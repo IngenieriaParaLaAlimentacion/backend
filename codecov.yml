@@ -1,0 +1,18 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 70%
+        threshold: 1%
+    patch:
+      default:
+        target: 70%
+        threshold: 1%
+
+comment:
+  layout: "header,diff,flags,files"
+  behavior: default
+  require_changes: false
+
+ignore:
+  - "**/*.test.*"
