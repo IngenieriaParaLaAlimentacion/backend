@@ -1,0 +1,20 @@
+services:
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    ports:
+      - "8080:${PORT}"
+    env_file:
+      - .env
+    networks:
+      - backend-net
+
+volumes:
+  db-data:
+
+networks:
+  backend-net:
+    driver: bridge

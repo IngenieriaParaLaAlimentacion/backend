@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = ""
+authors = ["grupo-193"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.135.3"
+sqlalchemy = "^2.0.49"
+pydantic = {extras = ["email"], version = "^2.12.5"}
+pydantic-settings = "^2.13.1"
+uvicorn = "^0.44.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = ">=0.15.8,<0.16.0"
+pre-commit = ">=4.5.1,<5.0.0"
+pytest = ">=9.0.2,<10.0.0"
+pytest-cov = ">=7.1.0,<8.0.0"
+testcontainers = {extras = ["postgres"], version = "^4.14.2"}
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
+]
+
+[tool.ruff.format]
+quote-style = "double"

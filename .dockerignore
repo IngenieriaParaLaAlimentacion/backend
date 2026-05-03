@@ -1,0 +1,60 @@
+# Git
+.git
+.gitignore
+.github
+
+# Docker
+Dockerfile
+Dockerfile.*
+docker-compose.yml
+docker-compose.*.yml
+.dockerignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info
+.eggs
+dist
+build
+.venv
+venv
+env
+
+# Tests
+tests
+test_*
+*_test.py
+pytest.ini
+.pytest_cache
+coverage.xml
+.coverage
+htmlcov
+
+# Linting / formatting
+.ruff_cache
+.mypy_cache
+
+# Editors
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docs
+docs
+*.md
+README*
+CHANGELOG*
+LICENSE
+
+# CI
+.env.*
+!.env.example
