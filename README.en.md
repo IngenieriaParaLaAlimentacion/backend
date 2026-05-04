@@ -1,24 +1,10 @@
-# Ingeniería para la Alimentación — Backend
+# Backend
 
 [![es](https://img.shields.io/badge/lang-es-green.svg)](README.md)
 [![codecov](https://codecov.io/gh/IngenieriaParaLaAlimentacion/backend/graph/badge.svg?token=mR49XH6LdK)](https://app.codecov.io/gh/IngenieriaParaLaAlimentacion/backend)
 
 REST API for the **Food Engineering** project, developed with FastAPI
 and SQLAlchemy on Python 3.11+.
-
-------------------------------------------------------------------------
-
-## Table of Contents
-
-- [Ingeniería para la Alimentación — Backend](#ingeniería-para-la-alimentación--backend)
-  - [Table of Contents](#table-of-contents)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Environment Variables](#environment-variables)
-  - [Running the Application](#running-the-application)
-  - [Tests](#tests)
-  - [Linting and Formatting](#linting-and-formatting)
-  - [License](#license)
 
 ------------------------------------------------------------------------
 
