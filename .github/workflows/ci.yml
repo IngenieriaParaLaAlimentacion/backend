@@ -53,10 +53,10 @@ jobs:
         with:
             token: ${{ secrets.CODECOV_TOKEN }}
             
-                  - name: Build Docker image (verify only, no push)
+      - name: Build Docker image (verify only, no push)
         uses: docker/build-push-action@v5
         with:
           context: .
           push: false
           cache-from: type=gha
-          cache-to: type=gha,mode=true
+          cache-to: type=gha,mode=max
