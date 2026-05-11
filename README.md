@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/IngenieriaParaLaAlimentacion/backend/graph/badge.svg?token=mR49XH6LdK)](https://app.codecov.io/gh/IngenieriaParaLaAlimentacion/backend)
 
 
-API REST del proyecto **Ingeniería para la Alimentación**, desarrollada con FastAPI y SQLAlchemy sobre Python 3.11+.
+API REST del proyecto **Ingeniería para la Alimentación**, desarrollada con FastAPI, SQLAlchemy (async) y asyncpg sobre Python 3.11+.
 
 ---
 
