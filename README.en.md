@@ -105,6 +105,14 @@ To run them manually on all files:
 poetry run pre-commit run --all-files
 ```
 
+## Database migrations
+
+Migrations run automatically on startup via the Docker entrypoint.
+To run them manually:
+```bash
+poetry run alembic upgrade head
+```
+
 ------------------------------------------------------------------------
 
 ## License

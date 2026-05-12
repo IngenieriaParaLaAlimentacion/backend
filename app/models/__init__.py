@@ -1,3 +1,4 @@
+from .base import Base
 from .establishment import Establishment
 from .measurement import Measurement
 from .subject import Sex, Subject
@@ -7,6 +8,7 @@ from .user_password import UserPassword
 from .user_token import UserToken
 
 __all__ = [
+    "Base",
     "User",
     "UserRole",
     "UserStatus",

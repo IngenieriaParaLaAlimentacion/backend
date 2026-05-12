@@ -101,6 +101,16 @@ poetry run pre-commit run --all-files
 
 ---
 
+## Migraciones de base de datos
+
+Las migraciones se ejecutan automáticamente al iniciar mediante el entrypoint de Docker.
+Para ejecutarlas manualmente:
+```bash
+poetry run alembic upgrade head
+```
+
+---
+
 
 ## Licencia
 

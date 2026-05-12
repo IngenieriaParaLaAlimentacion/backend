@@ -45,10 +45,6 @@ class Settings(BaseSettings):
         SQLAlchemy requires the scheme 'postgresql+asyncpg://' to use the
         asyncpg driver. This validator ensures the correct scheme regardless
         of how the URL is provided.
-
-        Note: Alembic runs synchronously and requires a different driver.
-        A separate sync URL ('postgresql://') is configured in alembic/env.py.
-        TODO: create the alembyc driver.
         """
         if self.database_url:
             self.database_url = self.database_url.replace(
@@ -60,6 +56,14 @@ class Settings(BaseSettings):
                 f"@{self.database_host}:{self.database_port}/{self.database_name}"
             )
         return self
+
+    @property
+    def database_url_sync(self) -> str:
+        """Sync database URL for Alembic migrations.
+
+        Alembic runs synchronously and requires psycopg2 instead of asyncpg.
+        """
+        return self.database_url.replace("postgresql+asyncpg://", "postgresql://")
 
 
 settings = Settings()
