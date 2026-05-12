@@ -1,0 +1,39 @@
+import pytest
+from pydantic import ValidationError
+
+from app.core.config import Settings
+
+
+def test_settings_defaults():
+    s = Settings(_env_file=None)
+    assert s.host == "0.0.0.0"
+    assert s.port == 8080
+    assert s.environment == "development"
+    assert str(s.log_level) == "INFO"
+    assert s.service_name == "backend"
+
+    assert s.database_host == "localhost"
+    assert s.database_name == "db"
+    assert s.database_port == 5432
+    assert s.database_user == "admin"
+    assert s.database_password == "password"
+
+
+def test_settings_invalid_port():
+    with pytest.raises(ValidationError):
+        Settings(port="notanint")
+
+
+def test_build_database_url_from_parts():
+    s = Settings(_env_file=None)
+    assert s.database_url == "postgresql+asyncpg://admin:password@localhost:5432/db"
+
+
+def test_build_database_url_normalizes_shorthand_postgres_scheme():
+    s = Settings(_env_file=None, database_url="postgres://user:pw@host:5432/mydb")
+    assert s.database_url.startswith("postgresql+asyncpg://")
+
+
+def test_build_database_url_normalizes_standard_postgresql_scheme():
+    s = Settings(_env_file=None, database_url="postgresql://user:pw@host:5432/mydb")
+    assert s.database_url.startswith("postgresql+asyncpg://")
