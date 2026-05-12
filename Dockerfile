@@ -10,6 +10,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     build-essential \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -37,4 +38,4 @@ RUN useradd --create-home appuser && chown -R appuser:appuser /app
 USER appuser
 
 EXPOSE 8080
-CMD ["sh", "-c", "uvicorn app.main:app --host ${HOST:-0.0.0.0} --port ${PORT:-8080}"]
+ CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host ${HOST:-0.0.0.0} --port ${PORT:-8080}"]
