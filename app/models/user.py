@@ -22,6 +22,7 @@ class UserStatus(str, Enum):
 
     ACTIVE = "active"
     INACTIVE = "inactive"
+    PENDING_VALIDATION = "pending_validation"
 
 
 class User(Base):
