@@ -49,46 +49,33 @@ tests/
   unit/
 ```
 
-## Common commands
+## Quick commands
 
 ```bash
-poetry install                                         # install dependencies
-poetry run uvicorn app.main:app --reload               # dev server (0.0.0.0:8080)
-poetry run pytest                                      # run tests (requires Docker)
-poetry run alembic upgrade head                        # apply migrations
-poetry run alembic revision --autogenerate -m "msg"    # generate migration
-poetry run ruff check . && poetry run ruff format .    # lint and format
+poetry run uvicorn app.main:app --reload    # dev server
+poetry run pytest                           # tests (requires Docker)
+poetry run alembic upgrade head             # apply migrations
+poetry run ruff check . --fix && poetry run ruff format .  # lint + format
 ```
 
-## Environment variables
-
-Loaded from `.env` at project root (see `app/core/config.py`). All have defaults for local dev.
-
-| Variable | Default | Notes |
-|---|---|---|
-| `DATABASE_HOST` | `localhost` | |
-| `DATABASE_PORT` | `5432` | |
-| `DATABASE_NAME` | `db` | |
-| `DATABASE_USER` | `admin` | |
-| `DATABASE_PASSWORD` | `password` | |
-| `DATABASE_URL` | — | Overrides individual DB vars if set |
-| `PORT` | `8080` | |
-| `ENVIRONMENT` | `development` | |
-| `JWT_SECRET` | — | Required; set to any string in tests |
-
-## Auth and authorization
-
-**Authentication**: custom JWT. The access token contains `user_id` and `role`. No external auth services.
-
-**Per-establishment authorization**: establishment access is resolved at the endpoint level by querying the DB — it is not encoded in the token. A centralized middleware handles this check — **never implement it inline per endpoint**.
-
-**Roles**: `admin`, `professional`, `establishment_manager`. Establishment managers can only load and view data for the establishments they have been assigned to.
+→ Full setup, Docker, and migration commands: `docs/commands.md`
 
 ## Architecture rules
 
 - Auth middleware is centralized — never check establishment permissions inside individual endpoints.
 - Business logic belongs in `app/services/`, not in route handlers or repositories.
 - Route handlers live in `app/api/` and are mounted in `app/main.py` — never add routes directly to `main.py`.
+- Never modify the DB schema manually — all changes go through Alembic migrations.
+
+→ Full architecture details: `docs/architecture.md`
+
+## Auth and authorization
+
+- Access token contains `user_id` and `role`. Per-establishment access is **not** in the token — resolved at request time via DB query.
+- A centralized middleware handles establishment permission checks — **never implement inline per endpoint**.
+- Roles: `admin`, `professional`, `establishment_manager`.
+
+→ Full auth model, token flow, and data model: `docs/auth.md`
 
 ## Sensitive data
 
@@ -99,8 +86,9 @@ The system stores health data of minors. Comply with Ley 25.326:
 
 ## Conventions
 
-- **Branches**: `main` (production), `feature/<ticket>` (development).
 - **Commits**: Conventional Commits — `feat:`, `fix:`, `chore:`, `docs:`, `test:`.
-- **PRs**: require at least 1 review before merging to `main`.
-- **Language**: code, documentation, and comments in English.
-- **Format**: Ruff with double quotes and line length 88. Do not modify without team consensus. Pre-commit hooks run Ruff automatically before every commit.
+- **Branches**: `main` (production), `feature/<ticket>` (development).
+- **Language**: English for all code, comments, and documentation.
+- **Format**: Ruff, double quotes, line length 88. Pre-commit hooks run automatically.
+
+→ Full conventions (naming, layers, docstrings, PRs): `docs/conventions.md`
