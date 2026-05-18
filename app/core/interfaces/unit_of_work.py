@@ -11,18 +11,18 @@ class IUnitOfWork(ABC):
     token_repo: TokenRepository
 
     @abstractmethod
-    def commit(self) -> None: ...
+    async def commit(self) -> None: ...
 
     @abstractmethod
-    def rollback(self) -> None: ...
+    async def rollback(self) -> None: ...
 
-    def __enter__(self):
+    async def __aenter__(self):
         return self
 
-    def __exit__(self, exc_type, *args):
+    async def __aexit__(self, exc_type, *args):
         if exc_type:
-            self.rollback()
-        self.close()
+            await self.rollback()
+        await self.close()
 
     @abstractmethod
-    def close(self) -> None: ...
+    async def close(self) -> None: ...
