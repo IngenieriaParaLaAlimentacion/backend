@@ -1,6 +1,7 @@
 import uuid
 from enum import Enum
 
+from pydantic import BaseModel
 from sqlalchemy import Column, DateTime, String, func
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
@@ -23,6 +24,11 @@ class UserStatus(str, Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
     PENDING_VALIDATION = "pending_validation"
+
+
+class UserActor(BaseModel):
+    user_id: UUID
+    role: UserRole
 
 
 class User(Base):

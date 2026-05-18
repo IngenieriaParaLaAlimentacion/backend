@@ -1,3 +1,2 @@
-
 class AuthService:
     pass
