@@ -7,6 +7,7 @@ from argon2.exceptions import VerifyMismatchError
 from jose import JWTError, jwt
 
 from app.core.config import settings
+from app.models import UserRole
 
 _password_hasher = PasswordHasher()
 
@@ -16,7 +17,7 @@ def _get_secret(role: str) -> str:
     return {
         "admin": settings.jwt_secret_admin,
         "professional": settings.jwt_secret_professional,
-    }.get(role, settings.jwt_secret_user)
+    }.get(role, settings.jwt_secret_manager)
 
 
 def hash_password(password: str) -> str:
@@ -33,7 +34,7 @@ def verify_password(password: str, hashed: str) -> bool:
         return False
 
 
-def create_access_token(user_id, role: str = "user"):
+def create_access_token(user_id, role: str = UserRole.ESTABLISHMENT_MANAGER):
     """Create a signed access JWT for a user identifier."""
     secret = _get_secret(role)
     now = datetime.now(timezone.utc)
@@ -70,7 +71,7 @@ def create_password_recovery_token() -> tuple[str, str]:
     return recovery_token, recovery_token_hash
 
 
-def decode_token(token: str, expected_role: str = "user"):
+def decode_token(token: str, expected_role: str = UserRole.ESTABLISHMENT_MANAGER):
     """Decode and validate a JWT, returning None on failure."""
     secret = _get_secret(expected_role)
     try:

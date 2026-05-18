@@ -27,7 +27,7 @@ class UserStatus(str, Enum):
 
 
 class UserActor(BaseModel):
-    user_id: UUID
+    user_id: uuid.UUID
     role: UserRole
 
 

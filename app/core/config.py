@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     database_url: Optional[str] = None
 
     # JWT
-    jwt_secret_user: str = "secret"
+    jwt_secret_manager: str = "secret_manager"
     jwt_secret_admin: str = "secret_admin"
     jwt_secret_professional: str = "secret_professional"
     jwt_algorithm: str = "HS256"

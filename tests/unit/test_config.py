@@ -18,6 +18,13 @@ def test_settings_defaults():
     assert s.database_user == "admin"
     assert s.database_password == "password"
 
+    assert s.jwt_secret_manager == "secret_manager"
+    assert s.jwt_secret_admin == "secret_admin"
+    assert s.jwt_secret_professional == "secret_professional"
+    assert s.jwt_algorithm == "HS256"
+    assert s.access_token_expire_minutes == 15
+    assert s.refresh_token_expire_days == 7
+
 
 def test_settings_invalid_port():
     with pytest.raises(ValidationError):
