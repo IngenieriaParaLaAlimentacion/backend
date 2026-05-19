@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 from app.core.security import decode_token
 from app.db.unit_of_work import UnitOfWork
-from app.models.user import UserActor, UserRole
+from app.domain.user import UserActor, UserRole
 from app.services.auth_service import AuthService
 from app.services.establishment_service import EstablishmentService
 

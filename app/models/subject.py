@@ -33,7 +33,9 @@ class Subject(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     dni = Column(Integer, nullable=False)
-    sex = Column(SAEnum(Sex), nullable=False)
+    sex = Column(
+        SAEnum(Sex, values_callable=lambda x: [e.value for e in x]), nullable=False
+    )
     name = Column(String, nullable=False)
     surname = Column(String, nullable=False)
     birth_date = Column(Date, nullable=False)

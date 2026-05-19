@@ -1,5 +1,5 @@
+import app.db.database as _db
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.db.database import AsyncSessionLocal
 from app.repositories.establishment_repository import EstablishmentRepository
 from app.repositories.user_establishment_repository import UserEstablishmentRepository
 from app.repositories.user_password_repository import UserPasswordRepository
@@ -16,14 +16,15 @@ class UnitOfWork(IUnitOfWork):
             await uow.commit()
     """
 
-    def __init__(self) -> None:
+    async def __aenter__(self):
         """Open a new async session and initialize all repositories."""
-        self.session = AsyncSessionLocal()
+        self.session = _db.AsyncSessionLocal()
         self.user_repo = UserRepository(self.session)
         self.password_repo = UserPasswordRepository(self.session)
         self.token_repo = TokenRepository(self.session)
         self.establishment_repo = EstablishmentRepository(self.session)
         self.user_establishment_repo = UserEstablishmentRepository(self.session)
+        return self
 
     async def commit(self) -> None:
         """Persist all pending changes to the database."""

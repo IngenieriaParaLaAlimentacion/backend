@@ -26,4 +26,7 @@ class UserEstablishment(Base):
         ForeignKey("establishments.id", ondelete="CASCADE"),
         primary_key=True,
     )
-    status = Column(SAEnum(UserEstablishmentStatus), nullable=False)
+    status = Column(
+        SAEnum(UserEstablishmentStatus, values_callable=lambda x: [e.value for e in x]),
+        nullable=False,
+    )
