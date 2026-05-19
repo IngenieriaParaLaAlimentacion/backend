@@ -1,13 +1,15 @@
 from math import ceil
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.schemas.establishment import (
+from app.schemas.establishment_schema import (
     EstablishmentResponse,
     PaginatedEstablishmentsResponse,
 )
 
 
 class EstablishmentService:
+    """Service layer for establishment queries."""
+
     def __init__(
         self,
         uow: IUnitOfWork,
@@ -20,10 +22,9 @@ class EstablishmentService:
         """Return a paginated response with establishments and pagination metadata."""
 
         offset = (page - 1) * page_size
-        async with self.uow as uow:
-            establishments, total = await uow.establishment_repo.get_paginated(
-                limit=page_size, offset=offset
-            )
+        establishments, total = await self.uow.establishment_repo.get_paginated(
+            limit=page_size, offset=offset
+        )
         total_pages = ceil(total / page_size) if total > 0 else 0
 
         return PaginatedEstablishmentsResponse(

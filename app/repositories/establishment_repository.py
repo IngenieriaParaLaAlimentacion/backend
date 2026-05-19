@@ -5,6 +5,7 @@ from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.exceptions.domain_exceptions import EstablishmentNotFoundError
 from app.models.establishment import Establishment
 
 
@@ -22,11 +23,19 @@ class EstablishmentRepository:
         return result.scalar_one_or_none()
 
     async def get_by_ids(self, ids: List[UUID]) -> List[Establishment]:
-        """Return only the establishments whose id is in the given list."""
+        """Return establishments for all given IDs, raising if any are missing."""
+        id_set = set(ids)
         result = await self.db.execute(
-            select(Establishment).where(Establishment.id.in_(ids))
+            select(Establishment).where(Establishment.id.in_(id_set))
         )
-        return list(result.scalars().all())
+        establishments = list(result.scalars().all())
+
+        if len(establishments) != len(id_set):
+            found_ids = {e.id for e in establishments}
+            missing = next(i for i in id_set if i not in found_ids)
+            raise EstablishmentNotFoundError(str(missing))
+
+        return establishments
 
     async def get_paginated(
         self, limit: int, offset: int

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query, status
 
 from app.core.dependencies import get_establishment_service
-from app.schemas.establishment import PaginatedEstablishmentsResponse
+from app.schemas.establishment_schema import PaginatedEstablishmentsResponse
 from app.services.establishment_service import EstablishmentService
 
 router = APIRouter(prefix="/establishments", tags=["Establishments"])

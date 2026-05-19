@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 
 from app.exceptions.domain_exceptions import (
     BaseError,
+    EstablishmentNotFoundError,
     PasswordNotFoundError,
     UnauthorizedError,
     UserAlreadyExistsError,
@@ -92,6 +93,22 @@ async def unauthorized_handler(request: Request, exc: UnauthorizedError):
     return _build_error_response(exc, request, status.HTTP_401_UNAUTHORIZED)
 
 
+async def establishment_not_found_handler(
+    request: Request, exc: EstablishmentNotFoundError
+):
+    """Handle EstablishmentNotFoundError exceptions.
+
+    Args:
+        request (Request): The incoming request.
+        exc (EstablishmentNotFoundError): The exception instance.
+
+    Returns:
+        JSONResponse: A JSON response with error details.
+    """
+
+    return _build_error_response(exc, request, status.HTTP_404_NOT_FOUND)
+
+
 def register_exception_handlers(app: FastAPI):
     """Register exception handlers with the FastAPI app.
 
@@ -102,3 +119,6 @@ def register_exception_handlers(app: FastAPI):
     app.add_exception_handler(UserNotFoundError, user_not_found_handler)
     app.add_exception_handler(PasswordNotFoundError, password_not_found_handler)
     app.add_exception_handler(UnauthorizedError, unauthorized_handler)
+    app.add_exception_handler(
+        EstablishmentNotFoundError, establishment_not_found_handler
+    )

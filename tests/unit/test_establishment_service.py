@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.schemas.establishment import (
+from app.schemas.establishment_schema import (
     EstablishmentResponse,
     PaginatedEstablishmentsResponse,
 )

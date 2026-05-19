@@ -60,3 +60,17 @@ class UnauthorizedError(BaseError):
         super().__init__(
             "Unauthorized", "Authentication credentials are missing or invalid."
         )
+
+
+class EstablishmentNotFoundError(BaseError):
+    """Exception raised when an establishment is not found.
+
+    Args:
+        establishment_id (str): The ID of the establishment that was not found.
+    """
+
+    def __init__(self, establishment_id: str):
+        super().__init__(
+            "Establishment not found",
+            f"The establishment with id {establishment_id} was not found.",
+        )

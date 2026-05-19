@@ -1,17 +1,27 @@
+from collections.abc import AsyncGenerator
+
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
 from app.core.security import decode_token
 from app.db.unit_of_work import UnitOfWork
 from app.models.user import UserActor, UserRole
+from app.services.auth_service import AuthService
 from app.services.establishment_service import EstablishmentService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
-def get_establishment_service() -> EstablishmentService:
+async def get_establishment_service() -> AsyncGenerator[EstablishmentService, None]:
     """Provide an EstablishmentService backed by a fresh UnitOfWork."""
-    return EstablishmentService(UnitOfWork())
+    async with UnitOfWork() as uow:
+        yield EstablishmentService(uow)
+
+
+async def get_auth_service() -> AsyncGenerator[AuthService, None]:
+    """Build an AuthService instance with request-scoped dependencies."""
+    async with UnitOfWork() as uow:
+        yield AuthService(uow)
 
 
 async def get_current_manager(token: str = Depends(oauth2_scheme)) -> UserActor:

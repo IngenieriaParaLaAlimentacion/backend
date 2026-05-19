@@ -1,6 +1,7 @@
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.db.database import AsyncSessionLocal
 from app.repositories.establishment_repository import EstablishmentRepository
+from app.repositories.user_establishment_repository import UserEstablishmentRepository
 from app.repositories.user_password_repository import UserPasswordRepository
 from app.repositories.user_repository import UserRepository
 from app.repositories.user_token_repository import TokenRepository
@@ -22,6 +23,7 @@ class UnitOfWork(IUnitOfWork):
         self.password_repo = UserPasswordRepository(self.session)
         self.token_repo = TokenRepository(self.session)
         self.establishment_repo = EstablishmentRepository(self.session)
+        self.user_establishment_repo = UserEstablishmentRepository(self.session)
 
     async def commit(self) -> None:
         """Persist all pending changes to the database."""

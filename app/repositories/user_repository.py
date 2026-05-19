@@ -13,8 +13,18 @@ class UserRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def create(self, user: User) -> User:
+    async def create(
+        self,
+        email: str,
+        name: str,
+        last_name: str,
+        role: str = UserRole.ESTABLISHMENT_MANAGER,
+        status: UserStatus = UserStatus.PENDING_VALIDATION,
+    ) -> User:
         """Persist a new user. Password and establishments are handled separately."""
+        user = User(
+            email=email, name=name, last_name=last_name, role=role, status=status
+        )
         self.db.add(user)
         await self.db.flush()
         await self.db.refresh(user)

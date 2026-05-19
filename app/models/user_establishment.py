@@ -1,7 +1,16 @@
+from enum import Enum
+
 from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 
 from .base import Base
+
+
+class UserEstablishmentStatus(str, Enum):
+    APPROVED = "approved"
+    PENDING = "pending"
+    REJECTED = "rejected"
 
 
 class UserEstablishment(Base):
@@ -17,3 +26,4 @@ class UserEstablishment(Base):
         ForeignKey("establishments.id", ondelete="CASCADE"),
         primary_key=True,
     )
+    status = Column(SAEnum(UserEstablishmentStatus), nullable=False)
