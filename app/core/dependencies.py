@@ -1,22 +1,17 @@
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import decode_token
-from app.db.database import get_db
+from app.db.unit_of_work import UnitOfWork
 from app.models.user import UserActor, UserRole
-from app.repositories.establishment_repository import EstablishmentRepository
 from app.services.establishment_service import EstablishmentService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
-def get_establishment_service(
-    db: AsyncSession = Depends(get_db),
-) -> EstablishmentService:
-    """Provide an EstablishmentService with its repository wired to
-    the current session."""
-    return EstablishmentService(EstablishmentRepository(db))
+def get_establishment_service() -> EstablishmentService:
+    """Provide an EstablishmentService backed by a fresh UnitOfWork."""
+    return EstablishmentService(UnitOfWork())
 
 
 async def get_current_manager(token: str = Depends(oauth2_scheme)) -> UserActor:
