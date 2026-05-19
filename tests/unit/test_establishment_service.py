@@ -1,6 +1,5 @@
-import uuid
 from math import ceil
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -9,18 +8,6 @@ from app.schemas.establishment_schema import (
     PaginatedEstablishmentsResponse,
 )
 from app.services.establishment_service import EstablishmentService
-
-
-@pytest.fixture
-def make_establishment():
-    def _make(name: str = "Centro A", address: str = "Calle 1"):
-        e = MagicMock()
-        e.id = uuid.uuid4()
-        e.name = name
-        e.address = address
-        return e
-
-    return _make
 
 
 @pytest.fixture

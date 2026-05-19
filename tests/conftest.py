@@ -1,6 +1,8 @@
 import importlib
 import os
 import sys
+import uuid
+from unittest.mock import MagicMock
 from urllib.parse import urlparse
 
 import pytest
@@ -9,8 +11,33 @@ from fastapi.testclient import TestClient
 from testcontainers.postgres import PostgresContainer
 
 from alembic import command
+from app.models import UserRole, UserStatus
 
 os.environ["TESTCONTAINERS_RYUK_DISABLED"] = "true"
+
+
+@pytest.fixture
+def make_establishment():
+    def _make(name: str = "Centro A", address: str = "Calle 1"):
+        e = MagicMock()
+        e.id = uuid.uuid4()
+        e.name = name
+        e.address = address
+        return e
+
+    return _make
+
+
+@pytest.fixture
+def make_user():
+    def _make():
+        u = MagicMock()
+        u.id = uuid.uuid4()
+        u.role = UserRole.ESTABLISHMENT_MANAGER
+        u.status = UserStatus.PENDING_VALIDATION
+        return u
+
+    return _make
 
 
 @pytest.fixture(scope="session")
