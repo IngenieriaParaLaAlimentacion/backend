@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 from uuid import UUID
 
+from app.domain.establishment import EstablishmentDomain
+
 
 class UserRole(str, Enum):
     ADMIN = "admin"
@@ -30,3 +32,14 @@ class UserDomain:
     role: UserRole
     status: UserStatus
     establishments: list[UUID]
+
+
+@dataclass
+class UserWithEstablishmentsDomain:
+    id: UUID
+    email: str
+    name: str
+    last_name: str
+    role: UserRole
+    status: UserStatus
+    establishments: list[EstablishmentDomain]

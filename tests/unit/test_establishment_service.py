@@ -3,10 +3,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from app.schemas.establishment_schema import (
-    EstablishmentResponse,
-    PaginatedEstablishmentsResponse,
-)
+from app.domain.establishment import EstablishmentDomain
+from app.domain.pagination import PaginatedResult
+from app.schemas.establishment_schema import EstablishmentResponse
 from app.services.establishment_service import EstablishmentService
 
 
@@ -41,7 +40,7 @@ class TestGetEstablishmentsPaginated:
 
         result = await service.get_establishments_paginated(page=1, page_size=20)
 
-        assert isinstance(result, PaginatedEstablishmentsResponse)
+        assert isinstance(result, PaginatedResult)
         assert len(result.items) == 2
         assert result.total == 2
         assert result.page == 1
@@ -84,4 +83,4 @@ class TestGetEstablishmentsPaginated:
 
         result = await service.get_establishments_paginated(page=1, page_size=20)
 
-        assert all(isinstance(item, EstablishmentResponse) for item in result.items)
+        assert all(isinstance(item, EstablishmentDomain) for item in result.items)

@@ -1,7 +1,7 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User, UserRole, UserStatus
@@ -53,6 +53,32 @@ class UserRepository:
             query = query.where(User.status == status)
         result = await self.db.execute(query)
         return list(result.scalars().all())
+
+    async def get_paginated(
+        self,
+        *,
+        role: Optional[UserRole] = None,
+        status: Optional[UserStatus] = None,
+        limit: int,
+        offset: int,
+    ) -> Tuple[List[User], int]:
+        """Return a paginated list of users."""
+        query = select(User)
+        count_query = select(func.count()).select_from(User)
+
+        if role is not None:
+            query = query.where(User.role == role)
+            count_query = count_query.where(User.role == role)
+        if status is not None:
+            query = query.where(User.status == status)
+            count_query = count_query.where(User.status == status)
+
+        query = query.order_by(User.created_at.desc()).limit(limit).offset(offset)
+
+        total = (await self.db.execute(count_query)).scalar_one()
+        users = (await self.db.execute(query)).scalars().all()
+
+        return list(users), total
 
     async def get_pending(self) -> list[User]:
         """Return all managers awaiting admin approval"""

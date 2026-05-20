@@ -6,10 +6,17 @@ from fastapi.security import OAuth2PasswordBearer
 from app.core.security import decode_token
 from app.db.unit_of_work import UnitOfWork
 from app.domain.user import UserActor, UserRole
+from app.services.admin_service import AdminService
 from app.services.auth_service import AuthService
 from app.services.establishment_service import EstablishmentService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+
+
+async def get_admin_service() -> AsyncGenerator[AdminService, None]:
+    """Provide an AdminService backed by a fresh UnitOfWork."""
+    async with UnitOfWork() as uow:
+        yield AdminService(uow)
 
 
 async def get_establishment_service() -> AsyncGenerator[EstablishmentService, None]:

@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import APIRouter, FastAPI
 
+from app.api.admin import router as admin_router
 from app.api.auth import router as auth_router
 from app.api.establishments import router as establishments_router
 from app.core.config import settings
@@ -22,6 +23,7 @@ app = FastAPI(
 register_exception_handlers(app)
 
 api_router = APIRouter(prefix="/api/v1")
+api_router.include_router(admin_router)
 api_router.include_router(establishments_router)
 api_router.include_router(auth_router)
 app.include_router(api_router)

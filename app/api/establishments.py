@@ -1,7 +1,10 @@
 from fastapi import APIRouter, Depends, Query, status
 
 from app.core.dependencies import get_establishment_service
-from app.schemas.establishment_schema import PaginatedEstablishmentsResponse
+from app.schemas.establishment_schema import (
+    EstablishmentResponse,
+    PaginatedEstablishmentsResponse,
+)
 from app.services.establishment_service import EstablishmentService
 
 router = APIRouter(prefix="/establishments", tags=["Establishments"])
@@ -24,4 +27,15 @@ async def get_establishments(
     ),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> PaginatedEstablishmentsResponse:
-    return await service.get_establishments_paginated(page=page, page_size=page_size)
+    result = await service.get_establishments_paginated(page=page, page_size=page_size)
+
+    return PaginatedEstablishmentsResponse(
+        items=[
+            EstablishmentResponse(id=e.id, name=e.name, address=e.address)
+            for e in result.items
+        ],
+        total=result.total,
+        page=result.page,
+        page_size=result.page_size,
+        total_pages=result.total_pages,
+    )

@@ -1,10 +1,8 @@
 from math import ceil
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.schemas.establishment_schema import (
-    EstablishmentResponse,
-    PaginatedEstablishmentsResponse,
-)
+from app.domain.establishment import EstablishmentDomain
+from app.domain.pagination import PaginatedResult
 
 
 class EstablishmentService:
@@ -18,8 +16,8 @@ class EstablishmentService:
 
     async def get_establishments_paginated(
         self, page: int, page_size: int
-    ) -> PaginatedEstablishmentsResponse:
-        """Return a paginated response with establishments and pagination metadata."""
+    ) -> PaginatedResult[EstablishmentDomain]:
+        """Return a paginated result with establishments and pagination metadata."""
 
         offset = (page - 1) * page_size
         establishments, total = await self.uow.establishment_repo.get_paginated(
@@ -27,8 +25,15 @@ class EstablishmentService:
         )
         total_pages = ceil(total / page_size) if total > 0 else 0
 
-        return PaginatedEstablishmentsResponse(
-            items=[EstablishmentResponse.model_validate(e) for e in establishments],
+        return PaginatedResult(
+            items=[
+                EstablishmentDomain(
+                    id=establishment.id,
+                    name=establishment.name,
+                    address=establishment.address,
+                )
+                for establishment in establishments
+            ],
             total=total,
             page=page,
             page_size=page_size,
