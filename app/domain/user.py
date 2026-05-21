@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from uuid import UUID
 
-from app.domain.establishment import EstablishmentDomain
+from app.domain.establishment import EstablishmentDomain, EstablishmentWithStatusDomain
 
 
 class UserRole(str, Enum):
@@ -30,8 +30,8 @@ class UserActor:
 
 
 @dataclass
-class UserDomain:
-    """Core user data as returned from persistence."""
+class BaseUserDomain:
+    """Shared fields for all user domain representations."""
 
     id: UUID
     email: str
@@ -39,20 +39,28 @@ class UserDomain:
     last_name: str
     role: UserRole
     status: UserStatus
+
+
+@dataclass
+class UserDomain(BaseUserDomain):
+    """Core user data as returned from persistence."""
+
     establishments: list[UUID]
 
 
 @dataclass
-class UserWithEstablishmentsDomain:
+class UserWithEstablishmentsDomain(BaseUserDomain):
     """User with fully hydrated establishment objects.
 
     Used when a response must include establishment details alongside user data.
     """
 
-    id: UUID
-    email: str
-    name: str
-    last_name: str
-    role: UserRole
-    status: UserStatus
     establishments: list[EstablishmentDomain]
+
+
+@dataclass
+class ApprovedManagerDomain(BaseUserDomain):
+    """User after admin approval, with each establishment annotated by
+    approval status."""
+
+    establishments: list[EstablishmentWithStatusDomain]

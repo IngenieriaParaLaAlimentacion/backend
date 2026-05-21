@@ -83,3 +83,14 @@ class EstablishmentNotFoundError(BaseError):
             "Establishment not found",
             f"The establishment with id {establishment_id} was not found.",
         )
+
+
+class UserEstablishmentNotFoundError(BaseError):
+    """Exception raised when a user-establishment relation does not exist."""
+
+    def __init__(self, establishment_id: str, user_id: str):
+        super().__init__(
+            "User establishment not found",
+            f"The establishment with id {establishment_id} is not associated with the "
+            f"user with id {user_id}.",
+        )

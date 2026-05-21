@@ -1,9 +1,11 @@
 from app.exceptions.domain_exceptions import (
     BaseError,
     EstablishmentNotFoundError,
+    ForbiddenError,
     PasswordNotFoundError,
     UnauthorizedError,
     UserAlreadyExistsError,
+    UserEstablishmentNotFoundError,
     UserNotFoundError,
 )
 
@@ -36,8 +38,22 @@ def test_unauthorized_error():
     assert "Unauthorized" in e.title
 
 
+def test_forbidden_error():
+    e = ForbiddenError()
+    assert isinstance(e, BaseError)
+    assert "Forbidden" in e.title
+
+
 def test_establishment_not_found_error():
     e = EstablishmentNotFoundError("id456")
     assert isinstance(e, BaseError)
     assert "id456" in e.details
     assert "Establishment not found" in e.title
+
+
+def test_user_establishment_not_found_error():
+    e = UserEstablishmentNotFoundError("estab-id", "user-id")
+    assert isinstance(e, BaseError)
+    assert "estab-id" in e.details
+    assert "user-id" in e.details
+    assert "User establishment not found" in e.title

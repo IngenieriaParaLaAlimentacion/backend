@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User, UserRole, UserStatus
@@ -79,6 +79,12 @@ class UserRepository:
         users = (await self.db.execute(query)).scalars().all()
 
         return list(users), total
+
+    async def update_status(self, user_id: UUID, status: UserStatus) -> None:
+        """Update the status of a user."""
+        await self.db.execute(
+            update(User).where(User.id == user_id).values(status=status)
+        )
 
     async def get_pending(self) -> list[User]:
         """Return all managers awaiting admin approval"""
