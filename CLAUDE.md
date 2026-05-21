@@ -77,13 +77,6 @@ poetry run ruff check . --fix && poetry run ruff format .  # lint + format
 
 → Full auth model, token flow, and data model: `docs/auth.md`
 
-## Sensitive data
-
-The system stores health data of minors. Comply with Ley 25.326:
-- Encrypt sensitive data at rest.
-- Do not log PII (personally identifiable information).
-- Anonymize data in exports and reports where possible.
-
 ## Conventions
 
 - **Commits**: Conventional Commits — `feat:`, `fix:`, `chore:`, `docs:`, `test:`.
