@@ -37,7 +37,7 @@ Errors follow [RFC 7807 — Problem Details for HTTP APIs](https://www.rfc-edito
 {
   "type": "/errors/validation-error",
   "title": "Validation Error",
-  "status": 422,
+  "status": 400,
   "detail": "The field 'email' must be a valid email address.",
   "instance": "/api/v1/auth/register"
 }
@@ -51,7 +51,9 @@ Errors follow [RFC 7807 — Problem Details for HTTP APIs](https://www.rfc-edito
 | `detail` | Human-readable explanation of this specific occurrence. |
 | `instance` | The request path where the error occurred. |
 
----
+### 422 vs 400 for validation errors
+
+FastAPI returns `422 Unprocessable Entity` by default when Pydantic rejects a request body or query parameter. The OpenAPI contract exposed to clients maps these to `400 Bad Request` instead (see `app/core/openapi.py`), which is the semantically correct code for malformed client input.
 
 ## Pagination
 
