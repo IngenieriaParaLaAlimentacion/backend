@@ -62,6 +62,15 @@ class UnauthorizedError(BaseError):
         )
 
 
+class ForbiddenError(BaseError):
+    """Exception raised when the authenticated user lacks the required permissions."""
+
+    def __init__(self):
+        super().__init__(
+            "Forbidden", "You do not have permission to perform this action."
+        )
+
+
 class EstablishmentNotFoundError(BaseError):
     """Exception raised when an establishment is not found.
 

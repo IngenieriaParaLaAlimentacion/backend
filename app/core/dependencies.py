@@ -1,16 +1,20 @@
 from collections.abc import AsyncGenerator
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
 
 from app.core.security import decode_token
 from app.db.unit_of_work import UnitOfWork
 from app.domain.user import UserActor, UserRole
+from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
 from app.services.admin_service import AdminService
 from app.services.auth_service import AuthService
 from app.services.establishment_service import EstablishmentService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+
+# Services
 
 
 async def get_admin_service() -> AsyncGenerator[AdminService, None]:
@@ -31,29 +35,46 @@ async def get_auth_service() -> AsyncGenerator[AuthService, None]:
         yield AuthService(uow)
 
 
-async def get_current_manager(token: str = Depends(oauth2_scheme)) -> UserActor:
-    """Validate an establishment manager access token and return the
-    authenticated actor."""
-    payload = decode_token(token, expected_role=UserRole.ESTABLISHMENT_MANAGER)
+def _decode_verified_payload(token: str) -> dict:
+    """Verify a JWT signature and return its payload.
+
+    Raises UnauthorizedError if the token is malformed or has an invalid signature.
+    """
+    try:
+        claimed_role = jwt.get_unverified_claims(token).get("role")
+    except JWTError:
+        raise UnauthorizedError()
+
+    payload = decode_token(token, expected_role=claimed_role)
     if payload is None:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
+        raise UnauthorizedError()
+
+    return payload
+
+
+async def _get_authenticated_actor(token: str, required_role: UserRole) -> UserActor:
+    """Validate a token and enforce a single required role.
+
+    Raises ForbiddenError if the token is valid but belongs to a different role.
+    """
+    payload = _decode_verified_payload(token)
+
+    if payload.get("role") != required_role:
+        raise ForbiddenError()
+
     return UserActor(user_id=payload["sub"], role=payload["role"])
 
 
 async def get_current_admin(token: str = Depends(oauth2_scheme)) -> UserActor:
-    """Validate an admin access token and return the authenticated actor."""
-    payload = decode_token(token, expected_role=UserRole.ADMIN)
-    if payload is None:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-    return UserActor(user_id=payload["sub"], role=payload["role"])
+    return await _get_authenticated_actor(token, UserRole.ADMIN)
+
+
+async def get_current_manager(token: str = Depends(oauth2_scheme)) -> UserActor:
+    return await _get_authenticated_actor(token, UserRole.ESTABLISHMENT_MANAGER)
 
 
 async def get_current_professional(token: str = Depends(oauth2_scheme)) -> UserActor:
-    """Validate a professional access token and return the authenticated actor."""
-    payload = decode_token(token, expected_role=UserRole.PROFESSIONAL)
-    if payload is None:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-    return UserActor(user_id=payload["sub"], role=payload["role"])
+    return await _get_authenticated_actor(token, UserRole.PROFESSIONAL)
 
 
 def require_any(*roles: str):
@@ -61,10 +82,11 @@ def require_any(*roles: str):
     Used when multiple actors can send the request."""
 
     async def dep(token: str = Depends(oauth2_scheme)) -> UserActor:
-        for role in roles:
-            payload = decode_token(token, expected_role=role)
-            if payload is not None:
-                return UserActor(user_id=payload["sub"], role=payload["role"])
-        raise HTTPException(status_code=403, detail="Insufficient permissions")
+        payload = _decode_verified_payload(token)
+
+        if payload.get("role") not in roles:
+            raise ForbiddenError()
+
+        return UserActor(user_id=payload["sub"], role=payload["role"])
 
     return dep

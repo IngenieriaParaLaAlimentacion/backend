@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from app.exceptions.domain_exceptions import (
     BaseError,
     EstablishmentNotFoundError,
+    ForbiddenError,
     PasswordNotFoundError,
     UnauthorizedError,
     UserAlreadyExistsError,
@@ -93,6 +94,11 @@ async def unauthorized_handler(request: Request, exc: UnauthorizedError):
     return _build_error_response(exc, request, status.HTTP_401_UNAUTHORIZED)
 
 
+async def forbidden_handler(request: Request, exc: ForbiddenError):
+    """Handle ForbiddenError exceptions."""
+    return _build_error_response(exc, request, status.HTTP_403_FORBIDDEN)
+
+
 async def establishment_not_found_handler(
     request: Request, exc: EstablishmentNotFoundError
 ):
@@ -119,6 +125,7 @@ def register_exception_handlers(app: FastAPI):
     app.add_exception_handler(UserNotFoundError, user_not_found_handler)
     app.add_exception_handler(PasswordNotFoundError, password_not_found_handler)
     app.add_exception_handler(UnauthorizedError, unauthorized_handler)
+    app.add_exception_handler(ForbiddenError, forbidden_handler)
     app.add_exception_handler(
         EstablishmentNotFoundError, establishment_not_found_handler
     )
