@@ -158,7 +158,7 @@ class AdminService:
             name=user.name,
             last_name=user.last_name,
             role=user.role,
-            status=user.status,
+            status=UserStatus.ACTIVE,
             establishments=[
                 EstablishmentWithStatusDomain(
                     id=estab.id,

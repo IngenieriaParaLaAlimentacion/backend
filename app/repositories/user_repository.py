@@ -1,4 +1,3 @@
-from typing import List, Optional, Tuple
 from uuid import UUID
 
 from sqlalchemy import func, select, update
@@ -30,22 +29,22 @@ class UserRepository:
         await self.db.refresh(user)
         return user
 
-    async def get_by_id(self, user_id: UUID) -> Optional[User]:
-        """Return a user by id, or None if it does not exist"""
+    async def get_by_id(self, user_id: UUID) -> User | None:
+        """Return a user by id, or None if it does not exist."""
         return await self.db.get(User, user_id)
 
-    async def get_by_email(self, email: str) -> Optional[User]:
-        """Return a user by email, or None if it does not exist"""
+    async def get_by_email(self, email: str) -> User | None:
+        """Return a user by email, or None if it does not exist."""
         result = await self.db.execute(select(User).where(User.email == email))
         return result.scalar_one_or_none()
 
     async def get_all(
         self,
         *,
-        role: Optional[UserRole] = None,
-        status: Optional[UserStatus] = None,
-    ) -> List[User]:
-        """Return all users, optionally filtered by role or status"""
+        role: UserRole | None = None,
+        status: UserStatus | None = None,
+    ) -> list[User]:
+        """Return all users, optionally filtered by role or status."""
         query = select(User)
         if role is not None:
             query = query.where(User.role == role)
@@ -57,11 +56,11 @@ class UserRepository:
     async def get_paginated(
         self,
         *,
-        role: Optional[UserRole] = None,
-        status: Optional[UserStatus] = None,
+        role: UserRole | None = None,
+        status: UserStatus | None = None,
         limit: int,
         offset: int,
-    ) -> Tuple[List[User], int]:
+    ) -> tuple[list[User], int]:
         """Return a paginated list of users."""
         query = select(User)
         count_query = select(func.count()).select_from(User)
@@ -87,7 +86,7 @@ class UserRepository:
         )
 
     async def get_pending(self) -> list[User]:
-        """Return all managers awaiting admin approval"""
+        """Return all managers awaiting admin approval."""
         return await self.get_all(
             role=UserRole.ESTABLISHMENT_MANAGER,
             status=UserStatus.PENDING_VALIDATION,

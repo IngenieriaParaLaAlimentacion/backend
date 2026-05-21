@@ -1,4 +1,3 @@
-import uuid
 from uuid import UUID
 
 from sqlalchemy import select, update
@@ -14,7 +13,7 @@ class UserEstablishmentRepository:
         self.db = db
 
     async def preset_relation(
-        self, user_id: uuid.UUID, establishment_id: uuid.UUID
+        self, user_id: UUID, establishment_id: UUID
     ) -> UserEstablishment:
         """Stage a pending user-establishment relation for a manager registration."""
         status = UserEstablishmentStatus.PENDING

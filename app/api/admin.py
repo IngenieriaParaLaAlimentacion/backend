@@ -76,7 +76,7 @@ async def list_users(
     response_model=ApproveManagerResponse,
     status_code=status.HTTP_200_OK,
     summary="Approve a manager",
-    description="Approves a manager and sets the status of each of their  "
+    description="Approves a manager and sets the status of each of their "
     "establishments. Establishments not included in the request are rejected. "
     "Accessible by admins only.",
     responses={
