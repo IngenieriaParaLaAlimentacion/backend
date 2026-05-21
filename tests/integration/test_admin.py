@@ -12,12 +12,49 @@ pytestmark = pytest.mark.asyncio
 
 ADMIN_USERS_URL = "/api/v1/admin/users"
 REGISTER_MANAGER_URL = "/api/v1/auth/register/establishment-manager"
+APPROVE_URL = "/api/v1/admin/managers/{user_id}/approve"
+
+
+async def _make_list_request(client, *, headers=None):
+    return await client.get(ADMIN_USERS_URL, headers=headers or {})
+
+
+async def _make_approve_request(client, *, headers=None):
+    return await client.post(
+        APPROVE_URL.format(user_id=uuid.uuid4()),
+        json={"approved_establishment_ids": [str(uuid.uuid4())]},
+        headers=headers or {},
+    )
+
+
+@pytest.fixture(
+    params=[
+        pytest.param(_make_list_request, id="GET /admin/users"),
+        pytest.param(_make_approve_request, id="POST /admin/managers/{id}/approve"),
+    ]
+)
+def any_admin_request(request):
+    return request.param
 
 
 @pytest.fixture
 def admin_headers():
     token = create_access_token(uuid.uuid4(), role=UserRole.ADMIN)
     return {"Authorization": f"Bearer {token}"}
+
+
+@pytest_asyncio.fixture
+async def db_establishment_2(app):
+    """Insert a second Establishment row and return the ORM instance."""
+    from app.db.database import AsyncSessionLocal
+    from app.models.establishment import Establishment
+
+    async with AsyncSessionLocal() as session:
+        establishment = Establishment(name="Centro B", address="Calle B 456")
+        session.add(establishment)
+        await session.commit()
+        await session.refresh(establishment)
+        return establishment
 
 
 @pytest_asyncio.fixture
@@ -38,51 +75,41 @@ async def registered_manager(client, db_establishment):
     return response.json()
 
 
-class TestListUsersAuth:
-    async def test_unauthenticated(self, client):
+class TestAdminAuth:
+    async def test_unauthenticated(self, client, any_admin_request):
         """Should return 401 if no access token is provided."""
-        response = await client.get(ADMIN_USERS_URL)
+        response = await any_admin_request(client)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_malformed_token(self, client):
-        """Should return 401 if the access token is not a valid JWT."""
-        response = await client.get(
-            ADMIN_USERS_URL,
-            headers={"Authorization": "Bearer token_invalido"},
+    async def test_malformed_token(self, client, any_admin_request):
+        """Should return 401 if the token is not a valid JWT."""
+        response = await any_admin_request(
+            client, headers={"Authorization": "Bearer token_invalido"}
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_token_signed_with_wrong_secret(self, client):
+    async def test_token_signed_with_wrong_secret(self, client, any_admin_request):
         """Should return 401 if the token is signed with the wrong secret."""
         payload = {"sub": str(uuid.uuid4()), "role": "admin", "type": "access"}
         forged_token = jwt.encode(payload, "secret_manager", algorithm="HS256")
-
-        response = await client.get(
-            ADMIN_USERS_URL,
-            headers={"Authorization": f"Bearer {forged_token}"},
+        response = await any_admin_request(
+            client, headers={"Authorization": f"Bearer {forged_token}"}
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_admin_has_access(self, client, admin_headers):
-        """Should return 200 when a valid admin token is provided."""
-        response = await client.get(ADMIN_USERS_URL, headers=admin_headers)
-        assert response.status_code == status.HTTP_200_OK
-
-    async def test_manager_is_forbidden(self, client):
+    async def test_manager_is_forbidden(self, client, any_admin_request):
         """Should return 403 when a valid manager token is provided."""
         token = create_access_token(uuid.uuid4(), role=UserRole.ESTABLISHMENT_MANAGER)
-        response = await client.get(
-            ADMIN_USERS_URL,
-            headers={"Authorization": f"Bearer {token}"},
+        response = await any_admin_request(
+            client, headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    async def test_professional_is_forbidden(self, client):
+    async def test_professional_is_forbidden(self, client, any_admin_request):
         """Should return 403 when a valid professional token is provided."""
         token = create_access_token(uuid.uuid4(), role=UserRole.PROFESSIONAL)
-        response = await client.get(
-            ADMIN_USERS_URL,
-            headers={"Authorization": f"Bearer {token}"},
+        response = await any_admin_request(
+            client, headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
@@ -197,3 +224,138 @@ class TestListUsersPagination:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["items"] == []
+
+
+class TestApproveManager:
+    async def test_response_has_required_fields(
+        self, client, admin_headers, registered_manager, db_establishment
+    ):
+        """Should return user fields and establishments with their status."""
+        url = APPROVE_URL.format(user_id=registered_manager["id"])
+        response = await client.post(
+            url,
+            json={"approved_establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert "id" in body
+        assert "email" in body
+        assert "name" in body
+        assert "last_name" in body
+        assert "role" in body
+        assert "status" in body
+        assert "establishments" in body
+        for estab in body["establishments"]:
+            assert "id" in estab
+            assert "name" in estab
+            assert "address" in estab
+            assert "status" in estab
+
+    async def test_approved_establishment_has_approved_status(
+        self, client, admin_headers, registered_manager, db_establishment
+    ):
+        """Establishments in the request body should have status approved."""
+        url = APPROVE_URL.format(user_id=registered_manager["id"])
+        response = await client.post(
+            url,
+            json={"approved_establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        body = response.json()
+        assert body["establishments"][0]["status"] == "approved"
+
+    async def test_user_status_becomes_active(
+        self, client, admin_headers, registered_manager, db_establishment
+    ):
+        """Manager status should be active after approval."""
+        url = APPROVE_URL.format(user_id=registered_manager["id"])
+        response = await client.post(
+            url,
+            json={"approved_establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        assert response.json()["status"] == UserStatus.ACTIVE.value
+
+    async def test_partial_approval_annotates_statuses_correctly(
+        self, client, admin_headers, db_establishment, db_establishment_2
+    ):
+        """Approved establishments get approved, the rest get rejected."""
+        response = await client.post(
+            REGISTER_MANAGER_URL,
+            json={
+                "email": f"manager_{uuid.uuid4().hex[:6]}@test.com",
+                "password": "Password123!",
+                "name": "Test",
+                "last_name": "Manager",
+                "establishments": [
+                    str(db_establishment.id),
+                    str(db_establishment_2.id),
+                ],
+            },
+        )
+        assert response.status_code == status.HTTP_201_CREATED
+        manager_id = response.json()["id"]
+
+        url = APPROVE_URL.format(user_id=manager_id)
+        response = await client.post(
+            url,
+            json={"approved_establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        establishments = response.json()["establishments"]
+        statuses = {e["id"]: e["status"] for e in establishments}
+        assert statuses[str(db_establishment.id)] == "approved"
+        assert statuses[str(db_establishment_2.id)] == "rejected"
+
+    async def test_idempotent_when_called_twice(
+        self, client, admin_headers, registered_manager, db_establishment
+    ):
+        """Calling approve twice should return 200 both times."""
+        url = APPROVE_URL.format(user_id=registered_manager["id"])
+        body = {"approved_establishment_ids": [str(db_establishment.id)]}
+
+        first = await client.post(url, json=body, headers=admin_headers)
+        second = await client.post(url, json=body, headers=admin_headers)
+
+        assert first.status_code == status.HTTP_200_OK
+        assert second.status_code == status.HTTP_200_OK
+
+    async def test_user_not_found(self, client, admin_headers):
+        """Should return 404 if the manager does not exist."""
+        url = APPROVE_URL.format(user_id=uuid.uuid4())
+        response = await client.post(
+            url,
+            json={"approved_establishment_ids": [str(uuid.uuid4())]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_establishment_not_associated_with_manager(
+        self, client, admin_headers, registered_manager
+    ):
+        """Should return 404 if an establishment ID is not linked to this manager."""
+        url = APPROVE_URL.format(user_id=registered_manager["id"])
+        response = await client.post(
+            url,
+            json={"approved_establishment_ids": [str(uuid.uuid4())]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_empty_approved_ids_rejected(
+        self, client, admin_headers, registered_manager
+    ):
+        """Should return 422 if approved_establishment_ids is empty."""
+        url = APPROVE_URL.format(user_id=registered_manager["id"])
+        response = await client.post(
+            url,
+            json={"approved_establishment_ids": []},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT

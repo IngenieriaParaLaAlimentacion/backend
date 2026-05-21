@@ -5,6 +5,10 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.domain.user import UserRole, UserStatus
+from app.exceptions.domain_exceptions import (
+    UserEstablishmentNotFoundError,
+    UserNotFoundError,
+)
 from app.services.admin_service import AdminService
 
 
@@ -43,6 +47,23 @@ def make_uow():
         return uow
 
     return _make
+
+
+def _make_relation(establishment_id):
+    rel = MagicMock()
+    rel.establishment_id = establishment_id
+    return rel
+
+
+def _make_approve_uow(user=None, relations=None, establishments=None):
+    uow = AsyncMock()
+    uow.user_repo.get_by_id = AsyncMock(return_value=user)
+    uow.user_establishment_repo.get_by_user_id = AsyncMock(return_value=relations or [])
+    uow.establishment_repo.find_by_ids = AsyncMock(return_value=establishments or [])
+    uow.user_repo.update_status = AsyncMock()
+    uow.user_establishment_repo.update_statuses = AsyncMock()
+    uow.commit = AsyncMock()
+    return uow
 
 
 class TestGetPaginatedUsers:
@@ -180,3 +201,99 @@ class TestGetPaginatedUsers:
         assert len(result.items[0].establishments) == 1
         assert result.items[0].establishments[0].id == establishment.id
         assert result.items[0].establishments[0].name == "Gym Centro"
+
+
+class TestApproveManager:
+    @pytest.mark.asyncio
+    async def test_partial_approval_annotates_statuses_correctly(
+        self, make_establishment
+    ):
+        user = _make_user(
+            role=UserRole.ESTABLISHMENT_MANAGER, status=UserStatus.PENDING_VALIDATION
+        )
+        estab1 = make_establishment(name="Hospital")
+        estab2 = make_establishment(name="Clínica")
+        uow = _make_approve_uow(
+            user=user,
+            relations=[_make_relation(estab1.id), _make_relation(estab2.id)],
+            establishments=[estab1, estab2],
+        )
+        service = AdminService(uow)
+
+        result = await service.approve_manager(user.id, [estab1.id])
+
+        approved = [e for e in result.establishments if e.status == "approved"]
+        rejected = [e for e in result.establishments if e.status == "rejected"]
+        assert len(approved) == 1 and approved[0].id == estab1.id
+        assert len(rejected) == 1 and rejected[0].id == estab2.id
+
+    @pytest.mark.asyncio
+    async def test_all_approved(self, make_establishment):
+        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        estab1 = make_establishment()
+        estab2 = make_establishment()
+        uow = _make_approve_uow(
+            user=user,
+            relations=[_make_relation(estab1.id), _make_relation(estab2.id)],
+            establishments=[estab1, estab2],
+        )
+        service = AdminService(uow)
+
+        result = await service.approve_manager(user.id, [estab1.id, estab2.id])
+
+        assert all(e.status == "approved" for e in result.establishments)
+
+    @pytest.mark.asyncio
+    async def test_sets_user_status_to_active(self, make_establishment):
+        user = _make_user(
+            role=UserRole.ESTABLISHMENT_MANAGER, status=UserStatus.PENDING_VALIDATION
+        )
+        estab = make_establishment()
+        uow = _make_approve_uow(
+            user=user,
+            relations=[_make_relation(estab.id)],
+            establishments=[estab],
+        )
+        service = AdminService(uow)
+
+        await service.approve_manager(user.id, [estab.id])
+
+        uow.user_repo.update_status.assert_called_once_with(user.id, UserStatus.ACTIVE)
+        uow.user_establishment_repo.update_statuses.assert_called_once_with(
+            user.id, [estab.id]
+        )
+        uow.commit.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_user_not_found_raises_error(self):
+        uow = _make_approve_uow(user=None)
+        service = AdminService(uow)
+
+        with pytest.raises(UserNotFoundError):
+            await service.approve_manager(uuid.uuid4(), [uuid.uuid4()])
+
+    @pytest.mark.asyncio
+    async def test_invalid_establishment_id_raises_error(self, make_establishment):
+        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        estab = make_establishment()
+        uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
+        service = AdminService(uow)
+
+        with pytest.raises(UserEstablishmentNotFoundError):
+            await service.approve_manager(user.id, [uuid.uuid4()])
+
+    @pytest.mark.asyncio
+    async def test_idempotent_when_already_active(self, make_establishment):
+        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER, status=UserStatus.ACTIVE)
+        estab = make_establishment()
+        uow = _make_approve_uow(
+            user=user,
+            relations=[_make_relation(estab.id)],
+            establishments=[estab],
+        )
+        service = AdminService(uow)
+
+        result = await service.approve_manager(user.id, [estab.id])
+
+        assert result.id == user.id
+        uow.commit.assert_called_once()

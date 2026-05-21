@@ -1,7 +1,7 @@
 import uuid
 from uuid import UUID
 
-from sqlalchemy import case, select, update
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user_establishment import UserEstablishment, UserEstablishmentStatus
@@ -52,14 +52,17 @@ class UserEstablishmentRepository:
 
         await self.db.execute(
             update(UserEstablishment)
-            .where(UserEstablishment.user_id == user_id)
-            .values(
-                status=case(
-                    (
-                        UserEstablishment.establishment_id.in_(approved_set),
-                        UserEstablishmentStatus.APPROVED,
-                    ),
-                    else_=UserEstablishmentStatus.REJECTED,
-                )
+            .where(
+                UserEstablishment.user_id == user_id,
+                UserEstablishment.establishment_id.in_(approved_set),
             )
+            .values(status=UserEstablishmentStatus.APPROVED)
+        )
+        await self.db.execute(
+            update(UserEstablishment)
+            .where(
+                UserEstablishment.user_id == user_id,
+                UserEstablishment.establishment_id.not_in(approved_set),
+            )
+            .values(status=UserEstablishmentStatus.REJECTED)
         )
