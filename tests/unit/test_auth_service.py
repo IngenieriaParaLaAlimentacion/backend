@@ -17,7 +17,9 @@ def make_uow(make_user):
     def _make(existing_user=None, establishments=None):
         uow = AsyncMock()
         uow.user_repo.get_by_email = AsyncMock(return_value=existing_user)
-        uow.establishment_repo.get_by_ids = AsyncMock(return_value=establishments or [])
+        uow.establishment_repo.get_all_by_ids = AsyncMock(
+            return_value=establishments or []
+        )
         uow.user_repo.create = AsyncMock(return_value=make_user())
         uow.password_repo.create = AsyncMock()
         uow.user_establishment_repo.preset_relation = AsyncMock()
@@ -107,7 +109,7 @@ class TestRegisterManager:
     @pytest.mark.asyncio
     async def test_raises_if_establishment_not_found(self, make_uow, valid_request):
         uow = make_uow()
-        uow.establishment_repo.get_by_ids = AsyncMock(
+        uow.establishment_repo.get_all_by_ids = AsyncMock(
             side_effect=EstablishmentNotFoundError(str(uuid.uuid4()))
         )
         service = AuthService(uow)

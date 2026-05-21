@@ -25,16 +25,13 @@ class UserEstablishmentRepository:
         return user_establishment
 
     async def get_by_user_ids(self, user_ids: list[UUID]) -> dict[UUID, list[UUID]]:
-        """Return a mapping of user_id → list of establishment_ids for
-        the given users."""
-        if not user_ids:
-            return {}
+        """Return a list of establishment ids for each of the given users."""
         result = await self.db.execute(
             select(UserEstablishment.user_id, UserEstablishment.establishment_id).where(
                 UserEstablishment.user_id.in_(user_ids)
             )
         )
-        mapping: dict[UUID, list[UUID]] = {uid: [] for uid in user_ids}
+        mapping: dict[UUID, list[UUID]] = {user_id: [] for user_id in user_ids}
         for user_id, estab_id in result.all():
             mapping[user_id].append(estab_id)
         return mapping

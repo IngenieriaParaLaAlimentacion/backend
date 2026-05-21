@@ -31,8 +31,8 @@ async def get_establishments(
 
     return PaginatedEstablishmentsResponse(
         items=[
-            EstablishmentResponse(id=e.id, name=e.name, address=e.address)
-            for e in result.items
+            EstablishmentResponse(id=estab.id, name=estab.name, address=estab.address)
+            for estab in result.items
         ],
         total=result.total,
         page=result.page,

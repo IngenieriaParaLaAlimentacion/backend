@@ -26,10 +26,8 @@ router = APIRouter(prefix="/admin", tags=["Admin"])
     },
 )
 async def list_users(
-    page: int = Query(default=1, ge=1, description="Page number, starting at 1."),
-    page_size: int = Query(
-        default=20, ge=1, le=100, description="Number of users per page (max 100)."
-    ),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=20, ge=1, le=100),
     role: UserRole | None = Query(default=None, description="Filter by role."),
     status_filter: UserStatus | None = Query(
         default=None, alias="status", description="Filter by status."
@@ -50,8 +48,10 @@ async def list_users(
                 role=user.role,
                 status=user.status,
                 establishments=[
-                    EstablishmentResponse(id=e.id, name=e.name, address=e.address)
-                    for e in user.establishments
+                    EstablishmentResponse(
+                        id=estab.id, name=estab.name, address=estab.address
+                    )
+                    for estab in user.establishments
                 ],
             )
             for user in result.items

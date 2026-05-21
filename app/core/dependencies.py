@@ -26,13 +26,14 @@ async def get_establishment_service() -> AsyncGenerator[EstablishmentService, No
 
 
 async def get_auth_service() -> AsyncGenerator[AuthService, None]:
-    """Build an AuthService instance with request-scoped dependencies."""
+    """Provide an AuthService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
         yield AuthService(uow)
 
 
 async def get_current_manager(token: str = Depends(oauth2_scheme)) -> UserActor:
-    """Validate a user access token and return the authenticated actor."""
+    """Validate an establishment manager access token and return the
+    authenticated actor."""
     payload = decode_token(token, expected_role=UserRole.ESTABLISHMENT_MANAGER)
     if payload is None:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
@@ -56,7 +57,8 @@ async def get_current_professional(token: str = Depends(oauth2_scheme)) -> UserA
 
 
 def require_any(*roles: str):
-    """Return a dependency that accepts any of the given roles."""
+    """Return a dependency that accepts any of the given roles.
+    Used when multiple actors can send the request."""
 
     async def dep(token: str = Depends(oauth2_scheme)) -> UserActor:
         for role in roles:

@@ -23,7 +23,7 @@ class AuthService:
         if await self.uow.user_repo.get_by_email(str(data.email)):
             raise UserAlreadyExistsError(str(data.email))
 
-        establishments = await self.uow.establishment_repo.get_by_ids(
+        establishments = await self.uow.establishment_repo.get_all_by_ids(
             data.establishments
         )
 

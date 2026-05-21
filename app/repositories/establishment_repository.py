@@ -22,17 +22,30 @@ class EstablishmentRepository:
         )
         return result.scalar_one_or_none()
 
-    async def get_by_ids(self, ids: List[UUID]) -> List[Establishment]:
-        """Return establishments for all given IDs, raising if any are missing."""
+    async def find_by_ids(self, ids: List[UUID]) -> List[Establishment]:
+        """Return establishments for the given IDs, silently skipping any
+        that do not exist."""
         id_set = set(ids)
         result = await self.db.execute(
             select(Establishment).where(Establishment.id.in_(id_set))
         )
-        establishments = list(result.scalars().all())
+        return list(result.scalars().all())
+
+    async def get_all_by_ids(self, ids: List[UUID]) -> List[Establishment]:
+        """Return establishments for all given IDs.
+
+        Raises:
+            EstablishmentNotFoundError: if any of the requested establishment
+            is missing.
+        """
+        establishments = await self.find_by_ids(ids)
+        id_set = set(ids)
 
         if len(establishments) != len(id_set):
-            found_ids = {e.id for e in establishments}
-            missing = next(i for i in id_set if i not in found_ids)
+            found_ids = {establishment.id for establishment in establishments}
+            missing = next(
+                identifier for identifier in id_set if identifier not in found_ids
+            )
             raise EstablishmentNotFoundError(str(missing))
 
         return establishments
