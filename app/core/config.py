@@ -65,13 +65,5 @@ class Settings(BaseSettings):
             )
         return self
 
-    @property
-    def database_url_sync(self) -> str:
-        """Sync database URL for Alembic migrations.
-
-        Alembic runs synchronously and requires psycopg2 instead of asyncpg.
-        """
-        return self.database_url.replace("postgresql+asyncpg://", "postgresql://")
-
 
 settings = Settings()
