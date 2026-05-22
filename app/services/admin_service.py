@@ -46,10 +46,9 @@ class AdminService:
             UUID, list[UUID]
         ] = await self.uow.user_establishment_repo.get_by_user_ids(user_ids)
 
-        all_establishment_ids = []
-        for establishment_ids in estab_ids_by_user.values():
-            all_establishment_ids.extend(establishment_ids)
-        unique_establishment_ids = list(set(all_establishment_ids))
+        unique_establishment_ids = list(
+            {e_id for ids in estab_ids_by_user.values() for e_id in ids}
+        )
 
         if not unique_establishment_ids:
             return {user_id: [] for user_id in user_ids}
@@ -139,16 +138,21 @@ class AdminService:
         relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
         user_establishment_ids = {rel.establishment_id for rel in relations}
 
-        for approved_id in approved_ids:
-            if approved_id not in user_establishment_ids:
-                raise UserEstablishmentNotFoundError(str(approved_id), str(user_id))
+        approved_set = set(approved_ids)
+        invalid_ids = approved_set - user_establishment_ids
+        if invalid_ids:
+            raise UserEstablishmentNotFoundError(
+                str(next(iter(invalid_ids))), str(user_id)
+            )
 
         establishments = await self.uow.establishment_repo.find_by_ids(
             list(user_establishment_ids)
         )
 
         await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
-        await self.uow.user_establishment_repo.update_statuses(user_id, approved_ids)
+        await self.uow.user_establishment_repo.update_statuses(
+            user_id, list(approved_set)
+        )
         await self.uow.commit()
 
         approved_set = set(approved_ids)

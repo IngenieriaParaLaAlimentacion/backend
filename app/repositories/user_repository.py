@@ -77,7 +77,7 @@ class UserRepository:
         total = (await self.db.execute(count_query)).scalar_one()
         users = (await self.db.execute(query)).scalars().all()
 
-        return list(users), total
+        return users, total
 
     async def update_status(self, user_id: UUID, status: UserStatus) -> None:
         """Update the status of a user."""
