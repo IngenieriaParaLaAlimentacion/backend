@@ -37,7 +37,7 @@ class Subject(Base):
         SAEnum(Sex, values_callable=lambda x: [e.value for e in x]), nullable=False
     )
     name = Column(String, nullable=False)
-    surname = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
     birth_date = Column(Date, nullable=False)
     is_rural = Column(Boolean, default=False, nullable=False)
     is_indigenous = Column(Boolean, default=False, nullable=False)

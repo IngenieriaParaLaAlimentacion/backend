@@ -51,7 +51,7 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column("name", sa.String(), nullable=False),
-        sa.Column("surname", sa.String(), nullable=False),
+        sa.Column("last_name", sa.String(), nullable=False),
         sa.Column("birth_date", sa.Date(), nullable=False),
         sa.Column("is_rural", sa.Boolean(), nullable=False),
         sa.Column("is_indigenous", sa.Boolean(), nullable=False),
