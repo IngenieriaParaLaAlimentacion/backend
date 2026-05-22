@@ -1,13 +1,11 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query, Response, status
 
 from app.core.dependencies import get_admin_service, get_current_admin
 from app.domain.user import UserActor, UserRole, UserStatus
 from app.schemas.admin_schema import (
-    ApproveManagerRequest,
-    ApproveManagerResponse,
-    EstablishmentWithStatusResponse,
+    EstablishmentAccessRequest,
     PaginatedUsersResponse,
     UserAdminView,
 )
@@ -71,14 +69,12 @@ async def list_users(
     )
 
 
-@router.post(
-    "/managers/{user_id}/approve",
-    response_model=ApproveManagerResponse,
-    status_code=status.HTTP_200_OK,
-    summary="Approve a manager",
-    description="Approves a manager and sets the status of each of their "
-    "establishments. Establishments not included in the request are rejected. "
-    "Accessible by admins only.",
+@router.patch(
+    "/managers/{user_id}/establishments/approve",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Approve establishment access for a manager",
+    description="Approves the given establishments for the manager and activates the "
+    "manager's account. Accessible by admins only.",
     responses={
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Missing or invalid authentication token"
@@ -91,27 +87,39 @@ async def list_users(
         },
     },
 )
-async def approve_manager(
+async def approve_establishments(
     user_id: UUID,
-    data: ApproveManagerRequest,
+    data: EstablishmentAccessRequest,
     _admin: UserActor = Depends(get_current_admin),
     service: AdminService = Depends(get_admin_service),
-) -> ApproveManagerResponse:
-    result = await service.approve_manager(user_id, data.approved_establishment_ids)
-    return ApproveManagerResponse(
-        id=result.id,
-        email=result.email,
-        name=result.name,
-        last_name=result.last_name,
-        role=result.role,
-        status=result.status,
-        establishments=[
-            EstablishmentWithStatusResponse(
-                id=estab.id,
-                name=estab.name,
-                address=estab.address,
-                status=estab.status,
-            )
-            for estab in result.establishments
-        ],
-    )
+) -> Response:
+    await service.approve_establishments(user_id, data.establishment_ids)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.patch(
+    "/managers/{user_id}/establishments/reject",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Reject establishment access for a manager",
+    description="Rejects the given establishments for the manager. Does not affect "
+    "the manager's account status. Accessible by admins only.",
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Missing or invalid authentication token"
+        },
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Authenticated user does not have admin privileges"
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Manager or establishment not found"
+        },
+    },
+)
+async def reject_establishments(
+    user_id: UUID,
+    data: EstablishmentAccessRequest,
+    _admin: UserActor = Depends(get_current_admin),
+    service: AdminService = Depends(get_admin_service),
+) -> Response:
+    await service.reject_establishments(user_id, data.establishment_ids)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

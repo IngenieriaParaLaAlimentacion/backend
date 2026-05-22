@@ -12,7 +12,8 @@ pytestmark = pytest.mark.asyncio
 
 ADMIN_USERS_URL = "/api/v1/admin/users"
 REGISTER_MANAGER_URL = "/api/v1/auth/register/establishment-manager"
-APPROVE_URL = "/api/v1/admin/managers/{user_id}/approve"
+APPROVE_URL = "/api/v1/admin/managers/{user_id}/establishments/approve"
+REJECT_URL = "/api/v1/admin/managers/{user_id}/establishments/reject"
 
 
 async def _make_list_request(client, *, headers=None):
@@ -20,9 +21,9 @@ async def _make_list_request(client, *, headers=None):
 
 
 async def _make_approve_request(client, *, headers=None):
-    return await client.post(
+    return await client.patch(
         APPROVE_URL.format(user_id=uuid.uuid4()),
-        json={"approved_establishment_ids": [str(uuid.uuid4())]},
+        json={"establishment_ids": [str(uuid.uuid4())]},
         headers=headers or {},
     )
 
@@ -30,7 +31,10 @@ async def _make_approve_request(client, *, headers=None):
 @pytest.fixture(
     params=[
         pytest.param(_make_list_request, id="GET /admin/users"),
-        pytest.param(_make_approve_request, id="POST /admin/managers/{id}/approve"),
+        pytest.param(
+            _make_approve_request,
+            id="PATCH /admin/managers/{id}/establishments/approve",
+        ),
     ]
 )
 def any_admin_request(request):
@@ -226,112 +230,38 @@ class TestListUsersPagination:
         assert response.json()["items"] == []
 
 
-class TestApproveManager:
-    async def test_response_has_required_fields(
+class TestApproveEstablishments:
+    async def test_returns_no_content(
         self, client, admin_headers, registered_manager, db_establishment
     ):
-        """Should return user fields and establishments with their status."""
+        """Should return 204 on successful approval."""
         url = APPROVE_URL.format(user_id=registered_manager["id"])
-        response = await client.post(
+        response = await client.patch(
             url,
-            json={"approved_establishment_ids": [str(db_establishment.id)]},
+            json={"establishment_ids": [str(db_establishment.id)]},
             headers=admin_headers,
         )
-
-        assert response.status_code == status.HTTP_200_OK
-        body = response.json()
-        assert "id" in body
-        assert "email" in body
-        assert "name" in body
-        assert "last_name" in body
-        assert "role" in body
-        assert "status" in body
-        assert "establishments" in body
-        for estab in body["establishments"]:
-            assert "id" in estab
-            assert "name" in estab
-            assert "address" in estab
-            assert "status" in estab
-
-    async def test_approved_establishment_has_approved_status(
-        self, client, admin_headers, registered_manager, db_establishment
-    ):
-        """Establishments in the request body should have status approved."""
-        url = APPROVE_URL.format(user_id=registered_manager["id"])
-        response = await client.post(
-            url,
-            json={"approved_establishment_ids": [str(db_establishment.id)]},
-            headers=admin_headers,
-        )
-
-        body = response.json()
-        assert body["establishments"][0]["status"] == "approved"
-
-    async def test_user_status_becomes_active(
-        self, client, admin_headers, registered_manager, db_establishment
-    ):
-        """Manager status should be active after approval."""
-        url = APPROVE_URL.format(user_id=registered_manager["id"])
-        response = await client.post(
-            url,
-            json={"approved_establishment_ids": [str(db_establishment.id)]},
-            headers=admin_headers,
-        )
-
-        assert response.json()["status"] == UserStatus.ACTIVE.value
-
-    async def test_partial_approval_annotates_statuses_correctly(
-        self, client, admin_headers, db_establishment, db_establishment_2
-    ):
-        """Approved establishments get approved, the rest get rejected."""
-        response = await client.post(
-            REGISTER_MANAGER_URL,
-            json={
-                "email": f"manager_{uuid.uuid4().hex[:6]}@test.com",
-                "password": "Password123!",
-                "name": "Test",
-                "last_name": "Manager",
-                "establishments": [
-                    str(db_establishment.id),
-                    str(db_establishment_2.id),
-                ],
-            },
-        )
-        assert response.status_code == status.HTTP_201_CREATED
-        manager_id = response.json()["id"]
-
-        url = APPROVE_URL.format(user_id=manager_id)
-        response = await client.post(
-            url,
-            json={"approved_establishment_ids": [str(db_establishment.id)]},
-            headers=admin_headers,
-        )
-
-        assert response.status_code == status.HTTP_200_OK
-        establishments = response.json()["establishments"]
-        statuses = {e["id"]: e["status"] for e in establishments}
-        assert statuses[str(db_establishment.id)] == "approved"
-        assert statuses[str(db_establishment_2.id)] == "rejected"
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
     async def test_idempotent_when_called_twice(
         self, client, admin_headers, registered_manager, db_establishment
     ):
-        """Calling approve twice should return 200 both times."""
+        """Calling approve twice should return 204 both times."""
         url = APPROVE_URL.format(user_id=registered_manager["id"])
-        body = {"approved_establishment_ids": [str(db_establishment.id)]}
+        body = {"establishment_ids": [str(db_establishment.id)]}
 
-        first = await client.post(url, json=body, headers=admin_headers)
-        second = await client.post(url, json=body, headers=admin_headers)
+        first = await client.patch(url, json=body, headers=admin_headers)
+        second = await client.patch(url, json=body, headers=admin_headers)
 
-        assert first.status_code == status.HTTP_200_OK
-        assert second.status_code == status.HTTP_200_OK
+        assert first.status_code == status.HTTP_204_NO_CONTENT
+        assert second.status_code == status.HTTP_204_NO_CONTENT
 
     async def test_user_not_found(self, client, admin_headers):
         """Should return 404 if the manager does not exist."""
         url = APPROVE_URL.format(user_id=uuid.uuid4())
-        response = await client.post(
+        response = await client.patch(
             url,
-            json={"approved_establishment_ids": [str(uuid.uuid4())]},
+            json={"establishment_ids": [str(uuid.uuid4())]},
             headers=admin_headers,
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -341,21 +271,19 @@ class TestApproveManager:
     ):
         """Should return 404 if an establishment ID is not linked to this manager."""
         url = APPROVE_URL.format(user_id=registered_manager["id"])
-        response = await client.post(
+        response = await client.patch(
             url,
-            json={"approved_establishment_ids": [str(uuid.uuid4())]},
+            json={"establishment_ids": [str(uuid.uuid4())]},
             headers=admin_headers,
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    async def test_empty_approved_ids_rejected(
-        self, client, admin_headers, registered_manager
-    ):
-        """Should return 422 if approved_establishment_ids is empty."""
+    async def test_empty_ids_rejected(self, client, admin_headers, registered_manager):
+        """Should return 422 if establishment_ids is empty."""
         url = APPROVE_URL.format(user_id=registered_manager["id"])
-        response = await client.post(
+        response = await client.patch(
             url,
-            json={"approved_establishment_ids": []},
+            json={"establishment_ids": []},
             headers=admin_headers,
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT

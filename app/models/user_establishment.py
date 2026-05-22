@@ -1,16 +1,9 @@
-from enum import Enum
-
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 
+from ..domain.establishment import UserEstablishmentStatus
 from .base import Base
-
-
-class UserEstablishmentStatus(str, Enum):
-    APPROVED = "approved"
-    PENDING = "pending"
-    REJECTED = "rejected"
 
 
 class UserEstablishment(Base):

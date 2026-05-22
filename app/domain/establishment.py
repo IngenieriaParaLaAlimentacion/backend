@@ -1,5 +1,12 @@
 from dataclasses import dataclass
+from enum import Enum
 from uuid import UUID
+
+
+class UserEstablishmentStatus(str, Enum):
+    APPROVED = "approved"
+    PENDING = "pending"
+    REJECTED = "rejected"
 
 
 @dataclass

@@ -2,10 +2,9 @@ from math import ceil
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.domain.establishment import EstablishmentDomain, EstablishmentWithStatusDomain
+from app.domain.establishment import EstablishmentDomain, UserEstablishmentStatus
 from app.domain.pagination import PaginatedResult
 from app.domain.user import (
-    ApprovedManagerDomain,
     UserRole,
     UserStatus,
     UserWithEstablishmentsDomain,
@@ -127,10 +126,10 @@ class AdminService:
             page_size=page_size,
         )
 
-    async def approve_manager(
-        self, user_id: UUID, approved_ids: list[UUID]
-    ) -> ApprovedManagerDomain:
-        """Approve a manager and set the status of each of their establishments."""
+    async def _validate_access_request(
+        self, user_id: UUID, establishment_ids: list[UUID]
+    ) -> None:
+        """Validate that the user exists and all establishment IDs belong to them."""
         user = await self.uow.user_repo.get_by_id(user_id)
         if user is None:
             raise UserNotFoundError(str(user_id))
@@ -138,38 +137,42 @@ class AdminService:
         relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
         user_establishment_ids = {rel.establishment_id for rel in relations}
 
-        approved_set = set(approved_ids)
-        invalid_ids = approved_set - user_establishment_ids
+        invalid_ids = set(establishment_ids) - user_establishment_ids
         if invalid_ids:
             raise UserEstablishmentNotFoundError(
                 str(next(iter(invalid_ids))), str(user_id)
             )
 
-        establishments = await self.uow.establishment_repo.find_by_ids(
-            list(user_establishment_ids)
+    async def _set_user_establishment_relation_status(
+        self,
+        user_id: UUID,
+        establishment_ids: list[UUID],
+        status: UserEstablishmentStatus,
+    ) -> None:
+        """Validate and write a status update for the given user-establishment pairs."""
+        await self._validate_access_request(user_id, establishment_ids)
+        await self.uow.user_establishment_repo.update_status_for_ids(
+            user_id, establishment_ids, status
         )
 
-        await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
-        await self.uow.user_establishment_repo.update_statuses(
-            user_id, list(approved_set)
+    async def approve_establishments(
+        self, user_id: UUID, establishment_ids: list[UUID]
+    ) -> None:
+        """Approve access to the given establishments and activate the manager."""
+        await self._set_user_establishment_relation_status(
+            user_id, establishment_ids, UserEstablishmentStatus.APPROVED
         )
+        await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
         await self.uow.commit()
 
-        approved_set = set(approved_ids)
-        return ApprovedManagerDomain(
-            id=user.id,
-            email=user.email,
-            name=user.name,
-            last_name=user.last_name,
-            role=user.role,
-            status=UserStatus.ACTIVE,
-            establishments=[
-                EstablishmentWithStatusDomain(
-                    id=estab.id,
-                    name=estab.name,
-                    address=estab.address,
-                    status="approved" if estab.id in approved_set else "rejected",
-                )
-                for estab in establishments
-            ],
+    async def reject_establishments(
+        self, user_id: UUID, establishment_ids: list[UUID]
+    ) -> None:
+        """Reject access to the given establishments.
+
+        Does not change user status.
+        """
+        await self._set_user_establishment_relation_status(
+            user_id, establishment_ids, UserEstablishmentStatus.REJECTED
         )
+        await self.uow.commit()

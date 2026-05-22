@@ -1,10 +1,10 @@
 from uuid import UUID
 
-from sqlalchemy import case, cast, select, update
-from sqlalchemy.dialects.postgresql import ENUM
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.user_establishment import UserEstablishment, UserEstablishmentStatus
+from app.domain.establishment import UserEstablishmentStatus
+from app.models.user_establishment import UserEstablishment
 
 
 class UserEstablishmentRepository:
@@ -43,26 +43,18 @@ class UserEstablishmentRepository:
         )
         return list(result.scalars().all())
 
-    async def update_statuses(self, user_id: UUID, approved_ids: list[UUID]) -> None:
-        """Set each user-establishment relation to APPROVED or REJECTED.
-
-        Establishments in approved_ids are approved; all others are rejected.
-        """
-        approved_set = set(approved_ids)
-
+    async def update_status_for_ids(
+        self,
+        user_id: UUID,
+        establishment_ids: list[UUID],
+        status: UserEstablishmentStatus,
+    ) -> None:
+        """Set the given user-establishment relations to the specified status."""
         await self.db.execute(
             update(UserEstablishment)
-            .where(UserEstablishment.user_id == user_id)
-            .values(
-                status=cast(
-                    case(
-                        (
-                            UserEstablishment.establishment_id.in_(approved_set),
-                            UserEstablishmentStatus.APPROVED.value,
-                        ),
-                        else_=UserEstablishmentStatus.REJECTED.value,
-                    ),
-                    ENUM(name="userestablishmentstatus"),
-                )
+            .where(
+                UserEstablishment.user_id == user_id,
+                UserEstablishment.establishment_id.in_(establishment_ids),
             )
+            .values(status=status)
         )
