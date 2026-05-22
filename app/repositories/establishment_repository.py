@@ -25,11 +25,10 @@ class EstablishmentRepository:
     async def find_by_ids(self, ids: List[UUID]) -> List[Establishment]:
         """Return establishments for the given IDs, silently skipping any
         that do not exist."""
-        id_set = set(ids)
         result = await self.db.execute(
-            select(Establishment).where(Establishment.id.in_(id_set))
+            select(Establishment).where(Establishment.id.in_(ids))
         )
-        return list(result.scalars().all())
+        return result.scalars().all()
 
     async def get_all_by_ids(self, ids: List[UUID]) -> List[Establishment]:
         """Return establishments for all given IDs.
@@ -43,9 +42,7 @@ class EstablishmentRepository:
 
         if len(establishments) != len(id_set):
             found_ids = {establishment.id for establishment in establishments}
-            missing = next(
-                identifier for identifier in id_set if identifier not in found_ids
-            )
+            missing = next(iter(id_set - found_ids))
             raise EstablishmentNotFoundError(str(missing))
 
         return establishments
@@ -62,4 +59,4 @@ class EstablishmentRepository:
         total = (await self.db.execute(count_query)).scalar_one()
         establishments = (await self.db.execute(establishments_query)).scalars().all()
 
-        return list(establishments), total
+        return establishments, total

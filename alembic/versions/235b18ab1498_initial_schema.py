@@ -94,7 +94,7 @@ def upgrade() -> None:
                 "pending_validation",
                 name="userstatus",
             ),
-            server_default="active",
+            server_default="pending_validation",
             nullable=False,
         ),
         sa.Column(

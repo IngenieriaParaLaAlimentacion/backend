@@ -24,7 +24,7 @@ class User(Base):
     )
     status = Column(
         SAEnum(UserStatus, values_callable=lambda x: [e.value for e in x]),
-        default=UserStatus.ACTIVE,
+        default=UserStatus.PENDING_VALIDATION,
         nullable=False,
     )
     created_at = Column(
