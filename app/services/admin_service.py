@@ -98,11 +98,14 @@ class AdminService:
         page_size: int,
         role: UserRole | None = None,
         status: UserStatus | None = None,
+        search: str | None = None,
     ) -> PaginatedResult[UserWithEstablishmentsDomain]:
         """Return a paginated list of users with their establishments."""
         offset = (page - 1) * page_size
+        search = search.strip() or None if search else None
+
         users, total = await self.uow.user_repo.get_paginated(
-            role=role, status=status, limit=page_size, offset=offset
+            role=role, status=status, limit=page_size, offset=offset, search=search
         )
 
         if not users:

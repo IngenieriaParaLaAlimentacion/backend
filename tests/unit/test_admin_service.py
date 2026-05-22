@@ -89,7 +89,7 @@ class TestGetPaginatedUsers:
         await service.get_users_paginated(page=3, page_size=20)
 
         uow.user_repo.get_paginated.assert_called_once_with(
-            role=None, status=None, limit=20, offset=40
+            role=None, status=None, limit=20, offset=40, search=None
         )
 
     @pytest.mark.asyncio
@@ -132,7 +132,7 @@ class TestGetPaginatedUsers:
 
         assert result.total_pages == 10
         uow.user_repo.get_paginated.assert_called_once_with(
-            role=None, status=None, limit=1, offset=0
+            role=None, status=None, limit=1, offset=0, search=None
         )
 
     @pytest.mark.asyncio
@@ -145,7 +145,7 @@ class TestGetPaginatedUsers:
         )
 
         uow.user_repo.get_paginated.assert_called_once_with(
-            role=UserRole.PROFESSIONAL, status=None, limit=20, offset=0
+            role=UserRole.PROFESSIONAL, status=None, limit=20, offset=0, search=None
         )
 
     @pytest.mark.asyncio
@@ -158,7 +158,7 @@ class TestGetPaginatedUsers:
         )
 
         uow.user_repo.get_paginated.assert_called_once_with(
-            role=None, status=UserStatus.ACTIVE, limit=20, offset=0
+            role=None, status=UserStatus.ACTIVE, limit=20, offset=0, search=None
         )
 
     @pytest.mark.asyncio
@@ -201,6 +201,45 @@ class TestGetPaginatedUsers:
         assert len(result.items[0].establishments) == 1
         assert result.items[0].establishments[0].id == establishment.id
         assert result.items[0].establishments[0].name == "Gym Centro"
+
+    @pytest.mark.asyncio
+    async def test_forwards_search_to_repo(self, make_uow):
+        uow = make_uow()
+        service = AdminService(uow)
+
+        await service.get_users_paginated(
+            page=1, page_size=20, status=UserStatus.ACTIVE, search="Name search"
+        )
+
+        uow.user_repo.get_paginated.assert_called_once_with(
+            role=None,
+            status=UserStatus.ACTIVE,
+            limit=20,
+            offset=0,
+            search="Name search",
+        )
+
+    @pytest.mark.asyncio
+    async def test_strips_whitespace_from_search(self, make_uow):
+        uow = make_uow()
+        service = AdminService(uow)
+
+        await service.get_users_paginated(page=1, page_size=20, search="  john  ")
+
+        uow.user_repo.get_paginated.assert_called_once_with(
+            role=None, status=None, limit=20, offset=0, search="john"
+        )
+
+    @pytest.mark.asyncio
+    async def test_whitespace_only_search_passes_none(self, make_uow):
+        uow = make_uow()
+        service = AdminService(uow)
+
+        await service.get_users_paginated(page=1, page_size=20, search="   ")
+
+        uow.user_repo.get_paginated.assert_called_once_with(
+            role=None, status=None, limit=20, offset=0, search=None
+        )
 
 
 class TestApproveEstablishments:

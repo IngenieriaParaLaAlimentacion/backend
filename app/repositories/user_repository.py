@@ -56,10 +56,11 @@ class UserRepository:
     async def get_paginated(
         self,
         *,
-        role: UserRole | None = None,
-        status: UserStatus | None = None,
         limit: int,
         offset: int,
+        role: UserRole | None = None,
+        status: UserStatus | None = None,
+        search: str | None = None,
     ) -> tuple[list[User], int]:
         """Return a paginated list of users."""
         query = select(User)
@@ -71,6 +72,16 @@ class UserRepository:
         if status is not None:
             query = query.where(User.status == status)
             count_query = count_query.where(User.status == status)
+        if search:
+            escaped = (
+                search.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+            )
+            search_term = f"%{escaped}%"
+            query = query.filter(
+                (User.email.ilike(search_term, escape="\\"))
+                | (User.name.ilike(search_term, escape="\\"))
+                | (User.last_name.ilike(search_term, escape="\\"))
+            )
 
         query = query.order_by(User.created_at.desc()).limit(limit).offset(offset)
 
