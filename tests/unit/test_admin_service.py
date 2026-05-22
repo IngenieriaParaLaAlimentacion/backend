@@ -238,3 +238,50 @@ class TestApproveEstablishments:
 
         with pytest.raises(UserEstablishmentNotFoundError):
             await service.approve_establishments(user.id, [uuid.uuid4()])
+
+
+class TestRejectEstablishments:
+    @pytest.mark.asyncio
+    async def test_does_not_change_user_status(self, make_establishment):
+        user = _make_user(
+            role=UserRole.ESTABLISHMENT_MANAGER, status=UserStatus.PENDING_VALIDATION
+        )
+        estab = make_establishment()
+        uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
+        service = AdminService(uow)
+
+        await service.reject_establishments(user.id, [estab.id])
+
+        uow.user_repo.update_status.assert_not_called()
+        uow.commit.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_calls_repo_with_correct_args(self, make_establishment):
+        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        estab = make_establishment()
+        uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
+        service = AdminService(uow)
+
+        await service.reject_establishments(user.id, [estab.id])
+
+        uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
+            user.id, [estab.id], UserEstablishmentStatus.REJECTED
+        )
+
+    @pytest.mark.asyncio
+    async def test_user_not_found_raises_error(self):
+        uow = _make_approve_uow(user=None)
+        service = AdminService(uow)
+
+        with pytest.raises(UserNotFoundError):
+            await service.reject_establishments(uuid.uuid4(), [uuid.uuid4()])
+
+    @pytest.mark.asyncio
+    async def test_invalid_establishment_id_raises_error(self, make_establishment):
+        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        estab = make_establishment()
+        uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
+        service = AdminService(uow)
+
+        with pytest.raises(UserEstablishmentNotFoundError):
+            await service.reject_establishments(user.id, [uuid.uuid4()])

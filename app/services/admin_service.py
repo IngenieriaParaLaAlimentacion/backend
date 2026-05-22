@@ -168,10 +168,7 @@ class AdminService:
     async def reject_establishments(
         self, user_id: UUID, establishment_ids: list[UUID]
     ) -> None:
-        """Reject access to the given establishments.
-
-        Does not change user status.
-        """
+        """Reject access to the given establishments. Does not change user status."""
         await self._set_user_establishment_relation_status(
             user_id, establishment_ids, UserEstablishmentStatus.REJECTED
         )

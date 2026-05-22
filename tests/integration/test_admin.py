@@ -28,12 +28,24 @@ async def _make_approve_request(client, *, headers=None):
     )
 
 
+async def _make_reject_request(client, *, headers=None):
+    return await client.patch(
+        REJECT_URL.format(user_id=uuid.uuid4()),
+        json={"establishment_ids": [str(uuid.uuid4())]},
+        headers=headers or {},
+    )
+
+
 @pytest.fixture(
     params=[
         pytest.param(_make_list_request, id="GET /admin/users"),
         pytest.param(
             _make_approve_request,
             id="PATCH /admin/managers/{id}/establishments/approve",
+        ),
+        pytest.param(
+            _make_reject_request,
+            id="PATCH /admin/managers/{id}/establishments/reject",
         ),
     ]
 )
@@ -281,6 +293,93 @@ class TestApproveEstablishments:
     async def test_empty_ids_rejected(self, client, admin_headers, registered_manager):
         """Should return 422 if establishment_ids is empty."""
         url = APPROVE_URL.format(user_id=registered_manager["id"])
+        response = await client.patch(
+            url,
+            json={"establishment_ids": []},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+class TestRejectEstablishments:
+    async def test_returns_no_content(
+        self, client, admin_headers, registered_manager, db_establishment
+    ):
+        """Should return 204 on successful rejection."""
+        url = REJECT_URL.format(user_id=registered_manager["id"])
+        response = await client.patch(
+            url,
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    async def test_rejected_establishment_has_rejected_status(
+        self, client, admin_headers, registered_manager, db_establishment
+    ):
+        """The user-establishment relation should be REJECTED in the database."""
+        from sqlalchemy import select
+
+        from app.db.database import AsyncSessionLocal
+        from app.models.user_establishment import UserEstablishment
+
+        url = REJECT_URL.format(user_id=registered_manager["id"])
+        await client.patch(
+            url,
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        async with AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(UserEstablishment).where(
+                    UserEstablishment.establishment_id == db_establishment.id
+                )
+            )
+            relation = result.scalar_one()
+        assert relation.status.value == "rejected"
+
+    async def test_user_status_unchanged_after_reject(
+        self, client, admin_headers, registered_manager, db_establishment
+    ):
+        """Rejecting establishments must not activate the manager."""
+        url = REJECT_URL.format(user_id=registered_manager["id"])
+        await client.patch(
+            url,
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        list_response = await client.get(ADMIN_USERS_URL, headers=admin_headers)
+        users = list_response.json()["items"]
+        manager = next(u for u in users if u["id"] == registered_manager["id"])
+        assert manager["status"] == UserStatus.PENDING_VALIDATION
+
+    async def test_user_not_found(self, client, admin_headers):
+        """Should return 404 if the manager does not exist."""
+        url = REJECT_URL.format(user_id=uuid.uuid4())
+        response = await client.patch(
+            url,
+            json={"establishment_ids": [str(uuid.uuid4())]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_establishment_not_associated_with_manager(
+        self, client, admin_headers, registered_manager
+    ):
+        """Should return 404 if an establishment ID is not linked to this manager."""
+        url = REJECT_URL.format(user_id=registered_manager["id"])
+        response = await client.patch(
+            url,
+            json={"establishment_ids": [str(uuid.uuid4())]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_empty_ids_rejected(self, client, admin_headers, registered_manager):
+        """Should return 422 if establishment_ids is empty."""
+        url = REJECT_URL.format(user_id=registered_manager["id"])
         response = await client.patch(
             url,
             json={"establishment_ids": []},
