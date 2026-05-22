@@ -62,7 +62,14 @@ class UserRepository:
         status: UserStatus | None = None,
         search: str | None = None,
     ) -> tuple[list[User], int]:
-        """Return a paginated list of users."""
+        """Return a paginated list of users and the total matching count.
+
+        Optional search or filters:
+            role: Optional role filter.
+            status: Optional status filter.
+            search: Optional free-text filter applied case-insensitively against
+                email, name, and last_name (OR match).
+        """
         query = select(User)
         count_query = select(func.count()).select_from(User)
 
@@ -77,11 +84,13 @@ class UserRepository:
                 search.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
             )
             search_term = f"%{escaped}%"
-            query = query.filter(
+            condition = (
                 (User.email.ilike(search_term, escape="\\"))
                 | (User.name.ilike(search_term, escape="\\"))
                 | (User.last_name.ilike(search_term, escape="\\"))
             )
+            query = query.where(condition)
+            count_query = count_query.where(condition)
 
         query = query.order_by(User.created_at.desc()).limit(limit).offset(offset)
 

@@ -15,13 +15,19 @@ class EstablishmentService:
         self.uow = uow
 
     async def get_establishments_paginated(
-        self, page: int, page_size: int
+        self,
+        page: int,
+        page_size: int,
+        search: str | None,
     ) -> PaginatedResult[EstablishmentDomain]:
-        """Return a paginated result with establishments and pagination metadata."""
+        """Return a paginated list of establishments with metadata.
 
+        The search matches case-insensitively against name or address.
+        """
         offset = (page - 1) * page_size
+        search = search.strip() or None if search else None
         establishments, total = await self.uow.establishment_repo.get_paginated(
-            limit=page_size, offset=offset
+            limit=page_size, offset=offset, search=search
         )
         total_pages = ceil(total / page_size) if total > 0 else 0
 

@@ -100,7 +100,10 @@ class AdminService:
         status: UserStatus | None = None,
         search: str | None = None,
     ) -> PaginatedResult[UserWithEstablishmentsDomain]:
-        """Return a paginated list of users with their establishments."""
+        """Return a paginated list of users with their establishments.
+
+        The search matches case-insensitively against email, name, and last_name.
+        """
         offset = (page - 1) * page_size
         search = search.strip() or None if search else None
 

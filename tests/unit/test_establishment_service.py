@@ -38,7 +38,9 @@ class TestGetEstablishmentsPaginated:
         establishments = [make_establishment(), make_establishment()]
         service = EstablishmentService(uow=make_uow(establishments, total=2))
 
-        result = await service.get_establishments_paginated(page=1, page_size=20)
+        result = await service.get_establishments_paginated(
+            page=1, page_size=20, search=None
+        )
 
         assert isinstance(result, PaginatedResult)
         assert len(result.items) == 2
@@ -51,7 +53,9 @@ class TestGetEstablishmentsPaginated:
         establishments = [make_establishment() for _ in range(5)]
         service = EstablishmentService(uow=make_uow(establishments, total=23))
 
-        result = await service.get_establishments_paginated(page=1, page_size=5)
+        result = await service.get_establishments_paginated(
+            page=1, page_size=5, search=None
+        )
 
         assert result.total_pages == ceil(23 / 5)
 
@@ -59,7 +63,9 @@ class TestGetEstablishmentsPaginated:
     async def test_empty(self, make_uow):
         service = EstablishmentService(uow=make_uow([], total=0))
 
-        result = await service.get_establishments_paginated(page=1, page_size=20)
+        result = await service.get_establishments_paginated(
+            page=1, page_size=20, search=None
+        )
 
         assert result.items == []
         assert result.total == 0
@@ -70,10 +76,10 @@ class TestGetEstablishmentsPaginated:
         uow = make_uow([], total=0)
         service = EstablishmentService(uow=uow)
 
-        await service.get_establishments_paginated(page=3, page_size=10)
+        await service.get_establishments_paginated(page=3, page_size=10, search=None)
 
         uow.establishment_repo.get_paginated.assert_called_once_with(
-            limit=10, offset=20
+            limit=10, offset=20, search=None
         )
 
     @pytest.mark.asyncio
@@ -81,6 +87,8 @@ class TestGetEstablishmentsPaginated:
         establishments = [make_establishment()]
         service = EstablishmentService(uow=make_uow(establishments, total=1))
 
-        result = await service.get_establishments_paginated(page=1, page_size=20)
+        result = await service.get_establishments_paginated(
+            page=1, page_size=20, search=None
+        )
 
         assert all(isinstance(item, EstablishmentDomain) for item in result.items)

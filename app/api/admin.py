@@ -21,7 +21,7 @@ router = APIRouter(prefix="/admin", tags=["Admin"])
     status_code=status.HTTP_200_OK,
     summary="List registered users",
     description="Returns a paginated list of users, optionally filtered by role or "
-    "status. Accessible by admins only.",
+    "status, or searching by name, last name or email. Accessible by admins only.",
     responses={
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Missing or invalid authentication token"

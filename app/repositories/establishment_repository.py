@@ -48,12 +48,32 @@ class EstablishmentRepository:
         return establishments
 
     async def get_paginated(
-        self, limit: int, offset: int
+        self,
+        limit: int,
+        offset: int,
+        search: str | None = None,
     ) -> Tuple[List[Establishment], int]:
-        """Retrieve a paginated list of establishments along with the total count."""
+        """Return a paginated list of establishments and the total matching count.
+
+        Optional free-text filter applied case-insensitively against name and address
+        (OR match). Special SQL wildcard characters are escaped before use.
+        """
+        base_query = select(Establishment)
         count_query = select(func.count()).select_from(Establishment)
+
+        if search:
+            escaped = (
+                search.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+            )
+            search_term = f"%{escaped}%"
+            condition = Establishment.name.ilike(
+                search_term, escape="\\"
+            ) | Establishment.address.ilike(search_term, escape="\\")
+            base_query = base_query.where(condition)
+            count_query = count_query.where(condition)
+
         establishments_query = (
-            select(Establishment).order_by(Establishment.id).limit(limit).offset(offset)
+            base_query.order_by(Establishment.id).limit(limit).offset(offset)
         )
 
         total = (await self.db.execute(count_query)).scalar_one()

@@ -15,7 +15,8 @@ router = APIRouter(prefix="/establishments", tags=["Establishments"])
     response_model=PaginatedEstablishmentsResponse,
     status_code=status.HTTP_200_OK,
     summary="List all establishments",
-    description="Returns all establishments available for a manager to register with.",
+    description="Returns all establishments available for a manager to register with."
+    "Supports optional search filtering by establishment name or address.",
 )
 async def get_establishments(
     page: int = Query(default=1, ge=1, description="Page number, starting at 1."),
@@ -25,9 +26,12 @@ async def get_establishments(
         le=100,
         description="Number of establishments per page (max 100).",
     ),
+    search: str | None = Query(default=None, max_length=100),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> PaginatedEstablishmentsResponse:
-    result = await service.get_establishments_paginated(page=page, page_size=page_size)
+    result = await service.get_establishments_paginated(
+        page=page, page_size=page_size, search=search
+    )
 
     return PaginatedEstablishmentsResponse(
         items=[
