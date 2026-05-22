@@ -4,6 +4,16 @@ from fastapi import status
 pytestmark = pytest.mark.asyncio
 
 
+async def _seed_establishment(name: str, address: str) -> None:
+    """Insert a single establishment with the given name and address."""
+    from app.db.database import AsyncSessionLocal
+    from app.models.establishment import Establishment
+
+    async with AsyncSessionLocal() as session:
+        session.add(Establishment(name=name, address=address))
+        await session.commit()
+
+
 async def _seed_establishments(n: int, app) -> list:
     """Insert n establishments and return their ORM instances."""
     from app.db.database import AsyncSessionLocal
@@ -96,3 +106,57 @@ class TestGetEstablishmentsPaginated:
         """page_size=101 exceeds the maximum of 100."""
         response = await client.get("/api/v1/establishments?page_size=101")
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_search_by_name_returns_matching(self, client):
+        """Only establishments whose name contains the search term are returned."""
+        await _seed_establishment("Centro Recoleta", "Av. Corrientes 100")
+        await _seed_establishment("Centro Caballito", "Av. Santa Fe 200")
+
+        response = await client.get("/api/v1/establishments?search=Recoleta")
+
+        assert response.status_code == status.HTTP_200_OK
+        items = response.json()["items"]
+        assert len(items) == 1
+        assert items[0]["name"] == "Centro Recoleta"
+
+    async def test_search_by_address_returns_matching(self, client):
+        """Only establishments whose address contains the search term are returned."""
+        await _seed_establishment("Centro A", "Av. Corrientes 100")
+        await _seed_establishment("Centro B", "Av. Santa Fe 200")
+
+        response = await client.get("/api/v1/establishments?search=Santa Fe")
+
+        assert response.status_code == status.HTTP_200_OK
+        items = response.json()["items"]
+        assert len(items) == 1
+        assert items[0]["name"] == "Centro B"
+
+    async def test_search_is_case_insensitive(self, client):
+        """Search is case-insensitive: 'junin' matches 'Centro Junin'."""
+        await _seed_establishment("Centro Junin", "Av. Corrientes 100")
+
+        response = await client.get("/api/v1/establishments?search=junin")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.json()["items"]) == 1
+
+    async def test_search_no_match_returns_empty(self, client):
+        """A search term that matches nothing returns an empty list."""
+        await _seed_establishment("Gym Centro", "Av. Corrientes 100")
+
+        response = await client.get("/api/v1/establishments?search=zzznomatch")
+
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["items"] == []
+        assert data["total"] == 0
+
+    async def test_search_whitespace_only_returns_all(self, client):
+        """A whitespace-only search is treated as no filter and returns all records."""
+        await _seed_establishment("Centro Recoleta", "Av. Corrientes 100")
+        await _seed_establishment("Centro Caballito", "Av. Santa Fe 200")
+
+        response = await client.get("/api/v1/establishments?search=   ")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["total"] == 2

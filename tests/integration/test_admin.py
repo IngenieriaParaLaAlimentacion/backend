@@ -131,6 +131,19 @@ class TestAdminAuth:
 
 
 class TestListUsersPagination:
+    async def _register(self, client, db_establishment, *, name, last_name, email):
+        response = await client.post(
+            REGISTER_MANAGER_URL,
+            json={
+                "email": email,
+                "password": "Password123!",
+                "name": name,
+                "last_name": last_name,
+                "establishments": [str(db_establishment.id)],
+            },
+        )
+        assert response.status_code == status.HTTP_201_CREATED
+
     async def test_returns_paginated_structure(self, client, admin_headers):
         """Should return a response with all pagination fields."""
         response = await client.get(ADMIN_USERS_URL, headers=admin_headers)
@@ -240,6 +253,148 @@ class TestListUsersPagination:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["items"] == []
+
+    async def test_search_by_name_returns_matching(
+        self, client, admin_headers, db_establishment
+    ):
+        """Only users whose name contains the search term are returned."""
+        await self._register(
+            client,
+            db_establishment,
+            name="Juanita",
+            last_name="Lopez",
+            email="juanita@test.com",
+        )
+        await self._register(
+            client,
+            db_establishment,
+            name="Carlos",
+            last_name="Gomez",
+            email="carlos@test.com",
+        )
+
+        response = await client.get(
+            f"{ADMIN_USERS_URL}?search=Juanita", headers=admin_headers
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        items = response.json()["items"]
+        assert len(items) == 1
+        assert items[0]["name"] == "Juanita"
+
+    async def test_search_by_last_name_returns_matching(
+        self, client, admin_headers, db_establishment
+    ):
+        """Only users whose last_name contains the search term are returned."""
+        await self._register(
+            client,
+            db_establishment,
+            name="Ana",
+            last_name="Ramirez",
+            email="ana@test.com",
+        )
+        await self._register(
+            client,
+            db_establishment,
+            name="Luis",
+            last_name="Fernandez",
+            email="luis@test.com",
+        )
+
+        response = await client.get(
+            f"{ADMIN_USERS_URL}?search=Ramirez", headers=admin_headers
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        items = response.json()["items"]
+        assert len(items) == 1
+        assert items[0]["last_name"] == "Ramirez"
+
+    async def test_search_by_email_returns_matching(
+        self, client, admin_headers, db_establishment
+    ):
+        """Only users whose email contains the search term are returned."""
+        await self._register(
+            client,
+            db_establishment,
+            name="Maria",
+            last_name="Torres",
+            email="maria.torres@test.com",
+        )
+        await self._register(
+            client,
+            db_establishment,
+            name="Pedro",
+            last_name="Ruiz",
+            email="pedro.ruiz@test.com",
+        )
+
+        response = await client.get(
+            f"{ADMIN_USERS_URL}?search=maria.torres", headers=admin_headers
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        items = response.json()["items"]
+        assert len(items) == 1
+        assert items[0]["email"] == "maria.torres@test.com"
+
+    async def test_search_is_case_insensitive(
+        self, client, admin_headers, db_establishment
+    ):
+        """Search is case-insensitive: 'juanita' matches a user named 'Juanita'."""
+        await self._register(
+            client,
+            db_establishment,
+            name="Juanita",
+            last_name="Lopez",
+            email="juanita2@test.com",
+        )
+
+        response = await client.get(
+            f"{ADMIN_USERS_URL}?search=juanita", headers=admin_headers
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.json()["items"]) == 1
+
+    async def test_search_no_match_returns_empty(
+        self, client, admin_headers, registered_manager
+    ):
+        """A search term that matches nothing returns an empty list."""
+        response = await client.get(
+            f"{ADMIN_USERS_URL}?search=zzznomatch", headers=admin_headers
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["items"] == []
+        assert data["total"] == 0
+
+    async def test_search_whitespace_only_returns_all(
+        self, client, admin_headers, db_establishment
+    ):
+        """A whitespace-only search is treated as no filter and returns all records."""
+        await self._register(
+            client,
+            db_establishment,
+            name="Ana",
+            last_name="Paz",
+            email="ana.paz@test.com",
+        )
+        await self._register(
+            client,
+            db_establishment,
+            name="Luis",
+            last_name="Vega",
+            email="luis.vega@test.com",
+        )
+
+        response = await client.get(
+            f"{ADMIN_USERS_URL}?search=   ", headers=admin_headers
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["total"] == 2
 
 
 class TestApproveEstablishments:

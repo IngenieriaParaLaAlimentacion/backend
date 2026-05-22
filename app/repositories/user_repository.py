@@ -64,11 +64,7 @@ class UserRepository:
     ) -> tuple[list[User], int]:
         """Return a paginated list of users and the total matching count.
 
-        Optional search or filters:
-            role: Optional role filter.
-            status: Optional status filter.
-            search: Optional free-text filter applied case-insensitively against
-                email, name, and last_name (OR match).
+        ``search`` matches case-insensitively against email, name, and last_name (OR).
         """
         query = select(User)
         count_query = select(func.count()).select_from(User)

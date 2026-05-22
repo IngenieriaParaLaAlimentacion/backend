@@ -92,3 +92,48 @@ class TestGetEstablishmentsPaginated:
         )
 
         assert all(isinstance(item, EstablishmentDomain) for item in result.items)
+
+    @pytest.mark.asyncio
+    async def test_forwards_search_to_repo(self, make_uow):
+        uow = make_uow([], total=0)
+        service = EstablishmentService(uow=uow)
+
+        await service.get_establishments_paginated(
+            page=1, page_size=20, search="Establishment search"
+        )
+
+        uow.establishment_repo.get_paginated.assert_called_once_with(
+            limit=20,
+            offset=0,
+            search="Establishment search",
+        )
+
+    @pytest.mark.asyncio
+    async def test_strips_whitespace_from_search(self, make_uow):
+        uow = make_uow([], total=0)
+        service = EstablishmentService(uow=uow)
+
+        await service.get_establishments_paginated(
+            page=1, page_size=20, search="    Establishment search     "
+        )
+
+        uow.establishment_repo.get_paginated.assert_called_once_with(
+            limit=20,
+            offset=0,
+            search="Establishment search",
+        )
+
+    @pytest.mark.asyncio
+    async def test_whitespace_only_search_passes_none(self, make_uow):
+        uow = make_uow([], total=0)
+        service = EstablishmentService(uow=uow)
+
+        await service.get_establishments_paginated(
+            page=1, page_size=20, search="       "
+        )
+
+        uow.establishment_repo.get_paginated.assert_called_once_with(
+            limit=20,
+            offset=0,
+            search=None,
+        )

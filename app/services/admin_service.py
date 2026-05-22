@@ -102,7 +102,8 @@ class AdminService:
     ) -> PaginatedResult[UserWithEstablishmentsDomain]:
         """Return a paginated list of users with their establishments.
 
-        The search matches case-insensitively against email, name, and last_name.
+        ``search`` matches case-insensitively against email, name, and last_name.
+        Whitespace-only values are treated as no filter.
         """
         offset = (page - 1) * page_size
         search = search.strip() or None if search else None

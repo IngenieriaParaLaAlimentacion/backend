@@ -22,7 +22,8 @@ class EstablishmentService:
     ) -> PaginatedResult[EstablishmentDomain]:
         """Return a paginated list of establishments with metadata.
 
-        The search matches case-insensitively against name or address.
+        ``search`` matches case-insensitively against name or address.
+        Whitespace-only values are treated as no filter.
         """
         offset = (page - 1) * page_size
         search = search.strip() or None if search else None

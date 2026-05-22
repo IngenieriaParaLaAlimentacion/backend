@@ -55,8 +55,7 @@ class EstablishmentRepository:
     ) -> Tuple[List[Establishment], int]:
         """Return a paginated list of establishments and the total matching count.
 
-        Optional free-text filter applied case-insensitively against name and address
-        (OR match). Special SQL wildcard characters are escaped before use.
+        ``search`` matches case-insensitively against name or address (OR).
         """
         base_query = select(Establishment)
         count_query = select(func.count()).select_from(Establishment)
