@@ -94,3 +94,14 @@ class UserEstablishmentNotFoundError(BaseError):
             f"The establishment with id {establishment_id} is not associated with the "
             f"user with id {user_id}.",
         )
+
+
+class InvalidCredentialsError(BaseError):
+    """Exception raised when credentials are invalid.
+
+    Args:
+        reason (str): The reason why the credentials are invalid.
+    """
+
+    def __init__(self, reason: str = "The credentials are invalid"):
+        super().__init__("Invalid credentials", reason)
