@@ -18,7 +18,7 @@ class TokenRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    def create(
+    async def create(
         self, user_id: UUID, token_hash: str, device_id: UUID, role: str
     ) -> UserToken:
         """Create and stage a refresh token record."""
