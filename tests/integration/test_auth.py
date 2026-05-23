@@ -1,9 +1,45 @@
 import uuid
 
 import pytest
+import pytest_asyncio
 from fastapi import status
 
+from app.core.security import hash_password
+from app.domain.user import UserRole, UserStatus
+from app.models.user import User
+from app.models.user_password import UserPassword
+
 pytestmark = pytest.mark.asyncio
+
+LOGIN_URL = "/api/v1/auth/login"
+REGISTER_URL = "/api/v1/auth/register/establishment-manager"
+
+
+@pytest_asyncio.fixture()
+async def db_active_user(db_establishment):
+    """Insert an active ADMIN user with a valid password record."""
+    from app.db.database import AsyncSessionLocal
+
+    async with AsyncSessionLocal() as session:
+        user = User(
+            name="Ana",
+            last_name="Gomez",
+            email="ana@test.com",
+            role=UserRole.ADMIN,
+            status=UserStatus.ACTIVE,
+        )
+        session.add(user)
+        await session.flush()
+
+        session.add(
+            UserPassword(
+                user_id=user.id,
+                password_hashed=hash_password("correct_password"),
+            )
+        )
+        await session.commit()
+        await session.refresh(user)
+        return user
 
 
 class TestRegisterManager:
@@ -16,9 +52,7 @@ class TestRegisterManager:
             "establishments": [str(uuid.uuid4())],
             **overrides,
         }
-        return await client.post(
-            "/api/v1/auth/register/establishment-manager", json=body
-        )
+        return await client.post(REGISTER_URL, json=body)
 
     async def test_valid_registration_returns_201(self, client, db_establishment):
         """A well-formed request with an existing establishment returns 201."""
@@ -62,3 +96,85 @@ class TestRegisterManager:
         """A password shorter than 8 characters fails schema validation."""
         response = await self._register(client, password="short")
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+class TestLogin:
+    def _payload(self, email: str, password: str) -> dict:
+        return {"email": email, "password": password, "device_id": str(uuid.uuid4())}
+
+    async def test_valid_credentials_returns_200(self, client, db_active_user):
+        response = await client.post(
+            LOGIN_URL, json=self._payload("ana@test.com", "correct_password")
+        )
+        assert response.status_code == status.HTTP_200_OK
+
+    async def test_response_contains_access_token(self, client, db_active_user):
+        response = await client.post(
+            LOGIN_URL, json=self._payload("ana@test.com", "correct_password")
+        )
+        assert response.json()["access_token"]
+
+    async def test_response_contains_refresh_token(self, client, db_active_user):
+        response = await client.post(
+            LOGIN_URL, json=self._payload("ana@test.com", "correct_password")
+        )
+        assert response.json()["refresh_token"]
+
+    async def test_response_contains_user_fields(self, client, db_active_user):
+        response = await client.post(
+            LOGIN_URL, json=self._payload("ana@test.com", "correct_password")
+        )
+        user = response.json()["user"]
+        assert user["email"] == "ana@test.com"
+        assert user["name"] == "Ana"
+        assert user["last_name"] == "Gomez"
+        assert user["role"] == UserRole.ADMIN.value
+
+    async def test_unknown_email_returns_401(self, client):
+        response = await client.post(
+            LOGIN_URL, json=self._payload("nobody@test.com", "any_password")
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_wrong_password_returns_401(self, client, db_active_user):
+        response = await client.post(
+            LOGIN_URL, json=self._payload("ana@test.com", "wrong_password")
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_unknown_email_and_wrong_password_same_detail(
+        self, client, db_active_user
+    ):
+        """CA 5 — ambos fallos deben devolver el mismo mensaje."""
+        r_unknown = await client.post(
+            LOGIN_URL, json=self._payload("ghost@test.com", "any")
+        )
+        r_wrong = await client.post(
+            LOGIN_URL, json=self._payload("ana@test.com", "wrong_password")
+        )
+        assert r_unknown.json()["detail"] == r_wrong.json()["detail"]
+
+    async def test_missing_email_returns_422(self, client):
+        response = await client.post(
+            LOGIN_URL,
+            json={"password": "pass", "device_id": str(uuid.uuid4())},
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    async def test_invalid_email_format_returns_422(self, client):
+        response = await client.post(
+            LOGIN_URL,
+            json={
+                "email": "not-an-email",
+                "password": "pass",
+                "device_id": str(uuid.uuid4()),
+            },
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    async def test_missing_device_id_returns_422(self, client):
+        response = await client.post(
+            LOGIN_URL,
+            json={"email": "ana@test.com", "password": "pass"},
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
