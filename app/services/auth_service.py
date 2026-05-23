@@ -9,6 +9,7 @@ from app.domain.auth import LoginDomain
 from app.domain.user import UserDomain, UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
     InvalidCredentialsError,
+    PendingValidationError,
     UserAlreadyExistsError,
 )
 from app.schemas.auth_schema import LoginRequest, RegisterManagerRequest
@@ -84,6 +85,9 @@ class AuthService:
 
         if not verify_password(data.password, user_password.password_hashed):
             raise InvalidCredentialsError()
+
+        if user.status == UserStatus.PENDING_VALIDATION:
+            raise PendingValidationError()
 
         access_token = create_access_token(user.id, user.role)
         refresh_token, refresh_hash = create_refresh_token()
