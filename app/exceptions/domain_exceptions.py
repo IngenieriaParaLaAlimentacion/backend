@@ -105,3 +105,13 @@ class InvalidCredentialsError(BaseError):
 
     def __init__(self, reason: str = "The credentials are invalid"):
         super().__init__("Invalid credentials", reason)
+
+
+class PendingValidationError(BaseError):
+    """Exception raised when a user attempts to log in with a pending account."""
+
+    def __init__(self):
+        super().__init__(
+            "Account pending validation",
+            "Wait until administrator approval.",
+        )
