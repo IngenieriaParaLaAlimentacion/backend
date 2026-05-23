@@ -1,8 +1,17 @@
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.core.security import hash_password
+from app.core.security import (
+    create_access_token,
+    create_refresh_token,
+    hash_password,
+    verify_password,
+)
+from app.domain.auth import LoginDomain
 from app.domain.user import UserDomain, UserRole, UserStatus
-from app.exceptions.domain_exceptions import UserAlreadyExistsError
-from app.schemas.auth_schema import RegisterManagerRequest
+from app.exceptions.domain_exceptions import (
+    InvalidCredentialsError,
+    UserAlreadyExistsError,
+)
+from app.schemas.auth_schema import LoginRequest, RegisterManagerRequest
 
 
 class AuthService:
@@ -49,4 +58,51 @@ class AuthService:
             role=user.role,
             status=user.status,
             establishments=[establishment.id for establishment in establishments],
+        )
+
+    async def login(self, data: LoginRequest) -> LoginDomain:
+        """Authenticate credentials and issue access and refresh tokens.
+
+        Returns:
+            LoginDomain
+
+        Raises:
+            UserNotFoundError: If email does not belong to any user.
+            PasswordNotFoundError: If stored password row is missing.
+            ValueError: If password verification fails.
+
+        Side effects:
+            Persists a new refresh token hash for the given device and commits.
+        """
+        user = await self.uow.user_repo.get_by_email(data.email)
+        if not user:
+            raise InvalidCredentialsError()
+
+        user_password = await self.uow.password_repo.get_by_user_id(user.id)
+        if not user_password:
+            raise InvalidCredentialsError()
+
+        if not verify_password(data.password, user_password.password_hashed):
+            raise InvalidCredentialsError()
+
+        access_token = create_access_token(user.id, user.role)
+        refresh_token, refresh_hash = create_refresh_token()
+
+        await self.uow.token_repo.create(
+            user.id, refresh_hash, data.device_id, user.role
+        )
+        await self.uow.commit()
+
+        return LoginDomain(
+            user=UserDomain(
+                id=user.id,
+                email=str(user.email),
+                name=user.name,
+                last_name=user.last_name,
+                role=user.role,
+                status=user.status,
+                establishments=[e.id for e in user.establishments],
+            ),
+            access_token=access_token,
+            refresh_token=refresh_token,
         )
