@@ -1,7 +1,7 @@
 import enum
 from typing import Optional
 
-from pydantic import model_validator
+from pydantic import EmailStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -45,6 +45,11 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 7
+
+    # superadmin
+    seed_admin_email: EmailStr = "admin@dashboard.com"
+    seed_admin_password: str = "Admin123!"
+
 
     @model_validator(mode="after")
     def build_database_url(self) -> "Settings":
