@@ -5,6 +5,7 @@ import pytest_asyncio
 from fastapi import status
 
 from app.core.security import hash_password
+from app.db.database import AsyncSessionLocal
 from app.domain.user import UserRole, UserStatus
 from app.models.user import User
 from app.models.user_password import UserPassword
@@ -18,7 +19,6 @@ REGISTER_URL = "/api/v1/auth/register/establishment-manager"
 @pytest_asyncio.fixture()
 async def db_active_user(db_establishment):
     """Insert an active ADMIN user with a valid password record."""
-    from app.db.database import AsyncSessionLocal
 
     async with AsyncSessionLocal() as session:
         user = User(
@@ -178,3 +178,70 @@ class TestLogin:
             json={"email": "ana@test.com", "password": "pass"},
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
+@pytest_asyncio.fixture()
+async def db_pending_user():
+    """Insert a PENDING_VALIDATION user with a valid password record."""
+    async with AsyncSessionLocal() as session:
+        user = User(
+            name="Pedro",
+            last_name="Pending",
+            email="pending@test.com",
+            role=UserRole.ESTABLISHMENT_MANAGER,
+            status=UserStatus.PENDING_VALIDATION,
+        )
+        session.add(user)
+        await session.flush()
+
+        session.add(
+            UserPassword(
+                user_id=user.id,
+                password_hashed=hash_password("correct_password"),
+            )
+        )
+        await session.commit()
+        await session.refresh(user)
+        return user
+
+
+class TestLoginPendingValidation:
+    def _payload(self, password: str = "correct_password") -> dict:
+        return {
+            "email": "pending@test.com",
+            "password": password,
+            "device_id": str(uuid.uuid4()),
+        }
+
+    async def test_pending_user_returns_403(self, client, db_pending_user):
+        response = await client.post(LOGIN_URL, json=self._payload())
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_pending_user_message_mentions_admin(self, client, db_pending_user):
+        response = await client.post(LOGIN_URL, json=self._payload())
+        detail = response.json()["detail"]
+
+        assert "administrator" in detail
+
+    async def test_pending_user_does_not_receive_tokens(self, client, db_pending_user):
+        response = await client.post(LOGIN_URL, json=self._payload())
+
+        assert "access_token" not in response.json()
+        assert "refresh_token" not in response.json()
+
+    async def test_pending_differs_from_invalid_credentials(
+        self, client, db_pending_user
+    ):
+        r_pending = await client.post(LOGIN_URL, json=self._payload())
+        r_invalid = await client.post(
+            LOGIN_URL,
+            json={
+                "email": "pending@test.com",
+                "password": "wrong",
+                "device_id": str(uuid.uuid4()),
+            },
+        )
+
+        assert r_pending.status_code == status.HTTP_403_FORBIDDEN
+        assert r_invalid.status_code == status.HTTP_401_UNAUTHORIZED
