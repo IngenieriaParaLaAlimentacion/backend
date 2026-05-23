@@ -1,6 +1,8 @@
 from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 
+from ..domain.establishment import UserEstablishmentStatus
 from .base import Base
 
 
@@ -16,4 +18,8 @@ class UserEstablishment(Base):
         UUID(as_uuid=True),
         ForeignKey("establishments.id", ondelete="CASCADE"),
         primary_key=True,
+    )
+    status = Column(
+        SAEnum(UserEstablishmentStatus, values_callable=lambda x: [e.value for e in x]),
+        nullable=False,
     )

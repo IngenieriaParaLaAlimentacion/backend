@@ -37,7 +37,9 @@ class UserToken(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     device_id = Column(UUID(as_uuid=True), nullable=False)
-    role = Column(SAEnum(UserRole), nullable=False)
+    role = Column(
+        SAEnum(UserRole, values_callable=lambda x: [e.value for e in x]), nullable=False
+    )
     token_hash = Column(String, nullable=False)
     expires_at = Column(
         DateTime(timezone=True),

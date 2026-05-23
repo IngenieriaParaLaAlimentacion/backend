@@ -16,3 +16,6 @@ comment:
 
 ignore:
   - "**/*.test.*"
+  - "**/app/repositories/**"
+  - "**/app/api/**"
+  - "**/app/models/**"

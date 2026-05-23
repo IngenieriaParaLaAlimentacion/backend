@@ -1,27 +1,13 @@
 import uuid
-from enum import Enum
 
 from sqlalchemy import Column, DateTime, String, func
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
+from app.domain.user import UserRole, UserStatus
+
 from .base import Base
-
-
-class UserRole(str, Enum):
-    """Role that determines a user's permissions within the system."""
-
-    ADMIN = "admin"
-    PROFESSIONAL = "professional"
-    ESTABLISHMENT_MANAGER = "establishment_manager"
-
-
-class UserStatus(str, Enum):
-    """Lifecycle state of a user account."""
-
-    ACTIVE = "active"
-    INACTIVE = "inactive"
 
 
 class User(Base):
@@ -31,10 +17,16 @@ class User(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
-    surname = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
-    role = Column(SAEnum(UserRole), nullable=False)
-    status = Column(SAEnum(UserStatus), default=UserStatus.ACTIVE, nullable=False)
+    role = Column(
+        SAEnum(UserRole, values_callable=lambda x: [e.value for e in x]), nullable=False
+    )
+    status = Column(
+        SAEnum(UserStatus, values_callable=lambda x: [e.value for e in x]),
+        default=UserStatus.PENDING_VALIDATION,
+        nullable=False,
+    )
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

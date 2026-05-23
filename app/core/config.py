@@ -38,6 +38,14 @@ class Settings(BaseSettings):
     # Database - DATABASE_URL is set
     database_url: Optional[str] = None
 
+    # JWT
+    jwt_secret_manager: str = "secret_manager"
+    jwt_secret_admin: str = "secret_admin"
+    jwt_secret_professional: str = "secret_professional"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 15
+    refresh_token_expire_days: int = 7
+
     @model_validator(mode="after")
     def build_database_url(self) -> "Settings":
         """Resolve the final async-compatible database URL.
@@ -56,14 +64,6 @@ class Settings(BaseSettings):
                 f"@{self.database_host}:{self.database_port}/{self.database_name}"
             )
         return self
-
-    @property
-    def database_url_sync(self) -> str:
-        """Sync database URL for Alembic migrations.
-
-        Alembic runs synchronously and requires psycopg2 instead of asyncpg.
-        """
-        return self.database_url.replace("postgresql+asyncpg://", "postgresql://")
 
 
 settings = Settings()
