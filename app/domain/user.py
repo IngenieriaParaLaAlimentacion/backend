@@ -7,6 +7,7 @@ from app.domain.establishment import EstablishmentDomain, EstablishmentWithStatu
 
 class UserRole(str, Enum):
     """Roles that determine a user's permissions within the system."""
+
     SUPERADMIN = "superadmin"
     ADMIN = "admin"
     PROFESSIONAL = "professional"

@@ -50,7 +50,6 @@ class Settings(BaseSettings):
     seed_admin_email: EmailStr = "admin@dashboard.com"
     seed_admin_password: str = "Admin123!"
 
-
     @model_validator(mode="after")
     def build_database_url(self) -> "Settings":
         """Resolve the final async-compatible database URL.
