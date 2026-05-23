@@ -5,7 +5,6 @@ import pytest_asyncio
 from fastapi import status
 
 from app.core.security import hash_password
-from app.db.database import AsyncSessionLocal
 from app.domain.user import UserRole, UserStatus
 from app.models.user import User
 from app.models.user_password import UserPassword
@@ -19,6 +18,7 @@ REGISTER_URL = "/api/v1/auth/register/establishment-manager"
 @pytest_asyncio.fixture()
 async def db_active_user(db_establishment):
     """Insert an active ADMIN user with a valid password record."""
+    from app.db.database import AsyncSessionLocal
 
     async with AsyncSessionLocal() as session:
         user = User(
@@ -183,6 +183,8 @@ class TestLogin:
 @pytest_asyncio.fixture()
 async def db_pending_user():
     """Insert a PENDING_VALIDATION user with a valid password record."""
+    from app.db.database import AsyncSessionLocal
+
     async with AsyncSessionLocal() as session:
         user = User(
             name="Pedro",
