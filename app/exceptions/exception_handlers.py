@@ -45,7 +45,7 @@ async def forbidden_handler(request: Request, exc: ForbiddenError):
 
 
 async def invalid_credentials_handler(request: Request, exc: InvalidCredentialsError):
-    return _build_error_response(exc, request, status.HTTP_400_BAD_REQUEST)
+    return _build_error_response(exc, request, status.HTTP_401_UNAUTHORIZED)
 
 
 def register_exception_handlers(app: FastAPI):
