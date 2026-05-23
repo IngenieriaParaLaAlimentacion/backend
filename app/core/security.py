@@ -13,10 +13,11 @@ _password_hasher = PasswordHasher()
 
 
 def _get_secret(role: str) -> str:
-    """Return the secret for the given role."""
     return {
+        "superadmin": settings.jwt_secret_admin,
         "admin": settings.jwt_secret_admin,
         "professional": settings.jwt_secret_professional,
+        "establishment_manager": settings.jwt_secret_manager,
     }.get(role, settings.jwt_secret_manager)
 
 

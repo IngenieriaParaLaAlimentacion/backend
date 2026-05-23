@@ -29,3 +29,26 @@ class RegistrationResponse(BaseModel):
     establishments: list[UUID]
 
     model_config = {"from_attributes": True}
+
+
+class UserInTokenResponse(BaseModel):
+    id: UUID
+    email: str
+    name: str
+    last_name: str
+    rol: str
+
+    model_config = {"from_attributes": True}
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    user: UserInTokenResponse
+
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+    device_id: UUID
