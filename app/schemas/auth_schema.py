@@ -36,7 +36,7 @@ class UserInTokenResponse(BaseModel):
     email: str
     name: str
     last_name: str
-    rol: str
+    role: str
 
     model_config = {"from_attributes": True}
 
