@@ -147,7 +147,7 @@ async def get_subject_detail(
     subject_id: UUID,
     history_page: int = Query(default=1, ge=1),
     history_page_size: int = Query(default=20, ge=1, le=100),
-    _: UserActor = Depends(get_current_admin),
+    _admin: UserActor = Depends(get_current_admin),
     service: AdminService = Depends(get_admin_service),
 ) -> AdminSubjectDetailResponse:
     subject, history = await service.get_subject_detail(

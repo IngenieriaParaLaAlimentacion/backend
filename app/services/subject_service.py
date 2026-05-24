@@ -3,13 +3,14 @@ from uuid import UUID
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.pagination import PaginatedResult
 from app.domain.subject import SubjectBase, SubjectDomain
-from app.domain.subject_event import SubjectEventType
+from app.domain.subject_event import EventPayload, SubjectEventType
 from app.exceptions.domain_exceptions import (
+    EmptyUpdateRequestError,
     SubjectAlreadyExistsError,
     SubjectNotFoundError,
     UniqueConstraintError,
 )
-from app.schemas.subject_schema import SubjectRequest
+from app.schemas.subject_schema import SubjectRequest, SubjectUpdateRequest
 
 
 class SubjectService:
@@ -89,3 +90,41 @@ class SubjectService:
             page=page,
             page_size=page_size,
         )
+
+    async def update_subject(
+        self, subject_id: UUID, data: SubjectUpdateRequest, actor_id: UUID
+    ) -> SubjectDomain:
+        """Apply a partial update to an existing subject.
+
+        Raises:
+            SubjectNotFoundError: If no subject with the given id exists.
+            EmptyUpdateRequestError: If no fields are provided.
+            SubjectAlreadyExistsError: If the new DNI already belongs
+            to another subject.
+        """
+        update_dict = data.to_update_dict()
+        if not update_dict:
+            raise EmptyUpdateRequestError()
+
+        subject = await self.uow.subject_repo.get_by_id(subject_id)
+        if subject is None:
+            raise SubjectNotFoundError(str(subject_id))
+
+        before = {field: getattr(subject, field) for field in update_dict}
+
+        try:
+            subject = await self.uow.subject_repo.update(subject, update_dict)
+        except UniqueConstraintError:
+            raise SubjectAlreadyExistsError(data.dni)
+
+        after = {field: getattr(subject, field) for field in update_dict}
+
+        await self.uow.subject_event_repo.append(
+            subject_id=subject.id,
+            actor_id=actor_id,
+            event_type=SubjectEventType.SUBJECT_UPDATED,
+            payload=EventPayload(before=before, after=after),
+        )
+        await self.uow.commit()
+
+        return SubjectDomain.from_orm(subject)

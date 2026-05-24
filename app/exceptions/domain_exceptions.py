@@ -147,3 +147,13 @@ class UniqueConstraintError(Exception):
         self.field = field
         self.value = value
         super().__init__(f"Unique constraint violated: {field}={value}")
+
+
+class EmptyUpdateRequestError(BadRequestError):
+    """Exception raised when an update has no attributes to be updated."""
+
+    def __init__(self):
+        super().__init__(
+            "No fields to update",
+            "At least one field must be provided.",
+        )

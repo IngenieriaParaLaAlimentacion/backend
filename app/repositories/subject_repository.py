@@ -45,6 +45,21 @@ class SubjectRepository:
         await self.db.refresh(subject)
         return subject
 
+    async def update(self, subject: Subject, data: dict) -> Subject:
+        """Apply a partial update to an existing subject.
+
+        Raises:
+            UniqueConstraintError: If the new DNI already belongs to another subject.
+        """
+        for field, value in data.items():
+            setattr(subject, field, value)
+        try:
+            await self.db.flush()
+        except IntegrityError:
+            raise UniqueConstraintError("dni", data["dni"])
+        await self.db.refresh(subject)
+        return subject
+
     async def get_by_id(self, subject_id: UUID) -> Subject | None:
         """Return a subject by id, or None if it does not exist."""
         return await self.db.get(Subject, subject_id)

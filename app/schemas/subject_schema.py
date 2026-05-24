@@ -39,6 +39,43 @@ class SubjectRequest(BaseModel):
         return v
 
 
+class SubjectUpdateRequest(BaseModel):
+    dni: int | None = Field(default=None, ge=1, le=99_999_999)
+    sex: Sex | None = None
+    name: (
+        Annotated[
+            str,
+            StringConstraints(
+                strict=True, strip_whitespace=True, min_length=1, max_length=50
+            ),
+        ]
+        | None
+    ) = None
+    last_name: (
+        Annotated[
+            str,
+            StringConstraints(
+                strict=True, strip_whitespace=True, min_length=1, max_length=50
+            ),
+        ]
+        | None
+    ) = None
+    birth_date: date | None = None
+    is_rural: bool | None = None
+    is_indigenous: bool | None = None
+
+    @field_validator("birth_date")
+    @classmethod
+    def birth_date_not_in_future(cls, v: date) -> date:
+        if v > datetime.now(timezone.utc).date():
+            raise ValueError("birth date cannot be in the future")
+        return v
+
+    def to_update_dict(self) -> dict:
+        """Return only the fields explicitly set in the request."""
+        return self.model_dump(exclude_none=True)
+
+
 class SubjectSummaryResponse(BaseModel):
     id: UUID
     dni: int
