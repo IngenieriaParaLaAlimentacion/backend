@@ -47,3 +47,7 @@ class PasswordRecoveryTokenRepository:
             .execution_options(synchronize_session=False)
         )
         return result.rowcount
+
+    async def mark_used(self, token: PasswordRecoveryToken) -> None:
+        """Mark a recovery token as used."""
+        token.used = True

@@ -22,6 +22,7 @@ from app.exceptions.domain_exceptions import (
 from app.schemas.auth_schema import (
     LoginRequest,
     LogoutRequest,
+    PasswordRecoveryConfirmRequest,
     PasswordRecoveryRequest,
     RefreshRequest,
     RegisterManagerRequest,
@@ -199,3 +200,23 @@ class AuthService:
         await self.uow.commit()
         deeplink = build_recovery_deeplink(recovery_token)
         send_recovery_email(user.email, deeplink, created_token.expires_at)
+
+    async def confirm_password_recovery(
+        self, data: PasswordRecoveryConfirmRequest
+    ) -> None:
+        """Validate a recovery token and update the user's password."""
+        recovery_token_hash = encode_refresh_token(data.token)
+        recovery_token = await self.uow.password_recovery_repo.get_active_token(
+            recovery_token_hash
+        )
+        if not recovery_token:
+            raise InvalidTokenError("Password recovery token is invalid or expired")
+
+        user_password = await self.uow.password_repo.get_by_user_id(
+            recovery_token.user_id
+        )
+        user_password.password_hashed = hash_password(data.new_password)
+
+        await self.uow.password_recovery_repo.mark_used(recovery_token)
+        await self.uow.token_repo.revoke_all_by_user_id(recovery_token.user_id)
+        await self.uow.commit()

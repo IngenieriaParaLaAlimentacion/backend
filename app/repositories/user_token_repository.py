@@ -1,7 +1,7 @@
 from datetime import timedelta
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -53,3 +53,16 @@ class TokenRepository:
     async def revoke(self, token: UserToken) -> None:
         """Mark a refresh token as revoked."""
         token.revoked = True
+
+    async def revoke_all_by_user_id(self, user_id: UUID) -> int:
+        """Revoke all active refresh tokens for a user."""
+        result = await self.db.execute(
+            update(UserToken)
+            .where(
+                UserToken.user_id == user_id,
+                UserToken.revoked.is_(False),
+            )
+            .values(revoked=True)
+            .execution_options(synchronize_session=False)
+        )
+        return result.rowcount

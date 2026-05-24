@@ -72,3 +72,15 @@ class RefreshResponse(BaseModel):
 
 class PasswordRecoveryRequest(BaseModel):
     email: EmailStr
+
+
+class PasswordRecoveryConfirmRequest(BaseModel):
+    token: Annotated[str, StringConstraints(strict=True, min_length=1)]
+    new_password: str
+
+    @field_validator("new_password")
+    @classmethod
+    def password_min_length(cls, v: str) -> str:
+        if len(v) < 8:
+            raise ValueError("Password must be at least 8 characters")
+        return v
