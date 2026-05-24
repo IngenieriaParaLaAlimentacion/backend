@@ -2,6 +2,7 @@ from .base import Base
 from .establishment import Establishment
 from .measurement import Measurement
 from .subject import Sex, Subject
+from .subject_history import SubjectEvent
 from .user import User, UserRole, UserStatus
 from .user_establishment import UserEstablishment
 from .user_password import UserPassword
@@ -17,6 +18,7 @@ __all__ = [
     "Subject",
     "Sex",
     "Measurement",
+    "SubjectEvent",
     "UserPassword",
     "UserToken",
 ]
