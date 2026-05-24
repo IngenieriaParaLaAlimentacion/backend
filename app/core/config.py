@@ -1,7 +1,7 @@
 import enum
 from typing import Optional
 
-from pydantic import EmailStr, model_validator
+from pydantic import AnyUrl, EmailStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -49,6 +49,41 @@ class Settings(BaseSettings):
     # superadmin
     seed_admin_email: EmailStr = "admin@dashboard.com"
     seed_admin_password: str = "Admin123!"
+
+    # Password recovery
+    password_recovery_token_expire_minutes: int = 30
+
+    # SMTP
+    smtp_enabled: bool = False
+    smtp_host: str = "localhost"
+    smtp_port: int = 1025
+    smtp_username: Optional[str] = None
+    smtp_password: Optional[str] = None
+    smtp_use_tls: bool = False
+    smtp_sender_email: EmailStr = "no-reply@tpp.com"
+
+    # Shared base URL used by frontend deeplinks.s
+    app_deeplink_base: AnyUrl = "http://localhost:3000"
+    backoffice_deeplink_base: AnyUrl = "http://i_need_deeplink.com"
+
+    password_recovery_path: str = "/reset-password"
+
+    def _build_deeplink(self, base: str) -> str:
+        base = str(base).rstrip("/")
+        path = self.password_recovery_path
+        if not path.startswith("/"):
+            path = f"/{path}"
+        return f"{base}{path}"
+
+    @property
+    def password_recovery_deeplink_url(self) -> str:
+        """Derived password recovery deeplink URL from base URL and path."""
+        return self._build_deeplink(self.app_deeplink_base)
+
+    @property
+    def admin_password_reset_deeplink(self) -> str:
+        """Derived password reset deeplink URL for admin invitation."""
+        return self._build_deeplink(self.backoffice_deeplink_base)
 
     @model_validator(mode="after")
     def build_database_url(self) -> "Settings":
