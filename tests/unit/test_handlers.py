@@ -4,6 +4,7 @@ from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
     ForbiddenError,
     PasswordNotFoundError,
+    SubjectAlreadyExistsError,
     UnauthorizedError,
     UserAlreadyExistsError,
     UserEstablishmentNotFoundError,
@@ -13,6 +14,7 @@ from app.exceptions.exception_handlers import (
     _build_error_response,
     forbidden_handler,
     not_found_handler,
+    subject_already_exists_handler,
     unauthorized_handler,
     user_already_exists_handler,
 )
@@ -94,3 +96,13 @@ def test_forbidden_handler():
     response = asyncio.run(forbidden_handler(request, ForbiddenError()))
     assert response.status_code == 403
     assert b"Forbidden" in response.body
+
+
+def test_subject_already_exists_handler():
+    request = DummyRequest("/upload-subject")
+    response = asyncio.run(
+        subject_already_exists_handler(request, SubjectAlreadyExistsError(20000000))
+    )
+    assert response.status_code == 409
+    assert b"20000000" in response.body
+    assert b"Subject already exists" in response.body
