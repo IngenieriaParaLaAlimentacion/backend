@@ -68,14 +68,15 @@ async def client(app):
 
 @pytest_asyncio.fixture(autouse=True)
 async def clean_db(app):
-    """Truncate all tables after each test to guarantee isolation."""
-    yield
+    """Truncate all tables before each test to guarantee isolation."""
     from app.db.database import engine
     from app.models.base import Base
 
     async with engine.begin() as conn:
         tables = ", ".join(t.name for t in Base.metadata.sorted_tables)
         await conn.execute(text(f"TRUNCATE TABLE {tables} CASCADE"))
+
+    yield
 
 
 @pytest_asyncio.fixture()
