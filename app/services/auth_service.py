@@ -2,6 +2,7 @@ from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.core.security import (
     create_access_token,
     create_refresh_token,
+    encode_refresh_token,
     hash_password,
     verify_password,
 )
@@ -9,10 +10,11 @@ from app.domain.auth import LoginDomain
 from app.domain.user import UserDomain, UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
     InvalidCredentialsError,
+    InvalidTokenError,
     PendingValidationError,
     UserAlreadyExistsError,
 )
-from app.schemas.auth_schema import LoginRequest, RegisterManagerRequest
+from app.schemas.auth_schema import LoginRequest, LogoutRequest, RegisterManagerRequest
 
 
 class AuthService:
@@ -110,3 +112,27 @@ class AuthService:
             access_token=access_token,
             refresh_token=refresh_token,
         )
+
+    async def logout(self, data: LogoutRequest) -> None:
+        """Revoke the refresh token associated with a device.
+
+        Raises:
+            InvalidTokenError: If refresh token is invalid, expired, or revoked.
+
+        Side effects:
+            Revokes the persisted refresh token and commits the transaction.
+
+        Note:
+            Existing access tokens remain valid until they expire.
+        """
+        refresh_token_hash = encode_refresh_token(data.refresh_token)
+
+        token = await self.uow.token_repo.get_active_refresh_token(
+            refresh_token_hash, data.device_id
+        )
+        if not token:
+            raise InvalidTokenError("Refresh token is invalid or expired")
+
+        await self.uow.token_repo.revoke(token)
+
+        await self.uow.commit()

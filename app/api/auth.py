@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Response, status
 
 from app.core.dependencies import get_auth_service
 from app.schemas.auth_schema import (
     LoginRequest,
+    LogoutRequest,
     RegisterManagerRequest,
     RegistrationResponse,
     TokenResponse,
@@ -46,3 +47,31 @@ async def register_manager(
 )
 async def login(data: LoginRequest, service: AuthService = Depends(get_auth_service)):
     return await service.login(data)
+
+
+@router.post(
+    "/logout",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+    summary="Logout user",
+    description="Revokes a refresh token for a specific device.",
+    responses={
+        status.HTTP_204_NO_CONTENT: {"description": "User logged out successfully"},
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Invalid or expired refresh token"
+        },
+        status.HTTP_400_BAD_REQUEST: {"description": "Invalid request payload"},
+    },
+)
+async def logout(
+    data: LogoutRequest, service: AuthService = Depends(get_auth_service)
+) -> Response:
+    """Logout a user by revoking the provided refresh token for the device.
+
+    Args:
+        data: Logout payload with refresh token and device data.
+        service: Injected authentication service.
+    """
+
+    await service.logout(data)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
