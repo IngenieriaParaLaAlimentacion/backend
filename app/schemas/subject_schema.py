@@ -1,0 +1,51 @@
+from datetime import date
+from typing import Annotated
+from uuid import UUID
+
+from pydantic import BaseModel, Field, StringConstraints, field_validator
+
+from app.domain.subject import Sex
+
+
+class SubjectRequest(BaseModel):
+    dni: int = Field(ge=1, le=99_999_999)
+    sex: Sex
+    name: Annotated[
+        str,
+        StringConstraints(
+            strict=True, strip_whitespace=True, min_length=1, max_length=50
+        ),
+    ]
+    last_name: Annotated[
+        str,
+        StringConstraints(
+            strict=True, strip_whitespace=True, min_length=1, max_length=50
+        ),
+    ]
+    birth_date: date
+    is_rural: bool = Field(
+        description="Bool indicating if the subject belongs to a rural population"
+    )
+    is_indigenous: bool = Field(
+        description="Bool indicating if the subject belongs to an indigenous population"
+    )
+
+    @field_validator("birth_date")
+    @classmethod
+    def birth_date_not_in_future(cls, v: date) -> date:
+        if v > date.today():
+            raise ValueError("birth date cannot be in the future")
+        return v
+
+
+class SubjectResponse(BaseModel):
+    id: UUID
+    dni: int
+    sex: Sex
+    name: str
+    last_name: str
+    birth_date: date
+    is_rural: bool
+    is_indigenous: bool
+
+    model_config = {"from_attributes": True}

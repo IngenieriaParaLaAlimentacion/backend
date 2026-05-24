@@ -6,6 +6,7 @@ from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
     ForbiddenError,
     PasswordNotFoundError,
+    SubjectAlreadyExistsError,
     UnauthorizedError,
     UserAlreadyExistsError,
     UserEstablishmentNotFoundError,
@@ -43,6 +44,12 @@ async def forbidden_handler(request: Request, exc: ForbiddenError):
     return _build_error_response(exc, request, status.HTTP_403_FORBIDDEN)
 
 
+async def subject_already_exists_handler(
+    request: Request, exc: SubjectAlreadyExistsError
+):
+    return _build_error_response(exc, request, status.HTTP_409_CONFLICT)
+
+
 def register_exception_handlers(app: FastAPI):
     """Register exception handlers with the FastAPI app."""
     app.add_exception_handler(UserNotFoundError, not_found_handler)
@@ -52,3 +59,4 @@ def register_exception_handlers(app: FastAPI):
     app.add_exception_handler(UserAlreadyExistsError, user_already_exists_handler)
     app.add_exception_handler(UnauthorizedError, unauthorized_handler)
     app.add_exception_handler(ForbiddenError, forbidden_handler)
+    app.add_exception_handler(SubjectAlreadyExistsError, subject_already_exists_handler)

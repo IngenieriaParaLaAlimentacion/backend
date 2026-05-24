@@ -1,5 +1,4 @@
 import uuid
-from enum import Enum
 
 from sqlalchemy import (
     Boolean,
@@ -16,14 +15,9 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
+from app.domain.subject import Sex
+
 from .base import Base
-
-
-class Sex(str, Enum):
-    """Biological sex of a subject."""
-
-    MALE = "male"
-    FEMALE = "female"
 
 
 class Subject(Base):

@@ -94,3 +94,17 @@ class UserEstablishmentNotFoundError(BaseError):
             f"The establishment with id {establishment_id} is not associated with the "
             f"user with id {user_id}.",
         )
+
+
+class SubjectAlreadyExistsError(BaseError):
+    """Exception raised when trying to register a subject with an existing DNI.
+
+    Args:
+        dni (int): The DNI that already exists.
+    """
+
+    def __init__(self, dni: int):
+        super().__init__(
+            "Subject already exists",
+            f"A subject with DNI {dni} already exists.",
+        )
