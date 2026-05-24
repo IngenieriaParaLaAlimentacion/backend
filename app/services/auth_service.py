@@ -6,7 +6,7 @@ from app.core.security import (
     hash_password,
     verify_password,
 )
-from app.domain.auth import LoginDomain
+from app.domain.auth import LoginDomain, RefreshDomain
 from app.domain.user import UserDomain, UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
     InvalidCredentialsError,
@@ -14,7 +14,12 @@ from app.exceptions.domain_exceptions import (
     PendingValidationError,
     UserAlreadyExistsError,
 )
-from app.schemas.auth_schema import LoginRequest, LogoutRequest, RegisterManagerRequest
+from app.schemas.auth_schema import (
+    LoginRequest,
+    LogoutRequest,
+    RefreshRequest,
+    RegisterManagerRequest,
+)
 
 
 class AuthService:
@@ -136,3 +141,30 @@ class AuthService:
         await self.uow.token_repo.revoke(token)
 
         await self.uow.commit()
+
+    async def refresh(self, data: RefreshRequest) -> RefreshDomain:
+        refresh_token_hash = encode_refresh_token(data.refresh_token)
+
+        token = await self.uow.token_repo.get_active_refresh_token(
+            refresh_token_hash, data.device_id
+        )
+        if not token:
+            raise InvalidCredentialsError("Refresh token is invalid or expired.")
+
+        await self.uow.token_repo.revoke(token)
+
+        new_access = create_access_token(token.user_id, token.role)
+        new_raw, new_hash = create_refresh_token()
+
+        await self.uow.token_repo.create(
+            user_id=token.user_id,
+            token_hash=new_hash,
+            device_id=data.device_id,
+            role=token.role,
+        )
+        await self.uow.commit()
+
+        return RefreshDomain(
+            access_token=new_access,
+            refresh_token=new_raw,
+        )

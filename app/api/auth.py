@@ -4,6 +4,8 @@ from app.core.dependencies import get_auth_service
 from app.schemas.auth_schema import (
     LoginRequest,
     LogoutRequest,
+    RefreshRequest,
+    RefreshResponse,
     RegisterManagerRequest,
     RegistrationResponse,
     TokenResponse,
@@ -75,3 +77,23 @@ async def logout(
 
     await service.logout(data)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post(
+    "/refresh",
+    response_model=RefreshResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Refresh authentication tokens",
+    description="Rotates the refresh token and issues a new access token.",
+    responses={
+        status.HTTP_200_OK: {"description": "Tokens refreshed successfully"},
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Invalid or expired refresh token"
+        },
+        status.HTTP_400_BAD_REQUEST: {"description": "Invalid request payload"},
+    },
+)
+async def refresh(
+    data: RefreshRequest, service: AuthService = Depends(get_auth_service)
+):
+    return await service.refresh(data)
