@@ -115,3 +115,14 @@ class PendingValidationError(BaseError):
             "Account pending validation",
             "Wait until administrator approval.",
         )
+
+
+class InvalidTokenError(BaseError):
+    """Exception raised when a token is invalid, expired, or revoked.
+
+    Args:
+        reason (str): The specific reason why the token is invalid.
+    """
+
+    def __init__(self, reason: str = "The provided token is invalid or expired."):
+        super().__init__("Invalid token", reason)

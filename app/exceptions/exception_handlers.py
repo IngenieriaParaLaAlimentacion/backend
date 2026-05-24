@@ -6,6 +6,7 @@ from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
     ForbiddenError,
     InvalidCredentialsError,
+    InvalidTokenError,
     PasswordNotFoundError,
     PendingValidationError,
     UnauthorizedError,
@@ -53,6 +54,10 @@ async def pending_validation_handler(request: Request, exc: PendingValidationErr
     return _build_error_response(exc, request, status.HTTP_403_FORBIDDEN)
 
 
+async def invalid_token_handler(request: Request, exc: InvalidTokenError):
+    return _build_error_response(exc, request, status.HTTP_401_UNAUTHORIZED)
+
+
 def register_exception_handlers(app: FastAPI):
     """Register exception handlers with the FastAPI app."""
     app.add_exception_handler(UserNotFoundError, not_found_handler)
@@ -64,3 +69,4 @@ def register_exception_handlers(app: FastAPI):
     app.add_exception_handler(ForbiddenError, forbidden_handler)
     app.add_exception_handler(InvalidCredentialsError, invalid_credentials_handler)
     app.add_exception_handler(PendingValidationError, pending_validation_handler)
+    app.add_exception_handler(InvalidTokenError, invalid_token_handler)
