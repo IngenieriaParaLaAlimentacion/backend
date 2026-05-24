@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Annotated, Any
 from uuid import UUID
 
@@ -34,7 +34,7 @@ class SubjectRequest(BaseModel):
     @field_validator("birth_date")
     @classmethod
     def birth_date_not_in_future(cls, v: date) -> date:
-        if v > date.today():
+        if v > datetime.now(timezone.utc).date():
             raise ValueError("birth date cannot be in the future")
         return v
 

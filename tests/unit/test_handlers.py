@@ -51,9 +51,11 @@ def test_unauthorized_handler():
     request = DummyRequest("/me")
     response = asyncio.run(unauthorized_handler(request, UnauthorizedError()))
     assert response.status_code == 401
+    assert b"Unauthorized" in response.body
 
 
 def test_forbidden_handler():
     request = DummyRequest("/admin/users")
     response = asyncio.run(forbidden_handler(request, ForbiddenError()))
     assert response.status_code == 403
+    assert b"Forbidden" in response.body
