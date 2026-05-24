@@ -38,7 +38,7 @@ async def _upload(client, headers=None, **overrides):
     )
 
 
-class TestSubjectAuth:
+class TestUploadSubject:
     async def test_unauthenticated_returns_401(self, client):
         """No token provided should return 401."""
         response = await _upload(client)
@@ -77,8 +77,6 @@ class TestSubjectAuth:
         response = await _upload(client, headers={"Authorization": f"Bearer {token}"})
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-
-class TestUploadSubject:
     async def test_valid_request_returns_201(self, client, manager_headers):
         """A well-formed request with a manager token returns 201."""
         response = await _upload(client, manager_headers)
@@ -136,3 +134,35 @@ class TestUploadSubject:
         del body[field]
         response = await client.post(SUBJECTS_URL, json=body, headers=manager_headers)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+class TestGetSubject:
+    async def test_returns_200_with_subject_data(self, client, manager_headers):
+        """A subject that was just created can be retrieved by id."""
+        created = (await _upload(client, manager_headers)).json()
+        response = await client.get(
+            f"{SUBJECTS_URL}/{created['id']}", headers=manager_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == created
+
+    async def test_unknown_id_returns_404(self, client, manager_headers):
+        """A random UUID that was never registered returns 404."""
+        response = await client.get(
+            f"{SUBJECTS_URL}/{uuid.uuid4()}", headers=manager_headers
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_unauthenticated_returns_401(self, client):
+        """No token on GET should return 401."""
+        response = await client.get(f"{SUBJECTS_URL}/{uuid.uuid4()}")
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_non_manager_role_returns_403(self, client):
+        """A valid token with a non-manager role on GET should return 403."""
+        token = create_access_token(uuid.uuid4(), role=UserRole.PROFESSIONAL)
+        response = await client.get(
+            f"{SUBJECTS_URL}/{uuid.uuid4()}",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN

@@ -5,7 +5,10 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.domain.subject import Sex, SubjectDomain
-from app.exceptions.domain_exceptions import SubjectAlreadyExistsError
+from app.exceptions.domain_exceptions import (
+    SubjectAlreadyExistsError,
+    SubjectNotFoundError,
+)
 from app.schemas.subject_schema import SubjectRequest
 from app.services.subject_service import SubjectService
 
@@ -93,3 +96,27 @@ class TestCreateSubject:
 
         uow.subject_repo.create.assert_not_called()
         uow.commit.assert_not_called()
+
+
+class TestGetSubject:
+    @pytest.mark.asyncio
+    async def test_returns_subject_domain(self, make_subject, make_uow):
+        subject = make_subject()
+        uow = make_uow()
+        uow.subject_repo.get_by_id = AsyncMock(return_value=subject)
+        service = SubjectService(uow)
+
+        result = await service.get_subject(subject.id)
+
+        assert isinstance(result, SubjectDomain)
+        assert result.id == subject.id
+        assert result.dni == subject.dni
+
+    @pytest.mark.asyncio
+    async def test_raises_if_not_found(self, make_uow):
+        uow = make_uow()
+        uow.subject_repo.get_by_id = AsyncMock(return_value=None)
+        service = SubjectService(uow)
+
+        with pytest.raises(SubjectNotFoundError):
+            await service.get_subject(uuid.uuid4())

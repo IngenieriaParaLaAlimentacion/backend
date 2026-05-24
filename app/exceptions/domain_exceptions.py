@@ -15,7 +15,15 @@ class BaseError(Exception):
         super().__init__(f"{title}: {details}")
 
 
-class UserNotFoundError(BaseError):
+class NotFoundError(BaseError):
+    """Base exception for resources that cannot be found."""
+
+
+class AlreadyExistsError(BaseError):
+    """Base exception for resources that already exist."""
+
+
+class UserNotFoundError(NotFoundError):
     """Exception raised when a user is not found.
 
     Args:
@@ -26,7 +34,7 @@ class UserNotFoundError(BaseError):
         super().__init__("User not found", f"The user with ID {user_id} was not found.")
 
 
-class UserAlreadyExistsError(BaseError):
+class UserAlreadyExistsError(AlreadyExistsError):
     """Exception raised when trying to register with an existing email.
 
     Args:
@@ -39,7 +47,7 @@ class UserAlreadyExistsError(BaseError):
         )
 
 
-class PasswordNotFoundError(BaseError):
+class PasswordNotFoundError(NotFoundError):
     """Exception raised when a user's password record is not found.
 
     Args:
@@ -71,7 +79,7 @@ class ForbiddenError(BaseError):
         )
 
 
-class EstablishmentNotFoundError(BaseError):
+class EstablishmentNotFoundError(NotFoundError):
     """Exception raised when an establishment is not found.
 
     Args:
@@ -85,7 +93,7 @@ class EstablishmentNotFoundError(BaseError):
         )
 
 
-class UserEstablishmentNotFoundError(BaseError):
+class UserEstablishmentNotFoundError(NotFoundError):
     """Exception raised when a user-establishment relation does not exist."""
 
     def __init__(self, establishment_id: str, user_id: str):
@@ -96,7 +104,7 @@ class UserEstablishmentNotFoundError(BaseError):
         )
 
 
-class SubjectAlreadyExistsError(BaseError):
+class SubjectAlreadyExistsError(AlreadyExistsError):
     """Exception raised when trying to register a subject with an existing DNI.
 
     Args:
@@ -110,7 +118,7 @@ class SubjectAlreadyExistsError(BaseError):
         )
 
 
-class SubjectNotFoundError(BaseError):
+class SubjectNotFoundError(NotFoundError):
     """Exception raised when a subject cannot be found.
 
     Args:
