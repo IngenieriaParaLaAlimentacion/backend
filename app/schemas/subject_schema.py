@@ -1,10 +1,11 @@
-from datetime import date
-from typing import Annotated
+from datetime import date, datetime
+from typing import Annotated, Any
 from uuid import UUID
 
 from pydantic import BaseModel, Field, StringConstraints, field_validator
 
 from app.domain.subject import Sex
+from app.domain.subject_event import SubjectEventType
 
 
 class SubjectRequest(BaseModel):
@@ -53,4 +54,14 @@ class SubjectResponse(SubjectSummaryResponse):
     is_rural: bool
     is_indigenous: bool
 
-    model_config = {"from_attributes": True}
+
+class EventPayloadResponse(BaseModel):
+    before: dict[str, Any] | None = None
+    after: dict[str, Any] | None = None
+
+
+class SubjectEventResponse(BaseModel):
+    event_type: SubjectEventType
+    occurred_at: datetime
+    actor_id: UUID
+    payload: EventPayloadResponse

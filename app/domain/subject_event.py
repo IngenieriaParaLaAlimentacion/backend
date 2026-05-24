@@ -32,13 +32,3 @@ class SubjectEventRecord:
     occurred_at: datetime
     actor_id: UUID
     payload: EventPayload
-
-
-@dataclass
-class SubjectEventHistory:
-    """Paginated subject event history returned by the repository."""
-
-    events: list[SubjectEventRecord]
-    total_events: int
-    page: int
-    page_size: int

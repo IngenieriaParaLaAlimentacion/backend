@@ -7,6 +7,7 @@ from app.domain.subject_event import SubjectEventType
 from app.exceptions.domain_exceptions import (
     SubjectAlreadyExistsError,
     SubjectNotFoundError,
+    UniqueConstraintError,
 )
 from app.schemas.subject_schema import SubjectRequest
 
@@ -25,10 +26,18 @@ class SubjectService:
         Raises:
             SubjectAlreadyExistsError: If a subject with the given DNI already exists.
         """
-        if await self.uow.subject_repo.get_by_dni(data.dni):
+        try:
+            subject = await self.uow.subject_repo.create(
+                dni=data.dni,
+                sex=data.sex,
+                name=data.name,
+                last_name=data.last_name,
+                birth_date=data.birth_date,
+                is_rural=data.is_rural,
+                is_indigenous=data.is_indigenous,
+            )
+        except UniqueConstraintError:
             raise SubjectAlreadyExistsError(data.dni)
-
-        subject = await self.uow.subject_repo.create(**data.model_dump())
         await self.uow.subject_event_repo.append(
             subject_id=subject.id,
             actor_id=actor_id,
@@ -46,7 +55,7 @@ class SubjectService:
         """
         subject = await self.uow.subject_repo.get_by_id(subject_id)
         if subject is None:
-            raise SubjectNotFoundError(subject_id)
+            raise SubjectNotFoundError(str(subject_id))
         return SubjectDomain.from_orm(subject)
 
     async def get_subject_listing(

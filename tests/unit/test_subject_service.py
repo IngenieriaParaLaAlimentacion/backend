@@ -11,6 +11,7 @@ from app.domain.subject_event import SubjectEventType
 from app.exceptions.domain_exceptions import (
     SubjectAlreadyExistsError,
     SubjectNotFoundError,
+    UniqueConstraintError,
 )
 from app.schemas.subject_schema import SubjectRequest
 from app.services.subject_service import SubjectService
@@ -47,9 +48,8 @@ def make_subject():
 def make_uow(make_subject):
     """Return a factory that builds a mock UnitOfWork for SubjectService."""
 
-    def _make(existing_subject=None, listing=None, total=0):
+    def _make(listing=None, total=0):
         uow = AsyncMock()
-        uow.subject_repo.get_by_dni = AsyncMock(return_value=existing_subject)
         uow.subject_repo.create = AsyncMock(return_value=make_subject())
         uow.subject_repo.get_subject_listing = AsyncMock(
             return_value=(listing or [], total)
@@ -94,16 +94,17 @@ class TestCreateSubject:
         uow.commit.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_raises_if_dni_already_exists(
-        self, make_subject, make_uow, valid_request
-    ):
-        uow = make_uow(existing_subject=make_subject())
+    async def test_raises_if_dni_already_exists(self, make_uow, valid_request):
+        uow = make_uow()
+        uow.subject_repo.create = AsyncMock(
+            side_effect=UniqueConstraintError("dni", valid_request.dni)
+        )
         service = SubjectService(uow)
 
         with pytest.raises(SubjectAlreadyExistsError):
             await service.create_subject(valid_request, actor_id=uuid.uuid4())
 
-        uow.subject_repo.create.assert_not_called()
+        uow.subject_repo.create.assert_called_once()
         uow.subject_event_repo.append.assert_not_called()
         uow.commit.assert_not_called()
 

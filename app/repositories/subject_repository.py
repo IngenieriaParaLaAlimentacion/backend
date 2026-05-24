@@ -2,9 +2,11 @@ import datetime
 from uuid import UUID
 
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.subject import Sex
+from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.subject import Subject
 from app.utils.db import escape_like, execute_paginated
 
@@ -36,7 +38,10 @@ class SubjectRepository:
             is_indigenous=is_indigenous,
         )
         self.db.add(subject)
-        await self.db.flush()
+        try:
+            await self.db.flush()
+        except IntegrityError:
+            raise UniqueConstraintError("dni", dni)
         await self.db.refresh(subject)
         return subject
 

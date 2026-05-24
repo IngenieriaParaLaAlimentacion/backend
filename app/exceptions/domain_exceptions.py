@@ -129,8 +129,21 @@ class SubjectNotFoundError(NotFoundError):
         subject_id: The UUID that was looked up.
     """
 
-    def __init__(self, subject_id: object):
+    def __init__(self, subject_id: str):
         super().__init__(
             "Subject not found",
             f"No subject with id {subject_id} exists.",
         )
+
+
+class UniqueConstraintError(Exception):
+    """Raised by a repository when a unique constraint is violated.
+
+    Callers (services) are responsible for translating this into the
+    appropriate domain exception.
+    """
+
+    def __init__(self, field: str, value: object) -> None:
+        self.field = field
+        self.value = value
+        super().__init__(f"Unique constraint violated: {field}={value}")

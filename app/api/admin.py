@@ -2,9 +2,13 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Response, status
 
-from app.core.dependencies import get_admin_service, get_current_admin
+from app.core.dependencies import (
+    get_admin_service,
+    get_current_admin,
+)
 from app.domain.user import UserActor, UserRole, UserStatus
 from app.schemas.admin_schema import (
+    AdminSubjectDetailResponse,
     EstablishmentAccessRequest,
     PaginatedUsersResponse,
     UserAdminView,
@@ -124,3 +128,31 @@ async def reject_establishments(
 ) -> Response:
     await service.reject_establishments(user_id, data.establishment_ids)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get(
+    "/subjects/{subject_id}",
+    response_model=AdminSubjectDetailResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get subject detail",
+    description="Returns full subject data including paginated event history. "
+    "Accessible by admins only.",
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
+        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        status.HTTP_404_NOT_FOUND: {"description": "Subject not found"},
+    },
+)
+async def get_subject_detail(
+    subject_id: UUID,
+    history_page: int = Query(default=1, ge=1),
+    history_page_size: int = Query(default=20, ge=1, le=100),
+    _: UserActor = Depends(get_current_admin),
+    service: AdminService = Depends(get_admin_service),
+) -> AdminSubjectDetailResponse:
+    subject, history = await service.get_subject_detail(
+        subject_id,
+        history_page=history_page,
+        history_page_size=history_page_size,
+    )
+    return AdminSubjectDetailResponse.from_domain(subject, history)

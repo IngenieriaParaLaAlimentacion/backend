@@ -1,4 +1,4 @@
-"""add subjects constraints, indexes and event log
+"""add subjects constraints, indexes, event log and establishments created_at index
 
 Revision ID: eb850f66c679
 Revises: 235b18ab1498
@@ -25,6 +25,7 @@ def upgrade() -> None:
     op.create_unique_constraint("uq_subjects_dni", "subjects", ["dni"])
 
     op.create_index("ix_subjects_created_at", "subjects", ["created_at"])
+    op.create_index("ix_establishments_created_at", "establishments", ["created_at"])
 
     # Trigram search on name and last_name (supports ILIKE '%term%')
     op.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm")
@@ -75,5 +76,6 @@ def downgrade() -> None:
 
     op.drop_index("ix_subjects_last_name_trgm", table_name="subjects")
     op.drop_index("ix_subjects_name_trgm", table_name="subjects")
+    op.drop_index("ix_establishments_created_at", table_name="establishments")
     op.drop_index("ix_subjects_created_at", table_name="subjects")
     op.drop_constraint("uq_subjects_dni", "subjects", type_="unique")

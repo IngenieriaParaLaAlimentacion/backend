@@ -67,6 +67,10 @@ async def get_subject(
     summary="List subjects",
     description="Returns a paginated list of subjects ordered by creation date. "
     "Supports optional search filtering by name, last name, or DNI.",
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
+        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+    },
 )
 async def list_subjects(
     page: int = Query(default=1, ge=1, description="Page number, starting at 1."),

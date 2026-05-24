@@ -4,12 +4,15 @@ from uuid import UUID
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.establishment import EstablishmentDomain, UserEstablishmentStatus
 from app.domain.pagination import PaginatedResult
+from app.domain.subject import SubjectDomain
+from app.domain.subject_event import EventPayload, SubjectEventRecord
 from app.domain.user import (
     UserRole,
     UserStatus,
     UserWithEstablishmentsDomain,
 )
 from app.exceptions.domain_exceptions import (
+    SubjectNotFoundError,
     UserEstablishmentNotFoundError,
     UserNotFoundError,
 )
@@ -180,3 +183,40 @@ class AdminService:
             user_id, establishment_ids, UserEstablishmentStatus.REJECTED
         )
         await self.uow.commit()
+
+    async def get_subject_detail(
+        self,
+        subject_id: UUID,
+        *,
+        history_page: int = 1,
+        history_page_size: int = 20,
+    ) -> tuple[SubjectDomain, PaginatedResult[SubjectEventRecord]]:
+        """Return a subject and its paginated event history.
+
+        Raises:
+            SubjectNotFoundError: If no subject with the given id exists.
+        """
+        subject = await self.uow.subject_repo.get_by_id(subject_id)
+        if subject is None:
+            raise SubjectNotFoundError(str(subject_id))
+
+        events, total = await self.uow.subject_event_repo.get_history(
+            subject_id, page=history_page, page_size=history_page_size
+        )
+        history = PaginatedResult.build(
+            items=[
+                SubjectEventRecord(
+                    event_type=event.event_type,
+                    occurred_at=event.occurred_at,
+                    actor_id=event.actor_id,
+                    payload=EventPayload(**event.payload)
+                    if event.payload
+                    else EventPayload(),
+                )
+                for event in events
+            ],
+            total=total,
+            page=history_page,
+            page_size=history_page_size,
+        )
+        return SubjectDomain.from_orm(subject), history
