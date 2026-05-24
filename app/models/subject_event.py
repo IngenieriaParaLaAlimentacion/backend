@@ -4,7 +4,7 @@ from sqlalchemy import Column, DateTime, ForeignKey, func
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 
-from app.domain.subject import SubjectEventType
+from app.domain.subject_event import SubjectEventType
 
 from .base import Base
 
@@ -29,7 +29,7 @@ class SubjectEvent(Base):
         SAEnum(SubjectEventType, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
     )
+    payload = Column(JSONB, nullable=True)
     occurred_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
-    payload = Column(JSONB, nullable=True)

@@ -34,7 +34,7 @@ async def create_subject(
     service: SubjectService = Depends(get_subject_service),
 ) -> SubjectResponse:
     """Register a new subject."""
-    subject = await service.create_subject(data)
+    subject = await service.create_subject(data, actor_id=current_user.user_id)
     return SubjectResponse.model_validate(subject)
 
 

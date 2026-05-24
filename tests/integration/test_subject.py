@@ -2,6 +2,7 @@ import uuid
 from datetime import date, timedelta
 
 import pytest
+import pytest_asyncio
 from fastapi import status
 from jose import jwt
 
@@ -13,9 +14,27 @@ pytestmark = pytest.mark.asyncio
 SUBJECTS_URL = "/api/v1/subjects"
 
 
-@pytest.fixture
-def manager_headers():
-    token = create_access_token(uuid.uuid4(), role=UserRole.ESTABLISHMENT_MANAGER)
+@pytest_asyncio.fixture
+async def manager_headers(app):
+    from app.db.database import AsyncSessionLocal
+    from app.models.user import User, UserStatus
+    from app.models.user import UserRole as ORMUserRole
+
+    user_id = uuid.uuid4()
+    async with AsyncSessionLocal() as session:
+        session.add(
+            User(
+                id=user_id,
+                name="Test",
+                last_name="Manager",
+                email=f"{user_id}@test.com",
+                role=ORMUserRole.ESTABLISHMENT_MANAGER,
+                status=UserStatus.ACTIVE,
+            )
+        )
+        await session.commit()
+
+    token = create_access_token(user_id, role=UserRole.ESTABLISHMENT_MANAGER)
     return {"Authorization": f"Bearer {token}"}
 
 

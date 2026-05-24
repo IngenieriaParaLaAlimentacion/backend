@@ -1,6 +1,7 @@
 import app.db.database as _db
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.repositories.establishment_repository import EstablishmentRepository
+from app.repositories.subject_event_repository import SubjectEventRepository
 from app.repositories.subject_repository import SubjectRepository
 from app.repositories.user_establishment_repository import UserEstablishmentRepository
 from app.repositories.user_password_repository import UserPasswordRepository
@@ -26,6 +27,7 @@ class UnitOfWork(IUnitOfWork):
         self.establishment_repo = EstablishmentRepository(self.session)
         self.user_establishment_repo = UserEstablishmentRepository(self.session)
         self.subject_repo = SubjectRepository(self.session)
+        self.subject_event_repo = SubjectEventRepository(self.session)
         return self
 
     async def commit(self) -> None:

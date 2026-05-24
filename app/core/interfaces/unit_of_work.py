@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from app.repositories.establishment_repository import EstablishmentRepository
+from app.repositories.subject_event_repository import SubjectEventRepository
 from app.repositories.subject_repository import SubjectRepository
 from app.repositories.user_establishment_repository import UserEstablishmentRepository
 from app.repositories.user_password_repository import UserPasswordRepository
@@ -15,6 +16,7 @@ class IUnitOfWork(ABC):
     establishment_repo: EstablishmentRepository
     user_establishment_repo: UserEstablishmentRepository
     subject_repo: SubjectRepository
+    subject_event_repo: SubjectEventRepository
 
     @abstractmethod
     async def commit(self) -> None: ...

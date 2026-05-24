@@ -3,6 +3,7 @@ from uuid import UUID
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.pagination import PaginatedResult
 from app.domain.subject import SubjectBase, SubjectDomain
+from app.domain.subject_event import SubjectEventType
 from app.exceptions.domain_exceptions import (
     SubjectAlreadyExistsError,
     SubjectNotFoundError,
@@ -16,7 +17,9 @@ class SubjectService:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
-    async def create_subject(self, data: SubjectRequest) -> SubjectDomain:
+    async def create_subject(
+        self, data: SubjectRequest, actor_id: UUID
+    ) -> SubjectDomain:
         """Register a new subject.
 
         Raises:
@@ -26,6 +29,11 @@ class SubjectService:
             raise SubjectAlreadyExistsError(data.dni)
 
         subject = await self.uow.subject_repo.create(**data.model_dump())
+        await self.uow.subject_event_repo.append(
+            subject_id=subject.id,
+            actor_id=actor_id,
+            event_type=SubjectEventType.SUBJECT_CREATED,
+        )
         await self.uow.commit()
 
         return SubjectDomain.from_orm(subject)

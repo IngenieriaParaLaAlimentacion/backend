@@ -53,6 +53,7 @@ def make_uow(make_subject):
         uow.subject_repo.get_subject_listing = AsyncMock(
             return_value=(listing or [], total)
         )
+        uow.subject_event_repo.append = AsyncMock()
         uow.commit = AsyncMock()
         return uow
 
@@ -78,15 +79,17 @@ class TestCreateSubject:
         self, make_subject, make_uow, valid_request
     ):
         subject = make_subject()
+        actor_id = uuid.uuid4()
         uow = make_uow()
         uow.subject_repo.create = AsyncMock(return_value=subject)
         service = SubjectService(uow)
 
-        result = await service.create_subject(valid_request)
+        result = await service.create_subject(valid_request, actor_id=actor_id)
 
         assert isinstance(result, SubjectDomain)
         assert result.id == subject.id
         assert result.dni == subject.dni
+        uow.subject_event_repo.append.assert_called_once()
         uow.commit.assert_called_once()
 
     @pytest.mark.asyncio
@@ -97,9 +100,10 @@ class TestCreateSubject:
         service = SubjectService(uow)
 
         with pytest.raises(SubjectAlreadyExistsError):
-            await service.create_subject(valid_request)
+            await service.create_subject(valid_request, actor_id=uuid.uuid4())
 
         uow.subject_repo.create.assert_not_called()
+        uow.subject_event_repo.append.assert_not_called()
         uow.commit.assert_not_called()
 
 
