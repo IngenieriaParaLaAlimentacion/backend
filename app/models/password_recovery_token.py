@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Index, String
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Index, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -20,6 +20,8 @@ class PasswordRecoveryToken(Base):
     token_hash = Column(String, nullable=False, unique=True)
     expires_at = Column(DateTime(timezone=True), nullable=False)
     used = Column(Boolean, nullable=False, default=False)
-    created_at = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
 
     user = relationship("User", back_populates="recovery_tokens")
