@@ -393,3 +393,66 @@ class TestSubjectEventLog:
             events = result.scalars().all()
 
         assert len(events) == 1
+
+
+class TestUpdateSubject:
+    async def test_returns_200_with_updated_data(self, client, manager_headers):
+        """A valid PATCH returns 200 with the updated field reflected."""
+        created = (await _upload(client, manager_headers)).json()
+        response = await client.patch(
+            f"{SUBJECTS_URL}/{created['id']}",
+            json={"name": "Carlos"},
+            headers=manager_headers,
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["name"] == "Carlos"
+
+    async def test_partial_update_does_not_affect_other_fields(
+        self, client, manager_headers
+    ):
+        """Fields not included in the request must remain unchanged."""
+        created = (await _upload(client, manager_headers)).json()
+        await client.patch(
+            f"{SUBJECTS_URL}/{created['id']}",
+            json={"name": "Carlos"},
+            headers=manager_headers,
+        )
+        response = await client.get(
+            f"{SUBJECTS_URL}/{created['id']}", headers=manager_headers
+        )
+        data = response.json()
+        assert data["last_name"] == created["last_name"]
+        assert data["dni"] == created["dni"]
+        assert data["birth_date"] == created["birth_date"]
+        assert data["is_rural"] == created["is_rural"]
+        assert data["is_indigenous"] == created["is_indigenous"]
+
+    async def test_unknown_id_returns_404(self, client, manager_headers):
+        """Patching a subject that does not exist returns 404."""
+        response = await client.patch(
+            f"{SUBJECTS_URL}/{uuid.uuid4()}",
+            json={"name": "Carlos"},
+            headers=manager_headers,
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_duplicate_dni_returns_409(self, client, manager_headers):
+        """Setting a DNI that already belongs to another subject returns 409."""
+        await _upload(client, manager_headers, dni=11111111)
+        second = (await _upload(client, manager_headers, dni=22222222)).json()
+        response = await client.patch(
+            f"{SUBJECTS_URL}/{second['id']}",
+            json={"dni": 11111111},
+            headers=manager_headers,
+        )
+        assert response.status_code == status.HTTP_409_CONFLICT
+
+    async def test_empty_body_returns_400(self, client, manager_headers):
+        """An empty body with no fields to update returns 400."""
+        created = (await _upload(client, manager_headers)).json()
+        response = await client.patch(
+            f"{SUBJECTS_URL}/{created['id']}",
+            json={},
+            headers=manager_headers,
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST

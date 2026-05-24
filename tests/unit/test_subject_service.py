@@ -9,11 +9,12 @@ from app.domain.pagination import PaginatedResult
 from app.domain.subject import Sex, SubjectBase, SubjectDomain
 from app.domain.subject_event import SubjectEventType
 from app.exceptions.domain_exceptions import (
+    EmptyUpdateRequestError,
     SubjectAlreadyExistsError,
     SubjectNotFoundError,
     UniqueConstraintError,
 )
-from app.schemas.subject_schema import SubjectRequest
+from app.schemas.subject_schema import SubjectRequest, SubjectUpdateRequest
 from app.services.subject_service import SubjectService
 
 
@@ -242,3 +243,75 @@ class TestGetSubjectsPaginated:
             offset=0,
             search=None,
         )
+
+
+class TestUpdateSubject:
+    @pytest.mark.asyncio
+    async def test_raises_if_empty_update(self, make_uow):
+        """An empty body is rejected before hitting the DB."""
+        uow = make_uow()
+        service = SubjectService(uow)
+
+        with pytest.raises(EmptyUpdateRequestError):
+            await service.update_subject(
+                uuid.uuid4(), SubjectUpdateRequest(), actor_id=uuid.uuid4()
+            )
+
+        uow.subject_repo.get_by_id.assert_not_called()
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_raises_if_subject_not_found(self, make_uow):
+        """SubjectNotFoundError is raised when the subject does not exist."""
+        uow = make_uow()
+        uow.subject_repo.get_by_id = AsyncMock(return_value=None)
+        service = SubjectService(uow)
+
+        with pytest.raises(SubjectNotFoundError):
+            await service.update_subject(
+                uuid.uuid4(), SubjectUpdateRequest(name="Carlos"), actor_id=uuid.uuid4()
+            )
+
+    @pytest.mark.asyncio
+    async def test_raises_if_dni_conflict(self, make_subject, make_uow):
+        """SubjectAlreadyExistsError is raised when the new DNI belongs
+        to another subject."""
+        subject = make_subject()
+        uow = make_uow()
+        uow.subject_repo.get_by_id = AsyncMock(return_value=subject)
+        uow.subject_repo.update = AsyncMock(
+            side_effect=UniqueConstraintError("dni", 99999999)
+        )
+        service = SubjectService(uow)
+
+        with pytest.raises(SubjectAlreadyExistsError):
+            await service.update_subject(
+                subject.id, SubjectUpdateRequest(dni=99999999), actor_id=uuid.uuid4()
+            )
+
+        uow.subject_event_repo.append.assert_not_called()
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_event_payload_contains_before_and_after(
+        self, make_subject, make_uow
+    ):
+        """The SUBJECT_UPDATED event payload reflects exactly the changed fields."""
+        subject = make_subject(name="Juan")
+        updated = make_subject(name="Carlos")
+        updated.id = subject.id
+
+        uow = make_uow()
+        uow.subject_repo.get_by_id = AsyncMock(return_value=subject)
+        uow.subject_repo.update = AsyncMock(return_value=updated)
+        service = SubjectService(uow)
+
+        await service.update_subject(
+            subject.id, SubjectUpdateRequest(name="Carlos"), actor_id=uuid.uuid4()
+        )
+
+        _, kwargs = uow.subject_event_repo.append.call_args
+        assert kwargs["event_type"] == SubjectEventType.SUBJECT_UPDATED
+        assert kwargs["payload"].before == {"name": "Juan"}
+        assert kwargs["payload"].after == {"name": "Carlos"}
+        uow.commit.assert_called_once()
