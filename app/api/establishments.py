@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, Query, status
 
-from app.core.dependencies import get_establishment_service
-from app.schemas.establishment_schema import (
-    EstablishmentResponse,
-    PaginatedEstablishmentsResponse,
+from app.core.dependencies import (
+    get_establishment_service,
 )
+from app.schemas.establishment_schema import EstablishmentResponse
+from app.schemas.pagination import PaginatedResponse
 from app.services.establishment_service import EstablishmentService
 
 router = APIRouter(prefix="/establishments", tags=["Establishments"])
@@ -12,7 +12,7 @@ router = APIRouter(prefix="/establishments", tags=["Establishments"])
 
 @router.get(
     "",
-    response_model=PaginatedEstablishmentsResponse,
+    response_model=PaginatedResponse[EstablishmentResponse],
     status_code=status.HTTP_200_OK,
     summary="List all establishments",
     description="Returns all establishments available for a manager to register with."
@@ -28,16 +28,13 @@ async def get_establishments(
     ),
     search: str | None = Query(default=None, max_length=100),
     service: EstablishmentService = Depends(get_establishment_service),
-) -> PaginatedEstablishmentsResponse:
+) -> PaginatedResponse[EstablishmentResponse]:
     result = await service.get_establishments_paginated(
         page=page, page_size=page_size, search=search
     )
 
-    return PaginatedEstablishmentsResponse(
-        items=[
-            EstablishmentResponse(id=estab.id, name=estab.name, address=estab.address)
-            for estab in result.items
-        ],
+    return PaginatedResponse[EstablishmentResponse](
+        items=[EstablishmentResponse.model_validate(estab) for estab in result.items],
         total=result.total,
         page=result.page,
         page_size=result.page_size,

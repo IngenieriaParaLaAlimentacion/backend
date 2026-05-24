@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.subject import Sex
 from app.models.subject import Subject
+from app.utils.db import escape_like, execute_paginated
 
 
 class SubjectRepository:
@@ -62,10 +63,7 @@ class SubjectRepository:
         count_query = select(func.count()).select_from(Subject)
 
         if search:
-            escaped = (
-                search.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-            )
-            search_term = f"%{escaped}%"
+            search_term = f"%{escape_like(search)}%"
             condition = Subject.name.ilike(
                 search_term, escape="\\"
             ) | Subject.last_name.ilike(search_term, escape="\\")
@@ -74,11 +72,6 @@ class SubjectRepository:
             base_query = base_query.where(condition)
             count_query = count_query.where(condition)
 
-        subjects_query = (
-            base_query.order_by(Subject.created_at).limit(limit).offset(offset)
+        return await execute_paginated(
+            self.db, base_query, count_query, Subject.created_at, limit, offset
         )
-
-        total = (await self.db.execute(count_query)).scalar_one()
-        subjects = (await self.db.execute(subjects_query)).scalars().all()
-
-        return subjects, total

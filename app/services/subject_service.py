@@ -1,4 +1,3 @@
-from math import ceil
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
@@ -58,9 +57,7 @@ class SubjectService:
         subjects, total = await self.uow.subject_repo.get_subject_listing(
             limit=page_size, offset=offset, search=search
         )
-        total_pages = ceil(total / page_size) if total > 0 else 0
-
-        return PaginatedResult(
+        return PaginatedResult.build(
             items=[
                 SubjectBase(
                     id=subject.id,
@@ -74,5 +71,4 @@ class SubjectService:
             total=total,
             page=page,
             page_size=page_size,
-            total_pages=total_pages,
         )

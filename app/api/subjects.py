@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, Query, status
 
 from app.core.dependencies import get_current_manager, get_subject_service
 from app.domain import UserActor
+from app.schemas.pagination import PaginatedResponse
 from app.schemas.subject_schema import (
-    SubjectListResponse,
     SubjectRequest,
     SubjectResponse,
     SubjectSummaryResponse,
@@ -62,7 +62,7 @@ async def get_subject(
 
 @router.get(
     "",
-    response_model=SubjectListResponse,
+    response_model=PaginatedResponse[SubjectSummaryResponse],
     status_code=status.HTTP_200_OK,
     summary="List subjects",
     description="Returns a paginated list of subjects ordered by creation date. "
@@ -76,20 +76,14 @@ async def list_subjects(
     search: str | None = Query(default=None, max_length=100),
     _: UserActor = Depends(get_current_manager),
     service: SubjectService = Depends(get_subject_service),
-) -> SubjectListResponse:
+) -> PaginatedResponse[SubjectSummaryResponse]:
     result = await service.get_subject_listing(
         page=page, page_size=page_size, search=search
     )
-    return SubjectListResponse(
+
+    return PaginatedResponse[SubjectSummaryResponse](
         items=[
-            SubjectSummaryResponse(
-                id=subject.id,
-                dni=subject.dni,
-                name=subject.name,
-                last_name=subject.last_name,
-                sex=subject.sex,
-            )
-            for subject in result.items
+            SubjectSummaryResponse.model_validate(subject) for subject in result.items
         ],
         total=result.total,
         page=result.page,
