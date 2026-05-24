@@ -14,12 +14,12 @@ async def execute_paginated(
     db: AsyncSession,
     base_query,
     count_query,
-    order_by_col,
+    order_by,
     limit: int,
     offset: int,
 ) -> tuple[list, int]:
     """Execute a paginated query and return (items, total)."""
-    paginated = base_query.order_by(order_by_col).limit(limit).offset(offset)
+    paginated = base_query.order_by(order_by).limit(limit).offset(offset)
     total = (await db.execute(count_query)).scalar_one()
     items = (await db.execute(paginated)).scalars().all()
     return items, total

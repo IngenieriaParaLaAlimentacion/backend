@@ -11,9 +11,11 @@ from app.domain.user import UserRole, UserStatus
 pytestmark = pytest.mark.asyncio
 
 ADMIN_USERS_URL = "/api/v1/admin/users"
+ADMIN_SUBJECTS_URL = "/api/v1/admin/subjects"
 REGISTER_MANAGER_URL = "/api/v1/auth/register/establishment-manager"
 APPROVE_URL = "/api/v1/admin/managers/{user_id}/establishments/approve"
 REJECT_URL = "/api/v1/admin/managers/{user_id}/establishments/reject"
+SUBJECTS_URL = "/api/v1/subjects"
 
 
 async def _make_list_request(client, *, headers=None):
@@ -89,6 +91,48 @@ async def registered_manager(client, db_establishment):
     )
     assert response.status_code == status.HTTP_201_CREATED
     return response.json()
+
+
+@pytest_asyncio.fixture
+async def manager_user_id(app):
+    """Insert an active establishment manager and return its UUID."""
+    from app.db.database import AsyncSessionLocal
+    from app.models.user import User, UserStatus
+    from app.models.user import UserRole as ORMUserRole
+
+    user_id = uuid.uuid4()
+    async with AsyncSessionLocal() as session:
+        session.add(
+            User(
+                id=user_id,
+                name="Test",
+                last_name="Manager",
+                email=f"{user_id}@test.com",
+                role=ORMUserRole.ESTABLISHMENT_MANAGER,
+                status=UserStatus.ACTIVE,
+            )
+        )
+        await session.commit()
+    return user_id
+
+
+@pytest_asyncio.fixture
+async def manager_headers(manager_user_id):
+    token = create_access_token(manager_user_id, role=UserRole.ESTABLISHMENT_MANAGER)
+    return {"Authorization": f"Bearer {token}"}
+
+
+def _subject_body(**overrides):
+    return {
+        "dni": 12345678,
+        "sex": "male",
+        "name": "Juan",
+        "last_name": "Perez",
+        "birth_date": "2010-01-01",
+        "is_rural": False,
+        "is_indigenous": False,
+        **overrides,
+    }
 
 
 class TestAdminAuth:
@@ -541,3 +585,43 @@ class TestRejectEstablishments:
             headers=admin_headers,
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+class TestAdminSubjectDetail:
+    async def test_returns_200_with_subject_and_events(
+        self, client, manager_headers, admin_headers
+    ):
+        """Admin retrieves a subject with its full event history."""
+        created = (
+            await client.post(
+                SUBJECTS_URL, json=_subject_body(), headers=manager_headers
+            )
+        ).json()
+        response = await client.get(
+            f"{ADMIN_SUBJECTS_URL}/{created['id']}", headers=admin_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["id"] == created["id"]
+        assert data["dni"] == created["dni"]
+        assert data["events"]["total"] == 1
+        assert data["events"]["items"][0]["event_type"] == "SUBJECT_CREATED"
+
+    async def test_unknown_id_returns_404(self, client, admin_headers):
+        """A UUID that was never registered returns 404."""
+        response = await client.get(
+            f"{ADMIN_SUBJECTS_URL}/{uuid.uuid4()}", headers=admin_headers
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_unauthenticated_returns_401(self, client):
+        """No token returns 401."""
+        response = await client.get(f"{ADMIN_SUBJECTS_URL}/{uuid.uuid4()}")
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_manager_role_returns_403(self, client, manager_headers):
+        """A manager token is rejected on the admin endpoint."""
+        response = await client.get(
+            f"{ADMIN_SUBJECTS_URL}/{uuid.uuid4()}", headers=manager_headers
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN

@@ -46,31 +46,26 @@ class AdminSubjectDetailResponse(SubjectResponse):
         subject: SubjectDomain,
         history: PaginatedResult[SubjectEventRecord],
     ) -> "AdminSubjectDetailResponse":
-        return cls(
-            id=subject.id,
-            dni=subject.dni,
-            sex=subject.sex,
-            name=subject.name,
-            last_name=subject.last_name,
-            birth_date=subject.birth_date,
-            is_rural=subject.is_rural,
-            is_indigenous=subject.is_indigenous,
-            events=PaginatedResponse[SubjectEventResponse](
-                items=[
-                    SubjectEventResponse(
-                        event_type=event.event_type,
-                        occurred_at=event.occurred_at,
-                        actor_id=event.actor_id,
-                        payload=EventPayloadResponse(
-                            before=event.payload.before,
-                            after=event.payload.after,
-                        ),
-                    )
-                    for event in history.items
-                ],
-                total=history.total,
-                page=history.page,
-                page_size=history.page_size,
-                total_pages=history.total_pages,
-            ),
+        return cls.model_validate(
+            {
+                **subject.__dict__,
+                "events": PaginatedResponse[SubjectEventResponse](
+                    items=[
+                        SubjectEventResponse(
+                            event_type=event.event_type,
+                            occurred_at=event.occurred_at,
+                            actor_id=event.actor_id,
+                            payload=EventPayloadResponse(
+                                before=event.payload.before,
+                                after=event.payload.after,
+                            ),
+                        )
+                        for event in history.items
+                    ],
+                    total=history.total,
+                    page=history.page,
+                    page_size=history.page_size,
+                    total_pages=history.total_pages,
+                ),
+            }
         )

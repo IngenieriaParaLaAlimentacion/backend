@@ -36,6 +36,7 @@ def test_not_found_handler():
     response = asyncio.run(not_found_handler(request, SubjectNotFoundError("123")))
     assert response.status_code == 404
     assert b"123" in response.body
+    assert b"Subject not found" in response.body
 
 
 def test_already_exists_handler():
@@ -45,6 +46,7 @@ def test_already_exists_handler():
     )
     assert response.status_code == 409
     assert b"taken@email.com" in response.body
+    assert b"User already exists" in response.body
 
 
 def test_unauthorized_handler():

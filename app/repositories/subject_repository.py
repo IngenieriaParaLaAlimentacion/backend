@@ -62,7 +62,8 @@ class SubjectRepository:
     ) -> tuple[list[Subject], int]:
         """Return a paginated list of subjects and the total matching count.
 
-        ``search`` matches case-insensitively against name, lastname or DNI (OR).
+        ``search`` matches case-insensitively against name and last name (partial),
+        and exactly against DNI (only if the search term is fully numeric).
         """
         base_query = select(Subject)
         count_query = select(func.count()).select_from(Subject)
@@ -78,5 +79,5 @@ class SubjectRepository:
             count_query = count_query.where(condition)
 
         return await execute_paginated(
-            self.db, base_query, count_query, Subject.created_at, limit, offset
+            self.db, base_query, count_query, Subject.created_at.desc(), limit, offset
         )

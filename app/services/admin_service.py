@@ -209,7 +209,10 @@ class AdminService:
                     event_type=event.event_type,
                     occurred_at=event.occurred_at,
                     actor_id=event.actor_id,
-                    payload=EventPayload(**event.payload)
+                    payload=EventPayload(
+                        before=event.payload.get("before"),
+                        after=event.payload.get("after"),
+                    )
                     if event.payload
                     else EventPayload(),
                 )
