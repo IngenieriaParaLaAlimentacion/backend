@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.domain.auth import LoginDomain
+from app.domain.auth import LoginDomain, RefreshDomain
 from app.domain.user import UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
@@ -11,8 +11,34 @@ from app.exceptions.domain_exceptions import (
     InvalidTokenError,
     UserAlreadyExistsError,
 )
-from app.schemas.auth_schema import LoginRequest, LogoutRequest, RegisterManagerRequest
+from app.schemas.auth_schema import (
+    LoginRequest,
+    LogoutRequest,
+    RefreshRequest,
+    RegisterManagerRequest,
+)
 from app.services.auth_service import AuthService
+
+
+@pytest.fixture
+def valid_refresh_request():
+    return RefreshRequest(
+        refresh_token="raw_refresh_token",
+        device_id=str(uuid.uuid4()),
+    )
+
+
+@pytest.fixture
+def make_active_token():
+    """Return a factory for mock token rows returned by token_repo."""
+
+    def _make(role: UserRole = UserRole.ADMIN):
+        t = MagicMock()
+        t.user_id = uuid.uuid4()
+        t.role = role
+        return t
+
+    return _make
 
 
 @pytest.fixture
@@ -487,5 +513,179 @@ class TestLogoutInvalidToken:
 
         with pytest.raises(InvalidTokenError):
             await AuthService(uow).logout(valid_logout_request)
+
+        uow.commit.assert_not_awaited()
+
+
+class TestRefreshSuccess:
+    @pytest.mark.asyncio
+    async def test_returns_refresh_domain(
+        self,
+        make_uow,
+        make_active_token,
+        valid_refresh_request,
+        mock_security,
+        mock_encode_refresh_token,
+    ):
+        token = make_active_token()
+        uow = make_uow(active_token=token)
+
+        result = await AuthService(uow).refresh(valid_refresh_request)
+
+        assert isinstance(result, RefreshDomain)
+
+    @pytest.mark.asyncio
+    async def test_new_access_token_issued(
+        self,
+        make_uow,
+        make_active_token,
+        valid_refresh_request,
+        mock_security,
+        mock_encode_refresh_token,
+    ):
+        token = make_active_token(role=UserRole.ADMIN)
+        uow = make_uow(active_token=token)
+
+        result = await AuthService(uow).refresh(valid_refresh_request)
+
+        assert result.access_token == f"access.{UserRole.ADMIN}.mocked"
+
+    @pytest.mark.asyncio
+    async def test_new_raw_refresh_token_returned(
+        self,
+        make_uow,
+        make_active_token,
+        valid_refresh_request,
+        mock_security,
+        mock_encode_refresh_token,
+    ):
+        uow = make_uow(active_token=make_active_token())
+
+        result = await AuthService(uow).refresh(valid_refresh_request)
+
+        assert result.refresh_token == "raw_refresh_token"
+
+    @pytest.mark.asyncio
+    async def test_old_token_revoked(
+        self,
+        make_uow,
+        make_active_token,
+        valid_refresh_request,
+        mock_security,
+        mock_encode_refresh_token,
+    ):
+        token = make_active_token()
+        uow = make_uow(active_token=token)
+
+        await AuthService(uow).refresh(valid_refresh_request)
+
+        uow.token_repo.revoke.assert_called_once_with(token)
+
+    @pytest.mark.asyncio
+    async def test_new_token_persisted(
+        self,
+        make_uow,
+        make_active_token,
+        valid_refresh_request,
+        mock_security,
+        mock_encode_refresh_token,
+    ):
+        token = make_active_token()
+        uow = make_uow(active_token=token)
+
+        await AuthService(uow).refresh(valid_refresh_request)
+
+        uow.token_repo.create.assert_awaited_once_with(
+            user_id=token.user_id,
+            token_hash="hashed_refresh_token",
+            device_id=valid_refresh_request.device_id,
+            role=token.role,
+        )
+
+    @pytest.mark.asyncio
+    async def test_commits_after_rotation(
+        self,
+        make_uow,
+        make_active_token,
+        valid_refresh_request,
+        mock_security,
+        mock_encode_refresh_token,
+    ):
+        uow = make_uow(active_token=make_active_token())
+
+        await AuthService(uow).refresh(valid_refresh_request)
+
+        uow.commit.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_queries_with_encoded_token_and_device_id(
+        self,
+        make_uow,
+        make_active_token,
+        valid_refresh_request,
+        mock_security,
+        mock_encode_refresh_token,
+    ):
+        uow = make_uow(active_token=make_active_token())
+
+        await AuthService(uow).refresh(valid_refresh_request)
+
+        uow.token_repo.get_active_refresh_token.assert_awaited_once_with(
+            "hashed_refresh_token", valid_refresh_request.device_id
+        )
+
+
+class TestRefreshInvalidToken:
+    @pytest.mark.asyncio
+    async def test_raises_invalid_credentials(
+        self,
+        make_uow,
+        valid_refresh_request,
+        mock_encode_refresh_token,
+    ):
+        uow = make_uow(active_token=None)
+
+        with pytest.raises(InvalidCredentialsError):
+            await AuthService(uow).refresh(valid_refresh_request)
+
+    @pytest.mark.asyncio
+    async def test_does_not_revoke(
+        self,
+        make_uow,
+        valid_refresh_request,
+        mock_encode_refresh_token,
+    ):
+        uow = make_uow(active_token=None)
+
+        with pytest.raises(InvalidCredentialsError):
+            await AuthService(uow).refresh(valid_refresh_request)
+
+        uow.token_repo.revoke.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_does_not_create_new_token(
+        self,
+        make_uow,
+        valid_refresh_request,
+        mock_encode_refresh_token,
+    ):
+        uow = make_uow(active_token=None)
+
+        with pytest.raises(InvalidCredentialsError):
+            await AuthService(uow).refresh(valid_refresh_request)
+
+        uow.token_repo.create.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_does_not_commit(
+        self,
+        make_uow,
+        valid_refresh_request,
+        mock_encode_refresh_token,
+    ):
+        uow = make_uow(active_token=None)
+
+        with pytest.raises(InvalidCredentialsError):
+            await AuthService(uow).refresh(valid_refresh_request)
 
         uow.commit.assert_not_awaited()

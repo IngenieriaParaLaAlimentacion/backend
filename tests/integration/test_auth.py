@@ -11,7 +11,9 @@ from app.models.user_password import UserPassword
 
 pytestmark = pytest.mark.asyncio
 
+REFRESH_URL = "/api/v1/auth/refresh"
 LOGIN_URL = "/api/v1/auth/login"
+LOGOUT_URL = "/api/v1/auth/logout"
 REGISTER_URL = "/api/v1/auth/register/establishment-manager"
 
 
@@ -40,6 +42,22 @@ async def db_active_user(db_establishment):
         await session.commit()
         await session.refresh(user)
         return user
+
+
+@pytest_asyncio.fixture()
+async def db_logged_in_for_refresh(db_active_user, client):
+    """Login db_active_user and return (user, refresh_token, device_id)."""
+    device_id = str(uuid.uuid4())
+    response = await client.post(
+        LOGIN_URL,
+        json={
+            "email": "ana@test.com",
+            "password": "correct_password",
+            "device_id": device_id,
+        },
+    )
+    body = response.json()
+    return db_active_user, body["refresh_token"], device_id
 
 
 class TestRegisterManager:
@@ -249,25 +267,6 @@ class TestLoginPendingValidation:
         assert r_invalid.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-LOGOUT_URL = "/api/v1/auth/logout"
-
-
-@pytest_asyncio.fixture()
-async def db_logged_in_user(db_active_user, client):
-    """Login db_active_user and return (user, refresh_token, device_id)."""
-    device_id = str(uuid.uuid4())
-    response = await client.post(
-        LOGIN_URL,
-        json={
-            "email": "ana@test.com",
-            "password": "correct_password",
-            "device_id": device_id,
-        },
-    )
-    refresh_token = response.json()["refresh_token"]
-    return db_active_user, refresh_token, device_id
-
-
 class TestLogout:
     def _payload(self, refresh_token: str, device_id: str) -> dict:
         return {"refresh_token": refresh_token, "device_id": device_id}
@@ -326,3 +325,126 @@ class TestLogout:
             json={"refresh_token": "some-token"},
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+class TestRefreshSuccess:
+    def _payload(self, refresh_token: str, device_id: str) -> dict:
+        return {"refresh_token": refresh_token, "device_id": device_id}
+
+    async def test_valid_refresh_returns_200(self, client, db_logged_in_for_refresh):
+        _, refresh_token, device_id = db_logged_in_for_refresh
+        response = await client.post(
+            REFRESH_URL, json=self._payload(refresh_token, device_id)
+        )
+        assert response.status_code == status.HTTP_200_OK
+
+    async def test_response_contains_access_token(
+        self, client, db_logged_in_for_refresh
+    ):
+        _, refresh_token, device_id = db_logged_in_for_refresh
+        response = await client.post(
+            REFRESH_URL, json=self._payload(refresh_token, device_id)
+        )
+        assert response.json()["access_token"]
+
+    async def test_response_contains_refresh_token(
+        self, client, db_logged_in_for_refresh
+    ):
+        _, refresh_token, device_id = db_logged_in_for_refresh
+        response = await client.post(
+            REFRESH_URL, json=self._payload(refresh_token, device_id)
+        )
+        assert response.json()["refresh_token"]
+
+    async def test_new_refresh_token_differs_from_old(
+        self, client, db_logged_in_for_refresh
+    ):
+        _, refresh_token, device_id = db_logged_in_for_refresh
+        response = await client.post(
+            REFRESH_URL, json=self._payload(refresh_token, device_id)
+        )
+        assert response.json()["refresh_token"] != refresh_token
+
+    async def test_new_refresh_token_is_usable(self, client, db_logged_in_for_refresh):
+        """The rotated token should itself be accepted for a subsequent refresh."""
+        _, refresh_token, device_id = db_logged_in_for_refresh
+        first = await client.post(
+            REFRESH_URL, json=self._payload(refresh_token, device_id)
+        )
+        new_token = first.json()["refresh_token"]
+
+        second = await client.post(
+            REFRESH_URL, json=self._payload(new_token, device_id)
+        )
+        assert second.status_code == status.HTTP_200_OK
+
+    async def test_new_refresh_token_can_logout(self, client, db_logged_in_for_refresh):
+        """The rotated token should be accepted by the logout endpoint."""
+        _, refresh_token, device_id = db_logged_in_for_refresh
+        first = await client.post(
+            REFRESH_URL, json=self._payload(refresh_token, device_id)
+        )
+        new_token = first.json()["refresh_token"]
+
+        response = await client.post(
+            LOGOUT_URL, json=self._payload(new_token, device_id)
+        )
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+
+class TestRefreshInvalidToken:
+    def _payload(self, refresh_token: str, device_id: str) -> dict:
+        return {"refresh_token": refresh_token, "device_id": device_id}
+
+    async def test_invalid_token_returns_401(self, client, db_active_user):
+        response = await client.post(
+            REFRESH_URL,
+            json=self._payload("completely-invalid-token", str(uuid.uuid4())),
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_wrong_device_id_returns_401(self, client, db_logged_in_for_refresh):
+        """Valid token presented with the wrong device_id must be rejected."""
+        _, refresh_token, _ = db_logged_in_for_refresh
+        response = await client.post(
+            REFRESH_URL, json=self._payload(refresh_token, str(uuid.uuid4()))
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_old_token_rejected_after_rotation(
+        self, client, db_logged_in_for_refresh
+    ):
+        """After a successful rotation the original token must be rejected."""
+        _, refresh_token, device_id = db_logged_in_for_refresh
+        await client.post(REFRESH_URL, json=self._payload(refresh_token, device_id))
+
+        response = await client.post(
+            REFRESH_URL, json=self._payload(refresh_token, device_id)
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_logged_out_token_cannot_be_refreshed(
+        self, client, db_logged_in_for_refresh
+    ):
+        """A token that was explicitly logged out must not be refreshable."""
+        _, refresh_token, device_id = db_logged_in_for_refresh
+        await client.post(LOGOUT_URL, json=self._payload(refresh_token, device_id))
+
+        response = await client.post(
+            REFRESH_URL, json=self._payload(refresh_token, device_id)
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+class TestRefreshValidation:
+    async def test_missing_refresh_token_returns_422(self, client, db_active_user):
+        response = await client.post(REFRESH_URL, json={"device_id": str(uuid.uuid4())})
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    async def test_missing_device_id_returns_422(self, client, db_active_user):
+        response = await client.post(REFRESH_URL, json={"refresh_token": "some-token"})
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    async def test_empty_body_returns_422(self, client, db_active_user):
+        response = await client.post(REFRESH_URL, json={})
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
