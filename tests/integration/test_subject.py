@@ -166,3 +166,163 @@ class TestGetSubject:
             headers={"Authorization": f"Bearer {token}"},
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+class TestGetSubjectsPaginated:
+    async def test_unauthenticated_returns_401(self, client):
+        """No token on GET /subjects should return 401."""
+        response = await client.get(SUBJECTS_URL)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_empty_list_returns_200(self, client, manager_headers):
+        """No subjects in the DB returns an empty list with zeroed metadata."""
+        response = await client.get(SUBJECTS_URL, headers=manager_headers)
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["items"] == []
+        assert data["total"] == 0
+        assert data["total_pages"] == 0
+
+    async def test_returns_subject_fields(self, client, manager_headers):
+        """Response items include id, dni, name, last_name and sex."""
+        await _upload(client, manager_headers)
+        response = await client.get(SUBJECTS_URL, headers=manager_headers)
+        assert response.status_code == status.HTTP_200_OK
+        item = response.json()["items"][0]
+        assert "id" in item
+        assert item["dni"] == 12345678
+        assert item["name"] == "Juan"
+        assert item["last_name"] == "Perez"
+        assert item["sex"] == "male"
+
+    async def test_pagination_metadata(self, client, manager_headers):
+        """With 5 subjects and page_size=2, total_pages should be 3."""
+        for i in range(5):
+            await _upload(client, manager_headers, dni=10000000 + i)
+        response = await client.get(
+            f"{SUBJECTS_URL}?page=1&page_size=2", headers=manager_headers
+        )
+        data = response.json()
+        assert data["total"] == 5
+        assert data["page"] == 1
+        assert data["page_size"] == 2
+        assert data["total_pages"] == 3
+
+    async def test_page_size_limits_results(self, client, manager_headers):
+        """page_size controls how many items are returned."""
+        for i in range(5):
+            await _upload(client, manager_headers, dni=10000000 + i)
+        response = await client.get(
+            f"{SUBJECTS_URL}?page_size=3", headers=manager_headers
+        )
+        assert len(response.json()["items"]) == 3
+
+    async def test_second_page_returns_different_items(self, client, manager_headers):
+        """Two consecutive pages share no subjects."""
+        for i in range(4):
+            await _upload(client, manager_headers, dni=10000000 + i)
+        page1 = await client.get(
+            f"{SUBJECTS_URL}?page=1&page_size=2", headers=manager_headers
+        )
+        page2 = await client.get(
+            f"{SUBJECTS_URL}?page=2&page_size=2", headers=manager_headers
+        )
+        ids1 = {i["id"] for i in page1.json()["items"]}
+        ids2 = {i["id"] for i in page2.json()["items"]}
+        assert ids1.isdisjoint(ids2)
+
+    async def test_offset_past_last_record_returns_empty(self, client, manager_headers):
+        """Requesting a page whose offset exceeds the total returns an empty list."""
+        await _upload(client, manager_headers)
+        response = await client.get(
+            f"{SUBJECTS_URL}?page=99&page_size=20", headers=manager_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["items"] == []
+
+    async def test_invalid_page_returns_422(self, client, manager_headers):
+        """page=0 is invalid, minimum is 1."""
+        response = await client.get(f"{SUBJECTS_URL}?page=0", headers=manager_headers)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_invalid_page_size_zero_returns_422(self, client, manager_headers):
+        """page_size=0 is invalid, minimum is 1."""
+        response = await client.get(
+            f"{SUBJECTS_URL}?page_size=0", headers=manager_headers
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_invalid_page_size_above_max_returns_422(
+        self, client, manager_headers
+    ):
+        """page_size=101 exceeds the maximum of 100."""
+        response = await client.get(
+            f"{SUBJECTS_URL}?page_size=101", headers=manager_headers
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_search_by_name_returns_matching(self, client, manager_headers):
+        """Only subjects whose name contains the search term are returned."""
+        await _upload(client, manager_headers, dni=11111111, name="Juan")
+        await _upload(client, manager_headers, dni=22222222, name="Maria")
+        response = await client.get(
+            f"{SUBJECTS_URL}?search=Juan", headers=manager_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        items = response.json()["items"]
+        assert len(items) == 1
+        assert items[0]["name"] == "Juan"
+
+    async def test_search_by_last_name_returns_matching(self, client, manager_headers):
+        """Only subjects whose last name contains the search term are returned."""
+        await _upload(client, manager_headers, dni=11111111, last_name="Perez")
+        await _upload(client, manager_headers, dni=22222222, last_name="Garcia")
+        response = await client.get(
+            f"{SUBJECTS_URL}?search=Garcia", headers=manager_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        items = response.json()["items"]
+        assert len(items) == 1
+        assert items[0]["last_name"] == "Garcia"
+
+    async def test_search_by_dni_returns_matching(self, client, manager_headers):
+        """A numeric search term matches against DNI exactly."""
+        await _upload(client, manager_headers, dni=11111111)
+        await _upload(client, manager_headers, dni=22222222)
+        response = await client.get(
+            f"{SUBJECTS_URL}?search=11111111", headers=manager_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        items = response.json()["items"]
+        assert len(items) == 1
+        assert items[0]["dni"] == 11111111
+
+    async def test_search_is_case_insensitive(self, client, manager_headers):
+        """Search is case-insensitive: 'juan' matches 'Juan'."""
+        await _upload(client, manager_headers, name="Juan")
+        response = await client.get(
+            f"{SUBJECTS_URL}?search=juan", headers=manager_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.json()["items"]) == 1
+
+    async def test_search_no_match_returns_empty(self, client, manager_headers):
+        """A search term that matches nothing returns an empty list."""
+        await _upload(client, manager_headers)
+        response = await client.get(
+            f"{SUBJECTS_URL}?search=zzznomatch", headers=manager_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["items"] == []
+        assert data["total"] == 0
+
+    async def test_search_whitespace_only_returns_all(self, client, manager_headers):
+        """A whitespace-only search is treated as no filter and returns all records."""
+        await _upload(client, manager_headers, dni=11111111)
+        await _upload(client, manager_headers, dni=22222222)
+        response = await client.get(
+            f"{SUBJECTS_URL}?search=   ", headers=manager_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["total"] == 2
