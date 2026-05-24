@@ -58,3 +58,8 @@ class User(Base):
         back_populates="responsible",
         foreign_keys="[Measurement.responsible_id]",
     )
+    recovery_tokens = relationship(
+        "PasswordRecoveryToken",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
