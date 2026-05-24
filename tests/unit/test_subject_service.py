@@ -7,6 +7,7 @@ import pytest
 
 from app.domain.pagination import PaginatedResult
 from app.domain.subject import Sex, SubjectBase, SubjectDomain
+from app.domain.subject_event import SubjectEventType
 from app.exceptions.domain_exceptions import (
     SubjectAlreadyExistsError,
     SubjectNotFoundError,
@@ -105,6 +106,22 @@ class TestCreateSubject:
         uow.subject_repo.create.assert_not_called()
         uow.subject_event_repo.append.assert_not_called()
         uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_event_type_is_subject_created(
+        self, make_subject, make_uow, valid_request
+    ):
+        """append is always called with SUBJECT_CREATED, never another type."""
+        uow = make_uow()
+        subject = make_subject()
+        actor_id = uuid.uuid4()
+        uow.subject_repo.create = AsyncMock(return_value=subject)
+        await SubjectService(uow).create_subject(valid_request, actor_id=actor_id)
+
+        _, kwargs = uow.subject_event_repo.append.call_args
+        assert kwargs["event_type"] == SubjectEventType.SUBJECT_CREATED
+        assert kwargs["actor_id"] == actor_id
+        assert kwargs["subject_id"] == subject.id
 
 
 class TestGetSubject:

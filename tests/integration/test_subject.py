@@ -15,7 +15,7 @@ SUBJECTS_URL = "/api/v1/subjects"
 
 
 @pytest_asyncio.fixture
-async def manager_headers(app):
+async def manager_user_id(app):
     from app.db.database import AsyncSessionLocal
     from app.models.user import User, UserStatus
     from app.models.user import UserRole as ORMUserRole
@@ -33,8 +33,12 @@ async def manager_headers(app):
             )
         )
         await session.commit()
+    return user_id
 
-    token = create_access_token(user_id, role=UserRole.ESTABLISHMENT_MANAGER)
+
+@pytest_asyncio.fixture
+async def manager_headers(manager_user_id):
+    token = create_access_token(manager_user_id, role=UserRole.ESTABLISHMENT_MANAGER)
     return {"Authorization": f"Bearer {token}"}
 
 
@@ -345,3 +349,47 @@ class TestGetSubjectsPaginated:
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["total"] == 2
+
+
+class TestSubjectEventLog:
+    async def test_registration_creates_event(
+        self, client, manager_headers, manager_user_id
+    ):
+        """Creating a subject persists a SUBJECT_CREATED event linked to the actor."""
+        from sqlalchemy import select
+
+        from app.db.database import AsyncSessionLocal
+        from app.domain.subject_event import SubjectEventType
+        from app.models.subject_event import SubjectEvent
+
+        response = await _upload(client, manager_headers)
+        assert response.status_code == status.HTTP_201_CREATED
+        subject_id = uuid.UUID(response.json()["id"])
+
+        async with AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(SubjectEvent).where(SubjectEvent.subject_id == subject_id)
+            )
+            events = result.scalars().all()
+
+        assert len(events) == 1
+        assert events[0].event_type == SubjectEventType.SUBJECT_CREATED
+        assert events[0].actor_id == manager_user_id
+        assert events[0].payload is None
+
+    async def test_failed_registration_creates_no_event(self, client, manager_headers):
+        """A rejected registration (duplicate DNI) does not persist any event."""
+        from sqlalchemy import select
+
+        from app.db.database import AsyncSessionLocal
+        from app.models.subject_event import SubjectEvent
+
+        await _upload(client, manager_headers)
+        response = await _upload(client, manager_headers)
+        assert response.status_code == status.HTTP_409_CONFLICT
+
+        async with AsyncSessionLocal() as session:
+            result = await session.execute(select(SubjectEvent))
+            events = result.scalars().all()
+
+        assert len(events) == 1
