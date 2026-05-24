@@ -10,3 +10,9 @@ class LoginDomain:
     user: UserDomain
     access_token: str
     refresh_token: str
+
+
+@dataclass
+class RefreshDomain:
+    access_token: str
+    refresh_token: str

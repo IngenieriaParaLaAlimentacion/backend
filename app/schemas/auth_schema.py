@@ -57,3 +57,14 @@ class LoginRequest(BaseModel):
 class LogoutRequest(BaseModel):
     device_id: str
     refresh_token: str
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+    device_id: UUID
+
+
+class RefreshResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
