@@ -7,6 +7,7 @@ from app.exceptions.domain_exceptions import (
     ForbiddenError,
     PasswordNotFoundError,
     SubjectAlreadyExistsError,
+    SubjectNotFoundError,
     UnauthorizedError,
     UserAlreadyExistsError,
     UserEstablishmentNotFoundError,
@@ -60,3 +61,4 @@ def register_exception_handlers(app: FastAPI):
     app.add_exception_handler(UnauthorizedError, unauthorized_handler)
     app.add_exception_handler(ForbiddenError, forbidden_handler)
     app.add_exception_handler(SubjectAlreadyExistsError, subject_already_exists_handler)
+    app.add_exception_handler(SubjectNotFoundError, not_found_handler)

@@ -108,3 +108,17 @@ class SubjectAlreadyExistsError(BaseError):
             "Subject already exists",
             f"A subject with DNI {dni} already exists.",
         )
+
+
+class SubjectNotFoundError(BaseError):
+    """Exception raised when a subject cannot be found.
+
+    Args:
+        subject_id: The UUID that was looked up.
+    """
+
+    def __init__(self, subject_id: object):
+        super().__init__(
+            "Subject not found",
+            f"No subject with id {subject_id} exists.",
+        )
