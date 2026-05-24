@@ -1,10 +1,15 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 
 from app.core.dependencies import get_current_manager, get_subject_service
 from app.domain import UserActor
-from app.schemas.subject_schema import SubjectRequest, SubjectResponse
+from app.schemas.subject_schema import (
+    SubjectListResponse,
+    SubjectRequest,
+    SubjectResponse,
+    SubjectSummaryResponse,
+)
 from app.services.subject_service import SubjectService
 
 router = APIRouter(prefix="/subjects", tags=["Subjects"])
@@ -53,3 +58,41 @@ async def get_subject(
     """Return a subject by id."""
     subject = await service.get_subject(subject_id)
     return SubjectResponse.model_validate(subject)
+
+
+@router.get(
+    "",
+    response_model=SubjectListResponse,
+    status_code=status.HTTP_200_OK,
+    summary="List subjects",
+    description="Returns a paginated list of subjects ordered by creation date. "
+    "Supports optional search filtering by name, last name, or DNI.",
+)
+async def list_subjects(
+    page: int = Query(default=1, ge=1, description="Page number, starting at 1."),
+    page_size: int = Query(
+        default=20, ge=1, le=100, description="Results per page (max 100)."
+    ),
+    search: str | None = Query(default=None, max_length=100),
+    _: UserActor = Depends(get_current_manager),
+    service: SubjectService = Depends(get_subject_service),
+) -> SubjectListResponse:
+    result = await service.get_subject_listing(
+        page=page, page_size=page_size, search=search
+    )
+    return SubjectListResponse(
+        items=[
+            SubjectSummaryResponse(
+                id=subject.id,
+                dni=subject.dni,
+                name=subject.name,
+                last_name=subject.last_name,
+                sex=subject.sex,
+            )
+            for subject in result.items
+        ],
+        total=result.total,
+        page=result.page,
+        page_size=result.page_size,
+        total_pages=result.total_pages,
+    )

@@ -38,14 +38,27 @@ class SubjectRequest(BaseModel):
         return v
 
 
-class SubjectResponse(BaseModel):
+class SubjectSummaryResponse(BaseModel):
     id: UUID
     dni: int
-    sex: Sex
     name: str
     last_name: str
+    sex: Sex
+
+    model_config = {"from_attributes": True}
+
+
+class SubjectResponse(SubjectSummaryResponse):
     birth_date: date
     is_rural: bool
     is_indigenous: bool
 
     model_config = {"from_attributes": True}
+
+
+class SubjectListResponse(BaseModel):
+    items: list[SubjectSummaryResponse]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int

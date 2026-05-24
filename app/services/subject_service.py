@@ -1,7 +1,9 @@
+from math import ceil
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.domain.subject import SubjectDomain
+from app.domain.pagination import PaginatedResult
+from app.domain.subject import SubjectBase, SubjectDomain
 from app.exceptions.domain_exceptions import (
     SubjectAlreadyExistsError,
     SubjectNotFoundError,
@@ -39,3 +41,38 @@ class SubjectService:
         if subject is None:
             raise SubjectNotFoundError(subject_id)
         return SubjectDomain.from_orm(subject)
+
+    async def get_subject_listing(
+        self,
+        page: int,
+        page_size: int,
+        search: str | None,
+    ) -> PaginatedResult[SubjectBase]:
+        """Return a paginated list of subjects with metadata.
+
+        ``search`` matches case-insensitively against name, last name or DNI.
+        Whitespace-only values are treated as no filter.
+        """
+        offset = (page - 1) * page_size
+        search = search.strip() or None if search else None
+        subjects, total = await self.uow.subject_repo.get_subject_listing(
+            limit=page_size, offset=offset, search=search
+        )
+        total_pages = ceil(total / page_size) if total > 0 else 0
+
+        return PaginatedResult(
+            items=[
+                SubjectBase(
+                    id=subject.id,
+                    name=subject.name,
+                    last_name=subject.last_name,
+                    dni=subject.dni,
+                    sex=subject.sex,
+                )
+                for subject in subjects
+            ],
+            total=total,
+            page=page,
+            page_size=page_size,
+            total_pages=total_pages,
+        )

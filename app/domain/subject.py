@@ -12,14 +12,20 @@ class Sex(str, Enum):
 
 
 @dataclass
-class SubjectDomain:
-    """Core subject data as returned from persistence."""
+class SubjectBase:
+    """Base information about a subject."""
 
     id: UUID
     dni: int
     sex: Sex
     name: str
     last_name: str
+
+
+@dataclass
+class SubjectDomain(SubjectBase):
+    """Full subject data as returned from persistence."""
+
     birth_date: date
     is_rural: bool
     is_indigenous: bool

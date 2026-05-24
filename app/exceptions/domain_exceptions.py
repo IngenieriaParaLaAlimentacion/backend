@@ -23,6 +23,10 @@ class AlreadyExistsError(BaseError):
     """Base exception for resources that already exist."""
 
 
+class BadRequestError(BaseError):
+    """Base exception for invalid client requests (HTTP 400)."""
+
+
 class UserNotFoundError(NotFoundError):
     """Exception raised when a user is not found.
 
