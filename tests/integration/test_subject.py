@@ -124,9 +124,15 @@ class TestUploadSubject:
         response = await _upload(client, manager_headers, name="   ")
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
-    async def test_missing_required_field_returns_422(self, client, manager_headers):
-        """Omitting a required field returns 422."""
+    @pytest.mark.parametrize(
+        "field",
+        ["dni", "sex", "name", "last_name", "birth_date", "is_rural", "is_indigenous"],
+    )
+    async def test_each_required_field_is_mandatory(
+        self, client, manager_headers, field
+    ):
+        """Omitting any single required field returns 422."""
         body = _body()
-        del body["dni"]
+        del body[field]
         response = await client.post(SUBJECTS_URL, json=body, headers=manager_headers)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
