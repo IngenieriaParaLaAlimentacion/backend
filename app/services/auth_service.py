@@ -1,6 +1,11 @@
+from datetime import timedelta
+
+from app.core.config import settings
 from app.core.interfaces.unit_of_work import IUnitOfWork
+from app.core.password_recovery import build_recovery_deeplink, send_recovery_email
 from app.core.security import (
     create_access_token,
+    create_password_recovery_token,
     create_refresh_token,
     encode_refresh_token,
     hash_password,
@@ -17,6 +22,7 @@ from app.exceptions.domain_exceptions import (
 from app.schemas.auth_schema import (
     LoginRequest,
     LogoutRequest,
+    PasswordRecoveryRequest,
     RefreshRequest,
     RegisterManagerRequest,
 )
@@ -168,3 +174,28 @@ class AuthService:
             access_token=new_access,
             refresh_token=new_raw,
         )
+
+    async def request_password_recovery(self, data: PasswordRecoveryRequest) -> None:
+        """Create and email a password recovery deep link for a user.
+
+        Notes:
+            Returns without error for unknown emails to avoid user enumeration.
+        """
+        user = await self.uow.user_repo.get_by_email(data.email)
+        if not user:
+            return
+
+        await self.uow.password_recovery_repo.revoke_active_for_user(user.id)
+
+        recovery_token, recovery_token_hash = create_password_recovery_token()
+        created_token = await self.uow.password_recovery_repo.create(
+            user.id,
+            recovery_token_hash,
+            expires_delta=timedelta(
+                minutes=settings.password_recovery_token_expire_minutes
+            ),
+        )
+
+        await self.uow.commit()
+        deeplink = build_recovery_deeplink(recovery_token)
+        send_recovery_email(user.email, deeplink, created_token.expires_at)

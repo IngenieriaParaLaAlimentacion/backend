@@ -4,6 +4,7 @@ from app.core.dependencies import get_auth_service
 from app.schemas.auth_schema import (
     LoginRequest,
     LogoutRequest,
+    PasswordRecoveryRequest,
     RefreshRequest,
     RefreshResponse,
     RegisterManagerRequest,
@@ -97,3 +98,26 @@ async def refresh(
     data: RefreshRequest, service: AuthService = Depends(get_auth_service)
 ):
     return await service.refresh(data)
+
+
+@router.post(
+    "/password-recovery/request",
+    status_code=status.HTTP_202_ACCEPTED,
+    response_class=Response,
+    summary="Request password recovery",
+    description="Creates a one-time recovery token and sends a deep link by email.",
+    responses={
+        status.HTTP_202_ACCEPTED: {
+            "description": (
+                "Request accepted. If the email exists, recovery instructions are sent."
+            )
+        },
+        status.HTTP_400_BAD_REQUEST: {"description": "Invalid request payload"},
+    },
+)
+async def request_password_recovery(
+    data: PasswordRecoveryRequest, service: AuthService = Depends(get_auth_service)
+) -> Response:
+    """Request password recovery for a user email."""
+    await service.request_password_recovery(data)
+    return Response(status_code=status.HTTP_202_ACCEPTED)
