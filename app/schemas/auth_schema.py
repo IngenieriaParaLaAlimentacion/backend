@@ -52,3 +52,8 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
     device_id: UUID
+
+
+class LogoutRequest(BaseModel):
+    device_id: str
+    refresh_token: str
