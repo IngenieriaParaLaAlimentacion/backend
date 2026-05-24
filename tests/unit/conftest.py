@@ -1,10 +1,3 @@
-"""
-Unit test fixtures.
-
-Provides MagicMock factories used across unit tests.
-These are lightweight in-memory objects — no database or HTTP involved.
-"""
-
 import uuid
 from unittest.mock import MagicMock
 

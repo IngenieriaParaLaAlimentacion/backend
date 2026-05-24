@@ -1,10 +1,3 @@
-"""
-Unit tests for AuthService — CA 1 only.
-
-No database or HTTP involved. All dependencies are mocked.
-Each class tests one failure mode or success path.
-"""
-
 import uuid
 from unittest.mock import AsyncMock, MagicMock
 
@@ -15,9 +8,10 @@ from app.domain.user import UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
     InvalidCredentialsError,
+    InvalidTokenError,
     UserAlreadyExistsError,
 )
-from app.schemas.auth_schema import LoginRequest, RegisterManagerRequest
+from app.schemas.auth_schema import LoginRequest, LogoutRequest, RegisterManagerRequest
 from app.services.auth_service import AuthService
 
 
@@ -33,10 +27,10 @@ def make_uow(make_user):
         establishments=None,
         login_user=None,
         password_record=None,
+        active_token=None,
     ):
         uow = AsyncMock()
 
-        # register_manager
         uow.user_repo.get_by_email = AsyncMock(return_value=existing_user)
         uow.establishment_repo.get_all_by_ids = AsyncMock(
             return_value=establishments or []
@@ -45,10 +39,12 @@ def make_uow(make_user):
         uow.password_repo.create = AsyncMock()
         uow.user_establishment_repo.preset_relation = AsyncMock()
 
-        # login
         uow.user_repo.get_by_email = AsyncMock(return_value=login_user or existing_user)
         uow.password_repo.get_by_user_id = AsyncMock(return_value=password_record)
         uow.token_repo.create = AsyncMock()
+
+        uow.token_repo.get_active_refresh_token = AsyncMock(return_value=active_token)
+        uow.token_repo.revoke = AsyncMock()
 
         uow.commit = AsyncMock()
         return uow
@@ -63,7 +59,6 @@ def mock_hash_password(monkeypatch):
 
 @pytest.fixture
 def mock_security(monkeypatch):
-    """Patch security helpers to avoid argon2/JWT overhead in unit tests."""
     monkeypatch.setattr(
         "app.services.auth_service.verify_password",
         lambda plain, hashed: plain == "correct_password",
@@ -79,9 +74,15 @@ def mock_security(monkeypatch):
 
 
 @pytest.fixture
-def make_login_user():
-    """Factory for a mock user suitable for login tests."""
+def mock_encode_refresh_token(monkeypatch):
+    monkeypatch.setattr(
+        "app.services.auth_service.encode_refresh_token",
+        lambda token: "hashed_refresh_token",
+    )
 
+
+@pytest.fixture
+def make_login_user():
     def _make(
         role: UserRole = UserRole.ADMIN,
         status: UserStatus = UserStatus.ACTIVE,
@@ -111,6 +112,16 @@ def make_password_record():
 
 
 @pytest.fixture
+def make_token():
+    def _make(revoked: bool = False):
+        t = MagicMock()
+        t.revoked = revoked
+        return t
+
+    return _make
+
+
+@pytest.fixture
 def valid_register_request():
     return RegisterManagerRequest(
         email="manager@example.com",
@@ -127,6 +138,14 @@ def valid_login_request(device_id):
         email="user@test.com",
         password="correct_password",
         device_id=device_id,
+    )
+
+
+@pytest.fixture
+def valid_logout_request():
+    return LogoutRequest(
+        refresh_token="raw_refresh_token",
+        device_id=str(uuid.uuid4()),
     )
 
 
@@ -377,8 +396,6 @@ class TestLoginWrongPassword:
 
 
 class TestLoginErrorMessageConsistency:
-    """CA 5 — mismo tipo y mensaje para todos los fallos, sin filtrar info."""
-
     @pytest.mark.asyncio
     async def test_unknown_email_and_wrong_password_same_exception(
         self, make_uow, make_login_user, make_password_record, device_id, mock_security
@@ -404,3 +421,71 @@ class TestLoginErrorMessageConsistency:
 
         assert type(exc_unknown.value) is type(exc_wrong.value)
         assert str(exc_unknown.value) == str(exc_wrong.value)
+
+
+class TestLogoutSuccess:
+    @pytest.mark.asyncio
+    async def test_revokes_token(
+        self, make_uow, make_token, valid_logout_request, mock_encode_refresh_token
+    ):
+        token = make_token()
+        uow = make_uow(active_token=token)
+
+        await AuthService(uow).logout(valid_logout_request)
+
+        uow.token_repo.revoke.assert_called_once_with(token)
+
+    @pytest.mark.asyncio
+    async def test_commits_after_revoke(
+        self, make_uow, make_token, valid_logout_request, mock_encode_refresh_token
+    ):
+        uow = make_uow(active_token=make_token())
+
+        await AuthService(uow).logout(valid_logout_request)
+
+        uow.commit.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_queries_with_encoded_token_and_device_id(
+        self, make_uow, make_token, valid_logout_request, mock_encode_refresh_token
+    ):
+        uow = make_uow(active_token=make_token())
+
+        await AuthService(uow).logout(valid_logout_request)
+
+        uow.token_repo.get_active_refresh_token.assert_awaited_once_with(
+            "hashed_refresh_token", valid_logout_request.device_id
+        )
+
+
+class TestLogoutInvalidToken:
+    @pytest.mark.asyncio
+    async def test_raises_invalid_token_error(
+        self, make_uow, valid_logout_request, mock_encode_refresh_token
+    ):
+        uow = make_uow(active_token=None)
+
+        with pytest.raises(InvalidTokenError):
+            await AuthService(uow).logout(valid_logout_request)
+
+    @pytest.mark.asyncio
+    async def test_does_not_revoke(
+        self, make_uow, valid_logout_request, mock_encode_refresh_token
+    ):
+        uow = make_uow(active_token=None)
+
+        with pytest.raises(InvalidTokenError):
+            await AuthService(uow).logout(valid_logout_request)
+
+        uow.token_repo.revoke.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_does_not_commit(
+        self, make_uow, valid_logout_request, mock_encode_refresh_token
+    ):
+        uow = make_uow(active_token=None)
+
+        with pytest.raises(InvalidTokenError):
+            await AuthService(uow).logout(valid_logout_request)
+
+        uow.commit.assert_not_awaited()

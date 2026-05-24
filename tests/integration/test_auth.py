@@ -247,3 +247,82 @@ class TestLoginPendingValidation:
 
         assert r_pending.status_code == status.HTTP_403_FORBIDDEN
         assert r_invalid.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+LOGOUT_URL = "/api/v1/auth/logout"
+
+
+@pytest_asyncio.fixture()
+async def db_logged_in_user(db_active_user, client):
+    """Login db_active_user and return (user, refresh_token, device_id)."""
+    device_id = str(uuid.uuid4())
+    response = await client.post(
+        LOGIN_URL,
+        json={
+            "email": "ana@test.com",
+            "password": "correct_password",
+            "device_id": device_id,
+        },
+    )
+    refresh_token = response.json()["refresh_token"]
+    return db_active_user, refresh_token, device_id
+
+
+class TestLogout:
+    def _payload(self, refresh_token: str, device_id: str) -> dict:
+        return {"refresh_token": refresh_token, "device_id": device_id}
+
+    async def test_valid_logout_returns_204(self, client, db_logged_in_user):
+        _, refresh_token, device_id = db_logged_in_user
+        response = await client.post(
+            LOGOUT_URL, json=self._payload(refresh_token, device_id)
+        )
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    async def test_logout_response_has_no_body(self, client, db_logged_in_user):
+        _, refresh_token, device_id = db_logged_in_user
+        response = await client.post(
+            LOGOUT_URL, json=self._payload(refresh_token, device_id)
+        )
+        assert response.content == b""
+
+    async def test_token_revoked_second_logout_returns_401(
+        self, client, db_logged_in_user
+    ):
+        """Using the same refresh token twice must fail on the second attempt."""
+        _, refresh_token, device_id = db_logged_in_user
+        await client.post(LOGOUT_URL, json=self._payload(refresh_token, device_id))
+        response = await client.post(
+            LOGOUT_URL, json=self._payload(refresh_token, device_id)
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_invalid_token_returns_401(self, client, db_active_user):
+        response = await client.post(
+            LOGOUT_URL,
+            json=self._payload("invalid-token", str(uuid.uuid4())),
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_wrong_device_id_returns_401(self, client, db_logged_in_user):
+        """Valid token but wrong device_id must be rejected."""
+        _, refresh_token, _ = db_logged_in_user
+        response = await client.post(
+            LOGOUT_URL,
+            json=self._payload(refresh_token, str(uuid.uuid4())),
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_missing_refresh_token_returns_422(self, client, db_active_user):
+        response = await client.post(
+            LOGOUT_URL,
+            json={"device_id": str(uuid.uuid4())},
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_missing_device_id_returns_422(self, client, db_active_user):
+        response = await client.post(
+            LOGOUT_URL,
+            json={"refresh_token": "some-token"},
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
