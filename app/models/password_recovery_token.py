@@ -22,4 +22,4 @@ class PasswordRecoveryToken(Base):
     used = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime(timezone=True), nullable=False)
 
-    user = relationship("User", back_populates="password_recovery_tokens")
+    user = relationship("User", back_populates="recovery_tokens")
