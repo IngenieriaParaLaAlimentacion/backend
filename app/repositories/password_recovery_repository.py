@@ -1,7 +1,7 @@
 from datetime import timedelta
 from uuid import UUID
 
-from sqlalchemy import func, update
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.password_recovery_token import PasswordRecoveryToken
@@ -51,3 +51,14 @@ class PasswordRecoveryTokenRepository:
     async def mark_used(self, token: PasswordRecoveryToken) -> None:
         """Mark a recovery token as used."""
         token.used = True
+
+    async def get_active_token(self, token_hash: str) -> PasswordRecoveryToken | None:
+        """Return an active recovery token by hash, or None."""
+        result = await self.db.execute(
+            select(PasswordRecoveryToken).where(
+                PasswordRecoveryToken.token_hash == token_hash,
+                PasswordRecoveryToken.used.is_(False),
+                PasswordRecoveryToken.expires_at > func.now(),
+            )
+        )
+        return result.scalar_one_or_none()

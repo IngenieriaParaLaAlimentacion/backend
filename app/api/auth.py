@@ -4,6 +4,7 @@ from app.core.dependencies import get_auth_service
 from app.schemas.auth_schema import (
     LoginRequest,
     LogoutRequest,
+    PasswordRecoveryConfirmRequest,
     PasswordRecoveryRequest,
     RefreshRequest,
     RefreshResponse,
@@ -121,3 +122,27 @@ async def request_password_recovery(
     """Request password recovery for a user email."""
     await service.request_password_recovery(data)
     return Response(status_code=status.HTTP_202_ACCEPTED)
+
+
+@router.post(
+    "/password-recovery/confirm",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+    summary="Confirm password recovery",
+    description="Consumes a valid recovery token and updates the user's password.",
+    responses={
+        status.HTTP_204_NO_CONTENT: {"description": "Password updated successfully"},
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Invalid or expired recovery token"
+        },
+        status.HTTP_400_BAD_REQUEST: {"description": "Invalid request payload"},
+    },
+)
+async def confirm_password_recovery(
+    data: PasswordRecoveryConfirmRequest,
+    service: AuthService = Depends(get_auth_service),
+) -> Response:
+    """Confirm password recovery and set a new password."""
+
+    await service.confirm_password_recovery(data)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
