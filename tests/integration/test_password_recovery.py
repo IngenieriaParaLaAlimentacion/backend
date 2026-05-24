@@ -1,3 +1,4 @@
+import uuid
 from urllib.parse import parse_qs, urlparse
 
 import pytest
@@ -9,6 +10,19 @@ REQUEST_URL = "/api/v1/auth/password-recovery/request"
 CONFIRM_URL = "/api/v1/auth/password-recovery/confirm"
 LOGIN_URL = "/api/v1/auth/login"
 LOGOUT_URL = "/api/v1/auth/logout"
+
+
+def _extract_token(deeplink: str | None) -> str:
+    if not deeplink:
+        raise AssertionError("Password recovery deeplink was not captured")
+    token = parse_qs(urlparse(deeplink).query).get("token", [None])[0]
+    if not token:
+        raise AssertionError("Password recovery token was not found in deeplink")
+    return token
+
+
+def _login_payload(email: str, password: str) -> dict:
+    return {"email": email, "password": password, "device_id": str(uuid.uuid4())}
 
 
 @pytest.fixture
@@ -66,6 +80,107 @@ class TestPasswordRecoveryRequest:
         response = await client.post(REQUEST_URL, json={"email": "ana@test.com"})
         assert response.status_code == status.HTTP_202_ACCEPTED
 
+    async def test_second_request_revokes_previous_token(
+        self, client, db_active_user, capture_deeplink
+    ):
+        await client.post(REQUEST_URL, json={"email": "ana@test.com"})
+        first_token = _extract_token(capture_deeplink["deeplink"])
+
+        await client.post(REQUEST_URL, json={"email": "ana@test.com"})
+
+        confirm = await client.post(
+            CONFIRM_URL, json={"token": first_token, "new_password": "newpassword123"}
+        )
+        assert confirm.status_code == status.HTTP_401_UNAUTHORIZED
+
     async def test_missing_email_returns_422(self, client):
         response = await client.post(REQUEST_URL, json={})
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
+class TestPasswordRecoveryConfirm:
+    async def test_invalid_token_returns_401(self, client):
+        response = await client.post(
+            CONFIRM_URL,
+            json={"token": "not-a-valid-token", "new_password": "newpassword123"},
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_valid_token_returns_204(
+        self, client, db_active_user, capture_deeplink
+    ):
+        await client.post(REQUEST_URL, json={"email": "ana@test.com"})
+        token = _extract_token(capture_deeplink["deeplink"])
+
+        response = await client.post(
+            CONFIRM_URL, json={"token": token, "new_password": "newpassword123"}
+        )
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    async def test_old_password_rejected_after_reset(
+        self, client, db_active_user, capture_deeplink
+    ):
+        await client.post(REQUEST_URL, json={"email": "ana@test.com"})
+        token = _extract_token(capture_deeplink["deeplink"])
+        await client.post(
+            CONFIRM_URL, json={"token": token, "new_password": "newpassword123"}
+        )
+
+        response = await client.post(
+            LOGIN_URL, json=_login_payload("ana@test.com", "correct_password")
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_new_password_accepted_after_reset(
+        self, client, db_active_user, capture_deeplink
+    ):
+        await client.post(REQUEST_URL, json={"email": "ana@test.com"})
+        token = _extract_token(capture_deeplink["deeplink"])
+        await client.post(
+            CONFIRM_URL, json={"token": token, "new_password": "newpassword123"}
+        )
+
+        response = await client.post(
+            LOGIN_URL, json=_login_payload("ana@test.com", "newpassword123")
+        )
+        assert response.status_code == status.HTTP_200_OK
+
+    async def test_active_sessions_revoked_after_reset(
+        self, client, db_logged_in_user, capture_deeplink
+    ):
+        user, refresh_token, device_id = db_logged_in_user
+
+        await client.post(REQUEST_URL, json={"email": "ana@test.com"})
+        token = _extract_token(capture_deeplink["deeplink"])
+        await client.post(
+            CONFIRM_URL, json={"token": token, "new_password": "newpassword123"}
+        )
+
+        response = await client.post(
+            LOGOUT_URL, json={"refresh_token": refresh_token, "device_id": device_id}
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_token_cannot_be_reused(
+        self, client, db_active_user, capture_deeplink
+    ):
+        await client.post(REQUEST_URL, json={"email": "ana@test.com"})
+        token = _extract_token(capture_deeplink["deeplink"])
+
+        await client.post(
+            CONFIRM_URL, json={"token": token, "new_password": "newpassword123"}
+        )
+        response = await client.post(
+            CONFIRM_URL, json={"token": token, "new_password": "anotherpassword123"}
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_missing_token_returns_422(self, client):
+        response = await client.post(
+            CONFIRM_URL, json={"new_password": "newpassword123"}
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    async def test_missing_new_password_returns_422(self, client):
+        response = await client.post(CONFIRM_URL, json={"token": "sometoken"})
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
