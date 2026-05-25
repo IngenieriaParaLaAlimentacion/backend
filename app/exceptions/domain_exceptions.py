@@ -94,3 +94,35 @@ class UserEstablishmentNotFoundError(BaseError):
             f"The establishment with id {establishment_id} is not associated with the "
             f"user with id {user_id}.",
         )
+
+
+class InvalidCredentialsError(BaseError):
+    """Exception raised when credentials are invalid.
+
+    Args:
+        reason (str): The reason why the credentials are invalid.
+    """
+
+    def __init__(self, reason: str = "The credentials are invalid"):
+        super().__init__("Invalid credentials", reason)
+
+
+class PendingValidationError(BaseError):
+    """Exception raised when a user attempts to log in with a pending account."""
+
+    def __init__(self):
+        super().__init__(
+            "Account pending validation",
+            "Wait until administrator approval.",
+        )
+
+
+class InvalidTokenError(BaseError):
+    """Exception raised when a token is invalid, expired, or revoked.
+
+    Args:
+        reason (str): The specific reason why the token is invalid.
+    """
+
+    def __init__(self, reason: str = "The provided token is invalid or expired."):
+        super().__init__("Invalid token", reason)

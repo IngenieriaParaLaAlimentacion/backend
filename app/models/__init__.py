@@ -1,6 +1,7 @@
 from .base import Base
 from .establishment import Establishment
 from .measurement import Measurement
+from .password_recovery_token import PasswordRecoveryToken
 from .subject import Sex, Subject
 from .user import User, UserRole, UserStatus
 from .user_establishment import UserEstablishment
@@ -19,4 +20,5 @@ __all__ = [
     "Measurement",
     "UserPassword",
     "UserToken",
+    "PasswordRecoveryToken",
 ]

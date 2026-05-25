@@ -2,6 +2,7 @@ from uuid import UUID
 
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.models.user import User, UserRole, UserStatus
 
@@ -35,7 +36,11 @@ class UserRepository:
 
     async def get_by_email(self, email: str) -> User | None:
         """Return a user by email, or None if it does not exist."""
-        result = await self.db.execute(select(User).where(User.email == email))
+        result = await self.db.execute(
+            select(User)
+            .where(User.email == email)
+            .options(selectinload(User.establishments))
+        )
         return result.scalar_one_or_none()
 
     async def get_all(
