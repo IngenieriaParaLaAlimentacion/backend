@@ -1,4 +1,4 @@
-from typing import Annotated, List
+from typing import Annotated
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -22,11 +22,11 @@ class UserAdminView(BaseModel):
     last_name: str
     role: str
     status: str
-    establishments: List[EstablishmentResponse]
+    establishments: list[EstablishmentResponse]
 
 
 class PaginatedUsersResponse(BaseModel):
-    items: List[UserAdminView]
+    items: list[UserAdminView]
     total: int
     page: int
     page_size: int

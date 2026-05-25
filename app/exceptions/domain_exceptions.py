@@ -68,19 +68,23 @@ class PasswordNotFoundError(NotFoundError):
 class UnauthorizedError(BaseError):
     """Exception raised when authorization fails."""
 
-    def __init__(self):
-        super().__init__(
-            "Unauthorized", "Authentication credentials are missing or invalid."
-        )
+    def __init__(
+        self,
+        title: str = "Unauthorized",
+        details: str = "Authentication credentials are missing or invalid.",
+    ):
+        super().__init__(title, details)
 
 
 class ForbiddenError(BaseError):
     """Exception raised when the authenticated user lacks the required permissions."""
 
-    def __init__(self):
-        super().__init__(
-            "Forbidden", "You do not have permission to perform this action."
-        )
+    def __init__(
+        self,
+        title: str = "Forbidden",
+        details: str = "You do not have permission to perform this action.",
+    ):
+        super().__init__(title, details)
 
 
 class EstablishmentNotFoundError(NotFoundError):
@@ -157,3 +161,35 @@ class EmptyUpdateRequestError(BadRequestError):
             "No fields to update",
             "At least one field must be provided.",
         )
+
+
+class InvalidCredentialsError(UnauthorizedError):
+    """Exception raised when credentials are invalid.
+
+    Args:
+        reason (str): The reason why the credentials are invalid.
+    """
+
+    def __init__(self, reason: str = "The credentials are invalid"):
+        super().__init__("Invalid credentials", reason)
+
+
+class PendingValidationError(ForbiddenError):
+    """Exception raised when a user attempts to log in with a pending account."""
+
+    def __init__(self):
+        super().__init__(
+            "Account pending validation",
+            "Wait until administrator approval.",
+        )
+
+
+class InvalidTokenError(UnauthorizedError):
+    """Exception raised when a token is invalid, expired, or revoked.
+
+    Args:
+        reason (str): The specific reason why the token is invalid.
+    """
+
+    def __init__(self, reason: str = "The provided token is invalid or expired."):
+        super().__init__("Invalid token", reason)

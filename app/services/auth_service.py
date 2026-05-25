@@ -1,8 +1,32 @@
+from datetime import timedelta
+
+from app.core.config import settings
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.core.security import hash_password
+from app.core.password_recovery import build_recovery_deeplink, send_recovery_email
+from app.core.security import (
+    create_access_token,
+    create_password_recovery_token,
+    create_refresh_token,
+    encode_refresh_token,
+    hash_password,
+    verify_password,
+)
+from app.domain.auth import LoginDomain, RefreshDomain
 from app.domain.user import UserDomain, UserRole, UserStatus
-from app.exceptions.domain_exceptions import UserAlreadyExistsError
-from app.schemas.auth_schema import RegisterManagerRequest
+from app.exceptions.domain_exceptions import (
+    InvalidCredentialsError,
+    InvalidTokenError,
+    PendingValidationError,
+    UserAlreadyExistsError,
+)
+from app.schemas.auth_schema import (
+    LoginRequest,
+    LogoutRequest,
+    PasswordRecoveryConfirmRequest,
+    PasswordRecoveryRequest,
+    RefreshRequest,
+    RegisterManagerRequest,
+)
 
 
 class AuthService:
@@ -50,3 +74,149 @@ class AuthService:
             status=user.status,
             establishments=[establishment.id for establishment in establishments],
         )
+
+    async def login(self, data: LoginRequest) -> LoginDomain:
+        """Authenticate credentials and issue access and refresh tokens.
+
+        Returns:
+            LoginDomain
+
+        Raises:
+            UserNotFoundError: If email does not belong to any user.
+            PasswordNotFoundError: If stored password row is missing.
+            ValueError: If password verification fails.
+
+        Side effects:
+            Persists a new refresh token hash for the given device and commits.
+        """
+        user = await self.uow.user_repo.get_by_email(data.email)
+        if not user:
+            raise InvalidCredentialsError()
+
+        user_password = await self.uow.password_repo.get_by_user_id(user.id)
+        if not user_password:
+            raise InvalidCredentialsError()
+
+        if not verify_password(data.password, user_password.password_hashed):
+            raise InvalidCredentialsError()
+
+        if user.status == UserStatus.PENDING_VALIDATION:
+            raise PendingValidationError()
+
+        access_token = create_access_token(user.id, user.role)
+        refresh_token, refresh_hash = create_refresh_token()
+
+        await self.uow.token_repo.create(
+            user.id, refresh_hash, data.device_id, user.role
+        )
+        await self.uow.commit()
+
+        return LoginDomain(
+            user=UserDomain(
+                id=user.id,
+                email=str(user.email),
+                name=user.name,
+                last_name=user.last_name,
+                role=user.role,
+                status=user.status,
+                establishments=[e.id for e in user.establishments],
+            ),
+            access_token=access_token,
+            refresh_token=refresh_token,
+        )
+
+    async def logout(self, data: LogoutRequest) -> None:
+        """Revoke the refresh token associated with a device.
+
+        Raises:
+            InvalidTokenError: If refresh token is invalid, expired, or revoked.
+
+        Side effects:
+            Revokes the persisted refresh token and commits the transaction.
+
+        Note:
+            Existing access tokens remain valid until they expire.
+        """
+        refresh_token_hash = encode_refresh_token(data.refresh_token)
+
+        token = await self.uow.token_repo.get_active_refresh_token(
+            refresh_token_hash, data.device_id
+        )
+        if not token:
+            raise InvalidTokenError("Refresh token is invalid or expired")
+
+        await self.uow.token_repo.revoke(token)
+
+        await self.uow.commit()
+
+    async def refresh(self, data: RefreshRequest) -> RefreshDomain:
+        refresh_token_hash = encode_refresh_token(data.refresh_token)
+
+        token = await self.uow.token_repo.get_active_refresh_token(
+            refresh_token_hash, data.device_id
+        )
+        if not token:
+            raise InvalidCredentialsError("Refresh token is invalid or expired.")
+
+        await self.uow.token_repo.revoke(token)
+
+        new_access = create_access_token(token.user_id, token.role)
+        new_raw, new_hash = create_refresh_token()
+
+        await self.uow.token_repo.create(
+            user_id=token.user_id,
+            token_hash=new_hash,
+            device_id=data.device_id,
+            role=token.role,
+        )
+        await self.uow.commit()
+
+        return RefreshDomain(
+            access_token=new_access,
+            refresh_token=new_raw,
+        )
+
+    async def request_password_recovery(self, data: PasswordRecoveryRequest) -> None:
+        """Create and email a password recovery deep link for a user.
+
+        Notes:
+            Returns without error for unknown emails to avoid user enumeration.
+        """
+        user = await self.uow.user_repo.get_by_email(data.email)
+        if not user:
+            return
+
+        await self.uow.password_recovery_repo.revoke_active_for_user(user.id)
+
+        recovery_token, recovery_token_hash = create_password_recovery_token()
+        created_token = await self.uow.password_recovery_repo.create(
+            user.id,
+            recovery_token_hash,
+            expires_delta=timedelta(
+                minutes=settings.password_recovery_token_expire_minutes
+            ),
+        )
+
+        await self.uow.commit()
+        deeplink = build_recovery_deeplink(recovery_token)
+        send_recovery_email(user.email, deeplink, created_token.expires_at)
+
+    async def confirm_password_recovery(
+        self, data: PasswordRecoveryConfirmRequest
+    ) -> None:
+        """Validate a recovery token and update the user's password."""
+        recovery_token_hash = encode_refresh_token(data.token)
+        recovery_token = await self.uow.password_recovery_repo.get_active_token(
+            recovery_token_hash
+        )
+        if not recovery_token:
+            raise InvalidTokenError("Password recovery token is invalid or expired")
+
+        user_password = await self.uow.password_repo.get_by_user_id(
+            recovery_token.user_id
+        )
+        user_password.password_hashed = hash_password(data.new_password)
+
+        await self.uow.password_recovery_repo.mark_used(recovery_token)
+        await self.uow.token_repo.revoke_all_by_user_id(recovery_token.user_id)
+        await self.uow.commit()

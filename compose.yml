@@ -9,6 +9,8 @@ services:
       - "8080:${PORT}"
     env_file:
       - .env
+    environment:
+      - DATABASE_HOST=postgres   # ← sobreescribe el .env dentro del contenedor
     networks:
       - backend-net
 

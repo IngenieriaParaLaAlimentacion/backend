@@ -14,7 +14,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "5ce092ba2941"
-down_revision: Union[str, None] = "eb850f66c679"
+down_revision: Union[str, Sequence[str], None] = ("eb850f66c679", "d63191bf6620")
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -26,6 +26,7 @@ _TABLES = [
     "user_passwords",
     "user_tokens",
     "subject_events",
+    "password_recovery_tokens",
 ]
 
 

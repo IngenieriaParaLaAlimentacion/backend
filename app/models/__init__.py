@@ -1,6 +1,7 @@
 from .base import Base
 from .establishment import Establishment
 from .measurement import Measurement
+from .password_recovery_token import PasswordRecoveryToken
 from .subject import Sex, Subject
 from .subject_event import SubjectEvent
 from .user import User, UserRole, UserStatus
@@ -21,4 +22,5 @@ __all__ = [
     "SubjectEvent",
     "UserPassword",
     "UserToken",
+    "PasswordRecoveryToken",
 ]

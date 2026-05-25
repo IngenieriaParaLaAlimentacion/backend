@@ -59,14 +59,21 @@ def _decode_verified_payload(token: str) -> dict:
     return payload
 
 
-async def _get_authenticated_actor(token: str, required_role: UserRole) -> UserActor:
-    """Validate a token and enforce a single required role.
+async def _get_authenticated_actor(
+    token: str,
+    required_roles: UserRole | set[UserRole],
+) -> UserActor:
+    """Validate a token and enforce one or more required roles.
 
     Raises ForbiddenError if the token is valid but belongs to a different role.
     """
     payload = _decode_verified_payload(token)
 
-    if payload.get("role") != required_role:
+    allowed = (
+        {required_roles} if isinstance(required_roles, UserRole) else required_roles
+    )
+
+    if payload.get("role") not in allowed:
         raise ForbiddenError()
 
     return UserActor(user_id=payload["sub"], role=payload["role"])
@@ -84,7 +91,7 @@ async def get_current_professional(token: str = Depends(oauth2_scheme)) -> UserA
     return await _get_authenticated_actor(token, UserRole.PROFESSIONAL)
 
 
-def require_any(*roles: str):
+def require_any(*roles: UserRole):
     """Return a dependency that accepts any of the given roles.
     Used when multiple actors can send the request."""
 
