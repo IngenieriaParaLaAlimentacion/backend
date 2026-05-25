@@ -1,5 +1,5 @@
 import uuid
-from datetime import date, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytest
 import pytest_asyncio
@@ -125,8 +125,8 @@ class TestUploadSubject:
         assert response.status_code == status.HTTP_409_CONFLICT
 
     async def test_future_birth_date_returns_422(self, client, manager_headers):
-        """A birth date in the future is rejected with 422."""
-        future = (date.today() + timedelta(days=1)).isoformat()
+        """A birthdate in the future is rejected with 422."""
+        future = (datetime.now(timezone.utc).date() + timedelta(days=1)).isoformat()
         response = await _upload(client, manager_headers, birth_date=future)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
