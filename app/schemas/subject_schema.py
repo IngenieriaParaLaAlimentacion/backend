@@ -6,21 +6,16 @@ from pydantic import BaseModel, Field, StringConstraints, field_validator
 
 from app.domain.subject import Sex
 from app.domain.subject_event import SubjectEventType
-
+def validate_date(v: date | None) -> date | None:
+    if v is not None and v > datetime.now(timezone.utc).date():
+        raise ValueError("birth date cannot be in the future")
+    return v
 
 class SubjectRequest(BaseModel):
     dni: int = Field(ge=1, le=99_999_999)
     sex: Sex
-    name: Annotated[
-        str,
-        StringConstraints(
-            strict=True, strip_whitespace=True, min_length=1, max_length=50
-        ),
-    ]
-    last_name: Annotated[
-        str,
-        StringConstraints(
-            strict=True, strip_whitespace=True, min_length=1, max_length=50
+    name: ValidNameStr
+    last_name: ValidNameStr
         ),
     ]
     birth_date: date
@@ -31,49 +26,23 @@ class SubjectRequest(BaseModel):
         description="Bool indicating if the subject belongs to an indigenous population"
     )
 
-    @field_validator("birth_date")
-    @classmethod
-    def birth_date_not_in_future(cls, v: date) -> date:
-        if v > datetime.now(timezone.utc).date():
-            raise ValueError("birth date cannot be in the future")
-        return v
-
+_check_birth_date = field_validator("birth_date")(validate_date)
 
 class SubjectUpdateRequest(BaseModel):
     dni: int | None = Field(default=None, ge=1, le=99_999_999)
     sex: Sex | None = None
-    name: (
-        Annotated[
-            str,
-            StringConstraints(
-                strict=True, strip_whitespace=True, min_length=1, max_length=50
-            ),
-        ]
-        | None
-    ) = None
-    last_name: (
-        Annotated[
-            str,
-            StringConstraints(
-                strict=True, strip_whitespace=True, min_length=1, max_length=50
-            ),
-        ]
-        | None
-    ) = None
+name: ValidNameStr | None = None
+last_name: ValidNameStr | None = None
+
     birth_date: date | None = None
     is_rural: bool | None = None
     is_indigenous: bool | None = None
 
-    @field_validator("birth_date")
-    @classmethod
-    def birth_date_not_in_future(cls, v: date) -> date:
-        if v > datetime.now(timezone.utc).date():
-            raise ValueError("birth date cannot be in the future")
-        return v
+_check_birth_date = field_validator("birth_date")(validate_date)
 
     def to_update_dict(self) -> dict:
         """Return only the fields explicitly set in the request."""
-        return self.model_dump(exclude_none=True)
+        return self.model_dump(exclude_unset=True)
 
 
 class SubjectSummaryResponse(BaseModel):
