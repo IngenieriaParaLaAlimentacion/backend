@@ -91,7 +91,7 @@ async def get_current_professional(token: str = Depends(oauth2_scheme)) -> UserA
     return await _get_authenticated_actor(token, UserRole.PROFESSIONAL)
 
 
-def require_any(*roles: UserRole):
+def require_some(*roles: UserRole):
     """Return a dependency that accepts any of the given roles.
     Used when multiple actors can send the request."""
 
@@ -104,3 +104,16 @@ def require_any(*roles: UserRole):
         return UserActor(user_id=payload["sub"], role=payload["role"])
 
     return dep
+
+
+async def require_any(token: str = Depends(oauth2_scheme)) -> UserActor:
+    """Dependency that accepts any authenticated role."""
+    return await _get_authenticated_actor(
+        token,
+        {
+            UserRole.PROFESSIONAL,
+            UserRole.ESTABLISHMENT_MANAGER,
+            UserRole.ADMIN,
+            UserRole.SUPERADMIN,
+        },
+    )

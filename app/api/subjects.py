@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 
-from app.core.dependencies import get_current_manager, get_subject_service
+from app.core.dependencies import get_current_manager, get_subject_service, require_any
 from app.domain import UserActor
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.subject_schema import (
@@ -53,7 +53,7 @@ async def create_subject(
 )
 async def get_subject(
     subject_id: UUID,
-    _manager: UserActor = Depends(get_current_manager),
+    _: UserActor = Depends(require_any),
     service: SubjectService = Depends(get_subject_service),
 ) -> SubjectResponse:
     """Return a subject by id."""
@@ -79,7 +79,7 @@ async def list_subjects(
         default=20, ge=1, le=100, description="Results per page (max 100)."
     ),
     search: str | None = Query(default=None, max_length=100),
-    _manager: UserActor = Depends(get_current_manager),
+    _: UserActor = Depends(require_any),
     service: SubjectService = Depends(get_subject_service),
 ) -> PaginatedResponse[SubjectSummaryResponse]:
     result = await service.get_subject_listing(

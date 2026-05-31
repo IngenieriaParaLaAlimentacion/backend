@@ -181,15 +181,6 @@ class TestGetSubject:
         response = await client.get(f"{SUBJECTS_URL}/{uuid.uuid4()}")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_non_manager_role_returns_403(self, client):
-        """A valid token with a non-manager role on GET should return 403."""
-        token = create_access_token(uuid.uuid4(), role=UserRole.PROFESSIONAL)
-        response = await client.get(
-            f"{SUBJECTS_URL}/{uuid.uuid4()}",
-            headers={"Authorization": f"Bearer {token}"},
-        )
-        assert response.status_code == status.HTTP_403_FORBIDDEN
-
 
 class TestGetSubjectsPaginated:
     async def test_unauthenticated_returns_401(self, client):

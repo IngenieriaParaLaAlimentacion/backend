@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query, status
 
 from app.core.dependencies import (
     get_establishment_service,
-    require_any,
+    require_some,
 )
 from app.domain import UserRole
 from app.schemas.establishment_schema import EstablishmentResponse
@@ -31,7 +31,7 @@ async def get_establishments(
     search: str | None = Query(default=None, max_length=100),
     service: EstablishmentService = Depends(get_establishment_service),
     _user: UserRole = Depends(
-        require_any(
+        require_some(
             UserRole.ESTABLISHMENT_MANAGER, UserRole.ADMIN, UserRole.PROFESSIONAL
         )
     ),
