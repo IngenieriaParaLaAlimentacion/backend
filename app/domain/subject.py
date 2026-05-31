@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from datetime import date
 from enum import Enum
 from uuid import UUID
@@ -21,6 +21,11 @@ class SubjectBase:
     name: str
     last_name: str
 
+    @classmethod
+    def from_orm(cls, obj) -> "SubjectBase":
+        """Build an instance from an ORM object by matching field names."""
+        return cls(**{f.name: getattr(obj, f.name) for f in fields(cls)})
+
 
 @dataclass
 class SubjectDomain(SubjectBase):
@@ -29,8 +34,3 @@ class SubjectDomain(SubjectBase):
     birth_date: date
     is_rural: bool
     is_indigenous: bool
-
-    @classmethod
-    def from_orm(cls, obj) -> "SubjectDomain":
-        """Build a SubjectDomain from an ORM Subject instance."""
-        return cls(**{field: getattr(obj, field) for field in cls.__dataclass_fields__})

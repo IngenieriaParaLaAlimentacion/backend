@@ -70,22 +70,14 @@ class SubjectService:
         ``search`` matches case-insensitively against name, last name or DNI.
         Whitespace-only values are treated as no filter.
         """
+        page = max(1, page)
         offset = (page - 1) * page_size
-        search = search.strip() or None if search else None
+        search_term = (search or "").strip() or None
         subjects, total = await self.uow.subject_repo.get_subject_listing(
-            limit=page_size, offset=offset, search=search
+            limit=page_size, offset=offset, search=search_term
         )
         return PaginatedResult.build(
-            items=[
-                SubjectBase(
-                    id=subject.id,
-                    name=subject.name,
-                    last_name=subject.last_name,
-                    dni=subject.dni,
-                    sex=subject.sex,
-                )
-                for subject in subjects
-            ],
+            items=[SubjectBase.from_orm(subject) for subject in subjects],
             total=total,
             page=page,
             page_size=page_size,
