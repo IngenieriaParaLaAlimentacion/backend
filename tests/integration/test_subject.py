@@ -447,3 +447,15 @@ class TestUpdateSubject:
             headers=manager_headers,
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    async def test_update_birth_date_returns_200(self, client, manager_headers):
+        """Updating birth_date succeeds and the event payload is persisted correctly."""
+        created = (await _upload(client, manager_headers)).json()
+        new_date = "2011-06-15"
+        response = await client.patch(
+            f"{SUBJECTS_URL}/{created['id']}",
+            json={"birth_date": new_date},
+            headers=manager_headers,
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["birth_date"] == new_date

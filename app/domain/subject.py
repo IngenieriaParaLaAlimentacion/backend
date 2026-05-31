@@ -1,6 +1,7 @@
 from dataclasses import dataclass, fields
 from datetime import date
 from enum import Enum
+from typing import Self
 from uuid import UUID
 
 
@@ -22,7 +23,7 @@ class SubjectBase:
     last_name: str
 
     @classmethod
-    def from_db(cls, obj) -> "SubjectBase":
+    def from_db(cls, obj) -> Self:
         """Build an instance from an ORM object by matching field names."""
         return cls(**{f.name: getattr(obj, f.name) for f in fields(cls)})
 

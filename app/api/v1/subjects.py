@@ -44,7 +44,7 @@ async def create_subject(
     response_model=SubjectResponse,
     status_code=status.HTTP_200_OK,
     summary="Get a subject by ID",
-    description="Returns a subject's data. Accessible by establishment managers only.",
+    description="Returns a subject's data. Accessible by all authenticated roles.",
     responses={
         status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
         status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
@@ -67,7 +67,8 @@ async def get_subject(
     status_code=status.HTTP_200_OK,
     summary="List subjects",
     description="Returns a paginated list of subjects ordered by creation date. "
-    "Supports optional search filtering by name, last name, or DNI.",
+    "Supports optional search filtering by name, last name, or DNI. Accessible by "
+    "all authenticated roles.",
     responses={
         status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
         status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},

@@ -1,3 +1,4 @@
+from datetime import date
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
@@ -11,6 +12,12 @@ from app.exceptions.domain_exceptions import (
     UniqueConstraintError,
 )
 from app.schemas.subject_schema import SubjectRequest, SubjectUpdateRequest
+
+
+def _to_json_safe(v):
+    if isinstance(v, date):
+        return v.isoformat()
+    return v
 
 
 class SubjectService:
@@ -102,14 +109,14 @@ class SubjectService:
         if subject is None:
             raise SubjectNotFoundError(str(subject_id))
 
-        before = {field: getattr(subject, field) for field in update_dict}
+        before = {f: _to_json_safe(getattr(subject, f)) for f in update_dict}
 
         try:
             subject = await self.uow.subject_repo.update(subject, update_dict)
         except UniqueConstraintError:
             raise SubjectAlreadyExistsError(data.dni)
 
-        after = {field: getattr(subject, field) for field in update_dict}
+        after = {f: _to_json_safe(getattr(subject, f)) for f in update_dict}
 
         await self.uow.subject_event_repo.append(
             subject_id=subject.id,

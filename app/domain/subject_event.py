@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from enum import StrEnum
-from typing import Any
+from typing import Any, Self
 from uuid import UUID
 
 
@@ -34,7 +34,7 @@ class SubjectEventRecord:
     payload: EventPayload
 
     @classmethod
-    def from_db(cls, obj) -> "SubjectEventRecord":
+    def from_db(cls, obj) -> Self:
         return cls(
             event_type=obj.event_type,
             occurred_at=obj.occurred_at,

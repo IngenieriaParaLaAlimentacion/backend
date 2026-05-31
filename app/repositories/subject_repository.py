@@ -56,7 +56,7 @@ class SubjectRepository:
         try:
             await self.db.flush()
         except IntegrityError:
-            raise UniqueConstraintError("dni", data["dni"])
+            raise UniqueConstraintError("dni", data.get("dni"))
         await self.db.refresh(subject)
         return subject
 
