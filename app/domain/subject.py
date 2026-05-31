@@ -22,7 +22,7 @@ class SubjectBase:
     last_name: str
 
     @classmethod
-    def from_orm(cls, obj) -> "SubjectBase":
+    def from_db(cls, obj) -> "SubjectBase":
         """Build an instance from an ORM object by matching field names."""
         return cls(**{f.name: getattr(obj, f.name) for f in fields(cls)})
 

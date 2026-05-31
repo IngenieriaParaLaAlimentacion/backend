@@ -5,7 +5,7 @@ from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.establishment import EstablishmentDomain, UserEstablishmentStatus
 from app.domain.pagination import PaginatedResult
 from app.domain.subject import SubjectDomain
-from app.domain.subject_event import EventPayload, SubjectEventRecord
+from app.domain.subject_event import SubjectEventRecord
 from app.domain.user import (
     UserRole,
     UserStatus,
@@ -204,22 +204,9 @@ class AdminService:
             subject_id, page=history_page, page_size=history_page_size
         )
         history = PaginatedResult.build(
-            items=[
-                SubjectEventRecord(
-                    event_type=event.event_type,
-                    occurred_at=event.occurred_at,
-                    actor_id=event.actor_id,
-                    payload=EventPayload(
-                        before=event.payload.get("before"),
-                        after=event.payload.get("after"),
-                    )
-                    if event.payload
-                    else EventPayload(),
-                )
-                for event in events
-            ],
+            items=[SubjectEventRecord.from_db(event) for event in events],
             total=total,
             page=history_page,
             page_size=history_page_size,
         )
-        return SubjectDomain.from_orm(subject), history
+        return SubjectDomain.from_db(subject), history

@@ -32,3 +32,17 @@ class SubjectEventRecord:
     occurred_at: datetime
     actor_id: UUID
     payload: EventPayload
+
+    @classmethod
+    def from_db(cls, obj) -> "SubjectEventRecord":
+        return cls(
+            event_type=obj.event_type,
+            occurred_at=obj.occurred_at,
+            actor_id=obj.actor_id,
+            payload=EventPayload(
+                before=obj.payload.get("before"),
+                after=obj.payload.get("after"),
+            )
+            if obj.payload
+            else EventPayload(),
+        )

@@ -46,7 +46,7 @@ class SubjectService:
         )
         await self.uow.commit()
 
-        return SubjectDomain.from_orm(subject)
+        return SubjectDomain.from_db(subject)
 
     async def get_subject(self, subject_id: UUID) -> SubjectDomain:
         """Return a subject by id.
@@ -57,7 +57,7 @@ class SubjectService:
         subject = await self.uow.subject_repo.get_by_id(subject_id)
         if subject is None:
             raise SubjectNotFoundError(str(subject_id))
-        return SubjectDomain.from_orm(subject)
+        return SubjectDomain.from_db(subject)
 
     async def get_subject_listing(
         self,
@@ -77,7 +77,7 @@ class SubjectService:
             limit=page_size, offset=offset, search=search_term
         )
         return PaginatedResult.build(
-            items=[SubjectBase.from_orm(subject) for subject in subjects],
+            items=[SubjectBase.from_db(subject) for subject in subjects],
             total=total,
             page=page,
             page_size=page_size,
@@ -119,4 +119,4 @@ class SubjectService:
         )
         await self.uow.commit()
 
-        return SubjectDomain.from_orm(subject)
+        return SubjectDomain.from_db(subject)
