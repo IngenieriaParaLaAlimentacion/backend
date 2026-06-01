@@ -7,6 +7,7 @@ from app.domain import UserActor, UserRole
 from app.schemas.establishment_schema import (
     EstablishmentRequest,
     EstablishmentResponse,
+    EstablishmentUpdateRequest,
     PaginatedEstablishmentsResponse,
 )
 from app.services.establishment_service import EstablishmentService
@@ -37,6 +38,33 @@ async def create_establishment(
 ) -> EstablishmentResponse:
     """Register a new establishment."""
     establishment = await service.create_establishment(data, actor_id=user.user_id)
+    return EstablishmentResponse.model_validate(establishment)
+
+
+@router.patch(
+    "/{establishment_id}",
+    response_model=EstablishmentResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Update an establishment",
+    description="Partially updates an establishment's name and/or address.",
+    responses={
+        status.HTTP_400_BAD_REQUEST: {"description": "Invalid data"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
+        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
+        status.HTTP_409_CONFLICT: {"description": "Establishment already exists"},
+    },
+)
+async def update_establishment(
+    establishment_id: UUID,
+    data: EstablishmentUpdateRequest,
+    _: UserActor = Depends(
+        require_any(UserRole.ESTABLISHMENT_MANAGER, UserRole.ADMIN, UserRole.SUPERADMIN)
+    ),
+    service: EstablishmentService = Depends(get_establishment_service),
+) -> EstablishmentResponse:
+    """Partially update an establishment."""
+    establishment = await service.update_establishment(establishment_id, data)
     return EstablishmentResponse.model_validate(establishment)
 
 

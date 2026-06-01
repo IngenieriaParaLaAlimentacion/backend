@@ -30,6 +30,21 @@ class EstablishmentRepository:
         await self.db.refresh(establishment)
         return establishment
 
+    async def update(
+        self,
+        establishment: Establishment,
+        name: str | None,
+        address: str | None,
+    ) -> Establishment:
+        """Apply partial updates to an existing establishment."""
+        if name is not None:
+            establishment.name = name
+        if address is not None:
+            establishment.address = address
+        await self.db.flush()
+        await self.db.refresh(establishment)
+        return establishment
+
     async def get_by_data(self, name: str, address: str) -> Establishment | None:
         """Return an establishment by name and address, or None if it does not exist."""
         result = await self.db.execute(

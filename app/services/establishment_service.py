@@ -9,7 +9,10 @@ from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
 )
 from app.models import Establishment
-from app.schemas.establishment_schema import EstablishmentRequest
+from app.schemas.establishment_schema import (
+    EstablishmentRequest,
+    EstablishmentUpdateRequest,
+)
 
 
 class EstablishmentService:
@@ -36,6 +39,35 @@ class EstablishmentService:
 
         establishment = await self.uow.establishment_repo.create(
             name=data.name, address=data.address
+        )
+        await self.uow.commit()
+        return establishment
+
+    async def update_establishment(
+        self, establishment_id: UUID, data: EstablishmentUpdateRequest
+    ) -> Establishment:
+        """Apply a partial update to an existing establishment.
+
+        Raises:
+            EstablishmentNotFoundError: If no establishment with that ID exists.
+            EstablishmentAlreadyExistsError: If the resulting name+address is
+            already taken by a different establishment.
+        """
+        establishment = await self.uow.establishment_repo.get_by_id(establishment_id)
+        if establishment is None:
+            raise EstablishmentNotFoundError(str(establishment_id))
+
+        new_name = data.name if data.name is not None else establishment.name
+        new_address = (
+            data.address if data.address is not None else establishment.address
+        )
+
+        duplicate = await self.uow.establishment_repo.get_by_data(new_name, new_address)
+        if duplicate is not None and duplicate.id != establishment.id:
+            raise EstablishmentAlreadyExistsError(new_name, new_address)
+
+        establishment = await self.uow.establishment_repo.update(
+            establishment, name=data.name, address=data.address
         )
         await self.uow.commit()
         return establishment

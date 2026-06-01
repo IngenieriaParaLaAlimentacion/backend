@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated, List
 
-from pydantic import BaseModel, StringConstraints
+from pydantic import BaseModel, StringConstraints, model_validator
 
 ValidNameStr = Annotated[
     str,
@@ -12,6 +12,17 @@ ValidNameStr = Annotated[
 class EstablishmentRequest(BaseModel):
     name: ValidNameStr
     address: ValidNameStr
+
+
+class EstablishmentUpdateRequest(BaseModel):
+    name: ValidNameStr | None = None
+    address: ValidNameStr | None = None
+
+    @model_validator(mode="after")
+    def at_least_one_field(self) -> "EstablishmentUpdateRequest":
+        if self.name is None and self.address is None:
+            raise ValueError("At least one of 'name' or 'address' must be provided.")
+        return self
 
 
 class EstablishmentResponse(BaseModel):
