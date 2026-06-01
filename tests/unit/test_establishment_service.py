@@ -1,3 +1,4 @@
+import uuid
 from math import ceil
 from unittest.mock import AsyncMock
 
@@ -5,7 +6,11 @@ import pytest
 
 from app.domain.establishment import EstablishmentDomain
 from app.domain.pagination import PaginatedResult
-from app.schemas.establishment_schema import EstablishmentResponse
+from app.exceptions.domain_exceptions import (
+    EstablishmentAlreadyExistsError,
+    EstablishmentNotFoundError,
+)
+from app.schemas.establishment_schema import EstablishmentRequest, EstablishmentResponse
 from app.services.establishment_service import EstablishmentService
 
 
@@ -137,3 +142,89 @@ class TestGetEstablishmentsPaginated:
             offset=0,
             search=None,
         )
+
+
+class TestCreateEstablishment:
+    @pytest.fixture
+    def make_uow(self, make_establishment):
+        def _make(existing=None):
+            uow = AsyncMock()
+            uow.establishment_repo.get_by_data = AsyncMock(return_value=existing)
+            uow.establishment_repo.create = AsyncMock(return_value=make_establishment())
+            uow.commit = AsyncMock()
+            return uow
+
+        return _make
+
+    @pytest.mark.asyncio
+    async def test_raises_when_already_exists(self, make_uow, make_establishment):
+        """Raises EstablishmentAlreadyExistsError when name+address is taken."""
+        uow = make_uow(existing=make_establishment())
+        service = EstablishmentService(uow=uow)
+
+        with pytest.raises(EstablishmentAlreadyExistsError):
+            await service.create_establishment(
+                EstablishmentRequest(name="Centro A", address="Calle 1"),
+                actor_id=uuid.uuid4(),
+            )
+
+    @pytest.mark.asyncio
+    async def test_calls_repo_create_when_no_duplicate(self, make_uow):
+        """Delegates to the repo with the correct name and address."""
+        uow = make_uow(existing=None)
+        service = EstablishmentService(uow=uow)
+
+        await service.create_establishment(
+            EstablishmentRequest(name="Centro A", address="Calle 1"),
+            actor_id=uuid.uuid4(),
+        )
+
+        uow.establishment_repo.create.assert_called_once_with(
+            name="Centro A", address="Calle 1"
+        )
+
+    @pytest.mark.asyncio
+    async def test_returns_created_establishment(self, make_uow, make_establishment):
+        """Returns exactly what the repo returns."""
+        expected = make_establishment(name="Centro A", address="Calle 1")
+        uow = make_uow(existing=None)
+        uow.establishment_repo.create = AsyncMock(return_value=expected)
+        service = EstablishmentService(uow=uow)
+
+        result = await service.create_establishment(
+            EstablishmentRequest(name="Centro A", address="Calle 1"),
+            actor_id=uuid.uuid4(),
+        )
+
+        assert result is expected
+
+
+class TestGetEstablishmentById:
+    @pytest.fixture
+    def make_uow(self, make_establishment):
+        def _make(found=None):
+            uow = AsyncMock()
+            uow.establishment_repo.get_by_id = AsyncMock(return_value=found)
+            return uow
+
+        return _make
+
+    @pytest.mark.asyncio
+    async def test_returns_establishment_when_found(self, make_uow, make_establishment):
+        """Returns the ORM object when the repo finds it."""
+        expected = make_establishment()
+        uow = make_uow(found=expected)
+        service = EstablishmentService(uow=uow)
+
+        result = await service.get_establishment_by_id(expected.id)
+
+        assert result is expected
+
+    @pytest.mark.asyncio
+    async def test_raises_when_not_found(self, make_uow):
+        """Raises EstablishmentNotFoundError when the repo returns None."""
+        uow = make_uow(found=None)
+        service = EstablishmentService(uow=uow)
+
+        with pytest.raises(EstablishmentNotFoundError):
+            await service.get_establishment_by_id(uuid.uuid4())

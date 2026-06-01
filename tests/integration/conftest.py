@@ -17,6 +17,33 @@ os.environ["TESTCONTAINERS_RYUK_DISABLED"] = "true"
 LOGIN_URL = "/api/v1/auth/login"
 
 
+@pytest.fixture
+def admin_headers():
+    from app.core.security import create_access_token
+    from app.domain.user import UserRole
+
+    token = create_access_token(uuid.uuid4(), role=UserRole.ADMIN)
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+def manager_headers():
+    from app.core.security import create_access_token
+    from app.domain.user import UserRole
+
+    token = create_access_token(uuid.uuid4(), role=UserRole.ESTABLISHMENT_MANAGER)
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+def professional_headers():
+    from app.core.security import create_access_token
+    from app.domain.user import UserRole
+
+    token = create_access_token(uuid.uuid4(), role=UserRole.PROFESSIONAL)
+    return {"Authorization": f"Bearer {token}"}
+
+
 @pytest.fixture(scope="session")
 def postgres_url():
     """Start a Postgres container for the test session and yield its connection URL."""
