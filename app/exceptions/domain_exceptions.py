@@ -126,3 +126,18 @@ class InvalidTokenError(BaseError):
 
     def __init__(self, reason: str = "The provided token is invalid or expired."):
         super().__init__("Invalid token", reason)
+
+
+class EstablishmentAlreadyExistsError(BaseError):
+    """Exception raised when trying to create an establishment that already exists.
+
+    Args:
+        name (str): The name of the establishment that already exists.
+        address (str): The address of the establishment that already exists.
+    """
+
+    def __init__(self, name: str, address: str):
+        super().__init__(
+            "Establishment already exists",
+            f"An establishment with name {name} and address {address} already exists.",
+        )

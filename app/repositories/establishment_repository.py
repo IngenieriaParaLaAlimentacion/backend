@@ -15,6 +15,30 @@ class EstablishmentRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
+    async def create(
+        self,
+        name: str,
+        address: str,
+    ) -> Establishment:
+        """Persist a new establishment."""
+        establishment = Establishment(
+            name=name,
+            address=address,
+        )
+        self.db.add(establishment)
+        await self.db.flush()
+        await self.db.refresh(establishment)
+        return establishment
+
+    async def get_by_data(self, name: str, address: str) -> Establishment | None:
+        """Return an establishment by name and address, or None if it does not exist."""
+        result = await self.db.execute(
+            select(Establishment).where(
+                Establishment.name == name, Establishment.address == address
+            )
+        )
+        return result.scalar_one_or_none()
+
     async def get_by_id(self, id: uuid.UUID) -> Establishment | None:
         """Return an establishment by ID, or None if it does not exist."""
         result = await self.db.execute(

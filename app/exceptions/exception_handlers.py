@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 
 from app.exceptions.domain_exceptions import (
     BaseError,
+    EstablishmentAlreadyExistsError,
     EstablishmentNotFoundError,
     ForbiddenError,
     InvalidCredentialsError,
@@ -58,6 +59,12 @@ async def invalid_token_handler(request: Request, exc: InvalidTokenError):
     return _build_error_response(exc, request, status.HTTP_401_UNAUTHORIZED)
 
 
+async def establishment_already_exists_handler(
+    request: Request, exc: EstablishmentAlreadyExistsError
+):
+    return _build_error_response(exc, request, status.HTTP_409_CONFLICT)
+
+
 def register_exception_handlers(app: FastAPI):
     """Register exception handlers with the FastAPI app."""
     app.add_exception_handler(UserNotFoundError, not_found_handler)
@@ -65,6 +72,9 @@ def register_exception_handlers(app: FastAPI):
     app.add_exception_handler(EstablishmentNotFoundError, not_found_handler)
     app.add_exception_handler(UserEstablishmentNotFoundError, not_found_handler)
     app.add_exception_handler(UserAlreadyExistsError, user_already_exists_handler)
+    app.add_exception_handler(
+        EstablishmentAlreadyExistsError, establishment_already_exists_handler
+    )
     app.add_exception_handler(UnauthorizedError, unauthorized_handler)
     app.add_exception_handler(ForbiddenError, forbidden_handler)
     app.add_exception_handler(InvalidCredentialsError, invalid_credentials_handler)

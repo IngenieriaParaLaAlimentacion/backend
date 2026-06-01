@@ -1,8 +1,15 @@
 from math import ceil
+from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.establishment import EstablishmentDomain
 from app.domain.pagination import PaginatedResult
+from app.exceptions.domain_exceptions import (
+    EstablishmentAlreadyExistsError,
+    EstablishmentNotFoundError,
+)
+from app.models import Establishment
+from app.schemas.establishment_schema import EstablishmentRequest
 
 
 class EstablishmentService:
@@ -13,6 +20,36 @@ class EstablishmentService:
         uow: IUnitOfWork,
     ):
         self.uow = uow
+
+    async def create_establishment(self, data: EstablishmentRequest, actor_id: UUID):
+        """Register a new establishment.
+
+        Raises:
+            EstablishmentAlreadyExistsError: If an establishment with the name
+            and address already exists.
+        """
+        establishment = await self.uow.establishment_repo.get_by_data(
+            data.name, data.address
+        )
+        if establishment:
+            raise EstablishmentAlreadyExistsError(data.name, data.address)
+
+        establishment = await self.uow.establishment_repo.create(
+            name=data.name, address=data.address
+        )
+        await self.uow.commit()
+        return establishment
+
+    async def get_establishment_by_id(self, establishment_id: UUID) -> Establishment:
+        """Return an establishment by ID.
+
+        Raises:
+            EstablishmentNotFoundError: If no establishment with that ID exists.
+        """
+        establishment = await self.uow.establishment_repo.get_by_id(establishment_id)
+        if establishment is None:
+            raise EstablishmentNotFoundError(str(establishment_id))
+        return establishment
 
     async def get_establishments_paginated(
         self,
