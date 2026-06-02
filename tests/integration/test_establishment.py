@@ -300,3 +300,146 @@ class TestGetEstablishmentById:
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+class TestUpdateEstablishment:
+    async def test_update_name_returns_200(
+        self, client, db_establishment, admin_headers
+    ):
+        """Updating only the name returns 200 with the new name and
+        unchanged address."""
+        response = await client.patch(
+            f"{ESTABLISHMENT_URL}/{db_establishment.id}",
+            json={"name": "Nuevo Nombre"},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["name"] == "Nuevo Nombre"
+        assert data["address"] == db_establishment.address
+
+    async def test_update_address_returns_200(
+        self, client, db_establishment, admin_headers
+    ):
+        """Updating only the address returns 200 with unchanged name and new address."""
+        response = await client.patch(
+            f"{ESTABLISHMENT_URL}/{db_establishment.id}",
+            json={"address": "Nueva Dirección 456"},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["name"] == db_establishment.name
+        assert data["address"] == "Nueva Dirección 456"
+
+    async def test_update_both_fields_returns_200(
+        self, client, db_establishment, admin_headers
+    ):
+        """Updating both fields at once returns 200 with both values updated."""
+        response = await client.patch(
+            f"{ESTABLISHMENT_URL}/{db_establishment.id}",
+            json={"name": "Nuevo Nombre", "address": "Nueva Dirección 456"},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["name"] == "Nuevo Nombre"
+        assert data["address"] == "Nueva Dirección 456"
+
+    async def test_same_values_returns_200(
+        self, client, db_establishment, admin_headers
+    ):
+        """Sending the exact same name+address as the current values is allowed."""
+        response = await client.patch(
+            f"{ESTABLISHMENT_URL}/{db_establishment.id}",
+            json={"name": db_establishment.name, "address": db_establishment.address},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+    async def test_duplicate_name_and_address_returns_409(
+        self, client, db_establishment, admin_headers
+    ):
+        """If the resulting name+address already belongs to another establishment,
+        returns 409."""
+        await client.post(
+            ESTABLISHMENT_URL,
+            json={"name": "Otro Centro", "address": "Otra Calle 1"},
+            headers=admin_headers,
+        )
+        response = await client.patch(
+            f"{ESTABLISHMENT_URL}/{db_establishment.id}",
+            json={"name": "Otro Centro", "address": "Otra Calle 1"},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_409_CONFLICT
+
+    async def test_unknown_id_returns_404(self, client, admin_headers):
+        """A valid UUID that does not exist returns 404."""
+        response = await client.patch(
+            f"{ESTABLISHMENT_URL}/{uuid.uuid4()}",
+            json={"name": "Nuevo Nombre"},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_malformed_uuid_returns_422(self, client, admin_headers):
+        """A non-UUID path segment is rejected with 422."""
+        response = await client.patch(
+            f"{ESTABLISHMENT_URL}/not-a-uuid",
+            json={"name": "Nuevo Nombre"},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_empty_body_returns_422(
+        self, client, db_establishment, admin_headers
+    ):
+        """A body with no fields is rejected with 422."""
+        response = await client.patch(
+            f"{ESTABLISHMENT_URL}/{db_establishment.id}",
+            json={},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_blank_name_returns_422(
+        self, client, db_establishment, admin_headers
+    ):
+        """A blank name is rejected with 422."""
+        response = await client.patch(
+            f"{ESTABLISHMENT_URL}/{db_establishment.id}",
+            json={"name": "   "},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_missing_token_returns_401(self, client, db_establishment):
+        """Requests without an Authorization header are rejected with 401."""
+        response = await client.patch(
+            f"{ESTABLISHMENT_URL}/{db_establishment.id}",
+            json={"name": "Nuevo Nombre"},
+        )
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_professional_role_returns_403(
+        self, client, db_establishment, professional_headers
+    ):
+        """A PROFESSIONAL token lacks permission to update establishments."""
+        response = await client.patch(
+            f"{ESTABLISHMENT_URL}/{db_establishment.id}",
+            json={"name": "Nuevo Nombre"},
+            headers=professional_headers,
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
