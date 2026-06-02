@@ -127,7 +127,7 @@ class TestLogin:
         response = await client.post(
             LOGIN_URL, json={"password": "pass", "device_id": str(uuid.uuid4())}
         )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     async def test_invalid_email_format_returns_422(self, client):
         response = await client.post(
@@ -138,13 +138,13 @@ class TestLogin:
                 "device_id": str(uuid.uuid4()),
             },
         )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     async def test_missing_device_id_returns_422(self, client):
         response = await client.post(
             LOGIN_URL, json={"email": "ana@test.com", "password": "pass"}
         )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 class TestLoginPendingValidation:
@@ -335,12 +335,12 @@ class TestRefreshInvalidToken:
 class TestRefreshValidation:
     async def test_missing_refresh_token_returns_422(self, client, db_active_user):
         response = await client.post(REFRESH_URL, json={"device_id": str(uuid.uuid4())})
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     async def test_missing_device_id_returns_422(self, client, db_active_user):
         response = await client.post(REFRESH_URL, json={"refresh_token": "some-token"})
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     async def test_empty_body_returns_422(self, client, db_active_user):
         response = await client.post(REFRESH_URL, json={})
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT

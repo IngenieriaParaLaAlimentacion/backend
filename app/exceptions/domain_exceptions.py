@@ -15,7 +15,19 @@ class BaseError(Exception):
         super().__init__(f"{title}: {details}")
 
 
-class UserNotFoundError(BaseError):
+class NotFoundError(BaseError):
+    """Base exception for resources that cannot be found."""
+
+
+class AlreadyExistsError(BaseError):
+    """Base exception for resources that already exist."""
+
+
+class BadRequestError(BaseError):
+    """Base exception for invalid client requests (HTTP 400)."""
+
+
+class UserNotFoundError(NotFoundError):
     """Exception raised when a user is not found.
 
     Args:
@@ -26,7 +38,7 @@ class UserNotFoundError(BaseError):
         super().__init__("User not found", f"The user with ID {user_id} was not found.")
 
 
-class UserAlreadyExistsError(BaseError):
+class UserAlreadyExistsError(AlreadyExistsError):
     """Exception raised when trying to register with an existing email.
 
     Args:
@@ -39,7 +51,7 @@ class UserAlreadyExistsError(BaseError):
         )
 
 
-class PasswordNotFoundError(BaseError):
+class PasswordNotFoundError(NotFoundError):
     """Exception raised when a user's password record is not found.
 
     Args:
@@ -56,22 +68,26 @@ class PasswordNotFoundError(BaseError):
 class UnauthorizedError(BaseError):
     """Exception raised when authorization fails."""
 
-    def __init__(self):
-        super().__init__(
-            "Unauthorized", "Authentication credentials are missing or invalid."
-        )
+    def __init__(
+        self,
+        title: str = "Unauthorized",
+        details: str = "Authentication credentials are missing or invalid.",
+    ):
+        super().__init__(title, details)
 
 
 class ForbiddenError(BaseError):
     """Exception raised when the authenticated user lacks the required permissions."""
 
-    def __init__(self):
-        super().__init__(
-            "Forbidden", "You do not have permission to perform this action."
-        )
+    def __init__(
+        self,
+        title: str = "Forbidden",
+        details: str = "You do not have permission to perform this action.",
+    ):
+        super().__init__(title, details)
 
 
-class EstablishmentNotFoundError(BaseError):
+class EstablishmentNotFoundError(NotFoundError):
     """Exception raised when an establishment is not found.
 
     Args:
@@ -85,7 +101,7 @@ class EstablishmentNotFoundError(BaseError):
         )
 
 
-class UserEstablishmentNotFoundError(BaseError):
+class UserEstablishmentNotFoundError(NotFoundError):
     """Exception raised when a user-establishment relation does not exist."""
 
     def __init__(self, establishment_id: str, user_id: str):
@@ -96,7 +112,58 @@ class UserEstablishmentNotFoundError(BaseError):
         )
 
 
-class InvalidCredentialsError(BaseError):
+class SubjectAlreadyExistsError(AlreadyExistsError):
+    """Exception raised when trying to register a subject with an existing DNI.
+
+    Args:
+        dni (int): The DNI that already exists.
+    """
+
+    def __init__(self, dni: int):
+        super().__init__(
+            "Subject already exists",
+            f"A subject with DNI {dni} already exists.",
+        )
+
+
+class SubjectNotFoundError(NotFoundError):
+    """Exception raised when a subject cannot be found.
+
+    Args:
+        subject_id: The UUID that was looked up.
+    """
+
+    def __init__(self, subject_id: str):
+        super().__init__(
+            "Subject not found",
+            f"No subject with id {subject_id} exists.",
+        )
+
+
+class UniqueConstraintError(Exception):
+    """Raised by a repository when a unique constraint is violated.
+
+    Callers (services) are responsible for translating this into the
+    appropriate domain exception.
+    """
+
+    def __init__(self, field: str, value: object) -> None:
+        self.field = field
+        self.value = value
+        super().__init__(f"Unique constraint violated: {field}={value}")
+
+
+class EmptyUpdateRequestError(BadRequestError):
+    """Exception raised when an update has no attributes to be updated."""
+
+    def __init__(self):
+        super().__init__(
+            "No fields to update",
+            "At least one field must be provided.",
+        )
+
+
+class InvalidCredentialsError(UnauthorizedError):
     """Exception raised when credentials are invalid.
 
     Args:
@@ -107,7 +174,7 @@ class InvalidCredentialsError(BaseError):
         super().__init__("Invalid credentials", reason)
 
 
-class PendingValidationError(BaseError):
+class PendingValidationError(ForbiddenError):
     """Exception raised when a user attempts to log in with a pending account."""
 
     def __init__(self):
@@ -117,7 +184,7 @@ class PendingValidationError(BaseError):
         )
 
 
-class InvalidTokenError(BaseError):
+class InvalidTokenError(UnauthorizedError):
     """Exception raised when a token is invalid, expired, or revoked.
 
     Args:

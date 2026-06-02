@@ -2,17 +2,12 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
 from app.exceptions.domain_exceptions import (
+    AlreadyExistsError,
+    BadRequestError,
     BaseError,
-    EstablishmentNotFoundError,
     ForbiddenError,
-    InvalidCredentialsError,
-    InvalidTokenError,
-    PasswordNotFoundError,
-    PendingValidationError,
+    NotFoundError,
     UnauthorizedError,
-    UserAlreadyExistsError,
-    UserEstablishmentNotFoundError,
-    UserNotFoundError,
 )
 
 
@@ -30,11 +25,11 @@ def _build_error_response(e: BaseError, request: Request, status_code: int):
     )
 
 
-async def not_found_handler(request: Request, exc: BaseError):
+async def not_found_handler(request: Request, exc: NotFoundError):
     return _build_error_response(exc, request, status.HTTP_404_NOT_FOUND)
 
 
-async def user_already_exists_handler(request: Request, exc: UserAlreadyExistsError):
+async def already_exists_handler(request: Request, exc: AlreadyExistsError):
     return _build_error_response(exc, request, status.HTTP_409_CONFLICT)
 
 
@@ -46,27 +41,14 @@ async def forbidden_handler(request: Request, exc: ForbiddenError):
     return _build_error_response(exc, request, status.HTTP_403_FORBIDDEN)
 
 
-async def invalid_credentials_handler(request: Request, exc: InvalidCredentialsError):
-    return _build_error_response(exc, request, status.HTTP_401_UNAUTHORIZED)
-
-
-async def pending_validation_handler(request: Request, exc: PendingValidationError):
-    return _build_error_response(exc, request, status.HTTP_403_FORBIDDEN)
-
-
-async def invalid_token_handler(request: Request, exc: InvalidTokenError):
-    return _build_error_response(exc, request, status.HTTP_401_UNAUTHORIZED)
+async def bad_request_handler(request: Request, exc: BadRequestError):
+    return _build_error_response(exc, request, status.HTTP_400_BAD_REQUEST)
 
 
 def register_exception_handlers(app: FastAPI):
     """Register exception handlers with the FastAPI app."""
-    app.add_exception_handler(UserNotFoundError, not_found_handler)
-    app.add_exception_handler(PasswordNotFoundError, not_found_handler)
-    app.add_exception_handler(EstablishmentNotFoundError, not_found_handler)
-    app.add_exception_handler(UserEstablishmentNotFoundError, not_found_handler)
-    app.add_exception_handler(UserAlreadyExistsError, user_already_exists_handler)
+    app.add_exception_handler(NotFoundError, not_found_handler)
+    app.add_exception_handler(AlreadyExistsError, already_exists_handler)
     app.add_exception_handler(UnauthorizedError, unauthorized_handler)
     app.add_exception_handler(ForbiddenError, forbidden_handler)
-    app.add_exception_handler(InvalidCredentialsError, invalid_credentials_handler)
-    app.add_exception_handler(PendingValidationError, pending_validation_handler)
-    app.add_exception_handler(InvalidTokenError, invalid_token_handler)
+    app.add_exception_handler(BadRequestError, bad_request_handler)

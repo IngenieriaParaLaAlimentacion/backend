@@ -3,6 +3,7 @@ from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
     ForbiddenError,
     PasswordNotFoundError,
+    SubjectAlreadyExistsError,
     UnauthorizedError,
     UserAlreadyExistsError,
     UserEstablishmentNotFoundError,
@@ -57,3 +58,10 @@ def test_user_establishment_not_found_error():
     assert "estab-id" in e.details
     assert "user-id" in e.details
     assert "User establishment not found" in e.title
+
+
+def test_subject_already_exists_error():
+    e = SubjectAlreadyExistsError(20000000)
+    assert isinstance(e, BaseError)
+    assert "20000000" in e.details
+    assert "Subject already exists" in e.title

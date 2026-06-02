@@ -95,7 +95,7 @@ class TestPasswordRecoveryRequest:
 
     async def test_missing_email_returns_422(self, client):
         response = await client.post(REQUEST_URL, json={})
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 class TestPasswordRecoveryConfirm:
@@ -179,8 +179,8 @@ class TestPasswordRecoveryConfirm:
         response = await client.post(
             CONFIRM_URL, json={"new_password": "newpassword123"}
         )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     async def test_missing_new_password_returns_422(self, client):
         response = await client.post(CONFIRM_URL, json={"token": "sometoken"})
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT

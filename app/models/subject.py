@@ -1,5 +1,4 @@
 import uuid
-from enum import Enum
 
 from sqlalchemy import (
     Boolean,
@@ -16,14 +15,9 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
+from app.domain.subject import Sex
+
 from .base import Base
-
-
-class Sex(str, Enum):
-    """Biological sex of a subject."""
-
-    MALE = "male"
-    FEMALE = "female"
 
 
 class Subject(Base):
@@ -32,7 +26,7 @@ class Subject(Base):
     __tablename__ = "subjects"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    dni = Column(Integer, nullable=False)
+    dni = Column(Integer, nullable=False, unique=True)
     sex = Column(
         SAEnum(Sex, values_callable=lambda x: [e.value for e in x]), nullable=False
     )
