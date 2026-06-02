@@ -9,7 +9,7 @@ from app.schemas.establishment_schema import EstablishmentResponse
 from app.schemas.pagination import PaginatedResponse
 from app.services.establishment_service import EstablishmentService
 
-router = APIRouter(prefix="/establishments", tags=["Establishments"])
+router = APIRouter(prefix="/establishments")
 
 
 @router.get(

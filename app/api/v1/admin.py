@@ -16,7 +16,7 @@ from app.schemas.admin_schema import (
 from app.schemas.establishment_schema import EstablishmentResponse
 from app.services.admin_service import AdminService
 
-router = APIRouter(prefix="/admin", tags=["Admin"])
+router = APIRouter(prefix="/admin")
 
 
 @router.get(
