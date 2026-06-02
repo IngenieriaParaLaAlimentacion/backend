@@ -13,7 +13,7 @@ from app.schemas.subject_schema import (
 )
 from app.services.subject_service import SubjectService
 
-router = APIRouter(prefix="/subjects", tags=["Subjects"])
+router = APIRouter(prefix="/subjects")
 
 
 @router.post(

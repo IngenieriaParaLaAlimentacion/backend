@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
 
-from app.api import api_router
+from app.api.router import api_router
 from app.core.config import settings
 from app.core.openapi import configure_openapi
 from app.db.database import engine
