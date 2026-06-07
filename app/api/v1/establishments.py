@@ -2,17 +2,17 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 
-from app.core.dependencies import get_establishment_service, require_any
+from app.core.dependencies import get_establishment_service, require_any, require_some
 from app.domain import UserActor, UserRole
 from app.schemas.establishment_schema import (
     EstablishmentRequest,
     EstablishmentResponse,
     EstablishmentUpdateRequest,
-    PaginatedEstablishmentsResponse,
 )
+from app.schemas.pagination import PaginatedResponse
 from app.services.establishment_service import EstablishmentService
 
-router = APIRouter(prefix="/establishments", tags=["Establishments"])
+router = APIRouter(prefix="/establishments")
 
 
 @router.post(
@@ -30,14 +30,15 @@ router = APIRouter(prefix="/establishments", tags=["Establishments"])
 )
 async def create_establishment(
     data: EstablishmentRequest,
-    user: UserActor = Depends(
-        require_any(UserRole.ESTABLISHMENT_MANAGER, UserRole.ADMIN, UserRole.SUPERADMIN)
-    ),  # cuando se merge la otra rama, usar require_any
-    # (version que acepta todos sin tener que pasarle)
+    _: UserActor = Depends(
+        require_some(
+            UserRole.ESTABLISHMENT_MANAGER, UserRole.ADMIN, UserRole.SUPERADMIN
+        )
+    ),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> EstablishmentResponse:
     """Register a new establishment."""
-    establishment = await service.create_establishment(data, actor_id=user.user_id)
+    establishment = await service.create_establishment(data)
     return EstablishmentResponse.model_validate(establishment)
 
 
@@ -59,7 +60,9 @@ async def update_establishment(
     establishment_id: UUID,
     data: EstablishmentUpdateRequest,
     _: UserActor = Depends(
-        require_any(UserRole.ESTABLISHMENT_MANAGER, UserRole.ADMIN, UserRole.SUPERADMIN)
+        require_some(
+            UserRole.ESTABLISHMENT_MANAGER, UserRole.ADMIN, UserRole.SUPERADMIN
+        )
     ),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> EstablishmentResponse:
@@ -70,7 +73,7 @@ async def update_establishment(
 
 @router.get(
     "",
-    response_model=PaginatedEstablishmentsResponse,
+    response_model=PaginatedResponse[EstablishmentResponse],
     status_code=status.HTTP_200_OK,
     summary="List all establishments",
     description="Returns all establishments available for a manager to register with."
@@ -86,12 +89,13 @@ async def get_establishments(
     ),
     search: str | None = Query(default=None, max_length=100),
     service: EstablishmentService = Depends(get_establishment_service),
-) -> PaginatedEstablishmentsResponse:
+    _: UserActor = Depends(require_any),
+) -> PaginatedResponse[EstablishmentResponse]:
     result = await service.get_establishments_paginated(
         page=page, page_size=page_size, search=search
     )
 
-    return PaginatedEstablishmentsResponse(
+    return PaginatedResponse[EstablishmentResponse](
         items=[EstablishmentResponse.model_validate(estab) for estab in result.items],
         total=result.total,
         page=result.page,
@@ -115,7 +119,9 @@ async def get_establishments(
 async def get_establishment_detail(
     establishment_id: UUID,
     _: UserActor = Depends(
-        require_any(UserRole.ESTABLISHMENT_MANAGER, UserRole.ADMIN, UserRole.SUPERADMIN)
+        require_some(
+            UserRole.ESTABLISHMENT_MANAGER, UserRole.ADMIN, UserRole.SUPERADMIN
+        )
     ),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> EstablishmentResponse:

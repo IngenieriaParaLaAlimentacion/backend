@@ -34,7 +34,7 @@ def _make_request(**overrides) -> EstablishmentRequest:
 
 
 class TestEstablishmentResponse:
-    def test_from_orm(self, make_establishment):
+    def test_from_db(self, make_establishment):
         orm = make_establishment(name="Centro B", formatted_address="Calle 2")
         response = EstablishmentResponse.model_validate(orm)
 
@@ -176,10 +176,7 @@ class TestCreateEstablishment:
         service = EstablishmentService(uow=uow)
 
         with pytest.raises(EstablishmentAlreadyExistsError):
-            await service.create_establishment(
-                _make_request(),
-                actor_id=uuid.uuid4(),
-            )
+            await service.create_establishment(_make_request())
 
     async def test_calls_repo_create_when_no_duplicate(self, make_uow):
         """Delegates to the repo with the correct fields."""
@@ -188,7 +185,6 @@ class TestCreateEstablishment:
 
         await service.create_establishment(
             _make_request(name="Centro A", formatted_address="Calle 1"),
-            actor_id=uuid.uuid4(),
         )
 
         uow.establishment_repo.create.assert_called_once()
@@ -198,7 +194,7 @@ class TestCreateEstablishment:
         assert call_arg.formatted_address == "Calle 1"
 
     async def test_returns_created_establishment(self, make_uow, make_establishment):
-        """Returns exactly what the repo returns."""
+        """Returns an EstablishmentDomain with the repo's data."""
         expected = make_establishment(name="Centro A", formatted_address="Calle 1")
         uow = make_uow(existing=None)
         uow.establishment_repo.create = AsyncMock(return_value=expected)
@@ -206,10 +202,11 @@ class TestCreateEstablishment:
 
         result = await service.create_establishment(
             _make_request(name="Centro A", formatted_address="Calle 1"),
-            actor_id=uuid.uuid4(),
         )
 
-        assert result is expected
+        assert isinstance(result, EstablishmentDomain)
+        assert result.name == "Centro A"
+        assert result.formatted_address == "Calle 1"
 
 
 class TestGetEstablishmentById:
@@ -225,14 +222,16 @@ class TestGetEstablishmentById:
         return _make
 
     async def test_returns_establishment_when_found(self, make_uow, make_establishment):
-        """Returns the ORM object when the repo finds it."""
-        expected = make_establishment()
+        """Returns an EstablishmentDomain with the repo's data."""
+        expected = make_establishment(name="Centro A", formatted_address="Calle 1")
         uow = make_uow(found=expected)
         service = EstablishmentService(uow=uow)
 
         result = await service.get_establishment_by_id(expected.id)
 
-        assert result is expected
+        assert isinstance(result, EstablishmentDomain)
+        assert result.id == expected.id
+        assert result.name == expected.name
 
     async def test_raises_when_not_found(self, make_uow):
         """Raises EstablishmentNotFoundError when the repo returns None."""
@@ -294,7 +293,7 @@ class TestUpdateEstablishment:
             EstablishmentUpdateRequest(place_id=existing.place_id),
         )
 
-        assert result is existing
+        assert isinstance(result, EstablishmentDomain)
 
     async def test_calls_repo_update_with_correct_args(
         self, make_uow, make_establishment

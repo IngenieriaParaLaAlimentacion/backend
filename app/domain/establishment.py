@@ -23,7 +23,7 @@ class EstablishmentDomain:
     province: str
 
     @classmethod
-    def from_orm(cls, obj) -> "EstablishmentDomain":
+    def from_db(cls, obj) -> "EstablishmentDomain":
         return cls(**{field.name: getattr(obj, field.name) for field in fields(cls)})
 
 

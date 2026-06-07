@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from enum import Enum
 from uuid import UUID
 
@@ -57,6 +57,15 @@ class UserWithEstablishmentsDomain(BaseUserDomain):
     """
 
     establishments: list[EstablishmentDomain]
+
+    @classmethod
+    def from_db(
+        cls, user, establishments: list[EstablishmentDomain]
+    ) -> "UserWithEstablishmentsDomain":
+        return cls(
+            **{f.name: getattr(user, f.name) for f in fields(BaseUserDomain)},
+            establishments=establishments,
+        )
 
 
 @dataclass

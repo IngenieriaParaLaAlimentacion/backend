@@ -18,6 +18,15 @@ LOGIN_URL = "/api/v1/auth/login"
 
 
 @pytest.fixture
+def auth_headers():
+    from app.core.security import create_access_token
+    from app.domain.user import UserRole
+
+    token = create_access_token(uuid.uuid4(), role=UserRole.ADMIN)
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
 def admin_headers():
     from app.core.security import create_access_token
     from app.domain.user import UserRole

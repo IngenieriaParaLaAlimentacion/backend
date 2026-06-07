@@ -1,15 +1,17 @@
-from math import ceil
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.establishment import EstablishmentDomain, UserEstablishmentStatus
 from app.domain.pagination import PaginatedResult
+from app.domain.subject import SubjectDomain
+from app.domain.subject_event import SubjectEventRecord
 from app.domain.user import (
     UserRole,
     UserStatus,
     UserWithEstablishmentsDomain,
 )
 from app.exceptions.domain_exceptions import (
+    SubjectNotFoundError,
     UserEstablishmentNotFoundError,
     UserNotFoundError,
 )
@@ -29,7 +31,7 @@ class AdminService:
             establishment_ids
         )
         return {
-            establishment.id: EstablishmentDomain.from_orm(establishment)
+            establishment.id: EstablishmentDomain.from_db(establishment)
             for establishment in establishments
         }
 
@@ -58,76 +60,6 @@ class AdminService:
                 establishments_data[e_id] for e_id in establishment_ids
             ]
         return estab_data_by_user
-
-    def _build_paginated_result(
-        self,
-        users: list,
-        establishments_per_user: dict[UUID, list[EstablishmentDomain]],
-        total: int,
-        page: int,
-        page_size: int,
-    ) -> PaginatedResult[UserWithEstablishmentsDomain]:
-        """Build a paginated response from users and their establishments."""
-        items = [
-            UserWithEstablishmentsDomain(
-                id=user.id,
-                email=user.email,
-                name=user.name,
-                last_name=user.last_name,
-                role=user.role,
-                status=user.status,
-                establishments=establishments_per_user.get(user.id, []),
-            )
-            for user in users
-        ]
-        return PaginatedResult(
-            items=items,
-            total=total,
-            page=page,
-            page_size=page_size,
-            total_pages=ceil(total / page_size),
-        )
-
-    async def get_users_paginated(
-        self,
-        page: int,
-        page_size: int,
-        role: UserRole | None = None,
-        status: UserStatus | None = None,
-        search: str | None = None,
-    ) -> PaginatedResult[UserWithEstablishmentsDomain]:
-        """Return a paginated list of users with their establishments.
-
-        ``search`` matches case-insensitively against email, name, and last_name.
-        Whitespace-only values are treated as no filter.
-        """
-        offset = (page - 1) * page_size
-        search = search.strip() or None if search else None
-
-        users, total = await self.uow.user_repo.get_paginated(
-            role=role, status=status, limit=page_size, offset=offset, search=search
-        )
-
-        if not users:
-            return PaginatedResult(
-                items=[],
-                total=total,
-                page=page,
-                page_size=page_size,
-                total_pages=0,
-            )
-
-        establishments_per_user = await self._get_establishments_per_user(
-            [user.id for user in users]
-        )
-
-        return self._build_paginated_result(
-            users=users,
-            establishments_per_user=establishments_per_user,
-            total=total,
-            page=page,
-            page_size=page_size,
-        )
 
     async def _validate_access_request(
         self, user_id: UUID, establishment_ids: list[UUID]
@@ -176,3 +108,75 @@ class AdminService:
             user_id, establishment_ids, UserEstablishmentStatus.REJECTED
         )
         await self.uow.commit()
+
+    async def get_subject_detail(
+        self,
+        subject_id: UUID,
+        *,
+        history_page: int = 1,
+        history_page_size: int = 20,
+    ) -> tuple[SubjectDomain, PaginatedResult[SubjectEventRecord]]:
+        """Return a subject and its paginated event history.
+
+        Raises:
+            SubjectNotFoundError: If no subject with the given id exists.
+        """
+        subject = await self.uow.subject_repo.get_by_id(subject_id)
+        if subject is None:
+            raise SubjectNotFoundError(str(subject_id))
+
+        events, total = await self.uow.subject_event_repo.get_history(
+            subject_id, page=history_page, page_size=history_page_size
+        )
+        history = PaginatedResult.build(
+            items=[SubjectEventRecord.from_db(event) for event in events],
+            total=total,
+            page=history_page,
+            page_size=history_page_size,
+        )
+        return SubjectDomain.from_db(subject), history
+
+    async def get_users_paginated(
+        self,
+        page: int,
+        page_size: int,
+        role: UserRole | None = None,
+        status: UserStatus | None = None,
+        search: str | None = None,
+    ) -> PaginatedResult[UserWithEstablishmentsDomain]:
+        """Return a paginated list of users with their establishments.
+
+        ``search`` matches case-insensitively against email, name, and last_name.
+        Whitespace-only values are treated as no filter.
+        """
+        offset = (page - 1) * page_size
+        search = search.strip() or None if search else None
+
+        users, total = await self.uow.user_repo.get_paginated(
+            role=role, status=status, limit=page_size, offset=offset, search=search
+        )
+
+        if not users:
+            return PaginatedResult(
+                items=[],
+                total=total,
+                page=page,
+                page_size=page_size,
+                total_pages=0,
+            )
+
+        establishments_per_user = await self._get_establishments_per_user(
+            [user.id for user in users]
+        )
+
+        return PaginatedResult.build(
+            items=[
+                UserWithEstablishmentsDomain.from_db(
+                    user, establishments_per_user.get(user.id, [])
+                )
+                for user in users
+            ],
+            total=total,
+            page=page,
+            page_size=page_size,
+        )

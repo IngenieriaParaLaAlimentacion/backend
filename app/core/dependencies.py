@@ -11,6 +11,7 @@ from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
 from app.services.admin_service import AdminService
 from app.services.auth_service import AuthService
 from app.services.establishment_service import EstablishmentService
+from app.services.subject_service import SubjectService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
@@ -33,6 +34,12 @@ async def get_auth_service() -> AsyncGenerator[AuthService, None]:
     """Provide an AuthService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
         yield AuthService(uow)
+
+
+async def get_subject_service() -> AsyncGenerator[SubjectService, None]:
+    """Provide a SubjectService backed by a fresh UnitOfWork."""
+    async with UnitOfWork() as uow:
+        yield SubjectService(uow)
 
 
 def _decode_verified_payload(token: str) -> dict:
@@ -88,7 +95,7 @@ async def get_current_professional(token: str = Depends(oauth2_scheme)) -> UserA
     )
 
 
-def require_any(*roles: str):
+def require_some(*roles: UserRole):
     """Return a dependency that accepts any of the given roles.
     Used when multiple actors can send the request."""
 
@@ -101,3 +108,16 @@ def require_any(*roles: str):
         return UserActor(user_id=payload["sub"], role=payload["role"])
 
     return dep
+
+
+async def require_any(token: str = Depends(oauth2_scheme)) -> UserActor:
+    """Dependency that accepts any authenticated role."""
+    return await _get_authenticated_actor(
+        token,
+        {
+            UserRole.PROFESSIONAL,
+            UserRole.ESTABLISHMENT_MANAGER,
+            UserRole.ADMIN,
+            UserRole.SUPERADMIN,
+        },
+    )

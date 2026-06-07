@@ -1,4 +1,3 @@
-from math import ceil
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
@@ -24,7 +23,9 @@ class EstablishmentService:
     ):
         self.uow = uow
 
-    async def create_establishment(self, data: EstablishmentRequest, actor_id: UUID):
+    async def create_establishment(
+        self, data: EstablishmentRequest
+    ) -> EstablishmentDomain:
         """Register a new establishment.
 
         Raises:
@@ -39,11 +40,11 @@ class EstablishmentService:
             Establishment(**data.model_dump())
         )
         await self.uow.commit()
-        return establishment
+        return EstablishmentDomain.from_db(establishment)
 
     async def update_establishment(
         self, establishment_id: UUID, data: EstablishmentUpdateRequest
-    ) -> Establishment:
+    ) -> EstablishmentDomain:
         """Apply a partial update to an existing establishment.
 
         Raises:
@@ -66,9 +67,11 @@ class EstablishmentService:
 
         establishment = await self.uow.establishment_repo.update(establishment)
         await self.uow.commit()
-        return establishment
+        return EstablishmentDomain.from_db(establishment)
 
-    async def get_establishment_by_id(self, establishment_id: UUID) -> Establishment:
+    async def get_establishment_by_id(
+        self, establishment_id: UUID
+    ) -> EstablishmentDomain:
         """Return an establishment by ID.
 
         Raises:
@@ -77,7 +80,7 @@ class EstablishmentService:
         establishment = await self.uow.establishment_repo.get_by_id(establishment_id)
         if establishment is None:
             raise EstablishmentNotFoundError(str(establishment_id))
-        return establishment
+        return EstablishmentDomain.from_db(establishment)
 
     async def get_establishments_paginated(
         self,
@@ -95,12 +98,9 @@ class EstablishmentService:
         establishments, total = await self.uow.establishment_repo.get_paginated(
             limit=page_size, offset=offset, search=search
         )
-        total_pages = ceil(total / page_size) if total > 0 else 0
-
-        return PaginatedResult(
-            items=[EstablishmentDomain.from_orm(e) for e in establishments],
+        return PaginatedResult.build(
+            items=[EstablishmentDomain.from_db(e) for e in establishments],
             total=total,
             page=page,
             page_size=page_size,
-            total_pages=total_pages,
         )

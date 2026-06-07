@@ -1,5 +1,5 @@
 import uuid
-from typing import Annotated, List
+from typing import Annotated
 
 from pydantic import BaseModel, StringConstraints, model_validator
 
@@ -57,11 +57,3 @@ class EstablishmentResponse(BaseModel):
     province: str
 
     model_config = {"from_attributes": True}
-
-
-class PaginatedEstablishmentsResponse(BaseModel):
-    items: List[EstablishmentResponse]
-    total: int
-    page: int
-    page_size: int
-    total_pages: int

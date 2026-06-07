@@ -1,11 +1,9 @@
 from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import APIRouter, FastAPI
+from fastapi import FastAPI
 
-from app.api.admin import router as admin_router
-from app.api.auth import router as auth_router
-from app.api.establishments import router as establishments_router
+from app.api.router import api_router
 from app.core.config import settings
 from app.core.openapi import configure_openapi
 from app.db.database import engine
@@ -23,11 +21,6 @@ app = FastAPI(
 )
 register_exception_handlers(app)
 
-api_router = APIRouter(prefix="/api/v1")
-
-api_router.include_router(establishments_router)
-api_router.include_router(auth_router)
-api_router.include_router(admin_router)
 app.include_router(api_router)
 
 configure_openapi(app)
