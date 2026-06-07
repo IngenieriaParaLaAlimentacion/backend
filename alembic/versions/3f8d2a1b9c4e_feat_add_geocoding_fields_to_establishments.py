@@ -20,11 +20,11 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.alter_column("establishments", "address", new_column_name="formatted_address")
-    op.add_column("establishments", sa.Column("latitude", sa.Float(), nullable=True))
-    op.add_column("establishments", sa.Column("longitude", sa.Float(), nullable=True))
-    op.add_column("establishments", sa.Column("place_id", sa.String(), nullable=True))
-    op.add_column("establishments", sa.Column("city", sa.String(), nullable=True))
-    op.add_column("establishments", sa.Column("province", sa.String(), nullable=True))
+    op.add_column("establishments", sa.Column("latitude", sa.Float(), nullable=False))
+    op.add_column("establishments", sa.Column("longitude", sa.Float(), nullable=False))
+    op.add_column("establishments", sa.Column("place_id", sa.String(), nullable=False))
+    op.add_column("establishments", sa.Column("city", sa.String(), nullable=False))
+    op.add_column("establishments", sa.Column("province", sa.String(), nullable=False))
 
 
 def downgrade() -> None:

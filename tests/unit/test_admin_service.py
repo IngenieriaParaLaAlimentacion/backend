@@ -185,7 +185,7 @@ class TestGetPaginatedUsers:
     ):
         user = _make_user()
         establishment = make_establishment(
-            name="Gym Centro", address="Av. Corrientes 123"
+            name="Gym Centro", formatted_address="Av. Corrientes 123"
         )
 
         uow = make_uow(

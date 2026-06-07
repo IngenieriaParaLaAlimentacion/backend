@@ -15,8 +15,8 @@ class EstablishmentRequest(BaseModel):
     latitude: float
     longitude: float
     place_id: str
-    city: str | None = None
-    province: str | None = None
+    city: str
+    province: str
 
 
 class EstablishmentUpdateRequest(BaseModel):
@@ -50,11 +50,11 @@ class EstablishmentResponse(BaseModel):
     id: uuid.UUID
     name: str
     formatted_address: str
-    latitude: float | None
-    longitude: float | None
-    place_id: str | None
-    city: str | None
-    province: str | None
+    latitude: float
+    longitude: float
+    place_id: str
+    city: str
+    province: str
 
     model_config = {"from_attributes": True}
 

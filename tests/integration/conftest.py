@@ -113,7 +113,15 @@ async def db_establishment():
     from app.models.establishment import Establishment
 
     async with AsyncSessionLocal() as session:
-        establishment = Establishment(name="Centro Test", address="Calle Test 123")
+        establishment = Establishment(
+            name="Centro Test",
+            formatted_address="Calle Test 123",
+            latitude=-34.6037,
+            longitude=-58.3816,
+            place_id="place-test-001",
+            city="Buenos Aires",
+            province="Buenos Aires",
+        )
         session.add(establishment)
         await session.commit()
         await session.refresh(establishment)

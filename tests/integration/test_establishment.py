@@ -7,13 +7,37 @@ pytestmark = pytest.mark.asyncio
 ESTABLISHMENT_URL = "/api/v1/establishments"
 
 
-async def _seed_establishment(name: str, address: str) -> None:
-    """Insert a single establishment with the given name and address."""
+def _make_payload(**overrides) -> dict:
+    defaults = {
+        "name": "Centro Default",
+        "formatted_address": "Av. Corrientes 100",
+        "latitude": -34.6037,
+        "longitude": -58.3816,
+        "place_id": str(uuid.uuid4()),
+        "city": "Buenos Aires",
+        "province": "Buenos Aires",
+    }
+    defaults.update(overrides)
+    return defaults
+
+
+async def _seed_establishment(name: str, formatted_address: str) -> None:
+    """Insert a single establishment with the given name and formatted_address."""
     from app.db.database import AsyncSessionLocal
     from app.models.establishment import Establishment
 
     async with AsyncSessionLocal() as session:
-        session.add(Establishment(name=name, address=address))
+        session.add(
+            Establishment(
+                name=name,
+                formatted_address=formatted_address,
+                latitude=-34.6037,
+                longitude=-58.3816,
+                place_id=str(uuid.uuid4()),
+                city="Buenos Aires",
+                province="Buenos Aires",
+            )
+        )
         await session.commit()
 
 
@@ -25,7 +49,15 @@ async def _seed_establishments(n: int, app) -> list:
     created = []
     async with AsyncSessionLocal() as session:
         for i in range(n):
-            e = Establishment(name=f"Centro {i}", address=f"Calle {i}")
+            e = Establishment(
+                name=f"Centro {i}",
+                formatted_address=f"Calle {i}",
+                latitude=-34.6037,
+                longitude=-58.3816,
+                place_id=f"place-seed-{i}",
+                city="Buenos Aires",
+                province="Buenos Aires",
+            )
             session.add(e)
         await session.commit()
         for e in session.new:
@@ -59,7 +91,7 @@ class TestGetEstablishmentsPaginated:
         item = response.json()["items"][0]
         assert item["id"] == str(db_establishment.id)
         assert item["name"] == db_establishment.name
-        assert item["address"] == db_establishment.address
+        assert item["formatted_address"] == db_establishment.formatted_address
 
     async def test_pagination_metadata(self, client, app):
         """With 5 establishments and page_size=2, total_pages should be 3."""
@@ -123,7 +155,7 @@ class TestGetEstablishmentsPaginated:
         assert items[0]["name"] == "Centro Recoleta"
 
     async def test_search_by_address_returns_matching(self, client):
-        """Only establishments whose address contains the search term are returned."""
+        """Only establishments whose formatted_address contains the search term."""
         await _seed_establishment("Centro A", "Av. Corrientes 100")
         await _seed_establishment("Centro B", "Av. Santa Fe 200")
 
@@ -168,7 +200,9 @@ class TestGetEstablishmentsPaginated:
 class TestCreateEstablishment:
     async def test_admin_can_create_establishment(self, client, admin_headers):
         """An admin can create a new establishment and receives 201 with all fields."""
-        payload = {"name": "Centro Norte", "address": "Av. Cabildo 100"}
+        payload = _make_payload(
+            name="Centro Norte", formatted_address="Av. Cabildo 100"
+        )
         response = await client.post(
             ESTABLISHMENT_URL, json=payload, headers=admin_headers
         )
@@ -176,22 +210,23 @@ class TestCreateEstablishment:
         assert response.status_code == status.HTTP_201_CREATED
         data = response.json()
         assert data["name"] == "Centro Norte"
-        assert data["address"] == "Av. Cabildo 100"
+        assert data["formatted_address"] == "Av. Cabildo 100"
         assert "id" in data
 
     async def test_manager_can_create_establishment(self, client, manager_headers):
         """A manager can create a new establishment and receives 201."""
-        payload = {"name": "Centro Norte", "address": "Av. Cabildo 100"}
+        payload = _make_payload(
+            name="Centro Norte", formatted_address="Av. Cabildo 100"
+        )
         response = await client.post(
             ESTABLISHMENT_URL, json=payload, headers=manager_headers
         )
 
         assert response.status_code == status.HTTP_201_CREATED
 
-    async def test_duplicate_name_and_address_returns_409(self, client, admin_headers):
-        """Creating an establishment with the same name and
-        address twice returns 409."""
-        payload = {"name": "Centro Único", "address": "Calle Falsa 123"}
+    async def test_duplicate_place_id_returns_409(self, client, admin_headers):
+        """Creating an establishment with the same place_id twice returns 409."""
+        payload = _make_payload(name="Centro Único", place_id="place-unique-001")
         await client.post(ESTABLISHMENT_URL, json=payload, headers=admin_headers)
         response = await client.post(
             ESTABLISHMENT_URL, json=payload, headers=admin_headers
@@ -199,16 +234,16 @@ class TestCreateEstablishment:
 
         assert response.status_code == status.HTTP_409_CONFLICT
 
-    async def test_same_name_different_address_is_allowed(self, client, admin_headers):
-        """Same name but different address is a distinct establishment."""
+    async def test_same_name_different_place_id_is_allowed(self, client, admin_headers):
+        """Same name but different place_id is a distinct establishment."""
         await client.post(
             ESTABLISHMENT_URL,
-            json={"name": "Centro Salud", "address": "Calle A 1"},
+            json=_make_payload(name="Centro Salud", place_id="place-salud-a"),
             headers=admin_headers,
         )
         response = await client.post(
             ESTABLISHMENT_URL,
-            json={"name": "Centro Salud", "address": "Calle B 2"},
+            json=_make_payload(name="Centro Salud", place_id="place-salud-b"),
             headers=admin_headers,
         )
 
@@ -218,17 +253,17 @@ class TestCreateEstablishment:
         """A blank name is rejected with 422 before reaching the service."""
         response = await client.post(
             ESTABLISHMENT_URL,
-            json={"name": "   ", "address": "Calle X 1"},
+            json=_make_payload(name="   "),
             headers=admin_headers,
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
-    async def test_blank_address_returns_422(self, client, admin_headers):
-        """A blank address is rejected with 422."""
+    async def test_blank_formatted_address_returns_422(self, client, admin_headers):
+        """A blank formatted_address is rejected with 422."""
         response = await client.post(
             ESTABLISHMENT_URL,
-            json={"name": "Centro X", "address": "   "},
+            json=_make_payload(formatted_address="   "),
             headers=admin_headers,
         )
 
@@ -236,9 +271,7 @@ class TestCreateEstablishment:
 
     async def test_missing_token_returns_401(self, client):
         """Requests without an Authorization header are rejected with 401."""
-        response = await client.post(
-            ESTABLISHMENT_URL, json={"name": "Centro X", "address": "Calle X 1"}
-        )
+        response = await client.post(ESTABLISHMENT_URL, json=_make_payload())
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -246,7 +279,7 @@ class TestCreateEstablishment:
         """A PROFESSIONAL token lacks permission to create establishments."""
         response = await client.post(
             ESTABLISHMENT_URL,
-            json={"name": "Centro X", "address": "Calle X 1"},
+            json=_make_payload(),
             headers=professional_headers,
         )
 
@@ -266,7 +299,7 @@ class TestGetEstablishmentById:
         data = response.json()
         assert data["id"] == str(db_establishment.id)
         assert data["name"] == db_establishment.name
-        assert data["address"] == db_establishment.address
+        assert data["formatted_address"] == db_establishment.formatted_address
 
     async def test_unknown_id_returns_404(self, client, admin_headers):
         """A UUID that does not exist in the DB returns 404."""
@@ -317,22 +350,22 @@ class TestUpdateEstablishment:
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["name"] == "Nuevo Nombre"
-        assert data["address"] == db_establishment.address
+        assert data["formatted_address"] == db_establishment.formatted_address
 
-    async def test_update_address_returns_200(
+    async def test_update_formatted_address_returns_200(
         self, client, db_establishment, admin_headers
     ):
-        """Updating only the address returns 200 with unchanged name and new address."""
+        """Updating only formatted_address returns 200 with unchanged name."""
         response = await client.patch(
             f"{ESTABLISHMENT_URL}/{db_establishment.id}",
-            json={"address": "Nueva Dirección 456"},
+            json={"formatted_address": "Nueva Dirección 456"},
             headers=admin_headers,
         )
 
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["name"] == db_establishment.name
-        assert data["address"] == "Nueva Dirección 456"
+        assert data["formatted_address"] == "Nueva Dirección 456"
 
     async def test_update_both_fields_returns_200(
         self, client, db_establishment, admin_headers
@@ -340,40 +373,44 @@ class TestUpdateEstablishment:
         """Updating both fields at once returns 200 with both values updated."""
         response = await client.patch(
             f"{ESTABLISHMENT_URL}/{db_establishment.id}",
-            json={"name": "Nuevo Nombre", "address": "Nueva Dirección 456"},
+            json={"name": "Nuevo Nombre", "formatted_address": "Nueva Dirección 456"},
             headers=admin_headers,
         )
 
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["name"] == "Nuevo Nombre"
-        assert data["address"] == "Nueva Dirección 456"
+        assert data["formatted_address"] == "Nueva Dirección 456"
 
     async def test_same_values_returns_200(
         self, client, db_establishment, admin_headers
     ):
-        """Sending the exact same name+address as the current values is allowed."""
+        """Sending the exact same name+formatted_address as current values
+        is allowed."""
         response = await client.patch(
             f"{ESTABLISHMENT_URL}/{db_establishment.id}",
-            json={"name": db_establishment.name, "address": db_establishment.address},
+            json={
+                "name": db_establishment.name,
+                "formatted_address": db_establishment.formatted_address,
+            },
             headers=admin_headers,
         )
 
         assert response.status_code == status.HTTP_200_OK
 
-    async def test_duplicate_name_and_address_returns_409(
+    async def test_duplicate_place_id_returns_409(
         self, client, db_establishment, admin_headers
     ):
-        """If the resulting name+address already belongs to another establishment,
-        returns 409."""
+        """If the place_id already belongs to another establishment, returns 409."""
+        other_place_id = "place-other-001"
         await client.post(
             ESTABLISHMENT_URL,
-            json={"name": "Otro Centro", "address": "Otra Calle 1"},
+            json=_make_payload(name="Otro Centro", place_id=other_place_id),
             headers=admin_headers,
         )
         response = await client.patch(
             f"{ESTABLISHMENT_URL}/{db_establishment.id}",
-            json={"name": "Otro Centro", "address": "Otra Calle 1"},
+            json={"place_id": other_place_id},
             headers=admin_headers,
         )
 

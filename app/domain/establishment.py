@@ -16,11 +16,11 @@ class EstablishmentDomain:
     id: UUID
     name: str
     formatted_address: str
-    latitude: float | None
-    longitude: float | None
-    place_id: str | None
-    city: str | None
-    province: str | None
+    latitude: float
+    longitude: float
+    place_id: str
+    city: str
+    province: str
 
     @classmethod
     def from_orm(cls, obj) -> "EstablishmentDomain":

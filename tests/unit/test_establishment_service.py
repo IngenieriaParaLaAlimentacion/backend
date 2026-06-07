@@ -10,6 +10,7 @@ from app.exceptions.domain_exceptions import (
     EstablishmentAlreadyExistsError,
     EstablishmentNotFoundError,
 )
+from app.models import Establishment
 from app.schemas.establishment_schema import (
     EstablishmentRequest,
     EstablishmentResponse,
@@ -18,14 +19,28 @@ from app.schemas.establishment_schema import (
 from app.services.establishment_service import EstablishmentService
 
 
+def _make_request(**overrides) -> EstablishmentRequest:
+    defaults = {
+        "name": "Centro A",
+        "formatted_address": "Calle 1",
+        "latitude": -34.6,
+        "longitude": -58.4,
+        "place_id": "place-test-001",
+        "city": "Buenos Aires",
+        "province": "Buenos Aires",
+    }
+    defaults.update(overrides)
+    return EstablishmentRequest(**defaults)
+
+
 class TestEstablishmentResponse:
     def test_from_orm(self, make_establishment):
-        orm = make_establishment(name="Centro B", address="Calle 2")
+        orm = make_establishment(name="Centro B", formatted_address="Calle 2")
         response = EstablishmentResponse.model_validate(orm)
 
         assert response.id == orm.id
         assert response.name == "Centro B"
-        assert response.address == "Calle 2"
+        assert response.formatted_address == "Calle 2"
 
 
 class TestGetEstablishmentsPaginated:
@@ -148,7 +163,7 @@ class TestCreateEstablishment:
     def make_uow(self, make_establishment):
         def _make(existing=None):
             uow = AsyncMock()
-            uow.establishment_repo.get_by_data = AsyncMock(return_value=existing)
+            uow.establishment_repo.get_by_place_id = AsyncMock(return_value=existing)
             uow.establishment_repo.create = AsyncMock(return_value=make_establishment())
             uow.commit = AsyncMock()
             return uow
@@ -156,39 +171,41 @@ class TestCreateEstablishment:
         return _make
 
     async def test_raises_when_already_exists(self, make_uow, make_establishment):
-        """Raises EstablishmentAlreadyExistsError when name+address is taken."""
+        """Raises EstablishmentAlreadyExistsError when place_id is taken."""
         uow = make_uow(existing=make_establishment())
         service = EstablishmentService(uow=uow)
 
         with pytest.raises(EstablishmentAlreadyExistsError):
             await service.create_establishment(
-                EstablishmentRequest(name="Centro A", address="Calle 1"),
+                _make_request(),
                 actor_id=uuid.uuid4(),
             )
 
     async def test_calls_repo_create_when_no_duplicate(self, make_uow):
-        """Delegates to the repo with the correct name and address."""
+        """Delegates to the repo with the correct fields."""
         uow = make_uow(existing=None)
         service = EstablishmentService(uow=uow)
 
         await service.create_establishment(
-            EstablishmentRequest(name="Centro A", address="Calle 1"),
+            _make_request(name="Centro A", formatted_address="Calle 1"),
             actor_id=uuid.uuid4(),
         )
 
-        uow.establishment_repo.create.assert_called_once_with(
-            name="Centro A", address="Calle 1"
-        )
+        uow.establishment_repo.create.assert_called_once()
+        call_arg = uow.establishment_repo.create.call_args[0][0]
+        assert isinstance(call_arg, Establishment)
+        assert call_arg.name == "Centro A"
+        assert call_arg.formatted_address == "Calle 1"
 
     async def test_returns_created_establishment(self, make_uow, make_establishment):
         """Returns exactly what the repo returns."""
-        expected = make_establishment(name="Centro A", address="Calle 1")
+        expected = make_establishment(name="Centro A", formatted_address="Calle 1")
         uow = make_uow(existing=None)
         uow.establishment_repo.create = AsyncMock(return_value=expected)
         service = EstablishmentService(uow=uow)
 
         result = await service.create_establishment(
-            EstablishmentRequest(name="Centro A", address="Calle 1"),
+            _make_request(name="Centro A", formatted_address="Calle 1"),
             actor_id=uuid.uuid4(),
         )
 
@@ -234,8 +251,8 @@ class TestUpdateEstablishment:
         def _make(found=None, duplicate=None):
             uow = AsyncMock()
             uow.establishment_repo.get_by_id = AsyncMock(return_value=found)
-            uow.establishment_repo.get_by_data = AsyncMock(return_value=duplicate)
-            uow.establishment_repo.update = AsyncMock(side_effect=lambda est, **_: est)
+            uow.establishment_repo.get_by_place_id = AsyncMock(return_value=duplicate)
+            uow.establishment_repo.update = AsyncMock(side_effect=lambda est: est)
             uow.commit = AsyncMock()
             return uow
 
@@ -254,28 +271,27 @@ class TestUpdateEstablishment:
     async def test_raises_when_duplicate_belongs_to_other(
         self, make_uow, make_establishment
     ):
-        """Raises EstablishmentAlreadyExistsError when the resulting name+address
-        is already taken by a different establishment."""
-        existing = make_establishment(name="Centro A", address="Calle 1")
-        other = make_establishment(name="Centro B", address="Calle 2")
+        """Raises EstablishmentAlreadyExistsError when place_id belongs to another."""
+        existing = make_establishment()
+        other = make_establishment()
         uow = make_uow(found=existing, duplicate=other)
         service = EstablishmentService(uow=uow)
 
         with pytest.raises(EstablishmentAlreadyExistsError):
             await service.update_establishment(
                 existing.id,
-                EstablishmentUpdateRequest(name="Centro B", address="Calle 2"),
+                EstablishmentUpdateRequest(place_id="place-other-001"),
             )
 
     async def test_allows_same_values_as_self(self, make_uow, make_establishment):
-        """No error when the resulting name+address matches the same establishment."""
-        existing = make_establishment(name="Centro A", address="Calle 1")
+        """No error when the place_id matches the same establishment."""
+        existing = make_establishment()
         uow = make_uow(found=existing, duplicate=existing)
         service = EstablishmentService(uow=uow)
 
         result = await service.update_establishment(
             existing.id,
-            EstablishmentUpdateRequest(name="Centro A", address="Calle 1"),
+            EstablishmentUpdateRequest(place_id=existing.place_id),
         )
 
         assert result is existing
@@ -283,7 +299,7 @@ class TestUpdateEstablishment:
     async def test_calls_repo_update_with_correct_args(
         self, make_uow, make_establishment
     ):
-        """Delegates to repo.update with the establishment object and patch data."""
+        """Delegates to repo.update with the mutated establishment object."""
         existing = make_establishment()
         uow = make_uow(found=existing, duplicate=None)
         service = EstablishmentService(uow=uow)
@@ -292,6 +308,4 @@ class TestUpdateEstablishment:
             existing.id, EstablishmentUpdateRequest(name="Nuevo")
         )
 
-        uow.establishment_repo.update.assert_called_once_with(
-            existing, name="Nuevo", address=None
-        )
+        uow.establishment_repo.update.assert_called_once_with(existing)
