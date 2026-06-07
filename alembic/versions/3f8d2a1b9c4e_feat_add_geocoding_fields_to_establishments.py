@@ -20,11 +20,35 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.alter_column("establishments", "address", new_column_name="formatted_address")
-    op.add_column("establishments", sa.Column("latitude", sa.Float(), nullable=False))
-    op.add_column("establishments", sa.Column("longitude", sa.Float(), nullable=False))
-    op.add_column("establishments", sa.Column("place_id", sa.String(), nullable=False))
-    op.add_column("establishments", sa.Column("city", sa.String(), nullable=False))
-    op.add_column("establishments", sa.Column("province", sa.String(), nullable=False))
+    op.add_column(
+        "establishments",
+        sa.Column("latitude", sa.Float(), nullable=False, server_default=sa.text("0")),
+    )
+    op.add_column(
+        "establishments",
+        sa.Column("longitude", sa.Float(), nullable=False, server_default=sa.text("0")),
+    )
+    op.add_column(
+        "establishments",
+        sa.Column(
+            "place_id", sa.String(), nullable=False, server_default=sa.text("''")
+        ),
+    )
+    op.add_column(
+        "establishments",
+        sa.Column("city", sa.String(), nullable=False, server_default=sa.text("''")),
+    )
+    op.add_column(
+        "establishments",
+        sa.Column(
+            "province", sa.String(), nullable=False, server_default=sa.text("''")
+        ),
+    )
+    op.alter_column("establishments", "latitude", server_default=None)
+    op.alter_column("establishments", "longitude", server_default=None)
+    op.alter_column("establishments", "place_id", server_default=None)
+    op.alter_column("establishments", "city", server_default=None)
+    op.alter_column("establishments", "province", server_default=None)
 
 
 def downgrade() -> None:
