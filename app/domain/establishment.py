@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from enum import Enum
 from uuid import UUID
 
@@ -15,7 +15,16 @@ class EstablishmentDomain:
 
     id: UUID
     name: str
-    address: str
+    formatted_address: str
+    latitude: float | None
+    longitude: float | None
+    place_id: str | None
+    city: str | None
+    province: str | None
+
+    @classmethod
+    def from_orm(cls, obj) -> "EstablishmentDomain":
+        return cls(**{field.name: getattr(obj, field.name) for field in fields(cls)})
 
 
 @dataclass

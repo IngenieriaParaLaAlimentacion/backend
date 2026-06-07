@@ -28,17 +28,15 @@ class EstablishmentService:
         """Register a new establishment.
 
         Raises:
-            EstablishmentAlreadyExistsError: If an establishment with the name
-            and address already exists.
+            EstablishmentAlreadyExistsError: If an establishment with the same
+            place_id already exists.
         """
-        establishment = await self.uow.establishment_repo.get_by_data(
-            data.name, data.address
-        )
-        if establishment:
-            raise EstablishmentAlreadyExistsError(data.name, data.address)
+        existing = await self.uow.establishment_repo.get_by_place_id(data.place_id)
+        if existing:
+            raise EstablishmentAlreadyExistsError(data.place_id)
 
         establishment = await self.uow.establishment_repo.create(
-            name=data.name, address=data.address
+            Establishment(**data.model_dump())
         )
         await self.uow.commit()
         return establishment
@@ -50,25 +48,23 @@ class EstablishmentService:
 
         Raises:
             EstablishmentNotFoundError: If no establishment with that ID exists.
-            EstablishmentAlreadyExistsError: If the resulting name+address is
-            already taken by a different establishment.
+            EstablishmentAlreadyExistsError: If the new place_id is already
+            taken by a different establishment.
         """
         establishment = await self.uow.establishment_repo.get_by_id(establishment_id)
         if establishment is None:
             raise EstablishmentNotFoundError(str(establishment_id))
 
-        new_name = data.name if data.name is not None else establishment.name
-        new_address = (
-            data.address if data.address is not None else establishment.address
-        )
+        if data.place_id is not None:
+            duplicate = await self.uow.establishment_repo.get_by_place_id(data.place_id)
+            if duplicate is not None and duplicate.id != establishment.id:
+                raise EstablishmentAlreadyExistsError(data.place_id)
 
-        duplicate = await self.uow.establishment_repo.get_by_data(new_name, new_address)
-        if duplicate is not None and duplicate.id != establishment.id:
-            raise EstablishmentAlreadyExistsError(new_name, new_address)
+        for field, value in data.model_dump(exclude_none=True).items():
+            if getattr(establishment, field) != value:
+                setattr(establishment, field, value)
 
-        establishment = await self.uow.establishment_repo.update(
-            establishment, name=data.name, address=data.address
-        )
+        establishment = await self.uow.establishment_repo.update(establishment)
         await self.uow.commit()
         return establishment
 
@@ -102,14 +98,7 @@ class EstablishmentService:
         total_pages = ceil(total / page_size) if total > 0 else 0
 
         return PaginatedResult(
-            items=[
-                EstablishmentDomain(
-                    id=establishment.id,
-                    name=establishment.name,
-                    address=establishment.address,
-                )
-                for establishment in establishments
-            ],
+            items=[EstablishmentDomain.from_orm(e) for e in establishments],
             total=total,
             page=page,
             page_size=page_size,

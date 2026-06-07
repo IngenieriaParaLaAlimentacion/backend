@@ -132,12 +132,11 @@ class EstablishmentAlreadyExistsError(BaseError):
     """Exception raised when trying to create an establishment that already exists.
 
     Args:
-        name (str): The name of the establishment that already exists.
-        address (str): The address of the establishment that already exists.
+        place_id (str): The place_id of the establishment that already exists.
     """
 
-    def __init__(self, name: str, address: str):
+    def __init__(self, place_id: str):
         super().__init__(
             "Establishment already exists",
-            f"An establishment with name {name} and address {address} already exists.",
+            f"An establishment with place_id {place_id} already exists.",
         )
