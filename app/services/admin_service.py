@@ -29,11 +29,7 @@ class AdminService:
             establishment_ids
         )
         return {
-            establishment.id: EstablishmentDomain(
-                id=establishment.id,
-                name=establishment.name,
-                address=establishment.address,
-            )
+            establishment.id: EstablishmentDomain.from_orm(establishment)
             for establishment in establishments
         }
 

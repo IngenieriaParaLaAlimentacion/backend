@@ -92,10 +92,7 @@ async def get_establishments(
     )
 
     return PaginatedEstablishmentsResponse(
-        items=[
-            EstablishmentResponse(id=estab.id, name=estab.name, address=estab.address)
-            for estab in result.items
-        ],
+        items=[EstablishmentResponse.model_validate(estab) for estab in result.items],
         total=result.total,
         page=result.page,
         page_size=result.page_size,

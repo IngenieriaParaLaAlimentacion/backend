@@ -55,9 +55,7 @@ async def list_users(
                 role=user.role,
                 status=user.status,
                 establishments=[
-                    EstablishmentResponse(
-                        id=estab.id, name=estab.name, address=estab.address
-                    )
+                    EstablishmentResponse.model_validate(estab)
                     for estab in user.establishments
                 ],
             )

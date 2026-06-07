@@ -85,7 +85,7 @@ class TestGetEstablishmentsPaginated:
         assert data["total_pages"] == 0
 
     async def test_returns_establishment_fields(self, client, db_establishment):
-        """Response items include id, name and address serialized correctly."""
+        """Response items include id, name and formatted_address correctly."""
         response = await client.get(ESTABLISHMENT_URL)
         assert response.status_code == status.HTTP_200_OK
         item = response.json()["items"][0]
@@ -154,7 +154,7 @@ class TestGetEstablishmentsPaginated:
         assert len(items) == 1
         assert items[0]["name"] == "Centro Recoleta"
 
-    async def test_search_by_address_returns_matching(self, client):
+    async def test_search_by_formatted_address_returns_matching(self, client):
         """Only establishments whose formatted_address contains the search term."""
         await _seed_establishment("Centro A", "Av. Corrientes 100")
         await _seed_establishment("Centro B", "Av. Santa Fe 200")
@@ -340,7 +340,7 @@ class TestUpdateEstablishment:
         self, client, db_establishment, admin_headers
     ):
         """Updating only the name returns 200 with the new name and
-        unchanged address."""
+        unchanged formatted_address."""
         response = await client.patch(
             f"{ESTABLISHMENT_URL}/{db_establishment.id}",
             json={"name": "Nuevo Nombre"},
