@@ -2,9 +2,7 @@ from fastapi import APIRouter, Depends, Query, status
 
 from app.core.dependencies import (
     get_establishment_service,
-    require_some,
 )
-from app.domain import UserRole
 from app.schemas.establishment_schema import EstablishmentResponse
 from app.schemas.pagination import PaginatedResponse
 from app.services.establishment_service import EstablishmentService
@@ -30,11 +28,6 @@ async def get_establishments(
     ),
     search: str | None = Query(default=None, max_length=100),
     service: EstablishmentService = Depends(get_establishment_service),
-    _user: UserRole = Depends(
-        require_some(
-            UserRole.ESTABLISHMENT_MANAGER, UserRole.ADMIN, UserRole.PROFESSIONAL
-        )
-    ),
 ) -> PaginatedResponse[EstablishmentResponse]:
     result = await service.get_establishments_paginated(
         page=page, page_size=page_size, search=search
