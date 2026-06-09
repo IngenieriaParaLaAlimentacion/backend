@@ -15,6 +15,7 @@ from app.exceptions.domain_exceptions import (
     SubjectNotFoundError,
     UserEstablishmentNotFoundError,
     UserNotFoundError,
+    UserNotManagerError,
 )
 
 
@@ -136,15 +137,21 @@ class AdminService:
             page_size=page_size,
         )
 
-    async def _validate_access_request(
-        self, user_id: UUID, establishment_ids: list[UUID]
-    ) -> None:
-        """Validate that the user exists and all establishment IDs belong to them."""
+    async def _get_manager_relations(self, user_id: UUID):
+        """Return all user-establishment relations for a manager, validating
+        existence and role."""
         user = await self.uow.user_repo.get_by_id(user_id)
         if user is None:
             raise UserNotFoundError(str(user_id))
+        if user.role != UserRole.ESTABLISHMENT_MANAGER:
+            raise UserNotManagerError(str(user_id))
+        return await self.uow.user_establishment_repo.get_by_user_id(user_id)
 
-        relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
+    async def _validate_access_request(
+        self, user_id: UUID, establishment_ids: list[UUID]
+    ) -> None:
+        """Validate that all establishment IDs belong to the manager."""
+        relations = await self._get_manager_relations(user_id)
         user_establishment_ids = {rel.establishment_id for rel in relations}
 
         invalid_ids = set(establishment_ids) - user_establishment_ids
@@ -182,6 +189,19 @@ class AdminService:
         await self._set_user_establishment_relation_status(
             user_id, establishment_ids, UserEstablishmentStatus.REJECTED
         )
+        await self.uow.commit()
+
+    async def reject_manager(self, user_id: UUID) -> None:
+        """Reject all establishment access for the given manager and
+        mark them inactive."""
+        relations = await self._get_manager_relations(user_id)
+        establishment_ids = [rel.establishment_id for rel in relations]
+
+        if establishment_ids:
+            await self.uow.user_establishment_repo.update_status_for_ids(
+                user_id, establishment_ids, UserEstablishmentStatus.REJECTED
+            )
+        await self.uow.user_repo.update_status(user_id, UserStatus.INACTIVE)
         await self.uow.commit()
 
     async def get_subject_detail(

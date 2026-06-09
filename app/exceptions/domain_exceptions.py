@@ -38,6 +38,21 @@ class UserNotFoundError(NotFoundError):
         super().__init__("User not found", f"The user with ID {user_id} was not found.")
 
 
+class UserNotManagerError(BadRequestError):
+    """Exception raised when an operation requires the user to be an
+    establishment manager.
+
+    Args:
+        user_id (str): The ID of the user that is not a manager.
+    """
+
+    def __init__(self, user_id: str):
+        super().__init__(
+            "User is not a manager",
+            f"The user with ID {user_id} is not an establishment manager.",
+        )
+
+
 class UserAlreadyExistsError(AlreadyExistsError):
     """Exception raised when trying to register with an existing email.
 

@@ -130,6 +130,31 @@ async def reject_establishments(
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
+@router.patch(
+    "/managers/{user_id}/reject",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Reject all access for a manager",
+    description="Rejects all establishments for the given manager. "
+    "Makes the user status INACTIVE. Accessible by admins only.",
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Missing or invalid authentication token"
+        },
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Authenticated user does not have admin privileges"
+        },
+        status.HTTP_404_NOT_FOUND: {"description": "Manager not found"},
+    },
+)
+async def reject_manager(
+    user_id: UUID,
+    _admin: UserActor = Depends(get_current_admin),
+    service: AdminService = Depends(get_admin_service),
+) -> Response:
+    await service.reject_manager(user_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
 @router.get(
     "/subjects/{subject_id}",
     response_model=AdminSubjectDetailResponse,
