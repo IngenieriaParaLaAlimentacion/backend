@@ -4,9 +4,13 @@ import pytest
 import pytest_asyncio
 from fastapi import status
 from jose import jwt
+from sqlalchemy import select
 
+import app.db.database as db_module
 from app.core.security import create_access_token
 from app.domain.user import UserRole, UserStatus
+from app.models.user import User
+from app.models.user_establishment import UserEstablishment
 
 pytestmark = pytest.mark.asyncio
 
@@ -106,51 +110,34 @@ async def registered_manager(client, db_establishment):
 
 
 @pytest_asyncio.fixture
-async def manager_user_id(app):
-    """Insert an active establishment manager and return its UUID."""
-    from app.db.database import AsyncSessionLocal
-    from app.models.user import User, UserStatus
-    from app.models.user import UserRole as ORMUserRole
-
-    user_id = uuid.uuid4()
-    async with AsyncSessionLocal() as session:
-        session.add(
-            User(
-                id=user_id,
-                name="Test",
-                last_name="Manager",
-                email=f"{user_id}@test.com",
-                role=ORMUserRole.ESTABLISHMENT_MANAGER,
-                status=UserStatus.ACTIVE,
-            )
-        )
-        await session.commit()
-    return user_id
-
-
-@pytest_asyncio.fixture
 async def manager_headers(manager_user_id):
     token = create_access_token(manager_user_id, role=UserRole.ESTABLISHMENT_MANAGER)
     return {"Authorization": f"Bearer {token}"}
 
 
 @pytest_asyncio.fixture
+async def manager_user_id(app):
+    """Insert an active establishment manager and return its UUID."""
+    return await _insert_user(UserRole.ESTABLISHMENT_MANAGER, UserStatus.ACTIVE)
+
+
+@pytest_asyncio.fixture
 async def non_manager_user_id(app):
     """Insert an active professional user and return its UUID."""
-    from app.db.database import AsyncSessionLocal
-    from app.models.user import User, UserStatus
-    from app.models.user import UserRole as ORMUserRole
+    return await _insert_user(UserRole.PROFESSIONAL, UserStatus.ACTIVE)
 
+
+async def _insert_user(role: UserRole, user_status: UserStatus) -> uuid.UUID:
     user_id = uuid.uuid4()
-    async with AsyncSessionLocal() as session:
+    async with db_module.AsyncSessionLocal() as session:
         session.add(
             User(
                 id=user_id,
                 name="Test",
-                last_name="Professional",
+                last_name="User",
                 email=f"{user_id}@test.com",
-                role=ORMUserRole.PROFESSIONAL,
-                status=UserStatus.ACTIVE,
+                role=role,
+                status=user_status,
             )
         )
         await session.commit()
@@ -564,11 +551,6 @@ class TestRejectEstablishments:
         self, client, admin_headers, registered_manager, db_establishment
     ):
         """The user-establishment relation should be REJECTED in the database."""
-        from sqlalchemy import select
-
-        from app.db.database import AsyncSessionLocal
-        from app.models.user_establishment import UserEstablishment
-
         url = REJECT_URL.format(user_id=registered_manager["id"])
         await client.patch(
             url,
@@ -576,7 +558,7 @@ class TestRejectEstablishments:
             headers=admin_headers,
         )
 
-        async with AsyncSessionLocal() as session:
+        async with db_module.AsyncSessionLocal() as session:
             result = await session.execute(
                 select(UserEstablishment).where(
                     UserEstablishment.establishment_id == db_establishment.id
@@ -662,7 +644,9 @@ class TestRejectManager:
         url = REJECT_MANAGER_URL.format(user_id=registered_manager["id"])
         await client.patch(url, headers=admin_headers)
 
-        list_response = await client.get(ADMIN_USERS_URL, headers=admin_headers)
+        list_response = await client.get(
+            f"{ADMIN_USERS_URL}?page_size=100", headers=admin_headers
+        )
         users = list_response.json()["items"]
         manager = next(u for u in users if u["id"] == registered_manager["id"])
         assert manager["status"] == UserStatus.INACTIVE
@@ -671,15 +655,10 @@ class TestRejectManager:
         self, client, admin_headers, registered_manager, db_establishment
     ):
         """All user-establishment relations should be REJECTED in the database."""
-        from sqlalchemy import select
-
-        from app.db.database import AsyncSessionLocal
-        from app.models.user_establishment import UserEstablishment
-
         url = REJECT_MANAGER_URL.format(user_id=registered_manager["id"])
         await client.patch(url, headers=admin_headers)
 
-        async with AsyncSessionLocal() as session:
+        async with db_module.AsyncSessionLocal() as session:
             result = await session.execute(
                 select(UserEstablishment).where(
                     UserEstablishment.establishment_id == db_establishment.id
@@ -690,29 +669,16 @@ class TestRejectManager:
 
     async def test_no_establishments_becomes_inactive(self, client, admin_headers, app):
         """A manager with no establishments should still be marked INACTIVE."""
-        from app.db.database import AsyncSessionLocal
-        from app.models.user import User, UserStatus
-        from app.models.user import UserRole as ORMUserRole
-
-        user_id = uuid.uuid4()
-        async with AsyncSessionLocal() as session:
-            session.add(
-                User(
-                    id=user_id,
-                    name="Test",
-                    last_name="NoEstab",
-                    email=f"{user_id}@test.com",
-                    role=ORMUserRole.ESTABLISHMENT_MANAGER,
-                    status=UserStatus.PENDING_VALIDATION,
-                )
-            )
-            await session.commit()
-
+        user_id = await _insert_user(
+            UserRole.ESTABLISHMENT_MANAGER, UserStatus.PENDING_VALIDATION
+        )
         url = REJECT_MANAGER_URL.format(user_id=user_id)
         response = await client.patch(url, headers=admin_headers)
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
-        list_response = await client.get(ADMIN_USERS_URL, headers=admin_headers)
+        list_response = await client.get(
+            f"{ADMIN_USERS_URL}?page_size=100", headers=admin_headers
+        )
         users = list_response.json()["items"]
         manager = next(u for u in users if u["id"] == str(user_id))
         assert manager["status"] == UserStatus.INACTIVE

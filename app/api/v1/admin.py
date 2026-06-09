@@ -81,6 +81,9 @@ async def list_users(
     description="Approves the given establishments for the manager and activates the "
     "manager's account. Accessible by admins only.",
     responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Target user is not an establishment manager"
+        },
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Missing or invalid authentication token"
         },
@@ -109,6 +112,9 @@ async def approve_establishments(
     description="Rejects the given establishments for the manager. Does not affect "
     "the manager's account status. Accessible by admins only.",
     responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Target user is not an establishment manager"
+        },
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Missing or invalid authentication token"
         },
@@ -137,6 +143,9 @@ async def reject_establishments(
     description="Rejects all establishments for the given manager. "
     "Makes the user status INACTIVE. Accessible by admins only.",
     responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Target user is not an establishment manager"
+        },
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Missing or invalid authentication token"
         },

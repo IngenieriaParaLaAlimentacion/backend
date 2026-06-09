@@ -39,8 +39,7 @@ class UserNotFoundError(NotFoundError):
 
 
 class UserNotManagerError(BadRequestError):
-    """Exception raised when an operation requires the user to be an
-    establishment manager.
+    """Exception raised when the user is not an establishment manager.
 
     Args:
         user_id (str): The ID of the user that is not a manager.

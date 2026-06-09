@@ -137,7 +137,7 @@ class AdminService:
             page_size=page_size,
         )
 
-    async def _get_manager_relations(self, user_id: UUID):
+    async def _get_manager_relations(self, user_id: UUID) -> list:
         """Return all user-establishment relations for a manager, validating
         existence and role."""
         user = await self.uow.user_repo.get_by_id(user_id)
