@@ -685,6 +685,14 @@ class TestRejectManager:
         manager = next(u for u in users if u["id"] == str(user_id))
         assert manager["status"] == UserStatus.INACTIVE
 
+    async def test_active_manager_returns_400(self, client, admin_headers, app):
+        """Should return 400 if the manager is already active (use a dedicated
+        revoke endpoint instead)."""
+        user_id = await _insert_user(UserRole.ESTABLISHMENT_MANAGER, UserStatus.ACTIVE)
+        url = REJECT_MANAGER_URL.format(user_id=user_id)
+        response = await client.patch(url, headers=admin_headers)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
     async def test_user_not_found(self, client, admin_headers):
         """Should return 404 if the manager does not exist."""
         url = REJECT_MANAGER_URL.format(user_id=uuid.uuid4())

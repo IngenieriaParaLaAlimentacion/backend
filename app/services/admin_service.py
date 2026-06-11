@@ -1,4 +1,4 @@
-from math import ceil
+from typing import Any
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
@@ -12,6 +12,7 @@ from app.domain.user import (
     UserWithEstablishmentsDomain,
 )
 from app.exceptions.domain_exceptions import (
+    BadRequestError,
     SubjectNotFoundError,
     UserEstablishmentNotFoundError,
     UserNotFoundError,
@@ -66,33 +67,38 @@ class AdminService:
             ]
         return estab_data_by_user
 
-    def _build_paginated_result(
-        self,
-        users: list,
-        establishments_per_user: dict[UUID, list[EstablishmentDomain]],
-        total: int,
-        page: int,
-        page_size: int,
-    ) -> PaginatedResult[UserWithEstablishmentsDomain]:
-        """Build a paginated response from users and their establishments."""
-        items = [
-            UserWithEstablishmentsDomain(
-                id=user.id,
-                email=user.email,
-                name=user.name,
-                last_name=user.last_name,
-                role=user.role,
-                status=user.status,
-                establishments=establishments_per_user.get(user.id, []),
+    async def _get_manager_relations(self, user_id: UUID) -> tuple[Any, list]:
+        """Return (user, relations) for a manager, raising if the user does
+        not exist."""
+        user = await self.uow.user_repo.get_by_id(user_id)
+        if user is None:
+            raise UserNotFoundError(str(user_id))
+        relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
+        return user, relations
+
+    async def _validate_access_request(
+        self, user_id: UUID, establishment_ids: list[UUID]
+    ) -> None:
+        """Validate that all establishment IDs belong to the manager."""
+        _, relations = await self._get_manager_relations(user_id)
+        user_establishment_ids = {rel.establishment_id for rel in relations}
+
+        invalid_ids = set(establishment_ids) - user_establishment_ids
+        if invalid_ids:
+            raise UserEstablishmentNotFoundError(
+                str(next(iter(invalid_ids))), str(user_id)
             )
-            for user in users
-        ]
-        return PaginatedResult(
-            items=items,
-            total=total,
-            page=page,
-            page_size=page_size,
-            total_pages=ceil(total / page_size),
+
+    async def _set_user_establishment_relation_status(
+        self,
+        user_id: UUID,
+        establishment_ids: list[UUID],
+        status: UserEstablishmentStatus,
+    ) -> None:
+        """Validate and write a status update for the given user-establishment pairs."""
+        await self._validate_access_request(user_id, establishment_ids)
+        await self.uow.user_establishment_repo.update_status_for_ids(
+            user_id, establishment_ids, status
         )
 
     async def get_users_paginated(
@@ -128,45 +134,22 @@ class AdminService:
             [user.id for user in users]
         )
 
-        return self._build_paginated_result(
-            users=users,
-            establishments_per_user=establishments_per_user,
+        return PaginatedResult.build(
+            items=[
+                UserWithEstablishmentsDomain(
+                    id=user.id,
+                    email=user.email,
+                    name=user.name,
+                    last_name=user.last_name,
+                    role=user.role,
+                    status=user.status,
+                    establishments=establishments_per_user.get(user.id, []),
+                )
+                for user in users
+            ],
             total=total,
             page=page,
             page_size=page_size,
-        )
-
-    async def _get_manager_relations(self, user_id: UUID) -> list:
-        """Return all user-establishment relations for a manager, validating
-        existence and role."""
-        user = await self.uow.user_repo.get_by_id(user_id)
-        if user is None:
-            raise UserNotFoundError(str(user_id))
-        return await self.uow.user_establishment_repo.get_by_user_id(user_id)
-
-    async def _validate_access_request(
-        self, user_id: UUID, establishment_ids: list[UUID]
-    ) -> None:
-        """Validate that all establishment IDs belong to the manager."""
-        relations = await self._get_manager_relations(user_id)
-        user_establishment_ids = {rel.establishment_id for rel in relations}
-
-        invalid_ids = set(establishment_ids) - user_establishment_ids
-        if invalid_ids:
-            raise UserEstablishmentNotFoundError(
-                str(next(iter(invalid_ids))), str(user_id)
-            )
-
-    async def _set_user_establishment_relation_status(
-        self,
-        user_id: UUID,
-        establishment_ids: list[UUID],
-        status: UserEstablishmentStatus,
-    ) -> None:
-        """Validate and write a status update for the given user-establishment pairs."""
-        await self._validate_access_request(user_id, establishment_ids)
-        await self.uow.user_establishment_repo.update_status_for_ids(
-            user_id, establishment_ids, status
         )
 
     async def approve_establishments(
@@ -190,8 +173,19 @@ class AdminService:
 
     async def reject_manager(self, user_id: UUID) -> None:
         """Reject all establishment access for the given manager and
-        mark them inactive."""
-        relations = await self._get_manager_relations(user_id)
+        mark them inactive.
+
+        Raises:
+            UserNotFoundError: If the user does not exist.
+            BadRequestError: If the manager is not in pending status.
+        """
+        user, relations = await self._get_manager_relations(user_id)
+        if user.status != UserStatus.PENDING_VALIDATION:
+            raise BadRequestError(
+                "Manager is not pending",
+                "Only managers with pending status can be rejected through "
+                "this endpoint.",
+            )
         establishment_ids = [rel.establishment_id for rel in relations]
 
         if establishment_ids:

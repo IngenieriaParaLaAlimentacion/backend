@@ -339,7 +339,9 @@ class TestRejectManager:
     async def test_rejects_all_establishments_and_marks_inactive(
         self, make_establishment
     ):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(
+            role=UserRole.ESTABLISHMENT_MANAGER, status=UserStatus.PENDING_VALIDATION
+        )
         estab1 = make_establishment()
         estab2 = make_establishment()
         relations = [_make_relation(estab1.id), _make_relation(estab2.id)]
@@ -358,7 +360,9 @@ class TestRejectManager:
 
     @pytest.mark.asyncio
     async def test_no_establishments_still_marks_inactive(self):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(
+            role=UserRole.ESTABLISHMENT_MANAGER, status=UserStatus.PENDING_VALIDATION
+        )
         uow = _make_approve_uow(user=user, relations=[])
         service = AdminService(uow)
 
