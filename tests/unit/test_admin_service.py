@@ -324,3 +324,52 @@ class TestRejectEstablishments:
 
         with pytest.raises(UserEstablishmentNotFoundError):
             await service.reject_establishments(user.id, [uuid.uuid4()])
+
+
+class TestRejectManager:
+    @pytest.mark.asyncio
+    async def test_user_not_found_raises_error(self):
+        uow = _make_approve_uow(user=None)
+        service = AdminService(uow)
+
+        with pytest.raises(UserNotFoundError):
+            await service.reject_manager(uuid.uuid4())
+
+    @pytest.mark.asyncio
+    async def test_rejects_all_establishments_and_marks_inactive(
+        self, make_establishment
+    ):
+        user = _make_user(
+            role=UserRole.ESTABLISHMENT_MANAGER, status=UserStatus.PENDING_VALIDATION
+        )
+        estab1 = make_establishment()
+        estab2 = make_establishment()
+        relations = [_make_relation(estab1.id), _make_relation(estab2.id)]
+        uow = _make_approve_uow(user=user, relations=relations)
+        service = AdminService(uow)
+
+        await service.reject_manager(user.id)
+
+        uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
+            user.id, [estab1.id, estab2.id], UserEstablishmentStatus.REJECTED
+        )
+        uow.user_repo.update_status.assert_called_once_with(
+            user.id, UserStatus.INACTIVE
+        )
+        uow.commit.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_no_establishments_still_marks_inactive(self):
+        user = _make_user(
+            role=UserRole.ESTABLISHMENT_MANAGER, status=UserStatus.PENDING_VALIDATION
+        )
+        uow = _make_approve_uow(user=user, relations=[])
+        service = AdminService(uow)
+
+        await service.reject_manager(user.id)
+
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.user_repo.update_status.assert_called_once_with(
+            user.id, UserStatus.INACTIVE
+        )
+        uow.commit.assert_called_once()

@@ -81,6 +81,9 @@ async def list_users(
     description="Approves the given establishments for the manager and activates the "
     "manager's account. Accessible by admins only.",
     responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Target user is not an establishment manager"
+        },
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Missing or invalid authentication token"
         },
@@ -109,6 +112,9 @@ async def approve_establishments(
     description="Rejects the given establishments for the manager. Does not affect "
     "the manager's account status. Accessible by admins only.",
     responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Target user is not an establishment manager"
+        },
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Missing or invalid authentication token"
         },
@@ -127,6 +133,34 @@ async def reject_establishments(
     service: AdminService = Depends(get_admin_service),
 ) -> Response:
     await service.reject_establishments(user_id, data.establishment_ids)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.patch(
+    "/managers/{user_id}/reject",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Reject all access for a manager",
+    description="Rejects all establishments for the given manager. "
+    "Makes the user status INACTIVE. Accessible by admins only.",
+    responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Target user is not an establishment manager"
+        },
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Missing or invalid authentication token"
+        },
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Authenticated user does not have admin privileges"
+        },
+        status.HTTP_404_NOT_FOUND: {"description": "Manager not found"},
+    },
+)
+async def reject_manager(
+    user_id: UUID,
+    _admin: UserActor = Depends(get_current_admin),
+    service: AdminService = Depends(get_admin_service),
+) -> Response:
+    await service.reject_manager(user_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

@@ -4,9 +4,13 @@ import pytest
 import pytest_asyncio
 from fastapi import status
 from jose import jwt
+from sqlalchemy import select
 
+import app.db.database as db_module
 from app.core.security import create_access_token
 from app.domain.user import UserRole, UserStatus
+from app.models.user import User
+from app.models.user_establishment import UserEstablishment
 
 pytestmark = pytest.mark.asyncio
 
@@ -15,6 +19,7 @@ ADMIN_SUBJECTS_URL = "/api/v1/admin/subjects"
 REGISTER_MANAGER_URL = "/api/v1/auth/register/establishment-manager"
 APPROVE_URL = "/api/v1/admin/managers/{user_id}/establishments/approve"
 REJECT_URL = "/api/v1/admin/managers/{user_id}/establishments/reject"
+REJECT_MANAGER_URL = "/api/v1/admin/managers/{user_id}/reject"
 SUBJECTS_URL = "/api/v1/subjects"
 
 
@@ -38,6 +43,13 @@ async def _make_reject_request(client, *, headers=None):
     )
 
 
+async def _make_reject_manager_request(client, *, headers=None):
+    return await client.patch(
+        REJECT_MANAGER_URL.format(user_id=uuid.uuid4()),
+        headers=headers or {},
+    )
+
+
 @pytest.fixture(
     params=[
         pytest.param(_make_list_request, id="GET /admin/users"),
@@ -48,6 +60,10 @@ async def _make_reject_request(client, *, headers=None):
         pytest.param(
             _make_reject_request,
             id="PATCH /admin/managers/{id}/establishments/reject",
+        ),
+        pytest.param(
+            _make_reject_manager_request,
+            id="PATCH /admin/managers/{id}/reject",
         ),
     ]
 )
@@ -94,32 +110,38 @@ async def registered_manager(client, db_establishment):
 
 
 @pytest_asyncio.fixture
+async def manager_headers(manager_user_id):
+    token = create_access_token(manager_user_id, role=UserRole.ESTABLISHMENT_MANAGER)
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest_asyncio.fixture
 async def manager_user_id(app):
     """Insert an active establishment manager and return its UUID."""
-    from app.db.database import AsyncSessionLocal
-    from app.models.user import User, UserStatus
-    from app.models.user import UserRole as ORMUserRole
+    return await _insert_user(UserRole.ESTABLISHMENT_MANAGER, UserStatus.ACTIVE)
 
+
+@pytest_asyncio.fixture
+async def non_manager_user_id(app):
+    """Insert an active professional user and return its UUID."""
+    return await _insert_user(UserRole.PROFESSIONAL, UserStatus.ACTIVE)
+
+
+async def _insert_user(role: UserRole, user_status: UserStatus) -> uuid.UUID:
     user_id = uuid.uuid4()
-    async with AsyncSessionLocal() as session:
+    async with db_module.AsyncSessionLocal() as session:
         session.add(
             User(
                 id=user_id,
                 name="Test",
-                last_name="Manager",
+                last_name="User",
                 email=f"{user_id}@test.com",
-                role=ORMUserRole.ESTABLISHMENT_MANAGER,
-                status=UserStatus.ACTIVE,
+                role=role,
+                status=user_status,
             )
         )
         await session.commit()
     return user_id
-
-
-@pytest_asyncio.fixture
-async def manager_headers(manager_user_id):
-    token = create_access_token(manager_user_id, role=UserRole.ESTABLISHMENT_MANAGER)
-    return {"Authorization": f"Bearer {token}"}
 
 
 def _subject_body(**overrides):
@@ -499,6 +521,19 @@ class TestApproveEstablishments:
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
+    async def test_user_is_not_a_manager(
+        self, client, admin_headers, non_manager_user_id
+    ):
+        """Should return 404 when the target user has no matching
+        establishment relations."""
+        url = APPROVE_URL.format(user_id=non_manager_user_id)
+        response = await client.patch(
+            url,
+            json={"establishment_ids": [str(uuid.uuid4())]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
 
 class TestRejectEstablishments:
     async def test_returns_no_content(
@@ -517,11 +552,6 @@ class TestRejectEstablishments:
         self, client, admin_headers, registered_manager, db_establishment
     ):
         """The user-establishment relation should be REJECTED in the database."""
-        from sqlalchemy import select
-
-        from app.db.database import AsyncSessionLocal
-        from app.models.user_establishment import UserEstablishment
-
         url = REJECT_URL.format(user_id=registered_manager["id"])
         await client.patch(
             url,
@@ -529,7 +559,7 @@ class TestRejectEstablishments:
             headers=admin_headers,
         )
 
-        async with AsyncSessionLocal() as session:
+        async with db_module.AsyncSessionLocal() as session:
             result = await session.execute(
                 select(UserEstablishment).where(
                     UserEstablishment.establishment_id == db_establishment.id
@@ -585,6 +615,89 @@ class TestRejectEstablishments:
             headers=admin_headers,
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_user_is_not_a_manager(
+        self, client, admin_headers, non_manager_user_id
+    ):
+        """Should return 404 when the target user has no
+        matching establishment relations."""
+        url = REJECT_URL.format(user_id=non_manager_user_id)
+        response = await client.patch(
+            url,
+            json={"establishment_ids": [str(uuid.uuid4())]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+class TestRejectManager:
+    async def test_returns_no_content(
+        self, client, admin_headers, registered_manager, db_establishment
+    ):
+        """Should return 204 on successful rejection."""
+        url = REJECT_MANAGER_URL.format(user_id=registered_manager["id"])
+        response = await client.patch(url, headers=admin_headers)
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    async def test_manager_status_becomes_inactive(
+        self, client, admin_headers, registered_manager
+    ):
+        """Manager status should be INACTIVE after rejection."""
+        url = REJECT_MANAGER_URL.format(user_id=registered_manager["id"])
+        await client.patch(url, headers=admin_headers)
+
+        list_response = await client.get(
+            f"{ADMIN_USERS_URL}?page_size=100", headers=admin_headers
+        )
+        users = list_response.json()["items"]
+        manager = next(u for u in users if u["id"] == registered_manager["id"])
+        assert manager["status"] == UserStatus.INACTIVE
+
+    async def test_all_establishments_become_rejected(
+        self, client, admin_headers, registered_manager, db_establishment
+    ):
+        """All user-establishment relations should be REJECTED in the database."""
+        url = REJECT_MANAGER_URL.format(user_id=registered_manager["id"])
+        await client.patch(url, headers=admin_headers)
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(UserEstablishment).where(
+                    UserEstablishment.establishment_id == db_establishment.id
+                )
+            )
+            relation = result.scalar_one()
+        assert relation.status.value == "rejected"
+
+    async def test_no_establishments_becomes_inactive(self, client, admin_headers, app):
+        """A manager with no establishments should still be marked INACTIVE."""
+        user_id = await _insert_user(
+            UserRole.ESTABLISHMENT_MANAGER, UserStatus.PENDING_VALIDATION
+        )
+        url = REJECT_MANAGER_URL.format(user_id=user_id)
+        response = await client.patch(url, headers=admin_headers)
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        list_response = await client.get(
+            f"{ADMIN_USERS_URL}?page_size=100", headers=admin_headers
+        )
+        users = list_response.json()["items"]
+        manager = next(u for u in users if u["id"] == str(user_id))
+        assert manager["status"] == UserStatus.INACTIVE
+
+    async def test_active_manager_returns_400(self, client, admin_headers, app):
+        """Should return 400 if the manager is already active (use a dedicated
+        revoke endpoint instead)."""
+        user_id = await _insert_user(UserRole.ESTABLISHMENT_MANAGER, UserStatus.ACTIVE)
+        url = REJECT_MANAGER_URL.format(user_id=user_id)
+        response = await client.patch(url, headers=admin_headers)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    async def test_user_not_found(self, client, admin_headers):
+        """Should return 404 if the manager does not exist."""
+        url = REJECT_MANAGER_URL.format(user_id=uuid.uuid4())
+        response = await client.patch(url, headers=admin_headers)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 class TestAdminSubjectDetail:
