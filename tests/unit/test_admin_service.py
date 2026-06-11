@@ -9,7 +9,6 @@ from app.domain.user import UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
     UserEstablishmentNotFoundError,
     UserNotFoundError,
-    UserNotManagerError,
 )
 from app.services.admin_service import AdminService
 
@@ -279,15 +278,6 @@ class TestApproveEstablishments:
         with pytest.raises(UserEstablishmentNotFoundError):
             await service.approve_establishments(user.id, [uuid.uuid4()])
 
-    @pytest.mark.asyncio
-    async def test_non_manager_role_raises_error(self):
-        user = _make_user(role=UserRole.PROFESSIONAL)
-        uow = _make_approve_uow(user=user)
-        service = AdminService(uow)
-
-        with pytest.raises(UserNotManagerError):
-            await service.approve_establishments(user.id, [uuid.uuid4()])
-
 
 class TestRejectEstablishments:
     @pytest.mark.asyncio
@@ -335,15 +325,6 @@ class TestRejectEstablishments:
         with pytest.raises(UserEstablishmentNotFoundError):
             await service.reject_establishments(user.id, [uuid.uuid4()])
 
-    @pytest.mark.asyncio
-    async def test_non_manager_role_raises_error(self):
-        user = _make_user(role=UserRole.PROFESSIONAL)
-        uow = _make_approve_uow(user=user)
-        service = AdminService(uow)
-
-        with pytest.raises(UserNotManagerError):
-            await service.reject_establishments(user.id, [uuid.uuid4()])
-
 
 class TestRejectManager:
     @pytest.mark.asyncio
@@ -353,15 +334,6 @@ class TestRejectManager:
 
         with pytest.raises(UserNotFoundError):
             await service.reject_manager(uuid.uuid4())
-
-    @pytest.mark.asyncio
-    async def test_non_manager_role_raises_error(self):
-        user = _make_user(role=UserRole.PROFESSIONAL)
-        uow = _make_approve_uow(user=user)
-        service = AdminService(uow)
-
-        with pytest.raises(UserNotManagerError):
-            await service.reject_manager(user.id)
 
     @pytest.mark.asyncio
     async def test_rejects_all_establishments_and_marks_inactive(

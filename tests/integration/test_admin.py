@@ -524,14 +524,15 @@ class TestApproveEstablishments:
     async def test_user_is_not_a_manager(
         self, client, admin_headers, non_manager_user_id
     ):
-        """Should return 400 if the target user is not an establishment manager."""
+        """Should return 404 when the target user has no matching
+        establishment relations."""
         url = APPROVE_URL.format(user_id=non_manager_user_id)
         response = await client.patch(
             url,
             json={"establishment_ids": [str(uuid.uuid4())]},
             headers=admin_headers,
         )
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 class TestRejectEstablishments:
@@ -618,14 +619,15 @@ class TestRejectEstablishments:
     async def test_user_is_not_a_manager(
         self, client, admin_headers, non_manager_user_id
     ):
-        """Should return 400 if the target user is not an establishment manager."""
+        """Should return 404 when the target user has no
+        matching establishment relations."""
         url = REJECT_URL.format(user_id=non_manager_user_id)
         response = await client.patch(
             url,
             json={"establishment_ids": [str(uuid.uuid4())]},
             headers=admin_headers,
         )
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 class TestRejectManager:
@@ -688,14 +690,6 @@ class TestRejectManager:
         url = REJECT_MANAGER_URL.format(user_id=uuid.uuid4())
         response = await client.patch(url, headers=admin_headers)
         assert response.status_code == status.HTTP_404_NOT_FOUND
-
-    async def test_user_is_not_a_manager(
-        self, client, admin_headers, non_manager_user_id
-    ):
-        """Should return 400 if the target user is not an establishment manager."""
-        url = REJECT_MANAGER_URL.format(user_id=non_manager_user_id)
-        response = await client.patch(url, headers=admin_headers)
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 class TestAdminSubjectDetail:

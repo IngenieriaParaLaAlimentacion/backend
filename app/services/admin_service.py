@@ -15,7 +15,6 @@ from app.exceptions.domain_exceptions import (
     SubjectNotFoundError,
     UserEstablishmentNotFoundError,
     UserNotFoundError,
-    UserNotManagerError,
 )
 
 
@@ -143,8 +142,6 @@ class AdminService:
         user = await self.uow.user_repo.get_by_id(user_id)
         if user is None:
             raise UserNotFoundError(str(user_id))
-        if user.role != UserRole.ESTABLISHMENT_MANAGER:
-            raise UserNotManagerError(str(user_id))
         return await self.uow.user_establishment_repo.get_by_user_id(user_id)
 
     async def _validate_access_request(
