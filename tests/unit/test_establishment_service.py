@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from app.domain.establishment import EstablishmentDomain
+from app.domain.establishment import EstablishmentDomain, EstablishmentListingParams
 from app.domain.pagination import PaginatedResult
 from app.exceptions.domain_exceptions import (
     EstablishmentAlreadyExistsError,
@@ -63,7 +63,7 @@ class TestGetEstablishmentsPaginated:
         service = EstablishmentService(uow=make_uow(establishments, total=2))
 
         result = await service.get_establishments_paginated(
-            page=1, page_size=20, search=None
+            page=1, page_size=20, params=EstablishmentListingParams()
         )
 
         assert isinstance(result, PaginatedResult)
@@ -77,7 +77,7 @@ class TestGetEstablishmentsPaginated:
         service = EstablishmentService(uow=make_uow(establishments, total=23))
 
         result = await service.get_establishments_paginated(
-            page=1, page_size=5, search=None
+            page=1, page_size=5, params=EstablishmentListingParams()
         )
 
         assert result.total_pages == ceil(23 / 5)
@@ -86,7 +86,7 @@ class TestGetEstablishmentsPaginated:
         service = EstablishmentService(uow=make_uow([], total=0))
 
         result = await service.get_establishments_paginated(
-            page=1, page_size=20, search=None
+            page=1, page_size=20, params=EstablishmentListingParams()
         )
 
         assert result.items == []
@@ -97,10 +97,12 @@ class TestGetEstablishmentsPaginated:
         uow = make_uow([], total=0)
         service = EstablishmentService(uow=uow)
 
-        await service.get_establishments_paginated(page=3, page_size=10, search=None)
+        await service.get_establishments_paginated(
+            page=3, page_size=10, params=EstablishmentListingParams()
+        )
 
         uow.establishment_repo.get_paginated.assert_called_once_with(
-            limit=10, offset=20, search=None
+            limit=10, offset=20, params=EstablishmentListingParams()
         )
 
     async def test_items_are_schema_instances(self, make_establishment, make_uow):
@@ -108,7 +110,7 @@ class TestGetEstablishmentsPaginated:
         service = EstablishmentService(uow=make_uow(establishments, total=1))
 
         result = await service.get_establishments_paginated(
-            page=1, page_size=20, search=None
+            page=1, page_size=20, params=EstablishmentListingParams()
         )
 
         assert all(isinstance(item, EstablishmentDomain) for item in result.items)
@@ -118,13 +120,15 @@ class TestGetEstablishmentsPaginated:
         service = EstablishmentService(uow=uow)
 
         await service.get_establishments_paginated(
-            page=1, page_size=20, search="Establishment search"
+            page=1,
+            page_size=20,
+            params=EstablishmentListingParams(search="Establishment search"),
         )
 
         uow.establishment_repo.get_paginated.assert_called_once_with(
             limit=20,
             offset=0,
-            search="Establishment search",
+            params=EstablishmentListingParams(search="Establishment search"),
         )
 
     async def test_strips_whitespace_from_search(self, make_uow):
@@ -132,13 +136,15 @@ class TestGetEstablishmentsPaginated:
         service = EstablishmentService(uow=uow)
 
         await service.get_establishments_paginated(
-            page=1, page_size=20, search="    Establishment search     "
+            page=1,
+            page_size=20,
+            params=EstablishmentListingParams(search="    Establishment search     "),
         )
 
         uow.establishment_repo.get_paginated.assert_called_once_with(
             limit=20,
             offset=0,
-            search="Establishment search",
+            params=EstablishmentListingParams(search="Establishment search"),
         )
 
     async def test_whitespace_only_search_passes_none(self, make_uow):
@@ -146,13 +152,13 @@ class TestGetEstablishmentsPaginated:
         service = EstablishmentService(uow=uow)
 
         await service.get_establishments_paginated(
-            page=1, page_size=20, search="       "
+            page=1, page_size=20, params=EstablishmentListingParams(search="       ")
         )
 
         uow.establishment_repo.get_paginated.assert_called_once_with(
             limit=20,
             offset=0,
-            search=None,
+            params=EstablishmentListingParams(search=None),
         )
 
 
