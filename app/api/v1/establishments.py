@@ -31,11 +31,7 @@ router = APIRouter(prefix="/establishments")
 )
 async def create_establishment(
     data: EstablishmentRequest,
-    _: UserActor = Depends(
-        require_some(
-            UserRole.ESTABLISHMENT_MANAGER, UserRole.ADMIN, UserRole.SUPERADMIN
-        )
-    ),
+    _: UserActor = Depends(require_some(UserRole.ADMIN, UserRole.SUPERADMIN)),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> EstablishmentResponse:
     """Register a new establishment."""
@@ -60,11 +56,7 @@ async def create_establishment(
 async def update_establishment(
     establishment_id: UUID,
     data: EstablishmentUpdateRequest,
-    _: UserActor = Depends(
-        require_some(
-            UserRole.ESTABLISHMENT_MANAGER, UserRole.ADMIN, UserRole.SUPERADMIN
-        )
-    ),
+    _: UserActor = Depends(require_some(UserRole.ADMIN, UserRole.SUPERADMIN)),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> EstablishmentResponse:
     """Partially update an establishment."""
@@ -124,11 +116,7 @@ async def get_establishments(
 )
 async def get_establishment_detail(
     establishment_id: UUID,
-    _: UserActor = Depends(
-        require_some(
-            UserRole.ESTABLISHMENT_MANAGER, UserRole.ADMIN, UserRole.SUPERADMIN
-        )
-    ),
+    _: UserActor = Depends(require_any),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> EstablishmentResponse:
     establishment = await service.get_establishment_by_id(establishment_id)

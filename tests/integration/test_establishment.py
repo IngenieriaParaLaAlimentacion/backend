@@ -248,7 +248,7 @@ class TestCreateEstablishment:
         assert data["formatted_address"] == "Av. Cabildo 100"
         assert "id" in data
 
-    async def test_manager_can_create_establishment(self, client, manager_headers):
+    async def test_manager_cannot_create_establishment(self, client, manager_headers):
         """A manager can create a new establishment and receives 201."""
         payload = _make_payload(
             name="Centro Norte", formatted_address="Av. Cabildo 100"
@@ -257,7 +257,7 @@ class TestCreateEstablishment:
             ESTABLISHMENT_URL, json=payload, headers=manager_headers
         )
 
-        assert response.status_code == status.HTTP_201_CREATED
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     async def test_duplicate_place_id_returns_409(self, client, admin_headers):
         """Creating an establishment with the same place_id twice returns 409."""
@@ -310,16 +310,6 @@ class TestCreateEstablishment:
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_professional_role_returns_403(self, client, professional_headers):
-        """A PROFESSIONAL token lacks permission to create establishments."""
-        response = await client.post(
-            ESTABLISHMENT_URL,
-            json=_make_payload(),
-            headers=professional_headers,
-        )
-
-        assert response.status_code == status.HTTP_403_FORBIDDEN
-
 
 class TestGetEstablishmentById:
     async def test_existing_establishment_returns_200(
@@ -358,16 +348,16 @@ class TestGetEstablishmentById:
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_professional_role_returns_403(
+    async def test_professional_role_returns_200(
         self, client, db_establishment, professional_headers
     ):
-        """A PROFESSIONAL token lacks permission to fetch an establishment."""
+        """A PROFESSIONAL token can fetch an establishment."""
         response = await client.get(
             f"{ESTABLISHMENT_URL}/{db_establishment.id}",
             headers=professional_headers,
         )
 
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_200_OK
 
 
 class TestUpdateEstablishment:

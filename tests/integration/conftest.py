@@ -17,6 +17,29 @@ os.environ["TESTCONTAINERS_RYUK_DISABLED"] = "true"
 LOGIN_URL = "/api/v1/auth/login"
 
 
+async def make_token_for_role(domain_role) -> str:
+    """Create a real DB user for the given role and return a signed access token."""
+    from app.core.security import create_access_token
+    from app.db.database import AsyncSessionLocal
+    from app.models.user import User, UserStatus
+    from app.models.user import UserRole as ORMUserRole
+
+    user_id = uuid.uuid4()
+    async with AsyncSessionLocal() as session:
+        session.add(
+            User(
+                id=user_id,
+                name="Test",
+                last_name=domain_role.value.title(),
+                email=f"{user_id}@test.com",
+                role=ORMUserRole(domain_role.value),
+                status=UserStatus.ACTIVE,
+            )
+        )
+        await session.commit()
+    return create_access_token(user_id, role=domain_role)
+
+
 @pytest.fixture
 def auth_headers():
     from app.core.security import create_access_token
