@@ -196,11 +196,7 @@ class InvalidTokenError(UnauthorizedError):
 
 
 class EstablishmentAlreadyExistsError(AlreadyExistsError):
-    """Exception raised when trying to create an establishment that already exists.
-
-    Args:
-        place_id (str): The place_id of the establishment that already exists.
-    """
+    """Raised when an establishment with the given place_id already exists."""
 
     def __init__(self, place_id: str):
         super().__init__(

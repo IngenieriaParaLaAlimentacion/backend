@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.domain.establishment import EstablishmentDomain
+from app.domain.establishment import EstablishmentDomain, EstablishmentListingParams
 from app.domain.pagination import PaginatedResult
 from app.exceptions.domain_exceptions import (
     EstablishmentAlreadyExistsError,
@@ -86,17 +86,20 @@ class EstablishmentService:
         self,
         page: int,
         page_size: int,
-        search: str | None,
+        params: EstablishmentListingParams,
     ) -> PaginatedResult[EstablishmentDomain]:
         """Return a paginated list of establishments with metadata.
 
         ``search`` matches case-insensitively against name or address.
+        ``city`` and ``province`` are exact case-insensitive matches.
         Whitespace-only values are treated as no filter.
         """
         offset = (page - 1) * page_size
-        search = search.strip() or None if search else None
+        params.search = params.search.strip() or None if params.search else None
+        params.city = params.city.strip() or None if params.city else None
+        params.province = params.province.strip() or None if params.province else None
         establishments, total = await self.uow.establishment_repo.get_paginated(
-            limit=page_size, offset=offset, search=search
+            limit=page_size, offset=offset, params=params
         )
         return PaginatedResult.build(
             items=[EstablishmentDomain.from_db(e) for e in establishments],

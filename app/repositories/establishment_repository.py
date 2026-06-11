@@ -1,8 +1,9 @@
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import asc, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.domain.establishment import EstablishmentListingParams
 from app.exceptions.domain_exceptions import EstablishmentNotFoundError
 from app.models.establishment import Establishment
 from app.utils.db import escape_like, execute_paginated
@@ -67,23 +68,37 @@ class EstablishmentRepository:
         self,
         limit: int,
         offset: int,
-        search: str | None = None,
+        params: EstablishmentListingParams,
     ) -> tuple[list[Establishment], int]:
         """Return a paginated list of establishments and the total matching count.
 
         ``search`` matches case-insensitively against name or address (OR).
+        ``city`` and ``province`` are exact case-insensitive matches.
         """
         base_query = select(Establishment)
         count_query = select(func.count()).select_from(Establishment)
 
-        if search:
-            search_term = f"%{escape_like(search)}%"
+        if params.search:
+            search_term = f"%{escape_like(params.search)}%"
             condition = Establishment.name.ilike(
                 search_term, escape="\\"
             ) | Establishment.formatted_address.ilike(search_term, escape="\\")
             base_query = base_query.where(condition)
             count_query = count_query.where(condition)
 
+        if params.city:
+            base_query = base_query.where(Establishment.city.ilike(params.city))
+            count_query = count_query.where(Establishment.city.ilike(params.city))
+
+        if params.province:
+            base_query = base_query.where(Establishment.province.ilike(params.province))
+            count_query = count_query.where(
+                Establishment.province.ilike(params.province)
+            )
+
+        field, direction = params.sort_order.to_order_clause()
+        col = getattr(Establishment, field)
+        order_by = asc(col) if direction == "asc" else desc(col)
         return await execute_paginated(
-            self.db, base_query, count_query, Establishment.created_at, limit, offset
+            self.db, base_query, count_query, order_by, limit, offset
         )

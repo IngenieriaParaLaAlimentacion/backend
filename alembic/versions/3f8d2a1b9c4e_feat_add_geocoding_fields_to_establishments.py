@@ -49,9 +49,13 @@ def upgrade() -> None:
     op.alter_column("establishments", "place_id", server_default=None)
     op.alter_column("establishments", "city", server_default=None)
     op.alter_column("establishments", "province", server_default=None)
+    op.create_unique_constraint(
+        "uq_establishments_place_id", "establishments", ["place_id"]
+    )
 
 
 def downgrade() -> None:
+    op.drop_constraint("uq_establishments_place_id", "establishments", type_="unique")
     op.drop_column("establishments", "province")
     op.drop_column("establishments", "city")
     op.drop_column("establishments", "place_id")

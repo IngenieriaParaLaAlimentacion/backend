@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Query, status
 
 from app.core.dependencies import get_establishment_service, require_any, require_some
 from app.domain import UserActor, UserRole
+from app.domain.establishment import EstablishmentListingParams
 from app.schemas.establishment_schema import (
     EstablishmentRequest,
     EstablishmentResponse,
@@ -78,6 +79,10 @@ async def update_establishment(
     summary="List all establishments",
     description="Returns all establishments available for a manager to register with."
     "Supports optional search filtering by establishment name or address.",
+    responses={
+        status.HTTP_400_BAD_REQUEST: {"description": "Invalid query parameters"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
+    },
 )
 async def get_establishments(
     page: int = Query(default=1, ge=1, description="Page number, starting at 1."),
@@ -87,12 +92,12 @@ async def get_establishments(
         le=100,
         description="Number of establishments per page (max 100).",
     ),
-    search: str | None = Query(default=None, max_length=100),
+    params: EstablishmentListingParams = Depends(),
     service: EstablishmentService = Depends(get_establishment_service),
     _: UserActor = Depends(require_any),
 ) -> PaginatedResponse[EstablishmentResponse]:
     result = await service.get_establishments_paginated(
-        page=page, page_size=page_size, search=search
+        page=page, page_size=page_size, params=params
     )
 
     return PaginatedResponse[EstablishmentResponse](
@@ -111,6 +116,7 @@ async def get_establishments(
     summary="Get an establishment by ID",
     description="Returns the details of a single establishment.",
     responses={
+        status.HTTP_400_BAD_REQUEST: {"description": "Invalid establishment ID"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
         status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
         status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
