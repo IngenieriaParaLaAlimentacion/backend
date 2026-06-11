@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
@@ -11,6 +12,7 @@ from app.domain.user import (
     UserWithEstablishmentsDomain,
 )
 from app.exceptions.domain_exceptions import (
+    BadRequestError,
     SubjectNotFoundError,
     UserEstablishmentNotFoundError,
     UserNotFoundError,
@@ -61,15 +63,20 @@ class AdminService:
             ]
         return estab_data_by_user
 
-    async def _validate_access_request(
-        self, user_id: UUID, establishment_ids: list[UUID]
-    ) -> None:
-        """Validate that the user exists and all establishment IDs belong to them."""
+    async def _get_manager_relations(self, user_id: UUID) -> tuple[Any, list]:
+        """Return (user, relations) for a manager, raising if the user does
+        not exist."""
         user = await self.uow.user_repo.get_by_id(user_id)
         if user is None:
             raise UserNotFoundError(str(user_id))
-
         relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
+        return user, relations
+
+    async def _validate_access_request(
+        self, user_id: UUID, establishment_ids: list[UUID]
+    ) -> None:
+        """Validate that all establishment IDs belong to the manager."""
+        _, relations = await self._get_manager_relations(user_id)
         user_establishment_ids = {rel.establishment_id for rel in relations}
 
         invalid_ids = set(establishment_ids) - user_establishment_ids
@@ -107,6 +114,30 @@ class AdminService:
         await self._set_user_establishment_relation_status(
             user_id, establishment_ids, UserEstablishmentStatus.REJECTED
         )
+        await self.uow.commit()
+
+    async def reject_manager(self, user_id: UUID) -> None:
+        """Reject all establishment access for the given manager and
+        mark them inactive.
+
+        Raises:
+            UserNotFoundError: If the user does not exist.
+            BadRequestError: If the manager is not in pending status.
+        """
+        user, relations = await self._get_manager_relations(user_id)
+        if user.status != UserStatus.PENDING_VALIDATION:
+            raise BadRequestError(
+                "Manager is not pending",
+                "Only managers with pending status can be rejected through "
+                "this endpoint.",
+            )
+        establishment_ids = [rel.establishment_id for rel in relations]
+
+        if establishment_ids:
+            await self.uow.user_establishment_repo.update_status_for_ids(
+                user_id, establishment_ids, UserEstablishmentStatus.REJECTED
+            )
+        await self.uow.user_repo.update_status(user_id, UserStatus.INACTIVE)
         await self.uow.commit()
 
     async def get_subject_detail(
