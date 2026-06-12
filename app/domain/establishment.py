@@ -29,6 +29,11 @@ class EstablishmentListingParams:
     province: str | None = None
     sort_order: EstablishmentSortOrder = EstablishmentSortOrder.NEWEST
 
+    def __post_init__(self) -> None:
+        self.search = self.search.strip() or None if self.search else None
+        self.city = self.city.strip() or None if self.city else None
+        self.province = self.province.strip() or None if self.province else None
+
 
 @dataclass
 class EstablishmentDomain:

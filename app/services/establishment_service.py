@@ -95,9 +95,6 @@ class EstablishmentService:
         Whitespace-only values are treated as no filter.
         """
         offset = (page - 1) * page_size
-        params.search = params.search.strip() or None if params.search else None
-        params.city = params.city.strip() or None if params.city else None
-        params.province = params.province.strip() or None if params.province else None
         establishments, total = await self.uow.establishment_repo.get_paginated(
             limit=page_size, offset=offset, params=params
         )

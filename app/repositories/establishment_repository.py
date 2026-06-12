@@ -91,23 +91,24 @@ class EstablishmentRepository:
         base_query = select(Establishment)
         count_query = select(func.count()).select_from(Establishment)
 
+        conditions = []
+
         if params.search:
             search_term = f"%{escape_like(params.search)}%"
-            condition = Establishment.name.ilike(
-                search_term, escape="\\"
-            ) | Establishment.formatted_address.ilike(search_term, escape="\\")
-            base_query = base_query.where(condition)
-            count_query = count_query.where(condition)
+            conditions.append(
+                Establishment.name.ilike(search_term, escape="\\")
+                | Establishment.formatted_address.ilike(search_term, escape="\\")
+            )
 
         if params.city:
-            base_query = base_query.where(Establishment.city.ilike(params.city))
-            count_query = count_query.where(Establishment.city.ilike(params.city))
+            conditions.append(Establishment.city.ilike(params.city))
 
         if params.province:
-            base_query = base_query.where(Establishment.province.ilike(params.province))
-            count_query = count_query.where(
-                Establishment.province.ilike(params.province)
-            )
+            conditions.append(Establishment.province.ilike(params.province))
+
+        for condition in conditions:
+            base_query = base_query.where(condition)
+            count_query = count_query.where(condition)
 
         order_by = _SORT_CLAUSES[params.sort_order]
         return await execute_paginated(

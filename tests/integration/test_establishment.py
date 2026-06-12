@@ -249,7 +249,7 @@ class TestCreateEstablishment:
         assert "id" in data
 
     async def test_manager_cannot_create_establishment(self, client, manager_headers):
-        """A manager can create a new establishment and receives 201."""
+        """A manager cannot create an establishment and receives 403."""
         payload = _make_payload(
             name="Centro Norte", formatted_address="Av. Cabildo 100"
         )
