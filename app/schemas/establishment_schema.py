@@ -8,14 +8,15 @@ ValidStr = Annotated[
     StringConstraints(strict=True, strip_whitespace=True, min_length=1, max_length=100),
 ]
 
-Coordinate = Annotated[float, Field(ge=-180, le=180)]
+Latitude = Annotated[float, Field(ge=-90, le=90)]
+Longitude = Annotated[float, Field(ge=-180, le=180)]
 
 
 class EstablishmentRequest(BaseModel):
     name: ValidStr
     formatted_address: ValidStr
-    latitude: Coordinate
-    longitude: Coordinate
+    latitude: Latitude
+    longitude: Longitude
     place_id: ValidStr
     city: ValidStr
     province: ValidStr
@@ -24,8 +25,8 @@ class EstablishmentRequest(BaseModel):
 class EstablishmentUpdateRequest(BaseModel):
     name: ValidStr | None = None
     formatted_address: ValidStr | None = None
-    latitude: Coordinate | None = None
-    longitude: Coordinate | None = None
+    latitude: Latitude | None = None
+    longitude: Longitude | None = None
     place_id: ValidStr | None = None
     city: ValidStr | None = None
     province: ValidStr | None = None

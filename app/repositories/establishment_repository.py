@@ -3,10 +3,23 @@ from uuid import UUID
 from sqlalchemy import asc, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.establishment import EstablishmentListingParams
+from app.domain.establishment import EstablishmentListingParams, EstablishmentSortOrder
 from app.exceptions.domain_exceptions import EstablishmentNotFoundError
 from app.models.establishment import Establishment
 from app.utils.db import escape_like, execute_paginated
+
+# Maps each EstablishmentSortOrder value to its SQLAlchemy order clause.
+# KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
+_SORT_CLAUSES = {
+    EstablishmentSortOrder.NEWEST: desc(Establishment.created_at),
+    EstablishmentSortOrder.OLDEST: asc(Establishment.created_at),
+    EstablishmentSortOrder.NAME_ASC: asc(Establishment.name),
+    EstablishmentSortOrder.NAME_DESC: desc(Establishment.name),
+    EstablishmentSortOrder.CITY_ASC: asc(Establishment.city),
+    EstablishmentSortOrder.CITY_DESC: desc(Establishment.city),
+    EstablishmentSortOrder.PROVINCE_ASC: asc(Establishment.province),
+    EstablishmentSortOrder.PROVINCE_DESC: desc(Establishment.province),
+}
 
 
 class EstablishmentRepository:
@@ -96,9 +109,7 @@ class EstablishmentRepository:
                 Establishment.province.ilike(params.province)
             )
 
-        field, direction = params.sort_order.to_order_clause()
-        col = getattr(Establishment, field)
-        order_by = asc(col) if direction == "asc" else desc(col)
+        order_by = _SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
             self.db, base_query, count_query, order_by, limit, offset
         )

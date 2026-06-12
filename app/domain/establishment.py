@@ -19,26 +19,6 @@ class EstablishmentSortOrder(StrEnum):
     PROVINCE_ASC = "province_asc"
     PROVINCE_DESC = "province_desc"
 
-    def to_order_clause(self) -> tuple[str, str]:
-        """Return (field, direction) for SQL ordering."""
-        match self:
-            case EstablishmentSortOrder.NEWEST:
-                return "created_at", "desc"
-            case EstablishmentSortOrder.OLDEST:
-                return "created_at", "asc"
-            case EstablishmentSortOrder.NAME_ASC:
-                return "name", "asc"
-            case EstablishmentSortOrder.NAME_DESC:
-                return "name", "desc"
-            case EstablishmentSortOrder.CITY_ASC:
-                return "city", "asc"
-            case EstablishmentSortOrder.CITY_DESC:
-                return "city", "desc"
-            case EstablishmentSortOrder.PROVINCE_ASC:
-                return "province", "asc"
-            case EstablishmentSortOrder.PROVINCE_DESC:
-                return "province", "desc"
-
 
 @dataclass
 class EstablishmentListingParams:

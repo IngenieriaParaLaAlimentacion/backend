@@ -30,7 +30,7 @@ class EstablishmentService:
 
         Raises:
             EstablishmentAlreadyExistsError: If an establishment with the same
-            place_id already exists.
+                place_id already exists.
         """
         existing = await self.uow.establishment_repo.get_by_place_id(data.place_id)
         if existing:
@@ -50,7 +50,7 @@ class EstablishmentService:
         Raises:
             EstablishmentNotFoundError: If no establishment with that ID exists.
             EstablishmentAlreadyExistsError: If the new place_id is already
-            taken by a different establishment.
+                taken by a different establishment.
         """
         establishment = await self.uow.establishment_repo.get_by_id(establishment_id)
         if establishment is None:

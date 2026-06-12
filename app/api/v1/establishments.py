@@ -44,7 +44,7 @@ async def create_establishment(
     response_model=EstablishmentResponse,
     status_code=status.HTTP_200_OK,
     summary="Update an establishment",
-    description="Partially updates an establishment's name and/or address.",
+    description="Partially updates one or more fields of an existing establishment.",
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid data"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},

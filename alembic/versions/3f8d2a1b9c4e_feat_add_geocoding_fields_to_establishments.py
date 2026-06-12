@@ -46,9 +46,16 @@ def upgrade() -> None:
     )
     op.alter_column("establishments", "latitude", server_default=None)
     op.alter_column("establishments", "longitude", server_default=None)
-    op.alter_column("establishments", "place_id", server_default=None)
     op.alter_column("establishments", "city", server_default=None)
     op.alter_column("establishments", "province", server_default=None)
+    # Assign a unique sentinel to any pre-existing rows before applying the
+    # unique constraint, so the migration is safe on non-empty databases.
+    op.execute(
+        "UPDATE establishments "
+        "SET place_id = 'migrated-' || gen_random_uuid()::text "
+        "WHERE place_id = ''"
+    )
+    op.alter_column("establishments", "place_id", server_default=None)
     op.create_unique_constraint(
         "uq_establishments_place_id", "establishments", ["place_id"]
     )
