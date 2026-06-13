@@ -29,23 +29,5 @@ async def get_my_profile(
     service: UserService = Depends(get_user_service),
 ) -> ProfileResponse:
     profile = await service.get_profile(actor)
-    return ProfileResponse(
-        id=profile.id,
-        email=profile.email,
-        name=profile.name,
-        last_name=profile.last_name,
-        role=profile.role,
-        establishments=(
-            None
-            if profile.establishments is None
-            else [
-                EstablishmentWithStatusResponse(
-                    id=establishment.id,
-                    name=establishment.name,
-                    address=establishment.address,
-                    status=establishment.status,
-                )
-                for establishment in profile.establishments
-            ]
-        ),
-    )
+  return ProfileResponse.model_validate(profile)
+
