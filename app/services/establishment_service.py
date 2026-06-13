@@ -105,16 +105,15 @@ class EstablishmentService:
         user_id: UUID,
         page: int,
         page_size: int,
-        search: str | None,
+        params: EstablishmentListingParams,
     ) -> PaginatedResult[EstablishmentDomain]:
         """Return establishments the user can still request, paginated."""
         offset = (page - 1) * page_size
-        search = search.strip() or None if search else None
         (
             establishments,
             total,
         ) = await self.uow.establishment_repo.get_available_for_user(
-            user_id=user_id, limit=page_size, offset=offset, search=search
+            user_id=user_id, limit=page_size, offset=offset, params=params
         )
         return self._build_page(establishments, total, page, page_size)
 

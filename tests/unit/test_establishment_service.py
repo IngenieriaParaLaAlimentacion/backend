@@ -182,7 +182,10 @@ class TestGetAvailableEstablishments:
         service = EstablishmentService(uow=make_available_uow(establishments, total=2))
 
         result = await service.get_available_establishments(
-            user_id=uuid.uuid4(), page=1, page_size=20, search=None
+            user_id=uuid.uuid4(),
+            page=1,
+            page_size=20,
+            params=EstablishmentListingParams(),
         )
 
         assert isinstance(result, PaginatedResult)
@@ -191,45 +194,18 @@ class TestGetAvailableEstablishments:
         assert result.total == 2
 
     @pytest.mark.asyncio
-    async def test_passes_user_id_and_offset(self, make_available_uow):
+    async def test_passes_user_id_offset_and_params(self, make_available_uow):
         uow = make_available_uow([], total=0)
         service = EstablishmentService(uow=uow)
         user_id = uuid.uuid4()
+        params = EstablishmentListingParams(search="Centro", city="Cordoba")
 
         await service.get_available_establishments(
-            user_id=user_id, page=3, page_size=10, search=None
+            user_id=user_id, page=3, page_size=10, params=params
         )
 
         uow.establishment_repo.get_available_for_user.assert_called_once_with(
-            user_id=user_id, limit=10, offset=20, search=None
-        )
-
-    @pytest.mark.asyncio
-    async def test_strips_whitespace_from_search(self, make_available_uow):
-        uow = make_available_uow([], total=0)
-        service = EstablishmentService(uow=uow)
-        user_id = uuid.uuid4()
-
-        await service.get_available_establishments(
-            user_id=user_id, page=1, page_size=20, search="   Centro   "
-        )
-
-        uow.establishment_repo.get_available_for_user.assert_called_once_with(
-            user_id=user_id, limit=20, offset=0, search="Centro"
-        )
-
-    @pytest.mark.asyncio
-    async def test_whitespace_only_search_passes_none(self, make_available_uow):
-        uow = make_available_uow([], total=0)
-        service = EstablishmentService(uow=uow)
-        user_id = uuid.uuid4()
-
-        await service.get_available_establishments(
-            user_id=user_id, page=1, page_size=20, search="    "
-        )
-
-        uow.establishment_repo.get_available_for_user.assert_called_once_with(
-            user_id=user_id, limit=20, offset=0, search=None
+            user_id=user_id, limit=10, offset=20, params=params
         )
 
 

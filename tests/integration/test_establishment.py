@@ -48,7 +48,13 @@ async def _insert_manager() -> uuid.UUID:
     return user_id
 
 
-async def _insert_establishment(name: str, formatted_address: str) -> SimpleNamespace:
+async def _insert_establishment(
+    name: str,
+    formatted_address: str,
+    *,
+    city: str = "Buenos Aires",
+    province: str = "Buenos Aires",
+) -> SimpleNamespace:
     from app.db.database import AsyncSessionLocal
     from app.models.establishment import Establishment
 
@@ -59,8 +65,8 @@ async def _insert_establishment(name: str, formatted_address: str) -> SimpleName
             latitude=-34.6037,
             longitude=-58.3816,
             place_id=str(uuid.uuid4()),
-            city="Buenos Aires",
-            province="Buenos Aires",
+            city=city,
+            province=province,
         )
         session.add(establishment)
         await session.commit()
@@ -336,6 +342,21 @@ class TestAvailableEstablishments:
         items = response.json()["items"]
         assert len(items) == 1
         assert items[0]["name"] == "Centro Recoleta"
+
+    async def test_city_filter_narrows_available(self, client, app):
+        """available now honors the full listing params (city/province/sort)."""
+        manager_id = await _insert_manager()
+        await _insert_establishment("Centro Norte", "Calle 1", city="Cordoba")
+        await _insert_establishment("Centro Sur", "Calle 2", city="Rosario")
+
+        response = await client.get(
+            f"{AVAILABLE_URL}&city=Cordoba", headers=_manager_headers(manager_id)
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        items = response.json()["items"]
+        assert len(items) == 1
+        assert items[0]["name"] == "Centro Norte"
 
     async def test_no_token_returns_401(self, client, app):
         await _insert_establishment("Centro A", "Calle A")

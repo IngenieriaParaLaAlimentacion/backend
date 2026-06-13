@@ -95,6 +95,19 @@ class EstablishmentRepository:
             search_term, escape="\\"
         ) | Establishment.formatted_address.ilike(search_term, escape="\\")
 
+    @classmethod
+    def _listing_conditions(cls, params: EstablishmentListingParams) -> list:
+        """Build the search/city/province filter conditions for a listing."""
+        conditions = []
+        search_condition = cls._search_condition(params.search)
+        if search_condition is not None:
+            conditions.append(search_condition)
+        if params.city:
+            conditions.append(Establishment.city.ilike(params.city))
+        if params.province:
+            conditions.append(Establishment.province.ilike(params.province))
+        return conditions
+
     async def get_paginated(
         self,
         limit: int,
@@ -103,25 +116,13 @@ class EstablishmentRepository:
     ) -> tuple[list[Establishment], int]:
         """Return a paginated list of establishments and the total matching count.
 
-        ``search`` matches case-insensitively against name or address (OR).
+        ``search`` matches case-insensitively against name or formatted_address.
         ``city`` and ``province`` are exact case-insensitive matches.
         """
         base_query = select(Establishment)
         count_query = select(func.count()).select_from(Establishment)
 
-        conditions = []
-
-        search_condition = self._search_condition(params.search)
-        if search_condition is not None:
-            conditions.append(search_condition)
-
-        if params.city:
-            conditions.append(Establishment.city.ilike(params.city))
-
-        if params.province:
-            conditions.append(Establishment.province.ilike(params.province))
-
-        for condition in conditions:
+        for condition in self._listing_conditions(params):
             base_query = base_query.where(condition)
             count_query = count_query.where(condition)
 
@@ -135,13 +136,14 @@ class EstablishmentRepository:
         user_id: UUID,
         limit: int,
         offset: int,
-        search: str | None = None,
+        params: EstablishmentListingParams,
     ) -> tuple[list[Establishment], int]:
-        """Return establishments the user can still request access to.
+        """Return establishments the user can still request access to, paginated.
 
         Excludes establishments where the user already has an ``approved`` or
-        ``pending`` relation. ``rejected`` relations are treated as available
-        (re-requestable). ``search`` matches name or address (case-insensitive).
+        ``pending`` relation; ``rejected`` relations are treated as available
+        (re-requestable). Applies the same search/city/province/sort filters as
+        ``get_paginated``.
         """
         blocked = select(UserEstablishment.establishment_id).where(
             UserEstablishment.user_id == user_id,
@@ -156,11 +158,11 @@ class EstablishmentRepository:
             .where(Establishment.id.not_in(blocked))
         )
 
-        search_condition = self._search_condition(search)
-        if search_condition is not None:
-            base_query = base_query.where(search_condition)
-            count_query = count_query.where(search_condition)
+        for condition in self._listing_conditions(params):
+            base_query = base_query.where(condition)
+            count_query = count_query.where(condition)
 
+        order_by = _SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
-            self.db, base_query, count_query, Establishment.created_at, limit, offset
+            self.db, base_query, count_query, order_by, limit, offset
         )

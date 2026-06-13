@@ -108,6 +108,7 @@ async def get_establishments(
     actor: UserActor | None = Depends(get_optional_actor),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> PaginatedResponse[EstablishmentResponse]:
+    params = query.to_domain()
     if available:
         if actor is None:
             raise UnauthorizedError()
@@ -117,11 +118,11 @@ async def get_establishments(
             user_id=actor.user_id,
             page=page,
             page_size=page_size,
-            search=query.search,
+            params=params,
         )
     else:
         result = await service.get_establishments_paginated(
-            page=page, page_size=page_size, params=query.to_domain()
+            page=page, page_size=page_size, params=params
         )
 
     return PaginatedResponse[EstablishmentResponse](
