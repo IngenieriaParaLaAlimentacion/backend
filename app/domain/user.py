@@ -60,8 +60,8 @@ class UserWithEstablishmentsDomain(BaseUserDomain):
 
 
 @dataclass
-class ApprovedManagerDomain(BaseUserDomain):
-    """User after admin approval, with each establishment annotated by
-    approval status."""
+class ProfileDomain(BaseUserDomain):
+    """Current user's profile. ``establishments`` is None for non-managers,
+    and a (possibly empty) list for establishment managers."""
 
-    establishments: list[EstablishmentWithStatusDomain]
+    establishments: list[EstablishmentWithStatusDomain] | None = None

@@ -12,6 +12,7 @@ from app.services.admin_service import AdminService
 from app.services.auth_service import AuthService
 from app.services.establishment_service import EstablishmentService
 from app.services.subject_service import SubjectService
+from app.services.user_service import UserService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
@@ -40,6 +41,12 @@ async def get_subject_service() -> AsyncGenerator[SubjectService, None]:
     """Provide a SubjectService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
         yield SubjectService(uow)
+
+
+async def get_user_service() -> AsyncGenerator[UserService, None]:
+    """Provide a UserService backed by a fresh UnitOfWork."""
+    async with UnitOfWork() as uow:
+        yield UserService(uow)
 
 
 def _decode_verified_payload(token: str) -> dict:
