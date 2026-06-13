@@ -153,18 +153,16 @@ class TestGetProfile:
             await service.get_profile(actor)
 
     @pytest.mark.asyncio
-    async def test_string_user_id_is_converted_to_uuid(self):
+    async def test_token_user_id_is_used_for_lookup(self):
         user = _make_user(role=UserRole.PROFESSIONAL)
-        token_user_id = uuid.uuid4()
+        token_user_id = str(uuid.uuid4())
         uow = _make_uow(user=user)
         service = UserService(uow)
-        actor = UserActor(user_id=str(token_user_id), role=UserRole.PROFESSIONAL)
+        actor = UserActor(user_id=token_user_id, role=UserRole.PROFESSIONAL)
 
         await service.get_profile(actor)
 
         uow.user_repo.get_by_id.assert_called_once_with(token_user_id)
-        (called_id,), _ = uow.user_repo.get_by_id.call_args
-        assert isinstance(called_id, uuid.UUID)
 
     @pytest.mark.asyncio
     async def test_relation_with_missing_establishment_is_skipped(self):
@@ -265,19 +263,19 @@ class TestUpdateProfile:
         assert profile.establishments[0].status == UserEstablishmentStatus.APPROVED
 
     @pytest.mark.asyncio
-    async def test_string_user_id_is_converted_to_uuid(self):
+    async def test_token_user_id_is_used_for_lookup(self):
         user = _make_user(role=UserRole.PROFESSIONAL)
-        token_user_id = uuid.uuid4()
+        token_user_id = str(uuid.uuid4())
         uow = _make_uow(user=user)
         service = UserService(uow)
-        actor = UserActor(user_id=str(token_user_id), role=UserRole.PROFESSIONAL)
+        actor = UserActor(user_id=token_user_id, role=UserRole.PROFESSIONAL)
 
         await service.update_profile(actor, ProfileUpdateRequest(name="X"))
 
         uow.user_repo.get_by_id.assert_called_once_with(token_user_id)
+        # The update targets the loaded user's own id, not the raw token value.
         called_id, _ = uow.user_repo.update_profile.call_args.args
-        assert isinstance(called_id, uuid.UUID)
-        assert called_id == token_user_id
+        assert called_id == user.id
 
 
 class TestGetOwnEstablishments:

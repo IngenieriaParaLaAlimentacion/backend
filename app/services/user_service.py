@@ -40,10 +40,7 @@ class UserService:
         Raises:
             UserNotFoundError: If the token's user no longer exists.
         """
-        user_id = UUID(str(actor.user_id))
-        user = await self.uow.user_repo.get_by_id(user_id)
-        if user is None:
-            raise UserNotFoundError(str(user_id))
+        user = await self._get_user_or_raise(actor)
         return await self._build_profile(user)
 
     async def update_profile(
@@ -55,10 +52,7 @@ class UserService:
             UserNotFoundError: If the token's user no longer exists.
             EmptyUpdateRequestError: If no editable field was provided.
         """
-        user_id = UUID(str(actor.user_id))
-        user = await self.uow.user_repo.get_by_id(user_id)
-        if user is None:
-            raise UserNotFoundError(str(user_id))
+        user = await self._get_user_or_raise(actor)
 
         values = data.model_dump(exclude_unset=True, exclude_none=True)
         if not values:
@@ -69,15 +63,15 @@ class UserService:
         name = values.get("name", user.name)
         last_name = values.get("last_name", user.last_name)
 
-        await self.uow.user_repo.update_profile(user_id, values)
+        await self.uow.user_repo.update_profile(user.id, values)
         await self.uow.commit()
 
         establishments = None
         if role == UserRole.ESTABLISHMENT_MANAGER:
-            establishments = await self._get_establishments_with_status(user_id)
+            establishments = await self._get_establishments_with_status(user.id)
 
         return ProfileDomain(
-            id=user_id,
+            id=user.id,
             email=email,
             name=name,
             last_name=last_name,
@@ -90,8 +84,7 @@ class UserService:
         self, actor: UserActor
     ) -> list[EstablishmentWithStatusDomain]:
         """Return the caller's establishment relations, each with its status."""
-        user_id = UUID(str(actor.user_id))
-        return await self._get_establishments_with_status(user_id)
+        return await self._get_establishments_with_status(actor.user_id)
 
     async def request_establishment_access(
         self, actor: UserActor, establishment_ids: list[UUID]
@@ -102,7 +95,7 @@ class UserService:
         Raises:
             EstablishmentNotFoundError: If any establishment id does not exist.
         """
-        user_id = UUID(str(actor.user_id))
+        user_id = actor.user_id
         unique_ids = list(dict.fromkeys(establishment_ids))  # dedupe, keep order
 
         establishments = await self.uow.establishment_repo.get_all_by_ids(unique_ids)
@@ -143,6 +136,17 @@ class UserService:
             )
             for estab_id in unique_ids
         ]
+
+    async def _get_user_or_raise(self, actor: UserActor) -> User:
+        """Load the authenticated user, raising if it no longer exists.
+
+        Raises:
+            UserNotFoundError: If the token's user no longer exists.
+        """
+        user = await self.uow.user_repo.get_by_id(actor.user_id)
+        if user is None:
+            raise UserNotFoundError(str(actor.user_id))
+        return user
 
     async def _build_profile(self, user: User) -> ProfileDomain:
         """Assemble a ProfileDomain from a loaded user (establishments only for

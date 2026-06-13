@@ -114,7 +114,7 @@ async def get_establishments(
         if actor.role not in _MANAGER_ROLES:
             raise ForbiddenError()
         result = await service.get_available_establishments(
-            user_id=UUID(str(actor.user_id)),
+            user_id=actor.user_id,
             page=page,
             page_size=page_size,
             search=query.search,
