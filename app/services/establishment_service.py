@@ -98,12 +98,7 @@ class EstablishmentService:
         establishments, total = await self.uow.establishment_repo.get_paginated(
             limit=page_size, offset=offset, params=params
         )
-        return PaginatedResult.build(
-            items=[EstablishmentDomain.from_db(e) for e in establishments],
-            total=total,
-            page=page,
-            page_size=page_size,
-        )
+        return self._build_page(establishments, total, page, page_size)
 
     async def get_available_establishments(
         self,
@@ -121,6 +116,16 @@ class EstablishmentService:
         ) = await self.uow.establishment_repo.get_available_for_user(
             user_id=user_id, limit=page_size, offset=offset, search=search
         )
+        return self._build_page(establishments, total, page, page_size)
+
+    @staticmethod
+    def _build_page(
+        establishments: list[Establishment],
+        total: int,
+        page: int,
+        page_size: int,
+    ) -> PaginatedResult[EstablishmentDomain]:
+        """Build a paginated EstablishmentDomain result from a repo page."""
         return PaginatedResult.build(
             items=[EstablishmentDomain.from_db(e) for e in establishments],
             total=total,
