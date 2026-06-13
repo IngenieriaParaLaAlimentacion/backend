@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 
 from app.core.dependencies import get_user_service, require_any
 from app.domain.user import UserActor
-from app.schemas.user_schema import EstablishmentWithStatusResponse, ProfileResponse
+from app.schemas.user_schema import ProfileResponse
 from app.services.user_service import UserService
 
 router = APIRouter(prefix="/users")
@@ -29,5 +29,4 @@ async def get_my_profile(
     service: UserService = Depends(get_user_service),
 ) -> ProfileResponse:
     profile = await service.get_profile(actor)
-  return ProfileResponse.model_validate(profile)
-
+    return ProfileResponse.model_validate(profile)
