@@ -17,6 +17,65 @@ os.environ["TESTCONTAINERS_RYUK_DISABLED"] = "true"
 LOGIN_URL = "/api/v1/auth/login"
 
 
+async def make_token_for_role(domain_role) -> str:
+    """Create a real DB user for the given role and return a signed access token."""
+    from app.core.security import create_access_token
+    from app.db.database import AsyncSessionLocal
+    from app.models.user import User, UserStatus
+    from app.models.user import UserRole as ORMUserRole
+
+    user_id = uuid.uuid4()
+    async with AsyncSessionLocal() as session:
+        session.add(
+            User(
+                id=user_id,
+                name="Test",
+                last_name=domain_role.value.title(),
+                email=f"{user_id}@test.com",
+                role=ORMUserRole(domain_role.value),
+                status=UserStatus.ACTIVE,
+            )
+        )
+        await session.commit()
+    return create_access_token(user_id, role=domain_role)
+
+
+@pytest.fixture
+def auth_headers():
+    from app.core.security import create_access_token
+    from app.domain.user import UserRole
+
+    token = create_access_token(uuid.uuid4(), role=UserRole.ADMIN)
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+def admin_headers():
+    from app.core.security import create_access_token
+    from app.domain.user import UserRole
+
+    token = create_access_token(uuid.uuid4(), role=UserRole.ADMIN)
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+def manager_headers():
+    from app.core.security import create_access_token
+    from app.domain.user import UserRole
+
+    token = create_access_token(uuid.uuid4(), role=UserRole.ESTABLISHMENT_MANAGER)
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+def professional_headers():
+    from app.core.security import create_access_token
+    from app.domain.user import UserRole
+
+    token = create_access_token(uuid.uuid4(), role=UserRole.PROFESSIONAL)
+    return {"Authorization": f"Bearer {token}"}
+
+
 @pytest.fixture(scope="session")
 def postgres_url():
     """Start a Postgres container for the test session and yield its connection URL."""
@@ -86,7 +145,15 @@ async def db_establishment():
     from app.models.establishment import Establishment
 
     async with AsyncSessionLocal() as session:
-        establishment = Establishment(name="Centro Test", address="Calle Test 123")
+        establishment = Establishment(
+            name="Centro Test",
+            formatted_address="Calle Test 123",
+            latitude=-34.6037,
+            longitude=-58.3816,
+            place_id="place-test-001",
+            city="Buenos Aires",
+            province="Buenos Aires",
+        )
         session.add(establishment)
         await session.commit()
         await session.refresh(establishment)

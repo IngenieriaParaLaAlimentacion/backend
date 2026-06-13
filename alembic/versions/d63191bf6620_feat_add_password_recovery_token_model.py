@@ -1,7 +1,7 @@
 """feat: add password recovery token model
 
 Revision ID: d63191bf6620
-Revises: 7b8a679a60e0
+Revises: 9dfcb864e5a1
 Create Date: 2026-05-24 17:07:21.251074
 
 """
@@ -14,7 +14,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "d63191bf6620"
-down_revision: Union[str, Sequence[str], None] = "7b8a679a60e0"
+down_revision: Union[str, Sequence[str], None] = "9dfcb864e5a1"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
