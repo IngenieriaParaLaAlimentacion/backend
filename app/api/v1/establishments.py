@@ -2,9 +2,9 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 
+from app.api.v1.params import EstablishmentListingQuery
 from app.core.dependencies import get_establishment_service, require_any, require_some
 from app.domain import UserActor, UserRole
-from app.domain.establishment import EstablishmentListingParams
 from app.schemas.establishment_schema import (
     EstablishmentRequest,
     EstablishmentResponse,
@@ -84,12 +84,12 @@ async def get_establishments(
         le=100,
         description="Number of establishments per page (max 100).",
     ),
-    params: EstablishmentListingParams = Depends(),
+    query: EstablishmentListingQuery = Depends(),
     service: EstablishmentService = Depends(get_establishment_service),
     _: UserActor = Depends(require_any),
 ) -> PaginatedResponse[EstablishmentResponse]:
     result = await service.get_establishments_paginated(
-        page=page, page_size=page_size, params=params
+        page=page, page_size=page_size, params=query.to_domain()
     )
 
     return PaginatedResponse[EstablishmentResponse](
