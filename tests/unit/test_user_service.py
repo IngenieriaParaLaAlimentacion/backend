@@ -32,11 +32,16 @@ def _make_user(
     return user
 
 
-def _make_establishment(name="Centro A", address="Calle 1"):
+def _make_establishment(name="Centro A", formatted_address="Calle 1"):
     establishment = MagicMock()
     establishment.id = uuid.uuid4()
     establishment.name = name
-    establishment.address = address
+    establishment.formatted_address = formatted_address
+    establishment.latitude = -34.6037
+    establishment.longitude = -58.3816
+    establishment.place_id = f"place-{uuid.uuid4().hex[:8]}"
+    establishment.city = "Buenos Aires"
+    establishment.province = "Buenos Aires"
     return establishment
 
 
@@ -76,8 +81,8 @@ class TestGetProfile:
     @pytest.mark.asyncio
     async def test_manager_with_mixed_status_establishments(self):
         user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
-        estab_a = _make_establishment(name="Centro A", address="Calle A 123")
-        estab_b = _make_establishment(name="Centro B", address="Calle B 456")
+        estab_a = _make_establishment(name="Centro A", formatted_address="Calle A 123")
+        estab_b = _make_establishment(name="Centro B", formatted_address="Calle B 456")
         relations = [
             _make_relation(estab_a.id, UserEstablishmentStatus.APPROVED),
             _make_relation(estab_b.id, UserEstablishmentStatus.PENDING),
@@ -100,7 +105,7 @@ class TestGetProfile:
         assert isinstance(first, EstablishmentWithStatusDomain)
         assert first.id == estab_a.id
         assert first.name == "Centro A"
-        assert first.address == "Calle A 123"
+        assert first.formatted_address == "Calle A 123"
         assert first.status == UserEstablishmentStatus.APPROVED
         assert second.id == estab_b.id
         assert second.status == UserEstablishmentStatus.PENDING
@@ -164,7 +169,7 @@ class TestGetProfile:
     @pytest.mark.asyncio
     async def test_relation_with_missing_establishment_is_skipped(self):
         user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
-        estab_a = _make_establishment(name="Centro A", address="Calle A 123")
+        estab_a = _make_establishment(name="Centro A", formatted_address="Calle A 123")
         missing_establishment_id = uuid.uuid4()
         relations = [
             _make_relation(estab_a.id, UserEstablishmentStatus.APPROVED),
@@ -245,7 +250,7 @@ class TestUpdateProfile:
     @pytest.mark.asyncio
     async def test_manager_response_includes_status_annotated_establishments(self):
         user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
-        estab_a = _make_establishment(name="Centro A", address="Calle A 123")
+        estab_a = _make_establishment(name="Centro A", formatted_address="Calle A 123")
         relations = [_make_relation(estab_a.id, UserEstablishmentStatus.APPROVED)]
         uow = _make_uow(user=user, relations=relations, establishments=[estab_a])
         service = UserService(uow)
@@ -279,8 +284,8 @@ class TestGetOwnEstablishments:
     @pytest.mark.asyncio
     async def test_manager_with_mixed_status_relations(self):
         user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
-        estab_a = _make_establishment(name="Centro A", address="Calle A")
-        estab_b = _make_establishment(name="Centro B", address="Calle B")
+        estab_a = _make_establishment(name="Centro A", formatted_address="Calle A")
+        estab_b = _make_establishment(name="Centro B", formatted_address="Calle B")
         relations = [
             _make_relation(estab_a.id, UserEstablishmentStatus.APPROVED),
             _make_relation(estab_b.id, UserEstablishmentStatus.REJECTED),
@@ -296,7 +301,7 @@ class TestGetOwnEstablishments:
         assert all(isinstance(r, EstablishmentWithStatusDomain) for r in result)
         by_id = {r.id: r for r in result}
         assert by_id[estab_a.id].name == "Centro A"
-        assert by_id[estab_a.id].address == "Calle A"
+        assert by_id[estab_a.id].formatted_address == "Calle A"
         assert by_id[estab_a.id].status == UserEstablishmentStatus.APPROVED
         assert by_id[estab_b.id].status == UserEstablishmentStatus.REJECTED
 

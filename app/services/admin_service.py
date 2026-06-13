@@ -33,11 +33,7 @@ class AdminService:
             establishment_ids
         )
         return {
-            establishment.id: EstablishmentDomain(
-                id=establishment.id,
-                name=establishment.name,
-                address=establishment.address,
-            )
+            establishment.id: EstablishmentDomain.from_db(establishment)
             for establishment in establishments
         }
 
@@ -99,57 +95,6 @@ class AdminService:
         await self._validate_access_request(user_id, establishment_ids)
         await self.uow.user_establishment_repo.update_status_for_ids(
             user_id, establishment_ids, status
-        )
-
-    async def get_users_paginated(
-        self,
-        page: int,
-        page_size: int,
-        role: UserRole | None = None,
-        status: UserStatus | None = None,
-        search: str | None = None,
-    ) -> PaginatedResult[UserWithEstablishmentsDomain]:
-        """Return a paginated list of users with their establishments.
-
-        ``search`` matches case-insensitively against email, name, and last_name.
-        Whitespace-only values are treated as no filter.
-        """
-        offset = (page - 1) * page_size
-        search = search.strip() or None if search else None
-
-        users, total = await self.uow.user_repo.get_paginated(
-            role=role, status=status, limit=page_size, offset=offset, search=search
-        )
-
-        if not users:
-            return PaginatedResult(
-                items=[],
-                total=total,
-                page=page,
-                page_size=page_size,
-                total_pages=0,
-            )
-
-        establishments_per_user = await self._get_establishments_per_user(
-            [user.id for user in users]
-        )
-
-        return PaginatedResult.build(
-            items=[
-                UserWithEstablishmentsDomain(
-                    id=user.id,
-                    email=user.email,
-                    name=user.name,
-                    last_name=user.last_name,
-                    role=user.role,
-                    status=user.status,
-                    establishments=establishments_per_user.get(user.id, []),
-                )
-                for user in users
-            ],
-            total=total,
-            page=page,
-            page_size=page_size,
         )
 
     async def approve_establishments(
@@ -221,3 +166,48 @@ class AdminService:
             page_size=history_page_size,
         )
         return SubjectDomain.from_db(subject), history
+
+    async def get_users_paginated(
+        self,
+        page: int,
+        page_size: int,
+        role: UserRole | None = None,
+        status: UserStatus | None = None,
+        search: str | None = None,
+    ) -> PaginatedResult[UserWithEstablishmentsDomain]:
+        """Return a paginated list of users with their establishments.
+
+        ``search`` matches case-insensitively against email, name, and last_name.
+        Whitespace-only values are treated as no filter.
+        """
+        offset = (page - 1) * page_size
+        search = search.strip() or None if search else None
+
+        users, total = await self.uow.user_repo.get_paginated(
+            role=role, status=status, limit=page_size, offset=offset, search=search
+        )
+
+        if not users:
+            return PaginatedResult(
+                items=[],
+                total=total,
+                page=page,
+                page_size=page_size,
+                total_pages=0,
+            )
+
+        establishments_per_user = await self._get_establishments_per_user(
+            [user.id for user in users]
+        )
+
+        return PaginatedResult.build(
+            items=[
+                UserWithEstablishmentsDomain.from_db(
+                    user, establishments_per_user.get(user.id, [])
+                )
+                for user in users
+            ],
+            total=total,
+            page=page,
+            page_size=page_size,
+        )

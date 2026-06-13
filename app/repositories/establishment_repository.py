@@ -1,13 +1,30 @@
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import asc, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.establishment import UserEstablishmentStatus
+from app.domain.establishment import (
+    EstablishmentListingParams,
+    EstablishmentSortOrder,
+    UserEstablishmentStatus,
+)
 from app.exceptions.domain_exceptions import EstablishmentNotFoundError
 from app.models.establishment import Establishment
 from app.models.user_establishment import UserEstablishment
 from app.utils.db import escape_like, execute_paginated
+
+# Maps each EstablishmentSortOrder value to its SQLAlchemy order clause.
+# KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
+_SORT_CLAUSES = {
+    EstablishmentSortOrder.NEWEST: desc(Establishment.created_at),
+    EstablishmentSortOrder.OLDEST: asc(Establishment.created_at),
+    EstablishmentSortOrder.NAME_ASC: asc(Establishment.name),
+    EstablishmentSortOrder.NAME_DESC: desc(Establishment.name),
+    EstablishmentSortOrder.CITY_ASC: asc(Establishment.city),
+    EstablishmentSortOrder.CITY_DESC: desc(Establishment.city),
+    EstablishmentSortOrder.PROVINCE_ASC: asc(Establishment.province),
+    EstablishmentSortOrder.PROVINCE_DESC: desc(Establishment.province),
+}
 
 
 class EstablishmentRepository:
@@ -15,6 +32,26 @@ class EstablishmentRepository:
 
     def __init__(self, db: AsyncSession):
         self.db = db
+
+    async def create(self, establishment: Establishment) -> Establishment:
+        """Persist a new establishment."""
+        self.db.add(establishment)
+        await self.db.flush()
+        await self.db.refresh(establishment)
+        return establishment
+
+    async def update(self, establishment: Establishment) -> Establishment:
+        """Persist changes to an existing establishment."""
+        await self.db.flush()
+        await self.db.refresh(establishment)
+        return establishment
+
+    async def get_by_place_id(self, place_id: str) -> Establishment | None:
+        """Return an establishment by place_id, or None if it does not exist."""
+        result = await self.db.execute(
+            select(Establishment).where(Establishment.place_id == place_id)
+        )
+        return result.scalar_one_or_none()
 
     async def get_by_id(self, id: UUID) -> Establishment | None:
         """Return an establishment by ID, or None if it does not exist."""
@@ -49,25 +86,38 @@ class EstablishmentRepository:
         self,
         limit: int,
         offset: int,
-        search: str | None = None,
+        params: EstablishmentListingParams,
     ) -> tuple[list[Establishment], int]:
         """Return a paginated list of establishments and the total matching count.
 
         ``search`` matches case-insensitively against name or address (OR).
+        ``city`` and ``province`` are exact case-insensitive matches.
         """
         base_query = select(Establishment)
         count_query = select(func.count()).select_from(Establishment)
 
-        if search:
-            search_term = f"%{escape_like(search)}%"
-            condition = Establishment.name.ilike(
-                search_term, escape="\\"
-            ) | Establishment.address.ilike(search_term, escape="\\")
+        conditions = []
+
+        if params.search:
+            search_term = f"%{escape_like(params.search)}%"
+            conditions.append(
+                Establishment.name.ilike(search_term, escape="\\")
+                | Establishment.formatted_address.ilike(search_term, escape="\\")
+            )
+
+        if params.city:
+            conditions.append(Establishment.city.ilike(params.city))
+
+        if params.province:
+            conditions.append(Establishment.province.ilike(params.province))
+
+        for condition in conditions:
             base_query = base_query.where(condition)
             count_query = count_query.where(condition)
 
+        order_by = _SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
-            self.db, base_query, count_query, Establishment.created_at, limit, offset
+            self.db, base_query, count_query, order_by, limit, offset
         )
 
     async def get_available_for_user(
@@ -100,7 +150,7 @@ class EstablishmentRepository:
             search_term = f"%{escape_like(search)}%"
             condition = Establishment.name.ilike(
                 search_term, escape="\\"
-            ) | Establishment.address.ilike(search_term, escape="\\")
+            ) | Establishment.formatted_address.ilike(search_term, escape="\\")
             base_query = base_query.where(condition)
             count_query = count_query.where(condition)
 

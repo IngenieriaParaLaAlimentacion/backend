@@ -8,6 +8,7 @@ from jose import jwt
 
 from app.core.security import create_access_token
 from app.domain.user import UserRole
+from tests.integration.conftest import make_token_for_role
 
 pytestmark = pytest.mark.asyncio
 
@@ -88,17 +89,17 @@ class TestUploadSubject:
         response = await _upload(client, headers={"Authorization": f"Bearer {forged}"})
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_admin_role_returns_403(self, client):
-        """A valid token with admin role should return 403."""
-        token = create_access_token(uuid.uuid4(), role=UserRole.ADMIN)
+    async def test_admin_role_returns_201(self, client):
+        """A valid token with admin role should return 201."""
+        token = await make_token_for_role(UserRole.ADMIN)
         response = await _upload(client, headers={"Authorization": f"Bearer {token}"})
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_201_CREATED
 
-    async def test_professional_role_returns_403(self, client):
-        """A valid token with professional role should return 403."""
-        token = create_access_token(uuid.uuid4(), role=UserRole.PROFESSIONAL)
+    async def test_professional_role_returns_201(self, client):
+        """A valid token with professional role should return 201."""
+        token = await make_token_for_role(UserRole.PROFESSIONAL)
         response = await _upload(client, headers={"Authorization": f"Bearer {token}"})
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_201_CREATED
 
     async def test_valid_request_returns_201(self, client, manager_headers):
         """A well-formed request with a manager token returns 201."""

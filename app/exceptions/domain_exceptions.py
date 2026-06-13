@@ -193,3 +193,13 @@ class InvalidTokenError(UnauthorizedError):
 
     def __init__(self, reason: str = "The provided token is invalid or expired."):
         super().__init__("Invalid token", reason)
+
+
+class EstablishmentAlreadyExistsError(AlreadyExistsError):
+    """Raised when an establishment with the given place_id already exists."""
+
+    def __init__(self, place_id: str):
+        super().__init__(
+            "Establishment already exists",
+            f"An establishment with place_id {place_id} already exists.",
+        )

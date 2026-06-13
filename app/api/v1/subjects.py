@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 
-from app.core.dependencies import get_current_manager, get_subject_service, require_any
+from app.core.dependencies import get_subject_service, require_any
 from app.domain import UserActor
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.subject_schema import (
@@ -31,11 +31,11 @@ router = APIRouter(prefix="/subjects")
 )
 async def create_subject(
     data: SubjectRequest,
-    manager: UserActor = Depends(get_current_manager),
+    user: UserActor = Depends(require_any),
     service: SubjectService = Depends(get_subject_service),
 ) -> SubjectResponse:
     """Register a new subject."""
-    subject = await service.create_subject(data, actor_id=manager.user_id)
+    subject = await service.create_subject(data, actor_id=user.user_id)
     return SubjectResponse.model_validate(subject)
 
 
@@ -118,8 +118,8 @@ async def list_subjects(
 async def update_subject(
     subject_id: UUID,
     data: SubjectUpdateRequest,
-    manager: UserActor = Depends(get_current_manager),
+    user: UserActor = Depends(require_any),
     service: SubjectService = Depends(get_subject_service),
 ) -> SubjectResponse:
-    subject = await service.update_subject(subject_id, data, actor_id=manager.user_id)
+    subject = await service.update_subject(subject_id, data, actor_id=user.user_id)
     return SubjectResponse.model_validate(subject)

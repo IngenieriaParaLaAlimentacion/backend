@@ -11,9 +11,7 @@ from app.schemas.admin_schema import (
     AdminSubjectDetailResponse,
     EstablishmentAccessRequest,
     PaginatedUsersResponse,
-    UserAdminView,
 )
-from app.schemas.establishment_schema import EstablishmentResponse
 from app.services.admin_service import AdminService
 
 router = APIRouter(prefix="/admin")
@@ -49,29 +47,7 @@ async def list_users(
     result = await service.get_users_paginated(
         page=page, page_size=page_size, role=role, status=status_filter, search=search
     )
-    return PaginatedUsersResponse(
-        items=[
-            UserAdminView(
-                id=user.id,
-                email=user.email,
-                name=user.name,
-                last_name=user.last_name,
-                role=user.role,
-                status=user.status,
-                establishments=[
-                    EstablishmentResponse(
-                        id=estab.id, name=estab.name, address=estab.address
-                    )
-                    for estab in user.establishments
-                ],
-            )
-            for user in result.items
-        ],
-        total=result.total,
-        page=result.page,
-        page_size=result.page_size,
-        total_pages=result.total_pages,
-    )
+    return PaginatedUsersResponse.model_validate(result)
 
 
 @router.patch(

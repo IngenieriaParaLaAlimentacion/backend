@@ -8,11 +8,16 @@ from app.models import UserRole, UserStatus
 
 @pytest.fixture
 def make_establishment():
-    def _make(name: str = "Centro A", address: str = "Calle 1"):
+    def _make(name: str = "Centro A", formatted_address: str = "Calle 1"):
         e = MagicMock()
         e.id = uuid.uuid4()
         e.name = name
-        e.address = address
+        e.formatted_address = formatted_address
+        e.latitude = -34.6
+        e.longitude = -58.4
+        e.place_id = "place-test-001"
+        e.city = "Buenos Aires"
+        e.province = "Buenos Aires"
         return e
 
     return _make

@@ -1,7 +1,9 @@
+from dataclasses import fields
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.establishment import (
+    EstablishmentDomain,
     EstablishmentWithStatusDomain,
     UserEstablishmentStatus,
 )
@@ -12,6 +14,15 @@ from app.exceptions.domain_exceptions import (
 )
 from app.models.user import User
 from app.schemas.user_schema import ProfileUpdateRequest
+
+# Establishment scalar fields, captured so a status-annotated domain can be built
+# from a snapshot taken before commit (avoids async ORM attribute expiry).
+_ESTABLISHMENT_FIELDS = tuple(f.name for f in fields(EstablishmentDomain))
+
+
+def _establishment_snapshot(establishment) -> dict:
+    """Capture an establishment's scalar fields into a plain dict."""
+    return {name: getattr(establishment, name) for name in _ESTABLISHMENT_FIELDS}
 
 
 class UserService:
@@ -95,7 +106,8 @@ class UserService:
         unique_ids = list(dict.fromkeys(establishment_ids))  # dedupe, keep order
 
         establishments = await self.uow.establishment_repo.get_all_by_ids(unique_ids)
-        info = {e.id: (e.name, e.address) for e in establishments}  # before commit
+        # Snapshot scalars before commit to avoid async attribute expiry.
+        info = {e.id: _establishment_snapshot(e) for e in establishments}
 
         relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
         status_by_estab = {rel.establishment_id: rel.status for rel in relations}
@@ -127,10 +139,7 @@ class UserService:
 
         return [
             EstablishmentWithStatusDomain(
-                id=estab_id,
-                name=info[estab_id][0],
-                address=info[estab_id][1],
-                status=result_status[estab_id],
+                **info[estab_id], status=result_status[estab_id]
             )
             for estab_id in unique_ids
         ]
@@ -170,9 +179,7 @@ class UserService:
                 continue
             result.append(
                 EstablishmentWithStatusDomain(
-                    id=establishment.id,
-                    name=establishment.name,
-                    address=establishment.address,
+                    **_establishment_snapshot(establishment),
                     status=relation.status,
                 )
             )

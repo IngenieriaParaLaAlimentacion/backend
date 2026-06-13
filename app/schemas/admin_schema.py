@@ -24,6 +24,8 @@ class UserAdminView(BaseModel):
     status: str
     establishments: list[EstablishmentResponse]
 
+    model_config = {"from_attributes": True}
+
 
 class PaginatedUsersResponse(BaseModel):
     items: list[UserAdminView]
@@ -31,6 +33,8 @@ class PaginatedUsersResponse(BaseModel):
     page: int
     page_size: int
     total_pages: int
+
+    model_config = {"from_attributes": True}
 
 
 class EstablishmentAccessRequest(BaseModel):

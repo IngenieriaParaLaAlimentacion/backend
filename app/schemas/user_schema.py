@@ -7,7 +7,12 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 class EstablishmentWithStatusResponse(BaseModel):
     id: UUID
     name: str
-    address: str
+    formatted_address: str
+    latitude: float
+    longitude: float
+    place_id: str
+    city: str
+    province: str
     status: str
 
     model_config = {"from_attributes": True}

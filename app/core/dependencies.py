@@ -15,9 +15,6 @@ from app.services.subject_service import SubjectService
 from app.services.user_service import UserService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
-oauth2_scheme_optional = OAuth2PasswordBearer(
-    tokenUrl="/api/v1/auth/login", auto_error=False
-)
 
 # Services
 
@@ -86,19 +83,6 @@ async def _get_authenticated_actor(
     if payload.get("role") not in allowed:
         raise ForbiddenError()
 
-    return UserActor(user_id=payload["sub"], role=payload["role"])
-
-
-async def get_optional_actor(
-    token: str | None = Depends(oauth2_scheme_optional),
-) -> UserActor | None:
-    """Return the authenticated actor, or None when no token is supplied.
-
-    A present-but-invalid token still raises UnauthorizedError.
-    """
-    if not token:
-        return None
-    payload = _decode_verified_payload(token)
     return UserActor(user_id=payload["sub"], role=payload["role"])
 
 

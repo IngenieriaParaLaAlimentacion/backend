@@ -52,13 +52,23 @@ async def _insert_user(
     )
 
 
-async def _insert_establishment(name: str, address: str) -> SimpleNamespace:
-    establishment = Establishment(name=name, address=address)
+async def _insert_establishment(name: str, formatted_address: str) -> SimpleNamespace:
+    establishment = Establishment(
+        name=name,
+        formatted_address=formatted_address,
+        latitude=-34.6037,
+        longitude=-58.3816,
+        place_id=str(uuid.uuid4()),
+        city="Buenos Aires",
+        province="Buenos Aires",
+    )
     async with db_module.AsyncSessionLocal() as session:
         session.add(establishment)
         await session.commit()
         await session.refresh(establishment)
-    return SimpleNamespace(id=establishment.id, name=name, address=address)
+    return SimpleNamespace(
+        id=establishment.id, name=name, formatted_address=formatted_address
+    )
 
 
 async def _insert_relation(
@@ -177,7 +187,7 @@ class TestProfileManager:
         by_id = {item["id"]: item for item in establishments}
         item_a = by_id[str(estab_a.id)]
         assert item_a["name"] == "Centro A"
-        assert item_a["address"] == "Calle A 123"
+        assert item_a["formatted_address"] == "Calle A 123"
         assert item_a["status"] == UserEstablishmentStatus.APPROVED
 
         item_b = by_id[str(estab_b.id)]
