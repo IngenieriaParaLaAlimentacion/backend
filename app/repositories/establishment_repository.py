@@ -82,6 +82,19 @@ class EstablishmentRepository:
 
         return establishments
 
+    @staticmethod
+    def _search_condition(search: str | None):
+        """Case-insensitive name/formatted_address match for ``search``, or None.
+
+        Returns None when ``search`` is empty so callers can skip the filter.
+        """
+        if not search:
+            return None
+        search_term = f"%{escape_like(search)}%"
+        return Establishment.name.ilike(
+            search_term, escape="\\"
+        ) | Establishment.formatted_address.ilike(search_term, escape="\\")
+
     async def get_paginated(
         self,
         limit: int,
@@ -98,12 +111,9 @@ class EstablishmentRepository:
 
         conditions = []
 
-        if params.search:
-            search_term = f"%{escape_like(params.search)}%"
-            conditions.append(
-                Establishment.name.ilike(search_term, escape="\\")
-                | Establishment.formatted_address.ilike(search_term, escape="\\")
-            )
+        search_condition = self._search_condition(params.search)
+        if search_condition is not None:
+            conditions.append(search_condition)
 
         if params.city:
             conditions.append(Establishment.city.ilike(params.city))
@@ -146,13 +156,10 @@ class EstablishmentRepository:
             .where(Establishment.id.not_in(blocked))
         )
 
-        if search:
-            search_term = f"%{escape_like(search)}%"
-            condition = Establishment.name.ilike(
-                search_term, escape="\\"
-            ) | Establishment.formatted_address.ilike(search_term, escape="\\")
-            base_query = base_query.where(condition)
-            count_query = count_query.where(condition)
+        search_condition = self._search_condition(search)
+        if search_condition is not None:
+            base_query = base_query.where(search_condition)
+            count_query = count_query.where(search_condition)
 
         return await execute_paginated(
             self.db, base_query, count_query, Establishment.created_at, limit, offset
