@@ -100,8 +100,7 @@ async def get_optional_actor(
     """
     if not token:
         return None
-    payload = _decode_verified_payload(token)
-    return UserActor(user_id=payload["sub"], role=payload["role"])
+    return await _get_authenticated_actor(token, set(UserRole))
 
 
 async def get_current_admin(token: str = Depends(oauth2_scheme)) -> UserActor:
