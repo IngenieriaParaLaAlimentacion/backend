@@ -1,6 +1,7 @@
+from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 
 class EstablishmentWithStatusResponse(BaseModel):
@@ -21,3 +22,20 @@ class ProfileResponse(BaseModel):
     establishments: list[EstablishmentWithStatusResponse] | None = None
 
     model_config = {"from_attributes": True}
+
+
+class ProfileUpdateRequest(BaseModel):
+    """Editable profile fields. Any field other than these is rejected (422)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: Annotated[str, StringConstraints(strict=True, min_length=1)] | None = None
+    last_name: Annotated[str, StringConstraints(strict=True, min_length=1)] | None = (
+        None
+    )
+
+
+class EstablishmentAccessRequest(BaseModel):
+    """Establishment ids a manager wants to request access to."""
+
+    establishment_ids: Annotated[list[UUID], Field(min_length=1)]

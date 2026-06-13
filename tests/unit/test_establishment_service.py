@@ -1,3 +1,4 @@
+import uuid
 from math import ceil
 from unittest.mock import AsyncMock
 
@@ -15,6 +16,19 @@ def make_uow():
         uow = AsyncMock()
         uow.__aenter__.return_value = uow
         uow.establishment_repo.get_paginated = AsyncMock(
+            return_value=(establishments, total)
+        )
+        return uow
+
+    return _make
+
+
+@pytest.fixture
+def make_available_uow():
+    def _make(establishments, total):
+        uow = AsyncMock()
+        uow.__aenter__.return_value = uow
+        uow.establishment_repo.get_available_for_user = AsyncMock(
             return_value=(establishments, total)
         )
         return uow
@@ -136,4 +150,62 @@ class TestGetEstablishmentsPaginated:
             limit=20,
             offset=0,
             search=None,
+        )
+
+
+class TestGetAvailableEstablishments:
+    @pytest.mark.asyncio
+    async def test_returns_mapped_items(self, make_establishment, make_available_uow):
+        establishments = [make_establishment(), make_establishment()]
+        service = EstablishmentService(uow=make_available_uow(establishments, total=2))
+
+        result = await service.get_available_establishments(
+            user_id=uuid.uuid4(), page=1, page_size=20, search=None
+        )
+
+        assert isinstance(result, PaginatedResult)
+        assert len(result.items) == 2
+        assert all(isinstance(item, EstablishmentDomain) for item in result.items)
+        assert result.total == 2
+
+    @pytest.mark.asyncio
+    async def test_passes_user_id_and_offset(self, make_available_uow):
+        uow = make_available_uow([], total=0)
+        service = EstablishmentService(uow=uow)
+        user_id = uuid.uuid4()
+
+        await service.get_available_establishments(
+            user_id=user_id, page=3, page_size=10, search=None
+        )
+
+        uow.establishment_repo.get_available_for_user.assert_called_once_with(
+            user_id=user_id, limit=10, offset=20, search=None
+        )
+
+    @pytest.mark.asyncio
+    async def test_strips_whitespace_from_search(self, make_available_uow):
+        uow = make_available_uow([], total=0)
+        service = EstablishmentService(uow=uow)
+        user_id = uuid.uuid4()
+
+        await service.get_available_establishments(
+            user_id=user_id, page=1, page_size=20, search="   Centro   "
+        )
+
+        uow.establishment_repo.get_available_for_user.assert_called_once_with(
+            user_id=user_id, limit=20, offset=0, search="Centro"
+        )
+
+    @pytest.mark.asyncio
+    async def test_whitespace_only_search_passes_none(self, make_available_uow):
+        uow = make_available_uow([], total=0)
+        service = EstablishmentService(uow=uow)
+        user_id = uuid.uuid4()
+
+        await service.get_available_establishments(
+            user_id=user_id, page=1, page_size=20, search="    "
+        )
+
+        uow.establishment_repo.get_available_for_user.assert_called_once_with(
+            user_id=user_id, limit=20, offset=0, search=None
         )

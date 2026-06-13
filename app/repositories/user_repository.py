@@ -106,6 +106,13 @@ class UserRepository:
             update(User).where(User.id == user_id).values(status=status)
         )
 
+    async def update_profile(self, user_id: UUID, values: dict[str, str]) -> None:
+        """Update the given mutable profile columns for a user.
+
+        ``values`` must contain only editable columns (name, last_name).
+        """
+        await self.db.execute(update(User).where(User.id == user_id).values(**values))
+
     async def get_pending(self) -> list[User]:
         """Return all managers awaiting admin approval."""
         return await self.get_all(
