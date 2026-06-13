@@ -3,6 +3,7 @@ from types import SimpleNamespace
 
 import pytest
 import pytest_asyncio
+from sqlalchemy import select
 
 import app.db.database as db_module
 from app.core.security import create_access_token
@@ -15,6 +16,7 @@ from app.models.user_establishment import UserEstablishment
 pytestmark = pytest.mark.asyncio
 
 ME_URL = "/api/v1/users/me"
+ME_ESTABLISHMENTS_URL = "/api/v1/users/me/establishments"
 
 
 async def _insert_user(
@@ -50,13 +52,23 @@ async def _insert_user(
     )
 
 
-async def _insert_establishment(name: str, address: str) -> SimpleNamespace:
-    establishment = Establishment(name=name, address=address)
+async def _insert_establishment(name: str, formatted_address: str) -> SimpleNamespace:
+    establishment = Establishment(
+        name=name,
+        formatted_address=formatted_address,
+        latitude=-34.6037,
+        longitude=-58.3816,
+        place_id=str(uuid.uuid4()),
+        city="Buenos Aires",
+        province="Buenos Aires",
+    )
     async with db_module.AsyncSessionLocal() as session:
         session.add(establishment)
         await session.commit()
         await session.refresh(establishment)
-    return SimpleNamespace(id=establishment.id, name=name, address=address)
+    return SimpleNamespace(
+        id=establishment.id, name=name, formatted_address=formatted_address
+    )
 
 
 async def _insert_relation(
@@ -78,6 +90,20 @@ async def _insert_relation(
 def _headers_for(user: SimpleNamespace) -> dict:
     token = create_access_token(user.id, role=user.role)
     return {"Authorization": f"Bearer {token}"}
+
+
+async def _fetch_user(user_id: uuid.UUID) -> User | None:
+    async with db_module.AsyncSessionLocal() as session:
+        result = await session.execute(select(User).where(User.id == user_id))
+        return result.scalar_one_or_none()
+
+
+async def _fetch_relations(user_id: uuid.UUID) -> list[UserEstablishment]:
+    async with db_module.AsyncSessionLocal() as session:
+        result = await session.execute(
+            select(UserEstablishment).where(UserEstablishment.user_id == user_id)
+        )
+        return list(result.scalars().all())
 
 
 @pytest_asyncio.fixture
@@ -161,7 +187,7 @@ class TestProfileManager:
         by_id = {item["id"]: item for item in establishments}
         item_a = by_id[str(estab_a.id)]
         assert item_a["name"] == "Centro A"
-        assert item_a["address"] == "Calle A 123"
+        assert item_a["formatted_address"] == "Calle A 123"
         assert item_a["status"] == UserEstablishmentStatus.APPROVED
 
         item_b = by_id[str(estab_b.id)]
@@ -183,3 +209,268 @@ class TestProfileMissingUser:
         ghost = SimpleNamespace(id=uuid.uuid4(), role=UserRole.PROFESSIONAL)
         response = await client.get(ME_URL, headers=_headers_for(ghost))
         assert response.status_code == 404
+
+
+class TestProfileEdit:
+    async def test_professional_edits_both_fields(self, client, professional_user):
+        """CA1: editing name and last_name returns 200 and persists the change."""
+        response = await client.patch(
+            ME_URL,
+            json={"name": "Juana", "last_name": "Perez"},
+            headers=_headers_for(professional_user),
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["name"] == "Juana"
+        assert body["last_name"] == "Perez"
+        assert body["email"] == professional_user.email
+
+        reread = await client.get(ME_URL, headers=_headers_for(professional_user))
+        assert reread.json()["name"] == "Juana"
+        assert reread.json()["last_name"] == "Perez"
+
+    async def test_partial_edit_leaves_other_field_unchanged(
+        self, client, professional_user
+    ):
+        """CA1: sending only ``name`` leaves ``last_name`` untouched."""
+        response = await client.patch(
+            ME_URL,
+            json={"name": "SoloNombre"},
+            headers=_headers_for(professional_user),
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["name"] == "SoloNombre"
+        assert body["last_name"] == professional_user.last_name
+
+    async def test_empty_name_returns_422_and_keeps_db(self, client, professional_user):
+        """CA2: an empty name fails validation (422) and persists nothing."""
+        response = await client.patch(
+            ME_URL, json={"name": ""}, headers=_headers_for(professional_user)
+        )
+
+        assert response.status_code == 422
+        stored = await _fetch_user(professional_user.id)
+        assert stored.name == professional_user.name
+
+    async def test_empty_body_returns_400(self, client, professional_user):
+        """CA2: a defined-but-empty body is rejected by the service (400)."""
+        response = await client.patch(
+            ME_URL, json={}, headers=_headers_for(professional_user)
+        )
+
+        assert response.status_code == 400
+
+    @pytest.mark.parametrize(
+        "payload",
+        [
+            {"email": "new@test.com"},
+            {"role": "admin"},
+            {"status": "active"},
+        ],
+    )
+    async def test_non_editable_fields_return_422_and_keep_db(
+        self, client, professional_user, payload
+    ):
+        """CA3: editing email/role/status (or any unknown field) is rejected (422)."""
+        response = await client.patch(
+            ME_URL, json=payload, headers=_headers_for(professional_user)
+        )
+
+        assert response.status_code == 422
+        stored = await _fetch_user(professional_user.id)
+        assert stored.email == professional_user.email
+        assert stored.role == professional_user.role
+        assert stored.status == professional_user.status
+
+    async def test_manager_edit_still_returns_establishments(
+        self, client, manager_user
+    ):
+        """CA1: a manager's edit response still includes their establishments."""
+        estab = await _insert_establishment("Centro A", "Calle A 123")
+        await _insert_relation(
+            manager_user.id, estab.id, UserEstablishmentStatus.APPROVED
+        )
+
+        response = await client.patch(
+            ME_URL, json={"name": "NuevoNombre"}, headers=_headers_for(manager_user)
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["name"] == "NuevoNombre"
+        establishments = body["establishments"]
+        assert establishments is not None
+        assert len(establishments) == 1
+        assert establishments[0]["id"] == str(estab.id)
+        assert establishments[0]["status"] == UserEstablishmentStatus.APPROVED
+
+    async def test_no_token_returns_401(self, client):
+        """CA7: no token returns 401."""
+        response = await client.patch(ME_URL, json={"name": "X"})
+        assert response.status_code == 401
+
+    async def test_malformed_token_returns_401(self, client):
+        """CA7: a malformed token returns 401."""
+        response = await client.patch(
+            ME_URL, json={"name": "X"}, headers={"Authorization": "Bearer not_a_jwt"}
+        )
+        assert response.status_code == 401
+
+
+class TestListOwnEstablishments:
+    async def test_manager_lists_relations_with_status(self, client, manager_user):
+        """A manager receives their relations annotated with status."""
+        estab_a = await _insert_establishment("Centro A", "Calle A")
+        estab_b = await _insert_establishment("Centro B", "Calle B")
+        await _insert_relation(
+            manager_user.id, estab_a.id, UserEstablishmentStatus.APPROVED
+        )
+        await _insert_relation(
+            manager_user.id, estab_b.id, UserEstablishmentStatus.REJECTED
+        )
+
+        response = await client.get(
+            ME_ESTABLISHMENTS_URL, headers=_headers_for(manager_user)
+        )
+
+        assert response.status_code == 200
+        by_id = {item["id"]: item for item in response.json()}
+        assert by_id[str(estab_a.id)]["name"] == "Centro A"
+        assert by_id[str(estab_a.id)]["status"] == UserEstablishmentStatus.APPROVED
+        assert by_id[str(estab_b.id)]["status"] == UserEstablishmentStatus.REJECTED
+
+    async def test_manager_with_no_relations_returns_empty(self, client, manager_user):
+        response = await client.get(
+            ME_ESTABLISHMENTS_URL, headers=_headers_for(manager_user)
+        )
+        assert response.status_code == 200
+        assert response.json() == []
+
+    async def test_non_manager_returns_403(self, client, professional_user):
+        response = await client.get(
+            ME_ESTABLISHMENTS_URL, headers=_headers_for(professional_user)
+        )
+        assert response.status_code == 403
+
+    async def test_no_token_returns_401(self, client):
+        response = await client.get(ME_ESTABLISHMENTS_URL)
+        assert response.status_code == 401
+
+
+class TestRequestEstablishmentAccess:
+    async def test_new_ids_create_pending_relations(self, client, manager_user):
+        """CA5: requesting new establishments creates pending relations."""
+        estab_a = await _insert_establishment("Centro A", "Calle A")
+        estab_b = await _insert_establishment("Centro B", "Calle B")
+
+        response = await client.post(
+            ME_ESTABLISHMENTS_URL,
+            json={"establishment_ids": [str(estab_a.id), str(estab_b.id)]},
+            headers=_headers_for(manager_user),
+        )
+
+        assert response.status_code == 201
+        by_id = {item["id"]: item for item in response.json()}
+        assert by_id[str(estab_a.id)]["status"] == UserEstablishmentStatus.PENDING
+        assert by_id[str(estab_b.id)]["status"] == UserEstablishmentStatus.PENDING
+
+        relations = await _fetch_relations(manager_user.id)
+        assert {r.establishment_id for r in relations} == {estab_a.id, estab_b.id}
+        assert all(r.status == UserEstablishmentStatus.PENDING for r in relations)
+
+    async def test_rejected_relation_is_re_requested(self, client, manager_user):
+        """CA5/CA6: a rejected relation can be re-requested (back to pending)."""
+        estab = await _insert_establishment("Centro A", "Calle A")
+        await _insert_relation(
+            manager_user.id, estab.id, UserEstablishmentStatus.REJECTED
+        )
+
+        response = await client.post(
+            ME_ESTABLISHMENTS_URL,
+            json={"establishment_ids": [str(estab.id)]},
+            headers=_headers_for(manager_user),
+        )
+
+        assert response.status_code == 201
+        assert response.json()[0]["status"] == UserEstablishmentStatus.PENDING
+
+        relations = await _fetch_relations(manager_user.id)
+        assert len(relations) == 1
+        assert relations[0].status == UserEstablishmentStatus.PENDING
+
+    async def test_approved_stays_and_new_becomes_pending(self, client, manager_user):
+        """CA6: an approved relation is untouched while a new one is created."""
+        approved = await _insert_establishment("Approved", "Addr 1")
+        new = await _insert_establishment("New", "Addr 2")
+        await _insert_relation(
+            manager_user.id, approved.id, UserEstablishmentStatus.APPROVED
+        )
+
+        response = await client.post(
+            ME_ESTABLISHMENTS_URL,
+            json={"establishment_ids": [str(approved.id), str(new.id)]},
+            headers=_headers_for(manager_user),
+        )
+
+        assert response.status_code == 201
+        by_id = {item["id"]: item for item in response.json()}
+        assert by_id[str(approved.id)]["status"] == UserEstablishmentStatus.APPROVED
+        assert by_id[str(new.id)]["status"] == UserEstablishmentStatus.PENDING
+
+        relations = await _fetch_relations(manager_user.id)
+        assert len(relations) == 2  # no duplicate rows
+        status_by_id = {r.establishment_id: r.status for r in relations}
+        assert status_by_id[approved.id] == UserEstablishmentStatus.APPROVED
+        assert status_by_id[new.id] == UserEstablishmentStatus.PENDING
+
+    async def test_pending_stays_single_row(self, client, manager_user):
+        """CA6: re-requesting a pending relation keeps a single pending row."""
+        estab = await _insert_establishment("Centro A", "Calle A")
+        await _insert_relation(
+            manager_user.id, estab.id, UserEstablishmentStatus.PENDING
+        )
+
+        response = await client.post(
+            ME_ESTABLISHMENTS_URL,
+            json={"establishment_ids": [str(estab.id)]},
+            headers=_headers_for(manager_user),
+        )
+
+        assert response.status_code == 201
+        assert response.json()[0]["status"] == UserEstablishmentStatus.PENDING
+
+        relations = await _fetch_relations(manager_user.id)
+        assert len(relations) == 1
+        assert relations[0].status == UserEstablishmentStatus.PENDING
+
+    async def test_unknown_establishment_returns_404_and_writes_nothing(
+        self, client, manager_user
+    ):
+        response = await client.post(
+            ME_ESTABLISHMENTS_URL,
+            json={"establishment_ids": [str(uuid.uuid4())]},
+            headers=_headers_for(manager_user),
+        )
+
+        assert response.status_code == 404
+        assert await _fetch_relations(manager_user.id) == []
+
+    async def test_non_manager_returns_403(self, client, professional_user):
+        """CA7: a non-manager cannot request access."""
+        estab = await _insert_establishment("Centro A", "Calle A")
+        response = await client.post(
+            ME_ESTABLISHMENTS_URL,
+            json={"establishment_ids": [str(estab.id)]},
+            headers=_headers_for(professional_user),
+        )
+        assert response.status_code == 403
+
+    async def test_no_token_returns_401(self, client):
+        """CA7: no token returns 401."""
+        response = await client.post(
+            ME_ESTABLISHMENTS_URL, json={"establishment_ids": [str(uuid.uuid4())]}
+        )
+        assert response.status_code == 401

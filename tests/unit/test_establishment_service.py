@@ -33,6 +33,19 @@ def _make_request(**overrides) -> EstablishmentRequest:
     return EstablishmentRequest(**defaults)
 
 
+@pytest.fixture
+def make_available_uow():
+    def _make(establishments, total):
+        uow = AsyncMock()
+        uow.__aenter__.return_value = uow
+        uow.establishment_repo.get_available_for_user = AsyncMock(
+            return_value=(establishments, total)
+        )
+        return uow
+
+    return _make
+
+
 class TestEstablishmentResponse:
     def test_from_db(self, make_establishment):
         orm = make_establishment(name="Centro B", formatted_address="Calle 2")
@@ -159,6 +172,40 @@ class TestGetEstablishmentsPaginated:
             limit=20,
             offset=0,
             params=EstablishmentListingParams(search=None),
+        )
+
+
+class TestGetAvailableEstablishments:
+    @pytest.mark.asyncio
+    async def test_returns_mapped_items(self, make_establishment, make_available_uow):
+        establishments = [make_establishment(), make_establishment()]
+        service = EstablishmentService(uow=make_available_uow(establishments, total=2))
+
+        result = await service.get_available_establishments(
+            user_id=uuid.uuid4(),
+            page=1,
+            page_size=20,
+            params=EstablishmentListingParams(),
+        )
+
+        assert isinstance(result, PaginatedResult)
+        assert len(result.items) == 2
+        assert all(isinstance(item, EstablishmentDomain) for item in result.items)
+        assert result.total == 2
+
+    @pytest.mark.asyncio
+    async def test_passes_user_id_offset_and_params(self, make_available_uow):
+        uow = make_available_uow([], total=0)
+        service = EstablishmentService(uow=uow)
+        user_id = uuid.uuid4()
+        params = EstablishmentListingParams(search="Centro", city="Cordoba")
+
+        await service.get_available_establishments(
+            user_id=user_id, page=3, page_size=10, params=params
+        )
+
+        uow.establishment_repo.get_available_for_user.assert_called_once_with(
+            user_id=user_id, limit=10, offset=20, params=params
         )
 
 

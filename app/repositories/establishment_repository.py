@@ -3,9 +3,14 @@ from uuid import UUID
 from sqlalchemy import asc, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.establishment import EstablishmentListingParams, EstablishmentSortOrder
+from app.domain.establishment import (
+    EstablishmentListingParams,
+    EstablishmentSortOrder,
+    UserEstablishmentStatus,
+)
 from app.exceptions.domain_exceptions import EstablishmentNotFoundError
 from app.models.establishment import Establishment
+from app.models.user_establishment import UserEstablishment
 from app.utils.db import escape_like, execute_paginated
 
 # Maps each EstablishmentSortOrder value to its SQLAlchemy order clause.
@@ -77,6 +82,32 @@ class EstablishmentRepository:
 
         return establishments
 
+    @staticmethod
+    def _search_condition(search: str | None):
+        """Case-insensitive name/formatted_address match for ``search``, or None.
+
+        Returns None when ``search`` is empty so callers can skip the filter.
+        """
+        if not search:
+            return None
+        search_term = f"%{escape_like(search)}%"
+        return Establishment.name.ilike(
+            search_term, escape="\\"
+        ) | Establishment.formatted_address.ilike(search_term, escape="\\")
+
+    @classmethod
+    def _listing_conditions(cls, params: EstablishmentListingParams) -> list:
+        """Build the search/city/province filter conditions for a listing."""
+        conditions = []
+        search_condition = cls._search_condition(params.search)
+        if search_condition is not None:
+            conditions.append(search_condition)
+        if params.city:
+            conditions.append(Establishment.city.ilike(params.city))
+        if params.province:
+            conditions.append(Establishment.province.ilike(params.province))
+        return conditions
+
     async def get_paginated(
         self,
         limit: int,
@@ -85,28 +116,49 @@ class EstablishmentRepository:
     ) -> tuple[list[Establishment], int]:
         """Return a paginated list of establishments and the total matching count.
 
-        ``search`` matches case-insensitively against name or address (OR).
+        ``search`` matches case-insensitively against name or formatted_address.
         ``city`` and ``province`` are exact case-insensitive matches.
         """
         base_query = select(Establishment)
         count_query = select(func.count()).select_from(Establishment)
 
-        conditions = []
+        for condition in self._listing_conditions(params):
+            base_query = base_query.where(condition)
+            count_query = count_query.where(condition)
 
-        if params.search:
-            search_term = f"%{escape_like(params.search)}%"
-            conditions.append(
-                Establishment.name.ilike(search_term, escape="\\")
-                | Establishment.formatted_address.ilike(search_term, escape="\\")
-            )
+        order_by = _SORT_CLAUSES[params.sort_order]
+        return await execute_paginated(
+            self.db, base_query, count_query, order_by, limit, offset
+        )
 
-        if params.city:
-            conditions.append(Establishment.city.ilike(params.city))
+    async def get_available_for_user(
+        self,
+        user_id: UUID,
+        limit: int,
+        offset: int,
+        params: EstablishmentListingParams,
+    ) -> tuple[list[Establishment], int]:
+        """Return establishments the user can still request access to, paginated.
 
-        if params.province:
-            conditions.append(Establishment.province.ilike(params.province))
+        Excludes establishments where the user already has an ``approved`` or
+        ``pending`` relation; ``rejected`` relations are treated as available
+        (re-requestable). Applies the same search/city/province/sort filters as
+        ``get_paginated``.
+        """
+        blocked = select(UserEstablishment.establishment_id).where(
+            UserEstablishment.user_id == user_id,
+            UserEstablishment.status.in_(
+                [UserEstablishmentStatus.APPROVED, UserEstablishmentStatus.PENDING]
+            ),
+        )
+        base_query = select(Establishment).where(Establishment.id.not_in(blocked))
+        count_query = (
+            select(func.count())
+            .select_from(Establishment)
+            .where(Establishment.id.not_in(blocked))
+        )
 
-        for condition in conditions:
+        for condition in self._listing_conditions(params):
             base_query = base_query.where(condition)
             count_query = count_query.where(condition)
 

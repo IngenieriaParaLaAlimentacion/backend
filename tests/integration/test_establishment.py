@@ -1,10 +1,17 @@
 import uuid
+from types import SimpleNamespace
 
 import pytest
 from fastapi import status
 
+from app.core.security import create_access_token
+from app.domain.establishment import UserEstablishmentStatus
+from app.domain.user import UserRole, UserStatus
+
 pytestmark = pytest.mark.asyncio
 ESTABLISHMENT_URL = "/api/v1/establishments"
+
+AVAILABLE_URL = "/api/v1/establishments?available=true"
 
 
 def _make_payload(**overrides) -> dict:
@@ -19,6 +26,78 @@ def _make_payload(**overrides) -> dict:
     }
     defaults.update(overrides)
     return defaults
+
+
+async def _insert_manager() -> uuid.UUID:
+    from app.db.database import AsyncSessionLocal
+    from app.models.user import User
+
+    user_id = uuid.uuid4()
+    async with AsyncSessionLocal() as session:
+        session.add(
+            User(
+                id=user_id,
+                name="Mgr",
+                last_name="One",
+                email=f"{user_id}@test.com",
+                role=UserRole.ESTABLISHMENT_MANAGER,
+                status=UserStatus.ACTIVE,
+            )
+        )
+        await session.commit()
+    return user_id
+
+
+async def _insert_establishment(
+    name: str,
+    formatted_address: str,
+    *,
+    city: str = "Buenos Aires",
+    province: str = "Buenos Aires",
+) -> SimpleNamespace:
+    from app.db.database import AsyncSessionLocal
+    from app.models.establishment import Establishment
+
+    async with AsyncSessionLocal() as session:
+        establishment = Establishment(
+            name=name,
+            formatted_address=formatted_address,
+            latitude=-34.6037,
+            longitude=-58.3816,
+            place_id=str(uuid.uuid4()),
+            city=city,
+            province=province,
+        )
+        session.add(establishment)
+        await session.commit()
+        await session.refresh(establishment)
+        return SimpleNamespace(
+            id=establishment.id, name=name, formatted_address=formatted_address
+        )
+
+
+async def _insert_relation(
+    user_id: uuid.UUID,
+    establishment_id: uuid.UUID,
+    status_value: UserEstablishmentStatus,
+) -> None:
+    from app.db.database import AsyncSessionLocal
+    from app.models.user_establishment import UserEstablishment
+
+    async with AsyncSessionLocal() as session:
+        session.add(
+            UserEstablishment(
+                user_id=user_id,
+                establishment_id=establishment_id,
+                status=status_value,
+            )
+        )
+        await session.commit()
+
+
+def _manager_headers(user_id: uuid.UUID) -> dict:
+    token = create_access_token(user_id, role=UserRole.ESTABLISHMENT_MANAGER)
+    return {"Authorization": f"Bearer {token}"}
 
 
 async def _seed_establishment(name: str, formatted_address: str) -> None:
@@ -230,6 +309,73 @@ class TestGetEstablishmentsPaginated:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["total"] == 2
+
+
+class TestAvailableEstablishments:
+    async def test_excludes_approved_and_pending(self, client, app):
+        """available=true returns rejected and unrelated establishments only."""
+        manager_id = await _insert_manager()
+        a = await _insert_establishment("Centro A", "Calle A")
+        b = await _insert_establishment("Centro B", "Calle B")
+        c = await _insert_establishment("Centro C", "Calle C")
+        d = await _insert_establishment("Centro D", "Calle D")
+        await _insert_relation(manager_id, a.id, UserEstablishmentStatus.APPROVED)
+        await _insert_relation(manager_id, b.id, UserEstablishmentStatus.PENDING)
+        await _insert_relation(manager_id, c.id, UserEstablishmentStatus.REJECTED)
+
+        response = await client.get(AVAILABLE_URL, headers=_manager_headers(manager_id))
+
+        assert response.status_code == status.HTTP_200_OK
+        ids = {item["id"] for item in response.json()["items"]}
+        assert ids == {str(c.id), str(d.id)}
+
+    async def test_search_narrows_available(self, client, app):
+        manager_id = await _insert_manager()
+        await _insert_establishment("Centro Recoleta", "Av. Corrientes 100")
+        await _insert_establishment("Centro Caballito", "Av. Santa Fe 200")
+
+        response = await client.get(
+            f"{AVAILABLE_URL}&search=Recoleta", headers=_manager_headers(manager_id)
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        items = response.json()["items"]
+        assert len(items) == 1
+        assert items[0]["name"] == "Centro Recoleta"
+
+    async def test_city_filter_narrows_available(self, client, app):
+        """available now honors the full listing params (city/province/sort)."""
+        manager_id = await _insert_manager()
+        await _insert_establishment("Centro Norte", "Calle 1", city="Cordoba")
+        await _insert_establishment("Centro Sur", "Calle 2", city="Rosario")
+
+        response = await client.get(
+            f"{AVAILABLE_URL}&city=Cordoba", headers=_manager_headers(manager_id)
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        items = response.json()["items"]
+        assert len(items) == 1
+        assert items[0]["name"] == "Centro Norte"
+
+    async def test_no_token_returns_401(self, client, app):
+        await _insert_establishment("Centro A", "Calle A")
+        response = await client.get(AVAILABLE_URL)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_professional_returns_403(self, client, app):
+        token = create_access_token(uuid.uuid4(), role=UserRole.PROFESSIONAL)
+        response = await client.get(
+            AVAILABLE_URL, headers={"Authorization": f"Bearer {token}"}
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_public_catalog_unchanged_without_token(self, client, app):
+        """Regression: the plain catalog stays public (no token required)."""
+        await _insert_establishment("Centro A", "Calle A")
+        response = await client.get(ESTABLISHMENT_URL)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["total"] == 1
 
 
 class TestCreateEstablishment:
