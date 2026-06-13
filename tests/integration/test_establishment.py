@@ -349,11 +349,12 @@ class TestAvailableEstablishments:
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    async def test_listing_requires_token(self, client, app):
-        """Regression: the catalog now requires authentication (no anonymous access)."""
+    async def test_public_catalog_unchanged_without_token(self, client, app):
+        """Regression: the plain catalog stays public (no token required)."""
         await _insert_establishment("Centro A", "Calle A")
         response = await client.get(ESTABLISHMENT_URL)
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["total"] == 1
 
 
 class TestCreateEstablishment:

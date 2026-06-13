@@ -5,11 +5,12 @@ from fastapi import APIRouter, Depends, Query, status
 from app.api.v1.params import EstablishmentListingQuery
 from app.core.dependencies import (
     get_establishment_service,
+    get_optional_actor,
     require_any,
     require_some,
 )
 from app.domain import UserActor, UserRole
-from app.exceptions.domain_exceptions import ForbiddenError
+from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
 from app.schemas.establishment_schema import (
     EstablishmentRequest,
     EstablishmentResponse,
@@ -76,14 +77,18 @@ async def update_establishment(
     response_model=PaginatedResponse[EstablishmentResponse],
     status_code=status.HTTP_200_OK,
     summary="List all establishments",
-    description="Returns all establishments available for a manager to register with."
-    "Supports optional search filtering by establishment name or address. When "
-    "'available' is set, returns only establishments the authenticated manager can "
-    "still request (excludes approved/pending relations).",
+    description="Public catalog of establishments. Supports optional search "
+    "filtering by establishment name or address. When 'available' is set, requires "
+    "a manager token and returns only establishments that manager can still request "
+    "(excludes approved/pending relations).",
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid query parameters"},
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Caller is not a manager"},
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Missing or invalid token (only when 'available' is set)"
+        },
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Caller is not a manager (only when 'available' is set)"
+        },
     },
 )
 async def get_establishments(
@@ -100,10 +105,12 @@ async def get_establishments(
         description="If true, return only establishments the authenticated "
         "manager can still request (excludes approved/pending). Manager only.",
     ),
-    actor: UserActor = Depends(require_any),
+    actor: UserActor | None = Depends(get_optional_actor),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> PaginatedResponse[EstablishmentResponse]:
     if available:
+        if actor is None:
+            raise UnauthorizedError()
         if actor.role not in _MANAGER_ROLES:
             raise ForbiddenError()
         result = await service.get_available_establishments(
