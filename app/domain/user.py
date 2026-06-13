@@ -65,3 +65,11 @@ class ApprovedManagerDomain(BaseUserDomain):
     approval status."""
 
     establishments: list[EstablishmentWithStatusDomain]
+
+
+@dataclass
+class ProfileDomain(BaseUserDomain):
+    """Current user's profile. ``establishments`` is None for non-managers,
+    and a (possibly empty) list for establishment managers."""
+
+    establishments: list[EstablishmentWithStatusDomain] | None = None
