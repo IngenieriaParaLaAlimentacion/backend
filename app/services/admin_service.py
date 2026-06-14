@@ -218,7 +218,7 @@ class AdminService:
             page_size=page_size,
         )
 
-    async def invite_admin(self, data: InviteAdminRequest) -> None:
+    async def invite_user(self, data: InviteAdminRequest, role: UserRole) -> None:
         """Create an admin user and send a password setup link by email."""
         if await self.uow.user_repo.get_by_email(data.email):
             raise UserAlreadyExistsError(data.email)
@@ -227,7 +227,7 @@ class AdminService:
             email=data.email,
             name="",
             last_name="",
-            role=UserRole.ADMIN,
+            role=role,
             status=UserStatus.ACTIVE,
         )
         await self.uow.password_repo.create(user.id, hash_password("temp-password"))

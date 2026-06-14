@@ -186,5 +186,26 @@ async def invite_admin(
     service: AdminService = Depends(get_admin_service),
     _admin: UserActor = Depends(get_current_admin),
 ) -> None:
-    await service.invite_admin(data)
+    await service.invite_user(data, role=UserRole.ADMIN)
+    return Response(status_code=status.HTTP_202_ACCEPTED)
+
+
+@router.post(
+    "/invite-professional",
+    status_code=status.HTTP_202_ACCEPTED,
+    response_class=Response,
+    summary="Invite professional",
+    description="Creates a professional user and sends a password setup link by email.",
+    responses={
+        status.HTTP_202_ACCEPTED: {"description": "Invitation sent successfully"},
+        status.HTTP_409_CONFLICT: {"description": "Email already exists"},
+        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+    },
+)
+async def invite_professional(
+    data: InviteAdminRequest,
+    service: AdminService = Depends(get_admin_service),
+    _admin: UserActor = Depends(get_current_admin),
+) -> None:
+    await service.invite_user(data, role=UserRole.PROFESSIONAL)
     return Response(status_code=status.HTTP_202_ACCEPTED)
