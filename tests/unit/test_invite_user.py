@@ -63,7 +63,7 @@ class TestInviteAdmin:
         service = make_service(uow)
 
         with pytest.raises(UserAlreadyExistsError):
-            await service.invite_admin(MagicMock(email=existing.email))
+            await service.invite_user(MagicMock(email=existing.email), UserRole.ADMIN)
 
     @pytest.mark.asyncio
     async def test_does_not_create_user_if_email_exists(self, make_uow, make_service):
@@ -73,7 +73,7 @@ class TestInviteAdmin:
         service = make_service(uow)
 
         with pytest.raises(UserAlreadyExistsError):
-            await service.invite_admin(MagicMock(email=existing.email))
+            await service.invite_user(MagicMock(email=existing.email), UserRole.ADMIN)
 
         uow.user_repo.create.assert_not_called()
 
@@ -85,7 +85,7 @@ class TestInviteAdmin:
         uow = make_uow()
         service = make_service(uow)
 
-        await service.invite_admin(MagicMock(email="new@test.com"))
+        await service.invite_user(MagicMock(email="new@test.com"), UserRole.ADMIN)
 
         uow.user_repo.create.assert_called_once_with(
             email="new@test.com",
@@ -102,7 +102,7 @@ class TestInviteAdmin:
         uow = make_uow(created_user=created_user)
         service = make_service(uow)
 
-        await service.invite_admin(MagicMock(email="new@test.com"))
+        await service.invite_user(MagicMock(email="new@test.com"), UserRole.ADMIN)
 
         uow.password_repo.create.assert_called_once()
         call_args = uow.password_repo.create.call_args
@@ -117,7 +117,7 @@ class TestInviteAdmin:
         uow = make_uow(created_user=created_user)
         service = make_service(uow)
 
-        await service.invite_admin(MagicMock(email="new@test.com"))
+        await service.invite_user(MagicMock(email="new@test.com"), UserRole.ADMIN)
 
         mock_auth_service.create_recovery_token.assert_called_once_with(created_user.id)
 
@@ -134,7 +134,7 @@ class TestInviteAdmin:
             "app.services.admin_service.send_invite_email",
             side_effect=lambda *a, **kw: commit_order.append("email"),
         ):
-            await service.invite_admin(MagicMock(email="new@test.com"))
+            await service.invite_user(MagicMock(email="new@test.com"), UserRole.ADMIN)
 
         assert commit_order == ["commit", "email"]
 
@@ -160,7 +160,9 @@ class TestInviteAdmin:
                 return_value="https://deeplink/xyz",
             ),
         ):
-            await service.invite_admin(MagicMock(email="invited@test.com"))
+            await service.invite_user(
+                MagicMock(email="invited@test.com"), UserRole.ADMIN
+            )
 
             mock_send.assert_called_once_with(
                 "invited@test.com",
@@ -186,7 +188,7 @@ class TestInviteAdmin:
             ) as mock_deeplink,
             patch("app.services.admin_service.send_invite_email"),
         ):
-            await service.invite_admin(MagicMock(email="new@test.com"))
+            await service.invite_user(MagicMock(email="new@test.com"), UserRole.ADMIN)
 
             mock_deeplink.assert_called_once_with("plain-xyz", UserRole.ADMIN)
 
@@ -198,6 +200,6 @@ class TestInviteAdmin:
         service = make_service(uow)
 
         with pytest.raises(Exception, match="db error"):
-            await service.invite_admin(MagicMock(email="new@test.com"))
+            await service.invite_user(MagicMock(email="new@test.com"), UserRole.ADMIN)
 
         uow.commit.assert_not_called()
