@@ -17,13 +17,15 @@ from app.exceptions.domain_exceptions import (
     UserEstablishmentNotFoundError,
     UserNotFoundError,
 )
+from app.services.auth_service import AuthService
 
 
 class AdminService:
     """Service layer for admin-related business logic."""
 
-    def __init__(self, uow: IUnitOfWork) -> None:
+    def __init__(self, uow: IUnitOfWork, auth_service: AuthService) -> None:
         self.uow = uow
+        self.auth_service = auth_service
 
     async def _build_establishments_data(
         self, establishment_ids: list[UUID]
