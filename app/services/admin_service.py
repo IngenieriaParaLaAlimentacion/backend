@@ -2,6 +2,8 @@ from typing import Any
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
+from app.core.password_recovery import build_recovery_deeplink, send_invite_email
+from app.core.security import hash_password
 from app.domain.establishment import EstablishmentDomain, UserEstablishmentStatus
 from app.domain.pagination import PaginatedResult
 from app.domain.subject import SubjectDomain
@@ -14,9 +16,11 @@ from app.domain.user import (
 from app.exceptions.domain_exceptions import (
     BadRequestError,
     SubjectNotFoundError,
+    UserAlreadyExistsError,
     UserEstablishmentNotFoundError,
     UserNotFoundError,
 )
+from app.schemas.admin_schema import InviteAdminRequest
 from app.services.auth_service import AuthService
 
 
@@ -212,4 +216,28 @@ class AdminService:
             total=total,
             page=page,
             page_size=page_size,
+        )
+
+    async def invite_admin(self, data: InviteAdminRequest) -> None:
+        """Create an admin user and send a password setup link by email."""
+        if await self.uow.user_repo.get_by_email(data.email):
+            raise UserAlreadyExistsError(data.email)
+
+        user = await self.uow.user_repo.create(
+            email=data.email,
+            name="",
+            last_name="",
+            role=UserRole.ADMIN,
+            status=UserStatus.ACTIVE,
+        )
+        await self.uow.password_repo.create(user.id, hash_password("temp-password"))
+
+        created_token, plain_token = await self.auth_service.create_recovery_token(
+            user.id
+        )
+        await self.uow.commit()
+        send_invite_email(
+            user.email,
+            build_recovery_deeplink(plain_token, user.role),
+            created_token.expires_at,
         )
