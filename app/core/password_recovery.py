@@ -130,3 +130,39 @@ def send_recovery_email(to_email: str, deeplink: str, expires_at: datetime) -> N
         html_body=html_content,
         log_label="Password recovery",
     )
+
+
+def send_invite_email(to_email: str, deeplink: str, expires_at: datetime) -> None:
+    """Send an admin invitation email with a password setup link."""
+    formatted_expiry = expires_at.strftime("%B %d, %Y at %H:%M UTC")
+
+    html_content = _render_base_template(
+        title="Welcome to Ingenieria Para la Alimentacion!",
+        pre_button_text=(
+            "You have been invited to join"
+            " <strong>Ingenieria Para la Alimentacion</strong> "
+            "as an administrator. Click the button below to set up "
+            "your password and activate your account:"
+        ),
+        button_text="Set Up Password",
+        button_url=deeplink,
+        button_color="#28a745",
+        formatted_expiry=formatted_expiry,
+    )
+
+    _send_email(
+        to_email=to_email,
+        subject="You've been invited to Ingenieria Para la Alimentacion",
+        body=(
+            "Hi,\n\n"
+            "You have been invited to join Ingenieria Para la Alimentacion "
+            "as an administrator. "
+            "Use the following link to set up your password:\n\n"
+            f"{deeplink}\n\n"
+            f"This link expires on {formatted_expiry}.\n"
+            "If you were not expecting this invitation, "
+            "you can ignore this message.\n"
+        ),
+        html_body=html_content,
+        log_label="Admin invite",
+    )
