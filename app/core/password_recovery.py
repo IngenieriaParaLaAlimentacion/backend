@@ -47,7 +47,7 @@ def _render_base_template(
         f'<div style="font-family: Arial, sans-serif; max-width: 550px; '
         f'margin: 0 auto; padding: 20px; color: #333333; line-height: 1.6;">'
         f'  <h2 style="color: #111111; margin-bottom: 20px;">{title}</h2>'
-        f"  <p>Hi,</p>"
+        f"  <p>Hola,</p>"
         f"  <p>{pre_button_text}</p>"
         f'  <div style="text-align: center; margin: 30px 0;">'
         f'    <a href="{escaped_url}" style="background-color: {button_color}; '
@@ -55,11 +55,11 @@ def _render_base_template(
         f"border-radius: 5px; font-weight: bold; "
         f'display: inline-block;">{button_text}</a>'
         f"  </div>"
-        f'  <p style="font-size: 0.9em; color: #666666;">This link expires on '
+        f'  <p style="font-size: 0.9em; color: #666666;">Este enlace expira el '
         f"<strong>{formatted_expiry}</strong>.</p>"
         f'  <hr style="border: 0; border-top: 1px solid #eeeeee; margin: 20px 0;">'
         f'  <p style="font-size: 0.85em; color: #999999;">'
-        f"If you did not request this, you can safely ignore this email.</p>"
+        f"Si no solicitaste esto, puedes ignorar este correo de forma segura.</p>"
         f"</div>"
     )
 
@@ -100,17 +100,17 @@ def _send_email(
 
 def send_recovery_email(to_email: str, deeplink: str, expires_at: datetime) -> None:
     """Send the password recovery deep link to the user via SMTP."""
-    formatted_expiry = expires_at.strftime("%B %d, %Y at %H:%M UTC")
+    formatted_expiry = expires_at.strftime("%d/%m/%Y a las %H:%M UTC")
 
     html_content = _render_base_template(
-        title="Reset Your Password",
+        title="Restablece tu contraseña",
         pre_button_text=(
-            "We received a request to reset your password "
-            "for your App account. "
+            "Hemos recibido una solicitud para restablecer la contraseña "
+            "de tu cuenta. "
             # TODO: cuando tengamos nombre de app, customizamos
-            "Click the button below to proceed:"
+            "Haz clic en el botón de abajo para continuar:"
         ),
-        button_text="Reset Password",
+        button_text="Restablecer Contraseña",
         button_url=deeplink,
         button_color="#007bff",
         formatted_expiry=formatted_expiry,
@@ -118,14 +118,14 @@ def send_recovery_email(to_email: str, deeplink: str, expires_at: datetime) -> N
 
     _send_email(
         to_email=to_email,
-        subject="Password recovery",
+        subject="Recuperación de contraseña",
         body=(
-            "Hi,\n\n"
-            "We received a request to reset your password. "
-            "Use the following link to continue:\n\n"
+            "Hola,\n\n"
+            "Hemos recibido una solicitud para restablecer tu contraseña. "
+            "Usa el siguiente enlace para continuar:\n\n"
             f"{deeplink}\n\n"
-            f"This link expires on {formatted_expiry}.\n"
-            "If you did not request this, you can ignore this message.\n"
+            f"Este enlace expira el {formatted_expiry}.\n"
+            "Si no solicitaste esto, puedes ignorar este mensaje.\n"
         ),
         html_body=html_content,
         log_label="Password recovery",
@@ -134,17 +134,17 @@ def send_recovery_email(to_email: str, deeplink: str, expires_at: datetime) -> N
 
 def send_invite_email(to_email: str, deeplink: str, expires_at: datetime) -> None:
     """Send an admin invitation email with a password setup link."""
-    formatted_expiry = expires_at.strftime("%B %d, %Y at %H:%M UTC")
+    formatted_expiry = expires_at.strftime("%d/%m/%Y a las %H:%M UTC")
 
     html_content = _render_base_template(
-        title="Welcome to Ingenieria Para la Alimentacion!",
+        title="¡Bienvenido a Ingeniería Para la Alimentación!",
         pre_button_text=(
-            "You have been invited to join"
-            " <strong>Ingenieria Para la Alimentacion</strong> "
-            "as an administrator. Click the button below to set up "
-            "your password and activate your account:"
+            "Has sido invitado a unirte a"
+            " <strong>Ingeniería Para la Alimentación</strong> "
+            "como administrador. Haz clic en el botón de abajo para configurar "
+            "tu contraseña y activar tu cuenta:"
         ),
-        button_text="Set Up Password",
+        button_text="Configurar Contraseña",
         button_url=deeplink,
         button_color="#28a745",
         formatted_expiry=formatted_expiry,
@@ -152,16 +152,15 @@ def send_invite_email(to_email: str, deeplink: str, expires_at: datetime) -> Non
 
     _send_email(
         to_email=to_email,
-        subject="You've been invited to Ingenieria Para la Alimentacion",
+        subject="Has sido invitado a Ingeniería Para la Alimentación",
         body=(
-            "Hi,\n\n"
-            "You have been invited to join Ingenieria Para la Alimentacion "
-            "as an administrator. "
-            "Use the following link to set up your password:\n\n"
+            "Hola,\n\n"
+            "Has sido invitado a unirte a Ingeniería Para la Alimentación. "
+            "Usa el siguiente enlace para configurar tu contraseña:\n\n"
             f"{deeplink}\n\n"
-            f"This link expires on {formatted_expiry}.\n"
-            "If you were not expecting this invitation, "
-            "you can ignore this message.\n"
+            f"Este enlace expira el {formatted_expiry}.\n"
+            "Si no esperabas esta invitación, "
+            "puedes ignorar este mensaje.\n"
         ),
         html_body=html_content,
         log_label="Admin invite",
