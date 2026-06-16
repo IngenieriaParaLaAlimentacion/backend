@@ -86,8 +86,9 @@ class TestCreateSubject:
         uow.subject_repo.create = AsyncMock(return_value=subject)
         service = SubjectService(uow)
 
-        result = await service.create_subject(valid_request, actor_id=actor_id)
+        result, created = await service.create_subject(valid_request, actor_id=actor_id)
 
+        assert created is True
         assert isinstance(result, SubjectDomain)
         assert result.id == subject.id
         assert result.dni == subject.dni
@@ -98,8 +99,9 @@ class TestCreateSubject:
     async def test_raises_if_dni_already_exists(self, make_uow, valid_request):
         uow = make_uow()
         uow.subject_repo.create = AsyncMock(
-            side_effect=UniqueConstraintError("dni", valid_request.dni)
+            side_effect=UniqueConstraintError("subject", (None, valid_request.dni))
         )
+        uow.subject_repo.get_by_dni = AsyncMock(return_value=None)
         service = SubjectService(uow)
 
         with pytest.raises(SubjectAlreadyExistsError):
@@ -124,6 +126,85 @@ class TestCreateSubject:
         assert kwargs["event_type"] == SubjectEventType.SUBJECT_CREATED
         assert kwargs["actor_id"] == actor_id
         assert kwargs["subject_id"] == subject.id
+
+    @pytest.mark.asyncio
+    async def test_replay_by_id_returns_existing_without_event(
+        self, make_subject, make_uow
+    ):
+        """A request whose id already exists replays the stored subject (200)."""
+        existing = make_subject()
+        request = SubjectRequest(
+            id=existing.id,
+            dni=12345678,
+            sex=Sex.MALE,
+            name="Juan",
+            last_name="Perez",
+            birth_date=date(2010, 1, 1),
+            is_rural=False,
+            is_indigenous=False,
+        )
+        uow = make_uow()
+        uow.subject_repo.get_by_id = AsyncMock(return_value=existing)
+        service = SubjectService(uow)
+
+        result, created = await service.create_subject(request, actor_id=uuid.uuid4())
+
+        assert created is False
+        assert result.id == existing.id
+        uow.subject_repo.create.assert_not_called()
+        uow.subject_event_repo.append.assert_not_called()
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_id_race_on_conflict_replays_existing(self, make_subject, make_uow):
+        """A concurrent insert of the same id surfaces as a replay, not a conflict."""
+        raced = make_subject()
+        request = SubjectRequest(
+            id=raced.id,
+            dni=12345678,
+            sex=Sex.MALE,
+            name="Juan",
+            last_name="Perez",
+            birth_date=date(2010, 1, 1),
+            is_rural=False,
+            is_indigenous=False,
+        )
+        uow = make_uow()
+        # First pre-check misses; the row lands between the check and our insert.
+        uow.subject_repo.get_by_id = AsyncMock(side_effect=[None, raced])
+        uow.subject_repo.create = AsyncMock(
+            side_effect=UniqueConstraintError("subject", (raced.id, request.dni))
+        )
+        service = SubjectService(uow)
+
+        result, created = await service.create_subject(request, actor_id=uuid.uuid4())
+
+        assert created is False
+        assert result.id == raced.id
+        uow.subject_event_repo.append.assert_not_called()
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_dni_conflict_carries_canonical_subject(
+        self, make_subject, make_uow, valid_request
+    ):
+        """A DNI collision raises with the canonical subject in the extensions."""
+        canonical = make_subject(dni=valid_request.dni)
+        uow = make_uow()
+        uow.subject_repo.create = AsyncMock(
+            side_effect=UniqueConstraintError("subject", (None, valid_request.dni))
+        )
+        uow.subject_repo.get_by_dni = AsyncMock(return_value=canonical)
+        service = SubjectService(uow)
+
+        with pytest.raises(SubjectAlreadyExistsError) as exc_info:
+            await service.create_subject(valid_request, actor_id=uuid.uuid4())
+
+        canonical_body = exc_info.value.extensions["canonical_subject"]
+        assert canonical_body["id"] == str(canonical.id)
+        assert canonical_body["dni"] == canonical.dni
+        uow.subject_event_repo.append.assert_not_called()
+        uow.commit.assert_not_called()
 
 
 class TestGetSubject:

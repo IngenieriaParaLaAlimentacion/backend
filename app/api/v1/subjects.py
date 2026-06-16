@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query, Response, status
 
 from app.core.dependencies import get_subject_service, require_any
 from app.domain import UserActor
@@ -23,19 +23,28 @@ router = APIRouter(prefix="/subjects")
     summary="Register a new subject",
     description="Creates a new subject. Accessible by establishment managers only.",
     responses={
+        status.HTTP_200_OK: {
+            "description": "Subject already existed; idempotent replay of the same id."
+        },
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid data"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
         status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
-        status.HTTP_409_CONFLICT: {"description": "Subject already exists"},
+        status.HTTP_409_CONFLICT: {
+            "description": "A subject with this DNI already exists under a different "
+            "id; the canonical subject is returned in `canonical_subject`."
+        },
     },
 )
 async def create_subject(
     data: SubjectRequest,
+    response: Response,
     user: UserActor = Depends(require_any),
     service: SubjectService = Depends(get_subject_service),
 ) -> SubjectResponse:
-    """Register a new subject."""
-    subject = await service.create_subject(data, actor_id=user.user_id)
+    """Register a new subject (idempotent on the client-supplied id)."""
+    subject, created = await service.create_subject(data, actor_id=user.user_id)
+    if not created:
+        response.status_code = status.HTTP_200_OK
     return SubjectResponse.model_validate(subject)
 
 
