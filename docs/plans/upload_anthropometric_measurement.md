@@ -794,7 +794,7 @@ router = APIRouter(prefix="/measurements")
         status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
         status.HTTP_403_FORBIDDEN: {"description": "No approved access to establishment"},
         status.HTTP_404_NOT_FOUND: {"description": "Subject or establishment not found"},
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Anthropometric values out of range"},
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {"description": "Anthropometric values out of range"},
     },
 )
 async def register_measurement(

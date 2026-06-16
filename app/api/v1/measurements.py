@@ -26,7 +26,7 @@ router = APIRouter(prefix="/measurements")
         status.HTTP_404_NOT_FOUND: {
             "description": "Subject or establishment not found"
         },
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {
             "description": "Weight, height, or date out of valid range"
         },
     },

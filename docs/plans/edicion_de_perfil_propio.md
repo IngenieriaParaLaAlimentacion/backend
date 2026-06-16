@@ -607,7 +607,7 @@ from app.services.user_service import UserService
         status.HTTP_400_BAD_REQUEST: {"description": "No editable field provided"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
         status.HTTP_404_NOT_FOUND: {"description": "Authenticated user no longer exists"},
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {
             "description": "Invalid value or attempt to edit a non-editable field"
         },
     },
