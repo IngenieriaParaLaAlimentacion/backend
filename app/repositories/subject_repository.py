@@ -19,6 +19,8 @@ class SubjectRepository:
 
     async def create(
         self,
+        *,
+        id: UUID | None,
         dni: int,
         sex: Sex,
         name: str,
@@ -27,8 +29,16 @@ class SubjectRepository:
         is_rural: bool,
         is_indigenous: bool,
     ) -> Subject:
-        """Persist a new subject."""
-        subject = Subject(
+        """Persist a new subject. ``id`` is optional; when None the server generates it.
+
+        The insert runs inside a SAVEPOINT so a unique violation rolls back only the
+        failed row and leaves the session usable for the caller to re-query.
+
+        Raises:
+            UniqueConstraintError: If the id or DNI violates a unique constraint. The
+            caller is responsible for re-querying to decide the outcome.
+        """
+        fields = dict(
             dni=dni,
             sex=sex,
             name=name,
@@ -37,11 +47,15 @@ class SubjectRepository:
             is_rural=is_rural,
             is_indigenous=is_indigenous,
         )
-        self.db.add(subject)
+        if id is not None:
+            fields["id"] = id
+        subject = Subject(**fields)
         try:
-            await self.db.flush()
+            async with self.db.begin_nested():
+                self.db.add(subject)
+                await self.db.flush()
         except IntegrityError:
-            raise UniqueConstraintError("dni", dni)
+            raise UniqueConstraintError("subject", (id, dni))
         await self.db.refresh(subject)
         return subject
 
