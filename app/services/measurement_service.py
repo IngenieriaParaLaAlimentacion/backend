@@ -2,12 +2,13 @@ from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.establishment import UserEstablishmentStatus
-from app.domain.measurement import AlertDomain, MeasurementDomain
+from app.domain.measurement import MeasurementDomain
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
     ForbiddenError,
     SubjectNotFoundError,
+    UniqueConstraintError,
 )
 from app.models.subject import Subject
 from app.schemas.measurement_schema import MeasurementRequest
@@ -42,77 +43,61 @@ class MeasurementService:
         if relation is None or relation.status != UserEstablishmentStatus.APPROVED:
             raise ForbiddenError()
 
-    async def _upsert_with_alerts(
-        self,
-        idempotency_key: UUID,
-        data: MeasurementRequest,
-        actor: UserActor,
-        subject: Subject,
-        bmi: float,
-    ):
-        measurement, is_new = await self.uow.measurement_repo.upsert_by_idempotency_key(
-            idempotency_key=idempotency_key,
-            subject_id=data.subject_id,
-            responsible_id=actor.user_id,
-            establishment_id=data.establishment_id,
-            weight_kg=data.weight_kg,
-            height_cm=data.height_cm,
-            bmi=bmi,
-            measured_at=data.measured_at,
-        )
-        if is_new:
-            raw_alerts = evaluate_alerts(
-                bmi=bmi,
-                sex=subject.sex,
-                birth_date=subject.birth_date,
-                measured_at=data.measured_at,
-            )
-            if raw_alerts:
-                await self.uow.measurement_alert_repo.create_bulk(
-                    measurement.id, raw_alerts
-                )
-        return measurement
-
-    async def _to_domain(self, measurement) -> MeasurementDomain:
-        alert_rows = await self.uow.measurement_alert_repo.get_by_measurement_id(
-            measurement.id
-        )
-        return MeasurementDomain(
-            id=measurement.id,
-            idempotency_key=measurement.idempotency_key,
-            subject_id=measurement.subject_id,
-            responsible_id=measurement.responsible_id,
-            establishment_id=measurement.establishment_id,
-            weight_kg=measurement.weight_kg,
-            height_cm=measurement.height_cm,
-            bmi=measurement.bmi,
-            measured_at=measurement.measured_at,
-            created_at=measurement.created_at,
-            alerts=[AlertDomain.from_db(a) for a in alert_rows],
-        )
-
     async def register(
         self,
-        idempotency_key: UUID,
         data: MeasurementRequest,
         actor: UserActor,
-    ) -> MeasurementDomain:
-        """Register a measurement idempotently.
+    ) -> tuple[MeasurementDomain, bool]:
+        """Idempotently register a measurement.
 
-        Returns the stored record unchanged if idempotency_key was already seen.
+        Returns a ``(measurement, created)`` tuple: ``created`` is True for a brand-new
+        measurement (201) and False for an idempotent replay of an existing id (200).
 
         Raises:
             SubjectNotFoundError: subject_id does not exist.
             EstablishmentNotFoundError: establishment_id does not exist.
             ForbiddenError: manager lacks approved access to the establishment.
         """
+        if data.id is not None:
+            existing = await self.uow.measurement_repo.get_by_id(data.id)
+            if existing is not None:
+                return MeasurementDomain.from_db(existing), False
+
         subject = await self._get_subject_or_raise(data.subject_id)
         await self._get_establishment_or_raise(data.establishment_id)
         await self._check_establishment_access(actor, data.establishment_id)
 
         bmi = data.weight_kg / (data.height_cm / 100) ** 2
-        measurement = await self._upsert_with_alerts(
-            idempotency_key, data, actor, subject, bmi
+
+        try:
+            measurement = await self.uow.measurement_repo.create(
+                id=data.id,
+                subject_id=data.subject_id,
+                responsible_id=actor.user_id,
+                establishment_id=data.establishment_id,
+                weight_kg=data.weight_kg,
+                height_cm=data.height_cm,
+                bmi=bmi,
+                measured_at=data.measured_at,
+            )
+        except UniqueConstraintError:
+            # Concurrent insert of the same id (race) -> treat as replay.
+            if data.id is not None:
+                raced = await self.uow.measurement_repo.get_by_id(data.id)
+                if raced is not None:
+                    return MeasurementDomain.from_db(raced), False
+            raise
+
+        raw_alerts = evaluate_alerts(
+            bmi=bmi,
+            sex=subject.sex,
+            birth_date=subject.birth_date,
+            measured_at=data.measured_at,
         )
+        if raw_alerts:
+            measurement.alerts = await self.uow.measurement_alert_repo.create_bulk(
+                measurement.id, raw_alerts
+            )
+
         await self.uow.commit()
-        return await self._to_domain(measurement)
+        return MeasurementDomain.from_db(measurement), True

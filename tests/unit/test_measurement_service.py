@@ -1,6 +1,6 @@
 import uuid
 from datetime import date, datetime, timezone
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -12,6 +12,7 @@ from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
     ForbiddenError,
     SubjectNotFoundError,
+    UniqueConstraintError,
 )
 from app.schemas.measurement_schema import MeasurementRequest
 from app.services.measurement_service import MeasurementService
@@ -31,10 +32,9 @@ def make_subject():
 
 @pytest.fixture
 def make_measurement():
-    def _make(is_new: bool = True):
+    def _make():
         m = MagicMock()
         m.id = uuid.uuid4()
-        m.idempotency_key = uuid.uuid4()
         m.subject_id = uuid.uuid4()
         m.responsible_id = uuid.uuid4()
         m.establishment_id = uuid.uuid4()
@@ -43,22 +43,8 @@ def make_measurement():
         m.bmi = 70.0 / (1.70**2)
         m.measured_at = datetime(2024, 6, 1, tzinfo=timezone.utc)
         m.created_at = datetime(2024, 6, 1, tzinfo=timezone.utc)
-        return m, is_new
-
-    return _make
-
-
-@pytest.fixture
-def make_alert_row():
-    def _make(alert_type=AlertType.OVERWEIGHT, severity=AlertSeverity.MEDIUM):
-        a = MagicMock()
-        a.id = uuid.uuid4()
-        a.measurement_id = uuid.uuid4()
-        a.alert_type = alert_type
-        a.severity = severity
-        a.detail = "test detail"
-        a.created_at = datetime(2024, 6, 1, tzinfo=timezone.utc)
-        return a
+        m.alerts = []
+        return m
 
     return _make
 
@@ -69,20 +55,17 @@ def make_uow(make_subject, make_measurement):
         subject=None,
         establishment=MagicMock(),
         relation=None,
-        measurement_result=None,
-        alert_rows=None,
+        measurement=None,
     ):
         uow = AsyncMock()
         uow.subject_repo.get_by_id = AsyncMock(return_value=subject or make_subject())
         uow.establishment_repo.get_by_id = AsyncMock(return_value=establishment)
         uow.user_establishment_repo.get_relation = AsyncMock(return_value=relation)
-        uow.measurement_repo.upsert_by_idempotency_key = AsyncMock(
-            return_value=measurement_result or make_measurement()
+        uow.measurement_repo.get_by_id = AsyncMock(return_value=None)
+        uow.measurement_repo.create = AsyncMock(
+            return_value=measurement or make_measurement()
         )
         uow.measurement_alert_repo.create_bulk = AsyncMock()
-        uow.measurement_alert_repo.get_by_measurement_id = AsyncMock(
-            return_value=alert_rows or []
-        )
         uow.commit = AsyncMock()
         return uow
 
@@ -119,9 +102,7 @@ class TestRegisterValidation:
         uow.subject_repo.get_by_id = AsyncMock(return_value=None)
 
         with pytest.raises(SubjectNotFoundError):
-            await MeasurementService(uow).register(
-                uuid.uuid4(), valid_request, admin_actor
-            )
+            await MeasurementService(uow).register(valid_request, admin_actor)
 
         uow.commit.assert_not_called()
 
@@ -132,9 +113,7 @@ class TestRegisterValidation:
         uow = make_uow(establishment=None)
 
         with pytest.raises(EstablishmentNotFoundError):
-            await MeasurementService(uow).register(
-                uuid.uuid4(), valid_request, admin_actor
-            )
+            await MeasurementService(uow).register(valid_request, admin_actor)
 
         uow.commit.assert_not_called()
 
@@ -147,9 +126,7 @@ class TestEstablishmentAccessCheck:
         uow = make_uow(relation=None)
 
         with pytest.raises(ForbiddenError):
-            await MeasurementService(uow).register(
-                uuid.uuid4(), valid_request, manager_actor
-            )
+            await MeasurementService(uow).register(valid_request, manager_actor)
 
         uow.commit.assert_not_called()
 
@@ -162,9 +139,7 @@ class TestEstablishmentAccessCheck:
         uow = make_uow(relation=relation)
 
         with pytest.raises(ForbiddenError):
-            await MeasurementService(uow).register(
-                uuid.uuid4(), valid_request, manager_actor
-            )
+            await MeasurementService(uow).register(valid_request, manager_actor)
 
     @pytest.mark.asyncio
     async def test_manager_with_approved_relation_succeeds(
@@ -174,10 +149,11 @@ class TestEstablishmentAccessCheck:
         relation.status = UserEstablishmentStatus.APPROVED
         uow = make_uow(relation=relation)
 
-        result = await MeasurementService(uow).register(
-            uuid.uuid4(), valid_request, manager_actor
+        result, created = await MeasurementService(uow).register(
+            valid_request, manager_actor
         )
 
+        assert created is True
         assert isinstance(result, MeasurementDomain)
 
     @pytest.mark.asyncio
@@ -186,11 +162,12 @@ class TestEstablishmentAccessCheck:
     ):
         uow = make_uow(relation=None)
 
-        result = await MeasurementService(uow).register(
-            uuid.uuid4(), valid_request, admin_actor
+        result, created = await MeasurementService(uow).register(
+            valid_request, admin_actor
         )
 
         uow.user_establishment_repo.get_relation.assert_not_called()
+        assert created is True
         assert isinstance(result, MeasurementDomain)
 
 
@@ -200,19 +177,15 @@ class TestRegisterPersistence:
         self, make_uow, make_subject, make_measurement, valid_request, admin_actor
     ):
         subject = make_subject(sex=Sex.MALE, birth_date=date(2000, 1, 1))
-        measurement, _ = make_measurement(is_new=True)
-        uow = make_uow(
-            subject=subject,
-            measurement_result=(measurement, True),
-        )
+        measurement = make_measurement()
+        uow = make_uow(subject=subject, measurement=measurement)
 
         raw_alerts = [(AlertType.OVERWEIGHT, AlertSeverity.MEDIUM, "detail")]
-        with __import__("unittest.mock", fromlist=["patch"]).patch(
-            "app.services.measurement_service.evaluate_alerts", return_value=raw_alerts
+        with patch(
+            "app.services.measurement_service.evaluate_alerts",
+            return_value=raw_alerts,
         ):
-            await MeasurementService(uow).register(
-                uuid.uuid4(), valid_request, admin_actor
-            )
+            await MeasurementService(uow).register(valid_request, admin_actor)
 
         uow.measurement_alert_repo.create_bulk.assert_called_once_with(
             measurement.id, raw_alerts
@@ -223,58 +196,74 @@ class TestRegisterPersistence:
         self, make_uow, make_subject, make_measurement, valid_request, admin_actor
     ):
         subject = make_subject(sex=Sex.MALE, birth_date=date(2000, 1, 1))
-        measurement, _ = make_measurement(is_new=True)
-        uow = make_uow(subject=subject, measurement_result=(measurement, True))
+        measurement = make_measurement()
+        uow = make_uow(subject=subject, measurement=measurement)
 
-        with __import__("unittest.mock", fromlist=["patch"]).patch(
-            "app.services.measurement_service.evaluate_alerts", return_value=[]
-        ):
-            await MeasurementService(uow).register(
-                uuid.uuid4(), valid_request, admin_actor
-            )
+        with patch("app.services.measurement_service.evaluate_alerts", return_value=[]):
+            await MeasurementService(uow).register(valid_request, admin_actor)
 
         uow.measurement_alert_repo.create_bulk.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_idempotent_replay_skips_alert_creation(
-        self, make_uow, make_subject, make_measurement, valid_request, admin_actor
-    ):
-        subject = make_subject()
-        measurement, _ = make_measurement()
-        uow = make_uow(subject=subject, measurement_result=(measurement, False))
-
-        await MeasurementService(uow).register(uuid.uuid4(), valid_request, admin_actor)
-
-        uow.measurement_alert_repo.create_bulk.assert_not_called()
-
-    @pytest.mark.asyncio
-    async def test_commits_after_upsert(self, make_uow, valid_request, admin_actor):
+    async def test_commits_after_create(self, make_uow, valid_request, admin_actor):
         uow = make_uow()
-        await MeasurementService(uow).register(uuid.uuid4(), valid_request, admin_actor)
+        await MeasurementService(uow).register(valid_request, admin_actor)
         uow.commit.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_replay_by_id_returns_existing_without_create(
+        self, make_uow, make_measurement, valid_request, admin_actor
+    ):
+        """A request whose id already exists replays the stored measurement (200)."""
+        existing = make_measurement()
+        request = valid_request.model_copy(update={"id": existing.id})
+        uow = make_uow()
+        uow.measurement_repo.get_by_id = AsyncMock(return_value=existing)
+
+        result, created = await MeasurementService(uow).register(request, admin_actor)
+
+        assert created is False
+        assert result.id == existing.id
+        uow.measurement_repo.create.assert_not_called()
+        uow.measurement_alert_repo.create_bulk.assert_not_called()
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_id_race_on_conflict_replays_existing(
+        self, make_uow, make_measurement, valid_request, admin_actor
+    ):
+        """A concurrent insert of the same id surfaces as a replay, not a conflict."""
+        raced = make_measurement()
+        request = valid_request.model_copy(update={"id": raced.id})
+        uow = make_uow()
+        # First pre-check misses; the row lands between the check and our insert.
+        uow.measurement_repo.get_by_id = AsyncMock(side_effect=[None, raced])
+        uow.measurement_repo.create = AsyncMock(
+            side_effect=UniqueConstraintError("id", raced.id)
+        )
+
+        result, created = await MeasurementService(uow).register(request, admin_actor)
+
+        assert created is False
+        assert result.id == raced.id
+        uow.measurement_alert_repo.create_bulk.assert_not_called()
+        uow.commit.assert_not_called()
 
 
 class TestRegisterReturnValue:
     @pytest.mark.asyncio
     async def test_returns_measurement_domain(
-        self, make_uow, make_measurement, make_alert_row, valid_request, admin_actor
+        self, make_uow, make_measurement, valid_request, admin_actor
     ):
-        measurement, _ = make_measurement()
-        alert_row = make_alert_row()
-        uow = make_uow(
-            measurement_result=(measurement, True),
-            alert_rows=[alert_row],
-        )
+        measurement = make_measurement()
+        uow = make_uow(measurement=measurement)
 
-        with __import__("unittest.mock", fromlist=["patch"]).patch(
-            "app.services.measurement_service.evaluate_alerts", return_value=[]
-        ):
-            result = await MeasurementService(uow).register(
-                uuid.uuid4(), valid_request, admin_actor
+        with patch("app.services.measurement_service.evaluate_alerts", return_value=[]):
+            result, created = await MeasurementService(uow).register(
+                valid_request, admin_actor
             )
 
+        assert created is True
         assert isinstance(result, MeasurementDomain)
         assert result.id == measurement.id
         assert result.bmi == measurement.bmi
-        assert len(result.alerts) == 1
-        assert result.alerts[0].alert_type == alert_row.alert_type

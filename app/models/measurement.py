@@ -13,7 +13,6 @@ class Measurement(Base):
     __tablename__ = "measurements"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    idempotency_key = Column(UUID(as_uuid=True), nullable=False, unique=True)
     subject_id = Column(
         UUID(as_uuid=True),
         ForeignKey("subjects.id", ondelete="CASCADE"),

@@ -1,9 +1,10 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.measurement import Measurement
 
 
@@ -13,16 +14,14 @@ class MeasurementRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get_by_idempotency_key(self, key: UUID) -> Measurement | None:
-        """Return the measurement matching the given idempotency key, or None."""
-        result = await self.db.execute(
-            select(Measurement).where(Measurement.idempotency_key == key)
-        )
-        return result.scalar_one_or_none()
+    async def get_by_id(self, measurement_id: UUID) -> Measurement | None:
+        """Return a measurement by id, or None if it does not exist."""
+        return await self.db.get(Measurement, measurement_id)
 
-    async def upsert_by_idempotency_key(
+    async def create(
         self,
-        idempotency_key: UUID,
+        *,
+        id: UUID | None,
         subject_id: UUID,
         responsible_id: UUID,
         establishment_id: UUID,
@@ -30,14 +29,18 @@ class MeasurementRepository:
         height_cm: float,
         bmi: float,
         measured_at: datetime,
-    ) -> tuple[Measurement, bool]:
-        """Return (measurement, is_new). Inserts only when the key is unseen."""
-        existing = await self.get_by_idempotency_key(idempotency_key)
-        if existing is not None:
-            return existing, False
+    ) -> Measurement:
+        """Persist a new measurement. ``id`` is optional; when None the server
+        generates it.
 
-        measurement = Measurement(
-            idempotency_key=idempotency_key,
+        The insert runs inside a SAVEPOINT so a unique violation rolls back only
+        the failed row and leaves the session usable for the caller to re-query.
+
+        Raises:
+            UniqueConstraintError: If the id is already in use. The caller is
+                responsible for re-querying to decide the outcome.
+        """
+        fields = dict(
             subject_id=subject_id,
             responsible_id=responsible_id,
             establishment_id=establishment_id,
@@ -46,7 +49,14 @@ class MeasurementRepository:
             bmi=bmi,
             measured_at=measured_at,
         )
-        self.db.add(measurement)
-        await self.db.flush()
+        if id is not None:
+            fields["id"] = id
+        measurement = Measurement(**fields)
+        try:
+            async with self.db.begin_nested():
+                self.db.add(measurement)
+                await self.db.flush()
+        except IntegrityError:
+            raise UniqueConstraintError("id", id)
         await self.db.refresh(measurement)
-        return measurement, True
+        return measurement

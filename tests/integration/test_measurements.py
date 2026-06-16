@@ -111,11 +111,24 @@ def _body(subject_id, establishment_id, **overrides):
     }
 
 
-async def _upload(client, key, subject_id, establishment_id, headers, **overrides):
-    return await client.put(
-        f"{MEASUREMENTS_URL}/{key}",
+async def _upload(client, subject_id, establishment_id, headers, **overrides):
+    return await client.post(
+        MEASUREMENTS_URL,
         json=_body(subject_id, establishment_id, **overrides),
         headers=headers,
+    )
+
+
+async def _upload_with_id(
+    client, measurement_id, subject_id, establishment_id, headers, **overrides
+):
+    return await _upload(
+        client,
+        subject_id,
+        establishment_id,
+        headers,
+        id=str(measurement_id),
+        **overrides,
     )
 
 
@@ -125,7 +138,6 @@ class TestAuth:
     ):
         response = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             db_establishment.id,
             headers={},
@@ -137,7 +149,6 @@ class TestAuth:
     ):
         response = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             db_establishment.id,
             headers={"Authorization": "Bearer not_a_valid_token"},
@@ -151,7 +162,6 @@ class TestValidation:
     ):
         response = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             db_establishment.id,
             admin_headers,
@@ -164,7 +174,6 @@ class TestValidation:
     ):
         response = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             db_establishment.id,
             admin_headers,
@@ -177,7 +186,6 @@ class TestValidation:
     ):
         response = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             db_establishment.id,
             admin_headers,
@@ -190,7 +198,6 @@ class TestValidation:
     ):
         response = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             db_establishment.id,
             admin_headers,
@@ -203,7 +210,6 @@ class TestValidation:
     ):
         response = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             db_establishment.id,
             admin_headers,
@@ -219,7 +225,6 @@ class TestNotFound:
         response = await _upload(
             client,
             uuid.uuid4(),
-            uuid.uuid4(),
             db_establishment.id,
             db_admin_headers,
         )
@@ -230,7 +235,6 @@ class TestNotFound:
     ):
         response = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             uuid.uuid4(),
             db_admin_headers,
@@ -245,7 +249,6 @@ class TestEstablishmentAccess:
         """A manager with no relation to the establishment is forbidden."""
         response = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             db_establishment.id,
             manager_headers,
@@ -289,43 +292,39 @@ class TestEstablishmentAccess:
 
         response = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             db_establishment.id,
             headers,
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    async def test_manager_with_approved_relation_returns_200(
+    async def test_manager_with_approved_relation_returns_201(
         self, client, db_adult_subject, db_establishment, db_manager_with_access
     ):
         """A manager with an APPROVED relation can upload a measurement."""
         headers, _ = db_manager_with_access
         response = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             db_establishment.id,
             headers,
         )
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_201_CREATED
 
 
 class TestHappyPath:
-    async def test_returns_200_with_correct_shape(
+    async def test_returns_201_with_correct_shape(
         self, client, db_adult_subject, db_establishment, db_admin_headers
     ):
         response = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             db_establishment.id,
             db_admin_headers,
         )
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_201_CREATED
         data = response.json()
         assert "id" in data
-        assert "idempotency_key" in data
         assert data["subject_id"] == str(db_adult_subject.id)
         assert data["establishment_id"] == str(db_establishment.id)
         assert data["weight_kg"] == 70.0
@@ -340,45 +339,78 @@ class TestHappyPath:
     ):
         response = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             db_establishment.id,
             db_admin_headers,
             weight_kg=90.0,
             height_cm=180.0,
         )
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_201_CREATED
         expected_bmi = 90.0 / (1.80**2)
         assert response.json()["bmi"] == pytest.approx(expected_bmi, rel=1e-4)
 
-    async def test_idempotent_replay_returns_same_id(
+    async def test_client_supplied_id_is_used_as_pk(
         self, client, db_adult_subject, db_establishment, db_admin_headers
     ):
-        """Replaying the same idempotency_key returns the same record."""
-        key = uuid.uuid4()
-        first = await _upload(
-            client, key, db_adult_subject.id, db_establishment.id, db_admin_headers
+        """A client-supplied id becomes the measurement's primary key."""
+        measurement_id = uuid.uuid4()
+        response = await _upload_with_id(
+            client,
+            measurement_id,
+            db_adult_subject.id,
+            db_establishment.id,
+            db_admin_headers,
         )
-        second = await _upload(
-            client, key, db_adult_subject.id, db_establishment.id, db_admin_headers
-        )
-        assert first.status_code == status.HTTP_200_OK
-        assert second.status_code == status.HTTP_200_OK
-        assert first.json()["id"] == second.json()["id"]
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.json()["id"] == str(measurement_id)
 
-    async def test_different_keys_create_separate_records(
+    async def test_same_id_replay_returns_200(
+        self, client, db_adult_subject, db_establishment, db_admin_headers
+    ):
+        """Re-POSTing the same id is an idempotent replay returning 200."""
+        measurement_id = uuid.uuid4()
+        first = await _upload_with_id(
+            client,
+            measurement_id,
+            db_adult_subject.id,
+            db_establishment.id,
+            db_admin_headers,
+        )
+        assert first.status_code == status.HTTP_201_CREATED
+        second = await _upload_with_id(
+            client,
+            measurement_id,
+            db_adult_subject.id,
+            db_establishment.id,
+            db_admin_headers,
+        )
+        assert second.status_code == status.HTTP_200_OK
+        assert second.json() == first.json()
+
+    async def test_missing_id_still_returns_201(
+        self, client, db_adult_subject, db_establishment, db_admin_headers
+    ):
+        """Omitting id still creates a new measurement with a server-generated id."""
+        response = await _upload(
+            client,
+            db_adult_subject.id,
+            db_establishment.id,
+            db_admin_headers,
+        )
+        assert response.status_code == status.HTTP_201_CREATED
+        assert "id" in response.json()
+
+    async def test_different_ids_create_separate_records(
         self, client, db_adult_subject, db_establishment, db_admin_headers
     ):
         first = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             db_establishment.id,
             db_admin_headers,
         )
         second = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             db_establishment.id,
             db_admin_headers,
@@ -394,14 +426,13 @@ class TestAlerts:
         # weight=90, height=170 → BMI ≈ 31.1
         response = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             db_establishment.id,
             db_admin_headers,
             weight_kg=90.0,
             height_cm=170.0,
         )
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_201_CREATED
         alerts = response.json()["alerts"]
         assert len(alerts) == 1
         assert alerts[0]["alert_type"] == "obese"
@@ -410,43 +441,42 @@ class TestAlerts:
     async def test_normal_bmi_produces_no_alerts(
         self, client, db_adult_subject, db_establishment, db_admin_headers
     ):
-        """BMI in the normal range (18.5–24.9) produces no alerts."""
+        """BMI in the normal range (18.5-24.9) produces no alerts."""
         # weight=70, height=175 → BMI ≈ 22.9
         response = await _upload(
             client,
-            uuid.uuid4(),
             db_adult_subject.id,
             db_establishment.id,
             db_admin_headers,
             weight_kg=70.0,
             height_cm=175.0,
         )
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["alerts"] == []
 
     async def test_idempotent_replay_does_not_duplicate_alerts(
         self, client, db_adult_subject, db_establishment, db_admin_headers
     ):
-        """Replaying a key that triggered alerts returns the same alerts,
+        """Replaying an id that triggered alerts returns the same alerts,
         not duplicates."""
         from sqlalchemy import select
 
         from app.db.database import AsyncSessionLocal
         from app.models.measurement_alert import MeasurementAlert
 
-        key = uuid.uuid4()
-        await _upload(
+        measurement_id = uuid.uuid4()
+        await _upload_with_id(
             client,
-            key,
+            measurement_id,
             db_adult_subject.id,
             db_establishment.id,
             db_admin_headers,
             weight_kg=90.0,
             height_cm=170.0,
         )
-        await _upload(
+        await _upload_with_id(
             client,
-            key,
+            measurement_id,
             db_adult_subject.id,
             db_establishment.id,
             db_admin_headers,

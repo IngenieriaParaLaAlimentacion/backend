@@ -1,4 +1,4 @@
-"""add idempotency_key and bmi to measurements, add measurement_alerts
+"""add bmi to measurements, add measurement_alerts
 
 Revision ID: a4f2c8e1d3b7
 Revises: 2fb598be1acf
@@ -20,13 +20,6 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.add_column(
-        "measurements",
-        sa.Column("idempotency_key", postgresql.UUID(as_uuid=True), nullable=False),
-    )
-    op.create_unique_constraint(
-        "uq_measurements_idempotency_key", "measurements", ["idempotency_key"]
-    )
     op.add_column(
         "measurements",
         sa.Column("bmi", sa.Float(), nullable=False),
@@ -82,8 +75,4 @@ def downgrade() -> None:
     op.drop_table("measurement_alerts")
     sa.Enum(name="alertseverity").drop(op.get_bind())
     sa.Enum(name="alerttype").drop(op.get_bind())
-    op.drop_constraint(
-        "uq_measurements_idempotency_key", "measurements", type_="unique"
-    )
     op.drop_column("measurements", "bmi")
-    op.drop_column("measurements", "idempotency_key")

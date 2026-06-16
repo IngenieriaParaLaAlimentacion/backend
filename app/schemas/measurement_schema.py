@@ -7,6 +7,14 @@ from app.domain.measurement import AlertSeverity, AlertType
 
 
 class MeasurementRequest(BaseModel):
+    id: UUID | None = Field(
+        default=None,
+        description=(
+            "Client-generated UUID for offline-first idempotency. When provided it "
+            "becomes the measurement's primary key and repeated submissions with "
+            "the same id are idempotent. When omitted, the server generates one."
+        ),
+    )
     subject_id: UUID
     establishment_id: UUID
     weight_kg: float = Field(gt=0.5, le=300, description="Weight in kilograms.")
@@ -31,7 +39,6 @@ class AlertResponse(BaseModel):
 
 class MeasurementResponse(BaseModel):
     id: UUID
-    idempotency_key: UUID
     subject_id: UUID
     responsible_id: UUID
     establishment_id: UUID

@@ -48,7 +48,6 @@ class MeasurementDomain:
     """A registered anthropometric measurement with its clinical alerts."""
 
     id: UUID
-    idempotency_key: UUID
     subject_id: UUID
     responsible_id: UUID
     establishment_id: UUID
@@ -58,3 +57,19 @@ class MeasurementDomain:
     measured_at: datetime
     created_at: datetime
     alerts: list[AlertDomain]
+
+    @classmethod
+    def from_db(cls, obj) -> "MeasurementDomain":
+        """Build an MeasurementDomain from ORM."""
+        return cls(
+            id=obj.id,
+            subject_id=obj.subject_id,
+            responsible_id=obj.responsible_id,
+            establishment_id=obj.establishment_id,
+            weight_kg=obj.weight_kg,
+            height_cm=obj.height_cm,
+            bmi=obj.bmi,
+            measured_at=obj.measured_at,
+            created_at=obj.created_at,
+            alerts=[AlertDomain.from_db(a) for a in obj.alerts],
+        )
