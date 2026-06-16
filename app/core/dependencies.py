@@ -11,6 +11,7 @@ from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
 from app.services.admin_service import AdminService
 from app.services.auth_service import AuthService
 from app.services.establishment_service import EstablishmentService
+from app.services.measurement_service import MeasurementService
 from app.services.subject_service import SubjectService
 from app.services.user_service import UserService
 
@@ -44,6 +45,12 @@ async def get_subject_service() -> AsyncGenerator[SubjectService, None]:
     """Provide a SubjectService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
         yield SubjectService(uow)
+
+
+async def get_measurement_service() -> AsyncGenerator[MeasurementService, None]:
+    """Provide a MeasurementService backed by a fresh UnitOfWork."""
+    async with UnitOfWork() as uow:
+        yield MeasurementService(uow)
 
 
 async def get_user_service() -> AsyncGenerator[UserService, None]:
