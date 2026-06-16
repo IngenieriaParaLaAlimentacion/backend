@@ -13,6 +13,7 @@ class Measurement(Base):
     __tablename__ = "measurements"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    idempotency_key = Column(UUID(as_uuid=True), nullable=False, unique=True)
     subject_id = Column(
         UUID(as_uuid=True),
         ForeignKey("subjects.id", ondelete="CASCADE"),
@@ -28,6 +29,7 @@ class Measurement(Base):
     )
     weight_kg = Column(Float, nullable=False)
     height_cm = Column(Float, nullable=False)
+    bmi = Column(Float, nullable=False)
     measured_at = Column(DateTime(timezone=True), nullable=False)
     synced_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(
@@ -41,3 +43,9 @@ class Measurement(Base):
         back_populates="measurements",
     )
     establishment = relationship("Establishment", back_populates="measurements")
+    alerts = relationship(
+        "MeasurementAlert",
+        back_populates="measurement",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
