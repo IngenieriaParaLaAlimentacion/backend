@@ -62,6 +62,10 @@ async def _upload(client, headers=None, **overrides):
     )
 
 
+async def _upload_with_id(client, headers, subject_id, **overrides):
+    return await _upload(client, headers, id=str(subject_id), **overrides)
+
+
 class TestUploadSubject:
     async def test_unauthenticated_returns_401(self, client):
         """No token provided should return 401."""
@@ -120,10 +124,53 @@ class TestUploadSubject:
         assert data["is_indigenous"] is False
 
     async def test_duplicate_dni_returns_409(self, client, manager_headers):
-        """Registering a second subject with the same DNI returns 409."""
-        await _upload(client, manager_headers)
+        """A second subject with the same DNI returns 409 with the canonical subject."""
+        first = (await _upload(client, manager_headers)).json()
         response = await _upload(client, manager_headers)
         assert response.status_code == status.HTTP_409_CONFLICT
+        canonical = response.json()["canonical_subject"]
+        assert canonical["id"] == first["id"]
+        assert canonical["dni"] == first["dni"]
+
+    async def test_client_supplied_id_is_used_as_pk(self, client, manager_headers):
+        """A client-supplied id becomes the subject's primary key."""
+        subject_id = uuid.uuid4()
+        response = await _upload_with_id(client, manager_headers, subject_id)
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.json()["id"] == str(subject_id)
+
+        got = await client.get(f"{SUBJECTS_URL}/{subject_id}", headers=manager_headers)
+        assert got.status_code == status.HTTP_200_OK
+        assert got.json()["id"] == str(subject_id)
+
+    async def test_same_id_replay_returns_200(self, client, manager_headers):
+        """Re-POSTing the same id is an idempotent replay returning 200."""
+        subject_id = uuid.uuid4()
+        first = await _upload_with_id(client, manager_headers, subject_id)
+        assert first.status_code == status.HTTP_201_CREATED
+        second = await _upload_with_id(client, manager_headers, subject_id)
+        assert second.status_code == status.HTTP_200_OK
+        assert second.json() == first.json()
+
+    async def test_dni_conflict_different_id_returns_409_with_canonical(
+        self, client, manager_headers
+    ):
+        """Same DNI under a different id returns 409 carrying the canonical subject."""
+        id_a = uuid.uuid4()
+        id_b = uuid.uuid4()
+        first = await _upload_with_id(client, manager_headers, id_a, dni=30111222)
+        assert first.status_code == status.HTTP_201_CREATED
+        response = await _upload_with_id(client, manager_headers, id_b, dni=30111222)
+        assert response.status_code == status.HTTP_409_CONFLICT
+        canonical = response.json()["canonical_subject"]
+        assert canonical["id"] == str(id_a)
+        assert canonical["dni"] == 30111222
+
+    async def test_missing_id_still_returns_201(self, client, manager_headers):
+        """Omitting id preserves the backoffice create path."""
+        response = await _upload(client, manager_headers)
+        assert response.status_code == status.HTTP_201_CREATED
+        assert "id" in response.json()
 
     async def test_future_birth_date_returns_422(self, client, manager_headers):
         """A birthdate in the future is rejected with 422."""
@@ -382,6 +429,26 @@ class TestSubjectEventLog:
 
         async with AsyncSessionLocal() as session:
             result = await session.execute(select(SubjectEvent))
+            events = result.scalars().all()
+
+        assert len(events) == 1
+
+    async def test_replay_creates_no_second_event(self, client, manager_headers):
+        """Replaying the same id does not append a second SUBJECT_CREATED event."""
+        from sqlalchemy import select
+
+        from app.db.database import AsyncSessionLocal
+        from app.models.subject_event import SubjectEvent
+
+        subject_id = uuid.uuid4()
+        await _upload_with_id(client, manager_headers, subject_id)
+        replay = await _upload_with_id(client, manager_headers, subject_id)
+        assert replay.status_code == status.HTTP_200_OK
+
+        async with AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(SubjectEvent).where(SubjectEvent.subject_id == subject_id)
+            )
             events = result.scalars().all()
 
         assert len(events) == 1

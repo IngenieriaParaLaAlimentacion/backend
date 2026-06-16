@@ -12,15 +12,17 @@ from app.exceptions.domain_exceptions import (
 
 
 def _build_error_response(e: BaseError, request: Request, status_code: int):
+    content = {
+        "type": f"/errors/{e.title.lower().replace(' ', '-')}",
+        "title": e.title,
+        "status": status_code,
+        "detail": e.details,
+        "instance": request.url.path,
+    }
+    content.update(getattr(e, "extensions", {}) or {})
     return JSONResponse(
         status_code=status_code,
-        content={
-            "type": f"/errors/{e.title.lower().replace(' ', '-')}",
-            "title": e.title,
-            "status": status_code,
-            "detail": e.details,
-            "instance": request.url.path,
-        },
+        content=content,
         media_type="application/problem+json",
     )
 
