@@ -43,6 +43,18 @@ class UserEstablishmentRepository:
         )
         return list(result.scalars().all())
 
+    async def get_relation(
+        self, user_id: UUID, establishment_id: UUID
+    ) -> UserEstablishment | None:
+        """Return the user-establishment relation regardless of status, or None."""
+        result = await self.db.execute(
+            select(UserEstablishment).where(
+                UserEstablishment.user_id == user_id,
+                UserEstablishment.establishment_id == establishment_id,
+            )
+        )
+        return result.scalar_one_or_none()
+
     async def update_status_for_ids(
         self,
         user_id: UUID,

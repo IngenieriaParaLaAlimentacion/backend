@@ -256,7 +256,7 @@ Add `MeasurementAlert` to the imports and `__all__`.
 
 ---
 
-## Phase 2 — Repository + Unit of Work
+## Phase 2 — Repository + Unit of Work ✓
 
 ### Overview
 
@@ -371,24 +371,23 @@ class MeasurementAlertRepository:
         return list(result.scalars().all())
 ```
 
-#### 3. Add `get_approved_relation()` to `app/repositories/user_establishment_repository.py`
+#### 3. Add `get_relation()` to `app/repositories/user_establishment_repository.py`
 
 ```python
-async def get_approved_relation(
+async def get_relation(
     self, user_id: UUID, establishment_id: UUID
 ) -> UserEstablishment | None:
-    """Return the relation only when its status is approved, else None."""
+    """Return the user-establishment relation regardless of status, or None."""
     result = await self.db.execute(
         select(UserEstablishment).where(
             UserEstablishment.user_id == user_id,
             UserEstablishment.establishment_id == establishment_id,
-            UserEstablishment.status == UserEstablishmentStatus.APPROVED,
         )
     )
     return result.scalar_one_or_none()
 ```
 
-(Import `UserEstablishmentStatus` from `app.domain.establishment`.)
+The status check (`APPROVED`) belongs in the service layer, not here.
 
 #### 4. Update `app/core/interfaces/unit_of_work.py`
 
@@ -420,8 +419,8 @@ self.measurement_alert_repo = MeasurementAlertRepository(self.session)
 
 #### Automated Verification
 
-- [ ] `poetry run pre-commit run --all-files`
-- [ ] `poetry run pytest tests/unit/`
+- [x] `poetry run pre-commit run --all-files`
+- [x] `poetry run pytest tests/unit/`
 
 ---
 
@@ -631,10 +630,10 @@ class MeasurementService:
 
         # TODO: remove this check once the centralized establishment middleware is in place.
         if actor.role == UserRole.ESTABLISHMENT_MANAGER:
-            relation = await self.uow.user_establishment_repo.get_approved_relation(
+            relation = await self.uow.user_establishment_repo.get_relation(
                 actor.user_id, data.establishment_id
             )
-            if relation is None:
+            if relation is None or relation.status != UserEstablishmentStatus.APPROVED:
                 raise ForbiddenError()
 
         bmi = data.weight_kg / (data.height_cm / 100) ** 2
