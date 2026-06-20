@@ -209,3 +209,18 @@ async def invite_professional(
 ) -> None:
     await service.invite_user(data, role=UserRole.PROFESSIONAL)
     return Response(status_code=status.HTTP_202_ACCEPTED)
+
+
+@router.patch(
+    "/users/{user_id}/resend-invite",
+    status_code=status.HTTP_202_ACCEPTED,
+    response_class=Response,
+    summary="Re-send invitation to admin/professional user",
+    description="Re-send invitation to an already invited admin/profesional",
+)
+async def resend_invite(
+    user_id: UUID,
+    service: AdminService = Depends(get_admin_service),
+    _admin: UserActor = Depends(get_current_admin),
+) -> None:
+    await service.resend_invite(user_id)

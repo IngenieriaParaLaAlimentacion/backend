@@ -21,6 +21,7 @@ from app.exceptions.domain_exceptions import (
     UserEstablishmentNotFoundError,
     UserNotFoundError,
 )
+from app.models.user import User
 from app.schemas.admin_schema import InviteAdminRequest
 from app.services.auth_service import AuthService
 
@@ -219,8 +220,27 @@ class AdminService:
             page_size=page_size,
         )
 
+    async def _issue_and_send_invite(self, user: User) -> None:
+        """Generate a fresh recovery token for `user` and email the invite
+        deeplink. Shared by invite_user and resend_invite."""
+        created_token, plain_token = await self.auth_service.create_recovery_token(
+            user.id
+        )
+        await self.uow.commit()
+        send_invite_email(
+            user.email,
+            build_recovery_deeplink(plain_token, user.role),
+            created_token.expires_at,
+        )
+
     async def invite_user(self, data: InviteAdminRequest, role: UserRole) -> None:
-        """Create an admin user and send a password setup link by email."""
+        """Create a new admin user and send a password setup link by email.
+
+        Raises:
+            UserAlreadyExistsError: If the email already belongs to a user,
+                regardless of that user's status. Use resend_invite to
+                re-send a pending invitation.
+        """
         if await self.uow.user_repo.get_by_email(data.email):
             raise UserAlreadyExistsError(data.email)
 
@@ -235,13 +255,26 @@ class AdminService:
         await self.uow.password_repo.create(
             user.id, hash_password(placeholder_password)
         )
-
-        created_token, plain_token = await self.auth_service.create_recovery_token(
-            user.id
-        )
         await self.uow.commit()
-        send_invite_email(
-            user.email,
-            build_recovery_deeplink(plain_token, user.role),
-            created_token.expires_at,
-        )
+
+        await self._issue_and_send_invite(user)
+
+    async def resend_invite(self, user_id: UUID) -> None:
+        """Re-send the invitation email for a still-pending invited user.
+
+        Raises:
+            UserNotFoundError: If no user with the given id exists.
+            BadRequestError: If the user already completed onboarding
+                (status is not PENDING_VALIDATION).
+        """
+        user = await self.uow.user_repo.get_by_id(user_id)
+        if user is None:
+            raise UserNotFoundError(str(user_id))
+
+        if user.status != UserStatus.PENDING_VALIDATION:
+            raise BadRequestError(
+                "User is not pending",
+                "Only users with a pending invitation can be re-invited.",
+            )
+
+        await self._issue_and_send_invite(user)
