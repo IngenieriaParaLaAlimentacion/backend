@@ -77,7 +77,7 @@ class TestInviteAdminSuccess:
             user = result.scalar_one()
 
         assert user.role == UserRole.ADMIN
-        assert user.status == UserStatus.ACTIVE
+        assert user.status == UserStatus.PENDING_VALIDATION
 
     async def test_sends_invite_email(self, client, admin_headers):
         """Should call send_invite_email once with the invited user's email."""
