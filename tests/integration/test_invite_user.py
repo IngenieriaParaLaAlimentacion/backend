@@ -13,6 +13,7 @@ from app.models.user import User
 pytestmark = pytest.mark.asyncio
 
 INVITE_ADMIN_URL = "/api/v1/admin/invite-admin"
+RESEND_INVITE_URL = "/api/v1/admin/users/{user_id}/resend-invite"
 
 
 @pytest.fixture
@@ -23,6 +24,21 @@ def admin_headers():
 
 def _invite_body(**overrides):
     return {"email": f"admin_{uuid.uuid4().hex[:6]}@test.com", **overrides}
+
+
+async def _create_pending_admin(client, admin_headers) -> tuple[str, str]:
+    """Helper: invites a new admin and returns (user_id, email)."""
+    email = f"admin_{uuid.uuid4().hex[:6]}@test.com"
+    with patch("app.services.admin_service.send_invite_email"):
+        await client.post(
+            INVITE_ADMIN_URL, json={"email": email}, headers=admin_headers
+        )
+
+    async with db_module.AsyncSessionLocal() as session:
+        result = await session.execute(select(User).where(User.email == email))
+        user = result.scalar_one()
+
+    return str(user.id), email
 
 
 class TestInviteAdminAuth:
@@ -150,3 +166,138 @@ class TestInviteAdminValidation:
             headers=admin_headers,
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
+class TestResendInviteAuth:
+    async def test_unauthenticated_returns_401(self, client):
+        """Should return 401 if no token is provided."""
+        response = await client.patch(RESEND_INVITE_URL.format(user_id=uuid.uuid4()))
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_manager_is_forbidden(self, client):
+        """Should return 403 when a manager token is provided."""
+        token = create_access_token(uuid.uuid4(), role=UserRole.ESTABLISHMENT_MANAGER)
+        response = await client.patch(
+            RESEND_INVITE_URL.format(user_id=uuid.uuid4()),
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_professional_is_forbidden(self, client):
+        """Should return 403 when a professional token is provided."""
+        token = create_access_token(uuid.uuid4(), role=UserRole.PROFESSIONAL)
+        response = await client.patch(
+            RESEND_INVITE_URL.format(user_id=uuid.uuid4()),
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+class TestResendInviteSuccess:
+    async def test_returns_202(self, client, admin_headers):
+        """Should return 202 Accepted when re-inviting a pending user."""
+        user_id, _ = await _create_pending_admin(client, admin_headers)
+
+        with patch("app.services.admin_service.send_invite_email"):
+            response = await client.patch(
+                RESEND_INVITE_URL.format(user_id=user_id), headers=admin_headers
+            )
+
+        assert response.status_code == status.HTTP_202_ACCEPTED
+
+    async def test_sends_invite_email_again(self, client, admin_headers):
+        """Should call send_invite_email with the same user's email on resend."""
+        user_id, email = await _create_pending_admin(client, admin_headers)
+
+        with patch("app.services.admin_service.send_invite_email") as mock_send:
+            await client.patch(
+                RESEND_INVITE_URL.format(user_id=user_id), headers=admin_headers
+            )
+
+        mock_send.assert_called_once()
+        assert mock_send.call_args[0][0] == email
+
+    async def test_does_not_create_duplicate_user(self, client, admin_headers):
+        """Resending an invite should not create a second user row."""
+        user_id, email = await _create_pending_admin(client, admin_headers)
+
+        with patch("app.services.admin_service.send_invite_email"):
+            await client.patch(
+                RESEND_INVITE_URL.format(user_id=user_id), headers=admin_headers
+            )
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(select(User).where(User.email == email))
+            users = result.scalars().all()
+
+        assert len(users) == 1
+
+    async def test_user_remains_pending(self, client, admin_headers):
+        """Resending an invite should not change the user's status."""
+        user_id, email = await _create_pending_admin(client, admin_headers)
+
+        with patch("app.services.admin_service.send_invite_email"):
+            await client.patch(
+                RESEND_INVITE_URL.format(user_id=user_id), headers=admin_headers
+            )
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(select(User).where(User.email == email))
+            user = result.scalar_one()
+
+        assert user.status == UserStatus.PENDING_VALIDATION
+
+    async def test_response_body_is_empty(self, client, admin_headers):
+        """202 response should have no body."""
+        user_id, _ = await _create_pending_admin(client, admin_headers)
+
+        with patch("app.services.admin_service.send_invite_email"):
+            response = await client.patch(
+                RESEND_INVITE_URL.format(user_id=user_id), headers=admin_headers
+            )
+
+        assert response.content == b""
+
+
+class TestResendInviteErrors:
+    async def test_returns_404_if_user_not_found(self, client, admin_headers):
+        """Should return 404 if the user id does not exist."""
+        response = await client.patch(
+            RESEND_INVITE_URL.format(user_id=uuid.uuid4()), headers=admin_headers
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_returns_400_if_user_already_active(self, client, admin_headers):
+        """Should return 400 if the user already completed onboarding."""
+        user_id, email = await _create_pending_admin(client, admin_headers)
+
+        # Simulate the invitee having already confirmed their password recovery.
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(select(User).where(User.email == email))
+            user = result.scalar_one()
+            user.status = UserStatus.ACTIVE
+            await session.commit()
+
+        response = await client.patch(
+            RESEND_INVITE_URL.format(user_id=user_id), headers=admin_headers
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    async def test_does_not_send_email_if_user_already_active(
+        self, client, admin_headers
+    ):
+        """Should not call send_invite_email if the user is not pending."""
+        user_id, email = await _create_pending_admin(client, admin_headers)
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(select(User).where(User.email == email))
+            user = result.scalar_one()
+            user.status = UserStatus.ACTIVE
+            await session.commit()
+
+        with patch("app.services.admin_service.send_invite_email") as mock_send:
+            await client.patch(
+                RESEND_INVITE_URL.format(user_id=user_id), headers=admin_headers
+            )
+
+        mock_send.assert_not_called()

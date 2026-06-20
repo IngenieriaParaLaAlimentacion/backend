@@ -5,7 +5,11 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from app.domain.user import UserRole, UserStatus
-from app.exceptions.domain_exceptions import UserAlreadyExistsError
+from app.exceptions.domain_exceptions import (
+    BadRequestError,
+    UserAlreadyExistsError,
+    UserNotFoundError,
+)
 from app.services.admin_service import AdminService
 
 
@@ -15,6 +19,15 @@ def _make_user(email="admin@test.com"):
     user.email = email
     user.role = UserRole.ADMIN
     user.status = UserStatus.ACTIVE
+    return user
+
+
+def _make_pending_user(email="invitee@test.com"):
+    user = MagicMock()
+    user.id = uuid.uuid4()
+    user.email = email
+    user.role = UserRole.ADMIN
+    user.status = UserStatus.PENDING_VALIDATION
     return user
 
 
@@ -122,23 +135,6 @@ class TestInviteAdmin:
         mock_auth_service.create_recovery_token.assert_called_once_with(created_user.id)
 
     @pytest.mark.asyncio
-    async def test_commits_before_sending_email(self, make_uow, make_service):
-        """Should commit the transaction before sending the invite email."""
-        uow = make_uow()
-        service = make_service(uow)
-
-        commit_order = []
-        uow.commit = AsyncMock(side_effect=lambda: commit_order.append("commit"))
-
-        with patch(
-            "app.services.admin_service.send_invite_email",
-            side_effect=lambda *a, **kw: commit_order.append("email"),
-        ):
-            await service.invite_user(MagicMock(email="new@test.com"), UserRole.ADMIN)
-
-        assert commit_order == ["commit", "email"]
-
-    @pytest.mark.asyncio
     async def test_sends_invite_email_with_correct_args(
         self, make_uow, make_service, mock_auth_service
     ):
@@ -203,3 +199,168 @@ class TestInviteAdmin:
             await service.invite_user(MagicMock(email="new@test.com"), UserRole.ADMIN)
 
         uow.commit.assert_not_called()
+
+
+class TestResendInvite:
+    @pytest.mark.asyncio
+    async def test_raises_if_user_not_found(self, make_uow, make_service):
+        """Should raise UserNotFoundError if no user matches the id."""
+        uow = make_uow()
+        uow.user_repo.get_by_id = AsyncMock(return_value=None)
+        service = make_service(uow)
+
+        with pytest.raises(UserNotFoundError):
+            await service.resend_invite(uuid.uuid4())
+
+    @pytest.mark.asyncio
+    async def test_does_not_commit_if_user_not_found(self, make_uow, make_service):
+        """Should not commit if the user does not exist."""
+        uow = make_uow()
+        uow.user_repo.get_by_id = AsyncMock(return_value=None)
+        service = make_service(uow)
+
+        with pytest.raises(UserNotFoundError):
+            await service.resend_invite(uuid.uuid4())
+
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_raises_if_user_already_active(self, make_uow, make_service):
+        """Should raise BadRequestError if the user already completed onboarding."""
+        active_user = _make_user()  # status=ACTIVE by default
+        uow = make_uow()
+        uow.user_repo.get_by_id = AsyncMock(return_value=active_user)
+        service = make_service(uow)
+
+        with pytest.raises(BadRequestError):
+            await service.resend_invite(active_user.id)
+
+    @pytest.mark.asyncio
+    async def test_does_not_commit_if_user_already_active(self, make_uow, make_service):
+        """Should not commit if the user is not pending."""
+        active_user = _make_user()
+        uow = make_uow()
+        uow.user_repo.get_by_id = AsyncMock(return_value=active_user)
+        service = make_service(uow)
+
+        with pytest.raises(BadRequestError):
+            await service.resend_invite(active_user.id)
+
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_does_not_create_new_user_or_password(self, make_uow, make_service):
+        """Should not call user_repo.create or password_repo.create on resend."""
+        pending_user = _make_pending_user()
+        uow = make_uow()
+        uow.user_repo.get_by_id = AsyncMock(return_value=pending_user)
+        service = make_service(uow)
+
+        with (
+            patch("app.services.admin_service.send_invite_email"),
+            patch(
+                "app.services.admin_service.build_recovery_deeplink",
+                return_value="https://deeplink/xyz",
+            ),
+        ):
+            await service.resend_invite(pending_user.id)
+
+        uow.user_repo.create.assert_not_called()
+        uow.password_repo.create.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_issues_new_recovery_token_for_existing_user(
+        self, make_uow, make_service, mock_auth_service
+    ):
+        """Should call auth_service.create_recovery_token
+        with the existing user's id."""
+        pending_user = _make_pending_user()
+        uow = make_uow()
+        uow.user_repo.get_by_id = AsyncMock(return_value=pending_user)
+        service = make_service(uow)
+
+        with (
+            patch("app.services.admin_service.send_invite_email"),
+            patch(
+                "app.services.admin_service.build_recovery_deeplink",
+                return_value="https://deeplink/xyz",
+            ),
+        ):
+            await service.resend_invite(pending_user.id)
+
+        mock_auth_service.create_recovery_token.assert_called_once_with(pending_user.id)
+
+    @pytest.mark.asyncio
+    async def test_commits_before_sending_email(self, make_uow, make_service):
+        """Should commit the transaction before sending the resend email."""
+        pending_user = _make_pending_user()
+        uow = make_uow()
+        uow.user_repo.get_by_id = AsyncMock(return_value=pending_user)
+        service = make_service(uow)
+
+        commit_order = []
+        uow.commit = AsyncMock(side_effect=lambda: commit_order.append("commit"))
+
+        with patch(
+            "app.services.admin_service.send_invite_email",
+            side_effect=lambda *a, **kw: commit_order.append("email"),
+        ):
+            await service.resend_invite(pending_user.id)
+
+        assert commit_order == ["commit", "email"]
+
+    @pytest.mark.asyncio
+    async def test_sends_invite_email_with_correct_args(
+        self, make_uow, make_service, mock_auth_service
+    ):
+        """Should call send_invite_email with the user's email,
+        deeplink, and expires_at."""
+        pending_user = _make_pending_user(email="pending@test.com")
+        expires_at = datetime(2099, 6, 1, tzinfo=timezone.utc)
+        token = _make_token(expires_at=expires_at)
+        mock_auth_service.create_recovery_token = AsyncMock(
+            return_value=(token, "plain-resend")
+        )
+
+        uow = make_uow()
+        uow.user_repo.get_by_id = AsyncMock(return_value=pending_user)
+        service = make_service(uow)
+
+        with (
+            patch("app.services.admin_service.send_invite_email") as mock_send,
+            patch(
+                "app.services.admin_service.build_recovery_deeplink",
+                return_value="https://deeplink/resend",
+            ),
+        ):
+            await service.resend_invite(pending_user.id)
+
+            mock_send.assert_called_once_with(
+                "pending@test.com",
+                "https://deeplink/resend",
+                expires_at,
+            )
+
+    @pytest.mark.asyncio
+    async def test_builds_deeplink_with_plain_token_and_user_role(
+        self, make_uow, make_service, mock_auth_service
+    ):
+        """Should call build_recovery_deeplink with
+        the new plain token and the user's role."""
+        pending_user = _make_pending_user()
+        mock_auth_service.create_recovery_token = AsyncMock(
+            return_value=(_make_token(), "plain-resend")
+        )
+        uow = make_uow()
+        uow.user_repo.get_by_id = AsyncMock(return_value=pending_user)
+        service = make_service(uow)
+
+        with (
+            patch(
+                "app.services.admin_service.build_recovery_deeplink"
+            ) as mock_deeplink,
+            patch("app.services.admin_service.send_invite_email"),
+        ):
+            await service.resend_invite(pending_user.id)
+
+            mock_deeplink.assert_called_once_with("plain-resend", pending_user.role)
