@@ -18,6 +18,7 @@ uvicorn = "^0.44.0"
 asyncpg = "^0.31.0"
 alembic = "^1.18.4"
 greenlet = "^3.5.0"
+aiosmtplib = "^5.1.2"
 
 [tool.poetry.group.dev.dependencies]
 ruff = ">=0.15.8,<0.16.0"
