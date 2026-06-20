@@ -227,7 +227,7 @@ class AdminService:
             user.id
         )
         await self.uow.commit()
-        send_invite_email(
+        await send_invite_email(
             user.email,
             build_recovery_deeplink(plain_token, user.role),
             created_token.expires_at,
