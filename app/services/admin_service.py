@@ -1,3 +1,4 @@
+import secrets
 from typing import Any
 from uuid import UUID
 
@@ -230,7 +231,10 @@ class AdminService:
             role=role,
             status=UserStatus.PENDING_VALIDATION,
         )
-        await self.uow.password_repo.create(user.id, hash_password("temp-password"))
+        placeholder_password = secrets.token_urlsafe(32)
+        await self.uow.password_repo.create(
+            user.id, hash_password(placeholder_password)
+        )
 
         created_token, plain_token = await self.auth_service.create_recovery_token(
             user.id
