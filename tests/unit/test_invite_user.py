@@ -164,6 +164,7 @@ class TestInviteAdmin:
                 "invited@test.com",
                 "https://deeplink/xyz",
                 expires_at,
+                UserRole.ADMIN,
             )
 
     @pytest.mark.asyncio
@@ -339,6 +340,7 @@ class TestResendInvite:
                 "pending@test.com",
                 "https://deeplink/resend",
                 expires_at,
+                UserRole.ADMIN,
             )
 
     @pytest.mark.asyncio

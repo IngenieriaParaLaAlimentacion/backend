@@ -231,6 +231,7 @@ class AdminService:
             user.email,
             build_recovery_deeplink(plain_token, user.role),
             created_token.expires_at,
+            user.role,
         )
 
     async def invite_user(self, data: InviteAdminRequest, role: UserRole) -> None:

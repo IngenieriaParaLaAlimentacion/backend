@@ -15,9 +15,6 @@ from app.services.auth_service import AuthService
 _FIXED_NOW = datetime(2024, 6, 1, 12, 0, 0, tzinfo=timezone.utc)
 
 
-# ── Deeplink fixtures ────────────────────────────────────────────────────────
-
-
 @pytest.fixture
 def user_deeplink_settings(monkeypatch):
     monkeypatch.setattr(settings, "app_deeplink_base", "https://app.example.com")
@@ -93,9 +90,6 @@ def mock_hash_password_recovery(monkeypatch):
         "app.services.auth_service.hash_password",
         lambda p: f"hashed_{p}",
     )
-
-
-# ── TestBuildRecoveryDeeplink ────────────────────────────────────────────────
 
 
 class TestBuildRecoveryDeeplink:
@@ -180,7 +174,7 @@ class TestSendRecoveryEmail:
             )
 
         mock_send.assert_awaited_once()
-        sent_msg = mock_send.call_args[0][0]  # first positional arg is the EmailMessage
+        sent_msg = mock_send.call_args[0][0]
         assert sent_msg["To"] == "user@example.com"
 
     @pytest.mark.asyncio
@@ -193,10 +187,6 @@ class TestSendRecoveryEmail:
             await send_recovery_email(
                 "user@example.com", "https://app/reset?token=abc", _FIXED_NOW
             )
-        # no assert — just verifying no exception escapes
-
-
-# ── TestConfirmPasswordRecoverySuccess ───────────────────────────────────────
 
 
 class TestConfirmPasswordRecoverySuccess:

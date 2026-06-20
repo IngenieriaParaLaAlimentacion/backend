@@ -138,17 +138,24 @@ async def send_recovery_email(
     )
 
 
-async def send_invite_email(to_email: str, deeplink: str, expires_at: datetime) -> None:
+async def send_invite_email(
+    to_email: str, deeplink: str, expires_at: datetime, role: str = "admin"
+) -> None:
     """Send an admin invitation email with a password setup link."""
     formatted_expiry = expires_at.strftime("%d/%m/%Y a las %H:%M UTC")
+
+    role_label = {
+        "admin": "administrador",
+        "professional": "profesional",
+    }.get(role, "usuario")
 
     html_content = _render_base_template(
         title="¡Bienvenido a Ingeniería Para la Alimentación!",
         pre_button_text=(
-            "Has sido invitado a unirte a"
-            " <strong>Ingeniería Para la Alimentación</strong> "
-            "como administrador. Haz clic en el botón de abajo para configurar "
-            "tu contraseña y activar tu cuenta:"
+            f"Has sido invitado a unirte a"
+            f" <strong>Ingeniería Para la Alimentación</strong> "
+            f"como {role_label}. Haz clic en el botón de abajo para configurar "
+            f"tu contraseña y activar tu cuenta:"
         ),
         button_text="Configurar Contraseña",
         button_url=deeplink,
