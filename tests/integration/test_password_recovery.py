@@ -30,7 +30,7 @@ def capture_deeplink(monkeypatch):
     """Intercepts send_recovery_email and returns a dict with the captured deeplink."""
     captured = {"deeplink": None}
 
-    def _fake(to_email, deeplink, expires_at):
+    async def _fake(to_email, deeplink, expires_at):
         captured["deeplink"] = deeplink
 
     monkeypatch.setattr("app.services.auth_service.send_recovery_email", _fake)
@@ -64,18 +64,11 @@ class TestPasswordRecoveryRequest:
     async def test_smtp_failure_still_returns_202(
         self, client, db_active_user, monkeypatch
     ):
-        class _FailingSMTP:
-            def __init__(self, *args, **kwargs):
-                pass
-
-            def __enter__(self):
-                raise TimeoutError("smtp timeout")
-
-            def __exit__(self, *args):
-                return False
+        async def _failing_send(*args, **kwargs):
+            raise TimeoutError("smtp timeout")
 
         monkeypatch.setattr("app.core.password_recovery.settings.smtp_enabled", True)
-        monkeypatch.setattr("app.core.password_recovery.smtplib.SMTP", _FailingSMTP)
+        monkeypatch.setattr("app.core.password_recovery.aiosmtplib.send", _failing_send)
 
         response = await client.post(REQUEST_URL, json={"email": "ana@test.com"})
         assert response.status_code == status.HTTP_202_ACCEPTED
