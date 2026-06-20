@@ -228,7 +228,7 @@ class AdminService:
             name="",
             last_name="",
             role=role,
-            status=UserStatus.ACTIVE,
+            status=UserStatus.PENDING_VALIDATION,
         )
         await self.uow.password_repo.create(user.id, hash_password("temp-password"))
 

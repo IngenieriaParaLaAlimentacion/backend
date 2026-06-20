@@ -218,6 +218,10 @@ class AuthService:
             recovery_token.user_id
         )
         user_password.password_hashed = hash_password(data.new_password)
+        user = await self.uow.user_repo.get_by_id(recovery_token.user_id)
+
+        if user.status == UserStatus.PENDING_VALIDATION:
+            await self.uow.user_repo.update_status(user.id, UserStatus.ACTIVE)
 
         await self.uow.password_recovery_repo.mark_used(recovery_token)
         await self.uow.token_repo.revoke_all_by_user_id(recovery_token.user_id)

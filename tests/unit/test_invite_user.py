@@ -92,7 +92,7 @@ class TestInviteAdmin:
             name="",
             last_name="",
             role=UserRole.ADMIN,
-            status=UserStatus.ACTIVE,
+            status=UserStatus.PENDING_VALIDATION,
         )
 
     @pytest.mark.asyncio
