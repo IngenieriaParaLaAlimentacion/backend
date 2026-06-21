@@ -28,6 +28,7 @@ class Measurement(Base):
     )
     weight_kg = Column(Float, nullable=False)
     height_cm = Column(Float, nullable=False)
+    bmi = Column(Float, nullable=False)
     measured_at = Column(DateTime(timezone=True), nullable=False)
     synced_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(
@@ -41,3 +42,9 @@ class Measurement(Base):
         back_populates="measurements",
     )
     establishment = relationship("Establishment", back_populates="measurements")
+    alerts = relationship(
+        "MeasurementAlert",
+        back_populates="measurement",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
