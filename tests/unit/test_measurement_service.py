@@ -89,8 +89,8 @@ def admin_actor():
 
 
 @pytest.fixture
-def manager_actor():
-    return UserActor(user_id=uuid.uuid4(), role=UserRole.ESTABLISHMENT_MANAGER)
+def field_worker_actor():
+    return UserActor(user_id=uuid.uuid4(), role=UserRole.FIELD_WORKER)
 
 
 class TestRegisterValidation:
@@ -120,37 +120,37 @@ class TestRegisterValidation:
 
 class TestEstablishmentAccessCheck:
     @pytest.mark.asyncio
-    async def test_manager_with_no_relation_is_forbidden(
-        self, make_uow, valid_request, manager_actor
+    async def test_field_worker_with_no_relation_is_forbidden(
+        self, make_uow, valid_request, field_worker_actor
     ):
         uow = make_uow(relation=None)
 
         with pytest.raises(ForbiddenError):
-            await MeasurementService(uow).register(valid_request, manager_actor)
+            await MeasurementService(uow).register(valid_request, field_worker_actor)
 
         uow.commit.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_manager_with_pending_relation_is_forbidden(
-        self, make_uow, valid_request, manager_actor
+    async def test_field_worker_with_pending_relation_is_forbidden(
+        self, make_uow, valid_request, field_worker_actor
     ):
         relation = MagicMock()
         relation.status = UserEstablishmentStatus.PENDING
         uow = make_uow(relation=relation)
 
         with pytest.raises(ForbiddenError):
-            await MeasurementService(uow).register(valid_request, manager_actor)
+            await MeasurementService(uow).register(valid_request, field_worker_actor)
 
     @pytest.mark.asyncio
-    async def test_manager_with_approved_relation_succeeds(
-        self, make_uow, valid_request, manager_actor
+    async def test_field_worker_with_approved_relation_succeeds(
+        self, make_uow, valid_request, field_worker_actor
     ):
         relation = MagicMock()
         relation.status = UserEstablishmentStatus.APPROVED
         uow = make_uow(relation=relation)
 
         result, created = await MeasurementService(uow).register(
-            valid_request, manager_actor
+            valid_request, field_worker_actor
         )
 
         assert created is True

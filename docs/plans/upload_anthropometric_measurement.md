@@ -57,7 +57,7 @@ A `POST /api/v1/measurements` endpoint that:
 - Returns `201 Created` on the first upload for a given client-supplied `id` (or when `id` is
   omitted).
 - Returns `200 OK` on a subsequent upload of the same `id` with the stored record unchanged.
-- Validates subject and establishment exist, and that the requesting manager has approved access.
+- Validates subject and establishment exist, and that the requesting field worker has approved access.
 - Validates anthropometric ranges (422 for impossible values).
 - Computes and stores BMI.
 - Generates clinical alerts using WHO standards.
@@ -656,9 +656,9 @@ class MeasurementService:
 
     # TODO: remove this check once the centralized establishment middleware is in place.
     async def _check_establishment_access(
-        self, actor: UserActor, establishment_id: UUID
+            self, actor: UserActor, establishment_id: UUID
     ) -> None:
-        if actor.role != UserRole.ESTABLISHMENT_MANAGER:
+        if actor.role != UserRole.FIELD_WORKER:
             return
         relation = await self.uow.user_establishment_repo.get_relation(
             actor.user_id, establishment_id
@@ -667,9 +667,9 @@ class MeasurementService:
             raise ForbiddenError()
 
     async def register(
-        self,
-        data: MeasurementRequest,
-        actor: UserActor,
+            self,
+            data: MeasurementRequest,
+            actor: UserActor,
     ) -> tuple[MeasurementDomain, bool]:
         """Idempotently register a measurement.
 
@@ -679,7 +679,7 @@ class MeasurementService:
         Raises:
             SubjectNotFoundError: subject_id does not exist.
             EstablishmentNotFoundError: establishment_id does not exist.
-            ForbiddenError: manager lacks approved access to the establishment.
+            ForbiddenError: field worker lacks approved access to the establishment.
         """
         # Idempotent replay: same client id already stored.
         if data.id is not None:
@@ -897,7 +897,7 @@ v1_router.include_router(measurements.router, tags=["Measurements V1"])
 - [ ] `weight_kg: 0` → `422`
 - [ ] `measured_at` in the future → `422`
 - [ ] Unknown `subject_id` → `404`
-- [ ] Manager calling with an establishment they don't have approved access to → `403`
+- [ ] Field worker calling with an establishment they don't have approved access to → `403`
 - [ ] Admin calling → succeeds regardless of establishment relation
 
 ---
@@ -931,7 +931,7 @@ Mock `IUnitOfWork` (following the pattern in `tests/unit/test_subject_service.py
   re-queries by id and returns the winning row as a replay
 - Unknown `subject_id` → raises `SubjectNotFoundError`
 - Unknown `establishment_id` → raises `EstablishmentNotFoundError`
-- Manager with no approved relation → raises `ForbiddenError`
+- Field worker with no approved relation → raises `ForbiddenError`
 - Admin with no establishment relation → succeeds (bypasses establishment check)
 
 #### 3. `tests/integration/test_measurements.py`
@@ -946,7 +946,7 @@ Using Testcontainers (Docker required), following the pattern in
 - Bad `weight_kg` (0.1) → `422`
 - `measured_at` in the future → `422`
 - Nonexistent `subject_id` → `404`
-- Manager without establishment access → `403`
+- Field worker without establishment access → `403`
 - Measurement with severely low/high BMI → response includes the matching alert
 - Replaying an `id` that triggered alerts does not duplicate the alert rows
 
@@ -967,7 +967,7 @@ Using Testcontainers (Docker required), following the pattern in
 Cover `tests/unit/` with mocked `IUnitOfWork`:
 - All clinical alert paths (children z-scores, adult BMI, normal range = no alert)
 - Idempotency logic (replay by id, first insert, concurrent-insert race recovery)
-- Establishment access check for manager vs admin roles
+- Establishment access check for field worker vs admin roles
 - BMI formula: `weight / (height/100)^2`
 
 ### Integration Tests
@@ -982,12 +982,12 @@ Cover `tests/integration/` via Testcontainers (real PostgreSQL):
 
 1. Start the server: `poetry run uvicorn app.main:app --reload`
 2. Open `/docs`, find `POST /api/v1/measurements`
-3. Authenticate as a manager with an approved establishment
+3. Authenticate as a field worker with an approved establishment
 4. Submit a measurement for a registered subject (with or without a client-supplied `id`)
 5. Submit the same request again with the same `id` — confirm identical response (now `200`),
    no duplicate in DB
 6. Submit with `weight_kg: 1000` — confirm `422`
-7. Submit as a manager for an establishment they don't belong to — confirm `403`
+7. Submit as a field worker for an establishment they don't belong to — confirm `403`
 8. Submit as admin for any establishment — confirm `201`
 
 ---

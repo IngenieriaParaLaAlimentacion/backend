@@ -1,4 +1,5 @@
-"""rename professional to analyst in userrole enum
+"""rename professional to analyst and establishment_manager to field_worker
+in userrole enum
 
 Revision ID: c1e7f4a2d9b3
 Revises: a4f2c8e1d3b7
@@ -18,7 +19,13 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.execute("ALTER TYPE userrole RENAME VALUE 'professional' TO 'analyst'")
+    op.execute(
+        "ALTER TYPE userrole RENAME VALUE 'establishment_manager' TO 'field_worker'"
+    )
 
 
 def downgrade() -> None:
+    op.execute(
+        "ALTER TYPE userrole RENAME VALUE 'field_worker' TO 'establishment_manager'"
+    )
     op.execute("ALTER TYPE userrole RENAME VALUE 'analyst' TO 'professional'")

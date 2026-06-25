@@ -28,7 +28,7 @@ def _make_payload(**overrides) -> dict:
     return defaults
 
 
-async def _insert_manager() -> uuid.UUID:
+async def _insert_field_worker() -> uuid.UUID:
     from app.db.database import AsyncSessionLocal
     from app.models.user import User
 
@@ -40,7 +40,7 @@ async def _insert_manager() -> uuid.UUID:
                 name="Mgr",
                 last_name="One",
                 email=f"{user_id}@test.com",
-                role=UserRole.ESTABLISHMENT_MANAGER,
+                role=UserRole.FIELD_WORKER,
                 status=UserStatus.ACTIVE,
             )
         )
@@ -95,8 +95,8 @@ async def _insert_relation(
         await session.commit()
 
 
-def _manager_headers(user_id: uuid.UUID) -> dict:
-    token = create_access_token(user_id, role=UserRole.ESTABLISHMENT_MANAGER)
+def _field_worker_headers(user_id: uuid.UUID) -> dict:
+    token = create_access_token(user_id, role=UserRole.FIELD_WORKER)
     return {"Authorization": f"Bearer {token}"}
 
 
@@ -310,28 +310,31 @@ class TestGetEstablishmentsPaginated:
 class TestAvailableEstablishments:
     async def test_excludes_approved_and_pending(self, client, app):
         """available=true returns rejected and unrelated establishments only."""
-        manager_id = await _insert_manager()
+        field_worker_id = await _insert_field_worker()
         a = await _insert_establishment("Centro A", "Calle A")
         b = await _insert_establishment("Centro B", "Calle B")
         c = await _insert_establishment("Centro C", "Calle C")
         d = await _insert_establishment("Centro D", "Calle D")
-        await _insert_relation(manager_id, a.id, UserEstablishmentStatus.APPROVED)
-        await _insert_relation(manager_id, b.id, UserEstablishmentStatus.PENDING)
-        await _insert_relation(manager_id, c.id, UserEstablishmentStatus.REJECTED)
+        await _insert_relation(field_worker_id, a.id, UserEstablishmentStatus.APPROVED)
+        await _insert_relation(field_worker_id, b.id, UserEstablishmentStatus.PENDING)
+        await _insert_relation(field_worker_id, c.id, UserEstablishmentStatus.REJECTED)
 
-        response = await client.get(AVAILABLE_URL, headers=_manager_headers(manager_id))
+        response = await client.get(
+            AVAILABLE_URL, headers=_field_worker_headers(field_worker_id)
+        )
 
         assert response.status_code == status.HTTP_200_OK
         ids = {item["id"] for item in response.json()["items"]}
         assert ids == {str(c.id), str(d.id)}
 
     async def test_search_narrows_available(self, client, app):
-        manager_id = await _insert_manager()
+        field_worker_id = await _insert_field_worker()
         await _insert_establishment("Centro Recoleta", "Av. Corrientes 100")
         await _insert_establishment("Centro Caballito", "Av. Santa Fe 200")
 
         response = await client.get(
-            f"{AVAILABLE_URL}&search=Recoleta", headers=_manager_headers(manager_id)
+            f"{AVAILABLE_URL}&search=Recoleta",
+            headers=_field_worker_headers(field_worker_id),
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -341,12 +344,13 @@ class TestAvailableEstablishments:
 
     async def test_city_filter_narrows_available(self, client, app):
         """available now honors the full listing params (city/province/sort)."""
-        manager_id = await _insert_manager()
+        field_worker_id = await _insert_field_worker()
         await _insert_establishment("Centro Norte", "Calle 1", city="Cordoba")
         await _insert_establishment("Centro Sur", "Calle 2", city="Rosario")
 
         response = await client.get(
-            f"{AVAILABLE_URL}&city=Cordoba", headers=_manager_headers(manager_id)
+            f"{AVAILABLE_URL}&city=Cordoba",
+            headers=_field_worker_headers(field_worker_id),
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -390,13 +394,15 @@ class TestCreateEstablishment:
         assert data["formatted_address"] == "Av. Cabildo 100"
         assert "id" in data
 
-    async def test_manager_cannot_create_establishment(self, client, manager_headers):
-        """A manager cannot create an establishment and receives 403."""
+    async def test_field_worker_cannot_create_establishment(
+        self, client, field_worker_headers
+    ):
+        """A field worker cannot create an establishment and receives 403."""
         payload = _make_payload(
             name="Centro Norte", formatted_address="Av. Cabildo 100"
         )
         response = await client.post(
-            ESTABLISHMENT_URL, json=payload, headers=manager_headers
+            ESTABLISHMENT_URL, json=payload, headers=field_worker_headers
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN

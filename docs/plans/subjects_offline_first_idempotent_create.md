@@ -64,7 +64,7 @@ for replays or conflicts.
   foundation; a generic per-item-result sync envelope (covering measurements, surveys, iron
   values) is deferred to a later plan once sync volume justifies it.
 - **No change to the role/permission model.** The endpoint keeps `require_any`. The known
-  mismatch between `require_any` and the "establishment managers only" wording in the
+  mismatch between `require_any` and the "field workers only" wording in the
   endpoint description is **intentionally left untouched** here and should be tracked
   separately.
 - **No DNI mutability change.** `PATCH /subjects/{id}` still allows DNI correction; promoting
@@ -349,7 +349,7 @@ new responses.
 #### Route
 **File**: `app/api/v1/subjects.py`
 **Changes**: Inject `Response`; set `200` on replay; add `200` and clarify `409` in the
-`responses` map. **Do not** alter the "establishment managers only" description line
+`responses` map. **Do not** alter the "field workers only" description line
 (out of scope).
 
 ```python
@@ -360,7 +360,7 @@ from fastapi import APIRouter, Depends, Query, Response, status
     response_model=SubjectResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Register a new subject",
-    description="Creates a new subject. Accessible by establishment managers only.",
+    description="Creates a new subject. Accessible by field workers only.",
     responses={
         status.HTTP_200_OK: {
             "description": "Subject already existed; idempotent replay of the same id."

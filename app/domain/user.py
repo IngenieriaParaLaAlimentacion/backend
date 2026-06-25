@@ -11,7 +11,7 @@ class UserRole(str, Enum):
     SUPERADMIN = "superadmin"
     ADMIN = "admin"
     ANALYST = "analyst"
-    ESTABLISHMENT_MANAGER = "establishment_manager"
+    FIELD_WORKER = "field_worker"
 
 
 class UserStatus(str, Enum):
@@ -70,7 +70,7 @@ class UserWithEstablishmentsDomain(BaseUserDomain):
 
 @dataclass
 class ProfileDomain(BaseUserDomain):
-    """Current user's profile. ``establishments`` is None for non-managers,
-    and a (possibly empty) list for establishment managers."""
+    """Current user's profile. ``establishments`` is None for non-field-workers,
+    and a (possibly empty) list for field workers."""
 
     establishments: list[EstablishmentWithStatusDomain] | None = None

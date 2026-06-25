@@ -114,9 +114,9 @@ async def get_current_admin(token: str = Depends(oauth2_scheme)) -> UserActor:
     return await _get_authenticated_actor(token, {UserRole.ADMIN, UserRole.SUPERADMIN})
 
 
-async def get_current_manager(token: str = Depends(oauth2_scheme)) -> UserActor:
+async def get_current_field_worker(token: str = Depends(oauth2_scheme)) -> UserActor:
     return await _get_authenticated_actor(
-        token, {UserRole.ESTABLISHMENT_MANAGER, UserRole.SUPERADMIN}
+        token, {UserRole.FIELD_WORKER, UserRole.SUPERADMIN}
     )
 
 
@@ -147,7 +147,7 @@ async def require_any(token: str = Depends(oauth2_scheme)) -> UserActor:
         token,
         {
             UserRole.ANALYST,
-            UserRole.ESTABLISHMENT_MANAGER,
+            UserRole.FIELD_WORKER,
             UserRole.ADMIN,
             UserRole.SUPERADMIN,
         },

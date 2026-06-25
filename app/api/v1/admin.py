@@ -53,12 +53,12 @@ async def list_users(
 @router.patch(
     "/managers/{user_id}/establishments/approve",
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Approve establishment access for a manager",
-    description="Approves the given establishments for the manager and activates the "
-    "manager's account. Accessible by admins only.",
+    summary="Approve establishment access for a field worker",
+    description="Approves the given establishments for the field worker and "
+    "activates the field worker's account. Accessible by admins only.",
     responses={
         status.HTTP_400_BAD_REQUEST: {
-            "description": "Target user is not an establishment manager"
+            "description": "Target user is not a field worker"
         },
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Missing or invalid authentication token"
@@ -67,7 +67,7 @@ async def list_users(
             "description": "Authenticated user does not have admin privileges"
         },
         status.HTTP_404_NOT_FOUND: {
-            "description": "Manager or establishment not found"
+            "description": "Field worker or establishment not found"
         },
     },
 )
@@ -84,12 +84,12 @@ async def approve_establishments(
 @router.patch(
     "/managers/{user_id}/establishments/reject",
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Reject establishment access for a manager",
-    description="Rejects the given establishments for the manager. Does not affect "
-    "the manager's account status. Accessible by admins only.",
+    summary="Reject establishment access for a field worker",
+    description="Rejects the given establishments for the field worker. "
+    "Does not affect the field worker's account status. Accessible by admins only.",
     responses={
         status.HTTP_400_BAD_REQUEST: {
-            "description": "Target user is not an establishment manager"
+            "description": "Target user is not a field worker"
         },
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Missing or invalid authentication token"
@@ -98,7 +98,7 @@ async def approve_establishments(
             "description": "Authenticated user does not have admin privileges"
         },
         status.HTTP_404_NOT_FOUND: {
-            "description": "Manager or establishment not found"
+            "description": "Field worker or establishment not found"
         },
     },
 )
@@ -115,12 +115,12 @@ async def reject_establishments(
 @router.patch(
     "/managers/{user_id}/reject",
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Reject all access for a manager",
-    description="Rejects all establishments for the given manager. "
+    summary="Reject all access for a field worker",
+    description="Rejects all establishments for the given field worker. "
     "Makes the user status INACTIVE. Accessible by admins only.",
     responses={
         status.HTTP_400_BAD_REQUEST: {
-            "description": "Target user is not an establishment manager"
+            "description": "Target user is not a field worker"
         },
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Missing or invalid authentication token"
@@ -128,15 +128,15 @@ async def reject_establishments(
         status.HTTP_403_FORBIDDEN: {
             "description": "Authenticated user does not have admin privileges"
         },
-        status.HTTP_404_NOT_FOUND: {"description": "Manager not found"},
+        status.HTTP_404_NOT_FOUND: {"description": "Field worker not found"},
     },
 )
-async def reject_manager(
+async def reject_field_worker(
     user_id: UUID,
     _admin: UserActor = Depends(get_current_admin),
     service: AdminService = Depends(get_admin_service),
 ) -> Response:
-    await service.reject_manager(user_id)
+    await service.reject_field_worker(user_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

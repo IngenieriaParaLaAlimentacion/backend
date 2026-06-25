@@ -18,7 +18,7 @@ class UserRepository:
         email: str,
         name: str,
         last_name: str,
-        role: str = UserRole.ESTABLISHMENT_MANAGER,
+        role: str = UserRole.FIELD_WORKER,
         status: UserStatus = UserStatus.PENDING_VALIDATION,
     ) -> User:
         """Persist a new user. Password and establishments are handled separately."""
@@ -114,8 +114,8 @@ class UserRepository:
         await self.db.execute(update(User).where(User.id == user_id).values(**values))
 
     async def get_pending(self) -> list[User]:
-        """Return all managers awaiting admin approval."""
+        """Return all field workers awaiting admin approval."""
         return await self.get_all(
-            role=UserRole.ESTABLISHMENT_MANAGER,
+            role=UserRole.FIELD_WORKER,
             status=UserStatus.PENDING_VALIDATION,
         )

@@ -244,7 +244,7 @@ class TestApproveEstablishments:
     @pytest.mark.asyncio
     async def test_sets_user_status_to_active(self, make_establishment):
         user = _make_user(
-            role=UserRole.ESTABLISHMENT_MANAGER, status=UserStatus.PENDING_VALIDATION
+            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
         )
         estab = make_establishment()
         uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
@@ -268,7 +268,7 @@ class TestApproveEstablishments:
 
     @pytest.mark.asyncio
     async def test_invalid_establishment_id_raises_error(self, make_establishment):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(role=UserRole.FIELD_WORKER)
         estab = make_establishment()
         uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
         service = AdminService(uow)
@@ -281,7 +281,7 @@ class TestRejectEstablishments:
     @pytest.mark.asyncio
     async def test_does_not_change_user_status(self, make_establishment):
         user = _make_user(
-            role=UserRole.ESTABLISHMENT_MANAGER, status=UserStatus.PENDING_VALIDATION
+            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
         )
         estab = make_establishment()
         uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
@@ -294,7 +294,7 @@ class TestRejectEstablishments:
 
     @pytest.mark.asyncio
     async def test_calls_repo_with_correct_args(self, make_establishment):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(role=UserRole.FIELD_WORKER)
         estab = make_establishment()
         uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
         service = AdminService(uow)
@@ -315,7 +315,7 @@ class TestRejectEstablishments:
 
     @pytest.mark.asyncio
     async def test_invalid_establishment_id_raises_error(self, make_establishment):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(role=UserRole.FIELD_WORKER)
         estab = make_establishment()
         uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
         service = AdminService(uow)
@@ -324,21 +324,21 @@ class TestRejectEstablishments:
             await service.reject_establishments(user.id, [uuid.uuid4()])
 
 
-class TestRejectManager:
+class TestRejectFieldWorker:
     @pytest.mark.asyncio
     async def test_user_not_found_raises_error(self):
         uow = _make_approve_uow(user=None)
         service = AdminService(uow)
 
         with pytest.raises(UserNotFoundError):
-            await service.reject_manager(uuid.uuid4())
+            await service.reject_field_worker(uuid.uuid4())
 
     @pytest.mark.asyncio
     async def test_rejects_all_establishments_and_marks_inactive(
         self, make_establishment
     ):
         user = _make_user(
-            role=UserRole.ESTABLISHMENT_MANAGER, status=UserStatus.PENDING_VALIDATION
+            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
         )
         estab1 = make_establishment()
         estab2 = make_establishment()
@@ -346,7 +346,7 @@ class TestRejectManager:
         uow = _make_approve_uow(user=user, relations=relations)
         service = AdminService(uow)
 
-        await service.reject_manager(user.id)
+        await service.reject_field_worker(user.id)
 
         uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
             user.id, [estab1.id, estab2.id], UserEstablishmentStatus.REJECTED
@@ -359,12 +359,12 @@ class TestRejectManager:
     @pytest.mark.asyncio
     async def test_no_establishments_still_marks_inactive(self):
         user = _make_user(
-            role=UserRole.ESTABLISHMENT_MANAGER, status=UserStatus.PENDING_VALIDATION
+            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
         )
         uow = _make_approve_uow(user=user, relations=[])
         service = AdminService(uow)
 
-        await service.reject_manager(user.id)
+        await service.reject_field_worker(user.id)
 
         uow.user_establishment_repo.update_status_for_ids.assert_not_called()
         uow.user_repo.update_status.assert_called_once_with(

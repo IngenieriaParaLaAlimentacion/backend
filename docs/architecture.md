@@ -4,7 +4,7 @@
 
 The platform is composed of three independent clients and a centralized backend:
 
-- **Mobile app**: used in the field by establishment managers and health promoters.
+- **Mobile app**: used in the field by field workers and health promoters.
 - **Backoffice web**: analytics dashboard for nutritionists, doctors, and program coordinators.
 - **Backend**: single source of truth. Centralizes all business logic, LLM orchestration, and data access.
 

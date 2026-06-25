@@ -37,8 +37,8 @@ async def db_adult_subject(app):
 
 
 @pytest_asyncio.fixture
-async def db_manager_with_access(app, db_establishment):
-    """Create a manager user with an APPROVED relation to db_establishment.
+async def db_field_worker_with_access(app, db_establishment):
+    """Create a field worker user with an APPROVED relation to db_establishment.
 
     Returns (headers, user_id).
     """
@@ -55,9 +55,9 @@ async def db_manager_with_access(app, db_establishment):
             User(
                 id=user_id,
                 name="Maria",
-                last_name="Manager",
+                last_name="Field Worker",
                 email=f"{user_id}@test.com",
-                role=ORMUserRole.ESTABLISHMENT_MANAGER,
+                role=ORMUserRole.FIELD_WORKER,
                 status=UserStatus.ACTIVE,
             )
         )
@@ -70,7 +70,7 @@ async def db_manager_with_access(app, db_establishment):
         )
         await session.commit()
 
-    token = create_access_token(user_id, role=UserRole.ESTABLISHMENT_MANAGER)
+    token = create_access_token(user_id, role=UserRole.FIELD_WORKER)
     return {"Authorization": f"Bearer {token}"}, user_id
 
 
@@ -243,22 +243,22 @@ class TestNotFound:
 
 
 class TestEstablishmentAccess:
-    async def test_manager_without_relation_returns_403(
-        self, client, db_adult_subject, db_establishment, manager_headers
+    async def test_field_worker_without_relation_returns_403(
+        self, client, db_adult_subject, db_establishment, field_worker_headers
     ):
-        """A manager with no relation to the establishment is forbidden."""
+        """A field worker with no relation to the establishment is forbidden."""
         response = await _upload(
             client,
             db_adult_subject.id,
             db_establishment.id,
-            manager_headers,
+            field_worker_headers,
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    async def test_manager_with_pending_relation_returns_403(
+    async def test_field_worker_with_pending_relation_returns_403(
         self, client, db_adult_subject, db_establishment, app
     ):
-        """A manager with a PENDING relation to the establishment is forbidden."""
+        """A field worker with a PENDING relation to the establishment is forbidden."""
         from app.db.database import AsyncSessionLocal
         from app.domain.establishment import UserEstablishmentStatus
         from app.domain.user import UserStatus
@@ -274,7 +274,7 @@ class TestEstablishmentAccess:
                     name="Pedro",
                     last_name="Pending",
                     email=f"{user_id}@test.com",
-                    role=ORMUserRole.ESTABLISHMENT_MANAGER,
+                    role=ORMUserRole.FIELD_WORKER,
                     status=UserStatus.ACTIVE,
                 )
             )
@@ -287,7 +287,7 @@ class TestEstablishmentAccess:
             )
             await session.commit()
 
-        token = create_access_token(user_id, role=UserRole.ESTABLISHMENT_MANAGER)
+        token = create_access_token(user_id, role=UserRole.FIELD_WORKER)
         headers = {"Authorization": f"Bearer {token}"}
 
         response = await _upload(
@@ -298,11 +298,11 @@ class TestEstablishmentAccess:
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    async def test_manager_with_approved_relation_returns_201(
-        self, client, db_adult_subject, db_establishment, db_manager_with_access
+    async def test_field_worker_with_approved_relation_returns_201(
+        self, client, db_adult_subject, db_establishment, db_field_worker_with_access
     ):
-        """A manager with an APPROVED relation can upload a measurement."""
-        headers, _ = db_manager_with_access
+        """A field worker with an APPROVED relation can upload a measurement."""
+        headers, _ = db_field_worker_with_access
         response = await _upload(
             client,
             db_adult_subject.id,

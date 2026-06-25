@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status
 
 from app.core.dependencies import (
-    get_current_manager,
+    get_current_field_worker,
     get_user_service,
     require_any,
 )
@@ -22,7 +22,7 @@ router = APIRouter(prefix="/users")
     response_model=ProfileResponse,
     status_code=status.HTTP_200_OK,
     summary="Get own profile",
-    description="Returns the authenticated user's profile. Establishment managers "
+    description="Returns the authenticated user's profile. Field workers "
     "also receive their associated establishments, each with its approval status.",
     responses={
         status.HTTP_401_UNAUTHORIZED: {
@@ -73,15 +73,15 @@ async def update_my_profile(
     response_model=list[EstablishmentWithStatusResponse],
     status_code=status.HTTP_200_OK,
     summary="List own establishment relations",
-    description="Returns the manager's establishments, each with its approval "
-    "status. Manager only.",
+    description="Returns the field worker's establishments, each with its approval "
+    "status. Field worker only.",
     responses={
         status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Caller is not a manager"},
+        status.HTTP_403_FORBIDDEN: {"description": "Caller is not a field worker"},
     },
 )
 async def list_my_establishments(
-    actor: UserActor = Depends(get_current_manager),
+    actor: UserActor = Depends(get_current_field_worker),
     service: UserService = Depends(get_user_service),
 ) -> list[EstablishmentWithStatusResponse]:
     relations = await service.get_own_establishments(actor)
@@ -95,16 +95,16 @@ async def list_my_establishments(
     summary="Request establishment access",
     description="Requests access to one or more establishments. Idempotent: "
     "already-approved/pending stay unchanged, rejected ones are re-requested "
-    "(set to pending). Manager only.",
+    "(set to pending). Field worker only.",
     responses={
         status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Caller is not a manager"},
+        status.HTTP_403_FORBIDDEN: {"description": "Caller is not a field worker"},
         status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
     },
 )
 async def request_establishment_access(
     data: EstablishmentAccessRequest,
-    actor: UserActor = Depends(get_current_manager),
+    actor: UserActor = Depends(get_current_field_worker),
     service: UserService = Depends(get_user_service),
 ) -> list[EstablishmentWithStatusResponse]:
     relations = await service.request_establishment_access(

@@ -51,7 +51,7 @@ Authorization has two levels:
 |---|----------------------------------------------------------------------------|
 | `admin` | Full access to all data and all establishments. Can manage users.          |
 | `analyst` | Can view data across all establishments, including dashboards and reports. |
-| `establishment_manager` | Can only load and view data for their assigned establishments.             |
+| `field_worker` | Can only load and view data for their assigned establishments.             |
 
 Role is stored in the `users` table and included in the access token payload. It does not change between token refreshes without a new login.
 

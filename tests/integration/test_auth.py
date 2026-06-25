@@ -19,10 +19,10 @@ async def db_logged_in_for_refresh(db_logged_in_user):
     return db_logged_in_user
 
 
-class TestRegisterManager:
+class TestRegisterFieldWorker:
     async def _register(self, client, **overrides):
         body = {
-            "email": "manager@example.com",
+            "email": "field_worker@example.com",
             "password": "securepass123",
             "name": "Juan",
             "last_name": "Perez",
@@ -42,10 +42,10 @@ class TestRegisterManager:
             client, establishments=[str(db_establishment.id)]
         )
         data = response.json()
-        assert data["email"] == "manager@example.com"
+        assert data["email"] == "field_worker@example.com"
         assert data["name"] == "Juan"
         assert data["last_name"] == "Perez"
-        assert data["role"] == "establishment_manager"
+        assert data["role"] == "field_worker"
         assert data["status"] == "pending_validation"
 
     async def test_duplicate_email_returns_409(self, client, db_establishment):

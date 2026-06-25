@@ -55,6 +55,6 @@ class EstablishmentDomain:
 
 @dataclass
 class EstablishmentWithStatusDomain(EstablishmentDomain):
-    """Establishment data with its approval status in the context of a manager."""
+    """Establishment data with its approval status in the context of a field worker."""
 
     status: str

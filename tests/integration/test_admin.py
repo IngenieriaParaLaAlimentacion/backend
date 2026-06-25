@@ -16,10 +16,10 @@ pytestmark = pytest.mark.asyncio
 
 ADMIN_USERS_URL = "/api/v1/admin/users"
 ADMIN_SUBJECTS_URL = "/api/v1/admin/subjects"
-REGISTER_MANAGER_URL = "/api/v1/auth/register/establishment-manager"
+REGISTER_FIELD_WORKER_URL = "/api/v1/auth/register/establishment-manager"
 APPROVE_URL = "/api/v1/admin/managers/{user_id}/establishments/approve"
 REJECT_URL = "/api/v1/admin/managers/{user_id}/establishments/reject"
-REJECT_MANAGER_URL = "/api/v1/admin/managers/{user_id}/reject"
+REJECT_FIELD_WORKER_URL = "/api/v1/admin/managers/{user_id}/reject"
 SUBJECTS_URL = "/api/v1/subjects"
 
 
@@ -43,9 +43,9 @@ async def _make_reject_request(client, *, headers=None):
     )
 
 
-async def _make_reject_manager_request(client, *, headers=None):
+async def _make_reject_field_worker_request(client, *, headers=None):
     return await client.patch(
-        REJECT_MANAGER_URL.format(user_id=uuid.uuid4()),
+        REJECT_FIELD_WORKER_URL.format(user_id=uuid.uuid4()),
         headers=headers or {},
     )
 
@@ -62,7 +62,7 @@ async def _make_reject_manager_request(client, *, headers=None):
             id="PATCH /admin/managers/{id}/establishments/reject",
         ),
         pytest.param(
-            _make_reject_manager_request,
+            _make_reject_field_worker_request,
             id="PATCH /admin/managers/{id}/reject",
         ),
     ]
@@ -100,16 +100,16 @@ async def db_establishment_2(app):
 
 
 @pytest_asyncio.fixture
-async def registered_manager(client, db_establishment):
-    """Register a manager linked to the test establishment and return the response
+async def registered_field_worker(client, db_establishment):
+    """Register a field worker linked to the test establishment and return the response
     body."""
     response = await client.post(
-        REGISTER_MANAGER_URL,
+        REGISTER_FIELD_WORKER_URL,
         json={
-            "email": f"manager_{uuid.uuid4().hex[:6]}@test.com",
+            "email": f"field_worker_{uuid.uuid4().hex[:6]}@test.com",
             "password": "Password123!",
             "name": "Test",
-            "last_name": "Manager",
+            "last_name": "Field Worker",
             "establishments": [str(db_establishment.id)],
         },
     )
@@ -118,19 +118,19 @@ async def registered_manager(client, db_establishment):
 
 
 @pytest_asyncio.fixture
-async def manager_headers(manager_user_id):
-    token = create_access_token(manager_user_id, role=UserRole.ESTABLISHMENT_MANAGER)
+async def field_worker_headers(field_worker_user_id):
+    token = create_access_token(field_worker_user_id, role=UserRole.FIELD_WORKER)
     return {"Authorization": f"Bearer {token}"}
 
 
 @pytest_asyncio.fixture
-async def manager_user_id(app):
-    """Insert an active establishment manager and return its UUID."""
-    return await _insert_user(UserRole.ESTABLISHMENT_MANAGER, UserStatus.ACTIVE)
+async def field_worker_user_id(app):
+    """Insert an active establishment field worker and return its UUID."""
+    return await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
 
 
 @pytest_asyncio.fixture
-async def non_manager_user_id(app):
+async def non_field_worker_user_id(app):
     """Insert an active analyst user and return its UUID."""
     return await _insert_user(UserRole.ANALYST, UserStatus.ACTIVE)
 
@@ -181,15 +181,15 @@ class TestAdminAuth:
     async def test_token_signed_with_wrong_secret(self, client, any_admin_request):
         """Should return 401 if the token is signed with the wrong secret."""
         payload = {"sub": str(uuid.uuid4()), "role": "admin", "type": "access"}
-        forged_token = jwt.encode(payload, "secret_manager", algorithm="HS256")
+        forged_token = jwt.encode(payload, "secret_field_worker", algorithm="HS256")
         response = await any_admin_request(
             client, headers={"Authorization": f"Bearer {forged_token}"}
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_manager_is_forbidden(self, client, any_admin_request):
-        """Should return 403 when a valid manager token is provided."""
-        token = create_access_token(uuid.uuid4(), role=UserRole.ESTABLISHMENT_MANAGER)
+    async def test_field_worker_is_forbidden(self, client, any_admin_request):
+        """Should return 403 when a valid field worker token is provided."""
+        token = create_access_token(uuid.uuid4(), role=UserRole.FIELD_WORKER)
         response = await any_admin_request(
             client, headers={"Authorization": f"Bearer {token}"}
         )
@@ -207,7 +207,7 @@ class TestAdminAuth:
 class TestListUsersPagination:
     async def _register(self, client, db_establishment, *, name, last_name, email):
         response = await client.post(
-            REGISTER_MANAGER_URL,
+            REGISTER_FIELD_WORKER_URL,
             json={
                 "email": email,
                 "password": "Password123!",
@@ -260,7 +260,7 @@ class TestListUsersPagination:
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     async def test_items_have_required_fields(
-        self, client, admin_headers, registered_manager
+        self, client, admin_headers, registered_field_worker
     ):
         """Each item should expose id, email, name, last_name, role,
         status and establishments."""
@@ -279,20 +279,20 @@ class TestListUsersPagination:
             assert "establishments" in item
 
     async def test_filter_by_role_returns_only_matching_users(
-        self, client, admin_headers, registered_manager
+        self, client, admin_headers, registered_field_worker
     ):
         """Should return only users with the requested role."""
         response = await client.get(
-            f"{ADMIN_USERS_URL}?role={UserRole.ESTABLISHMENT_MANAGER.value}",
+            f"{ADMIN_USERS_URL}?role={UserRole.FIELD_WORKER.value}",
             headers=admin_headers,
         )
 
         assert response.status_code == status.HTTP_200_OK
         items = response.json()["items"]
-        assert all(item["role"] == UserRole.ESTABLISHMENT_MANAGER for item in items)
+        assert all(item["role"] == UserRole.FIELD_WORKER for item in items)
 
     async def test_filter_by_role_no_users(
-        self, client, admin_headers, registered_manager
+        self, client, admin_headers, registered_field_worker
     ):
         """Should return empty when filtering by a role with no users."""
         response = await client.get(
@@ -304,7 +304,7 @@ class TestListUsersPagination:
         assert response.json()["items"] == []
 
     async def test_filter_by_status_returns_only_matching_users(
-        self, client, admin_headers, registered_manager
+        self, client, admin_headers, registered_field_worker
     ):
         """Should return only users with the requested status."""
         response = await client.get(
@@ -317,7 +317,7 @@ class TestListUsersPagination:
         assert all(item["status"] == UserStatus.PENDING_VALIDATION for item in items)
 
     async def test_filter_by_status_no_users(
-        self, client, admin_headers, registered_manager
+        self, client, admin_headers, registered_field_worker
     ):
         """Should return empty when filtering by a status with no users."""
         response = await client.get(
@@ -432,7 +432,7 @@ class TestListUsersPagination:
         assert len(response.json()["items"]) == 1
 
     async def test_search_no_match_returns_empty(
-        self, client, admin_headers, registered_manager
+        self, client, admin_headers, registered_field_worker
     ):
         """A search term that matches nothing returns an empty list."""
         response = await client.get(
@@ -473,10 +473,10 @@ class TestListUsersPagination:
 
 class TestApproveEstablishments:
     async def test_returns_no_content(
-        self, client, admin_headers, registered_manager, db_establishment
+        self, client, admin_headers, registered_field_worker, db_establishment
     ):
         """Should return 204 on successful approval."""
-        url = APPROVE_URL.format(user_id=registered_manager["id"])
+        url = APPROVE_URL.format(user_id=registered_field_worker["id"])
         response = await client.patch(
             url,
             json={"establishment_ids": [str(db_establishment.id)]},
@@ -485,10 +485,10 @@ class TestApproveEstablishments:
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
     async def test_idempotent_when_called_twice(
-        self, client, admin_headers, registered_manager, db_establishment
+        self, client, admin_headers, registered_field_worker, db_establishment
     ):
         """Calling approve twice should return 204 both times."""
-        url = APPROVE_URL.format(user_id=registered_manager["id"])
+        url = APPROVE_URL.format(user_id=registered_field_worker["id"])
         body = {"establishment_ids": [str(db_establishment.id)]}
 
         first = await client.patch(url, json=body, headers=admin_headers)
@@ -498,7 +498,7 @@ class TestApproveEstablishments:
         assert second.status_code == status.HTTP_204_NO_CONTENT
 
     async def test_user_not_found(self, client, admin_headers):
-        """Should return 404 if the manager does not exist."""
+        """Should return 404 if the field worker does not exist."""
         url = APPROVE_URL.format(user_id=uuid.uuid4())
         response = await client.patch(
             url,
@@ -507,11 +507,12 @@ class TestApproveEstablishments:
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    async def test_establishment_not_associated_with_manager(
-        self, client, admin_headers, registered_manager
+    async def test_establishment_not_associated_with_field_worker(
+        self, client, admin_headers, registered_field_worker
     ):
-        """Should return 404 if an establishment ID is not linked to this manager."""
-        url = APPROVE_URL.format(user_id=registered_manager["id"])
+        """Should return 404 if an establishment ID is not linked to
+        this field worker."""
+        url = APPROVE_URL.format(user_id=registered_field_worker["id"])
         response = await client.patch(
             url,
             json={"establishment_ids": [str(uuid.uuid4())]},
@@ -519,9 +520,11 @@ class TestApproveEstablishments:
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    async def test_empty_ids_rejected(self, client, admin_headers, registered_manager):
+    async def test_empty_ids_rejected(
+        self, client, admin_headers, registered_field_worker
+    ):
         """Should return 422 if establishment_ids is empty."""
-        url = APPROVE_URL.format(user_id=registered_manager["id"])
+        url = APPROVE_URL.format(user_id=registered_field_worker["id"])
         response = await client.patch(
             url,
             json={"establishment_ids": []},
@@ -529,12 +532,12 @@ class TestApproveEstablishments:
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
-    async def test_user_is_not_a_manager(
-        self, client, admin_headers, non_manager_user_id
+    async def test_user_is_not_a_field_worker(
+        self, client, admin_headers, non_field_worker_user_id
     ):
         """Should return 404 when the target user has no matching
         establishment relations."""
-        url = APPROVE_URL.format(user_id=non_manager_user_id)
+        url = APPROVE_URL.format(user_id=non_field_worker_user_id)
         response = await client.patch(
             url,
             json={"establishment_ids": [str(uuid.uuid4())]},
@@ -545,10 +548,10 @@ class TestApproveEstablishments:
 
 class TestRejectEstablishments:
     async def test_returns_no_content(
-        self, client, admin_headers, registered_manager, db_establishment
+        self, client, admin_headers, registered_field_worker, db_establishment
     ):
         """Should return 204 on successful rejection."""
-        url = REJECT_URL.format(user_id=registered_manager["id"])
+        url = REJECT_URL.format(user_id=registered_field_worker["id"])
         response = await client.patch(
             url,
             json={"establishment_ids": [str(db_establishment.id)]},
@@ -557,10 +560,10 @@ class TestRejectEstablishments:
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
     async def test_rejected_establishment_has_rejected_status(
-        self, client, admin_headers, registered_manager, db_establishment
+        self, client, admin_headers, registered_field_worker, db_establishment
     ):
         """The user-establishment relation should be REJECTED in the database."""
-        url = REJECT_URL.format(user_id=registered_manager["id"])
+        url = REJECT_URL.format(user_id=registered_field_worker["id"])
         await client.patch(
             url,
             json={"establishment_ids": [str(db_establishment.id)]},
@@ -577,10 +580,10 @@ class TestRejectEstablishments:
         assert relation.status.value == "rejected"
 
     async def test_user_status_unchanged_after_reject(
-        self, client, admin_headers, registered_manager, db_establishment
+        self, client, admin_headers, registered_field_worker, db_establishment
     ):
-        """Rejecting establishments must not activate the manager."""
-        url = REJECT_URL.format(user_id=registered_manager["id"])
+        """Rejecting establishments must not activate the field worker."""
+        url = REJECT_URL.format(user_id=registered_field_worker["id"])
         await client.patch(
             url,
             json={"establishment_ids": [str(db_establishment.id)]},
@@ -589,11 +592,13 @@ class TestRejectEstablishments:
 
         list_response = await client.get(ADMIN_USERS_URL, headers=admin_headers)
         users = list_response.json()["items"]
-        manager = next(u for u in users if u["id"] == registered_manager["id"])
-        assert manager["status"] == UserStatus.PENDING_VALIDATION
+        field_worker = next(
+            u for u in users if u["id"] == registered_field_worker["id"]
+        )
+        assert field_worker["status"] == UserStatus.PENDING_VALIDATION
 
     async def test_user_not_found(self, client, admin_headers):
-        """Should return 404 if the manager does not exist."""
+        """Should return 404 if the field worker does not exist."""
         url = REJECT_URL.format(user_id=uuid.uuid4())
         response = await client.patch(
             url,
@@ -602,11 +607,12 @@ class TestRejectEstablishments:
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    async def test_establishment_not_associated_with_manager(
-        self, client, admin_headers, registered_manager
+    async def test_establishment_not_associated_with_field_worker(
+        self, client, admin_headers, registered_field_worker
     ):
-        """Should return 404 if an establishment ID is not linked to this manager."""
-        url = REJECT_URL.format(user_id=registered_manager["id"])
+        """Should return 404 if an establishment ID is not linked to
+        this field worker."""
+        url = REJECT_URL.format(user_id=registered_field_worker["id"])
         response = await client.patch(
             url,
             json={"establishment_ids": [str(uuid.uuid4())]},
@@ -614,9 +620,11 @@ class TestRejectEstablishments:
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    async def test_empty_ids_rejected(self, client, admin_headers, registered_manager):
+    async def test_empty_ids_rejected(
+        self, client, admin_headers, registered_field_worker
+    ):
         """Should return 422 if establishment_ids is empty."""
-        url = REJECT_URL.format(user_id=registered_manager["id"])
+        url = REJECT_URL.format(user_id=registered_field_worker["id"])
         response = await client.patch(
             url,
             json={"establishment_ids": []},
@@ -624,12 +632,12 @@ class TestRejectEstablishments:
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
-    async def test_user_is_not_a_manager(
-        self, client, admin_headers, non_manager_user_id
+    async def test_user_is_not_a_field_worker(
+        self, client, admin_headers, non_field_worker_user_id
     ):
         """Should return 404 when the target user has no
         matching establishment relations."""
-        url = REJECT_URL.format(user_id=non_manager_user_id)
+        url = REJECT_URL.format(user_id=non_field_worker_user_id)
         response = await client.patch(
             url,
             json={"establishment_ids": [str(uuid.uuid4())]},
@@ -638,34 +646,36 @@ class TestRejectEstablishments:
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-class TestRejectManager:
+class TestRejectFieldWorker:
     async def test_returns_no_content(
-        self, client, admin_headers, registered_manager, db_establishment
+        self, client, admin_headers, registered_field_worker, db_establishment
     ):
         """Should return 204 on successful rejection."""
-        url = REJECT_MANAGER_URL.format(user_id=registered_manager["id"])
+        url = REJECT_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"])
         response = await client.patch(url, headers=admin_headers)
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
-    async def test_manager_status_becomes_inactive(
-        self, client, admin_headers, registered_manager
+    async def test_field_worker_status_becomes_inactive(
+        self, client, admin_headers, registered_field_worker
     ):
-        """Manager status should be INACTIVE after rejection."""
-        url = REJECT_MANAGER_URL.format(user_id=registered_manager["id"])
+        """Field worker status should be INACTIVE after rejection."""
+        url = REJECT_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"])
         await client.patch(url, headers=admin_headers)
 
         list_response = await client.get(
             f"{ADMIN_USERS_URL}?page_size=100", headers=admin_headers
         )
         users = list_response.json()["items"]
-        manager = next(u for u in users if u["id"] == registered_manager["id"])
-        assert manager["status"] == UserStatus.INACTIVE
+        field_worker = next(
+            u for u in users if u["id"] == registered_field_worker["id"]
+        )
+        assert field_worker["status"] == UserStatus.INACTIVE
 
     async def test_all_establishments_become_rejected(
-        self, client, admin_headers, registered_manager, db_establishment
+        self, client, admin_headers, registered_field_worker, db_establishment
     ):
         """All user-establishment relations should be REJECTED in the database."""
-        url = REJECT_MANAGER_URL.format(user_id=registered_manager["id"])
+        url = REJECT_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"])
         await client.patch(url, headers=admin_headers)
 
         async with db_module.AsyncSessionLocal() as session:
@@ -678,11 +688,11 @@ class TestRejectManager:
         assert relation.status.value == "rejected"
 
     async def test_no_establishments_becomes_inactive(self, client, admin_headers, app):
-        """A manager with no establishments should still be marked INACTIVE."""
+        """A field worker with no establishments should still be marked INACTIVE."""
         user_id = await _insert_user(
-            UserRole.ESTABLISHMENT_MANAGER, UserStatus.PENDING_VALIDATION
+            UserRole.FIELD_WORKER, UserStatus.PENDING_VALIDATION
         )
-        url = REJECT_MANAGER_URL.format(user_id=user_id)
+        url = REJECT_FIELD_WORKER_URL.format(user_id=user_id)
         response = await client.patch(url, headers=admin_headers)
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
@@ -690,32 +700,32 @@ class TestRejectManager:
             f"{ADMIN_USERS_URL}?page_size=100", headers=admin_headers
         )
         users = list_response.json()["items"]
-        manager = next(u for u in users if u["id"] == str(user_id))
-        assert manager["status"] == UserStatus.INACTIVE
+        field_worker = next(u for u in users if u["id"] == str(user_id))
+        assert field_worker["status"] == UserStatus.INACTIVE
 
-    async def test_active_manager_returns_400(self, client, admin_headers, app):
-        """Should return 400 if the manager is already active (use a dedicated
+    async def test_active_field_worker_returns_400(self, client, admin_headers, app):
+        """Should return 400 if the field worker is already active (use a dedicated
         revoke endpoint instead)."""
-        user_id = await _insert_user(UserRole.ESTABLISHMENT_MANAGER, UserStatus.ACTIVE)
-        url = REJECT_MANAGER_URL.format(user_id=user_id)
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        url = REJECT_FIELD_WORKER_URL.format(user_id=user_id)
         response = await client.patch(url, headers=admin_headers)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     async def test_user_not_found(self, client, admin_headers):
-        """Should return 404 if the manager does not exist."""
-        url = REJECT_MANAGER_URL.format(user_id=uuid.uuid4())
+        """Should return 404 if the field worker does not exist."""
+        url = REJECT_FIELD_WORKER_URL.format(user_id=uuid.uuid4())
         response = await client.patch(url, headers=admin_headers)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 class TestAdminSubjectDetail:
     async def test_returns_200_with_subject_and_events(
-        self, client, manager_headers, admin_headers
+        self, client, field_worker_headers, admin_headers
     ):
         """Admin retrieves a subject with its full event history."""
         created = (
             await client.post(
-                SUBJECTS_URL, json=_subject_body(), headers=manager_headers
+                SUBJECTS_URL, json=_subject_body(), headers=field_worker_headers
             )
         ).json()
         response = await client.get(
@@ -740,9 +750,9 @@ class TestAdminSubjectDetail:
         response = await client.get(f"{ADMIN_SUBJECTS_URL}/{uuid.uuid4()}")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_manager_role_returns_403(self, client, manager_headers):
-        """A manager token is rejected on the admin endpoint."""
+    async def test_field_worker_role_returns_403(self, client, field_worker_headers):
+        """A field worker token is rejected on the admin endpoint."""
         response = await client.get(
-            f"{ADMIN_SUBJECTS_URL}/{uuid.uuid4()}", headers=manager_headers
+            f"{ADMIN_SUBJECTS_URL}/{uuid.uuid4()}", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
