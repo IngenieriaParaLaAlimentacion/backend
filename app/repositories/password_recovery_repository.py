@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 from sqlalchemy import func, select, update
@@ -17,14 +17,11 @@ class PasswordRecoveryTokenRepository:
         token_hash: str,
         expires_delta: timedelta,
     ) -> PasswordRecoveryToken:
-        """Create and stage a password recovery token record.
-
-        The timestamp source is the database clock (func.now()).
-        """
+        """Create and stage a password recovery token record."""
         token = PasswordRecoveryToken(
             user_id=user_id,
             token_hash=token_hash,
-            expires_at=func.now() + expires_delta,
+            expires_at=datetime.now(timezone.utc) + expires_delta,
         )
         self.db.add(token)
         await self.db.flush()

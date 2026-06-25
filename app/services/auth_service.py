@@ -1,4 +1,5 @@
 from datetime import timedelta
+from uuid import UUID
 
 from app.core.config import settings
 from app.core.interfaces.unit_of_work import IUnitOfWork
@@ -19,6 +20,7 @@ from app.exceptions.domain_exceptions import (
     PendingValidationError,
     UserAlreadyExistsError,
 )
+from app.models import PasswordRecoveryToken
 from app.schemas.auth_schema import (
     LoginRequest,
     LogoutRequest,
@@ -199,7 +201,7 @@ class AuthService:
 
         await self.uow.commit()
         deeplink = build_recovery_deeplink(recovery_token)
-        send_recovery_email(user.email, deeplink, created_token.expires_at)
+        await send_recovery_email(user.email, deeplink, created_token.expires_at)
 
     async def confirm_password_recovery(
         self, data: PasswordRecoveryConfirmRequest
@@ -216,7 +218,26 @@ class AuthService:
             recovery_token.user_id
         )
         user_password.password_hashed = hash_password(data.new_password)
+        user = await self.uow.user_repo.get_by_id(recovery_token.user_id)
+
+        if user.status == UserStatus.PENDING_VALIDATION:
+            await self.uow.user_repo.update_status(user.id, UserStatus.ACTIVE)
 
         await self.uow.password_recovery_repo.mark_used(recovery_token)
         await self.uow.token_repo.revoke_all_by_user_id(recovery_token.user_id)
         await self.uow.commit()
+
+    async def create_recovery_token(
+        self, user_id: UUID
+    ) -> tuple[PasswordRecoveryToken, str]:
+        """Revoke existing recovery tokens and create a fresh one."""
+        await self.uow.password_recovery_repo.revoke_active_for_user(user_id)
+        plain_token, token_hash = create_password_recovery_token()
+        created = await self.uow.password_recovery_repo.create(
+            user_id,
+            token_hash,
+            expires_delta=timedelta(
+                minutes=settings.password_recovery_token_expire_minutes
+            ),
+        )
+        return created, plain_token

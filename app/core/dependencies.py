@@ -20,13 +20,12 @@ oauth2_scheme_optional = OAuth2PasswordBearer(
     tokenUrl="/api/v1/auth/login", auto_error=False
 )
 
-# Services
-
 
 async def get_admin_service() -> AsyncGenerator[AdminService, None]:
     """Provide an AdminService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
-        yield AdminService(uow)
+        auth_service = AuthService(uow)
+        yield AdminService(uow, auth_service)
 
 
 async def get_establishment_service() -> AsyncGenerator[EstablishmentService, None]:
