@@ -32,9 +32,7 @@ router = APIRouter(prefix="/auth")
 )
 async def register_field_worker(
     data: RegisterFieldWorkerRequest, service: AuthService = Depends(get_auth_service)
-):
-    """Register a new establishment field worker."""
-
+) -> RegistrationResponse:
     return await service.register_field_worker(data)
 
 

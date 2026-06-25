@@ -185,7 +185,7 @@ async def invite_admin(
     data: InviteAdminRequest,
     service: AdminService = Depends(get_admin_service),
     _admin: UserActor = Depends(get_current_admin),
-) -> None:
+) -> Response:
     await service.invite_user(data, role=UserRole.ADMIN)
     return Response(status_code=status.HTTP_202_ACCEPTED)
 
@@ -206,7 +206,7 @@ async def invite_analyst(
     data: InviteAdminRequest,
     service: AdminService = Depends(get_admin_service),
     _admin: UserActor = Depends(get_current_admin),
-) -> None:
+) -> Response:
     await service.invite_user(data, role=UserRole.ANALYST)
     return Response(status_code=status.HTTP_202_ACCEPTED)
 
@@ -222,5 +222,5 @@ async def resend_invite(
     user_id: UUID,
     service: AdminService = Depends(get_admin_service),
     _admin: UserActor = Depends(get_current_admin),
-) -> None:
+) -> Response:
     await service.resend_invite(user_id)

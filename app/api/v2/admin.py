@@ -119,6 +119,6 @@ async def invite_analyst(
     data: InviteAdminRequest,
     service: AdminService = Depends(get_admin_service),
     _admin: UserActor = Depends(get_current_admin),
-) -> None:
+) -> Response:
     await service.invite_user(data, role=UserRole.ANALYST)
     return Response(status_code=status.HTTP_202_ACCEPTED)

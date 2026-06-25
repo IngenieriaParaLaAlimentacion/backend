@@ -156,7 +156,7 @@ class TestInviteAdminValidation:
     async def test_missing_email_returns_422(self, client, admin_headers):
         """Should return 422 if email field is missing."""
         response = await client.post(INVITE_ADMIN_URL, json={}, headers=admin_headers)
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     async def test_invalid_email_format_returns_422(self, client, admin_headers):
         """Should return 422 if email is not a valid format."""
@@ -165,7 +165,7 @@ class TestInviteAdminValidation:
             json={"email": "not-an-email"},
             headers=admin_headers,
         )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 class TestResendInviteAuth:
