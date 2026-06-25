@@ -16,10 +16,10 @@ pytestmark = pytest.mark.asyncio
 
 ADMIN_USERS_URL = "/api/v1/admin/users"
 ADMIN_SUBJECTS_URL = "/api/v1/admin/subjects"
-REGISTER_FIELD_WORKER_URL = "/api/v1/auth/register/establishment-manager"
-APPROVE_URL = "/api/v1/admin/managers/{user_id}/establishments/approve"
-REJECT_URL = "/api/v1/admin/managers/{user_id}/establishments/reject"
-REJECT_FIELD_WORKER_URL = "/api/v1/admin/managers/{user_id}/reject"
+REGISTER_FIELD_WORKER_URL = "/api/v2/auth/register/field-worker"
+APPROVE_URL = "/api/v2/admin/field-worker/{user_id}/establishments/approve"
+REJECT_URL = "/api/v2/admin/field-worker/{user_id}/establishments/reject"
+REJECT_FIELD_WORKER_URL = "/api/v2/admin/field-worker/{user_id}/reject"
 SUBJECTS_URL = "/api/v1/subjects"
 
 
@@ -55,15 +55,15 @@ async def _make_reject_field_worker_request(client, *, headers=None):
         pytest.param(_make_list_request, id="GET /admin/users"),
         pytest.param(
             _make_approve_request,
-            id="PATCH /admin/managers/{id}/establishments/approve",
+            id="PATCH /admin/field-worker/{id}/establishments/approve",
         ),
         pytest.param(
             _make_reject_request,
-            id="PATCH /admin/managers/{id}/establishments/reject",
+            id="PATCH /admin/field-worker/{id}/establishments/reject",
         ),
         pytest.param(
             _make_reject_field_worker_request,
-            id="PATCH /admin/managers/{id}/reject",
+            id="PATCH /admin/field-worker/{id}/reject",
         ),
     ]
 )
