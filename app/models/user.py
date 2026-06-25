@@ -11,7 +11,7 @@ from .base import Base
 
 
 class User(Base):
-    """System user — professional, admin, or establishment manager."""
+    """System user — analyst, admin, or establishment manager."""
 
     __tablename__ = "users"
 

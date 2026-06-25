@@ -6,8 +6,8 @@ from jose import JWTError
 
 from app.core.dependencies import (
     get_current_admin,
+    get_current_analyst,
     get_current_manager,
-    get_current_professional,
     require_some,
 )
 from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
@@ -102,36 +102,36 @@ async def test_get_current_manager_wrong_role_raises_403():
                 await get_current_manager(token="anytoken")
 
 
-# --- get_current_professional ---
+# --- get_current_analyst ---
 
 
 @pytest.mark.asyncio
-async def test_get_current_professional_valid_token():
+async def test_get_current_analyst_valid_token():
     user_id = str(uuid4())
-    payload = {"sub": user_id, "role": UserRole.PROFESSIONAL}
+    payload = {"sub": user_id, "role": UserRole.ANALYST}
     with patch(
         "app.core.dependencies.jwt.get_unverified_claims",
-        return_value={"role": UserRole.PROFESSIONAL},
+        return_value={"role": UserRole.ANALYST},
     ):
         with patch("app.core.dependencies.decode_token", return_value=payload):
-            actor = await get_current_professional(token="anytoken")
+            actor = await get_current_analyst(token="anytoken")
     assert str(actor.user_id) == user_id
-    assert actor.role == UserRole.PROFESSIONAL
+    assert actor.role == UserRole.ANALYST
 
 
 @pytest.mark.asyncio
-async def test_get_current_professional_invalid_signature_raises_401():
+async def test_get_current_analyst_invalid_signature_raises_401():
     with patch(
         "app.core.dependencies.jwt.get_unverified_claims",
-        return_value={"role": UserRole.PROFESSIONAL},
+        return_value={"role": UserRole.ANALYST},
     ):
         with patch("app.core.dependencies.decode_token", return_value=None):
             with pytest.raises(UnauthorizedError):
-                await get_current_professional(token="anytoken")
+                await get_current_analyst(token="anytoken")
 
 
 @pytest.mark.asyncio
-async def test_get_current_professional_wrong_role_raises_403():
+async def test_get_current_analyst_wrong_role_raises_403():
     payload = {"sub": str(uuid4()), "role": UserRole.ADMIN}
     with patch(
         "app.core.dependencies.jwt.get_unverified_claims",
@@ -139,7 +139,7 @@ async def test_get_current_professional_wrong_role_raises_403():
     ):
         with patch("app.core.dependencies.decode_token", return_value=payload):
             with pytest.raises(ForbiddenError):
-                await get_current_professional(token="anytoken")
+                await get_current_analyst(token="anytoken")
 
 
 # --- require_any ---
@@ -154,7 +154,7 @@ async def test_require_any_valid_token_matching_role():
         return_value={"role": UserRole.ADMIN},
     ):
         with patch("app.core.dependencies.decode_token", return_value=payload):
-            actor = await require_some(UserRole.ADMIN, UserRole.PROFESSIONAL)(
+            actor = await require_some(UserRole.ADMIN, UserRole.ANALYST)(
                 token="anytoken"
             )
     assert str(actor.user_id) == user_id
@@ -167,7 +167,7 @@ async def test_require_any_malformed_token_raises_401():
         "app.core.dependencies.jwt.get_unverified_claims", side_effect=JWTError()
     ):
         with pytest.raises(UnauthorizedError):
-            await require_some(UserRole.ADMIN, UserRole.PROFESSIONAL)(token="notajwt")
+            await require_some(UserRole.ADMIN, UserRole.ANALYST)(token="notajwt")
 
 
 @pytest.mark.asyncio
@@ -178,9 +178,7 @@ async def test_require_any_invalid_signature_raises_401():
     ):
         with patch("app.core.dependencies.decode_token", return_value=None):
             with pytest.raises(UnauthorizedError):
-                await require_some(UserRole.ADMIN, UserRole.PROFESSIONAL)(
-                    token="anytoken"
-                )
+                await require_some(UserRole.ADMIN, UserRole.ANALYST)(token="anytoken")
 
 
 @pytest.mark.asyncio
@@ -192,6 +190,4 @@ async def test_require_any_role_not_in_allowed_raises_403():
     ):
         with patch("app.core.dependencies.decode_token", return_value=payload):
             with pytest.raises(ForbiddenError):
-                await require_some(UserRole.ADMIN, UserRole.PROFESSIONAL)(
-                    token="anytoken"
-                )
+                await require_some(UserRole.ADMIN, UserRole.ANALYST)(token="anytoken")

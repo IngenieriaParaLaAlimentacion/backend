@@ -68,11 +68,11 @@ def manager_headers():
 
 
 @pytest.fixture
-def professional_headers():
+def analyst_headers():
     from app.core.security import create_access_token
     from app.domain.user import UserRole
 
-    token = create_access_token(uuid.uuid4(), role=UserRole.PROFESSIONAL)
+    token = create_access_token(uuid.uuid4(), role=UserRole.ANALYST)
     return {"Authorization": f"Bearer {token}"}
 
 

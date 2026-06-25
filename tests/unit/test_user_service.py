@@ -122,8 +122,8 @@ class TestGetProfile:
         uow.establishment_repo.find_by_ids.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_professional_has_none_establishments_and_skips_relation_query(self):
-        user = _make_user(role=UserRole.PROFESSIONAL)
+    async def test_analyst_has_none_establishments_and_skips_relation_query(self):
+        user = _make_user(role=UserRole.ANALYST)
         uow = _make_uow(user=user)
         service = UserService(uow)
 
@@ -147,18 +147,18 @@ class TestGetProfile:
     async def test_user_not_found_raises(self):
         uow = _make_uow(user=None)
         service = UserService(uow)
-        actor = UserActor(user_id=uuid.uuid4(), role=UserRole.PROFESSIONAL)
+        actor = UserActor(user_id=uuid.uuid4(), role=UserRole.ANALYST)
 
         with pytest.raises(UserNotFoundError):
             await service.get_profile(actor)
 
     @pytest.mark.asyncio
     async def test_token_user_id_is_used_for_lookup(self):
-        user = _make_user(role=UserRole.PROFESSIONAL)
+        user = _make_user(role=UserRole.ANALYST)
         token_user_id = str(uuid.uuid4())
         uow = _make_uow(user=user)
         service = UserService(uow)
-        actor = UserActor(user_id=token_user_id, role=UserRole.PROFESSIONAL)
+        actor = UserActor(user_id=token_user_id, role=UserRole.ANALYST)
 
         await service.get_profile(actor)
 
@@ -186,7 +186,7 @@ class TestGetProfile:
 class TestUpdateProfile:
     @pytest.mark.asyncio
     async def test_both_fields_updated_and_committed(self):
-        user = _make_user(role=UserRole.PROFESSIONAL)
+        user = _make_user(role=UserRole.ANALYST)
         uow = _make_uow(user=user)
         service = UserService(uow)
 
@@ -209,7 +209,7 @@ class TestUpdateProfile:
 
     @pytest.mark.asyncio
     async def test_single_field_only_updates_that_field(self):
-        user = _make_user(role=UserRole.PROFESSIONAL)
+        user = _make_user(role=UserRole.ANALYST)
         uow = _make_uow(user=user)
         service = UserService(uow)
 
@@ -223,7 +223,7 @@ class TestUpdateProfile:
 
     @pytest.mark.asyncio
     async def test_empty_update_raises_and_writes_nothing(self):
-        user = _make_user(role=UserRole.PROFESSIONAL)
+        user = _make_user(role=UserRole.ANALYST)
         uow = _make_uow(user=user)
         service = UserService(uow)
 
@@ -237,7 +237,7 @@ class TestUpdateProfile:
     async def test_user_not_found_raises(self):
         uow = _make_uow(user=None)
         service = UserService(uow)
-        actor = UserActor(user_id=uuid.uuid4(), role=UserRole.PROFESSIONAL)
+        actor = UserActor(user_id=uuid.uuid4(), role=UserRole.ANALYST)
 
         with pytest.raises(UserNotFoundError):
             await service.update_profile(actor, ProfileUpdateRequest(name="X"))
@@ -264,11 +264,11 @@ class TestUpdateProfile:
 
     @pytest.mark.asyncio
     async def test_token_user_id_is_used_for_lookup(self):
-        user = _make_user(role=UserRole.PROFESSIONAL)
+        user = _make_user(role=UserRole.ANALYST)
         token_user_id = str(uuid.uuid4())
         uow = _make_uow(user=user)
         service = UserService(uow)
-        actor = UserActor(user_id=token_user_id, role=UserRole.PROFESSIONAL)
+        actor = UserActor(user_id=token_user_id, role=UserRole.ANALYST)
 
         await service.update_profile(actor, ProfileUpdateRequest(name="X"))
 

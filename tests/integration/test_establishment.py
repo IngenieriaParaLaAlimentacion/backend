@@ -151,9 +151,9 @@ async def _seed_establishments(n: int, app) -> list:
 
 
 class TestGetEstablishmentsPaginated:
-    async def test_empty_list_returns_200(self, client, professional_headers):
+    async def test_empty_list_returns_200(self, client, analyst_headers):
         """No establishments in the DB returns an empty list with zeroed metadata."""
-        response = await client.get(ESTABLISHMENT_URL, headers=professional_headers)
+        response = await client.get(ESTABLISHMENT_URL, headers=analyst_headers)
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["items"] == []
@@ -161,21 +161,21 @@ class TestGetEstablishmentsPaginated:
         assert data["total_pages"] == 0
 
     async def test_returns_establishment_fields(
-        self, client, db_establishment, professional_headers
+        self, client, db_establishment, analyst_headers
     ):
         """Response items include id, name and address serialized correctly."""
-        response = await client.get(ESTABLISHMENT_URL, headers=professional_headers)
+        response = await client.get(ESTABLISHMENT_URL, headers=analyst_headers)
         assert response.status_code == status.HTTP_200_OK
         item = response.json()["items"][0]
         assert item["id"] == str(db_establishment.id)
         assert item["name"] == db_establishment.name
         assert item["formatted_address"] == db_establishment.formatted_address
 
-    async def test_pagination_metadata(self, client, app, professional_headers):
+    async def test_pagination_metadata(self, client, app, analyst_headers):
         """With 5 establishments and page_size=2, total_pages should be 3."""
         await _seed_establishments(5, app)
         response = await client.get(
-            ESTABLISHMENT_URL + "?page=1&page_size=2", headers=professional_headers
+            ESTABLISHMENT_URL + "?page=1&page_size=2", headers=analyst_headers
         )
         data = response.json()
         assert data["total"] == 5
@@ -183,72 +183,70 @@ class TestGetEstablishmentsPaginated:
         assert data["page_size"] == 2
         assert data["total_pages"] == 3
 
-    async def test_page_size_limits_results(self, client, app, professional_headers):
+    async def test_page_size_limits_results(self, client, app, analyst_headers):
         """page_size controls how many items are returned."""
         await _seed_establishments(5, app)
         response = await client.get(
-            ESTABLISHMENT_URL + "?page_size=3", headers=professional_headers
+            ESTABLISHMENT_URL + "?page_size=3", headers=analyst_headers
         )
         assert len(response.json()["items"]) == 3
 
     async def test_second_page_returns_different_items(
-        self, client, app, professional_headers
+        self, client, app, analyst_headers
     ):
         """Two consecutive pages share no establishments."""
         await _seed_establishments(4, app)
         page1 = await client.get(
-            ESTABLISHMENT_URL + "?page=1&page_size=2", headers=professional_headers
+            ESTABLISHMENT_URL + "?page=1&page_size=2", headers=analyst_headers
         )
         page2 = await client.get(
-            ESTABLISHMENT_URL + "?page=2&page_size=2", headers=professional_headers
+            ESTABLISHMENT_URL + "?page=2&page_size=2", headers=analyst_headers
         )
         ids1 = {i["id"] for i in page1.json()["items"]}
         ids2 = {i["id"] for i in page2.json()["items"]}
         assert ids1.isdisjoint(ids2)
 
     async def test_offset_past_last_record_returns_empty(
-        self, client, db_establishment, professional_headers
+        self, client, db_establishment, analyst_headers
     ):
         """Requesting a page whose offset exceeds the total record count returns
         an empty list."""
         response = await client.get(
-            ESTABLISHMENT_URL + "?page=99&page_size=20", headers=professional_headers
+            ESTABLISHMENT_URL + "?page=99&page_size=20", headers=analyst_headers
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["items"] == []
 
-    async def test_invalid_page_returns_422(self, client, professional_headers):
+    async def test_invalid_page_returns_422(self, client, analyst_headers):
         """page=0 is invalid, minimum is 1."""
         response = await client.get(
-            ESTABLISHMENT_URL + "?page=0", headers=professional_headers
+            ESTABLISHMENT_URL + "?page=0", headers=analyst_headers
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
-    async def test_invalid_page_size_zero_returns_422(
-        self, client, professional_headers
-    ):
+    async def test_invalid_page_size_zero_returns_422(self, client, analyst_headers):
         """page_size=0 is invalid, minimum is 1."""
         response = await client.get(
-            ESTABLISHMENT_URL + "?page_size=0", headers=professional_headers
+            ESTABLISHMENT_URL + "?page_size=0", headers=analyst_headers
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     async def test_invalid_page_size_above_max_returns_422(
-        self, client, professional_headers
+        self, client, analyst_headers
     ):
         """page_size=101 exceeds the maximum of 100."""
         response = await client.get(
-            ESTABLISHMENT_URL + "?page_size=101", headers=professional_headers
+            ESTABLISHMENT_URL + "?page_size=101", headers=analyst_headers
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
-    async def test_search_by_name_returns_matching(self, client, professional_headers):
+    async def test_search_by_name_returns_matching(self, client, analyst_headers):
         """Only establishments whose name contains the search term are returned."""
         await _seed_establishment("Centro Recoleta", "Av. Corrientes 100")
         await _seed_establishment("Centro Caballito", "Av. Santa Fe 200")
 
         response = await client.get(
-            ESTABLISHMENT_URL + "?search=Recoleta", headers=professional_headers
+            ESTABLISHMENT_URL + "?search=Recoleta", headers=analyst_headers
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -257,14 +255,14 @@ class TestGetEstablishmentsPaginated:
         assert items[0]["name"] == "Centro Recoleta"
 
     async def test_search_by_formatted_address_returns_matching(
-        self, client, professional_headers
+        self, client, analyst_headers
     ):
         """Only establishments whose formatted_address contains the search term."""
         await _seed_establishment("Centro A", "Av. Corrientes 100")
         await _seed_establishment("Centro B", "Av. Santa Fe 200")
 
         response = await client.get(
-            ESTABLISHMENT_URL + "?search=Santa Fe", headers=professional_headers
+            ESTABLISHMENT_URL + "?search=Santa Fe", headers=analyst_headers
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -272,23 +270,23 @@ class TestGetEstablishmentsPaginated:
         assert len(items) == 1
         assert items[0]["name"] == "Centro B"
 
-    async def test_search_is_case_insensitive(self, client, professional_headers):
+    async def test_search_is_case_insensitive(self, client, analyst_headers):
         """Search is case-insensitive: 'junin' matches 'Centro Junin'."""
         await _seed_establishment("Centro Junin", "Av. Corrientes 100")
 
         response = await client.get(
-            ESTABLISHMENT_URL + "?search=junin", headers=professional_headers
+            ESTABLISHMENT_URL + "?search=junin", headers=analyst_headers
         )
 
         assert response.status_code == status.HTTP_200_OK
         assert len(response.json()["items"]) == 1
 
-    async def test_search_no_match_returns_empty(self, client, professional_headers):
+    async def test_search_no_match_returns_empty(self, client, analyst_headers):
         """A search term that matches nothing returns an empty list."""
         await _seed_establishment("Gym Centro", "Av. Corrientes 100")
 
         response = await client.get(
-            ESTABLISHMENT_URL + "?search=zzznomatch", headers=professional_headers
+            ESTABLISHMENT_URL + "?search=zzznomatch", headers=analyst_headers
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -296,15 +294,13 @@ class TestGetEstablishmentsPaginated:
         assert data["items"] == []
         assert data["total"] == 0
 
-    async def test_search_whitespace_only_returns_all(
-        self, client, professional_headers
-    ):
+    async def test_search_whitespace_only_returns_all(self, client, analyst_headers):
         """A whitespace-only search is treated as no filter and returns all records."""
         await _seed_establishment("Centro Recoleta", "Av. Corrientes 100")
         await _seed_establishment("Centro Caballito", "Av. Santa Fe 200")
 
         response = await client.get(
-            ESTABLISHMENT_URL + "?search=   ", headers=professional_headers
+            ESTABLISHMENT_URL + "?search=   ", headers=analyst_headers
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -363,8 +359,8 @@ class TestAvailableEstablishments:
         response = await client.get(AVAILABLE_URL)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_professional_returns_403(self, client, app):
-        token = create_access_token(uuid.uuid4(), role=UserRole.PROFESSIONAL)
+    async def test_analyst_returns_403(self, client, app):
+        token = create_access_token(uuid.uuid4(), role=UserRole.ANALYST)
         response = await client.get(
             AVAILABLE_URL, headers={"Authorization": f"Bearer {token}"}
         )
@@ -494,13 +490,13 @@ class TestGetEstablishmentById:
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_professional_role_returns_200(
-        self, client, db_establishment, professional_headers
+    async def test_analyst_role_returns_200(
+        self, client, db_establishment, analyst_headers
     ):
-        """A PROFESSIONAL token can fetch an establishment."""
+        """An ANALYST token can fetch an establishment."""
         response = await client.get(
             f"{ESTABLISHMENT_URL}/{db_establishment.id}",
-            headers=professional_headers,
+            headers=analyst_headers,
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -640,14 +636,14 @@ class TestUpdateEstablishment:
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_professional_role_returns_403(
-        self, client, db_establishment, professional_headers
+    async def test_analyst_role_returns_403(
+        self, client, db_establishment, analyst_headers
     ):
-        """A PROFESSIONAL token lacks permission to update establishments."""
+        """An ANALYST token lacks permission to update establishments."""
         response = await client.patch(
             f"{ESTABLISHMENT_URL}/{db_establishment.id}",
             json={"name": "Nuevo Nombre"},
-            headers=professional_headers,
+            headers=analyst_headers,
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN

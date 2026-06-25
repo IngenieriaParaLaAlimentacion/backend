@@ -131,8 +131,8 @@ async def manager_user_id(app):
 
 @pytest_asyncio.fixture
 async def non_manager_user_id(app):
-    """Insert an active professional user and return its UUID."""
-    return await _insert_user(UserRole.PROFESSIONAL, UserStatus.ACTIVE)
+    """Insert an active analyst user and return its UUID."""
+    return await _insert_user(UserRole.ANALYST, UserStatus.ACTIVE)
 
 
 async def _insert_user(role: UserRole, user_status: UserStatus) -> uuid.UUID:
@@ -195,9 +195,9 @@ class TestAdminAuth:
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    async def test_professional_is_forbidden(self, client, any_admin_request):
-        """Should return 403 when a valid professional token is provided."""
-        token = create_access_token(uuid.uuid4(), role=UserRole.PROFESSIONAL)
+    async def test_analyst_is_forbidden(self, client, any_admin_request):
+        """Should return 403 when a valid analyst token is provided."""
+        token = create_access_token(uuid.uuid4(), role=UserRole.ANALYST)
         response = await any_admin_request(
             client, headers={"Authorization": f"Bearer {token}"}
         )
@@ -296,7 +296,7 @@ class TestListUsersPagination:
     ):
         """Should return empty when filtering by a role with no users."""
         response = await client.get(
-            f"{ADMIN_USERS_URL}?role={UserRole.PROFESSIONAL.value}",
+            f"{ADMIN_USERS_URL}?role={UserRole.ANALYST.value}",
             headers=admin_headers,
         )
 

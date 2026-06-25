@@ -99,9 +99,9 @@ class TestUploadSubject:
         response = await _upload(client, headers={"Authorization": f"Bearer {token}"})
         assert response.status_code == status.HTTP_201_CREATED
 
-    async def test_professional_role_returns_201(self, client):
-        """A valid token with professional role should return 201."""
-        token = await make_token_for_role(UserRole.PROFESSIONAL)
+    async def test_analyst_role_returns_201(self, client):
+        """A valid token with analyst role should return 201."""
+        token = await make_token_for_role(UserRole.ANALYST)
         response = await _upload(client, headers={"Authorization": f"Bearer {token}"})
         assert response.status_code == status.HTTP_201_CREATED
 

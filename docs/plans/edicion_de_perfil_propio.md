@@ -759,7 +759,7 @@ the `clean_db` truncation fixture (`tests/integration/conftest.py:69`).
 **File**: `tests/integration/test_users.py`
 **Changes**: New class covering `PATCH /me`.
 
-- **CA1** professional edits `name`+`last_name` → 200, body reflects new values;
+- **CA1** analyst edits `name`+`last_name` → 200, body reflects new values;
   re-`GET /me` confirms persistence.
 - **CA1 partial** → send only `name` → 200, `last_name` unchanged.
 - **CA2** `{"name": ""}` → 422; DB unchanged.
@@ -776,7 +776,7 @@ the `clean_db` truncation fixture (`tests/integration/conftest.py:69`).
 **Changes**: New classes covering `GET`/`POST /me/establishments`.
 
 - **GET own** manager with seeded mixed-status relations → 200 list with correct
-  statuses; non-manager (professional) → 403; no token → 401.
+  statuses; non-manager (analyst) → 403; no token → 401.
 - **CA5 new** manager POSTs new establishment ids → 201, all `pending`; DB rows
   created `pending`.
 - **CA5/CA6 rejected re-request** seed a `rejected` relation, POST that id → 201,
@@ -796,7 +796,7 @@ the `clean_db` truncation fixture (`tests/integration/conftest.py:69`).
 - Seed manager + establishments A (approved), B (pending), C (rejected), D (no
   relation). `available=true` → returns C and D only (A, B excluded; C included).
 - `available=true` with `search` narrows by name/address.
-- `available=true` no token → 401; professional token → 403.
+- `available=true` no token → 401; analyst token → 403.
 - `GET /establishments` (no flag, no token) → unchanged public catalog (regression).
 
 ### Success Criteria
@@ -835,7 +835,7 @@ the `clean_db` truncation fixture (`tests/integration/conftest.py:69`).
 ### Manual
 
 1. `poetry run uvicorn app.main:app --reload`.
-2. Log in as a professional and a manager (`/api/v1/auth/login`).
+2. Log in as an analyst and a manager (`/api/v1/auth/login`).
 3. `PATCH /users/me` (valid, empty, invalid, forbidden-field).
 4. `GET /establishments?available=true`, then `POST /users/me/establishments` with
    a selection, then `GET /users/me/establishments` and `GET /users/me` to confirm.

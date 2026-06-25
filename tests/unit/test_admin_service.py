@@ -18,7 +18,7 @@ def _make_user(
     name="Test",
     last_name="User",
     email=None,
-    role=UserRole.PROFESSIONAL,
+    role=UserRole.ANALYST,
     status=UserStatus.ACTIVE,
 ):
     user = MagicMock()
@@ -140,12 +140,10 @@ class TestGetPaginatedUsers:
         uow = make_uow()
         service = AdminService(uow)
 
-        await service.get_users_paginated(
-            page=1, page_size=20, role=UserRole.PROFESSIONAL
-        )
+        await service.get_users_paginated(page=1, page_size=20, role=UserRole.ANALYST)
 
         uow.user_repo.get_paginated.assert_called_once_with(
-            role=UserRole.PROFESSIONAL, status=None, limit=20, offset=0, search=None
+            role=UserRole.ANALYST, status=None, limit=20, offset=0, search=None
         )
 
     @pytest.mark.asyncio

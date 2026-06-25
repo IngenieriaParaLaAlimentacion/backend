@@ -23,7 +23,7 @@ Authorization has two levels:
 
 ### Access token
 
-- Format: JWT, signed with `JWT_SECRET_USER`, `JWT_SECRET_ADMIN` or `JWT_SECRET_PROFESSIONAL`.
+- Format: JWT, signed with `JWT_SECRET_USER`, `JWT_SECRET_ADMIN` or `JWT_SECRET_ANALYST`.
 - Payload contains: `user_id`, `role`.
 - Short-lived (TTL TBD).
 - Sent by the client in the `Authorization: Bearer <token>` header.
@@ -50,7 +50,7 @@ Authorization has two levels:
 | Role | Description                                                                |
 |---|----------------------------------------------------------------------------|
 | `admin` | Full access to all data and all establishments. Can manage users.          |
-| `professional` | Can view data across all establishments, including dashboards and reports. |
+| `analyst` | Can view data across all establishments, including dashboards and reports. |
 | `establishment_manager` | Can only load and view data for their assigned establishments.             |
 
 Role is stored in the `users` table and included in the access token payload. It does not change between token refreshes without a new login.

@@ -71,8 +71,8 @@ mobile "Visualización de perfil propio" user story
 // establishment_manager with none  -> empty list (CA3: app shows "request access")
 { "...": "...", "role": "establishment_manager", "establishments": [] }
 
-// admin / professional             -> null (no establishments section)
-{ "...": "...", "role": "professional", "establishments": null }
+// admin / analyst             -> null (no establishments section)
+{ "...": "...", "role": "analyst", "establishments": null }
 ```
 
 Verification: integration tests pass against a real Postgres container; manual
@@ -81,7 +81,7 @@ Verification: integration tests pass against a real Postgres container; manual
 ## Decisions (resolved)
 
 1. **Placement:** new `users` module + `UserService`, path `GET /api/v1/users/me`.
-2. **`establishments` field:** `null` for admin/professional; a list (`[]` when
+2. **`establishments` field:** `null` for admin/analyst; a list (`[]` when
    none) for managers — lets the app distinguish "no section" from "empty section"
    per CA3.
 3. **Status format:** the existing `UserEstablishmentStatus` enum value
@@ -201,7 +201,7 @@ establishments for managers only. Write unit tests first (RED), then implement
   `establishments` is a list of `EstablishmentWithStatusDomain` with the correct
   `status` per relation, and correct name/address joined from establishment data.
 - **Manager with no relations** → `establishments == []`.
-- **Professional** → `establishments is None`; association repo **not** queried.
+- **Analyst** → `establishments is None`; association repo **not** queried.
 - **Admin** → `establishments is None`.
 - **User id from token not found** → raises `UserNotFoundError`.
 - **`actor.user_id` passed as a `str`** (as the real dependency produces) → service
@@ -428,7 +428,7 @@ Docker), following `tests/integration/test_admin.py`.
 `AsyncSessionLocal` inserts of `Establishment` and `UserEstablishment`). Cover:
 
 - **401** with no token / malformed token.
-- **Professional** (active, seeded) → `200`, `establishments is None`, and
+- **Analyst** (active, seeded) → `200`, `establishments is None`, and
   `id/email/name/last_name/role` match the seeded user.
 - **Admin** → `200`, `establishments is None`.
 - **Manager with establishments** → seed `User` (manager) + two `Establishment`
@@ -451,7 +451,7 @@ Docker), following `tests/integration/test_admin.py`.
 #### Manual Verification:
 
 - [x] `curl -H "Authorization: Bearer <manager_token>" localhost:8000/api/v1/users/me` returns establishments with statuses — covered by `test_manager_with_establishments_lists_status` (real Postgres).
-- [x] Same call with a professional token returns `"establishments": null` — covered by `test_professional_has_null_establishments`.
+- [x] Same call with an analyst token returns `"establishments": null` — covered by `test_analyst_has_null_establishments`.
 
 ---
 
@@ -471,7 +471,7 @@ Docker), following `tests/integration/test_admin.py`.
 ### Manual
 
 1. Start the dev server: `poetry run uvicorn app.main:app --reload`.
-2. Obtain tokens for a manager, a professional, and an admin (`/api/v1/auth/login`).
+2. Obtain tokens for a manager, an analyst, and an admin (`/api/v1/auth/login`).
 3. Hit `/api/v1/users/me` with each and confirm the three response shapes.
 4. Confirm a manager with zero establishments returns `[]` (CA3), and a deleted/
    unknown user id returns `404`.

@@ -16,7 +16,7 @@ def _get_secret(role: str) -> str:
     return {
         "superadmin": settings.jwt_secret_admin,
         "admin": settings.jwt_secret_admin,
-        "professional": settings.jwt_secret_professional,
+        "analyst": settings.jwt_secret_analyst,
         "establishment_manager": settings.jwt_secret_manager,
     }.get(role, settings.jwt_secret_manager)
 

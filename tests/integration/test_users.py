@@ -107,8 +107,8 @@ async def _fetch_relations(user_id: uuid.UUID) -> list[UserEstablishment]:
 
 
 @pytest_asyncio.fixture
-async def professional_user(app):
-    return await _insert_user(role=UserRole.PROFESSIONAL, status=UserStatus.ACTIVE)
+async def analyst_user(app):
+    return await _insert_user(role=UserRole.ANALYST, status=UserStatus.ACTIVE)
 
 
 @pytest_asyncio.fixture
@@ -138,19 +138,17 @@ class TestProfileAuth:
 
 
 class TestProfileNonManager:
-    async def test_professional_has_null_establishments(
-        self, client, professional_user
-    ):
-        """A professional gets their profile with establishments = null."""
-        response = await client.get(ME_URL, headers=_headers_for(professional_user))
+    async def test_analyst_has_null_establishments(self, client, analyst_user):
+        """An analyst gets their profile with establishments = null."""
+        response = await client.get(ME_URL, headers=_headers_for(analyst_user))
 
         assert response.status_code == 200
         body = response.json()
-        assert body["id"] == str(professional_user.id)
-        assert body["email"] == professional_user.email
-        assert body["name"] == professional_user.name
-        assert body["last_name"] == professional_user.last_name
-        assert body["role"] == UserRole.PROFESSIONAL
+        assert body["id"] == str(analyst_user.id)
+        assert body["email"] == analyst_user.email
+        assert body["name"] == analyst_user.name
+        assert body["last_name"] == analyst_user.last_name
+        assert body["role"] == UserRole.ANALYST
         assert body["establishments"] is None
 
     async def test_admin_has_null_establishments(self, client, admin_user):
@@ -206,59 +204,59 @@ class TestProfileManager:
 class TestProfileMissingUser:
     async def test_valid_token_for_unknown_user_returns_404(self, client, app):
         """A valid token whose user was never persisted returns 404."""
-        ghost = SimpleNamespace(id=uuid.uuid4(), role=UserRole.PROFESSIONAL)
+        ghost = SimpleNamespace(id=uuid.uuid4(), role=UserRole.ANALYST)
         response = await client.get(ME_URL, headers=_headers_for(ghost))
         assert response.status_code == 404
 
 
 class TestProfileEdit:
-    async def test_professional_edits_both_fields(self, client, professional_user):
+    async def test_analyst_edits_both_fields(self, client, analyst_user):
         """CA1: editing name and last_name returns 200 and persists the change."""
         response = await client.patch(
             ME_URL,
             json={"name": "Juana", "last_name": "Perez"},
-            headers=_headers_for(professional_user),
+            headers=_headers_for(analyst_user),
         )
 
         assert response.status_code == 200
         body = response.json()
         assert body["name"] == "Juana"
         assert body["last_name"] == "Perez"
-        assert body["email"] == professional_user.email
+        assert body["email"] == analyst_user.email
 
-        reread = await client.get(ME_URL, headers=_headers_for(professional_user))
+        reread = await client.get(ME_URL, headers=_headers_for(analyst_user))
         assert reread.json()["name"] == "Juana"
         assert reread.json()["last_name"] == "Perez"
 
     async def test_partial_edit_leaves_other_field_unchanged(
-        self, client, professional_user
+        self, client, analyst_user
     ):
         """CA1: sending only ``name`` leaves ``last_name`` untouched."""
         response = await client.patch(
             ME_URL,
             json={"name": "SoloNombre"},
-            headers=_headers_for(professional_user),
+            headers=_headers_for(analyst_user),
         )
 
         assert response.status_code == 200
         body = response.json()
         assert body["name"] == "SoloNombre"
-        assert body["last_name"] == professional_user.last_name
+        assert body["last_name"] == analyst_user.last_name
 
-    async def test_empty_name_returns_422_and_keeps_db(self, client, professional_user):
+    async def test_empty_name_returns_422_and_keeps_db(self, client, analyst_user):
         """CA2: an empty name fails validation (422) and persists nothing."""
         response = await client.patch(
-            ME_URL, json={"name": ""}, headers=_headers_for(professional_user)
+            ME_URL, json={"name": ""}, headers=_headers_for(analyst_user)
         )
 
         assert response.status_code == 422
-        stored = await _fetch_user(professional_user.id)
-        assert stored.name == professional_user.name
+        stored = await _fetch_user(analyst_user.id)
+        assert stored.name == analyst_user.name
 
-    async def test_empty_body_returns_400(self, client, professional_user):
+    async def test_empty_body_returns_400(self, client, analyst_user):
         """CA2: a defined-but-empty body is rejected by the service (400)."""
         response = await client.patch(
-            ME_URL, json={}, headers=_headers_for(professional_user)
+            ME_URL, json={}, headers=_headers_for(analyst_user)
         )
 
         assert response.status_code == 400
@@ -272,18 +270,18 @@ class TestProfileEdit:
         ],
     )
     async def test_non_editable_fields_return_422_and_keep_db(
-        self, client, professional_user, payload
+        self, client, analyst_user, payload
     ):
         """CA3: editing email/role/status (or any unknown field) is rejected (422)."""
         response = await client.patch(
-            ME_URL, json=payload, headers=_headers_for(professional_user)
+            ME_URL, json=payload, headers=_headers_for(analyst_user)
         )
 
         assert response.status_code == 422
-        stored = await _fetch_user(professional_user.id)
-        assert stored.email == professional_user.email
-        assert stored.role == professional_user.role
-        assert stored.status == professional_user.status
+        stored = await _fetch_user(analyst_user.id)
+        assert stored.email == analyst_user.email
+        assert stored.role == analyst_user.role
+        assert stored.status == analyst_user.status
 
     async def test_manager_edit_still_returns_establishments(
         self, client, manager_user
@@ -349,9 +347,9 @@ class TestListOwnEstablishments:
         assert response.status_code == 200
         assert response.json() == []
 
-    async def test_non_manager_returns_403(self, client, professional_user):
+    async def test_non_manager_returns_403(self, client, analyst_user):
         response = await client.get(
-            ME_ESTABLISHMENTS_URL, headers=_headers_for(professional_user)
+            ME_ESTABLISHMENTS_URL, headers=_headers_for(analyst_user)
         )
         assert response.status_code == 403
 
@@ -458,13 +456,13 @@ class TestRequestEstablishmentAccess:
         assert response.status_code == 404
         assert await _fetch_relations(manager_user.id) == []
 
-    async def test_non_manager_returns_403(self, client, professional_user):
+    async def test_non_manager_returns_403(self, client, analyst_user):
         """CA7: a non-manager cannot request access."""
         estab = await _insert_establishment("Centro A", "Calle A")
         response = await client.post(
             ME_ESTABLISHMENTS_URL,
             json={"establishment_ids": [str(estab.id)]},
-            headers=_headers_for(professional_user),
+            headers=_headers_for(analyst_user),
         )
         assert response.status_code == 403
 

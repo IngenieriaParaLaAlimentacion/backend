@@ -10,7 +10,7 @@ class UserRole(str, Enum):
 
     SUPERADMIN = "superadmin"
     ADMIN = "admin"
-    PROFESSIONAL = "professional"
+    ANALYST = "analyst"
     ESTABLISHMENT_MANAGER = "establishment_manager"
 
 
