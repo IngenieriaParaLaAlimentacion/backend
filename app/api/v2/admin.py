@@ -111,8 +111,11 @@ async def reject_field_worker(
     description="Creates an analyst user and sends a password setup link by email.",
     responses={
         status.HTTP_202_ACCEPTED: {"description": "Invitation sent successfully"},
-        status.HTTP_409_CONFLICT: {"description": "Email already exists"},
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Missing or invalid authentication token"
+        },
         status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        status.HTTP_409_CONFLICT: {"description": "Email already exists"},
     },
 )
 async def invite_analyst(
