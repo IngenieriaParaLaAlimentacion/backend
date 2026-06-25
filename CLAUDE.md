@@ -73,7 +73,7 @@ poetry run ruff check . --fix && poetry run ruff format .  # lint + format
 
 - Access token contains `user_id` and `role`. Per-establishment access is **not** in the token — resolved at request time via DB query.
 - A centralized middleware handles establishment permission checks — **never implement inline per endpoint**.
-- Roles: `admin`, `analyst`, `field_workers`.
+- Roles: `admin`, `analyst`, `field_worker`.
 
 → Full auth model, token flow, and data model: `docs/auth.md`
 
