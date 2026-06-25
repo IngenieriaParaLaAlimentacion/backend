@@ -11,7 +11,11 @@ from app.exceptions.domain_exceptions import (
     SubjectNotFoundError,
     UniqueConstraintError,
 )
-from app.schemas.subject_schema import SubjectRequest, SubjectUpdateRequest
+from app.schemas.subject_schema import (
+    SubjectRequest,
+    SubjectResponse,
+    SubjectUpdateRequest,
+)
 
 
 def _to_json_safe(v):
@@ -28,14 +32,26 @@ class SubjectService:
 
     async def create_subject(
         self, data: SubjectRequest, actor_id: UUID
-    ) -> SubjectDomain:
-        """Register a new subject.
+    ) -> tuple[SubjectDomain, bool]:
+        """Idempotently register a subject.
+
+        Returns a ``(subject, created)`` tuple: ``created`` is True for a brand-new
+        subject (201) and False for an idempotent replay of an existing id (200).
 
         Raises:
-            SubjectAlreadyExistsError: If a subject with the given DNI already exists.
+            SubjectAlreadyExistsError: If the DNI already belongs to a different
+            subject. The exception carries the canonical subject so the caller can
+            remap local references.
         """
+        # Idempotent replay: same client id already stored.
+        if data.id is not None:
+            existing = await self.uow.subject_repo.get_by_id(data.id)
+            if existing is not None:
+                return SubjectDomain.from_db(existing), False
+
         try:
             subject = await self.uow.subject_repo.create(
+                id=data.id,
                 dni=data.dni,
                 sex=data.sex,
                 name=data.name,
@@ -45,15 +61,27 @@ class SubjectService:
                 is_indigenous=data.is_indigenous,
             )
         except UniqueConstraintError:
-            raise SubjectAlreadyExistsError(data.dni)
+            # Concurrent insert of the same id (race) -> treat as replay.
+            if data.id is not None:
+                raced = await self.uow.subject_repo.get_by_id(data.id)
+                if raced is not None:
+                    return SubjectDomain.from_db(raced), False
+            # Otherwise the DNI belongs to another subject -> surface the canonical one.
+            canonical = await self.uow.subject_repo.get_by_dni(data.dni)
+            canonical_body = (
+                SubjectResponse.model_validate(canonical).model_dump(mode="json")
+                if canonical is not None
+                else None
+            )
+            raise SubjectAlreadyExistsError(data.dni, canonical=canonical_body)
+
         await self.uow.subject_event_repo.append(
             subject_id=subject.id,
             actor_id=actor_id,
             event_type=SubjectEventType.SUBJECT_CREATED,
         )
         await self.uow.commit()
-
-        return SubjectDomain.from_db(subject)
+        return SubjectDomain.from_db(subject), True
 
     async def get_subject(self, subject_id: UUID) -> SubjectDomain:
         """Return a subject by id.

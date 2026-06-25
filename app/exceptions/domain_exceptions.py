@@ -7,11 +7,14 @@ class BaseError(Exception):
     Args:
         title (str): The title of the error.
         details (str): Detailed description of the error.
+        extensions (dict | None): Optional RFC 7807 extension members merged into
+            the ``problem+json`` response body.
     """
 
-    def __init__(self, title: str, details: str):
+    def __init__(self, title: str, details: str, extensions: dict | None = None):
         self.title = title
         self.details = details
+        self.extensions = extensions or {}
         super().__init__(f"{title}: {details}")
 
 
@@ -117,12 +120,16 @@ class SubjectAlreadyExistsError(AlreadyExistsError):
 
     Args:
         dni (int): The DNI that already exists.
+        canonical (dict | None): The canonical subject already stored under this
+            DNI, attached as the ``canonical_subject`` extension so the client can
+            remap its local references.
     """
 
-    def __init__(self, dni: int):
+    def __init__(self, dni: int, canonical: dict | None = None):
         super().__init__(
             "Subject already exists",
             f"A subject with DNI {dni} already exists.",
+            extensions={"canonical_subject": canonical} if canonical else None,
         )
 
 

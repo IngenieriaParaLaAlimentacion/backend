@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 
 from app.repositories.establishment_repository import EstablishmentRepository
+from app.repositories.measurement_alert_repository import MeasurementAlertRepository
+from app.repositories.measurement_repository import MeasurementRepository
 from app.repositories.password_recovery_repository import (
     PasswordRecoveryTokenRepository,
 )
@@ -21,6 +23,8 @@ class IUnitOfWork(ABC):
     subject_repo: SubjectRepository
     subject_event_repo: SubjectEventRepository
     password_recovery_repo: PasswordRecoveryTokenRepository
+    measurement_repo: MeasurementRepository
+    measurement_alert_repo: MeasurementAlertRepository
 
     @abstractmethod
     async def commit(self) -> None: ...

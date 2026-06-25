@@ -1,6 +1,8 @@
 import app.db.database as _db
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.repositories.establishment_repository import EstablishmentRepository
+from app.repositories.measurement_alert_repository import MeasurementAlertRepository
+from app.repositories.measurement_repository import MeasurementRepository
 from app.repositories.password_recovery_repository import (
     PasswordRecoveryTokenRepository,
 )
@@ -32,6 +34,8 @@ class UnitOfWork(IUnitOfWork):
         self.subject_repo = SubjectRepository(self.session)
         self.subject_event_repo = SubjectEventRepository(self.session)
         self.password_recovery_repo = PasswordRecoveryTokenRepository(self.session)
+        self.measurement_repo = MeasurementRepository(self.session)
+        self.measurement_alert_repo = MeasurementAlertRepository(self.session)
         return self
 
     async def commit(self) -> None:
