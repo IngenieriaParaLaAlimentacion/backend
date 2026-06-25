@@ -6,8 +6,8 @@ from app.core.dependencies import (
     get_admin_service,
     get_current_admin,
 )
-from app.domain.user import UserActor
-from app.schemas.admin_schema import EstablishmentAccessRequest
+from app.domain.user import UserActor, UserRole
+from app.schemas.admin_schema import EstablishmentAccessRequest, InviteAdminRequest
 from app.services.admin_service import AdminService
 
 router = APIRouter(prefix="/admin")
@@ -101,3 +101,24 @@ async def reject_field_worker(
 ) -> Response:
     await service.reject_field_worker(user_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post(
+    "/invite-analyst",
+    status_code=status.HTTP_202_ACCEPTED,
+    response_class=Response,
+    summary="Invite analyst",
+    description="Creates an analyst user and sends a password setup link by email.",
+    responses={
+        status.HTTP_202_ACCEPTED: {"description": "Invitation sent successfully"},
+        status.HTTP_409_CONFLICT: {"description": "Email already exists"},
+        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+    },
+)
+async def invite_analyst(
+    data: InviteAdminRequest,
+    service: AdminService = Depends(get_admin_service),
+    _admin: UserActor = Depends(get_current_admin),
+) -> None:
+    await service.invite_user(data, role=UserRole.ANALYST)
+    return Response(status_code=status.HTTP_202_ACCEPTED)

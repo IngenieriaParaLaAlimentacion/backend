@@ -1,9 +1,9 @@
-import smtplib
 import uuid
 from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 from urllib.parse import parse_qs, urlparse
 
+import aiosmtplib
 import pytest
 
 from app.core.config import settings
@@ -144,40 +144,47 @@ class TestBuildRecoveryDeeplink:
 
 
 class TestSendRecoveryEmail:
-    def test_smtp_disabled_logs_and_skips_send(self, smtp_disabled):
+    @pytest.mark.asyncio
+    async def test_smtp_disabled_logs_and_skips_send(self, smtp_disabled):
         with patch("app.core.password_recovery.logger") as mock_logger:
-            send_recovery_email(
+            await send_recovery_email(
                 "user@example.com", "https://app/reset?token=abc", _FIXED_NOW
             )
 
         mock_logger.info.assert_called_once()
 
-    def test_smtp_disabled_does_not_open_connection(self, smtp_disabled):
-        with patch("app.core.password_recovery.smtplib.SMTP") as mock_smtp:
-            send_recovery_email(
+    @pytest.mark.asyncio
+    async def test_smtp_disabled_does_not_send(self, smtp_disabled):
+        with patch(
+            "app.core.password_recovery.aiosmtplib.send", new_callable=AsyncMock
+        ) as mock_send:
+            await send_recovery_email(
                 "user@example.com", "https://app/reset?token=abc", _FIXED_NOW
             )
 
-        mock_smtp.assert_not_called()
+        mock_send.assert_not_called()
 
-    def test_smtp_enabled_sends_to_correct_recipient(self, smtp_enabled_no_tls):
-        with patch("app.core.password_recovery.smtplib.SMTP") as mock_smtp:
-            instance = mock_smtp.return_value.__enter__.return_value
-            send_recovery_email(
+    @pytest.mark.asyncio
+    async def test_smtp_enabled_sends_to_correct_recipient(self, smtp_enabled_no_tls):
+        with patch(
+            "app.core.password_recovery.aiosmtplib.send", new_callable=AsyncMock
+        ) as mock_send:
+            await send_recovery_email(
                 "user@example.com", "https://app/reset?token=abc", _FIXED_NOW
             )
 
-        instance.send_message.assert_called_once()
-        sent_msg = instance.send_message.call_args[0][0]
+        mock_send.assert_awaited_once()
+        sent_msg = mock_send.call_args[0][0]
         assert sent_msg["To"] == "user@example.com"
 
-    def test_smtp_exception_does_not_propagate(self, smtp_enabled_no_tls):
-        with patch("app.core.password_recovery.smtplib.SMTP") as mock_smtp:
-            mock_smtp.return_value.__enter__.side_effect = smtplib.SMTPException(
-                "connection failed"
-            )
-
-            send_recovery_email(
+    @pytest.mark.asyncio
+    async def test_smtp_exception_does_not_propagate(self, smtp_enabled_no_tls):
+        with patch(
+            "app.core.password_recovery.aiosmtplib.send",
+            new_callable=AsyncMock,
+            side_effect=aiosmtplib.SMTPException("connection failed"),
+        ):
+            await send_recovery_email(
                 "user@example.com", "https://app/reset?token=abc", _FIXED_NOW
             )
 

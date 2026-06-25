@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
 
 from app.domain.pagination import PaginatedResult
 from app.domain.subject import SubjectDomain
@@ -73,3 +73,7 @@ class AdminSubjectDetailResponse(SubjectResponse):
                 ),
             }
         )
+
+
+class InviteAdminRequest(BaseModel):
+    email: EmailStr
