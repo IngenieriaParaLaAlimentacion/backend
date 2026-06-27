@@ -39,9 +39,9 @@ class Settings(BaseSettings):
     database_url: Optional[str] = None
 
     # JWT
-    jwt_secret_manager: str = "secret_manager"
+    jwt_secret_field_worker: str = "secret_field_worker"
     jwt_secret_admin: str = "secret_admin"
-    jwt_secret_professional: str = "secret_professional"
+    jwt_secret_analyst: str = "secret_analyst"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 7

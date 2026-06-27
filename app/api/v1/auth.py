@@ -8,7 +8,7 @@ from app.schemas.auth_schema import (
     PasswordRecoveryRequest,
     RefreshRequest,
     RefreshResponse,
-    RegisterManagerRequest,
+    RegisterFieldWorkerRequest,
     RegistrationResponse,
     TokenResponse,
 )
@@ -21,8 +21,8 @@ router = APIRouter(prefix="/auth")
     "/register/establishment-manager",
     response_model=RegistrationResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Register establishment manager",
-    description="Creates a new establishment manager account pending admin approval.",
+    summary="Register field worker",
+    description="Creates a new field worker account pending admin approval.",
     responses={
         status.HTTP_201_CREATED: {"description": "User registered successfully"},
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid data"},
@@ -30,12 +30,10 @@ router = APIRouter(prefix="/auth")
         status.HTTP_404_NOT_FOUND: {"description": "Establishments not found"},
     },
 )
-async def register_manager(
-    data: RegisterManagerRequest, service: AuthService = Depends(get_auth_service)
-):
-    """Register a new establishment manager."""
-
-    return await service.register_manager(data)
+async def register_field_worker(
+    data: RegisterFieldWorkerRequest, service: AuthService = Depends(get_auth_service)
+) -> RegistrationResponse:
+    return await service.register_field_worker(data)
 
 
 @router.post(

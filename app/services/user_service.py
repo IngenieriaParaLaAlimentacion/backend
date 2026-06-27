@@ -47,10 +47,10 @@ class UserService:
     async def _build_profile(self, user: User) -> ProfileDomain:
         """Assemble a ProfileDomain from a loaded user.
 
-        Establishments are included only for establishment managers.
+        Establishments are included only for field workers.
         """
         establishments = None
-        if user.role == UserRole.ESTABLISHMENT_MANAGER:
+        if user.role == UserRole.FIELD_WORKER:
             establishments = await self._get_establishments_with_status(user.id)
         return ProfileDomain(
             id=user.id,
@@ -90,7 +90,7 @@ class UserService:
     async def get_profile(self, actor: UserActor) -> ProfileDomain:
         """Return the authenticated user's profile.
 
-        Establishments are included only for establishment managers; for other
+        Establishments are included only for field workers; for other
         roles the field is None (no establishments section).
 
         Raises:
@@ -123,7 +123,7 @@ class UserService:
         await self.uow.commit()
 
         establishments = None
-        if role == UserRole.ESTABLISHMENT_MANAGER:
+        if role == UserRole.FIELD_WORKER:
             establishments = await self._get_establishments_with_status(user.id)
 
         return ProfileDomain(

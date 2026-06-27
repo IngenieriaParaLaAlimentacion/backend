@@ -27,7 +27,7 @@ from app.schemas.auth_schema import (
     PasswordRecoveryConfirmRequest,
     PasswordRecoveryRequest,
     RefreshRequest,
-    RegisterManagerRequest,
+    RegisterFieldWorkerRequest,
 )
 
 
@@ -37,8 +37,10 @@ class AuthService:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
-    async def register_manager(self, data: RegisterManagerRequest) -> UserDomain:
-        """Register a new establishment manager. An admin has to approve
+    async def register_field_worker(
+        self, data: RegisterFieldWorkerRequest
+    ) -> UserDomain:
+        """Register a new field worker. An admin has to approve
             the registration.
 
         Raises:
@@ -57,7 +59,7 @@ class AuthService:
             email=data.email,
             name=data.name,
             last_name=data.last_name,
-            role=UserRole.ESTABLISHMENT_MANAGER,
+            role=UserRole.FIELD_WORKER,
             status=UserStatus.PENDING_VALIDATION,
         )
         await self.uow.password_repo.create(user.id, hash_password(data.password))

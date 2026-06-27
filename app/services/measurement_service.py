@@ -35,7 +35,7 @@ class MeasurementService:
     async def _check_establishment_access(
         self, actor: UserActor, establishment_id: UUID
     ) -> None:
-        if actor.role != UserRole.ESTABLISHMENT_MANAGER:
+        if actor.role != UserRole.FIELD_WORKER:
             return
         relation = await self.uow.user_establishment_repo.get_relation(
             actor.user_id, establishment_id
@@ -56,7 +56,7 @@ class MeasurementService:
         Raises:
             SubjectNotFoundError: subject_id does not exist.
             EstablishmentNotFoundError: establishment_id does not exist.
-            ForbiddenError: manager lacks approved access to the establishment.
+            ForbiddenError: field worker lacks approved access to the establishment.
         """
         if data.id is not None:
             existing = await self.uow.measurement_repo.get_by_id(data.id)

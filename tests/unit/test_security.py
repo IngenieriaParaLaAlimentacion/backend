@@ -60,11 +60,11 @@ def test_decode_token_expired():
         "sub": str(uuid.uuid4()),
         "iat": int((now - timedelta(hours=1)).timestamp()),
         "exp": int((now - timedelta(minutes=1)).timestamp()),
-        "role": UserRole.ESTABLISHMENT_MANAGER,
+        "role": UserRole.FIELD_WORKER,
         "type": "access",
     }
     expired_token = jwt.encode(
-        payload, settings.jwt_secret_manager, algorithm=settings.jwt_algorithm
+        payload, settings.jwt_secret_field_worker, algorithm=settings.jwt_algorithm
     )
     assert decode_token(expired_token) is None
 
@@ -78,4 +78,4 @@ def test_decode_token_tampered():
 
 def test_decode_token_wrong_role():
     token = create_access_token(uuid.uuid4(), role=UserRole.ADMIN)
-    assert decode_token(token, expected_role=UserRole.ESTABLISHMENT_MANAGER) is None
+    assert decode_token(token, expected_role=UserRole.FIELD_WORKER) is None

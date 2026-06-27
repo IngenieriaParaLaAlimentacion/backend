@@ -3,7 +3,7 @@
 ## Overview
 
 Expose a single authenticated read endpoint that returns the current user's
-profile (name, last name, email, role) and — **only for `establishment_manager`
+profile (name, last name, email, role) and — **only for `field_worker`
 users** — their associated establishments, each annotated with its approval
 status (`approved` / `pending` / `rejected`). This is the backend support for the
 mobile "Visualización de perfil propio" user story
@@ -18,7 +18,7 @@ mobile "Visualización de perfil propio" user story
   `UserActor(user_id, role)`. Already used in `app/api/v1/subjects.py:56`.
 - **Domain types are already scaffolded but unused.**
   `EstablishmentWithStatusDomain` (`app/domain/establishment.py:21-25`, fields
-  `id, name, address, status: str`) and `ApprovedManagerDomain`
+  `id, name, address, status: str`) and `ApprovedFieldWorkerDomain`
   (`app/domain/user.py:62-67`) exist in code but are referenced nowhere in
   production — they anticipate exactly this view.
 - The exact vertical pattern to mirror is the admin users slice: route
@@ -58,21 +58,21 @@ mobile "Visualización de perfil propio" user story
 `GET /api/v1/users/me` with a valid bearer token returns `200` and:
 
 ```jsonc
-// establishment_manager with 2 establishments
+// field_worker with 2 establishments
 {
   "id": "…", "email": "…", "name": "…", "last_name": "…",
-  "role": "establishment_manager",
+  "role": "field_worker",
   "establishments": [
     { "id": "…", "name": "Centro A", "address": "Calle A 123", "status": "approved" },
     { "id": "…", "name": "Centro B", "address": "Calle B 456", "status": "pending" }
   ]
 }
 
-// establishment_manager with none  -> empty list (CA3: app shows "request access")
-{ "...": "...", "role": "establishment_manager", "establishments": [] }
+// field_worker with none  -> empty list (CA3: app shows "request access")
+{ "...": "...", "role": "field_worker", "establishments": [] }
 
-// admin / professional             -> null (no establishments section)
-{ "...": "...", "role": "professional", "establishments": null }
+// admin / analyst             -> null (no establishments section)
+{ "...": "...", "role": "analyst", "establishments": null }
 ```
 
 Verification: integration tests pass against a real Postgres container; manual
@@ -81,8 +81,8 @@ Verification: integration tests pass against a real Postgres container; manual
 ## Decisions (resolved)
 
 1. **Placement:** new `users` module + `UserService`, path `GET /api/v1/users/me`.
-2. **`establishments` field:** `null` for admin/professional; a list (`[]` when
-   none) for managers — lets the app distinguish "no section" from "empty section"
+2. **`establishments` field:** `null` for admin/analyst; a list (`[]` when
+   none) for field workers — lets the app distinguish "no section" from "empty section"
    per CA3.
 3. **Status format:** the existing `UserEstablishmentStatus` enum value
    (`approved`/`pending`/`rejected`) serialized as `str`, following the
@@ -92,17 +92,17 @@ Verification: integration tests pass against a real Postgres container; manual
 
 - **CA2 (edit profile):** the edit screen is client navigation; the edit endpoint
   is a separate story. Out of scope.
-- **CA3 "request access" action:** for an active manager with zero establishments,
+- **CA3 "request access" action:** for an active field worker with zero establishments,
   the backend only returns `[]`. The request-access submission flow is a separate
   story. Out of scope.
 - No changes to authentication, token issuance, or the DB schema.
-- No pagination on establishments (a manager's set is small and bounded).
+- No pagination on establishments (a field worker's set is small and bounded).
 
 ## Implementation Approach
 
 Mirror the admin users vertical slice but for a single self-resolved user. The
 service reads the user by the token's id, and — only when the role is
-`establishment_manager` — assembles `EstablishmentWithStatusDomain` items by
+`field_worker` — assembles `EstablishmentWithStatusDomain` items by
 joining the association rows (status) with establishment details. A new
 `ProfileDomain` carries `establishments: list[...] | None` so a single return type
 expresses both "no section" (`None`) and "empty section" (`[]`). The route maps
@@ -130,8 +130,8 @@ imported at `app/domain/user.py:5`.)
 ```python
 @dataclass
 class ProfileDomain(BaseUserDomain):
-    """Current user's profile. ``establishments`` is None for non-managers,
-    and a (possibly empty) list for establishment managers."""
+    """Current user's profile. ``establishments`` is None for non-field-workers,
+    and a (possibly empty) list for field workers."""
 
     establishments: list[EstablishmentWithStatusDomain] | None = None
 ```
@@ -177,7 +177,7 @@ class ProfileResponse(BaseModel):
 
 #### Manual Verification:
 
-- [x] `ProfileResponse.establishments` defaults to `None` (non-manager case) and accepts `[]`.
+- [x] `ProfileResponse.establishments` defaults to `None` (non-field-worker case) and accepts `[]`.
 
 ---
 
@@ -186,7 +186,7 @@ class ProfileResponse(BaseModel):
 ### Overview
 
 Business logic: resolve the user from the actor, and assemble status-annotated
-establishments for managers only. Write unit tests first (RED), then implement
+establishments for field workers only. Write unit tests first (RED), then implement
 (GREEN).
 
 ### Changes Required:
@@ -197,11 +197,11 @@ establishments for managers only. Write unit tests first (RED), then implement
 **Changes**: Use the AsyncMock `make_uow` factory pattern from
 `tests/unit/conftest.py:34-59`. Cover:
 
-- **Manager with mixed-status establishments** → returns `ProfileDomain` whose
+- **Field worker with mixed-status establishments** → returns `ProfileDomain` whose
   `establishments` is a list of `EstablishmentWithStatusDomain` with the correct
   `status` per relation, and correct name/address joined from establishment data.
-- **Manager with no relations** → `establishments == []`.
-- **Professional** → `establishments is None`; association repo **not** queried.
+- **Field worker with no relations** → `establishments == []`.
+- **Analyst** → `establishments is None`; association repo **not** queried.
 - **Admin** → `establishments is None`.
 - **User id from token not found** → raises `UserNotFoundError`.
 - **`actor.user_id` passed as a `str`** (as the real dependency produces) → service
@@ -233,7 +233,7 @@ class UserService:
     async def get_profile(self, actor: UserActor) -> ProfileDomain:
         """Return the authenticated user's profile.
 
-        Establishments are included only for establishment managers; for other
+        Establishments are included only for field workers; for other
         roles the field is None (no establishments section).
 
         Raises:
@@ -245,7 +245,7 @@ class UserService:
             raise UserNotFoundError(str(user_id))
 
         establishments = None
-        if user.role == UserRole.ESTABLISHMENT_MANAGER:
+        if user.role == UserRole.FIELD_WORKER:
             establishments = await self._get_establishments_with_status(user_id)
 
         return ProfileDomain(
@@ -259,7 +259,7 @@ class UserService:
         )
 
     async def _get_establishments_with_status(
-        self, user_id: UUID
+            self, user_id: UUID
     ) -> list[EstablishmentWithStatusDomain]:
         relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
         if not relations:
@@ -351,7 +351,7 @@ router = APIRouter(prefix="/users")
     response_model=ProfileResponse,
     status_code=status.HTTP_200_OK,
     summary="Get own profile",
-    description="Returns the authenticated user's profile. Establishment managers "
+    description="Returns the authenticated user's profile. Field workers "
     "also receive their associated establishments, each with its approval status.",
     responses={
         status.HTTP_401_UNAUTHORIZED: {
@@ -428,15 +428,15 @@ Docker), following `tests/integration/test_admin.py`.
 `AsyncSessionLocal` inserts of `Establishment` and `UserEstablishment`). Cover:
 
 - **401** with no token / malformed token.
-- **Professional** (active, seeded) → `200`, `establishments is None`, and
+- **Analyst** (active, seeded) → `200`, `establishments is None`, and
   `id/email/name/last_name/role` match the seeded user.
 - **Admin** → `200`, `establishments is None`.
-- **Manager with establishments** → seed `User` (manager) + two `Establishment`
+- **Field worker with establishments** → seed `User` (field worker) + two `Establishment`
   rows + two `UserEstablishment` rows with distinct statuses (e.g. `approved`,
   `pending`); assert the list contains both with the correct `status`, `name`,
   `address` (compare against `UserEstablishmentStatus.<X>` per the convention in
   `test_admin.py:309`).
-- **Manager with no establishments** → `200`, `establishments == []`.
+- **Field worker with no establishments** → `200`, `establishments == []`.
 - **Valid token whose user is absent from the DB** (token id never seeded) →
   `404`.
 
@@ -450,8 +450,8 @@ Docker), following `tests/integration/test_admin.py`.
 
 #### Manual Verification:
 
-- [x] `curl -H "Authorization: Bearer <manager_token>" localhost:8000/api/v1/users/me` returns establishments with statuses — covered by `test_manager_with_establishments_lists_status` (real Postgres).
-- [x] Same call with a professional token returns `"establishments": null` — covered by `test_professional_has_null_establishments`.
+- [x] `curl -H "Authorization: Bearer <field_worker_token>" localhost:8000/api/v1/users/me` returns establishments with statuses — covered by `test_field_worker_with_establishments_lists_status` (real Postgres).
+- [x] Same call with an analyst token returns `"establishments": null` — covered by `test_analyst_has_null_establishments`.
 
 ---
 
@@ -460,7 +460,7 @@ Docker), following `tests/integration/test_admin.py`.
 ### Unit (TDD, Phase 2)
 
 - Drive `UserService.get_profile` with the `make_uow` AsyncMock factory.
-- Assert role branching (manager vs non-manager), status mapping, the str→UUID
+- Assert role branching (field worker vs non-field-worker), status mapping, the str→UUID
   conversion of `actor.user_id`, and `UserNotFoundError`.
 
 ### Integration (Phase 4)
@@ -471,16 +471,16 @@ Docker), following `tests/integration/test_admin.py`.
 ### Manual
 
 1. Start the dev server: `poetry run uvicorn app.main:app --reload`.
-2. Obtain tokens for a manager, a professional, and an admin (`/api/v1/auth/login`).
+2. Obtain tokens for a field worker, an analyst, and an admin (`/api/v1/auth/login`).
 3. Hit `/api/v1/users/me` with each and confirm the three response shapes.
-4. Confirm a manager with zero establishments returns `[]` (CA3), and a deleted/
+4. Confirm a field worker with zero establishments returns `[]` (CA3), and a deleted/
    unknown user id returns `404`.
 
 ## Performance Considerations
 
 - At most three queries per request: load user, load relations, load
-  establishments by ids — and only the last two for managers. No N+1 (ids are
-  batched into `find_by_ids`). Establishment sets per manager are small.
+  establishments by ids — and only the last two for field workers. No N+1 (ids are
+  batched into `find_by_ids`). Establishment sets per field worker are small.
 
 ## Migration Notes
 

@@ -16,7 +16,8 @@ class UserEstablishmentRepository:
     async def preset_relation(
         self, user_id: UUID, establishment_id: UUID
     ) -> UserEstablishment:
-        """Stage a pending user-establishment relation for a manager registration."""
+        """Stage a pending user-establishment relation for a
+        field worker registration."""
         status = UserEstablishmentStatus.PENDING
         user_establishment = UserEstablishment(
             user_id=user_id, establishment_id=establishment_id, status=status

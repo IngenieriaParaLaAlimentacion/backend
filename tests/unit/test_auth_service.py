@@ -15,7 +15,7 @@ from app.schemas.auth_schema import (
     LoginRequest,
     LogoutRequest,
     RefreshRequest,
-    RegisterManagerRequest,
+    RegisterFieldWorkerRequest,
 )
 from app.services.auth_service import AuthService
 
@@ -149,8 +149,8 @@ def make_token():
 
 @pytest.fixture
 def valid_register_request():
-    return RegisterManagerRequest(
-        email="manager@example.com",
+    return RegisterFieldWorkerRequest(
+        email="field_worker@example.com",
         password="securepassword",
         name="Juan",
         last_name="Perez",
@@ -175,21 +175,21 @@ def valid_logout_request():
     )
 
 
-class TestRegisterManager:
+class TestRegisterFieldWorker:
     @pytest.mark.asyncio
-    async def test_creates_manager_with_correct_role_and_status(
+    async def test_creates_field_worker_with_correct_role_and_status(
         self, make_uow, make_establishment, valid_register_request
     ):
         establishment = make_establishment()
         uow = make_uow(establishments=[establishment])
 
-        await AuthService(uow).register_manager(valid_register_request)
+        await AuthService(uow).register_field_worker(valid_register_request)
 
         uow.user_repo.create.assert_called_once_with(
             email=valid_register_request.email,
             name=valid_register_request.name,
             last_name=valid_register_request.last_name,
-            role=UserRole.ESTABLISHMENT_MANAGER,
+            role=UserRole.FIELD_WORKER,
             status=UserStatus.PENDING_VALIDATION,
         )
 
@@ -200,7 +200,7 @@ class TestRegisterManager:
         establishment = make_establishment()
         uow = make_uow(establishments=[establishment])
 
-        user = await AuthService(uow).register_manager(valid_register_request)
+        user = await AuthService(uow).register_field_worker(valid_register_request)
 
         uow.password_repo.create.assert_called_once_with(user.id, "hashed")
 
@@ -216,7 +216,7 @@ class TestRegisterManager:
         valid_register_request.establishments = [e.id for e in establishments]
         uow = make_uow(establishments=establishments)
 
-        await AuthService(uow).register_manager(valid_register_request)
+        await AuthService(uow).register_field_worker(valid_register_request)
 
         assert uow.user_establishment_repo.preset_relation.call_count == 3
 
@@ -227,7 +227,7 @@ class TestRegisterManager:
         uow = make_uow(existing_user=make_user())
 
         with pytest.raises(UserAlreadyExistsError):
-            await AuthService(uow).register_manager(valid_register_request)
+            await AuthService(uow).register_field_worker(valid_register_request)
 
         uow.user_repo.create.assert_not_called()
         uow.commit.assert_not_called()
@@ -242,7 +242,7 @@ class TestRegisterManager:
         )
 
         with pytest.raises(EstablishmentNotFoundError):
-            await AuthService(uow).register_manager(valid_register_request)
+            await AuthService(uow).register_field_worker(valid_register_request)
 
         uow.user_repo.create.assert_not_called()
         uow.commit.assert_not_called()

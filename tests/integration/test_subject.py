@@ -16,7 +16,7 @@ SUBJECTS_URL = "/api/v1/subjects"
 
 
 @pytest_asyncio.fixture
-async def manager_user_id(app):
+async def field_worker_user_id(app):
     from app.db.database import AsyncSessionLocal
     from app.models.user import User, UserStatus
     from app.models.user import UserRole as ORMUserRole
@@ -27,9 +27,9 @@ async def manager_user_id(app):
             User(
                 id=user_id,
                 name="Test",
-                last_name="Manager",
+                last_name="Field Worker",
                 email=f"{user_id}@test.com",
-                role=ORMUserRole.ESTABLISHMENT_MANAGER,
+                role=ORMUserRole.FIELD_WORKER,
                 status=UserStatus.ACTIVE,
             )
         )
@@ -38,8 +38,8 @@ async def manager_user_id(app):
 
 
 @pytest_asyncio.fixture
-async def manager_headers(manager_user_id):
-    token = create_access_token(manager_user_id, role=UserRole.ESTABLISHMENT_MANAGER)
+async def field_worker_headers(field_worker_user_id):
+    token = create_access_token(field_worker_user_id, role=UserRole.FIELD_WORKER)
     return {"Authorization": f"Bearer {token}"}
 
 
@@ -84,7 +84,7 @@ class TestUploadSubject:
         forged = jwt.encode(
             {
                 "sub": str(uuid.uuid4()),
-                "role": "establishment_manager",
+                "role": "field_worker",
                 "type": "access",
             },
             "wrong_secret",
@@ -99,20 +99,22 @@ class TestUploadSubject:
         response = await _upload(client, headers={"Authorization": f"Bearer {token}"})
         assert response.status_code == status.HTTP_201_CREATED
 
-    async def test_professional_role_returns_201(self, client):
-        """A valid token with professional role should return 201."""
-        token = await make_token_for_role(UserRole.PROFESSIONAL)
+    async def test_analyst_role_returns_201(self, client):
+        """A valid token with analyst role should return 201."""
+        token = await make_token_for_role(UserRole.ANALYST)
         response = await _upload(client, headers={"Authorization": f"Bearer {token}"})
         assert response.status_code == status.HTTP_201_CREATED
 
-    async def test_valid_request_returns_201(self, client, manager_headers):
-        """A well-formed request with a manager token returns 201."""
-        response = await _upload(client, manager_headers)
+    async def test_valid_request_returns_201(self, client, field_worker_headers):
+        """A well-formed request with a field worker token returns 201."""
+        response = await _upload(client, field_worker_headers)
         assert response.status_code == status.HTTP_201_CREATED
 
-    async def test_valid_request_returns_subject_data(self, client, manager_headers):
+    async def test_valid_request_returns_subject_data(
+        self, client, field_worker_headers
+    ):
         """Response body includes all submitted fields and a generated id."""
-        response = await _upload(client, manager_headers)
+        response = await _upload(client, field_worker_headers)
         data = response.json()
         assert "id" in data
         assert data["dni"] == 12345678
@@ -123,74 +125,78 @@ class TestUploadSubject:
         assert data["is_rural"] is False
         assert data["is_indigenous"] is False
 
-    async def test_duplicate_dni_returns_409(self, client, manager_headers):
+    async def test_duplicate_dni_returns_409(self, client, field_worker_headers):
         """A second subject with the same DNI returns 409 with the canonical subject."""
-        first = (await _upload(client, manager_headers)).json()
-        response = await _upload(client, manager_headers)
+        first = (await _upload(client, field_worker_headers)).json()
+        response = await _upload(client, field_worker_headers)
         assert response.status_code == status.HTTP_409_CONFLICT
         canonical = response.json()["canonical_subject"]
         assert canonical["id"] == first["id"]
         assert canonical["dni"] == first["dni"]
 
-    async def test_client_supplied_id_is_used_as_pk(self, client, manager_headers):
+    async def test_client_supplied_id_is_used_as_pk(self, client, field_worker_headers):
         """A client-supplied id becomes the subject's primary key."""
         subject_id = uuid.uuid4()
-        response = await _upload_with_id(client, manager_headers, subject_id)
+        response = await _upload_with_id(client, field_worker_headers, subject_id)
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["id"] == str(subject_id)
 
-        got = await client.get(f"{SUBJECTS_URL}/{subject_id}", headers=manager_headers)
+        got = await client.get(
+            f"{SUBJECTS_URL}/{subject_id}", headers=field_worker_headers
+        )
         assert got.status_code == status.HTTP_200_OK
         assert got.json()["id"] == str(subject_id)
 
-    async def test_same_id_replay_returns_200(self, client, manager_headers):
+    async def test_same_id_replay_returns_200(self, client, field_worker_headers):
         """Re-POSTing the same id is an idempotent replay returning 200."""
         subject_id = uuid.uuid4()
-        first = await _upload_with_id(client, manager_headers, subject_id)
+        first = await _upload_with_id(client, field_worker_headers, subject_id)
         assert first.status_code == status.HTTP_201_CREATED
-        second = await _upload_with_id(client, manager_headers, subject_id)
+        second = await _upload_with_id(client, field_worker_headers, subject_id)
         assert second.status_code == status.HTTP_200_OK
         assert second.json() == first.json()
 
     async def test_dni_conflict_different_id_returns_409_with_canonical(
-        self, client, manager_headers
+        self, client, field_worker_headers
     ):
         """Same DNI under a different id returns 409 carrying the canonical subject."""
         id_a = uuid.uuid4()
         id_b = uuid.uuid4()
-        first = await _upload_with_id(client, manager_headers, id_a, dni=30111222)
+        first = await _upload_with_id(client, field_worker_headers, id_a, dni=30111222)
         assert first.status_code == status.HTTP_201_CREATED
-        response = await _upload_with_id(client, manager_headers, id_b, dni=30111222)
+        response = await _upload_with_id(
+            client, field_worker_headers, id_b, dni=30111222
+        )
         assert response.status_code == status.HTTP_409_CONFLICT
         canonical = response.json()["canonical_subject"]
         assert canonical["id"] == str(id_a)
         assert canonical["dni"] == 30111222
 
-    async def test_missing_id_still_returns_201(self, client, manager_headers):
+    async def test_missing_id_still_returns_201(self, client, field_worker_headers):
         """Omitting id preserves the backoffice create path."""
-        response = await _upload(client, manager_headers)
+        response = await _upload(client, field_worker_headers)
         assert response.status_code == status.HTTP_201_CREATED
         assert "id" in response.json()
 
-    async def test_future_birth_date_returns_422(self, client, manager_headers):
+    async def test_future_birth_date_returns_422(self, client, field_worker_headers):
         """A birthdate in the future is rejected with 422."""
         future = (datetime.now(timezone.utc).date() + timedelta(days=1)).isoformat()
-        response = await _upload(client, manager_headers, birth_date=future)
+        response = await _upload(client, field_worker_headers, birth_date=future)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
-    async def test_dni_zero_returns_422(self, client, manager_headers):
+    async def test_dni_zero_returns_422(self, client, field_worker_headers):
         """DNI 0 is below the minimum allowed value."""
-        response = await _upload(client, manager_headers, dni=0)
+        response = await _upload(client, field_worker_headers, dni=0)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
-    async def test_dni_above_max_returns_422(self, client, manager_headers):
+    async def test_dni_above_max_returns_422(self, client, field_worker_headers):
         """DNI above 99999999 exceeds the Argentine DNI range."""
-        response = await _upload(client, manager_headers, dni=100000000)
+        response = await _upload(client, field_worker_headers, dni=100000000)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
-    async def test_whitespace_name_returns_422(self, client, manager_headers):
+    async def test_whitespace_name_returns_422(self, client, field_worker_headers):
         """A name composed only of whitespace is rejected after stripping."""
-        response = await _upload(client, manager_headers, name="   ")
+        response = await _upload(client, field_worker_headers, name="   ")
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     @pytest.mark.parametrize(
@@ -198,29 +204,31 @@ class TestUploadSubject:
         ["dni", "sex", "name", "last_name", "birth_date", "is_rural", "is_indigenous"],
     )
     async def test_each_required_field_is_mandatory(
-        self, client, manager_headers, field
+        self, client, field_worker_headers, field
     ):
         """Omitting any single required field returns 422."""
         body = _body()
         del body[field]
-        response = await client.post(SUBJECTS_URL, json=body, headers=manager_headers)
+        response = await client.post(
+            SUBJECTS_URL, json=body, headers=field_worker_headers
+        )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 class TestGetSubject:
-    async def test_returns_200_with_subject_data(self, client, manager_headers):
+    async def test_returns_200_with_subject_data(self, client, field_worker_headers):
         """A subject that was just created can be retrieved by id."""
-        created = (await _upload(client, manager_headers)).json()
+        created = (await _upload(client, field_worker_headers)).json()
         response = await client.get(
-            f"{SUBJECTS_URL}/{created['id']}", headers=manager_headers
+            f"{SUBJECTS_URL}/{created['id']}", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == created
 
-    async def test_unknown_id_returns_404(self, client, manager_headers):
+    async def test_unknown_id_returns_404(self, client, field_worker_headers):
         """A random UUID that was never registered returns 404."""
         response = await client.get(
-            f"{SUBJECTS_URL}/{uuid.uuid4()}", headers=manager_headers
+            f"{SUBJECTS_URL}/{uuid.uuid4()}", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -236,19 +244,19 @@ class TestGetSubjectsPaginated:
         response = await client.get(SUBJECTS_URL)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_empty_list_returns_200(self, client, manager_headers):
+    async def test_empty_list_returns_200(self, client, field_worker_headers):
         """No subjects in the DB returns an empty list with zeroed metadata."""
-        response = await client.get(SUBJECTS_URL, headers=manager_headers)
+        response = await client.get(SUBJECTS_URL, headers=field_worker_headers)
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["items"] == []
         assert data["total"] == 0
         assert data["total_pages"] == 0
 
-    async def test_returns_subject_fields(self, client, manager_headers):
+    async def test_returns_subject_fields(self, client, field_worker_headers):
         """Response items include id, dni, name, last_name and sex."""
-        await _upload(client, manager_headers)
-        response = await client.get(SUBJECTS_URL, headers=manager_headers)
+        await _upload(client, field_worker_headers)
+        response = await client.get(SUBJECTS_URL, headers=field_worker_headers)
         assert response.status_code == status.HTTP_200_OK
         item = response.json()["items"][0]
         assert "id" in item
@@ -257,12 +265,12 @@ class TestGetSubjectsPaginated:
         assert item["last_name"] == "Perez"
         assert item["sex"] == "male"
 
-    async def test_pagination_metadata(self, client, manager_headers):
+    async def test_pagination_metadata(self, client, field_worker_headers):
         """With 5 subjects and page_size=2, total_pages should be 3."""
         for i in range(5):
-            await _upload(client, manager_headers, dni=10000000 + i)
+            await _upload(client, field_worker_headers, dni=10000000 + i)
         response = await client.get(
-            f"{SUBJECTS_URL}?page=1&page_size=2", headers=manager_headers
+            f"{SUBJECTS_URL}?page=1&page_size=2", headers=field_worker_headers
         )
         data = response.json()
         assert data["total"] == 5
@@ -270,121 +278,133 @@ class TestGetSubjectsPaginated:
         assert data["page_size"] == 2
         assert data["total_pages"] == 3
 
-    async def test_page_size_limits_results(self, client, manager_headers):
+    async def test_page_size_limits_results(self, client, field_worker_headers):
         """page_size controls how many items are returned."""
         for i in range(5):
-            await _upload(client, manager_headers, dni=10000000 + i)
+            await _upload(client, field_worker_headers, dni=10000000 + i)
         response = await client.get(
-            f"{SUBJECTS_URL}?page_size=3", headers=manager_headers
+            f"{SUBJECTS_URL}?page_size=3", headers=field_worker_headers
         )
         assert len(response.json()["items"]) == 3
 
-    async def test_second_page_returns_different_items(self, client, manager_headers):
+    async def test_second_page_returns_different_items(
+        self, client, field_worker_headers
+    ):
         """Two consecutive pages share no subjects."""
         for i in range(4):
-            await _upload(client, manager_headers, dni=10000000 + i)
+            await _upload(client, field_worker_headers, dni=10000000 + i)
         page1 = await client.get(
-            f"{SUBJECTS_URL}?page=1&page_size=2", headers=manager_headers
+            f"{SUBJECTS_URL}?page=1&page_size=2", headers=field_worker_headers
         )
         page2 = await client.get(
-            f"{SUBJECTS_URL}?page=2&page_size=2", headers=manager_headers
+            f"{SUBJECTS_URL}?page=2&page_size=2", headers=field_worker_headers
         )
         ids1 = {i["id"] for i in page1.json()["items"]}
         ids2 = {i["id"] for i in page2.json()["items"]}
         assert ids1.isdisjoint(ids2)
 
-    async def test_offset_past_last_record_returns_empty(self, client, manager_headers):
+    async def test_offset_past_last_record_returns_empty(
+        self, client, field_worker_headers
+    ):
         """Requesting a page whose offset exceeds the total returns an empty list."""
-        await _upload(client, manager_headers)
+        await _upload(client, field_worker_headers)
         response = await client.get(
-            f"{SUBJECTS_URL}?page=99&page_size=20", headers=manager_headers
+            f"{SUBJECTS_URL}?page=99&page_size=20", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["items"] == []
 
-    async def test_invalid_page_returns_422(self, client, manager_headers):
+    async def test_invalid_page_returns_422(self, client, field_worker_headers):
         """page=0 is invalid, minimum is 1."""
-        response = await client.get(f"{SUBJECTS_URL}?page=0", headers=manager_headers)
+        response = await client.get(
+            f"{SUBJECTS_URL}?page=0", headers=field_worker_headers
+        )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
-    async def test_invalid_page_size_zero_returns_422(self, client, manager_headers):
+    async def test_invalid_page_size_zero_returns_422(
+        self, client, field_worker_headers
+    ):
         """page_size=0 is invalid, minimum is 1."""
         response = await client.get(
-            f"{SUBJECTS_URL}?page_size=0", headers=manager_headers
+            f"{SUBJECTS_URL}?page_size=0", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     async def test_invalid_page_size_above_max_returns_422(
-        self, client, manager_headers
+        self, client, field_worker_headers
     ):
         """page_size=101 exceeds the maximum of 100."""
         response = await client.get(
-            f"{SUBJECTS_URL}?page_size=101", headers=manager_headers
+            f"{SUBJECTS_URL}?page_size=101", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
-    async def test_search_by_name_returns_matching(self, client, manager_headers):
+    async def test_search_by_name_returns_matching(self, client, field_worker_headers):
         """Only subjects whose name contains the search term are returned."""
-        await _upload(client, manager_headers, dni=11111111, name="Juan")
-        await _upload(client, manager_headers, dni=22222222, name="Maria")
+        await _upload(client, field_worker_headers, dni=11111111, name="Juan")
+        await _upload(client, field_worker_headers, dni=22222222, name="Maria")
         response = await client.get(
-            f"{SUBJECTS_URL}?search=Juan", headers=manager_headers
+            f"{SUBJECTS_URL}?search=Juan", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_200_OK
         items = response.json()["items"]
         assert len(items) == 1
         assert items[0]["name"] == "Juan"
 
-    async def test_search_by_last_name_returns_matching(self, client, manager_headers):
+    async def test_search_by_last_name_returns_matching(
+        self, client, field_worker_headers
+    ):
         """Only subjects whose last name contains the search term are returned."""
-        await _upload(client, manager_headers, dni=11111111, last_name="Perez")
-        await _upload(client, manager_headers, dni=22222222, last_name="Garcia")
+        await _upload(client, field_worker_headers, dni=11111111, last_name="Perez")
+        await _upload(client, field_worker_headers, dni=22222222, last_name="Garcia")
         response = await client.get(
-            f"{SUBJECTS_URL}?search=Garcia", headers=manager_headers
+            f"{SUBJECTS_URL}?search=Garcia", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_200_OK
         items = response.json()["items"]
         assert len(items) == 1
         assert items[0]["last_name"] == "Garcia"
 
-    async def test_search_by_dni_returns_matching(self, client, manager_headers):
+    async def test_search_by_dni_returns_matching(self, client, field_worker_headers):
         """A numeric search term matches against DNI exactly."""
-        await _upload(client, manager_headers, dni=11111111)
-        await _upload(client, manager_headers, dni=22222222)
+        await _upload(client, field_worker_headers, dni=11111111)
+        await _upload(client, field_worker_headers, dni=22222222)
         response = await client.get(
-            f"{SUBJECTS_URL}?search=11111111", headers=manager_headers
+            f"{SUBJECTS_URL}?search=11111111", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_200_OK
         items = response.json()["items"]
         assert len(items) == 1
         assert items[0]["dni"] == 11111111
 
-    async def test_search_is_case_insensitive(self, client, manager_headers):
+    async def test_search_is_case_insensitive(self, client, field_worker_headers):
         """Search is case-insensitive: 'juan' matches 'Juan'."""
-        await _upload(client, manager_headers, name="Juan")
+        await _upload(client, field_worker_headers, name="Juan")
         response = await client.get(
-            f"{SUBJECTS_URL}?search=juan", headers=manager_headers
+            f"{SUBJECTS_URL}?search=juan", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_200_OK
         assert len(response.json()["items"]) == 1
 
-    async def test_search_no_match_returns_empty(self, client, manager_headers):
+    async def test_search_no_match_returns_empty(self, client, field_worker_headers):
         """A search term that matches nothing returns an empty list."""
-        await _upload(client, manager_headers)
+        await _upload(client, field_worker_headers)
         response = await client.get(
-            f"{SUBJECTS_URL}?search=zzznomatch", headers=manager_headers
+            f"{SUBJECTS_URL}?search=zzznomatch", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["items"] == []
         assert data["total"] == 0
 
-    async def test_search_whitespace_only_returns_all(self, client, manager_headers):
+    async def test_search_whitespace_only_returns_all(
+        self, client, field_worker_headers
+    ):
         """A whitespace-only search is treated as no filter and returns all records."""
-        await _upload(client, manager_headers, dni=11111111)
-        await _upload(client, manager_headers, dni=22222222)
+        await _upload(client, field_worker_headers, dni=11111111)
+        await _upload(client, field_worker_headers, dni=22222222)
         response = await client.get(
-            f"{SUBJECTS_URL}?search=   ", headers=manager_headers
+            f"{SUBJECTS_URL}?search=   ", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["total"] == 2
@@ -392,7 +412,7 @@ class TestGetSubjectsPaginated:
 
 class TestSubjectEventLog:
     async def test_registration_creates_event(
-        self, client, manager_headers, manager_user_id
+        self, client, field_worker_headers, field_worker_user_id
     ):
         """Creating a subject persists a SUBJECT_CREATED event linked to the actor."""
         from sqlalchemy import select
@@ -401,7 +421,7 @@ class TestSubjectEventLog:
         from app.domain.subject_event import SubjectEventType
         from app.models.subject_event import SubjectEvent
 
-        response = await _upload(client, manager_headers)
+        response = await _upload(client, field_worker_headers)
         assert response.status_code == status.HTTP_201_CREATED
         subject_id = uuid.UUID(response.json()["id"])
 
@@ -413,18 +433,20 @@ class TestSubjectEventLog:
 
         assert len(events) == 1
         assert events[0].event_type == SubjectEventType.SUBJECT_CREATED
-        assert events[0].actor_id == manager_user_id
+        assert events[0].actor_id == field_worker_user_id
         assert events[0].payload is None
 
-    async def test_failed_registration_creates_no_event(self, client, manager_headers):
+    async def test_failed_registration_creates_no_event(
+        self, client, field_worker_headers
+    ):
         """A rejected registration (duplicate DNI) does not persist any event."""
         from sqlalchemy import select
 
         from app.db.database import AsyncSessionLocal
         from app.models.subject_event import SubjectEvent
 
-        await _upload(client, manager_headers)
-        response = await _upload(client, manager_headers)
+        await _upload(client, field_worker_headers)
+        response = await _upload(client, field_worker_headers)
         assert response.status_code == status.HTTP_409_CONFLICT
 
         async with AsyncSessionLocal() as session:
@@ -433,7 +455,7 @@ class TestSubjectEventLog:
 
         assert len(events) == 1
 
-    async def test_replay_creates_no_second_event(self, client, manager_headers):
+    async def test_replay_creates_no_second_event(self, client, field_worker_headers):
         """Replaying the same id does not append a second SUBJECT_CREATED event."""
         from sqlalchemy import select
 
@@ -441,8 +463,8 @@ class TestSubjectEventLog:
         from app.models.subject_event import SubjectEvent
 
         subject_id = uuid.uuid4()
-        await _upload_with_id(client, manager_headers, subject_id)
-        replay = await _upload_with_id(client, manager_headers, subject_id)
+        await _upload_with_id(client, field_worker_headers, subject_id)
+        replay = await _upload_with_id(client, field_worker_headers, subject_id)
         assert replay.status_code == status.HTTP_200_OK
 
         async with AsyncSessionLocal() as session:
@@ -455,29 +477,29 @@ class TestSubjectEventLog:
 
 
 class TestUpdateSubject:
-    async def test_returns_200_with_updated_data(self, client, manager_headers):
+    async def test_returns_200_with_updated_data(self, client, field_worker_headers):
         """A valid PATCH returns 200 with the updated field reflected."""
-        created = (await _upload(client, manager_headers)).json()
+        created = (await _upload(client, field_worker_headers)).json()
         response = await client.patch(
             f"{SUBJECTS_URL}/{created['id']}",
             json={"name": "Carlos"},
-            headers=manager_headers,
+            headers=field_worker_headers,
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["name"] == "Carlos"
 
     async def test_partial_update_does_not_affect_other_fields(
-        self, client, manager_headers
+        self, client, field_worker_headers
     ):
         """Fields not included in the request must remain unchanged."""
-        created = (await _upload(client, manager_headers)).json()
+        created = (await _upload(client, field_worker_headers)).json()
         await client.patch(
             f"{SUBJECTS_URL}/{created['id']}",
             json={"name": "Carlos"},
-            headers=manager_headers,
+            headers=field_worker_headers,
         )
         response = await client.get(
-            f"{SUBJECTS_URL}/{created['id']}", headers=manager_headers
+            f"{SUBJECTS_URL}/{created['id']}", headers=field_worker_headers
         )
         data = response.json()
         assert data["last_name"] == created["last_name"]
@@ -486,44 +508,44 @@ class TestUpdateSubject:
         assert data["is_rural"] == created["is_rural"]
         assert data["is_indigenous"] == created["is_indigenous"]
 
-    async def test_unknown_id_returns_404(self, client, manager_headers):
+    async def test_unknown_id_returns_404(self, client, field_worker_headers):
         """Patching a subject that does not exist returns 404."""
         response = await client.patch(
             f"{SUBJECTS_URL}/{uuid.uuid4()}",
             json={"name": "Carlos"},
-            headers=manager_headers,
+            headers=field_worker_headers,
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    async def test_duplicate_dni_returns_409(self, client, manager_headers):
+    async def test_duplicate_dni_returns_409(self, client, field_worker_headers):
         """Setting a DNI that already belongs to another subject returns 409."""
-        await _upload(client, manager_headers, dni=11111111)
-        second = (await _upload(client, manager_headers, dni=22222222)).json()
+        await _upload(client, field_worker_headers, dni=11111111)
+        second = (await _upload(client, field_worker_headers, dni=22222222)).json()
         response = await client.patch(
             f"{SUBJECTS_URL}/{second['id']}",
             json={"dni": 11111111},
-            headers=manager_headers,
+            headers=field_worker_headers,
         )
         assert response.status_code == status.HTTP_409_CONFLICT
 
-    async def test_empty_body_returns_400(self, client, manager_headers):
+    async def test_empty_body_returns_400(self, client, field_worker_headers):
         """An empty body with no fields to update returns 400."""
-        created = (await _upload(client, manager_headers)).json()
+        created = (await _upload(client, field_worker_headers)).json()
         response = await client.patch(
             f"{SUBJECTS_URL}/{created['id']}",
             json={},
-            headers=manager_headers,
+            headers=field_worker_headers,
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    async def test_update_birth_date_returns_200(self, client, manager_headers):
+    async def test_update_birth_date_returns_200(self, client, field_worker_headers):
         """Updating birth_date succeeds and the event payload is persisted correctly."""
-        created = (await _upload(client, manager_headers)).json()
+        created = (await _upload(client, field_worker_headers)).json()
         new_date = "2011-06-15"
         response = await client.patch(
             f"{SUBJECTS_URL}/{created['id']}",
             json={"birth_date": new_date},
-            headers=manager_headers,
+            headers=field_worker_headers,
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["birth_date"] == new_date

@@ -28,7 +28,7 @@ def make_user():
     def _make():
         u = MagicMock()
         u.id = uuid.uuid4()
-        u.role = UserRole.ESTABLISHMENT_MANAGER
+        u.role = UserRole.FIELD_WORKER
         u.status = UserStatus.PENDING_VALIDATION
         return u
 

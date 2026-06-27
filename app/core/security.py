@@ -16,9 +16,9 @@ def _get_secret(role: str) -> str:
     return {
         "superadmin": settings.jwt_secret_admin,
         "admin": settings.jwt_secret_admin,
-        "professional": settings.jwt_secret_professional,
-        "establishment_manager": settings.jwt_secret_manager,
-    }.get(role, settings.jwt_secret_manager)
+        "analyst": settings.jwt_secret_analyst,
+        "field_worker": settings.jwt_secret_field_worker,
+    }.get(role, settings.jwt_secret_field_worker)
 
 
 def hash_password(password: str) -> str:
@@ -35,7 +35,7 @@ def verify_password(password: str, hashed: str) -> bool:
         return False
 
 
-def create_access_token(user_id, role: str = UserRole.ESTABLISHMENT_MANAGER):
+def create_access_token(user_id, role: str = UserRole.FIELD_WORKER):
     """Create a signed access JWT for a user identifier."""
     secret = _get_secret(role)
     now = datetime.now(timezone.utc)
@@ -72,7 +72,7 @@ def create_password_recovery_token() -> tuple[str, str]:
     return recovery_token, recovery_token_hash
 
 
-def decode_token(token: str, expected_role: str = UserRole.ESTABLISHMENT_MANAGER):
+def decode_token(token: str, expected_role: str = UserRole.FIELD_WORKER):
     """Decode and validate a JWT, returning None on failure."""
     secret = _get_secret(expected_role)
     try:

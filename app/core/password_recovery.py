@@ -146,7 +146,7 @@ async def send_invite_email(
 
     role_label = {
         "admin": "administrador",
-        "professional": "profesional",
+        "analyst": "analista",
     }.get(role, "usuario")
 
     html_content = _render_base_template(

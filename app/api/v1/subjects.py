@@ -21,7 +21,7 @@ router = APIRouter(prefix="/subjects")
     response_model=SubjectResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Register a new subject",
-    description="Creates a new subject. Accessible by establishment managers only.",
+    description="Creates a new subject. Accessible by field workers only.",
     responses={
         status.HTTP_200_OK: {
             "description": "Subject already existed; idempotent replay of the same id."
@@ -112,8 +112,7 @@ async def list_subjects(
     response_model=SubjectResponse,
     status_code=status.HTTP_200_OK,
     summary="Update a subject",
-    description="Partially updates a subject's data. "
-    "Accessible by establishment managers only.",
+    description="Partially updates a subject's data. Accessible by field workers only.",
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "No fields provided"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},

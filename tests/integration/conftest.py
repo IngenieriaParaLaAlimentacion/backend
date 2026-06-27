@@ -59,20 +59,20 @@ def admin_headers():
 
 
 @pytest.fixture
-def manager_headers():
+def field_worker_headers():
     from app.core.security import create_access_token
     from app.domain.user import UserRole
 
-    token = create_access_token(uuid.uuid4(), role=UserRole.ESTABLISHMENT_MANAGER)
+    token = create_access_token(uuid.uuid4(), role=UserRole.FIELD_WORKER)
     return {"Authorization": f"Bearer {token}"}
 
 
 @pytest.fixture
-def professional_headers():
+def analyst_headers():
     from app.core.security import create_access_token
     from app.domain.user import UserRole
 
-    token = create_access_token(uuid.uuid4(), role=UserRole.PROFESSIONAL)
+    token = create_access_token(uuid.uuid4(), role=UserRole.ANALYST)
     return {"Authorization": f"Bearer {token}"}
 
 
@@ -192,7 +192,7 @@ async def db_active_user(db_establishment):
 
 @pytest_asyncio.fixture()
 async def db_pending_user():
-    """Insert a PENDING_VALIDATION establishment manager with a known password."""
+    """Insert a PENDING_VALIDATION field worker with a known password."""
     from app.core.security import hash_password
     from app.db.database import AsyncSessionLocal
     from app.domain.user import UserRole, UserStatus
@@ -204,7 +204,7 @@ async def db_pending_user():
             name="Pedro",
             last_name="Pending",
             email="pending@test.com",
-            role=UserRole.ESTABLISHMENT_MANAGER,
+            role=UserRole.FIELD_WORKER,
             status=UserStatus.PENDING_VALIDATION,
         )
         session.add(user)

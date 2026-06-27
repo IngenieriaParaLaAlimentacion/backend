@@ -21,7 +21,7 @@ from app.services.establishment_service import EstablishmentService
 
 router = APIRouter(prefix="/establishments")
 
-_MANAGER_ROLES = {UserRole.ESTABLISHMENT_MANAGER, UserRole.SUPERADMIN}
+_FIELD_WORKER_ROLES = {UserRole.FIELD_WORKER, UserRole.SUPERADMIN}
 
 
 @router.post(
@@ -79,15 +79,15 @@ async def update_establishment(
     summary="List all establishments",
     description="Public catalog of establishments. Supports optional search "
     "filtering by establishment name or address. When 'available' is set, requires "
-    "a manager token and returns only establishments that manager can still request "
-    "(excludes approved/pending relations).",
+    "a field worker token and returns only establishments that field worker "
+    "can still request (excludes approved/pending relations).",
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid query parameters"},
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Missing or invalid token (only when 'available' is set)"
         },
         status.HTTP_403_FORBIDDEN: {
-            "description": "Caller is not a manager (only when 'available' is set)"
+            "description": "Caller is not a field worker (only when 'available' is set)"
         },
     },
 )
@@ -103,7 +103,8 @@ async def get_establishments(
     available: bool = Query(
         default=False,
         description="If true, return only establishments the authenticated "
-        "manager can still request (excludes approved/pending). Manager only.",
+        "field worker can still request (excludes approved/pending). "
+        "Field worker only.",
     ),
     actor: UserActor | None = Depends(get_optional_actor),
     service: EstablishmentService = Depends(get_establishment_service),
@@ -112,7 +113,7 @@ async def get_establishments(
     if available:
         if actor is None:
             raise UnauthorizedError()
-        if actor.role not in _MANAGER_ROLES:
+        if actor.role not in _FIELD_WORKER_ROLES:
             raise ForbiddenError()
         result = await service.get_available_establishments(
             user_id=actor.user_id,

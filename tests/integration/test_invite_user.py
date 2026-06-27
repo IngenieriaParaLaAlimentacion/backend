@@ -47,9 +47,9 @@ class TestInviteAdminAuth:
         response = await client.post(INVITE_ADMIN_URL, json=_invite_body())
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_manager_is_forbidden(self, client):
-        """Should return 403 when a manager token is provided."""
-        token = create_access_token(uuid.uuid4(), role=UserRole.ESTABLISHMENT_MANAGER)
+    async def test_field_worker_is_forbidden(self, client):
+        """Should return 403 when a field worker token is provided."""
+        token = create_access_token(uuid.uuid4(), role=UserRole.FIELD_WORKER)
         response = await client.post(
             INVITE_ADMIN_URL,
             json=_invite_body(),
@@ -57,9 +57,9 @@ class TestInviteAdminAuth:
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    async def test_professional_is_forbidden(self, client):
-        """Should return 403 when a professional token is provided."""
-        token = create_access_token(uuid.uuid4(), role=UserRole.PROFESSIONAL)
+    async def test_analyst_is_forbidden(self, client):
+        """Should return 403 when an analyst token is provided."""
+        token = create_access_token(uuid.uuid4(), role=UserRole.ANALYST)
         response = await client.post(
             INVITE_ADMIN_URL,
             json=_invite_body(),
@@ -156,7 +156,7 @@ class TestInviteAdminValidation:
     async def test_missing_email_returns_422(self, client, admin_headers):
         """Should return 422 if email field is missing."""
         response = await client.post(INVITE_ADMIN_URL, json={}, headers=admin_headers)
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     async def test_invalid_email_format_returns_422(self, client, admin_headers):
         """Should return 422 if email is not a valid format."""
@@ -165,7 +165,7 @@ class TestInviteAdminValidation:
             json={"email": "not-an-email"},
             headers=admin_headers,
         )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 class TestResendInviteAuth:
@@ -174,18 +174,18 @@ class TestResendInviteAuth:
         response = await client.patch(RESEND_INVITE_URL.format(user_id=uuid.uuid4()))
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_manager_is_forbidden(self, client):
-        """Should return 403 when a manager token is provided."""
-        token = create_access_token(uuid.uuid4(), role=UserRole.ESTABLISHMENT_MANAGER)
+    async def test_field_worker_is_forbidden(self, client):
+        """Should return 403 when a field worker token is provided."""
+        token = create_access_token(uuid.uuid4(), role=UserRole.FIELD_WORKER)
         response = await client.patch(
             RESEND_INVITE_URL.format(user_id=uuid.uuid4()),
             headers={"Authorization": f"Bearer {token}"},
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    async def test_professional_is_forbidden(self, client):
-        """Should return 403 when a professional token is provided."""
-        token = create_access_token(uuid.uuid4(), role=UserRole.PROFESSIONAL)
+    async def test_analyst_is_forbidden(self, client):
+        """Should return 403 when an analyst token is provided."""
+        token = create_access_token(uuid.uuid4(), role=UserRole.ANALYST)
         response = await client.patch(
             RESEND_INVITE_URL.format(user_id=uuid.uuid4()),
             headers={"Authorization": f"Bearer {token}"},

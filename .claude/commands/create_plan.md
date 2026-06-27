@@ -345,7 +345,7 @@ After structure approval:
 #### Manual Verification:
 
 - [ ] New endpoint returns the expected payload via /docs
-- [ ] establishment_manager is denied access to other establishments' data
+- [ ] field_woker is denied access to other establishments' data
 - [ ] Error messages are user-friendly and use the standard response shape
 - [ ] No regressions in related endpoints
 ```

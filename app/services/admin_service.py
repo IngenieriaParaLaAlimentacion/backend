@@ -71,8 +71,8 @@ class AdminService:
             ]
         return estab_data_by_user
 
-    async def _get_manager_relations(self, user_id: UUID) -> tuple[Any, list]:
-        """Return (user, relations) for a manager, raising if the user does
+    async def _get_field_worker_relations(self, user_id: UUID) -> tuple[Any, list]:
+        """Return (user, relations) for a field worker, raising if the user does
         not exist."""
         user = await self.uow.user_repo.get_by_id(user_id)
         if user is None:
@@ -83,8 +83,8 @@ class AdminService:
     async def _validate_access_request(
         self, user_id: UUID, establishment_ids: list[UUID]
     ) -> None:
-        """Validate that all establishment IDs belong to the manager."""
-        _, relations = await self._get_manager_relations(user_id)
+        """Validate that all establishment IDs belong to the field worker."""
+        _, relations = await self._get_field_worker_relations(user_id)
         user_establishment_ids = {rel.establishment_id for rel in relations}
 
         invalid_ids = set(establishment_ids) - user_establishment_ids
@@ -108,7 +108,7 @@ class AdminService:
     async def approve_establishments(
         self, user_id: UUID, establishment_ids: list[UUID]
     ) -> None:
-        """Approve access to the given establishments and activate the manager."""
+        """Approve access to the given establishments and activate the field worker."""
         await self._set_user_establishment_relation_status(
             user_id, establishment_ids, UserEstablishmentStatus.APPROVED
         )
@@ -124,19 +124,19 @@ class AdminService:
         )
         await self.uow.commit()
 
-    async def reject_manager(self, user_id: UUID) -> None:
-        """Reject all establishment access for the given manager and
+    async def reject_field_worker(self, user_id: UUID) -> None:
+        """Reject all establishment access for the given field worker and
         mark them inactive.
 
         Raises:
             UserNotFoundError: If the user does not exist.
-            BadRequestError: If the manager is not in pending status.
+            BadRequestError: If the field worker is not in pending status.
         """
-        user, relations = await self._get_manager_relations(user_id)
+        user, relations = await self._get_field_worker_relations(user_id)
         if user.status != UserStatus.PENDING_VALIDATION:
             raise BadRequestError(
-                "Manager is not pending",
-                "Only managers with pending status can be rejected through "
+                "Field worker is not pending",
+                "Only field workers with pending status can be rejected through "
                 "this endpoint.",
             )
         establishment_ids = [rel.establishment_id for rel in relations]

@@ -41,6 +41,6 @@ class ProfileUpdateRequest(BaseModel):
 
 
 class EstablishmentAccessRequest(BaseModel):
-    """Establishment ids a manager wants to request access to."""
+    """Establishment ids a field worker wants to request access to."""
 
     establishment_ids: Annotated[list[UUID], Field(min_length=1)]

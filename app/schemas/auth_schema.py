@@ -4,7 +4,7 @@ from uuid import UUID
 from pydantic import BaseModel, EmailStr, Field, StringConstraints, field_validator
 
 
-class RegisterManagerRequest(BaseModel):
+class RegisterFieldWorkerRequest(BaseModel):
     email: EmailStr
     password: str
     name: Annotated[str, StringConstraints(strict=True, min_length=1)]

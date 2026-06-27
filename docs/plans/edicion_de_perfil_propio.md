@@ -3,7 +3,7 @@
 ## Overview
 
 Let an authenticated user edit their personal data (`name`, `last_name`) and let
-an `establishment_manager` discover and request access to additional
+an `field_worker` discover and request access to additional
 establishments. This is the write-side companion to the already-merged
 "Visualización de perfil propio" read endpoint (`GET /api/v1/users/me`).
 
@@ -16,12 +16,12 @@ and table involved already exists (`users.name`, `users.last_name`,
 
 ## Endpoint surface (decided)
 
-| AC | Method & path | Auth | Behavior |
-|---|---|---|---|
-| CA1–CA3, CA7 | `PATCH /api/v1/users/me` | any role (`require_any`) | Partial edit of `name`/`last_name`. Returns the updated profile (same shape as `GET /me`). |
-| *(extra, requested)* | `GET /api/v1/users/me/establishments` | manager (`get_current_manager`) | The caller's own establishment relations, each annotated with status. |
-| CA5, CA6, CA7 | `POST /api/v1/users/me/establishments` | manager (`get_current_manager`) | Request access to one or more establishments (idempotent upsert to `pending`). |
-| CA4, CA7 | `GET /api/v1/establishments?available=true` | manager (optional-auth + role gate) | Catalog **minus** the caller's `approved`/`pending` relations (`rejected` reappears). |
+| AC | Method & path | Auth                                      | Behavior |
+|---|---|-------------------------------------------|---|
+| CA1–CA3, CA7 | `PATCH /api/v1/users/me` | any role (`require_any`)                  | Partial edit of `name`/`last_name`. Returns the updated profile (same shape as `GET /me`). |
+| *(extra, requested)* | `GET /api/v1/users/me/establishments` | field worker (`get_current_field_worker`) | The caller's own establishment relations, each annotated with status. |
+| CA5, CA6, CA7 | `POST /api/v1/users/me/establishments` | field worker (`get_current_field_worker`)      | Request access to one or more establishments (idempotent upsert to `pending`). |
+| CA4, CA7 | `GET /api/v1/establishments?available=true` | field worker (optional-auth + role gate)       | Catalog **minus** the caller's `approved`/`pending` relations (`rejected` reappears). |
 
 ## Current State Analysis
 
@@ -32,7 +32,7 @@ and table involved already exists (`users.name`, `users.last_name`,
   `_get_establishments_with_status` (`user_service.py:43`). `ProfileResponse` /
   `EstablishmentWithStatusResponse` already exist (`app/schemas/user_schema.py`).
 - **Writes go through a `UnitOfWork` and an explicit `commit()`.** See
-  `AuthService.register_manager` (`app/services/auth_service.py:54-66`) and
+  `AuthService.register_field_worker` (`app/services/auth_service.py:54-66`) and
   `AdminService.approve_establishments` (`app/services/admin_service.py:155-163`).
   The service providers wrap each call in `async with UnitOfWork()`
   (`app/core/dependencies.py:46-49`).
@@ -62,8 +62,8 @@ and table involved already exists (`users.name`, `users.last_name`,
   default **422**. `EmptyUpdateRequestError(BadRequestError)` already exists
   (`app/exceptions/domain_exceptions.py:156-163`).
 - **Role gating is done per-route via dependencies** (`get_current_admin`,
-  `get_current_manager`, `require_any` — `app/core/dependencies.py:89-130`).
-  `get_current_manager` accepts `{ESTABLISHMENT_MANAGER, SUPERADMIN}`.
+  `get_current_field_worker`, `require_any` — `app/core/dependencies.py:89-130`).
+  `get_current_field_worker` accepts `{FIELD_WORKER, SUPERADMIN}`.
 - **Tokens carry a string `sub`.** `UserActor(user_id=payload["sub"], ...)`
   (`dependencies.py:86`) does no coercion, so `actor.user_id` is a `str`. Services
   must `UUID(str(actor.user_id))` before querying (the read service already does —
@@ -88,9 +88,9 @@ and table involved already exists (`users.name`, `users.last_name`,
   establishment's resulting status. This satisfies CA6's "no duplicates / rejected
   may re-request" while being a clean idempotent upsert.
 - **`?available=true` needs caller-scoped auth on a currently-public endpoint.**
-  Availability is relative to the authenticated manager, so the catalog endpoint
+  Availability is relative to the authenticated field worker, so the catalog endpoint
   gains an **optional** bearer dependency: absent token → behaves as the public
-  catalog; `available=true` requires a valid manager token (else 401/403). This is
+  catalog; `available=true` requires a valid field worker token (else 401/403). This is
   the one place a role check is conditional on a query param rather than a static
   dependency — documented as a deliberate, localized exception.
 
@@ -100,15 +100,15 @@ and table involved already exists (`users.name`, `users.last_name`,
   `name`/`last_name`) returns `200` and the full updated profile; `{}` → `400`;
   `{"name": ""}` → `422`; `{"email": "x@y.z"}` (or `role`/`status`/any other key)
   → `422`; no/invalid token → `401`.
-- `GET /api/v1/users/me/establishments` (manager) returns the caller's relations
-  with status; non-manager → `403`; no token → `401`.
-- `POST /api/v1/users/me/establishments` (manager) with
+- `GET /api/v1/users/me/establishments` (field worker) returns the caller's relations
+  with status; non-field-worker → `403`; no token → `401`.
+- `POST /api/v1/users/me/establishments` (field worker) with
   `{"establishment_ids": [...]}` creates/updates relations to `pending`
   idempotently and returns the resulting status per establishment; unknown id →
-  `404`; non-manager → `403`; no token → `401`.
-- `GET /api/v1/establishments?available=true` (manager) returns the catalog minus
+  `404`; non-field-worker → `403`; no token → `401`.
+- `GET /api/v1/establishments?available=true` (field worker) returns the catalog minus
   the caller's `approved`/`pending` (rejected included); no token → `401`;
-  non-manager → `403`. `GET /api/v1/establishments` (no flag) is unchanged and
+  non-field-worker → `403`. `GET /api/v1/establishments` (no flag) is unchanged and
   still public.
 
 Verified by unit tests (services) + integration tests (real Postgres via
@@ -174,7 +174,7 @@ class ProfileUpdateRequest(BaseModel):
 
 
 class EstablishmentAccessRequest(BaseModel):
-    """Establishment ids a manager wants to request access to."""
+    """Establishment ids a field worker wants to request access to."""
 
     establishment_ids: Annotated[list[UUID], Field(min_length=1)]
 ```
@@ -226,7 +226,7 @@ async def update_profile(self, user_id: UUID, values: dict[str, str]) -> None:
     )
 ```
 
-#### 2. Establishments available to a manager
+#### 2. Establishments available to a field worker
 
 **File**: `app/repositories/establishment_repository.py`
 **Changes**: Add a paginated query excluding establishments where the user already
@@ -316,12 +316,12 @@ and `uow.commit` (AsyncMocks).
   - Empty values dict (`{}`) → raises `EmptyUpdateRequestError`; `update_profile`
     repo + `commit` **not** called.
   - User id from token not found → raises `UserNotFoundError`.
-  - Manager → returned `ProfileDomain.establishments` is the status-annotated list;
-    non-manager → `None`.
+  - Field worker → returned `ProfileDomain.establishments` is the status-annotated list;
+    non-field-worker → `None`.
   - `actor.user_id` passed as `str` → coerced to `UUID` (assert `get_by_id` called
     with a `UUID`).
 - **`get_own_establishments`**
-  - Manager with mixed-status relations → list of `EstablishmentWithStatusDomain`
+  - Field worker with mixed-status relations → list of `EstablishmentWithStatusDomain`
     with correct status/name/address.
   - No relations → `[]`.
 - **`request_establishment_access`**
@@ -351,6 +351,7 @@ from app.exceptions.domain_exceptions import (
 )
 from app.schemas.user_schema import ProfileUpdateRequest
 
+
 # get_profile becomes:
 async def get_profile(self, actor: UserActor) -> ProfileDomain:
     user_id = UUID(str(actor.user_id))
@@ -359,11 +360,12 @@ async def get_profile(self, actor: UserActor) -> ProfileDomain:
         raise UserNotFoundError(str(user_id))
     return await self._build_profile(user)
 
+
 async def _build_profile(self, user) -> ProfileDomain:
     """Assemble a ProfileDomain from a loaded user (establishments only for
-    managers). Read user scalars before any post-commit access."""
+    field workers). Read user scalars before any post-commit access."""
     establishments = None
-    if user.role == UserRole.ESTABLISHMENT_MANAGER:
+    if user.role == UserRole.FIELD_WORKER:
         establishments = await self._get_establishments_with_status(user.id)
     return ProfileDomain(
         id=user.id,
@@ -375,8 +377,9 @@ async def _build_profile(self, user) -> ProfileDomain:
         establishments=establishments,
     )
 
+
 async def update_profile(
-    self, actor: UserActor, data: ProfileUpdateRequest
+        self, actor: UserActor, data: ProfileUpdateRequest
 ) -> ProfileDomain:
     """Update the caller's editable profile fields and return the new profile.
 
@@ -402,7 +405,7 @@ async def update_profile(
     await self.uow.commit()
 
     establishments = None
-    if role == UserRole.ESTABLISHMENT_MANAGER:
+    if role == UserRole.FIELD_WORKER:
         establishments = await self._get_establishments_with_status(user_id)
 
     return ProfileDomain(
@@ -415,15 +418,17 @@ async def update_profile(
         establishments=establishments,
     )
 
+
 async def get_own_establishments(
-    self, actor: UserActor
+        self, actor: UserActor
 ) -> list[EstablishmentWithStatusDomain]:
     """Return the caller's establishment relations, each with its status."""
     user_id = UUID(str(actor.user_id))
     return await self._get_establishments_with_status(user_id)
 
+
 async def request_establishment_access(
-    self, actor: UserActor, establishment_ids: list[UUID]
+        self, actor: UserActor, establishment_ids: list[UUID]
 ) -> list[EstablishmentWithStatusDomain]:
     """Request (or re-request) access to establishments. Idempotent per item:
     approved/pending stay as-is, rejected/new become pending.
@@ -446,8 +451,8 @@ async def request_establishment_access(
     for estab_id in unique_ids:
         current = status_by_estab.get(estab_id)
         if current in (
-            UserEstablishmentStatus.APPROVED,
-            UserEstablishmentStatus.PENDING,
+                UserEstablishmentStatus.APPROVED,
+                UserEstablishmentStatus.PENDING,
         ):
             result_status[estab_id] = current
         elif current == UserEstablishmentStatus.REJECTED:
@@ -584,94 +589,95 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
 
-from app.core.dependencies import get_current_manager, get_user_service, require_any
+from app.core.dependencies import get_current_field_worker, get_user_service, require_any
 from app.domain.user import UserActor
 from app.schemas.user_schema import (
-    EstablishmentAccessRequest,
-    EstablishmentWithStatusResponse,
-    ProfileResponse,
-    ProfileUpdateRequest,
+  EstablishmentAccessRequest,
+  EstablishmentWithStatusResponse,
+  ProfileResponse,
+  ProfileUpdateRequest,
 )
 from app.services.user_service import UserService
+
 
 # GET /me unchanged …
 
 @router.patch(
-    "/me",
-    response_model=ProfileResponse,
-    status_code=status.HTTP_200_OK,
-    summary="Edit own profile",
-    description="Updates the authenticated user's editable fields (name, "
-    "last_name). Other fields (email, role, status) are rejected.",
-    responses={
-        status.HTTP_400_BAD_REQUEST: {"description": "No editable field provided"},
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_404_NOT_FOUND: {"description": "Authenticated user no longer exists"},
-        status.HTTP_422_UNPROCESSABLE_CONTENT: {
-            "description": "Invalid value or attempt to edit a non-editable field"
-        },
+  "/me",
+  response_model=ProfileResponse,
+  status_code=status.HTTP_200_OK,
+  summary="Edit own profile",
+  description="Updates the authenticated user's editable fields (name, "
+              "last_name). Other fields (email, role, status) are rejected.",
+  responses={
+    status.HTTP_400_BAD_REQUEST: {"description": "No editable field provided"},
+    status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
+    status.HTTP_404_NOT_FOUND: {"description": "Authenticated user no longer exists"},
+    status.HTTP_422_UNPROCESSABLE_CONTENT: {
+      "description": "Invalid value or attempt to edit a non-editable field"
     },
+  },
 )
 async def update_my_profile(
-    data: ProfileUpdateRequest,
-    actor: UserActor = Depends(require_any),
-    service: UserService = Depends(get_user_service),
+        data: ProfileUpdateRequest,
+        actor: UserActor = Depends(require_any),
+        service: UserService = Depends(get_user_service),
 ) -> ProfileResponse:
-    profile = await service.update_profile(actor, data)
-    return ProfileResponse.model_validate(profile)
+  profile = await service.update_profile(actor, data)
+  return ProfileResponse.model_validate(profile)
 
 
 @router.get(
-    "/me/establishments",
-    response_model=list[EstablishmentWithStatusResponse],
-    status_code=status.HTTP_200_OK,
-    summary="List own establishment relations",
-    description="Returns the manager's establishments, each with its approval "
-    "status. Manager only.",
-    responses={
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Caller is not a manager"},
-    },
+  "/me/establishments",
+  response_model=list[EstablishmentWithStatusResponse],
+  status_code=status.HTTP_200_OK,
+  summary="List own establishment relations",
+  description="Returns the field worker's establishments, each with its approval "
+              "status. Field worker only.",
+  responses={
+    status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
+    status.HTTP_403_FORBIDDEN: {"description": "Caller is not a field worker"},
+  },
 )
 async def list_my_establishments(
-    actor: UserActor = Depends(get_current_manager),
-    service: UserService = Depends(get_user_service),
+        actor: UserActor = Depends(get_current_field_worker),
+        service: UserService = Depends(get_user_service),
 ) -> list[EstablishmentWithStatusResponse]:
-    relations = await service.get_own_establishments(actor)
-    return [EstablishmentWithStatusResponse.model_validate(r) for r in relations]
+  relations = await service.get_own_establishments(actor)
+  return [EstablishmentWithStatusResponse.model_validate(r) for r in relations]
 
 
 @router.post(
-    "/me/establishments",
-    response_model=list[EstablishmentWithStatusResponse],
-    status_code=status.HTTP_201_CREATED,
-    summary="Request establishment access",
-    description="Requests access to one or more establishments. Idempotent: "
-    "already-approved/pending stay unchanged, rejected ones are re-requested "
-    "(set to pending). Manager only.",
-    responses={
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Caller is not a manager"},
-        status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
-    },
+  "/me/establishments",
+  response_model=list[EstablishmentWithStatusResponse],
+  status_code=status.HTTP_201_CREATED,
+  summary="Request establishment access",
+  description="Requests access to one or more establishments. Idempotent: "
+              "already-approved/pending stay unchanged, rejected ones are re-requested "
+              "(set to pending). Field worker only.",
+  responses={
+    status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
+    status.HTTP_403_FORBIDDEN: {"description": "Caller is not a field worker"},
+    status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
+  },
 )
 async def request_establishment_access(
-    data: EstablishmentAccessRequest,
-    actor: UserActor = Depends(get_current_manager),
-    service: UserService = Depends(get_user_service),
+        data: EstablishmentAccessRequest,
+        actor: UserActor = Depends(get_current_field_worker),
+        service: UserService = Depends(get_user_service),
 ) -> list[EstablishmentWithStatusResponse]:
-    relations = await service.request_establishment_access(
-        actor, data.establishment_ids
-    )
-    return [EstablishmentWithStatusResponse.model_validate(r) for r in relations]
+  relations = await service.request_establishment_access(
+    actor, data.establishment_ids
+  )
+  return [EstablishmentWithStatusResponse.model_validate(r) for r in relations]
 ```
 
 #### 3. `available=true` on the establishments route
 
 **File**: `app/api/v1/establishments.py`
 **Changes**: Add the `available` query flag and the optional actor. When
-`available` is set, require a manager (401 if unauthenticated, 403 if not a
-manager) and serve the user-scoped list; otherwise keep the public catalog path.
+`available` is set, require a field worker (401 if unauthenticated, 403 if not a
+field worker) and serve the user-scoped list; otherwise keep the public catalog path.
 
 ```python
 from uuid import UUID
@@ -680,25 +686,26 @@ from app.core.dependencies import get_establishment_service, get_optional_actor
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
 
-_MANAGER_ROLES = {UserRole.ESTABLISHMENT_MANAGER, UserRole.SUPERADMIN}
+_FIELD_WORKER_ROLES = {UserRole.FIELD_WORKER, UserRole.SUPERADMIN}
+
 
 async def get_establishments(
-    page: int = Query(default=1, ge=1),
-    page_size: int = Query(default=20, ge=1, le=100),
-    search: str | None = Query(default=None, max_length=100),
-    available: bool = Query(
-        default=False,
-        description="If true, return only establishments the authenticated "
-        "manager can still request (excludes approved/pending). Requires a "
-        "manager token.",
-    ),
-    actor: UserActor | None = Depends(get_optional_actor),
-    service: EstablishmentService = Depends(get_establishment_service),
+        page: int = Query(default=1, ge=1),
+        page_size: int = Query(default=20, ge=1, le=100),
+        search: str | None = Query(default=None, max_length=100),
+        available: bool = Query(
+            default=False,
+            description="If true, return only establishments the authenticated "
+                        "field worker can still request (excludes approved/pending). Requires a "
+                        "field worker token.",
+        ),
+        actor: UserActor | None = Depends(get_optional_actor),
+        service: EstablishmentService = Depends(get_establishment_service),
 ) -> PaginatedResponse[EstablishmentResponse]:
     if available:
         if actor is None:
             raise UnauthorizedError()
-        if actor.role not in _MANAGER_ROLES:
+        if actor.role not in _FIELD_WORKER_ROLES:
             raise ForbiddenError()
         result = await service.get_available_establishments(
             user_id=UUID(str(actor.user_id)),
@@ -723,7 +730,7 @@ async def get_establishments(
 > Architecture note: per `CLAUDE.md`, per-establishment permission checks are
 > centralized in middleware and never inline. That rule governs **resource
 > ownership** checks; the inline `available`/role gate here is **role
-> authorization** (the same kind `get_current_manager` does), made conditional on a
+> authorization** (the same kind `get_current_field_worker` does), made conditional on a
 > query param — which a static dependency cannot express. The data logic stays in
 > the service.
 
@@ -759,14 +766,14 @@ the `clean_db` truncation fixture (`tests/integration/conftest.py:69`).
 **File**: `tests/integration/test_users.py`
 **Changes**: New class covering `PATCH /me`.
 
-- **CA1** professional edits `name`+`last_name` → 200, body reflects new values;
+- **CA1** analyst edits `name`+`last_name` → 200, body reflects new values;
   re-`GET /me` confirms persistence.
 - **CA1 partial** → send only `name` → 200, `last_name` unchanged.
 - **CA2** `{"name": ""}` → 422; DB unchanged.
 - **CA2** empty body `{}` → 400 (`EmptyUpdateRequestError`).
 - **CA3** `{"email": "x@y.z"}`, `{"role": "admin"}`, `{"status": "active"}` → 422
   each; DB unchanged.
-- **CA1 manager** edits name → 200 and the response still includes the manager's
+- **CA1 field worker** edits name → 200 and the response still includes the field worker's
   `establishments` with statuses (proves `_build_profile` reuse).
 - **CA7** no token / malformed token → 401.
 
@@ -775,9 +782,9 @@ the `clean_db` truncation fixture (`tests/integration/conftest.py:69`).
 **File**: `tests/integration/test_users.py`
 **Changes**: New classes covering `GET`/`POST /me/establishments`.
 
-- **GET own** manager with seeded mixed-status relations → 200 list with correct
-  statuses; non-manager (professional) → 403; no token → 401.
-- **CA5 new** manager POSTs new establishment ids → 201, all `pending`; DB rows
+- **GET own** field worker with seeded mixed-status relations → 200 list with correct
+  statuses; non-field-worker (analyst) → 403; no token → 401.
+- **CA5 new** field worker POSTs new establishment ids → 201, all `pending`; DB rows
   created `pending`.
 - **CA5/CA6 rejected re-request** seed a `rejected` relation, POST that id → 201,
   result `pending`, DB row flipped to `pending`.
@@ -786,17 +793,17 @@ the `clean_db` truncation fixture (`tests/integration/conftest.py:69`).
 - **CA6 pending stays** seed `pending`, POST that id again → 201, still single
   `pending` row.
 - **invalid establishment** POST an unknown id → 404; no rows written.
-- **CA7** non-manager → 403; no token → 401.
+- **CA7** non-field-worker → 403; no token → 401.
 
 #### 3. Available-catalog tests
 
 **File**: `tests/integration/test_establishment.py`
 **Changes**: New class covering `GET /establishments?available=true`.
 
-- Seed manager + establishments A (approved), B (pending), C (rejected), D (no
+- Seed field worker + establishments A (approved), B (pending), C (rejected), D (no
   relation). `available=true` → returns C and D only (A, B excluded; C included).
 - `available=true` with `search` narrows by name/address.
-- `available=true` no token → 401; professional token → 403.
+- `available=true` no token → 401; analyst token → 403.
 - `GET /establishments` (no flag, no token) → unchanged public catalog (regression).
 
 ### Success Criteria
@@ -812,8 +819,8 @@ the `clean_db` truncation fixture (`tests/integration/conftest.py:69`).
 #### Manual Verification
 
 - [ ] `curl -X PATCH -H "Authorization: Bearer <token>" -d '{"name":"Juana"}' localhost:8080/api/v1/users/me` returns the updated profile.
-- [ ] `curl -X POST -H "Authorization: Bearer <manager>" -d '{"establishment_ids":["<id>"]}' .../users/me/establishments` returns the id as `pending`.
-- [ ] `GET /establishments?available=true` with a manager token omits already-approved/pending establishments.
+- [ ] `curl -X POST -H "Authorization: Bearer <field_worker>" -d '{"establishment_ids":["<id>"]}' .../users/me/establishments` returns the id as `pending`.
+- [ ] `GET /establishments?available=true` with a field worker token omits already-approved/pending establishments.
 
 ---
 
@@ -835,14 +842,14 @@ the `clean_db` truncation fixture (`tests/integration/conftest.py:69`).
 ### Manual
 
 1. `poetry run uvicorn app.main:app --reload`.
-2. Log in as a professional and a manager (`/api/v1/auth/login`).
+2. Log in as an analyst and a field worker (`/api/v1/auth/login`).
 3. `PATCH /users/me` (valid, empty, invalid, forbidden-field).
 4. `GET /establishments?available=true`, then `POST /users/me/establishments` with
    a selection, then `GET /users/me/establishments` and `GET /users/me` to confirm.
 
 ## Performance Considerations
 
-- `PATCH /me`: one `SELECT`, one `UPDATE`, plus (managers only) the two-query
+- `PATCH /me`: one `SELECT`, one `UPDATE`, plus (field workers only) the two-query
   establishment assembly. No N+1.
 - `POST /me/establishments`: `get_all_by_ids` (one query), `get_by_user_id` (one
   query), one batched `update_status_for_ids`, and N inserts for genuinely new ids
@@ -850,7 +857,7 @@ the `clean_db` truncation fixture (`tests/integration/conftest.py:69`).
   snapshot — no per-item query.
 - `GET /establishments?available=true`: a single paginated query with a correlated
   `NOT IN` subquery over `user_establishments` (keyed by `user_id`). Establishment
-  catalog and a manager's relation set are both small/bounded.
+  catalog and a field worker's relation set are both small/bounded.
 
 ## Migration Notes
 

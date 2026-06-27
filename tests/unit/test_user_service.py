@@ -19,7 +19,7 @@ from app.services.user_service import UserService
 
 def _make_user(
     *,
-    role=UserRole.ESTABLISHMENT_MANAGER,
+    role=UserRole.FIELD_WORKER,
     status=UserStatus.ACTIVE,
 ):
     user = MagicMock()
@@ -79,8 +79,8 @@ def _actor_for(user, *, user_id=None):
 
 class TestGetProfile:
     @pytest.mark.asyncio
-    async def test_manager_with_mixed_status_establishments(self):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+    async def test_field_worker_with_mixed_status_establishments(self):
+        user = _make_user(role=UserRole.FIELD_WORKER)
         estab_a = _make_establishment(name="Centro A", formatted_address="Calle A 123")
         estab_b = _make_establishment(name="Centro B", formatted_address="Calle B 456")
         relations = [
@@ -111,8 +111,8 @@ class TestGetProfile:
         assert second.status == UserEstablishmentStatus.PENDING
 
     @pytest.mark.asyncio
-    async def test_manager_with_no_relations_returns_empty_list(self):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+    async def test_field_worker_with_no_relations_returns_empty_list(self):
+        user = _make_user(role=UserRole.FIELD_WORKER)
         uow = _make_uow(user=user, relations=[])
         service = UserService(uow)
 
@@ -122,8 +122,8 @@ class TestGetProfile:
         uow.establishment_repo.find_by_ids.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_professional_has_none_establishments_and_skips_relation_query(self):
-        user = _make_user(role=UserRole.PROFESSIONAL)
+    async def test_analyst_has_none_establishments_and_skips_relation_query(self):
+        user = _make_user(role=UserRole.ANALYST)
         uow = _make_uow(user=user)
         service = UserService(uow)
 
@@ -147,18 +147,18 @@ class TestGetProfile:
     async def test_user_not_found_raises(self):
         uow = _make_uow(user=None)
         service = UserService(uow)
-        actor = UserActor(user_id=uuid.uuid4(), role=UserRole.PROFESSIONAL)
+        actor = UserActor(user_id=uuid.uuid4(), role=UserRole.ANALYST)
 
         with pytest.raises(UserNotFoundError):
             await service.get_profile(actor)
 
     @pytest.mark.asyncio
     async def test_token_user_id_is_used_for_lookup(self):
-        user = _make_user(role=UserRole.PROFESSIONAL)
+        user = _make_user(role=UserRole.ANALYST)
         token_user_id = str(uuid.uuid4())
         uow = _make_uow(user=user)
         service = UserService(uow)
-        actor = UserActor(user_id=token_user_id, role=UserRole.PROFESSIONAL)
+        actor = UserActor(user_id=token_user_id, role=UserRole.ANALYST)
 
         await service.get_profile(actor)
 
@@ -166,7 +166,7 @@ class TestGetProfile:
 
     @pytest.mark.asyncio
     async def test_relation_with_missing_establishment_is_skipped(self):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(role=UserRole.FIELD_WORKER)
         estab_a = _make_establishment(name="Centro A", formatted_address="Calle A 123")
         missing_establishment_id = uuid.uuid4()
         relations = [
@@ -186,7 +186,7 @@ class TestGetProfile:
 class TestUpdateProfile:
     @pytest.mark.asyncio
     async def test_both_fields_updated_and_committed(self):
-        user = _make_user(role=UserRole.PROFESSIONAL)
+        user = _make_user(role=UserRole.ANALYST)
         uow = _make_uow(user=user)
         service = UserService(uow)
 
@@ -209,7 +209,7 @@ class TestUpdateProfile:
 
     @pytest.mark.asyncio
     async def test_single_field_only_updates_that_field(self):
-        user = _make_user(role=UserRole.PROFESSIONAL)
+        user = _make_user(role=UserRole.ANALYST)
         uow = _make_uow(user=user)
         service = UserService(uow)
 
@@ -223,7 +223,7 @@ class TestUpdateProfile:
 
     @pytest.mark.asyncio
     async def test_empty_update_raises_and_writes_nothing(self):
-        user = _make_user(role=UserRole.PROFESSIONAL)
+        user = _make_user(role=UserRole.ANALYST)
         uow = _make_uow(user=user)
         service = UserService(uow)
 
@@ -237,7 +237,7 @@ class TestUpdateProfile:
     async def test_user_not_found_raises(self):
         uow = _make_uow(user=None)
         service = UserService(uow)
-        actor = UserActor(user_id=uuid.uuid4(), role=UserRole.PROFESSIONAL)
+        actor = UserActor(user_id=uuid.uuid4(), role=UserRole.ANALYST)
 
         with pytest.raises(UserNotFoundError):
             await service.update_profile(actor, ProfileUpdateRequest(name="X"))
@@ -246,8 +246,8 @@ class TestUpdateProfile:
         uow.commit.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_manager_response_includes_status_annotated_establishments(self):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+    async def test_field_worker_response_includes_status_annotated_establishments(self):
+        user = _make_user(role=UserRole.FIELD_WORKER)
         estab_a = _make_establishment(name="Centro A", formatted_address="Calle A 123")
         relations = [_make_relation(estab_a.id, UserEstablishmentStatus.APPROVED)]
         uow = _make_uow(user=user, relations=relations, establishments=[estab_a])
@@ -264,11 +264,11 @@ class TestUpdateProfile:
 
     @pytest.mark.asyncio
     async def test_token_user_id_is_used_for_lookup(self):
-        user = _make_user(role=UserRole.PROFESSIONAL)
+        user = _make_user(role=UserRole.ANALYST)
         token_user_id = str(uuid.uuid4())
         uow = _make_uow(user=user)
         service = UserService(uow)
-        actor = UserActor(user_id=token_user_id, role=UserRole.PROFESSIONAL)
+        actor = UserActor(user_id=token_user_id, role=UserRole.ANALYST)
 
         await service.update_profile(actor, ProfileUpdateRequest(name="X"))
 
@@ -280,8 +280,8 @@ class TestUpdateProfile:
 
 class TestGetOwnEstablishments:
     @pytest.mark.asyncio
-    async def test_manager_with_mixed_status_relations(self):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+    async def test_field_worker_with_mixed_status_relations(self):
+        user = _make_user(role=UserRole.FIELD_WORKER)
         estab_a = _make_establishment(name="Centro A", formatted_address="Calle A")
         estab_b = _make_establishment(name="Centro B", formatted_address="Calle B")
         relations = [
@@ -305,7 +305,7 @@ class TestGetOwnEstablishments:
 
     @pytest.mark.asyncio
     async def test_no_relations_returns_empty_list(self):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(role=UserRole.FIELD_WORKER)
         uow = _make_uow(user=user, relations=[])
         service = UserService(uow)
 
@@ -318,7 +318,7 @@ class TestGetOwnEstablishments:
 class TestRequestEstablishmentAccess:
     @pytest.mark.asyncio
     async def test_new_ids_are_inserted_as_pending(self):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(role=UserRole.FIELD_WORKER)
         estab_a = _make_establishment()
         estab_b = _make_establishment()
         uow = _make_uow(
@@ -338,7 +338,7 @@ class TestRequestEstablishmentAccess:
 
     @pytest.mark.asyncio
     async def test_rejected_id_is_re_requested(self):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(role=UserRole.FIELD_WORKER)
         estab = _make_establishment()
         relations = [_make_relation(estab.id, UserEstablishmentStatus.REJECTED)]
         uow = _make_uow(user=user, relations=relations, establishments_by_ids=[estab])
@@ -359,7 +359,7 @@ class TestRequestEstablishmentAccess:
 
     @pytest.mark.asyncio
     async def test_approved_id_is_untouched(self):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(role=UserRole.FIELD_WORKER)
         estab = _make_establishment()
         relations = [_make_relation(estab.id, UserEstablishmentStatus.APPROVED)]
         uow = _make_uow(user=user, relations=relations, establishments_by_ids=[estab])
@@ -375,7 +375,7 @@ class TestRequestEstablishmentAccess:
 
     @pytest.mark.asyncio
     async def test_pending_id_is_untouched(self):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(role=UserRole.FIELD_WORKER)
         estab = _make_establishment()
         relations = [_make_relation(estab.id, UserEstablishmentStatus.PENDING)]
         uow = _make_uow(user=user, relations=relations, establishments_by_ids=[estab])
@@ -391,7 +391,7 @@ class TestRequestEstablishmentAccess:
 
     @pytest.mark.asyncio
     async def test_mixed_batch_classifies_each_id(self):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(role=UserRole.FIELD_WORKER)
         approved = _make_establishment()
         rejected = _make_establishment()
         new = _make_establishment()
@@ -425,7 +425,7 @@ class TestRequestEstablishmentAccess:
 
     @pytest.mark.asyncio
     async def test_duplicate_ids_are_deduplicated(self):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(role=UserRole.FIELD_WORKER)
         estab = _make_establishment()
         uow = _make_uow(user=user, relations=[], establishments_by_ids=[estab])
         service = UserService(uow)
@@ -439,7 +439,7 @@ class TestRequestEstablishmentAccess:
 
     @pytest.mark.asyncio
     async def test_unknown_establishment_raises_and_writes_nothing(self):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(role=UserRole.FIELD_WORKER)
         uow = _make_uow(user=user, relations=[])
         uow.establishment_repo.get_all_by_ids = AsyncMock(
             side_effect=EstablishmentNotFoundError(str(uuid.uuid4()))

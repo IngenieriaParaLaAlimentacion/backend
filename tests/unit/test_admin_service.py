@@ -18,7 +18,7 @@ def _make_user(
     name="Test",
     last_name="User",
     email=None,
-    role=UserRole.PROFESSIONAL,
+    role=UserRole.ANALYST,
     status=UserStatus.ACTIVE,
 ):
     user = MagicMock()
@@ -155,12 +155,10 @@ class TestGetPaginatedUsers:
         uow = make_uow()
         service = make_service(uow)
 
-        await service.get_users_paginated(
-            page=1, page_size=20, role=UserRole.PROFESSIONAL
-        )
+        await service.get_users_paginated(page=1, page_size=20, role=UserRole.ANALYST)
 
         uow.user_repo.get_paginated.assert_called_once_with(
-            role=UserRole.PROFESSIONAL, status=None, limit=20, offset=0, search=None
+            role=UserRole.ANALYST, status=None, limit=20, offset=0, search=None
         )
 
     @pytest.mark.asyncio
@@ -267,7 +265,7 @@ class TestApproveEstablishments:
         self, make_establishment, mock_auth_service
     ):
         user = _make_user(
-            role=UserRole.ESTABLISHMENT_MANAGER, status=UserStatus.PENDING_VALIDATION
+            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
         )
         estab = make_establishment()
         uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
@@ -293,7 +291,7 @@ class TestApproveEstablishments:
     async def test_invalid_establishment_id_raises_error(
         self, make_establishment, mock_auth_service
     ):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(role=UserRole.FIELD_WORKER)
         estab = make_establishment()
         uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
         service = AdminService(uow, mock_auth_service)
@@ -308,7 +306,7 @@ class TestRejectEstablishments:
         self, make_establishment, mock_auth_service
     ):
         user = _make_user(
-            role=UserRole.ESTABLISHMENT_MANAGER, status=UserStatus.PENDING_VALIDATION
+            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
         )
         estab = make_establishment()
         uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
@@ -323,7 +321,7 @@ class TestRejectEstablishments:
     async def test_calls_repo_with_correct_args(
         self, make_establishment, mock_auth_service
     ):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(role=UserRole.FIELD_WORKER)
         estab = make_establishment()
         uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
         service = AdminService(uow, mock_auth_service)
@@ -346,7 +344,7 @@ class TestRejectEstablishments:
     async def test_invalid_establishment_id_raises_error(
         self, make_establishment, mock_auth_service
     ):
-        user = _make_user(role=UserRole.ESTABLISHMENT_MANAGER)
+        user = _make_user(role=UserRole.FIELD_WORKER)
         estab = make_establishment()
         uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
         service = AdminService(uow, mock_auth_service)
@@ -355,21 +353,21 @@ class TestRejectEstablishments:
             await service.reject_establishments(user.id, [uuid.uuid4()])
 
 
-class TestRejectManager:
+class TestRejectFieldWorker:
     @pytest.mark.asyncio
     async def test_user_not_found_raises_error(self, mock_auth_service):
         uow = _make_approve_uow(user=None)
         service = AdminService(uow, mock_auth_service)
 
         with pytest.raises(UserNotFoundError):
-            await service.reject_manager(uuid.uuid4())
+            await service.reject_field_worker(uuid.uuid4())
 
     @pytest.mark.asyncio
     async def test_rejects_all_establishments_and_marks_inactive(
         self, make_establishment, mock_auth_service
     ):
         user = _make_user(
-            role=UserRole.ESTABLISHMENT_MANAGER, status=UserStatus.PENDING_VALIDATION
+            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
         )
         estab1 = make_establishment()
         estab2 = make_establishment()
@@ -377,7 +375,7 @@ class TestRejectManager:
         uow = _make_approve_uow(user=user, relations=relations)
         service = AdminService(uow, mock_auth_service)
 
-        await service.reject_manager(user.id)
+        await service.reject_field_worker(user.id)
 
         uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
             user.id, [estab1.id, estab2.id], UserEstablishmentStatus.REJECTED
@@ -390,12 +388,12 @@ class TestRejectManager:
     @pytest.mark.asyncio
     async def test_no_establishments_still_marks_inactive(self, mock_auth_service):
         user = _make_user(
-            role=UserRole.ESTABLISHMENT_MANAGER, status=UserStatus.PENDING_VALIDATION
+            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
         )
         uow = _make_approve_uow(user=user, relations=[])
         service = AdminService(uow, mock_auth_service)
 
-        await service.reject_manager(user.id)
+        await service.reject_field_worker(user.id)
 
         uow.user_establishment_repo.update_status_for_ids.assert_not_called()
         uow.user_repo.update_status.assert_called_once_with(
