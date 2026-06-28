@@ -3,7 +3,11 @@ from typing import Any
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.core.password_recovery import build_recovery_deeplink, send_invite_email
+from app.core.password_recovery import (
+    build_recovery_deeplink,
+    send_access_granted_email,
+    send_invite_email,
+)
 from app.core.security import hash_password
 from app.domain.establishment import EstablishmentDomain, UserEstablishmentStatus
 from app.domain.pagination import PaginatedResult
@@ -114,6 +118,15 @@ class AdminService:
         )
         await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
         await self.uow.commit()
+
+        user = await self.uow.user_repo.get_by_id(user_id)
+        establishments = await self.uow.establishment_repo.find_by_ids(
+            establishment_ids
+        )
+        await send_access_granted_email(
+            user.email,
+            [e.name for e in establishments],
+        )
 
     async def reject_establishments(
         self, user_id: UUID, establishment_ids: list[UUID]
