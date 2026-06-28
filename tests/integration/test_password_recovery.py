@@ -67,8 +67,8 @@ class TestPasswordRecoveryRequest:
         async def _failing_send(*args, **kwargs):
             raise TimeoutError("smtp timeout")
 
-        monkeypatch.setattr("app.core.password_recovery.settings.smtp_enabled", True)
-        monkeypatch.setattr("app.core.password_recovery.aiosmtplib.send", _failing_send)
+        monkeypatch.setattr("app.services.email_service.settings.smtp_enabled", True)
+        monkeypatch.setattr("app.services.email_service.aiosmtplib.send", _failing_send)
 
         response = await client.post(REQUEST_URL, json={"email": "ana@test.com"})
         assert response.status_code == status.HTTP_202_ACCEPTED

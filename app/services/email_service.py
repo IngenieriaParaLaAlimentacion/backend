@@ -138,6 +138,30 @@ async def send_recovery_email(
     )
 
 
+async def send_access_granted_email(
+    to_email: str, establishment_names: list[str]
+) -> None:
+    """Notify a field worker that their establishment access was approved."""
+    names = ", ".join(establishment_names)
+    await _send_email(
+        to_email=to_email,
+        subject="Acceso concedido a establecimientos",
+        body=(
+            "Hola,\n\n"
+            "Tu solicitud de acceso a los siguientes establecimientos ha sido "
+            f"aprobada:\n\n{names}\n\n"
+            "Ya puedes iniciar sesión y comenzar a trabajar."
+        ),
+        html_body=(
+            f"<p>Tu solicitud de acceso a los siguientes establecimientos "
+            f"ha sido aprobada:</p>"
+            f"<ul><li>{'</li><li>'.join(establishment_names)}</li></ul>"
+            f"<p>Ya puedes iniciar sesión y comenzar a trabajar.</p>"
+        ),
+        log_label="Access granted",
+    )
+
+
 async def send_invite_email(
     to_email: str, deeplink: str, expires_at: datetime, role: str = "admin"
 ) -> None:
