@@ -162,6 +162,57 @@ async def send_access_granted_email(
     )
 
 
+def build_verification_deeplink(token: str) -> str:
+    """Build the email verification deep link, injecting the opaque token."""
+    deeplink_url = settings.email_verification_deeplink_url
+    parsed = urlsplit(deeplink_url)
+    query = dict(parse_qsl(parsed.query, keep_blank_values=True))
+    query["token"] = token
+    return urlunsplit(
+        (
+            parsed.scheme,
+            parsed.netloc,
+            parsed.path,
+            urlencode(query),
+            parsed.fragment,
+        )
+    )
+
+
+async def send_verification_email(
+    to_email: str, deeplink: str, expires_at: datetime
+) -> None:
+    """Send the email verification deep link to the user via SMTP."""
+    formatted_expiry = expires_at.strftime("%d/%m/%Y a las %H:%M UTC")
+
+    html_content = _render_base_template(
+        title="Verifica tu correo electrónico",
+        pre_button_text=(
+            "Gracias por registrarte. Por favor verifica tu dirección de correo "
+            "electrónico haciendo clic en el botón de abajo para activar tu cuenta:"
+        ),
+        button_text="Verificar Correo",
+        button_url=deeplink,
+        button_color="#28a745",
+        formatted_expiry=formatted_expiry,
+    )
+
+    await _send_email(
+        to_email=to_email,
+        subject="Verifica tu correo electrónico",
+        body=(
+            "Hola,\n\n"
+            "Gracias por registrarte. Por favor verifica tu dirección de correo "
+            "electrónico usando el siguiente enlace:\n\n"
+            f"{deeplink}\n\n"
+            f"Este enlace expira el {formatted_expiry}.\n"
+            "Si no creaste una cuenta, puedes ignorar este mensaje.\n"
+        ),
+        html_body=html_content,
+        log_label="Email verification",
+    )
+
+
 async def send_invite_email(
     to_email: str, deeplink: str, expires_at: datetime, role: str = "admin"
 ) -> None:
