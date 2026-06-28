@@ -50,6 +50,9 @@ class Settings(BaseSettings):
     seed_admin_email: EmailStr = "admin@dashboard.com"
     seed_admin_password: str = "Admin123!"
 
+    # Email verification
+    email_verification_token_expire_minutes: int = 1440  # 24 hours
+
     # Password recovery
     password_recovery_token_expire_minutes: int = 30
 
@@ -67,6 +70,7 @@ class Settings(BaseSettings):
     backoffice_deeplink_base: AnyUrl = "http://i_need_deeplink.com"
 
     password_recovery_path: str = "/reset-password"
+    email_verification_path: str = "/verify-email"
 
     def _build_deeplink(self, base: str) -> str:
         base = str(base).rstrip("/")
@@ -84,6 +88,15 @@ class Settings(BaseSettings):
     def admin_password_reset_deeplink(self) -> str:
         """Derived password reset deeplink URL for admin invitation."""
         return self._build_deeplink(self.backoffice_deeplink_base)
+
+    @property
+    def email_verification_deeplink_url(self) -> str:
+        """Derived email verification deeplink URL from app base URL."""
+        base = str(self.app_deeplink_base).rstrip("/")
+        path = self.email_verification_path
+        if not path.startswith("/"):
+            path = f"/{path}"
+        return f"{base}{path}"
 
     @model_validator(mode="after")
     def build_database_url(self) -> "Settings":
