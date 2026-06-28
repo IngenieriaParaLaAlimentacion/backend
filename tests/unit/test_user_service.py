@@ -29,6 +29,9 @@ def _make_user(
     user.last_name = "User"
     user.role = role
     user.status = status
+    user.locality = None
+    user.description = None
+    user.contact_phone = None
     return user
 
 

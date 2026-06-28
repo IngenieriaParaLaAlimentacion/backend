@@ -20,10 +20,20 @@ class UserRepository:
         last_name: str,
         role: str = UserRole.FIELD_WORKER,
         status: UserStatus = UserStatus.PENDING_VALIDATION,
+        locality: str | None = None,
+        description: str | None = None,
+        contact_phone: str | None = None,
     ) -> User:
         """Persist a new user. Password and establishments are handled separately."""
         user = User(
-            email=email, name=name, last_name=last_name, role=role, status=status
+            email=email,
+            name=name,
+            last_name=last_name,
+            role=role,
+            status=status,
+            locality=locality,
+            description=description,
+            contact_phone=contact_phone,
         )
         self.db.add(user)
         await self.db.flush()

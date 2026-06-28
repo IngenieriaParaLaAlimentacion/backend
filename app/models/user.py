@@ -36,6 +36,9 @@ class User(Base):
         onupdate=func.now(),
         nullable=False,
     )
+    locality = Column(String, nullable=True)
+    description = Column(String, nullable=True)
+    contact_phone = Column(String, nullable=True)
 
     password = relationship(
         "UserPassword",

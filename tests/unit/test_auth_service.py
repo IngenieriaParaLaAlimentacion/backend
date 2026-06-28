@@ -191,6 +191,9 @@ class TestRegisterFieldWorker:
             last_name=valid_register_request.last_name,
             role=UserRole.FIELD_WORKER,
             status=UserStatus.PENDING_VALIDATION,
+            locality=None,
+            description=None,
+            contact_phone=None,
         )
 
     @pytest.mark.asyncio

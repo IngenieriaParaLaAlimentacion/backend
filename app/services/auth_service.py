@@ -61,6 +61,9 @@ class AuthService:
             last_name=data.last_name,
             role=UserRole.FIELD_WORKER,
             status=UserStatus.PENDING_VALIDATION,
+            locality=data.locality,
+            description=data.description,
+            contact_phone=data.contact_phone,
         )
         await self.uow.password_repo.create(user.id, hash_password(data.password))
         for establishment in establishments:
@@ -77,6 +80,9 @@ class AuthService:
             role=user.role,
             status=user.status,
             establishments=[establishment.id for establishment in establishments],
+            locality=user.locality,
+            description=user.description,
+            contact_phone=user.contact_phone,
         )
 
     async def login(self, data: LoginRequest) -> LoginDomain:

@@ -60,6 +60,9 @@ class UserService:
             role=user.role,
             status=user.status,
             establishments=establishments,
+            locality=user.locality,
+            description=user.description,
+            contact_phone=user.contact_phone,
         )
 
     async def _get_establishments_with_status(
@@ -118,6 +121,9 @@ class UserService:
         email, role, status = user.email, user.role, user.status
         name = values.get("name", user.name)
         last_name = values.get("last_name", user.last_name)
+        locality = values.get("locality", user.locality)
+        description = values.get("description", user.description)
+        contact_phone = values.get("contact_phone", user.contact_phone)
 
         await self.uow.user_repo.update_profile(user.id, values)
         await self.uow.commit()
@@ -134,6 +140,9 @@ class UserService:
             role=role,
             status=status,
             establishments=establishments,
+            locality=locality,
+            description=description,
+            contact_phone=contact_phone,
         )
 
     async def get_own_establishments(

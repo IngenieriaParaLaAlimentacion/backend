@@ -3,6 +3,22 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
+_LocalityField = Annotated[
+    str, StringConstraints(strict=True, min_length=1, max_length=100)
+]
+_DescriptionField = Annotated[
+    str, StringConstraints(strict=True, min_length=1, max_length=500)
+]
+_PhoneField = Annotated[
+    str,
+    StringConstraints(
+        strict=True,
+        min_length=1,
+        max_length=20,
+        pattern=r"^[0-9+\-\s()]+$",
+    ),
+]
+
 
 class EstablishmentWithStatusResponse(BaseModel):
     id: UUID
@@ -25,6 +41,9 @@ class ProfileResponse(BaseModel):
     last_name: str
     role: str
     establishments: list[EstablishmentWithStatusResponse] | None = None
+    locality: str | None = None
+    description: str | None = None
+    contact_phone: str | None = None
 
     model_config = {"from_attributes": True}
 
@@ -38,6 +57,9 @@ class ProfileUpdateRequest(BaseModel):
     last_name: Annotated[str, StringConstraints(strict=True, min_length=1)] | None = (
         None
     )
+    locality: _LocalityField | None = None
+    description: _DescriptionField | None = None
+    contact_phone: _PhoneField | None = None
 
 
 class EstablishmentAccessRequest(BaseModel):
