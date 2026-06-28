@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 
+from app.repositories.email_verification_repository import (
+    EmailVerificationTokenRepository,
+)
 from app.repositories.establishment_repository import EstablishmentRepository
 from app.repositories.measurement_alert_repository import MeasurementAlertRepository
 from app.repositories.measurement_repository import MeasurementRepository
@@ -23,6 +26,7 @@ class IUnitOfWork(ABC):
     subject_repo: SubjectRepository
     subject_event_repo: SubjectEventRepository
     password_recovery_repo: PasswordRecoveryTokenRepository
+    email_verification_repo: EmailVerificationTokenRepository
     measurement_repo: MeasurementRepository
     measurement_alert_repo: MeasurementAlertRepository
 
