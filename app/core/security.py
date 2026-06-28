@@ -72,6 +72,13 @@ def create_password_recovery_token() -> tuple[str, str]:
     return recovery_token, recovery_token_hash
 
 
+def create_email_verification_token() -> tuple[str, str]:
+    """Create a random email verification token and its SHA-256 hash."""
+    token = secrets.token_urlsafe(48)
+    token_hash = hashlib.sha256(token.encode()).hexdigest()
+    return token, token_hash
+
+
 def decode_token(token: str, expected_role: str = UserRole.FIELD_WORKER):
     """Decode and validate a JWT, returning None on failure."""
     secret = _get_secret(expected_role)

@@ -70,7 +70,9 @@ class Settings(BaseSettings):
     backoffice_deeplink_base: AnyUrl = "http://i_need_deeplink.com"
 
     password_recovery_path: str = "/reset-password"
-    email_verification_path: str = "/verify-email"
+    email_verification_path: str = (
+        "https://backoffice-production-d63b.up.railway.app//verify-email"
+    )
 
     def _build_deeplink(self, base: str) -> str:
         base = str(base).rstrip("/")
