@@ -1,6 +1,6 @@
 import uuid
 from math import ceil
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -71,12 +71,13 @@ def _make_relation(establishment_id):
     return rel
 
 
-def _make_approve_uow(user=None, relations=None):
+def _make_approve_uow(user=None, relations=None, establishments=None):
     uow = AsyncMock()
     uow.user_repo.get_by_id = AsyncMock(return_value=user)
     uow.user_establishment_repo.get_by_user_id = AsyncMock(return_value=relations or [])
     uow.user_repo.update_status = AsyncMock()
     uow.user_establishment_repo.update_status_for_ids = AsyncMock()
+    uow.establishment_repo.find_by_ids = AsyncMock(return_value=establishments or [])
     uow.commit = AsyncMock()
     return uow
 
@@ -298,6 +299,54 @@ class TestApproveEstablishments:
 
         with pytest.raises(UserEstablishmentNotFoundError):
             await service.approve_establishments(user.id, [uuid.uuid4()])
+
+    @pytest.mark.asyncio
+    async def test_sends_access_granted_email(
+        self, make_establishment, mock_auth_service
+    ):
+        user = _make_user(
+            role=UserRole.FIELD_WORKER,
+            status=UserStatus.PENDING_VALIDATION,
+            email="worker@test.com",
+        )
+        estab1 = make_establishment(name="Centro A")
+        estab2 = make_establishment(name="Centro B")
+        uow = _make_approve_uow(
+            user=user,
+            relations=[_make_relation(estab1.id), _make_relation(estab2.id)],
+            establishments=[estab1, estab2],
+        )
+        service = AdminService(uow, mock_auth_service)
+
+        with patch(
+            "app.services.admin_service.send_access_granted_email",
+            new_callable=AsyncMock,
+        ) as mock_email:
+            await service.approve_establishments(user.id, [estab1.id, estab2.id])
+
+        mock_email.assert_awaited_once_with(user.email, ["Centro A", "Centro B"])
+
+    @pytest.mark.asyncio
+    async def test_email_sent_after_commit(self, make_establishment, mock_auth_service):
+        user = _make_user(
+            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
+        )
+        estab = make_establishment()
+        uow = _make_approve_uow(
+            user=user,
+            relations=[_make_relation(estab.id)],
+            establishments=[estab],
+        )
+        service = AdminService(uow, mock_auth_service)
+
+        with patch(
+            "app.services.admin_service.send_access_granted_email",
+            new_callable=AsyncMock,
+        ) as mock_email:
+            await service.approve_establishments(user.id, [estab.id])
+
+        uow.commit.assert_called_once()
+        mock_email.assert_awaited_once()
 
 
 class TestRejectEstablishments:
