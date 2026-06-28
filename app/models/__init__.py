@@ -1,4 +1,5 @@
 from .base import Base
+from .email_verification_token import EmailVerificationToken
 from .establishment import Establishment
 from .measurement import Measurement
 from .measurement_alert import MeasurementAlert
@@ -12,6 +13,7 @@ from .user_token import UserToken
 
 __all__ = [
     "Base",
+    "EmailVerificationToken",
     "User",
     "UserRole",
     "UserStatus",

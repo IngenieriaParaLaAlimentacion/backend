@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, String, func
+from sqlalchemy import Boolean, Column, DateTime, String, func
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -27,6 +27,7 @@ class User(Base):
         default=UserStatus.PENDING_VALIDATION,
         nullable=False,
     )
+    is_email_verified = Column(Boolean, default=False, nullable=False)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -60,6 +61,11 @@ class User(Base):
     )
     recovery_tokens = relationship(
         "PasswordRecoveryToken",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    email_verification_tokens = relationship(
+        "EmailVerificationToken",
         back_populates="user",
         cascade="all, delete-orphan",
     )
