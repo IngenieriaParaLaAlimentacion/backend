@@ -3,11 +3,6 @@ from typing import Any
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.core.password_recovery import (
-    build_recovery_deeplink,
-    send_access_granted_email,
-    send_invite_email,
-)
 from app.core.security import hash_password
 from app.domain.establishment import EstablishmentDomain, UserEstablishmentStatus
 from app.domain.pagination import PaginatedResult
@@ -28,6 +23,11 @@ from app.exceptions.domain_exceptions import (
 from app.models.user import User
 from app.schemas.admin_schema import InviteAdminRequest
 from app.services.auth_service import AuthService
+from app.services.email_service import (
+    build_recovery_deeplink,
+    send_access_granted_email,
+    send_invite_email,
+)
 
 
 class AdminService:

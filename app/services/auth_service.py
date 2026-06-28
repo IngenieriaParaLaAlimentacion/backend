@@ -3,7 +3,6 @@ from uuid import UUID
 
 from app.core.config import settings
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.core.password_recovery import build_recovery_deeplink, send_recovery_email
 from app.core.security import (
     create_access_token,
     create_password_recovery_token,
@@ -29,6 +28,7 @@ from app.schemas.auth_schema import (
     RefreshRequest,
     RegisterFieldWorkerRequest,
 )
+from app.services.email_service import build_recovery_deeplink, send_recovery_email
 
 
 class AuthService:

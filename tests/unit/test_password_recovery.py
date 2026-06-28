@@ -7,10 +7,10 @@ import aiosmtplib
 import pytest
 
 from app.core.config import settings
-from app.core.password_recovery import build_recovery_deeplink, send_recovery_email
 from app.exceptions.domain_exceptions import InvalidTokenError
 from app.schemas.auth_schema import PasswordRecoveryConfirmRequest
 from app.services.auth_service import AuthService
+from app.services.email_service import build_recovery_deeplink, send_recovery_email
 
 _FIXED_NOW = datetime(2024, 6, 1, 12, 0, 0, tzinfo=timezone.utc)
 
@@ -146,7 +146,7 @@ class TestBuildRecoveryDeeplink:
 class TestSendRecoveryEmail:
     @pytest.mark.asyncio
     async def test_smtp_disabled_logs_and_skips_send(self, smtp_disabled):
-        with patch("app.core.password_recovery.logger") as mock_logger:
+        with patch("app.services.email_service.logger") as mock_logger:
             await send_recovery_email(
                 "user@example.com", "https://app/reset?token=abc", _FIXED_NOW
             )
@@ -156,7 +156,7 @@ class TestSendRecoveryEmail:
     @pytest.mark.asyncio
     async def test_smtp_disabled_does_not_send(self, smtp_disabled):
         with patch(
-            "app.core.password_recovery.aiosmtplib.send", new_callable=AsyncMock
+            "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
         ) as mock_send:
             await send_recovery_email(
                 "user@example.com", "https://app/reset?token=abc", _FIXED_NOW
@@ -167,7 +167,7 @@ class TestSendRecoveryEmail:
     @pytest.mark.asyncio
     async def test_smtp_enabled_sends_to_correct_recipient(self, smtp_enabled_no_tls):
         with patch(
-            "app.core.password_recovery.aiosmtplib.send", new_callable=AsyncMock
+            "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
         ) as mock_send:
             await send_recovery_email(
                 "user@example.com", "https://app/reset?token=abc", _FIXED_NOW
@@ -180,7 +180,7 @@ class TestSendRecoveryEmail:
     @pytest.mark.asyncio
     async def test_smtp_exception_does_not_propagate(self, smtp_enabled_no_tls):
         with patch(
-            "app.core.password_recovery.aiosmtplib.send",
+            "app.services.email_service.aiosmtplib.send",
             new_callable=AsyncMock,
             side_effect=aiosmtplib.SMTPException("connection failed"),
         ):
