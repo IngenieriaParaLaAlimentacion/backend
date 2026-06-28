@@ -71,7 +71,7 @@ class Settings(BaseSettings):
 
     password_recovery_path: str = "/reset-password"
     email_verification_path: str = (
-        "https://backoffice-production-d63b.up.railway.app//verify-email"
+        "https://backoffice-production-d63b.up.railway.app/verify-email"
     )
 
     def _build_deeplink(self, base: str) -> str:
