@@ -1,35 +1,29 @@
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, Field, StringConstraints, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    EmailStr,
+    Field,
+    StringConstraints,
+    field_validator,
+)
 
-_NameField = Annotated[str, StringConstraints(strict=True, min_length=1)]
-_LocalityField = Annotated[
-    str, StringConstraints(strict=True, min_length=1, max_length=100)
-]
-_DescriptionField = Annotated[
-    str, StringConstraints(strict=True, min_length=1, max_length=500)
-]
-_PhoneField = Annotated[
-    str,
-    StringConstraints(
-        strict=True,
-        min_length=1,
-        max_length=20,
-        pattern=r"^[0-9+\-\s()]+$",
-    ),
-]
+from app.schemas.types import DescriptionStr, PhoneStr, ValidStr
+
+# -- Request --
 
 
 class RegisterFieldWorkerRequest(BaseModel):
     email: EmailStr
     password: str
-    name: _NameField
-    last_name: _NameField
+    name: ValidStr
+    last_name: ValidStr
     establishments: Annotated[list[UUID], Field(min_length=1)]
-    locality: _LocalityField | None = None
-    description: _DescriptionField | None = None
-    contact_phone: _PhoneField | None = None
+    locality: ValidStr | None = None
+    description: DescriptionStr | None = None
+    contact_phone: PhoneStr | None = None
 
     @field_validator("password")
     @classmethod
@@ -37,38 +31,6 @@ class RegisterFieldWorkerRequest(BaseModel):
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters")
         return v
-
-
-class RegistrationResponse(BaseModel):
-    id: UUID
-    email: str
-    name: str
-    last_name: str
-    role: str
-    status: str
-    establishments: list[UUID]
-    locality: str | None = None
-    description: str | None = None
-    contact_phone: str | None = None
-
-    model_config = {"from_attributes": True}
-
-
-class UserInTokenResponse(BaseModel):
-    id: UUID
-    email: str
-    name: str
-    last_name: str
-    role: str
-
-    model_config = {"from_attributes": True}
-
-
-class TokenResponse(BaseModel):
-    access_token: str
-    refresh_token: str
-    token_type: str = "bearer"
-    user: UserInTokenResponse
 
 
 class LoginRequest(BaseModel):
@@ -87,12 +49,6 @@ class RefreshRequest(BaseModel):
     device_id: UUID
 
 
-class RefreshResponse(BaseModel):
-    access_token: str
-    refresh_token: str
-    token_type: str = "bearer"
-
-
 class PasswordRecoveryRequest(BaseModel):
     email: EmailStr
 
@@ -107,3 +63,44 @@ class PasswordRecoveryConfirmRequest(BaseModel):
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters")
         return v
+
+
+# -- Response --
+
+
+class RegistrationResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    email: str
+    name: str
+    last_name: str
+    role: str
+    status: str
+    establishments: list[UUID]
+    locality: str | None = None
+    description: str | None = None
+    contact_phone: str | None = None
+
+
+class UserInTokenResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    email: str
+    name: str
+    last_name: str
+    role: str
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    user: UserInTokenResponse
+
+
+class RefreshResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
