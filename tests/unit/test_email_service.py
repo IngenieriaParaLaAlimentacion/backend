@@ -6,9 +6,11 @@ import aiosmtplib
 import pytest
 
 from app.core.config import settings
+from app.exceptions.domain_exceptions import EmailDeliveryError
 from app.services.email_service import (
     build_recovery_deeplink,
     send_access_granted_email,
+    send_invite_email,
     send_recovery_email,
 )
 
@@ -213,3 +215,33 @@ class TestSendAccessGrantedEmail:
             side_effect=aiosmtplib.SMTPException("connection failed"),
         ):
             await send_access_granted_email("worker@test.com", ["Centro A"])
+
+
+class TestSendInviteEmail:
+    @pytest.mark.asyncio
+    async def test_smtp_enabled_sends_to_correct_recipient(self, smtp_enabled_no_tls):
+        with patch(
+            "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
+        ) as mock_send:
+            await send_invite_email(
+                "invited@test.com", "https://backoffice/set?token=abc", _FIXED_NOW
+            )
+
+        mock_send.assert_awaited_once()
+        assert mock_send.call_args[0][0]["To"] == "invited@test.com"
+
+    @pytest.mark.asyncio
+    async def test_smtp_exception_raises_email_delivery_error(
+        self, smtp_enabled_no_tls
+    ):
+        """Unlike fire-and-forget emails, a failed invite must surface so the
+        caller does not report success."""
+        with patch(
+            "app.services.email_service.aiosmtplib.send",
+            new_callable=AsyncMock,
+            side_effect=aiosmtplib.SMTPException("connection failed"),
+        ):
+            with pytest.raises(EmailDeliveryError):
+                await send_invite_email(
+                    "invited@test.com", "https://backoffice/set?token=abc", _FIXED_NOW
+                )

@@ -6,6 +6,7 @@ from app.exceptions.domain_exceptions import (
     BadRequestError,
     BaseError,
     ConflictError,
+    EmailDeliveryError,
     ForbiddenError,
     NotFoundError,
     UnauthorizedError,
@@ -50,6 +51,8 @@ async def bad_request_handler(request: Request, exc: BadRequestError):
 
 async def conflict_handler(request: Request, exc: ConflictError):
     return _build_error_response(exc, request, status.HTTP_409_CONFLICT)
+async def email_delivery_handler(request: Request, exc: EmailDeliveryError):
+    return _build_error_response(exc, request, status.HTTP_502_BAD_GATEWAY)
 
 
 def register_exception_handlers(app: FastAPI):
@@ -60,3 +63,4 @@ def register_exception_handlers(app: FastAPI):
     app.add_exception_handler(ForbiddenError, forbidden_handler)
     app.add_exception_handler(BadRequestError, bad_request_handler)
     app.add_exception_handler(ConflictError, conflict_handler)
+    app.add_exception_handler(EmailDeliveryError, email_delivery_handler)
