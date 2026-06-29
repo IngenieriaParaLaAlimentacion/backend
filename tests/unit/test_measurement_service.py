@@ -1,11 +1,18 @@
 import uuid
 from datetime import date, datetime, timezone
+from math import ceil
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from app.domain.establishment import UserEstablishmentStatus
-from app.domain.measurement import AlertSeverity, AlertType, MeasurementDomain
+from app.domain.measurement import (
+    AlertSeverity,
+    AlertType,
+    MeasurementDomain,
+    MeasurementListingParams,
+)
+from app.domain.pagination import PaginatedResult
 from app.domain.subject import Sex
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
@@ -248,6 +255,121 @@ class TestRegisterPersistence:
         assert result.id == raced.id
         uow.measurement_alert_repo.create_bulk.assert_not_called()
         uow.commit.assert_not_called()
+
+
+@pytest.fixture
+def make_listing_measurement(make_measurement):
+    """An ORM-like measurement with subject/establishment/responsible loaded."""
+
+    def _make():
+        m = make_measurement()
+        subject = MagicMock()
+        subject.id = uuid.uuid4()
+        subject.dni = 12345678
+        subject.sex = Sex.FEMALE
+        subject.name = "Ana"
+        subject.last_name = "Perez"
+        subject.birth_date = date(2020, 1, 1)
+        establishment = MagicMock()
+        establishment.id = uuid.uuid4()
+        establishment.name = "Comedor Norte"
+        establishment.city = "La Plata"
+        establishment.province = "Buenos Aires"
+        responsible = MagicMock()
+        responsible.id = uuid.uuid4()
+        responsible.name = "Juan"
+        responsible.last_name = "Gomez"
+        m.subject = subject
+        m.establishment = establishment
+        m.responsible = responsible
+        return m
+
+    return _make
+
+
+class TestListMeasurements:
+    pytestmark = pytest.mark.asyncio
+
+    @pytest.fixture
+    def make_uow(self):
+        def _make(measurements, total):
+            uow = AsyncMock()
+            uow.measurement_repo.get_measurement_listing = AsyncMock(
+                return_value=(measurements, total)
+            )
+            return uow
+
+        return _make
+
+    async def test_returns_enriched_items(self, make_listing_measurement, make_uow):
+        measurements = [make_listing_measurement(), make_listing_measurement()]
+        uow = make_uow(measurements, total=2)
+
+        result = await MeasurementService(uow).list_measurements(
+            page=1, page_size=20, params=MeasurementListingParams()
+        )
+
+        assert isinstance(result, PaginatedResult)
+        assert len(result.items) == 2
+        assert result.total == 2
+        item = result.items[0]
+        assert item.subject.name == "Ana"
+        assert item.establishment.city == "La Plata"
+        assert item.responsible.last_name == "Gomez"
+
+    async def test_calculates_total_pages(self, make_listing_measurement, make_uow):
+        measurements = [make_listing_measurement() for _ in range(5)]
+        uow = make_uow(measurements, total=23)
+
+        result = await MeasurementService(uow).list_measurements(
+            page=1, page_size=5, params=MeasurementListingParams()
+        )
+
+        assert result.total_pages == ceil(23 / 5)
+
+    async def test_passes_correct_offset(self, make_uow):
+        uow = make_uow([], total=0)
+        params = MeasurementListingParams()
+
+        await MeasurementService(uow).list_measurements(
+            page=3, page_size=10, params=params
+        )
+
+        uow.measurement_repo.get_measurement_listing.assert_called_once_with(
+            limit=10, offset=20, params=params
+        )
+
+
+class TestGetSubjectEvolution:
+    pytestmark = pytest.mark.asyncio
+
+    async def test_raises_when_subject_missing(self, make_uow):
+        uow = make_uow()
+        uow.subject_repo.get_by_id = AsyncMock(return_value=None)
+
+        with pytest.raises(SubjectNotFoundError):
+            await MeasurementService(uow).get_subject_evolution(uuid.uuid4())
+
+    async def test_returns_points_in_repo_order(
+        self, make_uow, make_subject, make_measurement
+    ):
+        subject = make_subject()
+        early = make_measurement()
+        early.measured_at = datetime(2024, 1, 1, tzinfo=timezone.utc)
+        late = make_measurement()
+        late.measured_at = datetime(2024, 6, 1, tzinfo=timezone.utc)
+        uow = make_uow(subject=subject)
+        uow.measurement_repo.get_subject_evolution = AsyncMock(
+            return_value=[early, late]
+        )
+
+        result = await MeasurementService(uow).get_subject_evolution(subject.id)
+
+        assert result.subject.id == subject.id
+        assert [p.measured_at for p in result.points] == [
+            early.measured_at,
+            late.measured_at,
+        ]
 
 
 class TestRegisterReturnValue:

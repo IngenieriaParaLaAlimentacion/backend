@@ -1,9 +1,10 @@
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.domain.measurement import AlertSeverity, AlertType
+from app.domain.subject import Sex
 
 # -- Request --
 
@@ -55,3 +56,64 @@ class MeasurementResponse(BaseModel):
     measured_at: datetime
     created_at: datetime
     alerts: list[AlertResponse]
+
+    model_config = {"from_attributes": True}
+
+
+class SubjectRefResponse(BaseModel):
+    id: UUID
+    dni: int
+    sex: Sex
+    name: str
+    last_name: str
+    birth_date: date
+
+    model_config = {"from_attributes": True}
+
+
+class EstablishmentRefResponse(BaseModel):
+    id: UUID
+    name: str
+    city: str
+    province: str
+
+    model_config = {"from_attributes": True}
+
+
+class ResponsibleRefResponse(BaseModel):
+    id: UUID
+    name: str
+    last_name: str
+
+    model_config = {"from_attributes": True}
+
+
+class MeasurementListItem(BaseModel):
+    id: UUID
+    measured_at: datetime
+    weight_kg: float
+    height_cm: float
+    bmi: float
+    subject: SubjectRefResponse
+    establishment: EstablishmentRefResponse
+    responsible: ResponsibleRefResponse
+    alerts: list[AlertResponse]
+
+    model_config = {"from_attributes": True}
+
+
+class EvolutionPoint(BaseModel):
+    measured_at: datetime
+    weight_kg: float
+    height_cm: float
+    bmi: float
+    alerts: list[AlertResponse]
+
+    model_config = {"from_attributes": True}
+
+
+class SubjectEvolutionResponse(BaseModel):
+    subject: SubjectRefResponse
+    points: list[EvolutionPoint]
+
+    model_config = {"from_attributes": True}

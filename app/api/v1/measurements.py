@@ -1,11 +1,22 @@
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, Query, Response, status
 
-from app.core.dependencies import get_measurement_service, require_any
+from app.api.v1.params import MeasurementListingQuery
+from app.core.dependencies import get_measurement_service, require_any, require_some
 from app.domain import UserActor
-from app.schemas.measurement_schema import MeasurementRequest, MeasurementResponse
+from app.domain.user import UserRole
+from app.schemas.measurement_schema import (
+    MeasurementListItem,
+    MeasurementRequest,
+    MeasurementResponse,
+)
+from app.schemas.pagination import PaginatedResponse
 from app.services.measurement_service import MeasurementService
 
 router = APIRouter(prefix="/measurements")
+
+require_admin_or_analyst = require_some(
+    UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN
+)
 
 
 @router.post(
@@ -43,3 +54,42 @@ async def upload_measurement(
     if not created:
         response.status_code = status.HTTP_200_OK
     return MeasurementResponse.model_validate(measurement)
+
+
+@router.get(
+    "",
+    response_model=PaginatedResponse[MeasurementListItem],
+    status_code=status.HTTP_200_OK,
+    summary="List anthropometric measurements",
+    description=(
+        "Returns a paginated list of measurements enriched with subject, "
+        "establishment and responsible data. Supports filtering by subject, "
+        "comedor, ciudad, provincia, responsible, measurement-date range and "
+        "subject age, plus sorting. Accessible by admins and analysts."
+    ),
+    responses={
+        status.HTTP_400_BAD_REQUEST: {"description": "Inconsistent filter parameters"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
+        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+    },
+)
+async def list_measurements(
+    query: MeasurementListingQuery = Depends(),
+    page: int = Query(default=1, ge=1, description="Page number, starting at 1."),
+    page_size: int = Query(
+        default=20, ge=1, le=100, description="Results per page (max 100)."
+    ),
+    _: UserActor = Depends(require_admin_or_analyst),
+    service: MeasurementService = Depends(get_measurement_service),
+) -> PaginatedResponse[MeasurementListItem]:
+    query.validate()
+    result = await service.list_measurements(
+        page=page, page_size=page_size, params=query.to_domain()
+    )
+    return PaginatedResponse[MeasurementListItem](
+        items=[MeasurementListItem.model_validate(item) for item in result.items],
+        total=result.total,
+        page=result.page,
+        page_size=result.page_size,
+        total_pages=result.total_pages,
+    )

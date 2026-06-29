@@ -2,7 +2,15 @@ from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.establishment import UserEstablishmentStatus
-from app.domain.measurement import MeasurementDomain
+from app.domain.measurement import (
+    EvolutionPointDomain,
+    MeasurementDomain,
+    MeasurementListingParams,
+    MeasurementListItemDomain,
+    SubjectEvolutionDomain,
+    SubjectRefDomain,
+)
+from app.domain.pagination import PaginatedResult
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
@@ -101,3 +109,35 @@ class MeasurementService:
 
         await self.uow.commit()
         return MeasurementDomain.from_db(measurement), True
+
+    async def list_measurements(
+        self,
+        page: int,
+        page_size: int,
+        params: MeasurementListingParams,
+    ) -> PaginatedResult[MeasurementListItemDomain]:
+        """Return a paginated, filtered and sorted list of measurements."""
+        page = max(1, page)
+        offset = (page - 1) * page_size
+        measurements, total = await self.uow.measurement_repo.get_measurement_listing(
+            limit=page_size, offset=offset, params=params
+        )
+        return PaginatedResult.build(
+            items=[MeasurementListItemDomain.from_db(m) for m in measurements],
+            total=total,
+            page=page,
+            page_size=page_size,
+        )
+
+    async def get_subject_evolution(self, subject_id: UUID) -> SubjectEvolutionDomain:
+        """Return a subject's chronological anthropometric evolution.
+
+        Raises:
+            SubjectNotFoundError: if no subject with the given id exists.
+        """
+        subject = await self._get_subject_or_raise(subject_id)
+        measurements = await self.uow.measurement_repo.get_subject_evolution(subject_id)
+        return SubjectEvolutionDomain(
+            subject=SubjectRefDomain.from_db(subject),
+            points=[EvolutionPointDomain.from_db(m) for m in measurements],
+        )

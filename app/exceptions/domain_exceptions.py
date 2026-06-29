@@ -170,6 +170,13 @@ class EmptyUpdateRequestError(BadRequestError):
         )
 
 
+class InvalidListingFilterError(BadRequestError):
+    """Exception raised when listing filter parameters are inconsistent."""
+
+    def __init__(self, detail: str):
+        super().__init__("Invalid filter", detail)
+
+
 class InvalidCredentialsError(UnauthorizedError):
     """Exception raised when credentials are invalid.
 
