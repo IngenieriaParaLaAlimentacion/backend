@@ -2,6 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Response, status
 
+from app.api.v1.params import PaginatedQueryParams
 from app.core.dependencies import (
     get_admin_service,
     get_current_admin,
@@ -35,8 +36,7 @@ router = APIRouter(prefix="/admin")
     },
 )
 async def list_users(
-    page: int = Query(default=1, ge=1),
-    page_size: int = Query(default=20, ge=1, le=100),
+    paginated: PaginatedQueryParams = Depends(),
     role: UserRole | None = Query(default=None, description="Filter by role."),
     status_filter: UserStatus | None = Query(
         default=None, alias="status", description="Filter by status."
@@ -46,7 +46,11 @@ async def list_users(
     service: AdminService = Depends(get_admin_service),
 ) -> PaginatedUsersResponse:
     result = await service.get_users_paginated(
-        page=page, page_size=page_size, role=role, status=status_filter, search=search
+        page=paginated.page,
+        page_size=paginated.page_size,
+        role=role,
+        status=status_filter,
+        search=search,
     )
     return PaginatedUsersResponse.model_validate(result)
 
@@ -156,15 +160,14 @@ async def reject_field_worker(
 )
 async def get_subject_detail(
     subject_id: UUID,
-    history_page: int = Query(default=1, ge=1),
-    history_page_size: int = Query(default=20, ge=1, le=100),
+    paginated: PaginatedQueryParams = Depends(),
     _admin: UserActor = Depends(get_current_admin),
     service: AdminService = Depends(get_admin_service),
 ) -> AdminSubjectDetailResponse:
     subject, history = await service.get_subject_detail(
         subject_id,
-        history_page=history_page,
-        history_page_size=history_page_size,
+        history_page=paginated.page,
+        history_page_size=paginated.page_size,
     )
     return AdminSubjectDetailResponse.from_domain(subject, history)
 

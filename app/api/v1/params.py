@@ -11,6 +11,14 @@ from app.exceptions.domain_exceptions import InvalidListingFilterError
 
 
 @dataclass
+class PaginatedQueryParams:
+    page: Annotated[int, Query(ge=1, description="Page number, starting at 1.")] = 1
+    page_size: Annotated[
+        int, Query(ge=1, le=100, description="Results per page (max 100).")
+    ] = 20
+
+
+@dataclass
 class EstablishmentListingQuery:
     search: Annotated[str | None, Query(max_length=100)] = None
     city: Annotated[str | None, Query(max_length=100)] = None
