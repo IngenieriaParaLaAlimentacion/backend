@@ -19,6 +19,7 @@ from app.exceptions.domain_exceptions import (
     InvalidTokenError,
     PendingValidationError,
     UserAlreadyExistsError,
+    UserNotFoundError,
 )
 from app.models import PasswordRecoveryToken
 from app.schemas.auth_schema import (
@@ -73,19 +74,17 @@ class AuthService:
             await self.uow.user_establishment_repo.preset_relation(
                 user.id, establishment.id
             )
-
-        plain_token, token_hash = create_email_verification_token()
+        verification_token, verification_token_hash = create_email_verification_token()
         created_token = await self.uow.email_verification_repo.create(
             user.id,
-            token_hash,
+            verification_token_hash,
             expires_delta=timedelta(
                 minutes=settings.email_verification_token_expire_minutes
             ),
         )
-
         await self.uow.commit()
 
-        deeplink = build_verification_deeplink(plain_token)
+        deeplink = build_verification_deeplink(verification_token)
         await send_verification_email(user.email, deeplink, created_token.expires_at)
 
         return UserDomain(
@@ -254,60 +253,54 @@ class AuthService:
         await self.uow.commit()
 
     async def verify_email(self, token: str) -> None:
-        """Verify a user's email address using a verification token.
+        """Validate a one-time verification token and mark the user's email
+        as verified.
 
         Raises:
-            InvalidTokenError: If the token is invalid, expired, or the email
-                is already verified.
+            InvalidTokenError: If the token is invalid, expired, or already used.
         """
         token_hash = encode_refresh_token(token)
-        token_record = await self.uow.email_verification_repo.get_any_by_token_hash(
+        verification_token = await self.uow.email_verification_repo.get_active_token(
             token_hash
         )
-        if not token_record:
+        if not verification_token:
             raise InvalidTokenError(
-                "El enlace de verificación es inválido o ya fue utilizado."
+                "El enlace de verificación es inválido o ha expirado."
             )
 
-        if token_record.used:
-            raise InvalidTokenError("El enlace de verificación ya fue utilizado.")
-
-        if token_record.expires_at < datetime.now(timezone.utc):
-            raise InvalidTokenError(
-                "El enlace de verificación ha expirado. Solicita un nuevo enlace."
-            )
-
-        user = await self.uow.user_repo.get_by_id(token_record.user_id)
-        if user.is_email_verified:
-            raise InvalidTokenError("El correo electrónico ya ha sido verificado.")
-
-        await self.uow.email_verification_repo.mark_used(token_record)
-        await self.uow.user_repo.update_email_verification(user.id)
+        await self.uow.email_verification_repo.mark_used(verification_token)
+        user = await self.uow.user_repo.get_by_id(verification_token.user_id)
+        user.is_email_verified = True
+        user.email_verified_at = datetime.now(timezone.utc)
         await self.uow.commit()
 
     async def resend_verification_email(self, email: str) -> None:
-        """Generate a new verification token and resend the verification email.
+        """Revoke existing verification tokens and send a fresh
+        verification email.
 
-        Notes:
-            Returns without error for unknown emails to avoid enumeration.
+        Raises:
+            UserNotFoundError: If no user with the given email exists.
         """
         user = await self.uow.user_repo.get_by_email(email)
-        if not user or user.is_email_verified:
+        if not user:
+            raise UserNotFoundError(email)
+
+        if user.is_email_verified:
             return
 
         await self.uow.email_verification_repo.revoke_active_for_user(user.id)
 
-        plain_token, token_hash = create_email_verification_token()
+        verification_token, verification_token_hash = create_email_verification_token()
         created_token = await self.uow.email_verification_repo.create(
             user.id,
-            token_hash,
+            verification_token_hash,
             expires_delta=timedelta(
                 minutes=settings.email_verification_token_expire_minutes
             ),
         )
         await self.uow.commit()
 
-        deeplink = build_verification_deeplink(plain_token)
+        deeplink = build_verification_deeplink(verification_token)
         await send_verification_email(user.email, deeplink, created_token.expires_at)
 
     async def create_recovery_token(
