@@ -1,10 +1,21 @@
 from datetime import date, datetime, timezone
+from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    PlainSerializer,
+    field_validator,
+)
 
 from app.domain.measurement import AlertSeverity, AlertType
 from app.domain.subject import Sex
+
+# BMI carries full precision in storage and alert computation; it is rounded to
+# two decimals only when serialized for API responses.
+RoundedBmi = Annotated[float, PlainSerializer(lambda v: round(v, 2), return_type=float)]
 
 # -- Request --
 
@@ -52,15 +63,15 @@ class MeasurementResponse(BaseModel):
     establishment_id: UUID
     weight_kg: float
     height_cm: float
-    bmi: float
+    bmi: RoundedBmi
     measured_at: datetime
     created_at: datetime
     alerts: list[AlertResponse]
 
-    model_config = {"from_attributes": True}
-
 
 class SubjectRefResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     dni: int
     sex: Sex
@@ -68,52 +79,50 @@ class SubjectRefResponse(BaseModel):
     last_name: str
     birth_date: date
 
-    model_config = {"from_attributes": True}
-
 
 class EstablishmentRefResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     name: str
     city: str
     province: str
 
-    model_config = {"from_attributes": True}
-
 
 class ResponsibleRefResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     name: str
     last_name: str
 
-    model_config = {"from_attributes": True}
-
 
 class MeasurementListItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     measured_at: datetime
     weight_kg: float
     height_cm: float
-    bmi: float
+    bmi: RoundedBmi
     subject: SubjectRefResponse
     establishment: EstablishmentRefResponse
     responsible: ResponsibleRefResponse
     alerts: list[AlertResponse]
 
-    model_config = {"from_attributes": True}
-
 
 class EvolutionPoint(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     measured_at: datetime
     weight_kg: float
     height_cm: float
-    bmi: float
+    bmi: RoundedBmi
     alerts: list[AlertResponse]
-
-    model_config = {"from_attributes": True}
 
 
 class SubjectEvolutionResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     subject: SubjectRefResponse
     points: list[EvolutionPoint]
-
-    model_config = {"from_attributes": True}
