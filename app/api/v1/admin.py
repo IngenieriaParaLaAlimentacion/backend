@@ -227,3 +227,4 @@ async def resend_invite(
     _admin: UserActor = Depends(get_current_admin),
 ) -> Response:
     await service.resend_invite(user_id)
+    return Response(status_code=status.HTTP_202_ACCEPTED)
