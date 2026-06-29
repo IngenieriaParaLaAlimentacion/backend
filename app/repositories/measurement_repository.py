@@ -6,7 +6,11 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.domain.measurement import MeasurementListingParams, MeasurementSortOrder
+from app.domain.measurement import (
+    EvolutionOrder,
+    MeasurementListingParams,
+    MeasurementSortOrder,
+)
 from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.establishment import Establishment
 from app.models.measurement import Measurement
@@ -81,8 +85,9 @@ class MeasurementRepository:
     ) -> tuple[list[Measurement], int]:
         """Return a paginated list of measurements and the total matching count.
 
-        Joins Subject and Establishment to support filtering by comedor location
-        and subject age. City and province are case-insensitive exact matches.
+        Joins Subject and Establishment to support filtering by establishment
+        location and subject age. City and province are case-insensitive exact
+        matches.
         """
         base_query = (
             select(Measurement)
@@ -110,12 +115,25 @@ class MeasurementRepository:
             self.db, base_query, count_query, order_by, limit, offset
         )
 
-    async def get_subject_evolution(self, subject_id: UUID) -> list[Measurement]:
-        """Return a subject's measurements ordered chronologically (ascending)."""
+    async def get_subject_evolution(
+        self,
+        subject_id: UUID,
+        order: EvolutionOrder = EvolutionOrder.OLDEST_FIRST,
+    ) -> list[Measurement]:
+        """Return a subject's measurements ordered chronologically.
+
+        ``order`` selects oldest-first (ascending) or newest-first (descending).
+        """
+        date_column = Measurement.measured_at
+        order_by = (
+            asc(date_column)
+            if order == EvolutionOrder.OLDEST_FIRST
+            else desc(date_column)
+        )
         result = await self.db.execute(
             select(Measurement)
             .where(Measurement.subject_id == subject_id)
-            .order_by(asc(Measurement.measured_at))
+            .order_by(order_by)
         )
         return result.scalars().all()
 

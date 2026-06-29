@@ -3,6 +3,7 @@ from uuid import UUID
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.measurement import (
+    EvolutionOrder,
     EvolutionPointDomain,
     MeasurementDomain,
     MeasurementListingParams,
@@ -129,14 +130,22 @@ class MeasurementService:
             page_size=page_size,
         )
 
-    async def get_subject_evolution(self, subject_id: UUID) -> SubjectEvolutionDomain:
+    async def get_subject_evolution(
+        self,
+        subject_id: UUID,
+        order: EvolutionOrder = EvolutionOrder.OLDEST_FIRST,
+    ) -> SubjectEvolutionDomain:
         """Return a subject's chronological anthropometric evolution.
+
+        ``order`` selects oldest-first (default) or newest-first.
 
         Raises:
             SubjectNotFoundError: if no subject with the given id exists.
         """
         subject = await self._get_subject_or_raise(subject_id)
-        measurements = await self.uow.measurement_repo.get_subject_evolution(subject_id)
+        measurements = await self.uow.measurement_repo.get_subject_evolution(
+            subject_id, order=order
+        )
         return SubjectEvolutionDomain(
             subject=SubjectRefDomain.from_db(subject),
             points=[EvolutionPointDomain.from_db(m) for m in measurements],

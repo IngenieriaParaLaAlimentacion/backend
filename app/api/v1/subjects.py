@@ -9,6 +9,7 @@ from app.core.dependencies import (
     require_some,
 )
 from app.domain import UserActor
+from app.domain.measurement import EvolutionOrder
 from app.domain.user import UserRole
 from app.schemas.measurement_schema import SubjectEvolutionResponse
 from app.schemas.pagination import PaginatedResponse
@@ -125,8 +126,10 @@ async def list_subjects(
     status_code=status.HTTP_200_OK,
     summary="Get a subject's anthropometric evolution",
     description=(
-        "Returns the subject's full chronological (ascending by date) weight, "
-        "height and BMI series for trend charting. Accessible by admins and analysts."
+        "Returns the subject's full weight, height and BMI series for trend "
+        "charting, ordered by measurement date. Use the `order` parameter to "
+        "choose oldest-first (default) or newest-first. Accessible by admins "
+        "and analysts."
     ),
     responses={
         status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
@@ -136,10 +139,14 @@ async def list_subjects(
 )
 async def get_subject_evolution(
     subject_id: UUID,
+    order: EvolutionOrder = Query(
+        default=EvolutionOrder.OLDEST_FIRST,
+        description="Chronological order of the returned series.",
+    ),
     _: UserActor = Depends(require_admin_or_analyst),
     service: MeasurementService = Depends(get_measurement_service),
 ) -> SubjectEvolutionResponse:
-    evolution = await service.get_subject_evolution(subject_id)
+    evolution = await service.get_subject_evolution(subject_id, order=order)
     return SubjectEvolutionResponse.model_validate(evolution)
 
 

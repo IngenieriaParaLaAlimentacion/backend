@@ -88,6 +88,13 @@ class MeasurementSortOrder(StrEnum):
     HEIGHT_ASC = "height_asc"
 
 
+class EvolutionOrder(StrEnum):
+    """Chronological order for a subject's anthropometric evolution series."""
+
+    OLDEST_FIRST = "oldest_first"
+    NEWEST_FIRST = "newest_first"
+
+
 @dataclass
 class MeasurementListingParams:
     """Query parameters for a paginated measurement listing."""

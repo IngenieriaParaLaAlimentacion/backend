@@ -76,7 +76,13 @@ via `sort_order`; server-side pagination via `page` / `total_pages`.
 ## 2. Subject evolution (growth chart) — CA4
 `GET /api/v1/subjects/{subject_id}/measurements/evolution`
 
-No pagination. Points are ordered chronologically (ascending `measured_at`).
+No pagination. Points are ordered by `measured_at`.
+
+Query params:
+
+| Param | Type | Notes |
+|-------|------|-------|
+| `order` | enum | `oldest_first` (default) or `newest_first` |
 
 ### Response `200` — `SubjectEvolutionResponse`
 ```json

@@ -64,7 +64,7 @@ async def upload_measurement(
     description=(
         "Returns a paginated list of measurements enriched with subject, "
         "establishment and responsible data. Supports filtering by subject, "
-        "comedor, ciudad, provincia, responsible, measurement-date range and "
+        "establishment, city, province, responsible, measurement-date range and "
         "subject age, plus sorting. Accessible by admins and analysts."
     ),
     responses={

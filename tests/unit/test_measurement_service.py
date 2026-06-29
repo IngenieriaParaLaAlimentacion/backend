@@ -9,6 +9,7 @@ from app.domain.establishment import UserEstablishmentStatus
 from app.domain.measurement import (
     AlertSeverity,
     AlertType,
+    EvolutionOrder,
     MeasurementDomain,
     MeasurementListingParams,
 )
@@ -370,6 +371,30 @@ class TestGetSubjectEvolution:
             early.measured_at,
             late.measured_at,
         ]
+
+    async def test_defaults_to_oldest_first(self, make_uow, make_subject):
+        subject = make_subject()
+        uow = make_uow(subject=subject)
+        uow.measurement_repo.get_subject_evolution = AsyncMock(return_value=[])
+
+        await MeasurementService(uow).get_subject_evolution(subject.id)
+
+        uow.measurement_repo.get_subject_evolution.assert_called_once_with(
+            subject.id, order=EvolutionOrder.OLDEST_FIRST
+        )
+
+    async def test_passes_requested_order_to_repo(self, make_uow, make_subject):
+        subject = make_subject()
+        uow = make_uow(subject=subject)
+        uow.measurement_repo.get_subject_evolution = AsyncMock(return_value=[])
+
+        await MeasurementService(uow).get_subject_evolution(
+            subject.id, order=EvolutionOrder.NEWEST_FIRST
+        )
+
+        uow.measurement_repo.get_subject_evolution.assert_called_once_with(
+            subject.id, order=EvolutionOrder.NEWEST_FIRST
+        )
 
 
 class TestRegisterReturnValue:
