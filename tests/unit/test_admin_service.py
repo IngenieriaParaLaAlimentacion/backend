@@ -82,6 +82,18 @@ def _make_approve_uow(user=None, relations=None, establishments=None):
     return uow
 
 
+def _make_user_info_uow(user=None, establishment_ids_by_user=None, establishments=None):
+    uow = AsyncMock()
+    uow.user_repo.get_by_id = AsyncMock(return_value=user)
+    uow.user_establishment_repo.get_by_user_ids = AsyncMock(
+        return_value=establishment_ids_by_user
+        if establishment_ids_by_user is not None
+        else ({user.id: []} if user else {})
+    )
+    uow.establishment_repo.find_by_ids = AsyncMock(return_value=establishments or [])
+    return uow
+
+
 class TestGetPaginatedUsers:
     @pytest.mark.asyncio
     async def test_returns_correct_pagination_metadata(self, make_uow, make_service):
@@ -400,6 +412,56 @@ class TestRejectEstablishments:
 
         with pytest.raises(UserEstablishmentNotFoundError):
             await service.reject_establishments(user.id, [uuid.uuid4()])
+
+
+class TestGetUserInfo:
+    @pytest.mark.asyncio
+    async def test_user_not_found_raises_error(self, mock_auth_service):
+        uow = _make_user_info_uow(user=None)
+        service = AdminService(uow, mock_auth_service)
+
+        with pytest.raises(UserNotFoundError):
+            await service.get_user_info(uuid.uuid4())
+
+    @pytest.mark.asyncio
+    async def test_calls_repo_with_correct_user_id(self, mock_auth_service):
+        user = _make_user()
+        uow = _make_user_info_uow(user=user)
+        service = AdminService(uow, mock_auth_service)
+
+        await service.get_user_info(user.id)
+
+        uow.user_repo.get_by_id.assert_called_once_with(user.id)
+
+    @pytest.mark.asyncio
+    async def test_returns_user_with_no_establishments(self, mock_auth_service):
+        user = _make_user()
+        uow = _make_user_info_uow(user=user)
+        service = AdminService(uow, mock_auth_service)
+
+        result = await service.get_user_info(user.id)
+
+        assert result.id == user.id
+        assert result.establishments == []
+
+    @pytest.mark.asyncio
+    async def test_returns_user_with_hydrated_establishments(
+        self, mock_auth_service, make_establishment
+    ):
+        user = _make_user()
+        estab = make_establishment(name="Comedor Norte")
+        uow = _make_user_info_uow(
+            user=user,
+            establishment_ids_by_user={user.id: [estab.id]},
+            establishments=[estab],
+        )
+        service = AdminService(uow, mock_auth_service)
+
+        result = await service.get_user_info(user.id)
+
+        assert len(result.establishments) == 1
+        assert result.establishments[0].id == estab.id
+        assert result.establishments[0].name == "Comedor Norte"
 
 
 class TestRejectFieldWorker:
