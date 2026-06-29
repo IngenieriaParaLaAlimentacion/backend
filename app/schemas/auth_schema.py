@@ -84,3 +84,11 @@ class PasswordRecoveryConfirmRequest(BaseModel):
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters")
         return v
+
+
+class VerifyEmailRequest(BaseModel):
+    token: Annotated[str, StringConstraints(strict=True, min_length=1)]
+
+
+class ResendVerificationRequest(BaseModel):
+    email: EmailStr
