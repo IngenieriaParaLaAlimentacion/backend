@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 from app.core.config import settings
@@ -245,6 +245,28 @@ class AuthService:
 
         await self.uow.password_recovery_repo.mark_used(recovery_token)
         await self.uow.token_repo.revoke_all_by_user_id(recovery_token.user_id)
+        await self.uow.commit()
+
+    async def verify_email(self, token: str) -> None:
+        """Validate a one-time verification token and mark the user's email
+        as verified.
+
+        Raises:
+            InvalidTokenError: If the token is invalid, expired, or already used.
+        """
+        token_hash = encode_refresh_token(token)
+        verification_token = await self.uow.email_verification_repo.get_active_token(
+            token_hash
+        )
+        if not verification_token:
+            raise InvalidTokenError(
+                "El enlace de verificación es inválido o ha expirado."
+            )
+
+        await self.uow.email_verification_repo.mark_used(verification_token)
+        user = await self.uow.user_repo.get_by_id(verification_token.user_id)
+        user.is_email_verified = True
+        user.email_verified_at = datetime.now(timezone.utc)
         await self.uow.commit()
 
     async def resend_verification_email(self, email: str) -> None:
