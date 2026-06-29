@@ -280,6 +280,35 @@ class TestUpdateProfile:
         called_id, _ = uow.user_repo.update_profile.call_args.args
         assert called_id == user.id
 
+    @pytest.mark.asyncio
+    async def test_new_optional_fields_are_written_and_returned(self):
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        uow = _make_uow(user=user)
+        service = UserService(uow)
+
+        data = ProfileUpdateRequest(locality="Villa Lugano", contact_phone="1134567890")
+        profile = await service.update_profile(_actor_for(user), data)
+
+        _, values = uow.user_repo.update_profile.call_args.args
+        assert values == {"locality": "Villa Lugano", "contact_phone": "1134567890"}
+        assert profile.locality == "Villa Lugano"
+        assert profile.contact_phone == "1134567890"
+        assert profile.description is None
+
+    @pytest.mark.asyncio
+    async def test_unset_optional_fields_fall_back_to_existing_values(self):
+        user = _make_user(role=UserRole.ANALYST)
+        user.locality = "Existing locality"
+        uow = _make_uow(user=user)
+        service = UserService(uow)
+
+        data = ProfileUpdateRequest(name="New Name")
+        profile = await service.update_profile(_actor_for(user), data)
+
+        assert profile.locality == "Existing locality"
+        assert profile.description is None
+        assert profile.contact_phone is None
+
 
 class TestGetOwnEstablishments:
     @pytest.mark.asyncio
