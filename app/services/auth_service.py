@@ -5,6 +5,7 @@ from app.core.config import settings
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.core.security import (
     create_access_token,
+    create_email_verification_token,
     create_password_recovery_token,
     create_refresh_token,
     encode_refresh_token,
@@ -28,7 +29,12 @@ from app.schemas.auth_schema import (
     RefreshRequest,
     RegisterFieldWorkerRequest,
 )
-from app.services.email_service import build_recovery_deeplink, send_recovery_email
+from app.services.email_service import (
+    build_recovery_deeplink,
+    build_verification_deeplink,
+    send_recovery_email,
+    send_verification_email,
+)
 
 
 class AuthService:
@@ -67,7 +73,18 @@ class AuthService:
             await self.uow.user_establishment_repo.preset_relation(
                 user.id, establishment.id
             )
+        verification_token, verification_token_hash = create_email_verification_token()
+        created_token = await self.uow.email_verification_repo.create(
+            user.id,
+            verification_token_hash,
+            expires_delta=timedelta(
+                minutes=settings.email_verification_token_expire_minutes
+            ),
+        )
         await self.uow.commit()
+
+        deeplink = build_verification_deeplink(verification_token)
+        await send_verification_email(user.email, deeplink, created_token.expires_at)
 
         return UserDomain(
             id=user.id,
