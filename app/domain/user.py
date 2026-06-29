@@ -40,6 +40,7 @@ class BaseUserDomain:
     last_name: str
     role: UserRole
     status: UserStatus
+    is_email_verified: bool
 
 
 @dataclass

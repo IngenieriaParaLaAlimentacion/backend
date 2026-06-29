@@ -22,6 +22,7 @@ class UserAdminView(BaseModel):
     last_name: str
     role: str
     status: str
+    is_email_verified: bool
     establishments: list[EstablishmentResponse]
 
     model_config = {"from_attributes": True}
