@@ -1,15 +1,10 @@
 import uuid
-from typing import Annotated
 
-from pydantic import BaseModel, Field, StringConstraints, model_validator
+from pydantic import BaseModel, ConfigDict, model_validator
 
-ValidStr = Annotated[
-    str,
-    StringConstraints(strict=True, strip_whitespace=True, min_length=1, max_length=100),
-]
+from app.schemas.types import Latitude, Longitude, ValidStr
 
-Latitude = Annotated[float, Field(ge=-90, le=90)]
-Longitude = Annotated[float, Field(ge=-180, le=180)]
+# -- Request --
 
 
 class EstablishmentRequest(BaseModel):
@@ -49,7 +44,12 @@ class EstablishmentUpdateRequest(BaseModel):
         return self
 
 
+# -- Response --
+
+
 class EstablishmentResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: uuid.UUID
     name: str
     formatted_address: str
@@ -58,5 +58,3 @@ class EstablishmentResponse(BaseModel):
     place_id: str
     city: str
     province: str
-
-    model_config = {"from_attributes": True}

@@ -1,9 +1,11 @@
 from datetime import datetime, timezone
 from uuid import UUID
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.domain.measurement import AlertSeverity, AlertType
+
+# -- Request --
 
 
 class MeasurementRequest(BaseModel):
@@ -29,15 +31,20 @@ class MeasurementRequest(BaseModel):
         return v
 
 
+# -- Response --
+
+
 class AlertResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     alert_type: AlertType
     severity: AlertSeverity
     detail: str
 
-    model_config = {"from_attributes": True}
-
 
 class MeasurementResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     subject_id: UUID
     responsible_id: UUID
@@ -48,5 +55,3 @@ class MeasurementResponse(BaseModel):
     measured_at: datetime
     created_at: datetime
     alerts: list[AlertResponse]
-
-    model_config = {"from_attributes": True}
