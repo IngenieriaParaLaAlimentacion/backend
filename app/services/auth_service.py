@@ -19,6 +19,7 @@ from app.exceptions.domain_exceptions import (
     InvalidTokenError,
     PendingValidationError,
     UserAlreadyExistsError,
+    UserNotFoundError,
 )
 from app.models import PasswordRecoveryToken
 from app.schemas.auth_schema import (
@@ -245,6 +246,35 @@ class AuthService:
         await self.uow.password_recovery_repo.mark_used(recovery_token)
         await self.uow.token_repo.revoke_all_by_user_id(recovery_token.user_id)
         await self.uow.commit()
+
+    async def resend_verification_email(self, email: str) -> None:
+        """Revoke existing verification tokens and send a fresh
+        verification email.
+
+        Raises:
+            UserNotFoundError: If no user with the given email exists.
+        """
+        user = await self.uow.user_repo.get_by_email(email)
+        if not user:
+            raise UserNotFoundError(email)
+
+        if user.is_email_verified:
+            return
+
+        await self.uow.email_verification_repo.revoke_active_for_user(user.id)
+
+        verification_token, verification_token_hash = create_email_verification_token()
+        created_token = await self.uow.email_verification_repo.create(
+            user.id,
+            verification_token_hash,
+            expires_delta=timedelta(
+                minutes=settings.email_verification_token_expire_minutes
+            ),
+        )
+        await self.uow.commit()
+
+        deeplink = build_verification_deeplink(verification_token)
+        await send_verification_email(user.email, deeplink, created_token.expires_at)
 
     async def create_recovery_token(
         self, user_id: UUID
