@@ -18,7 +18,7 @@ router = APIRouter(prefix="/auth")
 
 
 @router.post(
-    "/register/establishment-manager",
+    "/register/field-worker",
     response_model=RegistrationResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Register field worker",

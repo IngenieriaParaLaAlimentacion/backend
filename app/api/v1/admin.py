@@ -52,7 +52,7 @@ async def list_users(
 
 
 @router.patch(
-    "/managers/{user_id}/establishments/approve",
+    "/field-worker/{user_id}/establishments/approve",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Approve establishment access for a field worker",
     description="Approves the given establishments for the field worker and "
@@ -83,7 +83,7 @@ async def approve_establishments(
 
 
 @router.patch(
-    "/managers/{user_id}/establishments/reject",
+    "/field-worker/{user_id}/establishments/reject",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Reject establishment access for a field worker",
     description="Rejects the given establishments for the field worker. "
@@ -114,7 +114,7 @@ async def reject_establishments(
 
 
 @router.patch(
-    "/managers/{user_id}/reject",
+    "/field-worker/{user_id}/reject",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Reject all access for a field worker",
     description="Rejects all establishments for the given field worker. "
@@ -191,15 +191,18 @@ async def invite_admin(
 
 
 @router.post(
-    "/invite-professional",
+    "/invite-analyst",
     status_code=status.HTTP_202_ACCEPTED,
     response_class=Response,
     summary="Invite analyst",
     description="Creates an analyst user and sends a password setup link by email.",
     responses={
         status.HTTP_202_ACCEPTED: {"description": "Invitation sent successfully"},
-        status.HTTP_409_CONFLICT: {"description": "Email already exists"},
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Missing or invalid authentication token"
+        },
         status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        status.HTTP_409_CONFLICT: {"description": "Email already exists"},
     },
 )
 async def invite_analyst(

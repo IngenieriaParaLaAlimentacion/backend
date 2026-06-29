@@ -11,7 +11,7 @@ pytestmark = pytest.mark.asyncio
 LOGIN_URL = "/api/v1/auth/login"
 LOGOUT_URL = "/api/v1/auth/logout"
 REFRESH_URL = "/api/v1/auth/refresh"
-REGISTER_URL = "/api/v2/auth/register/field-worker"
+REGISTER_URL = "/api/v1/auth/register/field-worker"
 
 
 @pytest_asyncio.fixture()
