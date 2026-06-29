@@ -1,9 +1,21 @@
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
+from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    PlainSerializer,
+    field_validator,
+)
 
 from app.domain.measurement import AlertSeverity, AlertType
+from app.domain.subject import Sex
+
+# BMI carries full precision in storage and alert computation; it is rounded to
+# two decimals only when serialized for API responses.
+RoundedBmi = Annotated[float, PlainSerializer(lambda v: round(v, 2), return_type=float)]
 
 # -- Request --
 
@@ -51,7 +63,66 @@ class MeasurementResponse(BaseModel):
     establishment_id: UUID
     weight_kg: float
     height_cm: float
-    bmi: float
+    bmi: RoundedBmi
     measured_at: datetime
     created_at: datetime
     alerts: list[AlertResponse]
+
+
+class SubjectRefResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    dni: int
+    sex: Sex
+    name: str
+    last_name: str
+    birth_date: date
+
+
+class EstablishmentRefResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    name: str
+    city: str
+    province: str
+
+
+class ResponsibleRefResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    name: str
+    last_name: str
+
+
+class MeasurementListItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    measured_at: datetime
+    weight_kg: float
+    height_cm: float
+    bmi: RoundedBmi
+    subject: SubjectRefResponse
+    establishment: EstablishmentRefResponse
+    responsible: ResponsibleRefResponse
+    alerts: list[AlertResponse]
+
+
+class EvolutionPoint(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    measured_at: datetime
+    weight_kg: float
+    height_cm: float
+    bmi: RoundedBmi
+    alerts: list[AlertResponse]
+
+
+class SubjectEvolutionResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    subject: SubjectRefResponse
+    points: list[EvolutionPoint]
