@@ -253,8 +253,25 @@ class AdminService:
             page_size=page_size,
         )
 
-    async def invite_user(self, data: InviteAdminRequest, role: UserRole) -> None:
+    async def _issue_and_send_invite(self, user: User) -> None:
+        """Generate a fresh recovery token for `user` and email the invite
+        deeplink. Shared by invite_user and resend_invite."""
+        created_token, plain_token = await self.auth_service.create_recovery_token(
+            user.id
+        )
+        await self.uow.commit()
+        await send_invite_email(
+            user.email,
+            build_recovery_deeplink(plain_token, user.role),
+            created_token.expires_at,
+            user.role,
+        )
+
+    async def invite_user(self, data: InviteAdminRequest, role: UserRole) -> UUID:
         """Create a new admin user and send a password setup link by email.
+
+        Returns:
+            The id of the newly created user.
 
         Raises:
             UserAlreadyExistsError: If the email already belongs to a user,
@@ -278,6 +295,7 @@ class AdminService:
         await self.uow.commit()
 
         await self._issue_and_send_invite(user)
+        return user.id
 
     async def resend_invite(self, user_id: UUID) -> None:
         """Re-send the invitation email for a still-pending invited user.

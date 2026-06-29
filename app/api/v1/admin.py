@@ -13,6 +13,7 @@ from app.schemas.admin_schema import (
     EstablishmentAccessRequest,
     FullUserAdminView,
     InviteAdminRequest,
+    InviteAdminResponse,
     PaginatedUsersResponse,
 )
 from app.services.admin_service import AdminService
@@ -153,33 +154,41 @@ async def get_subject_detail(
 @router.post(
     "/invite-admin",
     status_code=status.HTTP_202_ACCEPTED,
-    response_class=Response,
+    response_model=InviteAdminResponse,
     summary="Invite admin",
-    description="Creates an admin user and sends a password setup link by email.",
+    description="Creates an admin user and sends a password setup link by email. "
+    "Returns the created user's id for the resend-invitation flow.",
     responses={
-        status.HTTP_202_ACCEPTED: {"description": "Invitation sent successfully"},
-        **AUTH_RESPONSES,
+        status.HTTP_202_ACCEPTED: {
+            "description": "Invitation sent; created user's id returned."
+        },
         status.HTTP_409_CONFLICT: {"description": "Email already exists"},
+        **AUTH_RESPONSES,
     },
 )
 async def invite_admin(
     data: InviteAdminRequest,
     service: AdminService = Depends(get_admin_service),
     _admin: UserActor = Depends(get_current_admin),
-) -> Response:
-    await service.invite_user(data, role=UserRole.ADMIN)
-    return Response(status_code=status.HTTP_202_ACCEPTED)
+) -> InviteAdminResponse:
+    user_id = await service.invite_user(data, role=UserRole.ADMIN)
+    return InviteAdminResponse(user_id=user_id)
 
 
 @router.post(
     "/invite-analyst",
     status_code=status.HTTP_202_ACCEPTED,
-    response_class=Response,
+    response_model=InviteAdminResponse,
     summary="Invite analyst",
-    description="Creates an analyst user and sends a password setup link by email.",
+    description="Creates an analyst user and sends a password setup link by email. "
+    "Returns the created user's id for the resend-invitation flow.",
     responses={
         status.HTTP_202_ACCEPTED: {"description": "Invitation sent successfully"},
         **AUTH_RESPONSES,
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Missing or invalid authentication token"
+        },
+        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
         status.HTTP_409_CONFLICT: {"description": "Email already exists"},
     },
 )
@@ -187,9 +196,9 @@ async def invite_analyst(
     data: InviteAdminRequest,
     service: AdminService = Depends(get_admin_service),
     _admin: UserActor = Depends(get_current_admin),
-) -> Response:
-    await service.invite_user(data, role=UserRole.ANALYST)
-    return Response(status_code=status.HTTP_202_ACCEPTED)
+) -> InviteAdminResponse:
+    user_id = await service.invite_user(data, role=UserRole.ANALYST)
+    return InviteAdminResponse(user_id=user_id)
 
 
 @router.patch(

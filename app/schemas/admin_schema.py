@@ -98,3 +98,14 @@ class AdminSubjectDetailResponse(SubjectResponse):
                 ),
             }
         )
+
+
+class InviteAdminRequest(BaseModel):
+    email: EmailStr
+
+
+class InviteAdminResponse(BaseModel):
+    user_id: UUID = Field(
+        description="ID of the newly created admin/analyst user. Use it to drive "
+        "the resend-invitation action."
+    )

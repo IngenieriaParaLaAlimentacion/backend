@@ -14,6 +14,8 @@ from app.models.user import User
 pytestmark = pytest.mark.asyncio
 
 INVITE_ADMIN_URL = "/api/v1/admin/invite-admin"
+INVITE_ANALYST_URL = "/api/v1/admin/invite-professional"
+INVITE_ANALYST_V2_URL = "/api/v2/admin/invite-analyst"
 RESEND_INVITE_URL = "/api/v1/admin/users/{user_id}/resend-invite"
 
 
@@ -110,13 +112,61 @@ class TestInviteAdminSuccess:
         mock_send.assert_called_once()
         assert mock_send.call_args[0][0] == email
 
-    async def test_response_body_is_empty(self, client, admin_headers):
-        """202 response should have no body."""
+    async def test_response_returns_created_user_id(self, client, admin_headers):
+        """202 response should carry the created user's id in the body."""
+        email = f"admin_{uuid.uuid4().hex[:6]}@test.com"
+
         with patch("app.services.admin_service.send_invite_email"):
             response = await client.post(
-                INVITE_ADMIN_URL, json=_invite_body(), headers=admin_headers
+                INVITE_ADMIN_URL, json={"email": email}, headers=admin_headers
             )
-        assert response.content == b""
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(select(User).where(User.email == email))
+            user = result.scalar_one()
+
+        body = response.json()
+        assert body == {"user_id": str(user.id)}
+
+
+class TestInviteAnalystSuccess:
+    async def test_returns_202_with_created_user_id(self, client, admin_headers):
+        """Analyst invite should return 202 and the created user's id."""
+        email = f"analyst_{uuid.uuid4().hex[:6]}@test.com"
+
+        with patch("app.services.admin_service.send_invite_email"):
+            response = await client.post(
+                INVITE_ANALYST_URL, json={"email": email}, headers=admin_headers
+            )
+
+        assert response.status_code == status.HTTP_202_ACCEPTED
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(select(User).where(User.email == email))
+            user = result.scalar_one()
+
+        assert user.role == UserRole.ANALYST
+        assert response.json() == {"user_id": str(user.id)}
+
+
+class TestInviteAnalystV2Success:
+    async def test_returns_202_with_created_user_id(self, client, admin_headers):
+        """v2 analyst invite should return 202 and the created user's id."""
+        email = f"analyst_{uuid.uuid4().hex[:6]}@test.com"
+
+        with patch("app.services.admin_service.send_invite_email"):
+            response = await client.post(
+                INVITE_ANALYST_V2_URL, json={"email": email}, headers=admin_headers
+            )
+
+        assert response.status_code == status.HTTP_202_ACCEPTED
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(select(User).where(User.email == email))
+            user = result.scalar_one()
+
+        assert user.role == UserRole.ANALYST
+        assert response.json() == {"user_id": str(user.id)}
 
 
 class TestInviteAdminConflict:
