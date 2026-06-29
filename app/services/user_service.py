@@ -59,6 +59,7 @@ class UserService:
             last_name=user.last_name,
             role=user.role,
             status=user.status,
+            is_email_verified=user.is_email_verified,
             establishments=establishments,
         )
 
@@ -133,6 +134,7 @@ class UserService:
             last_name=last_name,
             role=role,
             status=status,
+            is_email_verified=user.is_email_verified,
             establishments=establishments,
         )
 

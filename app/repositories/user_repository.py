@@ -80,6 +80,9 @@ class UserRepository:
         if status is not None:
             query = query.where(User.status == status)
             count_query = count_query.where(User.status == status)
+            if status == UserStatus.PENDING_VALIDATION:
+                query = query.where(User.is_email_verified.is_(True))
+                count_query = count_query.where(User.is_email_verified.is_(True))
         if search:
             escaped = (
                 search.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
@@ -113,9 +116,28 @@ class UserRepository:
         """
         await self.db.execute(update(User).where(User.id == user_id).values(**values))
 
-    async def get_pending(self) -> list[User]:
-        """Return all field workers awaiting admin approval."""
-        return await self.get_all(
-            role=UserRole.FIELD_WORKER,
-            status=UserStatus.PENDING_VALIDATION,
+    async def update_email_verification(self, user_id: UUID) -> None:
+        """Mark email as verified and record the verification timestamp."""
+        await self.db.execute(
+            update(User)
+            .where(User.id == user_id)
+            .values(
+                is_email_verified=True,
+                email_verified_at=func.now(),
+            )
         )
+
+    async def get_pending(self) -> list[User]:
+        """Return all field workers awaiting admin approval whose email
+        has already been verified."""
+        query = (
+            select(User)
+            .where(
+                User.role == UserRole.FIELD_WORKER,
+                User.status == UserStatus.PENDING_VALIDATION,
+                User.is_email_verified.is_(True),
+            )
+            .order_by(User.created_at.desc())
+        )
+        result = await self.db.execute(query)
+        return result.scalars().all()
