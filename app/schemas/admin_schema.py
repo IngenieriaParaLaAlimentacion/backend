@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from app.domain.pagination import PaginatedResult
 from app.domain.subject import SubjectDomain
@@ -14,8 +14,23 @@ from app.schemas.subject_schema import (
     SubjectResponse,
 )
 
+# -- Request --
+
+
+class EstablishmentAccessRequest(BaseModel):
+    establishment_ids: Annotated[list[UUID], Field(min_length=1)]
+
+
+class InviteAdminRequest(BaseModel):
+    email: EmailStr
+
+
+# -- Response --
+
 
 class UserAdminView(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     email: str
     name: str
@@ -25,21 +40,15 @@ class UserAdminView(BaseModel):
     is_email_verified: bool
     establishments: list[EstablishmentResponse]
 
-    model_config = {"from_attributes": True}
-
 
 class PaginatedUsersResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     items: list[UserAdminView]
     total: int
     page: int
     page_size: int
     total_pages: int
-
-    model_config = {"from_attributes": True}
-
-
-class EstablishmentAccessRequest(BaseModel):
-    establishment_ids: Annotated[list[UUID], Field(min_length=1)]
 
 
 class AdminSubjectDetailResponse(SubjectResponse):
@@ -74,7 +83,3 @@ class AdminSubjectDetailResponse(SubjectResponse):
                 ),
             }
         )
-
-
-class InviteAdminRequest(BaseModel):
-    email: EmailStr

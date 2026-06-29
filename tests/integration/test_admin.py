@@ -16,10 +16,10 @@ pytestmark = pytest.mark.asyncio
 
 ADMIN_USERS_URL = "/api/v1/admin/users"
 ADMIN_SUBJECTS_URL = "/api/v1/admin/subjects"
-REGISTER_FIELD_WORKER_URL = "/api/v2/auth/register/field-worker"
-APPROVE_URL = "/api/v2/admin/field-worker/{user_id}/establishments/approve"
-REJECT_URL = "/api/v2/admin/field-worker/{user_id}/establishments/reject"
-REJECT_FIELD_WORKER_URL = "/api/v2/admin/field-worker/{user_id}/reject"
+REGISTER_FIELD_WORKER_URL = "/api/v1/auth/register/field-worker"
+APPROVE_URL = "/api/v1/admin/field-worker/{user_id}/establishments/approve"
+REJECT_URL = "/api/v1/admin/field-worker/{user_id}/establishments/reject"
+REJECT_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/reject"
 SUBJECTS_URL = "/api/v1/subjects"
 
 

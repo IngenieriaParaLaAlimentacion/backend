@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 
-from app.api.v1.params import EstablishmentListingQuery
+from app.api.v1.params import EstablishmentListingQuery, PaginatedQueryParams
 from app.core.dependencies import (
     get_establishment_service,
     get_optional_actor,
@@ -92,13 +92,7 @@ async def update_establishment(
     },
 )
 async def get_establishments(
-    page: int = Query(default=1, ge=1, description="Page number, starting at 1."),
-    page_size: int = Query(
-        default=20,
-        ge=1,
-        le=100,
-        description="Number of establishments per page (max 100).",
-    ),
+    paginated: PaginatedQueryParams = Depends(),
     query: EstablishmentListingQuery = Depends(),
     available: bool = Query(
         default=False,
@@ -117,13 +111,13 @@ async def get_establishments(
             raise ForbiddenError()
         result = await service.get_available_establishments(
             user_id=actor.user_id,
-            page=page,
-            page_size=page_size,
+            page=paginated.page,
+            page_size=paginated.page_size,
             params=params,
         )
     else:
         result = await service.get_establishments_paginated(
-            page=page, page_size=page_size, params=params
+            page=paginated.page, page_size=paginated.page_size, params=params
         )
 
     return PaginatedResponse[EstablishmentResponse](

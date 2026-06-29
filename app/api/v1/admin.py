@@ -2,6 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Response, status
 
+from app.api.v1.params import PaginatedQueryParams
 from app.core.dependencies import (
     get_admin_service,
     get_current_admin,
@@ -35,8 +36,7 @@ router = APIRouter(prefix="/admin")
     },
 )
 async def list_users(
-    page: int = Query(default=1, ge=1),
-    page_size: int = Query(default=20, ge=1, le=100),
+    paginated: PaginatedQueryParams = Depends(),
     role: UserRole | None = Query(default=None, description="Filter by role."),
     status_filter: UserStatus | None = Query(
         default=None, alias="status", description="Filter by status."
@@ -46,13 +46,17 @@ async def list_users(
     service: AdminService = Depends(get_admin_service),
 ) -> PaginatedUsersResponse:
     result = await service.get_users_paginated(
-        page=page, page_size=page_size, role=role, status=status_filter, search=search
+        page=paginated.page,
+        page_size=paginated.page_size,
+        role=role,
+        status=status_filter,
+        search=search,
     )
     return PaginatedUsersResponse.model_validate(result)
 
 
 @router.patch(
-    "/managers/{user_id}/establishments/approve",
+    "/field-worker/{user_id}/establishments/approve",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Approve establishment access for a field worker",
     description="Approves the given establishments for the field worker and "
@@ -83,7 +87,7 @@ async def approve_establishments(
 
 
 @router.patch(
-    "/managers/{user_id}/establishments/reject",
+    "/field-worker/{user_id}/establishments/reject",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Reject establishment access for a field worker",
     description="Rejects the given establishments for the field worker. "
@@ -114,7 +118,7 @@ async def reject_establishments(
 
 
 @router.patch(
-    "/managers/{user_id}/reject",
+    "/field-worker/{user_id}/reject",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Reject all access for a field worker",
     description="Rejects all establishments for the given field worker. "
@@ -156,15 +160,14 @@ async def reject_field_worker(
 )
 async def get_subject_detail(
     subject_id: UUID,
-    history_page: int = Query(default=1, ge=1),
-    history_page_size: int = Query(default=20, ge=1, le=100),
+    paginated: PaginatedQueryParams = Depends(),
     _admin: UserActor = Depends(get_current_admin),
     service: AdminService = Depends(get_admin_service),
 ) -> AdminSubjectDetailResponse:
     subject, history = await service.get_subject_detail(
         subject_id,
-        history_page=history_page,
-        history_page_size=history_page_size,
+        history_page=paginated.page,
+        history_page_size=paginated.page_size,
     )
     return AdminSubjectDetailResponse.from_domain(subject, history)
 
@@ -191,15 +194,18 @@ async def invite_admin(
 
 
 @router.post(
-    "/invite-professional",
+    "/invite-analyst",
     status_code=status.HTTP_202_ACCEPTED,
     response_class=Response,
     summary="Invite analyst",
     description="Creates an analyst user and sends a password setup link by email.",
     responses={
         status.HTTP_202_ACCEPTED: {"description": "Invitation sent successfully"},
-        status.HTTP_409_CONFLICT: {"description": "Email already exists"},
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Missing or invalid authentication token"
+        },
         status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        status.HTTP_409_CONFLICT: {"description": "Email already exists"},
     },
 )
 async def invite_analyst(
@@ -224,3 +230,4 @@ async def resend_invite(
     _admin: UserActor = Depends(get_current_admin),
 ) -> Response:
     await service.resend_invite(user_id)
+    return Response(status_code=status.HTTP_202_ACCEPTED)

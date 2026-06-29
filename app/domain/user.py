@@ -30,7 +30,7 @@ class UserActor:
     role: UserRole
 
 
-@dataclass
+@dataclass(kw_only=True)
 class BaseUserDomain:
     """Shared fields for all user domain representations."""
 
@@ -41,6 +41,9 @@ class BaseUserDomain:
     role: UserRole
     status: UserStatus
     is_email_verified: bool
+    locality: str | None = None
+    description: str | None = None
+    contact_phone: str | None = None
 
 
 @dataclass

@@ -1,22 +1,21 @@
 from datetime import date, datetime, timezone
-from typing import Annotated, Any
+from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, Field, StringConstraints, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.domain.subject import Sex
 from app.domain.subject_event import SubjectEventType
-
-ValidNameStr = Annotated[
-    str,
-    StringConstraints(strict=True, strip_whitespace=True, min_length=1, max_length=50),
-]
+from app.schemas.types import ValidStr
 
 
 def validate_date(v: date | None) -> date | None:
     if v is not None and v > datetime.now(timezone.utc).date():
         raise ValueError("birth date cannot be in the future")
     return v
+
+
+# -- Request --
 
 
 class SubjectRequest(BaseModel):
@@ -30,8 +29,8 @@ class SubjectRequest(BaseModel):
     )
     dni: int = Field(ge=1, le=99_999_999)
     sex: Sex
-    name: ValidNameStr
-    last_name: ValidNameStr
+    name: ValidStr
+    last_name: ValidStr
     birth_date: date
     is_rural: bool = Field(
         description="Bool indicating if the subject belongs to a rural population"
@@ -46,8 +45,8 @@ class SubjectRequest(BaseModel):
 class SubjectUpdateRequest(BaseModel):
     dni: int | None = Field(default=None, ge=1, le=99_999_999)
     sex: Sex | None = None
-    name: ValidNameStr | None = None
-    last_name: ValidNameStr | None = None
+    name: ValidStr | None = None
+    last_name: ValidStr | None = None
 
     birth_date: date | None = None
     is_rural: bool | None = None
@@ -60,14 +59,17 @@ class SubjectUpdateRequest(BaseModel):
         return self.model_dump(exclude_unset=True)
 
 
+# -- Response --
+
+
 class SubjectSummaryResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     dni: int
     name: str
     last_name: str
     sex: Sex
-
-    model_config = {"from_attributes": True}
 
 
 class SubjectResponse(SubjectSummaryResponse):

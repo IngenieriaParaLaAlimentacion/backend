@@ -1,15 +1,29 @@
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, Field, StringConstraints, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    EmailStr,
+    Field,
+    StringConstraints,
+    field_validator,
+)
+
+from app.schemas.types import DescriptionStr, PhoneStr, ValidStr
+
+# -- Request --
 
 
 class RegisterFieldWorkerRequest(BaseModel):
     email: EmailStr
     password: str
-    name: Annotated[str, StringConstraints(strict=True, min_length=1)]
-    last_name: Annotated[str, StringConstraints(strict=True, min_length=1)]
+    name: ValidStr
+    last_name: ValidStr
     establishments: Annotated[list[UUID], Field(min_length=1)]
+    locality: ValidStr | None = None
+    description: DescriptionStr | None = None
+    contact_phone: PhoneStr | None = None
 
     @field_validator("password")
     @classmethod
@@ -17,35 +31,6 @@ class RegisterFieldWorkerRequest(BaseModel):
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters")
         return v
-
-
-class RegistrationResponse(BaseModel):
-    id: UUID
-    email: str
-    name: str
-    last_name: str
-    role: str
-    status: str
-    establishments: list[UUID]
-
-    model_config = {"from_attributes": True}
-
-
-class UserInTokenResponse(BaseModel):
-    id: UUID
-    email: str
-    name: str
-    last_name: str
-    role: str
-
-    model_config = {"from_attributes": True}
-
-
-class TokenResponse(BaseModel):
-    access_token: str
-    refresh_token: str
-    token_type: str = "bearer"
-    user: UserInTokenResponse
 
 
 class LoginRequest(BaseModel):
@@ -62,12 +47,6 @@ class LogoutRequest(BaseModel):
 class RefreshRequest(BaseModel):
     refresh_token: str
     device_id: UUID
-
-
-class RefreshResponse(BaseModel):
-    access_token: str
-    refresh_token: str
-    token_type: str = "bearer"
 
 
 class PasswordRecoveryRequest(BaseModel):
@@ -92,3 +71,48 @@ class VerifyEmailRequest(BaseModel):
 
 class ResendVerificationRequest(BaseModel):
     email: EmailStr
+
+
+# -- Response --
+
+
+class RegistrationResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    email: str
+    name: str
+    last_name: str
+    role: str
+    status: str
+    establishments: list[UUID]
+    locality: str | None = None
+    description: str | None = None
+    contact_phone: str | None = None
+
+
+class UserInTokenResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    email: str
+    name: str
+    last_name: str
+    role: str
+
+
+class TokenResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    user: UserInTokenResponse
+
+
+class RefreshResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"

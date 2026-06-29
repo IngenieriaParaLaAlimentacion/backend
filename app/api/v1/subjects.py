@@ -2,8 +2,17 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Response, status
 
-from app.core.dependencies import get_subject_service, require_any
+from app.api.v1.params import PaginatedQueryParams
+from app.core.dependencies import (
+    get_measurement_service,
+    get_subject_service,
+    require_any,
+    require_some,
+)
 from app.domain import UserActor
+from app.domain.measurement import EvolutionOrder
+from app.domain.user import UserRole
+from app.schemas.measurement_schema import SubjectEvolutionResponse
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.subject_schema import (
     SubjectRequest,
@@ -11,9 +20,14 @@ from app.schemas.subject_schema import (
     SubjectSummaryResponse,
     SubjectUpdateRequest,
 )
+from app.services.measurement_service import MeasurementService
 from app.services.subject_service import SubjectService
 
 router = APIRouter(prefix="/subjects")
+
+require_admin_or_analyst = require_some(
+    UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN
+)
 
 
 @router.post(
@@ -84,16 +98,13 @@ async def get_subject(
     },
 )
 async def list_subjects(
-    page: int = Query(default=1, ge=1, description="Page number, starting at 1."),
-    page_size: int = Query(
-        default=20, ge=1, le=100, description="Results per page (max 100)."
-    ),
+    paginated: PaginatedQueryParams = Depends(),
     search: str | None = Query(default=None, max_length=100),
     _: UserActor = Depends(require_any),
     service: SubjectService = Depends(get_subject_service),
 ) -> PaginatedResponse[SubjectSummaryResponse]:
     result = await service.get_subject_listing(
-        page=page, page_size=page_size, search=search
+        page=paginated.page, page_size=paginated.page_size, search=search
     )
 
     return PaginatedResponse[SubjectSummaryResponse](
@@ -105,6 +116,36 @@ async def list_subjects(
         page_size=result.page_size,
         total_pages=result.total_pages,
     )
+
+
+@router.get(
+    "/{subject_id}/measurements/evolution",
+    response_model=SubjectEvolutionResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get a subject's anthropometric evolution",
+    description=(
+        "Returns the subject's full weight, height and BMI series for trend "
+        "charting, ordered by measurement date. Use the `order` parameter to "
+        "choose oldest-first (default) or newest-first. Accessible by admins "
+        "and analysts."
+    ),
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
+        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        status.HTTP_404_NOT_FOUND: {"description": "Subject not found"},
+    },
+)
+async def get_subject_evolution(
+    subject_id: UUID,
+    order: EvolutionOrder = Query(
+        default=EvolutionOrder.OLDEST_FIRST,
+        description="Chronological order of the returned series.",
+    ),
+    _: UserActor = Depends(require_admin_or_analyst),
+    service: MeasurementService = Depends(get_measurement_service),
+) -> SubjectEvolutionResponse:
+    evolution = await service.get_subject_evolution(subject_id, order=order)
+    return SubjectEvolutionResponse.model_validate(evolution)
 
 
 @router.patch(

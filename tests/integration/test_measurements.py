@@ -347,7 +347,8 @@ class TestHappyPath:
         )
         assert response.status_code == status.HTTP_201_CREATED
         expected_bmi = 90.0 / (1.80**2)
-        assert response.json()["bmi"] == pytest.approx(expected_bmi, rel=1e-4)
+        # BMI is rounded to 2 decimals in the response payload.
+        assert response.json()["bmi"] == round(expected_bmi, 2)
 
     async def test_client_supplied_id_is_used_as_pk(
         self, client, db_adult_subject, db_establishment, db_admin_headers

@@ -8,7 +8,7 @@ from fastapi import status
 
 pytestmark = pytest.mark.asyncio
 
-REGISTER_URL = "/api/v2/auth/register/field-worker"
+REGISTER_URL = "/api/v1/auth/register/field-worker"
 VERIFY_URL = "/api/v1/auth/verify-email/confirm"
 RESEND_URL = "/api/v1/auth/verify-email/resend"
 

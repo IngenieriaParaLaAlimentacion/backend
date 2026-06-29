@@ -148,13 +148,27 @@ def make_token():
 
 
 @pytest.fixture
-def valid_register_request():
+def valid_register_request_obligatory_fields():
     return RegisterFieldWorkerRequest(
         email="field_worker@example.com",
         password="securepassword",
         name="Juan",
         last_name="Perez",
         establishments=[uuid.uuid4()],
+    )
+
+
+@pytest.fixture
+def valid_register_request_all_fields():
+    return RegisterFieldWorkerRequest(
+        email="field_worker@example.com",
+        password="securepassword",
+        name="Juan",
+        last_name="Perez",
+        establishments=[uuid.uuid4()],
+        locality="Caballito",
+        description="User description and information.",
+        contact_phone="2478100000",
     )
 
 
@@ -178,63 +192,78 @@ def valid_logout_request():
 class TestRegisterFieldWorker:
     @pytest.mark.asyncio
     async def test_creates_field_worker_with_correct_role_and_status(
-        self, make_uow, make_establishment, valid_register_request
+        self, make_uow, make_establishment, valid_register_request_all_fields
     ):
         establishment = make_establishment()
         uow = make_uow(establishments=[establishment])
 
-        await AuthService(uow).register_field_worker(valid_register_request)
+        await AuthService(uow).register_field_worker(valid_register_request_all_fields)
 
         uow.user_repo.create.assert_called_once_with(
-            email=valid_register_request.email,
-            name=valid_register_request.name,
-            last_name=valid_register_request.last_name,
+            email=valid_register_request_all_fields.email,
+            name=valid_register_request_all_fields.name,
+            last_name=valid_register_request_all_fields.last_name,
             role=UserRole.FIELD_WORKER,
             status=UserStatus.PENDING_VALIDATION,
+            locality=valid_register_request_all_fields.locality,
+            description=valid_register_request_all_fields.description,
+            contact_phone=valid_register_request_all_fields.contact_phone,
         )
 
     @pytest.mark.asyncio
     async def test_registration_creates_password(
-        self, make_uow, make_establishment, mock_hash_password, valid_register_request
+        self,
+        make_uow,
+        make_establishment,
+        mock_hash_password,
+        valid_register_request_obligatory_fields,
     ):
         establishment = make_establishment()
         uow = make_uow(establishments=[establishment])
 
-        user = await AuthService(uow).register_field_worker(valid_register_request)
+        user = await AuthService(uow).register_field_worker(
+            valid_register_request_obligatory_fields
+        )
 
         uow.password_repo.create.assert_called_once_with(user.id, "hashed")
 
     @pytest.mark.asyncio
     async def test_registration_creates_one_relation_per_establishment(
-        self, make_uow, make_establishment, valid_register_request
+        self, make_uow, make_establishment, valid_register_request_obligatory_fields
     ):
         establishments = [
             make_establishment(),
             make_establishment(),
             make_establishment(),
         ]
-        valid_register_request.establishments = [e.id for e in establishments]
+        valid_register_request_obligatory_fields.establishments = [
+            e.id for e in establishments
+        ]
         uow = make_uow(establishments=establishments)
 
-        await AuthService(uow).register_field_worker(valid_register_request)
+        await AuthService(uow).register_field_worker(
+            valid_register_request_obligatory_fields
+        )
 
         assert uow.user_establishment_repo.preset_relation.call_count == 3
 
     @pytest.mark.asyncio
     async def test_raises_if_email_already_exists(
-        self, make_uow, make_user, valid_register_request
+        self, make_uow, make_user, valid_register_request_obligatory_fields
     ):
         uow = make_uow(existing_user=make_user())
 
         with pytest.raises(UserAlreadyExistsError):
-            await AuthService(uow).register_field_worker(valid_register_request)
+            await AuthService(uow).register_field_worker(
+                valid_register_request_obligatory_fields
+            )
 
         uow.user_repo.create.assert_not_called()
         uow.commit.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_raises_if_establishment_not_found(
-        self, make_uow, valid_register_request
+        self, make_uow, valid_register_request_obligatory_fields
     ):
         uow = make_uow()
         uow.establishment_repo.get_all_by_ids = AsyncMock(
@@ -242,10 +271,33 @@ class TestRegisterFieldWorker:
         )
 
         with pytest.raises(EstablishmentNotFoundError):
-            await AuthService(uow).register_field_worker(valid_register_request)
+            await AuthService(uow).register_field_worker(
+                valid_register_request_obligatory_fields
+            )
 
         uow.user_repo.create.assert_not_called()
         uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_optional_fields_are_not_required(
+        self, make_uow, make_establishment, valid_register_request_obligatory_fields
+    ):
+        establishment = make_establishment()
+        uow = make_uow(establishments=[establishment])
+        await AuthService(uow).register_field_worker(
+            valid_register_request_obligatory_fields
+        )
+
+        uow.user_repo.create.assert_called_once_with(
+            email=valid_register_request_obligatory_fields.email,
+            name=valid_register_request_obligatory_fields.name,
+            last_name=valid_register_request_obligatory_fields.last_name,
+            role=UserRole.FIELD_WORKER,
+            status=UserStatus.PENDING_VALIDATION,
+            locality=None,
+            description=None,
+            contact_phone=None,
+        )
 
 
 class TestLoginSuccess:

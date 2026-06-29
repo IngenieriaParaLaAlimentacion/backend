@@ -11,7 +11,7 @@ pytestmark = pytest.mark.asyncio
 LOGIN_URL = "/api/v1/auth/login"
 LOGOUT_URL = "/api/v1/auth/logout"
 REFRESH_URL = "/api/v1/auth/refresh"
-REGISTER_URL = "/api/v2/auth/register/field-worker"
+REGISTER_URL = "/api/v1/auth/register/field-worker"
 
 
 @pytest_asyncio.fixture()
@@ -65,6 +65,58 @@ class TestRegisterFieldWorker:
 
     async def test_short_password_returns_422(self, client):
         response = await self._register(client, password="short")
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_optional_fields_are_returned_in_response(
+        self, client, db_establishment
+    ):
+        response = await self._register(
+            client,
+            establishments=[str(db_establishment.id)],
+            locality="Villa Lugano",
+            description="Community health promoter",
+            contact_phone="1134567890",
+        )
+        data = response.json()
+        assert data["locality"] == "Villa Lugano"
+        assert data["description"] == "Community health promoter"
+        assert data["contact_phone"] == "1134567890"
+
+    async def test_optional_fields_default_to_null(self, client, db_establishment):
+        response = await self._register(
+            client, establishments=[str(db_establishment.id)]
+        )
+        data = response.json()
+        assert data["locality"] is None
+        assert data["description"] is None
+        assert data["contact_phone"] is None
+
+    async def test_invalid_phone_format_returns_422(self, client, db_establishment):
+        response = await self._register(
+            client,
+            establishments=[str(db_establishment.id)],
+            contact_phone="not-a-phone!!",
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_description_exceeding_max_length_returns_422(
+        self, client, db_establishment
+    ):
+        response = await self._register(
+            client,
+            establishments=[str(db_establishment.id)],
+            description="x" * 501,
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_locality_exceeding_max_length_returns_422(
+        self, client, db_establishment
+    ):
+        response = await self._register(
+            client,
+            establishments=[str(db_establishment.id)],
+            locality="x" * 101,
+        )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
