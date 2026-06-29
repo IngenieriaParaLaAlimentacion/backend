@@ -2,6 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Response, status
 
+from app.api.v1.params import PaginatedQueryParams
 from app.core.dependencies import (
     get_measurement_service,
     get_subject_service,
@@ -97,16 +98,13 @@ async def get_subject(
     },
 )
 async def list_subjects(
-    page: int = Query(default=1, ge=1, description="Page number, starting at 1."),
-    page_size: int = Query(
-        default=20, ge=1, le=100, description="Results per page (max 100)."
-    ),
+    paginated: PaginatedQueryParams = Depends(),
     search: str | None = Query(default=None, max_length=100),
     _: UserActor = Depends(require_any),
     service: SubjectService = Depends(get_subject_service),
 ) -> PaginatedResponse[SubjectSummaryResponse]:
     result = await service.get_subject_listing(
-        page=page, page_size=page_size, search=search
+        page=paginated.page, page_size=paginated.page_size, search=search
     )
 
     return PaginatedResponse[SubjectSummaryResponse](

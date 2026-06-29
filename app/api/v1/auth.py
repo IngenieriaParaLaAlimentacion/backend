@@ -18,7 +18,7 @@ router = APIRouter(prefix="/auth")
 
 
 @router.post(
-    "/register/establishment-manager",
+    "/register/field-worker",
     response_model=RegistrationResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Register field worker",
@@ -33,7 +33,8 @@ router = APIRouter(prefix="/auth")
 async def register_field_worker(
     data: RegisterFieldWorkerRequest, service: AuthService = Depends(get_auth_service)
 ) -> RegistrationResponse:
-    return await service.register_field_worker(data)
+    user = await service.register_field_worker(data)
+    return RegistrationResponse.model_validate(user)
 
 
 @router.post(
@@ -47,8 +48,11 @@ async def register_field_worker(
         status.HTTP_403_FORBIDDEN: {"description": "Account pending validation"},
     },
 )
-async def login(data: LoginRequest, service: AuthService = Depends(get_auth_service)):
-    return await service.login(data)
+async def login(
+    data: LoginRequest, service: AuthService = Depends(get_auth_service)
+) -> TokenResponse:
+    result = await service.login(data)
+    return TokenResponse.model_validate(result)
 
 
 @router.post(
@@ -95,8 +99,9 @@ async def logout(
 )
 async def refresh(
     data: RefreshRequest, service: AuthService = Depends(get_auth_service)
-):
-    return await service.refresh(data)
+) -> RefreshResponse:
+    result = await service.refresh(data)
+    return RefreshResponse.model_validate(result)
 
 
 @router.post(
