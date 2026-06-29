@@ -109,6 +109,20 @@ class AdminService:
             user_id, establishment_ids, status
         )
 
+    async def _issue_and_send_invite(self, user: User) -> None:
+        """Generate a fresh recovery token for `user` and email the invite
+        deeplink. Shared by invite_user and resend_invite."""
+        created_token, plain_token = await self.auth_service.create_recovery_token(
+            user.id
+        )
+        await self.uow.commit()
+        await send_invite_email(
+            user.email,
+            build_recovery_deeplink(plain_token, user.role),
+            created_token.expires_at,
+            user.role,
+        )
+
     async def approve_establishments(
         self, user_id: UUID, establishment_ids: list[UUID]
     ) -> None:
@@ -233,20 +247,6 @@ class AdminService:
             page_size=page_size,
         )
 
-    async def _issue_and_send_invite(self, user: User) -> None:
-        """Generate a fresh recovery token for `user` and email the invite
-        deeplink. Shared by invite_user and resend_invite."""
-        created_token, plain_token = await self.auth_service.create_recovery_token(
-            user.id
-        )
-        await self.uow.commit()
-        await send_invite_email(
-            user.email,
-            build_recovery_deeplink(plain_token, user.role),
-            created_token.expires_at,
-            user.role,
-        )
-
     async def invite_user(self, data: InviteAdminRequest, role: UserRole) -> None:
         """Create a new admin user and send a password setup link by email.
 
@@ -292,3 +292,17 @@ class AdminService:
             )
 
         await self._issue_and_send_invite(user)
+
+    async def get_user_info(self, user_id: UUID) -> UserWithEstablishmentsDomain:
+        """Return a user with fully hydrated establishment objects.
+
+        Raises:
+            UserNotFoundError: If no user with user_id exists.
+        """
+        user = await self.uow.user_repo.get_by_id(user_id)
+        if user is None:
+            raise UserNotFoundError(str(user_id))
+        establishments_per_user = await self._get_establishments_per_user([user.id])
+        return UserWithEstablishmentsDomain.from_db(
+            user, establishments_per_user.get(user.id, [])
+        )

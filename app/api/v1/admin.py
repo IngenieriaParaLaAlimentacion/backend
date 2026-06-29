@@ -11,6 +11,7 @@ from app.domain.user import UserActor, UserRole, UserStatus
 from app.schemas.admin_schema import (
     AdminSubjectDetailResponse,
     EstablishmentAccessRequest,
+    FullUserAdminView,
     InviteAdminRequest,
     PaginatedUsersResponse,
 )
@@ -231,3 +232,34 @@ async def resend_invite(
 ) -> Response:
     await service.resend_invite(user_id)
     return Response(status_code=status.HTTP_202_ACCEPTED)
+
+
+@router.get(
+    "/users/{user_id}",
+    response_model=FullUserAdminView,
+    status_code=status.HTTP_200_OK,
+    summary="Get a user's profile information.",
+    description="Returns all the information related to a user. "
+    "Accessible by admins only.",
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Missing or invalid authentication token"
+        },
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Authenticated user does not have admin privileges"
+        },
+        status.HTTP_404_NOT_FOUND: {"description": "User not found"},
+    },
+)
+async def get_user(
+    user_id: UUID,
+    _admin: UserActor = Depends(get_current_admin),
+    service: AdminService = Depends(get_admin_service),
+) -> FullUserAdminView:
+    """Return full profile data for the given user, including establishments.
+
+    Raises:
+        UserNotFoundError: If no user with user_id exists.
+    """
+    result = await service.get_user_info(user_id)
+    return FullUserAdminView.model_validate(result)
