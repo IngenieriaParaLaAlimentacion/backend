@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from app.repositories.activity_repository import ActivityRepository
 from app.repositories.establishment_repository import EstablishmentRepository
 from app.repositories.measurement_alert_repository import MeasurementAlertRepository
 from app.repositories.measurement_repository import MeasurementRepository
@@ -15,6 +16,7 @@ from app.repositories.user_token_repository import TokenRepository
 
 
 class IUnitOfWork(ABC):
+    activity_repo: ActivityRepository
     user_repo: UserRepository
     password_repo: UserPasswordRepository
     token_repo: TokenRepository
