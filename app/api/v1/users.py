@@ -9,14 +9,8 @@ from app.core.dependencies import (
 )
 from app.domain.activity import ActivityListingParams, ActivityType
 from app.domain.user import UserActor
-from app.schemas.activity_schema import (
-    ActivityItem,
-    MeasurementActivityItem,
-    SubjectActivityItem,
-)
-from app.schemas.measurement_schema import MeasurementListItem
+from app.schemas.activity_schema import ActivityItemResponse
 from app.schemas.pagination import PaginatedResponse
-from app.schemas.subject_schema import SubjectSummaryResponse
 from app.schemas.user_schema import (
     EstablishmentAccessRequest,
     EstablishmentWithStatusResponse,
@@ -127,7 +121,7 @@ async def request_establishment_access(
 
 @router.get(
     "/me/activity",
-    response_model=PaginatedResponse[ActivityItem],
+    response_model=PaginatedResponse[ActivityItemResponse],
     status_code=status.HTTP_200_OK,
     summary="Get the current user's recent activity",
     description=(
@@ -141,32 +135,18 @@ async def request_establishment_access(
 )
 async def get_my_activity(
     paginated: PaginatedQueryParams = Depends(),
-    type: ActivityType | None = Query(default=None),
+    activity_type: ActivityType | None = Query(default=None, alias="type"),
     actor: UserActor = Depends(require_any),
     service: ActivityService = Depends(get_activity_service),
-) -> PaginatedResponse[ActivityItem]:
+) -> PaginatedResponse[ActivityItemResponse]:
     result = await service.get_recent_activity(
         actor,
         page=paginated.page,
         page_size=paginated.page_size,
-        params=ActivityListingParams(activity_type=type),
+        params=ActivityListingParams(activity_type=activity_type),
     )
-    items = [
-        SubjectActivityItem(
-            type=ActivityType.SUBJECT,
-            occurred_at=i.occurred_at,
-            subject=SubjectSummaryResponse.model_validate(i.subject),
-        )
-        if i.type == ActivityType.SUBJECT
-        else MeasurementActivityItem(
-            type=ActivityType.MEASUREMENT,
-            occurred_at=i.occurred_at,
-            measurement=MeasurementListItem.model_validate(i.measurement),
-        )
-        for i in result.items
-    ]
-    return PaginatedResponse[ActivityItem](
-        items=items,
+    return PaginatedResponse[ActivityItemResponse](
+        items=[ActivityItemResponse.model_validate(i) for i in result.items],
         total=result.total,
         page=result.page,
         page_size=result.page_size,
