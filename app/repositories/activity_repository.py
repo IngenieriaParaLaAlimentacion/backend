@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import Select, func, literal, select, union_all
+from sqlalchemy import Select, Subquery, func, literal, select, union_all
 from sqlalchemy.engine import Row
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -9,7 +9,6 @@ from app.domain.activity import ActivityItemDomain, ActivityType
 from app.domain.measurement import MeasurementListItemDomain
 from app.domain.subject import SubjectBase
 from app.domain.subject_event import SubjectEventType
-from app.models.establishment import Establishment
 from app.models.measurement import Measurement
 from app.models.subject import Subject
 from app.models.subject_event import SubjectEvent
@@ -21,7 +20,9 @@ class ActivityRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    def _build_feed_subquery(self, actor_id: UUID, activity_type: ActivityType | None):
+    def _build_feed_subquery(
+        self, actor_id: UUID, activity_type: ActivityType | None
+    ) -> Subquery:
         """Build the id/type/occurred_at UNION ALL of the requested branches."""
         branches = []
         if activity_type is None or activity_type == ActivityType.SUBJECT:
@@ -37,18 +38,13 @@ class ActivityRepository:
         `subject_events` because that's where authorship and timing are
         recorded, not on the subject row itself.
         """
-        return (
-            select(
-                Subject.id.label("id"),
-                literal(ActivityType.SUBJECT.value).label("type"),
-                SubjectEvent.occurred_at.label("occurred_at"),
-            )
-            .select_from(SubjectEvent)
-            .join(Subject, Subject.id == SubjectEvent.subject_id)
-            .where(
-                SubjectEvent.actor_id == actor_id,
-                SubjectEvent.event_type == SubjectEventType.SUBJECT_CREATED,
-            )
+        return select(
+            SubjectEvent.subject_id.label("id"),
+            literal(ActivityType.SUBJECT.value).label("type"),
+            SubjectEvent.occurred_at.label("occurred_at"),
+        ).where(
+            SubjectEvent.actor_id == actor_id,
+            SubjectEvent.event_type == SubjectEventType.SUBJECT_CREATED,
         )
 
     def _build_measurements_taken_query(self, actor_id: UUID) -> Select:
@@ -62,7 +58,9 @@ class ActivityRepository:
             Measurement.measured_at.label("occurred_at"),
         ).where(Measurement.responsible_id == actor_id)
 
-    async def _fetch_page_rows(self, feed_query, limit: int, offset: int) -> list[Row]:
+    async def _fetch_page_rows(
+        self, feed_query: Subquery, limit: int, offset: int
+    ) -> list[Row]:
         """Slice the merged feed: id + type + timestamp only, no hydration yet.
 
         `id DESC` breaks ties on `occurred_at` deterministically so
@@ -103,8 +101,6 @@ class ActivityRepository:
             return {}
         result = await self.db.execute(
             select(Measurement)
-            .join(Subject, Measurement.subject_id == Subject.id)
-            .join(Establishment, Measurement.establishment_id == Establishment.id)
             .options(
                 selectinload(Measurement.subject),
                 selectinload(Measurement.establishment),

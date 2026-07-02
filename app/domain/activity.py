@@ -24,7 +24,7 @@ class ActivityListingParams:
 class ActivityItemDomain:
     """A single entry in a user's recent-activity feed.
 
-    Exactly one of ``subject``/``measurement`` is set, matching ``type``.
+    Exactly one of `subject`/`measurement` is set, matching `type`.
     """
 
     type: ActivityType

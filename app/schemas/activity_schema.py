@@ -6,6 +6,8 @@ from app.domain.activity import ActivityType
 from app.schemas.measurement_schema import MeasurementListItem
 from app.schemas.subject_schema import SubjectSummaryResponse
 
+# -- Response --
+
 
 class ActivityItemResponse(BaseModel):
     """A single entry in a user's recent-activity feed.
