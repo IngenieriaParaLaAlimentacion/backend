@@ -94,11 +94,7 @@ class Settings(BaseSettings):
     @property
     def email_verification_deeplink_url(self) -> str:
         """Derived email verification deeplink URL from app base URL."""
-        base = str(self.app_deeplink_base).rstrip("/")
-        path = self.email_verification_path
-        if not path.startswith("/"):
-            path = f"/{path}"
-        return f"{base}{path}"
+        return self._build_deeplink(self.app_deeplink_base)
 
     @model_validator(mode="after")
     def build_database_url(self) -> "Settings":
