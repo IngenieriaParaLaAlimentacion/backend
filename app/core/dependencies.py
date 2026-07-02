@@ -8,6 +8,7 @@ from app.core.security import decode_token
 from app.db.unit_of_work import UnitOfWork
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
+from app.services.activity_service import ActivityService
 from app.services.admin_service import AdminService
 from app.services.auth_service import AuthService
 from app.services.establishment_service import EstablishmentService
@@ -56,6 +57,12 @@ async def get_user_service() -> AsyncGenerator[UserService, None]:
     """Provide a UserService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
         yield UserService(uow)
+
+
+async def get_activity_service() -> AsyncGenerator[ActivityService, None]:
+    """Provide an ActivityService backed by a fresh UnitOfWork."""
+    async with UnitOfWork() as uow:
+        yield ActivityService(uow)
 
 
 def _decode_verified_payload(token: str) -> dict:
