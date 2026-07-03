@@ -77,18 +77,8 @@ class AuthService:
             await self.uow.user_establishment_repo.preset_relation(
                 user.id, establishment.id
             )
-        verification_token, verification_token_hash = create_email_verification_token()
-        created_token = await self.uow.email_verification_repo.create(
-            user.id,
-            verification_token_hash,
-            expires_delta=timedelta(
-                minutes=settings.email_verification_token_expire_minutes
-            ),
-        )
-        await self.uow.commit()
 
-        deeplink = build_verification_deeplink(verification_token)
-        await send_verification_email(user.email, deeplink, created_token.expires_at)
+        await self._generate_and_send_verification_email(user.id, str(user.email))
 
         return UserDomain(
             id=user.id,
@@ -296,18 +286,7 @@ class AuthService:
 
         await self.uow.email_verification_repo.revoke_active_for_user(user.id)
 
-        verification_token, verification_token_hash = create_email_verification_token()
-        created_token = await self.uow.email_verification_repo.create(
-            user.id,
-            verification_token_hash,
-            expires_delta=timedelta(
-                minutes=settings.email_verification_token_expire_minutes
-            ),
-        )
-        await self.uow.commit()
-
-        deeplink = build_verification_deeplink(verification_token)
-        await send_verification_email(user.email, deeplink, created_token.expires_at)
+        await self._generate_and_send_verification_email(user.id, str(user.email))
 
     async def create_recovery_token(
         self, user_id: UUID
@@ -323,3 +302,22 @@ class AuthService:
             ),
         )
         return created, plain_token
+
+    async def _generate_and_send_verification_email(
+        self, user_id: UUID, email: str
+    ) -> None:
+        """Generates a verification token, persists it and
+        sends an email with deeplink"""
+        verification_token, verification_token_hash = create_email_verification_token()
+
+        created_token = await self.uow.email_verification_repo.create(
+            user_id,
+            verification_token_hash,
+            expires_delta=timedelta(
+                minutes=settings.email_verification_token_expire_minutes
+            ),
+        )
+        await self.uow.commit()
+
+        deeplink = build_verification_deeplink(verification_token)
+        await send_verification_email(email, deeplink, created_token.expires_at)
