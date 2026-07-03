@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 from uuid import UUID
 
 from app.core.config import settings
@@ -265,9 +265,7 @@ class AuthService:
             )
 
         await self.uow.email_verification_repo.mark_used(verification_token)
-        user = await self.uow.user_repo.get_by_id(verification_token.user_id)
-        user.is_email_verified = True
-        user.email_verified_at = datetime.now(timezone.utc)
+        await self.uow.user_repo.update_email_verification(verification_token.user_id)
         await self.uow.commit()
 
     async def resend_verification_email(self, email: str) -> None:

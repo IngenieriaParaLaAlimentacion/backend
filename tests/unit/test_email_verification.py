@@ -161,6 +161,7 @@ class TestVerifyEmailSuccess:
             active_verification_token=self.token,
             login_user=make_login_user(),
         )
+        self.uow.user_repo.update_email_verification = AsyncMock()
 
     @pytest.mark.asyncio
     async def test_queries_with_encoded_token(self, valid_verify_request):
@@ -177,30 +178,15 @@ class TestVerifyEmailSuccess:
         self.uow.email_verification_repo.mark_used.assert_awaited_once_with(self.token)
 
     @pytest.mark.asyncio
-    async def test_fetches_user_by_token_user_id(self, valid_verify_request):
+    async def test_calls_repository_to_update_email_verification(
+        self, valid_verify_request
+    ):
+        """Asserts the service delegates the database update to the repository layer."""
         await AuthService(self.uow).verify_email(valid_verify_request.token)
 
-        self.uow.user_repo.get_by_id.assert_awaited_once_with(self.token.user_id)
-
-    @pytest.mark.asyncio
-    async def test_marks_email_as_verified(
-        self,
-        make_uow_verification,
-        make_verification_token,
-        mock_encode_verification_token,
-        valid_verify_request,
-    ):
-        """Asserts both the flag and the timestamp are set (CA 4)."""
-        token = make_verification_token()
-        user = MagicMock()
-        user.is_email_verified = False
-        user.email_verified_at = None
-        uow = make_uow_verification(active_verification_token=token, login_user=user)
-
-        await AuthService(uow).verify_email(valid_verify_request.token)
-
-        assert user.is_email_verified is True
-        assert user.email_verified_at is not None
+        self.uow.user_repo.update_email_verification.assert_awaited_once_with(
+            self.token.user_id
+        )
 
     @pytest.mark.asyncio
     async def test_commits(self, valid_verify_request):
