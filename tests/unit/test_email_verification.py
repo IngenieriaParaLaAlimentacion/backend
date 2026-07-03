@@ -225,7 +225,7 @@ class TestVerifyEmailInvalidToken:
         with pytest.raises(InvalidTokenError) as exc:
             await AuthService(self.uow).verify_email(valid_verify_request.token)
 
-        assert "inválido" in str(exc.value) or "expirado" in str(exc.value)
+        assert "invalid" in str(exc.value) or "expired" in str(exc.value)
 
     @pytest.mark.asyncio
     async def test_does_not_mark_token_as_used(self, valid_verify_request):
