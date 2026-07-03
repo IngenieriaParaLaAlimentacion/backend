@@ -43,7 +43,7 @@ def make_uow_recovery(make_uow, make_recovery_token):
 @pytest.fixture
 def mock_encode_recovery_token(monkeypatch):
     monkeypatch.setattr(
-        "app.services.auth_service.encode_refresh_token",
+        "app.services.auth_service.hash_token",
         lambda token: "hashed_recovery_token",
     )
 

@@ -102,7 +102,7 @@ def mock_security(monkeypatch):
 @pytest.fixture
 def mock_encode_refresh_token(monkeypatch):
     monkeypatch.setattr(
-        "app.services.auth_service.encode_refresh_token",
+        "app.services.auth_service.hash_token",
         lambda token: "hashed_refresh_token",
     )
 

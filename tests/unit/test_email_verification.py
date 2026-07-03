@@ -88,7 +88,7 @@ def make_uow_verification(make_uow, make_verification_token):
 @pytest.fixture
 def mock_encode_verification_token(monkeypatch):
     monkeypatch.setattr(
-        "app.services.auth_service.encode_refresh_token",
+        "app.services.auth_service.hash_token",
         lambda token: "hashed_verification_token",
     )
 

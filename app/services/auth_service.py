@@ -8,8 +8,8 @@ from app.core.security import (
     create_email_verification_token,
     create_password_recovery_token,
     create_refresh_token,
-    encode_refresh_token,
     hash_password,
+    hash_token,
     verify_password,
 )
 from app.domain.auth import LoginDomain, RefreshDomain
@@ -157,7 +157,7 @@ class AuthService:
         Note:
             Existing access tokens remain valid until they expire.
         """
-        refresh_token_hash = encode_refresh_token(data.refresh_token)
+        refresh_token_hash = hash_token(data.refresh_token)
 
         token = await self.uow.token_repo.get_active_refresh_token(
             refresh_token_hash, data.device_id
@@ -170,7 +170,7 @@ class AuthService:
         await self.uow.commit()
 
     async def refresh(self, data: RefreshRequest) -> RefreshDomain:
-        refresh_token_hash = encode_refresh_token(data.refresh_token)
+        refresh_token_hash = hash_token(data.refresh_token)
 
         token = await self.uow.token_repo.get_active_refresh_token(
             refresh_token_hash, data.device_id
@@ -225,7 +225,7 @@ class AuthService:
         self, data: PasswordRecoveryConfirmRequest
     ) -> None:
         """Validate a recovery token and update the user's password."""
-        recovery_token_hash = encode_refresh_token(data.token)
+        recovery_token_hash = hash_token(data.token)
         recovery_token = await self.uow.password_recovery_repo.get_active_token(
             recovery_token_hash
         )
@@ -255,7 +255,7 @@ class AuthService:
         Raises:
             InvalidTokenError: If the token is invalid, expired, or already used.
         """
-        token_hash = encode_refresh_token(token)
+        token_hash = hash_token(token)
         verification_token = await self.uow.email_verification_repo.get_active_token(
             token_hash
         )
