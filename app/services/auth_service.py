@@ -261,7 +261,7 @@ class AuthService:
         )
         if not verification_token:
             raise InvalidTokenError(
-                "El enlace de verificación es inválido o ha expirado."
+                "Verification link is invalid or has already expired."
             )
 
         await self.uow.email_verification_repo.mark_used(verification_token)
