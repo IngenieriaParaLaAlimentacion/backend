@@ -14,6 +14,7 @@ from app.services.auth_service import AuthService
 from app.services.establishment_service import EstablishmentService
 from app.services.measurement_service import MeasurementService
 from app.services.subject_service import SubjectService
+from app.services.survey_service import SurveyService
 from app.services.user_service import UserService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
@@ -63,6 +64,12 @@ async def get_activity_service() -> AsyncGenerator[ActivityService, None]:
     """Provide an ActivityService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
         yield ActivityService(uow)
+
+
+async def get_survey_service() -> AsyncGenerator[SurveyService, None]:
+    """Provide a SurveyService backed by a fresh UnitOfWork."""
+    async with UnitOfWork() as uow:
+        yield SurveyService(uow)
 
 
 def _decode_verified_payload(token: str) -> dict:

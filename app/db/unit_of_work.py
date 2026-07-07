@@ -9,6 +9,7 @@ from app.repositories.password_recovery_repository import (
 )
 from app.repositories.subject_event_repository import SubjectEventRepository
 from app.repositories.subject_repository import SubjectRepository
+from app.repositories.survey_repository import SurveyRepository
 from app.repositories.user_establishment_repository import UserEstablishmentRepository
 from app.repositories.user_password_repository import UserPasswordRepository
 from app.repositories.user_repository import UserRepository
@@ -38,6 +39,7 @@ class UnitOfWork(IUnitOfWork):
         self.measurement_repo = MeasurementRepository(self.session)
         self.measurement_alert_repo = MeasurementAlertRepository(self.session)
         self.activity_repo = ActivityRepository(self.session)
+        self.survey_repo = SurveyRepository(self.session)
         return self
 
     async def commit(self) -> None:

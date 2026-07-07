@@ -5,6 +5,10 @@ from .measurement_alert import MeasurementAlert
 from .password_recovery_token import PasswordRecoveryToken
 from .subject import Sex, Subject
 from .subject_event import SubjectEvent
+from .survey import Survey
+from .survey_establishment import SurveyEstablishment
+from .survey_question import SurveyQuestion
+from .survey_question_option import SurveyQuestionOption
 from .user import User, UserRole, UserStatus
 from .user_establishment import UserEstablishment
 from .user_password import UserPassword
@@ -22,6 +26,10 @@ __all__ = [
     "Measurement",
     "MeasurementAlert",
     "SubjectEvent",
+    "Survey",
+    "SurveyQuestion",
+    "SurveyQuestionOption",
+    "SurveyEstablishment",
     "UserPassword",
     "UserToken",
     "PasswordRecoveryToken",
