@@ -209,7 +209,10 @@ class SurveyService:
             limit=page_size, offset=offset, params=params
         )
         return PaginatedResult.build(
-            items=[SurveyListItemDomain.from_db(s) for s in surveys],
+            items=[
+                SurveyListItemDomain.from_db(s, question_count)
+                for s, question_count in surveys
+            ],
             total=total,
             page=page,
             page_size=page_size,

@@ -152,14 +152,19 @@ class SurveyListItemDomain:
     created_at: datetime
 
     @classmethod
-    def from_db(cls, obj) -> "SurveyListItemDomain":
+    def from_db(cls, obj, question_count: int) -> "SurveyListItemDomain":
+        """Build a list item from a survey row and its precomputed question count.
+
+        ``question_count`` comes from a subquery in the listing query, so the
+        ``questions`` relationship is never loaded for the summary view.
+        """
         return cls(
             id=obj.id,
             name=obj.name,
             scope=obj.scope,
             is_active=obj.is_active,
             created_by_id=obj.created_by_id,
-            question_count=len(obj.questions),
+            question_count=question_count,
             created_at=obj.created_at,
         )
 

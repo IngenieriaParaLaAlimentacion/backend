@@ -5,6 +5,7 @@ from uuid import UUID
 from sqlalchemy import asc, desc, exists, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import noload
 
 from app.domain.survey import (
     QuestionInputData,
@@ -19,7 +20,7 @@ from app.models.establishment import Establishment
 from app.models.survey import Survey
 from app.models.survey_question import SurveyQuestion
 from app.models.survey_question_option import SurveyQuestionOption
-from app.utils.db import escape_like, execute_paginated
+from app.utils.db import escape_like
 
 # Maps each SurveySortOrder value to its SQLAlchemy order clause.
 # KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
@@ -76,17 +77,33 @@ class SurveyRepository:
         limit: int,
         offset: int,
         params: SurveyListingParams,
-    ) -> tuple[list[Survey], int]:
-        """Return a paginated list of surveys and the total matching count."""
-        base_query = select(Survey)
+    ) -> tuple[list[tuple[Survey, int]], int]:
+        """Return a paginated list of ``(survey, question_count)`` rows and the
+        total matching count.
+
+        The summary view needs only a question count, so ``questions`` and
+        ``establishments`` are suppressed with ``noload`` and the count comes from a
+        correlated subquery — avoiding hydrating every question/option/establishment
+        just to call ``len()``.
+        """
+        question_count = (
+            select(func.count(SurveyQuestion.id))
+            .where(SurveyQuestion.survey_id == Survey.id)
+            .correlate(Survey)
+            .scalar_subquery()
+        )
+        base_query = select(Survey, question_count.label("question_count")).options(
+            noload(Survey.questions), noload(Survey.establishments)
+        )
         count_query = select(func.count()).select_from(Survey)
         for condition in self._listing_conditions(params):
             base_query = base_query.where(condition)
             count_query = count_query.where(condition)
         order_by = _SORT_CLAUSES[params.sort_order]
-        return await execute_paginated(
-            self.db, base_query, count_query, order_by, limit, offset
-        )
+        paginated = base_query.order_by(order_by).limit(limit).offset(offset)
+        total = (await self.db.execute(count_query)).scalar_one()
+        rows = (await self.db.execute(paginated)).all()
+        return [(row[0], row[1]) for row in rows], total
 
     async def create(
         self,

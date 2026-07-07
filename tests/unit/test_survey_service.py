@@ -276,11 +276,12 @@ class TestList:
 
     async def test_passes_offset_and_returns_paginated(self, make_uow, make_survey):
         uow = make_uow()
-        uow.survey_repo.list = AsyncMock(return_value=([make_survey()], 1))
+        uow.survey_repo.list = AsyncMock(return_value=([(make_survey(), 3)], 1))
         result = await SurveyService(uow).list_surveys(
             page=3, page_size=10, params=SurveyListingParams()
         )
         assert isinstance(result, PaginatedResult)
+        assert result.items[0].question_count == 3
         uow.survey_repo.list.assert_awaited_once()
         _, kwargs = uow.survey_repo.list.call_args
         assert kwargs["limit"] == 10
