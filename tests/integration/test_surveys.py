@@ -184,9 +184,10 @@ class TestUpdate:
         created = (await _create(client, headers)).json()
         survey_id = created["id"]
         keep = created["questions"][0]  # single_choice question, keep by id
-        # Rename the kept question, drop the second, add a new numeric question.
+        # Rename the survey (changes a surveys column -> exercises updated_at onupdate),
+        # rename the kept question, drop the second, add a new numeric question.
         payload = _survey_body(
-            name="Encuesta A",
+            name="Encuesta A renombrada",
             questions=[
                 {
                     "id": keep["id"],
@@ -211,6 +212,7 @@ class TestUpdate:
         )
         assert response.status_code == status.HTTP_200_OK
         body = response.json()
+        assert body["name"] == "Encuesta A renombrada"
         assert body["questions"][0]["id"] == keep["id"]
         assert body["questions"][0]["text"] == "¿Comió bien hoy?"
         assert body["questions"][1]["text"] == "¿Cuántas comidas?"

@@ -187,6 +187,7 @@ class SurveyRepository:
         """Toggle a survey's active flag."""
         survey.is_active = is_active
         await self.db.flush()
+        await self._refresh_updated_at(survey)
         return survey
 
     # -- Internal helpers --
@@ -265,3 +266,14 @@ class SurveyRepository:
                 await self.db.flush()
         except IntegrityError:
             raise UniqueConstraintError("name", name)
+        await self._refresh_updated_at(survey)
+
+    async def _refresh_updated_at(self, survey: Survey) -> None:
+        """Reload the server-side ``updated_at`` within the async context.
+
+        ``updated_at`` uses ``onupdate=func.now()``; after an UPDATE SQLAlchemy
+        expires it, so building the domain object post-commit would otherwise
+        trigger a lazy (sync) reload and raise ``MissingGreenlet``. Scoped to this
+        one column so the eager-loaded questions/establishments stay intact.
+        """
+        await self.db.refresh(survey, attribute_names=["updated_at"])
