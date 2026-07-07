@@ -171,11 +171,16 @@ class SurveyRepository:
         new_name: str,
         created_by_id: UUID,
     ) -> Survey:
-        """Deep-copy ``source`` into a fresh survey with new ids and no responses."""
+        """Deep-copy ``source`` into a fresh survey with new ids and no responses.
+
+        The copy inherits the source's ``is_active`` state, so duplicating a paused
+        survey yields a paused copy rather than silently publishing it.
+        """
         survey = Survey(
             name=new_name.strip(),
             description=source.description,
             scope=source.scope,
+            is_active=source.is_active,
             created_by_id=created_by_id,
             questions=[
                 SurveyQuestion(

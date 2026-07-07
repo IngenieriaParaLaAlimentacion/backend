@@ -283,6 +283,21 @@ class TestDuplicate:
             q["text"] for q in original["questions"]
         ]
 
+    async def test_duplicate_inherits_inactive_state(self, client, admin_author):
+        headers, _ = admin_author
+        survey_id = (await _create(client, headers, name="Paused")).json()["id"]
+        await client.patch(
+            f"{SURVEYS_URL}/{survey_id}/status",
+            json={"is_active": False},
+            headers=headers,
+        )
+
+        copy = await client.post(
+            f"{SURVEYS_URL}/{survey_id}/duplicate", headers=headers
+        )
+        assert copy.status_code == status.HTTP_201_CREATED
+        assert copy.json()["is_active"] is False
+
 
 class TestDeleteCascade:
     async def test_delete_removes_survey_and_children(self, client, admin_author):
