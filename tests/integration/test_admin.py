@@ -115,7 +115,13 @@ async def registered_field_worker(client, db_establishment):
         },
     )
     assert response.status_code == status.HTTP_201_CREATED
-    return response.json()
+    user_data = response.json()
+    # Mark email as verified so admin operations work
+    async with db_module.AsyncSessionLocal() as session:
+        user = await session.get(User, user_data["id"])
+        user.is_email_verified = True
+        await session.commit()
+    return user_data
 
 
 @pytest_asyncio.fixture
@@ -147,6 +153,7 @@ async def _insert_user(role: UserRole, user_status: UserStatus) -> uuid.UUID:
                 email=f"{user_id}@test.com",
                 role=role,
                 status=user_status,
+                is_email_verified=True,
             )
         )
         await session.commit()

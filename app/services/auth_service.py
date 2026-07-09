@@ -5,10 +5,11 @@ from app.core.config import settings
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.core.security import (
     create_access_token,
+    create_email_verification_token,
     create_password_recovery_token,
     create_refresh_token,
-    encode_refresh_token,
     hash_password,
+    hash_token,
     verify_password,
 )
 from app.domain.auth import LoginDomain, RefreshDomain
@@ -18,6 +19,7 @@ from app.exceptions.domain_exceptions import (
     InvalidTokenError,
     PendingValidationError,
     UserAlreadyExistsError,
+    UserNotFoundError,
 )
 from app.models import PasswordRecoveryToken
 from app.schemas.auth_schema import (
@@ -28,7 +30,12 @@ from app.schemas.auth_schema import (
     RefreshRequest,
     RegisterFieldWorkerRequest,
 )
-from app.services.email_service import build_recovery_deeplink, send_recovery_email
+from app.services.email_service import (
+    build_recovery_deeplink,
+    build_verification_deeplink,
+    send_recovery_email,
+    send_verification_email,
+)
 
 
 class AuthService:
@@ -70,7 +77,8 @@ class AuthService:
             await self.uow.user_establishment_repo.preset_relation(
                 user.id, establishment.id
             )
-        await self.uow.commit()
+
+        await self._generate_and_send_verification_email(user.id, str(user.email))
 
         return UserDomain(
             id=user.id,
@@ -79,6 +87,7 @@ class AuthService:
             last_name=user.last_name,
             role=user.role,
             status=user.status,
+            is_email_verified=False,
             establishments=[establishment.id for establishment in establishments],
             locality=user.locality,
             description=user.description,
@@ -129,6 +138,7 @@ class AuthService:
                 last_name=user.last_name,
                 role=user.role,
                 status=user.status,
+                is_email_verified=user.is_email_verified,
                 establishments=[e.id for e in user.establishments],
             ),
             access_token=access_token,
@@ -147,7 +157,7 @@ class AuthService:
         Note:
             Existing access tokens remain valid until they expire.
         """
-        refresh_token_hash = encode_refresh_token(data.refresh_token)
+        refresh_token_hash = hash_token(data.refresh_token)
 
         token = await self.uow.token_repo.get_active_refresh_token(
             refresh_token_hash, data.device_id
@@ -160,7 +170,7 @@ class AuthService:
         await self.uow.commit()
 
     async def refresh(self, data: RefreshRequest) -> RefreshDomain:
-        refresh_token_hash = encode_refresh_token(data.refresh_token)
+        refresh_token_hash = hash_token(data.refresh_token)
 
         token = await self.uow.token_repo.get_active_refresh_token(
             refresh_token_hash, data.device_id
@@ -215,7 +225,7 @@ class AuthService:
         self, data: PasswordRecoveryConfirmRequest
     ) -> None:
         """Validate a recovery token and update the user's password."""
-        recovery_token_hash = encode_refresh_token(data.token)
+        recovery_token_hash = hash_token(data.token)
         recovery_token = await self.uow.password_recovery_repo.get_active_token(
             recovery_token_hash
         )
@@ -231,9 +241,50 @@ class AuthService:
         if user.status == UserStatus.PENDING_VALIDATION:
             await self.uow.user_repo.update_status(user.id, UserStatus.ACTIVE)
 
+        if not user.is_email_verified:
+            await self.uow.user_repo.update_email_verification(user.id)
+
         await self.uow.password_recovery_repo.mark_used(recovery_token)
         await self.uow.token_repo.revoke_all_by_user_id(recovery_token.user_id)
         await self.uow.commit()
+
+    async def verify_email(self, token: str) -> None:
+        """Validate a one-time verification token and mark the user's email
+        as verified.
+
+        Raises:
+            InvalidTokenError: If the token is invalid, expired, or already used.
+        """
+        token_hash = hash_token(token)
+        verification_token = await self.uow.email_verification_repo.get_active_token(
+            token_hash
+        )
+        if not verification_token:
+            raise InvalidTokenError(
+                "Verification link is invalid or has already expired."
+            )
+
+        await self.uow.email_verification_repo.mark_used(verification_token)
+        await self.uow.user_repo.update_email_verification(verification_token.user_id)
+        await self.uow.commit()
+
+    async def resend_verification_email(self, email: str) -> None:
+        """Revoke existing verification tokens and send a fresh
+        verification email.
+
+        Raises:
+            UserNotFoundError: If no user with the given email exists.
+        """
+        user = await self.uow.user_repo.get_by_email(email)
+        if not user:
+            raise UserNotFoundError(email)
+
+        if user.is_email_verified:
+            return
+
+        await self.uow.email_verification_repo.revoke_active_for_user(user.id)
+
+        await self._generate_and_send_verification_email(user.id, str(user.email))
 
     async def create_recovery_token(
         self, user_id: UUID
@@ -249,3 +300,22 @@ class AuthService:
             ),
         )
         return created, plain_token
+
+    async def _generate_and_send_verification_email(
+        self, user_id: UUID, email: str
+    ) -> None:
+        """Generates a verification token, persists it and
+        sends an email with deeplink"""
+        verification_token, verification_token_hash = create_email_verification_token()
+
+        created_token = await self.uow.email_verification_repo.create(
+            user_id,
+            verification_token_hash,
+            expires_delta=timedelta(
+                minutes=settings.email_verification_token_expire_minutes
+            ),
+        )
+        await self.uow.commit()
+
+        deeplink = build_verification_deeplink(verification_token)
+        await send_verification_email(email, deeplink, created_token.expires_at)

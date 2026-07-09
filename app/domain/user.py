@@ -40,6 +40,7 @@ class BaseUserDomain:
     last_name: str
     role: UserRole
     status: UserStatus
+    is_email_verified: bool
     locality: str | None = None
     description: str | None = None
     contact_phone: str | None = None

@@ -10,7 +10,9 @@ from app.schemas.auth_schema import (
     RefreshResponse,
     RegisterFieldWorkerRequest,
     RegistrationResponse,
+    ResendVerificationRequest,
     TokenResponse,
+    VerifyEmailRequest,
 )
 from app.services.auth_service import AuthService
 
@@ -149,3 +151,50 @@ async def confirm_password_recovery(
 
     await service.confirm_password_recovery(data)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post(
+    "/verify-email/confirm",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+    summary="Confirm email verification",
+    description="Validates a one-time email verification token and marks the "
+    "user's email as verified.",
+    responses={
+        status.HTTP_204_NO_CONTENT: {"description": "Email verified successfully"},
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Invalid or expired verification token"
+        },
+    },
+)
+async def verify_email(
+    data: VerifyEmailRequest,
+    service: AuthService = Depends(get_auth_service),
+) -> Response:
+    """Verify the user's email using a one-time token."""
+    await service.verify_email(data.token)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post(
+    "/verify-email/resend",
+    status_code=status.HTTP_202_ACCEPTED,
+    response_class=Response,
+    summary="Resend verification email",
+    description="Generates a new verification token and sends a fresh "
+    "verification email to the user.",
+    responses={
+        status.HTTP_202_ACCEPTED: {
+            "description": "Verification email resent if the user exists "
+            "and email is not already verified"
+        },
+        status.HTTP_404_NOT_FOUND: {"description": "User not found"},
+    },
+)
+async def resend_verification_email(
+    data: ResendVerificationRequest,
+    service: AuthService = Depends(get_auth_service),
+) -> Response:
+    """Resend the verification email to the user."""
+    await service.resend_verification_email(str(data.email))
+    return Response(status_code=status.HTTP_202_ACCEPTED)

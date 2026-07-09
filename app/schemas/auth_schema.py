@@ -65,6 +65,14 @@ class PasswordRecoveryConfirmRequest(BaseModel):
         return v
 
 
+class VerifyEmailRequest(BaseModel):
+    token: Annotated[str, StringConstraints(strict=True, min_length=1)]
+
+
+class ResendVerificationRequest(BaseModel):
+    email: EmailStr
+
+
 # -- Response --
 
 

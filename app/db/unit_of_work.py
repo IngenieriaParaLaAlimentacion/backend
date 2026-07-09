@@ -1,6 +1,9 @@
 import app.db.database as _db
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.repositories.activity_repository import ActivityRepository
+from app.repositories.email_verification_repository import (
+    EmailVerificationTokenRepository,
+)
 from app.repositories.establishment_repository import EstablishmentRepository
 from app.repositories.measurement_alert_repository import MeasurementAlertRepository
 from app.repositories.measurement_repository import MeasurementRepository
@@ -35,6 +38,7 @@ class UnitOfWork(IUnitOfWork):
         self.subject_repo = SubjectRepository(self.session)
         self.subject_event_repo = SubjectEventRepository(self.session)
         self.password_recovery_repo = PasswordRecoveryTokenRepository(self.session)
+        self.email_verification_repo = EmailVerificationTokenRepository(self.session)
         self.measurement_repo = MeasurementRepository(self.session)
         self.measurement_alert_repo = MeasurementAlertRepository(self.session)
         self.activity_repo = ActivityRepository(self.session)

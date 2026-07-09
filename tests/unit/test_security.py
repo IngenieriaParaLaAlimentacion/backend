@@ -10,8 +10,8 @@ from app.core.security import (
     create_password_recovery_token,
     create_refresh_token,
     decode_token,
-    encode_refresh_token,
     hash_password,
+    hash_token,
     verify_password,
 )
 from app.models import UserRole
@@ -40,7 +40,7 @@ def test_encode_and_create_refresh_token():
     assert isinstance(token_hash, str)
     assert re.match(r"^[a-zA-Z0-9\-_]+$", token)
     assert len(token_hash) == 64
-    assert encode_refresh_token(token) == token_hash
+    assert hash_token(token) == token_hash
 
 
 def test_create_password_recovery_token():

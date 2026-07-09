@@ -15,6 +15,7 @@ from app.domain.user import (
 )
 from app.exceptions.domain_exceptions import (
     BadRequestError,
+    ForbiddenError,
     SubjectNotFoundError,
     UserAlreadyExistsError,
     UserEstablishmentNotFoundError,
@@ -77,10 +78,15 @@ class AdminService:
 
     async def _get_field_worker_relations(self, user_id: UUID) -> tuple[Any, list]:
         """Return (user, relations) for a field worker, raising if the user does
-        not exist."""
+        not exist or their email is not yet verified."""
         user = await self.uow.user_repo.get_by_id(user_id)
         if user is None:
             raise UserNotFoundError(str(user_id))
+        if not user.is_email_verified:
+            raise ForbiddenError(
+                "Email not verified",
+                "The user's email has not been verified yet.",
+            )
         relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
         return user, relations
 
