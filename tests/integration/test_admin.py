@@ -15,6 +15,7 @@ from app.models.user_establishment import UserEstablishment
 pytestmark = pytest.mark.asyncio
 
 ADMIN_USERS_URL = "/api/v1/admin/users"
+ADMIN_USER_URL = "/api/v1/admin/users/{user_id}"
 ADMIN_SUBJECTS_URL = "/api/v1/admin/subjects"
 REGISTER_FIELD_WORKER_URL = "/api/v1/auth/register/field-worker"
 APPROVE_URL = "/api/v1/admin/field-worker/{user_id}/establishments/approve"
@@ -763,3 +764,113 @@ class TestAdminSubjectDetail:
             f"{ADMIN_SUBJECTS_URL}/{uuid.uuid4()}", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+class TestGetUser:
+    async def test_unauthenticated_returns_401(self, client):
+        """No token returns 401."""
+        response = await client.get(ADMIN_USER_URL.format(user_id=uuid.uuid4()))
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_field_worker_role_returns_403(self, client, field_worker_headers):
+        """A field worker token is rejected."""
+        response = await client.get(
+            ADMIN_USER_URL.format(user_id=uuid.uuid4()), headers=field_worker_headers
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_analyst_role_returns_403(self, client, analyst_headers):
+        """An analyst token is rejected."""
+        response = await client.get(
+            ADMIN_USER_URL.format(user_id=uuid.uuid4()), headers=analyst_headers
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_unknown_id_returns_404(self, client, admin_headers):
+        """A UUID that was never registered returns 404."""
+        response = await client.get(
+            ADMIN_USER_URL.format(user_id=uuid.uuid4()), headers=admin_headers
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_returns_200_for_existing_user(self, client, admin_headers, app):
+        """Returns 200 for an existing user."""
+        user_id = await _insert_user(UserRole.ANALYST, UserStatus.ACTIVE)
+        response = await client.get(
+            ADMIN_USER_URL.format(user_id=user_id), headers=admin_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+
+    async def test_response_includes_required_fields(self, client, admin_headers, app):
+        """Response includes all fields defined in FullUserAdminView."""
+        user_id = await _insert_user(UserRole.ANALYST, UserStatus.ACTIVE)
+        response = await client.get(
+            ADMIN_USER_URL.format(user_id=user_id), headers=admin_headers
+        )
+        body = response.json()
+        for field in (
+            "id",
+            "email",
+            "name",
+            "last_name",
+            "role",
+            "status",
+            "establishments",
+        ):
+            assert field in body
+
+    async def test_returns_user_data_correctly(self, client, admin_headers, app):
+        """Returned data matches what was stored. Locality, description and
+        contact_phone are null for users that never set them."""
+        user_id = await _insert_user(UserRole.ANALYST, UserStatus.ACTIVE)
+        response = await client.get(
+            ADMIN_USER_URL.format(user_id=user_id), headers=admin_headers
+        )
+        body = response.json()
+        assert body["id"] == str(user_id)
+        assert body["role"] == UserRole.ANALYST
+        assert body["status"] == UserStatus.ACTIVE
+        assert body["locality"] is None
+        assert body["description"] is None
+        assert body["contact_phone"] is None
+
+    async def test_returns_user_with_hydrated_establishments(
+        self, client, admin_headers, registered_field_worker, db_establishment
+    ):
+        """A field worker registered to an establishment returns it hydrated."""
+        response = await client.get(
+            ADMIN_USER_URL.format(user_id=registered_field_worker["id"]),
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_200_OK
+        establishments = response.json()["establishments"]
+        assert len(establishments) == 1
+        assert establishments[0]["id"] == str(db_establishment.id)
+        assert establishments[0]["name"] == db_establishment.name
+
+    async def test_optional_fields_returned_when_set(self, client, admin_headers, app):
+        """locality, description and contact_phone are returned when stored in DB."""
+        user_id = uuid.uuid4()
+        async with db_module.AsyncSessionLocal() as session:
+            session.add(
+                User(
+                    id=user_id,
+                    name="Test",
+                    last_name="User",
+                    email=f"{user_id}@test.com",
+                    role=UserRole.ANALYST,
+                    status=UserStatus.ACTIVE,
+                    locality="Palermo",
+                    description="Nutricionista",
+                    contact_phone="1123456789",
+                )
+            )
+            await session.commit()
+
+        response = await client.get(
+            ADMIN_USER_URL.format(user_id=user_id), headers=admin_headers
+        )
+        body = response.json()
+        assert body["locality"] == "Palermo"
+        assert body["description"] == "Nutricionista"
+        assert body["contact_phone"] == "1123456789"

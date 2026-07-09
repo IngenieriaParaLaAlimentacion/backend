@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from app.repositories.activity_repository import ActivityRepository
 from app.repositories.email_verification_repository import (
     EmailVerificationTokenRepository,
 )
@@ -18,6 +19,7 @@ from app.repositories.user_token_repository import TokenRepository
 
 
 class IUnitOfWork(ABC):
+    activity_repo: ActivityRepository
     user_repo: UserRepository
     password_repo: UserPasswordRepository
     token_repo: TokenRepository

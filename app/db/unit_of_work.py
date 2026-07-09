@@ -1,5 +1,6 @@
 import app.db.database as _db
 from app.core.interfaces.unit_of_work import IUnitOfWork
+from app.repositories.activity_repository import ActivityRepository
 from app.repositories.email_verification_repository import (
     EmailVerificationTokenRepository,
 )
@@ -40,6 +41,7 @@ class UnitOfWork(IUnitOfWork):
         self.email_verification_repo = EmailVerificationTokenRepository(self.session)
         self.measurement_repo = MeasurementRepository(self.session)
         self.measurement_alert_repo = MeasurementAlertRepository(self.session)
+        self.activity_repo = ActivityRepository(self.session)
         return self
 
     async def commit(self) -> None:

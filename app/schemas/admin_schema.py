@@ -41,6 +41,21 @@ class UserAdminView(BaseModel):
     establishments: list[EstablishmentResponse]
 
 
+class FullUserAdminView(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    email: str
+    name: str
+    last_name: str
+    role: str
+    status: str
+    establishments: list[EstablishmentResponse]
+    locality: str | None = None
+    description: str | None = None
+    contact_phone: str | None = None
+
+
 class PaginatedUsersResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
