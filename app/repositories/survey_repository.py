@@ -183,17 +183,8 @@ class SurveyRepository:
             is_active=source.is_active,
             created_by_id=created_by_id,
             questions=[
-                SurveyQuestion(
-                    text=q.text,
-                    response_type=q.response_type,
-                    is_required=q.is_required,
-                    position=q.position,
-                    options=[
-                        SurveyQuestionOption(text=o.text, position=o.position)
-                        for o in q.options
-                    ],
-                )
-                for q in source.questions
+                self._build_question(q, position)
+                for position, q in enumerate(source.questions)
             ],
         )
         await self._assign_establishments(survey, [e.id for e in source.establishments])
@@ -215,7 +206,9 @@ class SurveyRepository:
     # -- Internal helpers --
 
     @staticmethod
-    def _build_question(q: QuestionInputData, position: int) -> SurveyQuestion:
+    def _build_question(
+        q: QuestionInputData | SurveyQuestion, position: int
+    ) -> SurveyQuestion:
         return SurveyQuestion(
             text=q.text,
             response_type=q.response_type,

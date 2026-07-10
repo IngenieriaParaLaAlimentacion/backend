@@ -395,6 +395,18 @@ class TestDuplicate:
         with pytest.raises(ForbiddenError):
             await SurveyService(uow).duplicate(survey.id, field_worker_actor)
 
+    async def test_unique_constraint_race_maps_to_conflict(
+        self, make_uow, make_survey, admin_actor
+    ):
+        survey = make_survey(name="Encuesta A")
+        uow = make_uow(survey=survey, name_exists=False)
+        uow.survey_repo.duplicate = AsyncMock(
+            side_effect=UniqueConstraintError("name", "Encuesta A (copy)")
+        )
+        with pytest.raises(SurveyAlreadyExistsError):
+            await SurveyService(uow).duplicate(survey.id, admin_actor)
+        uow.commit.assert_not_called()
+
 
 class TestDelete:
     pytestmark = pytest.mark.asyncio

@@ -251,13 +251,21 @@ class SurveyService:
         return SurveyDomain.from_db(survey)
 
     async def duplicate(self, survey_id: UUID, actor: UserActor) -> SurveyDomain:
-        """Deep-copy a survey under a unique ``"<name> (copy)"`` name."""
+        """Deep-copy a survey under a unique ``"<name> (copy)"`` name.
+
+        Raises:
+            SurveyAlreadyExistsError: another survey grabbed the generated name
+                between the availability check and the insert.
+        """
         source = await self._get_or_raise(survey_id)
         self._assert_can_create(actor)
         new_name = await self._unique_copy_name(source.name)
-        survey = await self.uow.survey_repo.duplicate(
-            source, new_name=new_name, created_by_id=actor.user_id
-        )
+        try:
+            survey = await self.uow.survey_repo.duplicate(
+                source, new_name=new_name, created_by_id=actor.user_id
+            )
+        except UniqueConstraintError:
+            raise SurveyAlreadyExistsError(new_name)
         await self.uow.commit()
         return SurveyDomain.from_db(survey)
 

@@ -160,6 +160,7 @@ async def update_survey(
     responses={
         **_AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Survey not found"},
+        status.HTTP_409_CONFLICT: {"description": "Survey name already exists"},
     },
 )
 async def duplicate_survey(
