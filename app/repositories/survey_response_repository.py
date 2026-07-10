@@ -28,7 +28,8 @@ class SurveyResponseRepository:
         answers: dict,
         event_at: datetime,
     ) -> SurveyResponse:
-        """Persist a new response. ``id`` is optional; when None the server generates it.
+        """Persist a new response. ``id`` is optional; when None the server
+        generates it.
 
         The insert runs inside a SAVEPOINT so a unique violation rolls back only
         the failed row and leaves the session usable for the caller to re-query.

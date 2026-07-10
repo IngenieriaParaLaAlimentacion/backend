@@ -179,9 +179,7 @@ class TestValidateAnswers:
 
     def test_date_accepted_as_opaque_string(self):
         q = _make_question(response_type=ResponseType.DATE, is_required=True)
-        result = SurveyResponseService._validate_answers(
-            [q], {str(q.id): "2026-01-01"}
-        )
+        result = SurveyResponseService._validate_answers([q], {str(q.id): "2026-01-01"})
         assert result[str(q.id)] == "2026-01-01"
 
     def test_numeric_wrong_shape_rejected(self):
@@ -210,9 +208,7 @@ class TestValidateAnswers:
 
     def test_multiple_choice_unknown_option_id_rejected(self):
         option = _make_option()
-        q = _make_question(
-            response_type=ResponseType.MULTIPLE_CHOICE, options=[option]
-        )
+        q = _make_question(response_type=ResponseType.MULTIPLE_CHOICE, options=[option])
         with pytest.raises(InvalidSurveyResponseError):
             SurveyResponseService._validate_answers(
                 [q], {str(q.id): [str(uuid.uuid4())]}
@@ -220,9 +216,7 @@ class TestValidateAnswers:
 
     def test_multiple_choice_valid_options_accepted(self):
         option = _make_option()
-        q = _make_question(
-            response_type=ResponseType.MULTIPLE_CHOICE, options=[option]
-        )
+        q = _make_question(response_type=ResponseType.MULTIPLE_CHOICE, options=[option])
         result = SurveyResponseService._validate_answers(
             [q], {str(q.id): [str(option.id)]}
         )
@@ -334,9 +328,7 @@ class TestSubmit:
         existing = _make_response()
         uow = make_uow(existing_response=existing)
         data = request_factory(id=existing.id)
-        response, created = await SurveyResponseService(uow).submit(
-            data, analyst_actor
-        )
+        response, created = await SurveyResponseService(uow).submit(data, analyst_actor)
         assert created is False
         assert response.id == existing.id
         uow.survey_response_repo.create.assert_not_called()

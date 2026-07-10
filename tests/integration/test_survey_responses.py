@@ -438,9 +438,7 @@ class TestEdit:
         )
         assert response.status_code == status.HTTP_200_OK
 
-    async def test_edit_appends_audit_row(
-        self, client, db_establishment, admin_user
-    ):
+    async def test_edit_appends_audit_row(self, client, db_establishment, admin_user):
         from app.models.survey_response_edit import SurveyResponseEdit
 
         headers, _ = admin_user

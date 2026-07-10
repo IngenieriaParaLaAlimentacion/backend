@@ -37,8 +37,7 @@ _AUTH_RESPONSES = {
     ),
     responses={
         status.HTTP_200_OK: {
-            "description": "Response already existed; idempotent replay of the "
-            "same id."
+            "description": "Response already existed; idempotent replay of the same id."
         },
         **_AUTH_RESPONSES,
         status.HTTP_400_BAD_REQUEST: {
