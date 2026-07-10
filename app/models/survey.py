@@ -5,9 +5,11 @@ from sqlalchemy import (
     Column,
     DateTime,
     ForeignKey,
+    Index,
     Integer,
     String,
     func,
+    text,
     true,
 )
 from sqlalchemy import Enum as SAEnum
@@ -23,6 +25,11 @@ class Survey(Base):
     """A configurable survey authored from the backoffice (Module 2)."""
 
     __tablename__ = "surveys"
+    __table_args__ = (
+        # Case-insensitive uniqueness; see uq_surveys_lower_name in the Alembic
+        # migration that created this table.
+        Index("uq_surveys_lower_name", text("lower(name)"), unique=True),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
