@@ -12,6 +12,7 @@ from app.repositories.password_recovery_repository import (
 )
 from app.repositories.subject_event_repository import SubjectEventRepository
 from app.repositories.subject_repository import SubjectRepository
+from app.repositories.survey_repository import SurveyRepository
 from app.repositories.user_establishment_repository import UserEstablishmentRepository
 from app.repositories.user_password_repository import UserPasswordRepository
 from app.repositories.user_repository import UserRepository
@@ -31,6 +32,7 @@ class IUnitOfWork(ABC):
     email_verification_repo: EmailVerificationTokenRepository
     measurement_repo: MeasurementRepository
     measurement_alert_repo: MeasurementAlertRepository
+    survey_repo: SurveyRepository
 
     @abstractmethod
     async def commit(self) -> None: ...

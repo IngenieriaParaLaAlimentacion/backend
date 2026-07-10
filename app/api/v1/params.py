@@ -7,6 +7,12 @@ from fastapi import Query
 
 from app.domain.establishment import EstablishmentListingParams, EstablishmentSortOrder
 from app.domain.measurement import MeasurementListingParams, MeasurementSortOrder
+from app.domain.survey import (
+    NAME_MAX,
+    SurveyListingParams,
+    SurveyScope,
+    SurveySortOrder,
+)
 from app.exceptions.domain_exceptions import InvalidListingFilterError
 
 
@@ -73,5 +79,23 @@ class MeasurementListingQuery:
             measured_to=self.measured_to,
             min_age=self.min_age,
             max_age=self.max_age,
+            sort_order=self.sort_order,
+        )
+
+
+@dataclass
+class SurveyListingQuery:
+    search: Annotated[str | None, Query(max_length=NAME_MAX)] = None
+    created_by: Annotated[UUID | None, Query()] = None
+    scope: Annotated[SurveyScope | None, Query()] = None
+    is_active: Annotated[bool | None, Query()] = None
+    sort_order: SurveySortOrder = SurveySortOrder.NEWEST
+
+    def to_domain(self) -> SurveyListingParams:
+        return SurveyListingParams(
+            search=self.search,
+            created_by=self.created_by,
+            scope=self.scope,
+            is_active=self.is_active,
             sort_order=self.sort_order,
         )

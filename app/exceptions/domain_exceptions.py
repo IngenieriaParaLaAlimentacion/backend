@@ -30,6 +30,14 @@ class BadRequestError(BaseError):
     """Base exception for invalid client requests (HTTP 400)."""
 
 
+class ConflictError(BaseError):
+    """Base exception for state conflicts that are not simple duplicates (HTTP 409).
+
+    Distinct from ``AlreadyExistsError`` (also 409) so the RFC 7807 ``type``/``title``
+    can convey a stateful conflict (e.g. a locked resource) rather than a duplicate.
+    """
+
+
 class UserNotFoundError(NotFoundError):
     """Exception raised when a user is not found.
 
@@ -217,3 +225,61 @@ class EstablishmentAlreadyExistsError(AlreadyExistsError):
             "Establishment already exists",
             f"An establishment with place_id {place_id} already exists.",
         )
+
+
+class SurveyNotFoundError(NotFoundError):
+    """Exception raised when a survey cannot be found.
+
+    Args:
+        survey_id (str): The ID that was looked up.
+    """
+
+    def __init__(self, survey_id: str):
+        super().__init__(
+            "Survey not found",
+            f"No survey with id {survey_id} exists.",
+        )
+
+
+class SurveyAlreadyExistsError(AlreadyExistsError):
+    """Exception raised when a survey name collides with an existing one.
+
+    Args:
+        name (str): The survey name that already exists.
+    """
+
+    def __init__(self, name: str):
+        super().__init__(
+            "Survey already exists",
+            f"A survey named '{name}' already exists.",
+        )
+
+
+class SurveyLockedError(ConflictError):
+    """Exception raised when a survey can no longer be modified.
+
+    Stub-enforced today (surveys never accumulate responses), it will gate edits
+    once response collection lands.
+    """
+
+    def __init__(
+        self,
+        detail: str = (
+            "This survey has recorded responses and can no longer be modified."
+        ),
+    ):
+        super().__init__("Survey locked", detail)
+
+
+class InvalidSurveyStructureError(BadRequestError):
+    """Exception raised when a survey's questions/options/scope are inconsistent."""
+
+    def __init__(self, detail: str):
+        super().__init__("Invalid survey structure", detail)
+
+
+class InvalidSurveyPayloadError(BadRequestError):
+    """Exception raised when a reconcile payload references ids outside the survey."""
+
+    def __init__(self, detail: str):
+        super().__init__("Invalid survey payload", detail)

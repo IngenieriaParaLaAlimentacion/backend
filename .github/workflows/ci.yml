@@ -45,8 +45,7 @@ jobs:
   
       - name: Run Semgrep SAST scan
         run: |
-          pip install semgrep
-          semgrep scan --config p/python --config p/secrets --error
+          docker run --rm -v "$PWD:/src" semgrep/semgrep semgrep scan --config p/python --config p/secrets --error
       
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 #v6
