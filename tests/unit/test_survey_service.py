@@ -52,6 +52,24 @@ def _choice_question(
     )
 
 
+def _existing_question(
+    is_required: bool = False,
+    response_type: ResponseType = ResponseType.TEXT,
+    option_ids: list[uuid.UUID] | None = None,
+) -> MagicMock:
+    """A MagicMock standing in for a persisted SurveyQuestion (with options)."""
+    q = MagicMock()
+    q.id = uuid.uuid4()
+    q.response_type = response_type
+    q.is_required = is_required
+    q.options = []
+    for option_id in option_ids or []:
+        option = MagicMock()
+        option.id = option_id
+        q.options.append(option)
+    return q
+
+
 def make_create(**overrides) -> SurveyCreateRequest:
     data = dict(
         name="Encuesta A",
@@ -87,6 +105,7 @@ def make_survey():
         is_active: bool = True,
         name: str = "Encuesta A",
         scope: SurveyScope = SurveyScope.GENERIC,
+        questions: list | None = None,
     ):
         s = MagicMock()
         s.id = uuid.uuid4()
@@ -96,7 +115,7 @@ def make_survey():
         s.created_by_id = created_by_id or uuid.uuid4()
         s.is_active = is_active
         s.response_count = response_count
-        s.questions = []
+        s.questions = questions if questions is not None else []
         s.establishments = []
         s.created_at = datetime(2026, 1, 1, tzinfo=timezone.utc)
         s.updated_at = datetime(2026, 1, 1, tzinfo=timezone.utc)
@@ -320,12 +339,150 @@ class TestUpdatePermissionsAndLock:
         await SurveyService(uow).update(survey.id, make_update(), admin_actor)
         uow.survey_repo.reconcile.assert_awaited_once()
 
-    async def test_locked_survey_rejected(self, make_uow, make_survey, admin_actor):
-        survey = make_survey(response_count=5)
+    async def test_deleted_question_locked(self, make_uow, make_survey, admin_actor):
+        existing = _existing_question()
+        survey = make_survey(response_count=1, questions=[existing])
         uow = make_uow(survey=survey)
+        data = make_update(questions=[])
         with pytest.raises(SurveyLockedError):
-            await SurveyService(uow).update(survey.id, make_update(), admin_actor)
+            await SurveyService(uow).update(survey.id, data, admin_actor)
         uow.survey_repo.reconcile.assert_not_called()
+
+    async def test_changed_response_type_locked(
+        self, make_uow, make_survey, admin_actor
+    ):
+        existing = _existing_question(response_type=ResponseType.TEXT)
+        survey = make_survey(response_count=1, questions=[existing])
+        uow = make_uow(survey=survey)
+        data = make_update(
+            questions=[
+                QuestionInput(
+                    id=existing.id,
+                    text="Editada",
+                    response_type=ResponseType.NUMERIC,
+                    is_required=False,
+                    options=[],
+                )
+            ]
+        )
+        with pytest.raises(SurveyLockedError):
+            await SurveyService(uow).update(survey.id, data, admin_actor)
+        uow.survey_repo.reconcile.assert_not_called()
+
+    async def test_optional_to_required_locked(
+        self, make_uow, make_survey, admin_actor
+    ):
+        existing = _existing_question(is_required=False)
+        survey = make_survey(response_count=1, questions=[existing])
+        uow = make_uow(survey=survey)
+        data = make_update(
+            questions=[
+                QuestionInput(
+                    id=existing.id,
+                    text="Editada",
+                    response_type=ResponseType.TEXT,
+                    is_required=True,
+                    options=[],
+                )
+            ]
+        )
+        with pytest.raises(SurveyLockedError):
+            await SurveyService(uow).update(survey.id, data, admin_actor)
+        uow.survey_repo.reconcile.assert_not_called()
+
+    async def test_removed_option_locked(self, make_uow, make_survey, admin_actor):
+        kept_id, removed_id = uuid.uuid4(), uuid.uuid4()
+        existing = _existing_question(
+            is_required=True,
+            response_type=ResponseType.SINGLE_CHOICE,
+            option_ids=[kept_id, removed_id],
+        )
+        survey = make_survey(response_count=1, questions=[existing])
+        uow = make_uow(survey=survey)
+        data = make_update(
+            questions=[
+                QuestionInput(
+                    id=existing.id,
+                    text="Editada",
+                    response_type=ResponseType.SINGLE_CHOICE,
+                    is_required=True,
+                    options=[OptionInput(id=kept_id, text="Opción")],
+                )
+            ]
+        )
+        with pytest.raises(SurveyLockedError):
+            await SurveyService(uow).update(survey.id, data, admin_actor)
+        uow.survey_repo.reconcile.assert_not_called()
+
+    async def test_rename_allowed_once_locked(self, make_uow, make_survey, admin_actor):
+        existing = _existing_question()
+        survey = make_survey(response_count=1, questions=[existing])
+        uow = make_uow(survey=survey)
+        data = make_update(
+            questions=[
+                QuestionInput(
+                    id=existing.id,
+                    text="Nuevo texto",
+                    response_type=ResponseType.TEXT,
+                    is_required=False,
+                    options=[],
+                )
+            ]
+        )
+        result = await SurveyService(uow).update(survey.id, data, admin_actor)
+        assert isinstance(result, SurveyDomain)
+        uow.survey_repo.reconcile.assert_awaited_once()
+
+    async def test_reorder_allowed_once_locked(
+        self, make_uow, make_survey, admin_actor
+    ):
+        first = _existing_question()
+        second = _existing_question()
+        survey = make_survey(response_count=1, questions=[first, second])
+        uow = make_uow(survey=survey)
+        data = make_update(
+            questions=[
+                QuestionInput(
+                    id=second.id,
+                    text="Segunda",
+                    response_type=ResponseType.TEXT,
+                    is_required=False,
+                    options=[],
+                ),
+                QuestionInput(
+                    id=first.id,
+                    text="Primera",
+                    response_type=ResponseType.TEXT,
+                    is_required=False,
+                    options=[],
+                ),
+            ]
+        )
+        result = await SurveyService(uow).update(survey.id, data, admin_actor)
+        assert isinstance(result, SurveyDomain)
+        uow.survey_repo.reconcile.assert_awaited_once()
+
+    async def test_add_optional_question_allowed_once_locked(
+        self, make_uow, make_survey, admin_actor
+    ):
+        existing = _existing_question()
+        survey = make_survey(response_count=1, questions=[existing])
+        uow = make_uow(survey=survey)
+        data = make_update(
+            questions=[
+                QuestionInput(
+                    id=existing.id,
+                    text="Editada",
+                    response_type=ResponseType.TEXT,
+                    is_required=False,
+                    options=[],
+                ),
+                _text_question("Nueva pregunta opcional"),
+            ]
+        )
+        result = await SurveyService(uow).update(survey.id, data, admin_actor)
+        assert isinstance(result, SurveyDomain)
+        uow.survey_repo.reconcile.assert_awaited_once()
 
     async def test_rename_conflict_uses_exclude_id(
         self, make_uow, make_survey, admin_actor

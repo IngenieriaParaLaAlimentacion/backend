@@ -251,6 +251,99 @@ class TestUpdate:
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
+class TestLockedAfterResponses:
+    async def test_delete_question_after_response_returns_409(
+        self, client, admin_author, db_establishment
+    ):
+        headers, _ = admin_author
+        created = (await _create(client, headers)).json()
+        survey_id = created["id"]
+        keep = created["questions"][0]
+
+        submit = await client.post(
+            "/api/v1/survey-responses",
+            json={
+                "survey_id": survey_id,
+                "establishment_id": str(db_establishment.id),
+                "answers": {keep["id"]: keep["options"][0]["id"]},
+                "event_at": "2024-06-01T12:00:00Z",
+            },
+            headers=headers,
+        )
+        assert submit.status_code == status.HTTP_201_CREATED
+
+        # Drop the second question entirely -> structural deletion, locked.
+        payload = _survey_body(
+            questions=[
+                {
+                    "id": keep["id"],
+                    "text": keep["text"],
+                    "response_type": "single_choice",
+                    "is_required": True,
+                    "options": [
+                        {"id": keep["options"][0]["id"], "text": "Sí"},
+                        {"id": keep["options"][1]["id"], "text": "No"},
+                    ],
+                }
+            ]
+        )
+        response = await client.put(
+            f"{SURVEYS_URL}/{survey_id}", json=payload, headers=headers
+        )
+        assert response.status_code == status.HTTP_409_CONFLICT
+
+    async def test_rename_question_after_response_succeeds(
+        self, client, admin_author, db_establishment
+    ):
+        headers, _ = admin_author
+        created = (await _create(client, headers)).json()
+        survey_id = created["id"]
+        keep = created["questions"][0]
+        second = created["questions"][1]
+
+        submit = await client.post(
+            "/api/v1/survey-responses",
+            json={
+                "survey_id": survey_id,
+                "establishment_id": str(db_establishment.id),
+                "answers": {keep["id"]: keep["options"][0]["id"]},
+                "event_at": "2024-06-01T12:00:00Z",
+            },
+            headers=headers,
+        )
+        assert submit.status_code == status.HTTP_201_CREATED
+
+        # Rename the kept question and leave the rest structurally identical.
+        payload = _survey_body(
+            questions=[
+                {
+                    "id": keep["id"],
+                    "text": "¿Comió bien hoy? (renombrada)",
+                    "response_type": "single_choice",
+                    "is_required": True,
+                    "options": [
+                        {"id": keep["options"][0]["id"], "text": "Sí"},
+                        {"id": keep["options"][1]["id"], "text": "No"},
+                    ],
+                },
+                {
+                    "id": second["id"],
+                    "text": second["text"],
+                    "response_type": "text",
+                    "is_required": False,
+                    "options": [],
+                },
+            ]
+        )
+        response = await client.put(
+            f"{SURVEYS_URL}/{survey_id}", json=payload, headers=headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert (
+            response.json()["questions"][0]["text"] == "¿Comió bien hoy? (renombrada)"
+        )
+
+
 class TestDuplicate:
     async def test_duplicate_suffixes_name(self, client, admin_author):
         headers, _ = admin_author

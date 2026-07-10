@@ -23,6 +23,9 @@ router = APIRouter(prefix="/surveys")
 require_survey_author = require_some(
     UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN
 )
+_survey_reader = require_some(
+    UserRole.FIELD_WORKER, UserRole.ADMIN, UserRole.SUPERADMIN
+)
 
 _AUTH_RESPONSES = {
     status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
@@ -100,6 +103,35 @@ async def get_fies_template(
     _: UserActor = Depends(require_survey_author),
 ) -> SurveyTemplateResponse:
     return build_fies_template()
+
+
+@router.get(
+    "/available",
+    response_model=PaginatedResponse[SurveyListItem],
+    summary="List surveys available to the caller",
+    description=(
+        "Paginated list of active surveys the caller may respond to: generic "
+        "surveys, plus targeted surveys aimed at one of the caller's approved "
+        "establishments. Field worker, admin, and superadmin only."
+    ),
+    responses=_AUTH_RESPONSES,
+)
+async def list_available_surveys(
+    page: int = Query(default=1, ge=1, description="Page number, starting at 1."),
+    page_size: int = Query(
+        default=20, ge=1, le=100, description="Results per page (max 100)."
+    ),
+    actor: UserActor = Depends(_survey_reader),
+    service: SurveyService = Depends(get_survey_service),
+) -> PaginatedResponse[SurveyListItem]:
+    result = await service.list_available_surveys(actor, page=page, page_size=page_size)
+    return PaginatedResponse[SurveyListItem](
+        items=[SurveyListItem.model_validate(item) for item in result.items],
+        total=result.total,
+        page=result.page,
+        page_size=result.page_size,
+        total_pages=result.total_pages,
+    )
 
 
 @router.get(

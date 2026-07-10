@@ -97,7 +97,13 @@ class TestActivityTypeFilter:
     pytestmark = pytest.mark.asyncio
 
     @pytest.mark.parametrize(
-        "activity_type", [None, ActivityType.SUBJECT, ActivityType.MEASUREMENT]
+        "activity_type",
+        [
+            None,
+            ActivityType.SUBJECT,
+            ActivityType.MEASUREMENT,
+            ActivityType.SURVEY_RESPONSE,
+        ],
     )
     async def test_passes_activity_type_through_unchanged(
         self, make_uow, activity_type

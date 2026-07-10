@@ -12,6 +12,8 @@ pytestmark = pytest.mark.asyncio
 ACTIVITY_URL = "/api/v1/users/me/activity"
 SUBJECTS_URL = "/api/v1/subjects"
 MEASUREMENTS_URL = "/api/v1/measurements"
+SURVEYS_URL = "/api/v1/surveys"
+SURVEY_RESPONSES_URL = "/api/v1/survey-responses"
 
 
 async def _make_field_worker_with_access(establishment_id):
@@ -61,6 +63,31 @@ async def field_worker_b(app, db_establishment):
     return await _make_field_worker_with_access(db_establishment.id)
 
 
+@pytest_asyncio.fixture
+async def survey_author(app):
+    """Create a real DB admin user (surveys.created_by_id is a real FK)."""
+    from app.db.database import AsyncSessionLocal
+    from app.domain.user import UserStatus
+    from app.models.user import User
+    from app.models.user import UserRole as ORMUserRole
+
+    user_id = uuid.uuid4()
+    async with AsyncSessionLocal() as session:
+        session.add(
+            User(
+                id=user_id,
+                name="Author",
+                last_name="Admin",
+                email=f"{user_id}@test.com",
+                role=ORMUserRole.ADMIN,
+                status=UserStatus.ACTIVE,
+            )
+        )
+        await session.commit()
+    token = create_access_token(user_id, role=UserRole.ADMIN)
+    return {"Authorization": f"Bearer {token}"}
+
+
 def _subject_body(dni: int, **overrides):
     return {
         "dni": dni,
@@ -101,6 +128,42 @@ async def _create_measurement(
         json=_measurement_body(subject_id, establishment_id, measured_at, **overrides),
         headers=headers,
     )
+    assert response.status_code == status.HTTP_201_CREATED
+    return response.json()["id"]
+
+
+async def _create_survey(client, author_headers, name: str = "Encuesta A"):
+    body = {
+        "name": name,
+        "description": None,
+        "scope": "generic",
+        "questions": [
+            {
+                "text": "¿Comió hoy?",
+                "response_type": "single_choice",
+                "is_required": True,
+                "options": [{"text": "Sí"}, {"text": "No"}],
+            }
+        ],
+        "establishment_ids": [],
+    }
+    response = await client.post(SURVEYS_URL, json=body, headers=author_headers)
+    assert response.status_code == status.HTTP_201_CREATED
+    return response.json()
+
+
+async def _submit_survey_response(
+    client, headers, survey, establishment_id, event_at, **overrides
+):
+    question = survey["questions"][0]
+    body = {
+        "survey_id": survey["id"],
+        "establishment_id": str(establishment_id),
+        "answers": {question["id"]: question["options"][0]["id"]},
+        "event_at": event_at,
+        **overrides,
+    }
+    response = await client.post(SURVEY_RESPONSES_URL, json=body, headers=headers)
     assert response.status_code == status.HTTP_201_CREATED
     return response.json()["id"]
 
@@ -223,6 +286,82 @@ class TestTypeFilter:
         assert body["total"] == 2
         assert all(i["type"] == "measurement" for i in body["items"])
         assert {i["measurement"]["id"] for i in body["items"]} == {m1, m2}
+
+    async def test_type_survey_response_returns_only_survey_response_items(
+        self, client, db_establishment, field_worker_a, survey_author
+    ):
+        headers, _ = field_worker_a
+        survey = await _create_survey(client, survey_author)
+        response_id = await _submit_survey_response(
+            client, headers, survey, db_establishment.id, "2024-01-01T00:00:00Z"
+        )
+
+        response = await client.get(
+            ACTIVITY_URL, params={"type": "survey_response"}, headers=headers
+        )
+        body = response.json()
+        assert body["total"] == 1
+        assert body["items"][0]["type"] == "survey_response"
+        assert body["items"][0]["survey_response"]["id"] == response_id
+        assert body["items"][0]["survey_response"]["survey"]["id"] == survey["id"]
+
+
+class TestSurveyResponseActivity:
+    async def test_submitted_response_appears_for_submitter(
+        self, client, db_establishment, field_worker_a, survey_author
+    ):
+        headers, _ = field_worker_a
+        survey = await _create_survey(client, survey_author)
+        response_id = await _submit_survey_response(
+            client, headers, survey, db_establishment.id, "2024-01-01T00:00:00Z"
+        )
+
+        response = await client.get(ACTIVITY_URL, headers=headers)
+        body = response.json()
+        assert body["total"] == 1
+        item = body["items"][0]
+        assert item["type"] == "survey_response"
+        assert item["survey_response"]["id"] == response_id
+        assert item["survey_response"]["establishment"]["id"] == str(
+            db_establishment.id
+        )
+
+    async def test_does_not_leak_to_other_submitters(
+        self, client, db_establishment, field_worker_a, field_worker_b, survey_author
+    ):
+        headers_a, _ = field_worker_a
+        headers_b, _ = field_worker_b
+        survey = await _create_survey(client, survey_author)
+        await _submit_survey_response(
+            client, headers_a, survey, db_establishment.id, "2024-01-01T00:00:00Z"
+        )
+
+        response_b = await client.get(ACTIVITY_URL, headers=headers_b)
+        assert response_b.json()["total"] == 0
+
+    async def test_mixed_feed_includes_all_three_types_ordered_desc(
+        self, client, db_establishment, field_worker_a, survey_author
+    ):
+        headers, _ = field_worker_a
+        subject_id = await _create_subject(client, headers, dni=55555551)
+        await _create_measurement(
+            client, headers, subject_id, db_establishment.id, "2024-02-01T00:00:00Z"
+        )
+        survey = await _create_survey(client, survey_author)
+        await _submit_survey_response(
+            client, headers, survey, db_establishment.id, "2024-03-01T00:00:00Z"
+        )
+
+        response = await client.get(ACTIVITY_URL, headers=headers)
+        body = response.json()
+        assert body["total"] == 3
+        # subject's occurred_at is server-generated "now" (via subject_events),
+        # so it sorts ahead of the client-dated 2024 measurement/response.
+        assert [i["type"] for i in body["items"]] == [
+            "subject",
+            "survey_response",
+            "measurement",
+        ]
 
 
 class TestPagination:

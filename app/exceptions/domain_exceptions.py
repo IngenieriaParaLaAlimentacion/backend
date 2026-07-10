@@ -283,3 +283,25 @@ class InvalidSurveyPayloadError(BadRequestError):
 
     def __init__(self, detail: str):
         super().__init__("Invalid survey payload", detail)
+
+
+class SurveyResponseNotFoundError(NotFoundError):
+    """Exception raised when a survey response cannot be found.
+
+    Args:
+        response_id (str): The ID that was looked up.
+    """
+
+    def __init__(self, response_id: str):
+        super().__init__(
+            "Survey response not found",
+            f"No survey response with id {response_id} exists.",
+        )
+
+
+class InvalidSurveyResponseError(BadRequestError):
+    """Exception raised when submitted answers fail validation, or the chosen
+    establishment is outside the survey's audience."""
+
+    def __init__(self, detail: str):
+        super().__init__("Invalid survey response", detail)
