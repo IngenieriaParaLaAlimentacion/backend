@@ -43,8 +43,6 @@ class SurveyService:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
-    # -- Permission gates --
-
     @staticmethod
     def _assert_can_create(actor: UserActor) -> None:
         if actor.role not in _AUTHOR_ROLES:
@@ -69,8 +67,6 @@ class SurveyService:
         #          referenced option;  allow: rename, reorder, add optional question.
         if survey.response_count > 0:
             raise SurveyLockedError()
-
-    # -- Structural validation (CA5/CA9/scope) --
 
     async def _validate_structure(
         self,
@@ -160,8 +156,6 @@ class SurveyService:
             if not await self.uow.survey_repo.name_exists(candidate):
                 return candidate
             suffix += 1
-
-    # -- Public operations --
 
     async def create(self, data: SurveyCreateRequest, actor: UserActor) -> SurveyDomain:
         """Create a survey.
