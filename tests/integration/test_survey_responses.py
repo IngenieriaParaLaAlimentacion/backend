@@ -535,6 +535,98 @@ class TestEdit:
             assert count.scalar_one() == 1
 
 
+class TestGetResponse:
+    """The full-detail view a mobile client hits after tapping a `/me/activity`
+    entry, since the activity feed only carries a summary."""
+
+    async def test_missing_response_returns_404(self, client, admin_user):
+        headers, _ = admin_user
+        response = await client.get(
+            f"{SURVEY_RESPONSES_URL}/{uuid.uuid4()}", headers=headers
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_owner_field_worker_can_view_own_response(
+        self, client, db_establishment, admin_user, field_worker_with_access
+    ):
+        admin_headers, _ = admin_user
+        fw_headers, _ = field_worker_with_access
+        survey = await _create_survey(client, admin_headers)
+        answers = _valid_answers(survey)
+        created = (
+            await client.post(
+                SURVEY_RESPONSES_URL,
+                json=_response_body(survey["id"], db_establishment.id, answers),
+                headers=fw_headers,
+            )
+        ).json()
+        response = await client.get(
+            f"{SURVEY_RESPONSES_URL}/{created['id']}", headers=fw_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["answers"] == answers
+
+    async def test_non_owner_field_worker_forbidden(
+        self, client, db_establishment, admin_user, field_worker_with_access
+    ):
+        admin_headers, _ = admin_user
+        fw_headers, _ = field_worker_with_access
+        survey = await _create_survey(client, admin_headers)
+        created = (
+            await client.post(
+                SURVEY_RESPONSES_URL,
+                json=_response_body(
+                    survey["id"], db_establishment.id, _valid_answers(survey)
+                ),
+                headers=admin_headers,
+            )
+        ).json()
+        response = await client.get(
+            f"{SURVEY_RESPONSES_URL}/{created['id']}", headers=fw_headers
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_admin_can_view_any_response(
+        self, client, db_establishment, admin_user, field_worker_with_access
+    ):
+        admin_headers, _ = admin_user
+        fw_headers, _ = field_worker_with_access
+        survey = await _create_survey(client, admin_headers)
+        created = (
+            await client.post(
+                SURVEY_RESPONSES_URL,
+                json=_response_body(
+                    survey["id"], db_establishment.id, _valid_answers(survey)
+                ),
+                headers=fw_headers,
+            )
+        ).json()
+        response = await client.get(
+            f"{SURVEY_RESPONSES_URL}/{created['id']}", headers=admin_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+
+    async def test_analyst_forbidden(
+        self, client, db_establishment, admin_user, analyst_user
+    ):
+        admin_headers, _ = admin_user
+        analyst_headers, _ = analyst_user
+        survey = await _create_survey(client, admin_headers)
+        created = (
+            await client.post(
+                SURVEY_RESPONSES_URL,
+                json=_response_body(
+                    survey["id"], db_establishment.id, _valid_answers(survey)
+                ),
+                headers=admin_headers,
+            )
+        ).json()
+        response = await client.get(
+            f"{SURVEY_RESPONSES_URL}/{created['id']}", headers=analyst_headers
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
 class TestListAvailable:
     async def test_field_worker_sees_generic_and_own_targeted_only(
         self, client, db_establishment, admin_user, field_worker_with_access

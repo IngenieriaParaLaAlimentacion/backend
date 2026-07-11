@@ -55,6 +55,30 @@ async def submit_survey_response(
     return SurveyResponseResponse.model_validate(survey_response)
 
 
+@router.get(
+    "/{response_id}",
+    response_model=SurveyResponseResponse,
+    summary="Get a survey response",
+    description=(
+        "Return a response's full detail, including its answers. Restricted to "
+        "the original submitter or an admin/superadmin — the same actors allowed "
+        "to edit it. Backs the mobile 'view a submitted response' screen reached "
+        "from a `/me/activity` entry, which only carries a summary."
+    ),
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {"description": "Response not found"},
+    },
+)
+async def get_survey_response(
+    response_id: UUID,
+    actor: UserActor = Depends(_submitter_or_editor),
+    service: SurveyResponseService = Depends(get_survey_response_service),
+) -> SurveyResponseResponse:
+    survey_response = await service.get(response_id, actor)
+    return SurveyResponseResponse.model_validate(survey_response)
+
+
 @router.put(
     "/{response_id}",
     response_model=SurveyResponseResponse,

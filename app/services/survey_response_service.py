@@ -61,7 +61,9 @@ class SurveyResponseService:
             )
 
     @staticmethod
-    def _assert_can_edit(actor: UserActor, response: SurveyResponse) -> None:
+    def _assert_owner_or_admin(actor: UserActor, response: SurveyResponse) -> None:
+        """Restrict to the original submitter or an admin/superadmin. Shared
+        by both viewing a response's full detail and editing it."""
         if actor.role in _ADMIN_ROLES:
             return
         if str(response.submitted_by_id) == str(actor.user_id):
@@ -127,6 +129,21 @@ class SurveyResponseService:
             raise SurveyResponseNotFoundError(str(response_id))
         return response
 
+    async def get(self, response_id: UUID, actor: UserActor) -> SurveyResponseDomain:
+        """Return a response's full detail, including its answers.
+
+        Restricted to the original submitter or an admin/superadmin — the same
+        actors allowed to edit it. Backs the mobile "tap an activity item" view,
+        since the activity feed only surfaces a summary.
+
+        Raises:
+            SurveyResponseNotFoundError.
+            ForbiddenError: not the submitter and not admin/superadmin.
+        """
+        response = await self._get_response_or_raise(response_id)
+        self._assert_owner_or_admin(actor, response)
+        return SurveyResponseDomain.from_db(response)
+
     async def submit(
         self, data: SurveyResponseRequest, actor: UserActor
     ) -> tuple[SurveyResponseDomain, bool]:
@@ -190,7 +207,7 @@ class SurveyResponseService:
             InvalidSurveyResponseError (answers fail validation).
         """
         response = await self._get_response_or_raise(response_id)
-        self._assert_can_edit(actor, response)
+        self._assert_owner_or_admin(actor, response)
 
         if data.id is not None:
             existing_edit = await self.uow.survey_response_edit_repo.get_by_id(data.id)
