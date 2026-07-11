@@ -6,6 +6,8 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.schemas.measurement_schema import EstablishmentRefResponse
 
+AnswerValue = str | int | float | list[str]
+
 
 def validate_event_at(v: datetime) -> datetime:
     if v > datetime.now(timezone.utc):
@@ -24,7 +26,7 @@ class SurveyResponseRequest(BaseModel):
     )
     survey_id: UUID
     establishment_id: UUID
-    answers: dict[str, Any]
+    answers: dict[str, AnswerValue]
     event_at: datetime = Field(
         description=(
             "When the respondent actually completed the survey, client-supplied. "
@@ -43,7 +45,7 @@ class SurveyResponseEditRequest(BaseModel):
             "offline-first idempotency on retried syncs."
         ),
     )
-    answers: dict[str, Any]
+    answers: dict[str, AnswerValue]
     event_at: datetime = Field(
         description=(
             "When the edit was actually made, client-supplied. Used for "

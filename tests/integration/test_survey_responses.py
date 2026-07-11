@@ -291,6 +291,34 @@ class TestSubmitValidation:
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
+    async def test_multiple_choice_with_non_string_element_returns_422(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(
+            client,
+            headers,
+            questions=[
+                {
+                    "text": "¿Qué alimentos consumió?",
+                    "response_type": "multiple_choice",
+                    "is_required": True,
+                    "options": [{"text": "Verduras"}, {"text": "Frutas"}],
+                }
+            ],
+        )
+        question = survey["questions"][0]
+        response = await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"],
+                db_establishment.id,
+                {question["id"]: [{"not": "a valid option id"}]},
+            ),
+            headers=headers,
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
     async def test_establishment_inside_targeted_audience_succeeds(
         self, client, db_establishment, admin_user
     ):
