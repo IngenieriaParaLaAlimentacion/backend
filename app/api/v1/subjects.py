@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Response, status
 
-from app.api.v1.params import PaginatedQueryParams
+from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams
 from app.core.dependencies import (
     get_measurement_service,
     get_subject_service,
@@ -41,8 +41,7 @@ require_admin_or_analyst = require_some(
             "description": "Subject already existed; idempotent replay of the same id."
         },
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid data"},
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        **AUTH_RESPONSES,
         status.HTTP_409_CONFLICT: {
             "description": "A subject with this DNI already exists under a different "
             "id; the canonical subject is returned in `canonical_subject`."
@@ -69,8 +68,7 @@ async def create_subject(
     summary="Get a subject by ID",
     description="Returns a subject's data. Accessible by all authenticated roles.",
     responses={
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Subject not found"},
     },
 )
@@ -92,10 +90,7 @@ async def get_subject(
     description="Returns a paginated list of subjects ordered by creation date. "
     "Supports optional search filtering by name, last name, or DNI. Accessible by "
     "all authenticated roles.",
-    responses={
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
-    },
+    responses=AUTH_RESPONSES,
 )
 async def list_subjects(
     paginated: PaginatedQueryParams = Depends(),
@@ -130,8 +125,7 @@ async def list_subjects(
         "and analysts."
     ),
     responses={
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Subject not found"},
     },
 )
@@ -156,8 +150,7 @@ async def get_subject_evolution(
     description="Partially updates a subject's data. Accessible by field workers only.",
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "No fields provided"},
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Subject not found"},
         status.HTTP_409_CONFLICT: {
             "description": "DNI already belongs to another subject"

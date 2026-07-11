@@ -2,6 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Response, status
 
+from app.api.v1.params import AUTH_RESPONSES
 from app.core.dependencies import get_survey_response_service, require_some
 from app.domain import UserActor
 from app.domain.user import UserRole
@@ -18,11 +19,6 @@ _submitter_or_editor = require_some(
     UserRole.FIELD_WORKER, UserRole.ADMIN, UserRole.SUPERADMIN
 )
 
-_AUTH_RESPONSES = {
-    status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-    status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
-}
-
 
 @router.post(
     "",
@@ -31,7 +27,7 @@ _AUTH_RESPONSES = {
     summary="Submit a survey response",
     description=(
         "Idempotent, offline-first submission of one anonymous individual's "
-        "answers to a survey at a comedor. Replaying the same id returns the "
+        "answers to a survey at an establishment. Replaying the same id returns the "
         "stored record unchanged. No draft mode: required questions must all "
         "be answered or the submission is rejected outright."
     ),
@@ -39,7 +35,7 @@ _AUTH_RESPONSES = {
         status.HTTP_200_OK: {
             "description": "Response already existed; idempotent replay of the same id."
         },
-        **_AUTH_RESPONSES,
+        **AUTH_RESPONSES,
         status.HTTP_400_BAD_REQUEST: {
             "description": "Answers invalid, or establishment outside the "
             "survey's audience"
@@ -69,7 +65,7 @@ async def submit_survey_response(
         "attempt id for offline-first retries."
     ),
     responses={
-        **_AUTH_RESPONSES,
+        **AUTH_RESPONSES,
         status.HTTP_400_BAD_REQUEST: {"description": "Answers invalid"},
         status.HTTP_404_NOT_FOUND: {"description": "Response not found"},
     },

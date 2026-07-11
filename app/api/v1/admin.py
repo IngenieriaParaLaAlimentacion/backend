@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Response, status
 
-from app.api.v1.params import PaginatedQueryParams
+from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams
 from app.core.dependencies import (
     get_admin_service,
     get_current_admin,
@@ -27,14 +27,7 @@ router = APIRouter(prefix="/admin")
     summary="List registered users",
     description="Returns a paginated list of users, optionally filtered by role or "
     "status, or searching by name, last name or email. Accessible by admins only.",
-    responses={
-        status.HTTP_401_UNAUTHORIZED: {
-            "description": "Missing or invalid authentication token"
-        },
-        status.HTTP_403_FORBIDDEN: {
-            "description": "Authenticated user does not have admin privileges"
-        },
-    },
+    responses=AUTH_RESPONSES,
 )
 async def list_users(
     paginated: PaginatedQueryParams = Depends(),
@@ -66,12 +59,7 @@ async def list_users(
         status.HTTP_400_BAD_REQUEST: {
             "description": "Target user is not a field worker"
         },
-        status.HTTP_401_UNAUTHORIZED: {
-            "description": "Missing or invalid authentication token"
-        },
-        status.HTTP_403_FORBIDDEN: {
-            "description": "Authenticated user does not have admin privileges"
-        },
+        **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {
             "description": "Field worker or establishment not found"
         },
@@ -97,12 +85,7 @@ async def approve_establishments(
         status.HTTP_400_BAD_REQUEST: {
             "description": "Target user is not a field worker"
         },
-        status.HTTP_401_UNAUTHORIZED: {
-            "description": "Missing or invalid authentication token"
-        },
-        status.HTTP_403_FORBIDDEN: {
-            "description": "Authenticated user does not have admin privileges"
-        },
+        **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {
             "description": "Field worker or establishment not found"
         },
@@ -128,12 +111,7 @@ async def reject_establishments(
         status.HTTP_400_BAD_REQUEST: {
             "description": "Target user is not a field worker"
         },
-        status.HTTP_401_UNAUTHORIZED: {
-            "description": "Missing or invalid authentication token"
-        },
-        status.HTTP_403_FORBIDDEN: {
-            "description": "Authenticated user does not have admin privileges"
-        },
+        **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Field worker not found"},
     },
 )
@@ -154,8 +132,7 @@ async def reject_field_worker(
     description="Returns full subject data including paginated event history. "
     "Accessible by admins only.",
     responses={
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Subject not found"},
     },
 )
@@ -181,8 +158,8 @@ async def get_subject_detail(
     description="Creates an admin user and sends a password setup link by email.",
     responses={
         status.HTTP_202_ACCEPTED: {"description": "Invitation sent successfully"},
+        **AUTH_RESPONSES,
         status.HTTP_409_CONFLICT: {"description": "Email already exists"},
-        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
     },
 )
 async def invite_admin(
@@ -202,10 +179,7 @@ async def invite_admin(
     description="Creates an analyst user and sends a password setup link by email.",
     responses={
         status.HTTP_202_ACCEPTED: {"description": "Invitation sent successfully"},
-        status.HTTP_401_UNAUTHORIZED: {
-            "description": "Missing or invalid authentication token"
-        },
-        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        **AUTH_RESPONSES,
         status.HTTP_409_CONFLICT: {"description": "Email already exists"},
     },
 )
@@ -224,6 +198,7 @@ async def invite_analyst(
     response_class=Response,
     summary="Re-send invitation to admin/analyst user",
     description="Re-send invitation to an already invited admin/analyst",
+    responses=AUTH_RESPONSES,
 )
 async def resend_invite(
     user_id: UUID,
@@ -242,12 +217,7 @@ async def resend_invite(
     description="Returns all the information related to a user. "
     "Accessible by admins only.",
     responses={
-        status.HTTP_401_UNAUTHORIZED: {
-            "description": "Missing or invalid authentication token"
-        },
-        status.HTTP_403_FORBIDDEN: {
-            "description": "Authenticated user does not have admin privileges"
-        },
+        **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "User not found"},
     },
 )
