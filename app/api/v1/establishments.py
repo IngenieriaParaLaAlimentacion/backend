@@ -2,7 +2,11 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 
-from app.api.v1.params import EstablishmentListingQuery, PaginatedQueryParams
+from app.api.v1.params import (
+    AUTH_RESPONSES,
+    EstablishmentListingQuery,
+    PaginatedQueryParams,
+)
 from app.core.dependencies import (
     get_establishment_service,
     get_optional_actor,
@@ -32,8 +36,7 @@ _FIELD_WORKER_ROLES = {UserRole.FIELD_WORKER, UserRole.SUPERADMIN}
     description="Creates a new establishment.",
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid data"},
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        **AUTH_RESPONSES,
         status.HTTP_409_CONFLICT: {"description": "Establishment already exists"},
     },
 )
@@ -55,8 +58,7 @@ async def create_establishment(
     description="Partially updates one or more fields of an existing establishment.",
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid data"},
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
         status.HTTP_409_CONFLICT: {"description": "Establishment already exists"},
     },
@@ -137,8 +139,7 @@ async def get_establishments(
     description="Returns the details of a single establishment.",
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid establishment ID"},
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
     },
 )

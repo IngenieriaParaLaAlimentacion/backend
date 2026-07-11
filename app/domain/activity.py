@@ -4,6 +4,7 @@ from enum import StrEnum
 
 from app.domain.measurement import MeasurementListItemDomain
 from app.domain.subject import SubjectBase
+from app.domain.survey_response import SurveyResponseListItemDomain
 
 
 class ActivityType(StrEnum):
@@ -11,6 +12,7 @@ class ActivityType(StrEnum):
 
     SUBJECT = "subject"
     MEASUREMENT = "measurement"
+    SURVEY_RESPONSE = "survey_response"
 
 
 @dataclass
@@ -22,12 +24,14 @@ class ActivityListingParams:
 
 @dataclass
 class ActivityItemDomain:
-    """A single entry in a user's recent-activity feed.
+    """A single entry in a user's self-published recent-activity feed.
 
-    Exactly one of `subject`/`measurement` is set, matching `type`.
+    Exactly one of `subject`/`measurement`/`survey_response` is set, matching
+    `type`.
     """
 
     type: ActivityType
     occurred_at: datetime
     subject: SubjectBase | None = None
     measurement: MeasurementListItemDomain | None = None
+    survey_response: SurveyResponseListItemDomain | None = None

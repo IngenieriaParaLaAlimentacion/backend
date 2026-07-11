@@ -14,6 +14,7 @@ from app.services.auth_service import AuthService
 from app.services.establishment_service import EstablishmentService
 from app.services.measurement_service import MeasurementService
 from app.services.subject_service import SubjectService
+from app.services.survey_response_service import SurveyResponseService
 from app.services.survey_service import SurveyService
 from app.services.user_service import UserService
 
@@ -70,6 +71,12 @@ async def get_survey_service() -> AsyncGenerator[SurveyService, None]:
     """Provide a SurveyService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
         yield SurveyService(uow)
+
+
+async def get_survey_response_service() -> AsyncGenerator[SurveyResponseService, None]:
+    """Provide a SurveyResponseService backed by a fresh UnitOfWork."""
+    async with UnitOfWork() as uow:
+        yield SurveyResponseService(uow)
 
 
 def _decode_verified_payload(token: str) -> dict:

@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import Query
+from fastapi import Query, status
 
 from app.domain.establishment import EstablishmentListingParams, EstablishmentSortOrder
 from app.domain.measurement import MeasurementListingParams, MeasurementSortOrder
@@ -14,6 +14,13 @@ from app.domain.survey import (
     SurveySortOrder,
 )
 from app.exceptions.domain_exceptions import InvalidListingFilterError
+
+AUTH_RESPONSES = {
+    status.HTTP_401_UNAUTHORIZED: {
+        "description": "Missing or invalid authentication token"
+    },
+    status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+}
 
 
 @dataclass

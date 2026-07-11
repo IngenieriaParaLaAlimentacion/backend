@@ -1,6 +1,10 @@
-from fastapi import APIRouter, Depends, Query, Response, status
+from fastapi import APIRouter, Depends, Response, status
 
-from app.api.v1.params import MeasurementListingQuery
+from app.api.v1.params import (
+    AUTH_RESPONSES,
+    MeasurementListingQuery,
+    PaginatedQueryParams,
+)
 from app.core.dependencies import get_measurement_service, require_any, require_some
 from app.domain import UserActor
 from app.domain.user import UserRole
@@ -34,8 +38,7 @@ require_admin_or_analyst = require_some(
             "description": "Measurement already existed; idempotent replay of the "
             "same id."
         },
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {
             "description": "Subject or establishment not found"
         },
@@ -69,22 +72,18 @@ async def upload_measurement(
     ),
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Inconsistent filter parameters"},
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+        **AUTH_RESPONSES,
     },
 )
 async def list_measurements(
     query: MeasurementListingQuery = Depends(),
-    page: int = Query(default=1, ge=1, description="Page number, starting at 1."),
-    page_size: int = Query(
-        default=20, ge=1, le=100, description="Results per page (max 100)."
-    ),
+    paginated: PaginatedQueryParams = Depends(),
     _: UserActor = Depends(require_admin_or_analyst),
     service: MeasurementService = Depends(get_measurement_service),
 ) -> PaginatedResponse[MeasurementListItem]:
     query.validate()
     result = await service.list_measurements(
-        page=page, page_size=page_size, params=query.to_domain()
+        page=paginated.page, page_size=paginated.page_size, params=query.to_domain()
     )
     return PaginatedResponse[MeasurementListItem](
         items=[MeasurementListItem.model_validate(item) for item in result.items],

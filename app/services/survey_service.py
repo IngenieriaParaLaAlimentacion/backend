@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
+from app.domain.establishment import UserEstablishmentStatus
 from app.domain.pagination import PaginatedResult
 from app.domain.survey import (
     CHOICE_TYPES,
@@ -57,16 +58,37 @@ class SurveyService:
             return
         raise ForbiddenError()
 
-    @staticmethod
-    def _assert_editable(survey: Survey) -> None:
-        # TODO(surveys): response collection is out of scope, so response_count is
-        # always 0 and this never blocks — which satisfies CA7 (no responses => all
-        # edits allowed). When the response-collection ticket lands, replace this
-        # coarse gate with a per-edit structural-vs-safe taxonomy to enforce CA8:
-        #   block: delete question, change response_type, optional->required, remove a
-        #          referenced option;  allow: rename, reorder, add optional question.
-        if survey.response_count > 0:
-            raise SurveyLockedError()
+    async def _assert_editable(
+        self, survey: Survey, new_questions: list[QuestionInputData]
+    ) -> None:
+        """Once a survey has responses, block structural edits that would
+        invalidate existing answers; allow safe ones.
+
+        Blocked: deleting a question, changing a question's response_type,
+        flipping optional -> required, or removing a choice option that some
+        response already selected.
+        Allowed: renaming, reordering, adding a new optional question, and
+        removing a choice option nobody has selected yet.
+        """
+        if survey.response_count == 0:
+            return
+        new_by_id = {q.id: q for q in new_questions if q.id is not None}
+        for question in survey.questions:
+            new = new_by_id.get(question.id)
+            if new is None:
+                raise SurveyLockedError()
+            if new.response_type != question.response_type:
+                raise SurveyLockedError()
+            if new.is_required and not question.is_required:
+                raise SurveyLockedError()
+            new_option_ids = {o.id for o in new.options if o.id is not None}
+            for option in question.options:
+                if option.id in new_option_ids:
+                    continue
+                if await self.uow.survey_response_repo.is_option_referenced(
+                    survey.id, question.id, option.id
+                ):
+                    raise SurveyLockedError()
 
     async def _validate_structure(
         self,
@@ -83,7 +105,6 @@ class SurveyService:
             self._validate_question(question, index)
         self._validate_scope(scope, establishment_ids)
         if scope == SurveyScope.TARGETED:
-            # Raises EstablishmentNotFoundError if any id does not exist.
             await self.uow.establishment_repo.get_all_by_ids(establishment_ids)
 
     def _validate_question(self, question: QuestionInput, index: int) -> None:
@@ -157,6 +178,20 @@ class SurveyService:
                 return candidate
             suffix += 1
 
+    @staticmethod
+    def _build_survey_list_result(
+        rows: list[tuple[Survey, int]], total: int, page: int, page_size: int
+    ) -> PaginatedResult[SurveyListItemDomain]:
+        return PaginatedResult.build(
+            items=[
+                SurveyListItemDomain.from_db(s, question_count)
+                for s, question_count in rows
+            ],
+            total=total,
+            page=page,
+            page_size=page_size,
+        )
+
     async def create(self, data: SurveyCreateRequest, actor: UserActor) -> SurveyDomain:
         """Create a survey.
 
@@ -202,15 +237,38 @@ class SurveyService:
         surveys, total = await self.uow.survey_repo.list(
             limit=page_size, offset=offset, params=params
         )
-        return PaginatedResult.build(
-            items=[
-                SurveyListItemDomain.from_db(s, question_count)
-                for s, question_count in surveys
-            ],
-            total=total,
-            page=page,
-            page_size=page_size,
+        return self._build_survey_list_result(surveys, total, page, page_size)
+
+    async def list_available_surveys(
+        self,
+        actor: UserActor,
+        page: int,
+        page_size: int,
+    ) -> PaginatedResult[SurveyListItemDomain]:
+        """Return active surveys the caller may respond to.
+
+        A field worker sees generic surveys plus targeted surveys aimed at one
+        of their approved establishments; admins/superadmins see every active
+        survey unfiltered by establishment.
+        """
+        actor_establishment_ids = None
+        if actor.role == UserRole.FIELD_WORKER:
+            relations = await self.uow.user_establishment_repo.get_by_user_id(
+                actor.user_id
+            )
+            actor_establishment_ids = [
+                r.establishment_id
+                for r in relations
+                if r.status == UserEstablishmentStatus.APPROVED
+            ]
+        page = max(1, page)
+        offset = (page - 1) * page_size
+        surveys, total = await self.uow.survey_repo.list_available(
+            actor_establishment_ids=actor_establishment_ids,
+            limit=page_size,
+            offset=offset,
         )
+        return self._build_survey_list_result(surveys, total, page, page_size)
 
     async def update(
         self, survey_id: UUID, data: SurveyUpdateRequest, actor: UserActor
@@ -224,7 +282,8 @@ class SurveyService:
         """
         survey = await self._get_or_raise(survey_id)
         self._assert_can_edit(actor, survey)
-        self._assert_editable(survey)
+        new_questions = self._to_question_inputs(data.questions)
+        await self._assert_editable(survey, new_questions)
         if await self.uow.survey_repo.name_exists(data.name, exclude_id=survey.id):
             raise SurveyAlreadyExistsError(data.name)
         await self._validate_structure(
@@ -236,7 +295,7 @@ class SurveyService:
                 name=data.name,
                 description=data.description,
                 scope=data.scope,
-                questions=self._to_question_inputs(data.questions),
+                questions=new_questions,
                 establishment_ids=data.establishment_ids,
             )
         except UniqueConstraintError:
@@ -267,7 +326,8 @@ class SurveyService:
         """Delete a survey (owner or admin only, and only while unlocked)."""
         survey = await self._get_or_raise(survey_id)
         self._assert_can_edit(actor, survey)
-        self._assert_editable(survey)
+        if survey.response_count > 0:
+            raise SurveyLockedError()
         await self.uow.survey_repo.delete(survey)
         await self.uow.commit()
 

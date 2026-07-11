@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Query, status
 
-from app.api.v1.params import PaginatedQueryParams
+from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams
 from app.core.dependencies import (
     get_activity_service,
     get_current_field_worker,
@@ -56,7 +56,9 @@ async def get_my_profile(
     "last_name). Other fields (email, role, status) are rejected.",
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "No editable field provided"},
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Missing or invalid authentication token"
+        },
         status.HTTP_404_NOT_FOUND: {
             "description": "Authenticated user no longer exists"
         },
@@ -81,10 +83,7 @@ async def update_my_profile(
     summary="List own establishment relations",
     description="Returns the field worker's establishments, each with its approval "
     "status. Field worker only.",
-    responses={
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Caller is not a field worker"},
-    },
+    responses=AUTH_RESPONSES,
 )
 async def list_my_establishments(
     actor: UserActor = Depends(get_current_field_worker),
@@ -103,8 +102,7 @@ async def list_my_establishments(
     "already-approved/pending stay unchanged, rejected ones are re-requested "
     "(set to pending). Field worker only.",
     responses={
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
-        status.HTTP_403_FORBIDDEN: {"description": "Caller is not a field worker"},
+        **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
     },
 )
@@ -126,11 +124,14 @@ async def request_establishment_access(
     summary="Get the current user's recent activity",
     description=(
         "Returns a paginated, date-descending feed of the caller's own "
-        "subject registrations and measurement uploads. Optionally filter "
-        "to a single activity type. Accessible by all authenticated roles."
+        "subject registrations, measurement uploads, and survey responses. "
+        "Optionally filter to a single activity type. Accessible by all "
+        "authenticated roles."
     ),
     responses={
-        status.HTTP_401_UNAUTHORIZED: {"description": "Missing or invalid token"},
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Missing or invalid authentication token"
+        },
     },
 )
 async def get_my_activity(

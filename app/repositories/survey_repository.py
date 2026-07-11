@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from sqlalchemy import asc, desc, exists, func, select
+from sqlalchemy import and_, asc, desc, exists, func, or_, select, true, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import noload
@@ -10,6 +10,7 @@ from sqlalchemy.orm import noload
 from app.domain.survey import (
     QuestionInputData,
     SurveyListingParams,
+    SurveyScope,
     SurveySortOrder,
 )
 from app.exceptions.domain_exceptions import (
@@ -18,6 +19,7 @@ from app.exceptions.domain_exceptions import (
 )
 from app.models.establishment import Establishment
 from app.models.survey import Survey
+from app.models.survey_establishment import SurveyEstablishment
 from app.models.survey_question import SurveyQuestion
 from app.models.survey_question_option import SurveyQuestionOption
 from app.utils.db import escape_like
@@ -202,6 +204,70 @@ class SurveyRepository:
         await self.db.flush()
         await self._refresh_updated_at(survey)
         return survey
+
+    async def increment_response_count(self, survey_id: UUID) -> None:
+        """Atomically increment a survey's response_count by 1.
+
+        A single ``UPDATE ... SET x = x + 1``, not a read-modify-write, so it
+        stays correct under concurrent submissions.
+        """
+        await self.db.execute(
+            update(Survey)
+            .where(Survey.id == survey_id)
+            .values(response_count=Survey.response_count + 1)
+        )
+
+    async def list_available(
+        self,
+        *,
+        actor_establishment_ids: list[UUID] | None,
+        limit: int,
+        offset: int,
+    ) -> tuple[list[tuple[Survey, int]], int]:
+        """Return ``(survey, question_count)`` rows for active surveys the caller
+        may respond to, and the total matching count.
+
+        Matches generic surveys plus targeted surveys aimed at one of
+        ``actor_establishment_ids``. ``actor_establishment_ids=None`` (an
+        admin/superadmin caller) matches every targeted survey unconditionally,
+        mirroring the establishment-access bypass used for submission.
+        """
+        question_count = (
+            select(func.count(SurveyQuestion.id))
+            .where(SurveyQuestion.survey_id == Survey.id)
+            .correlate(Survey)
+            .scalar_subquery()
+        )
+        scope_condition = self._available_scope_condition(actor_establishment_ids)
+        base_query = (
+            select(Survey, question_count.label("question_count"))
+            .options(noload(Survey.questions), noload(Survey.establishments))
+            .where(Survey.is_active.is_(True), scope_condition)
+        )
+        count_query = (
+            select(func.count())
+            .select_from(Survey)
+            .where(Survey.is_active.is_(True), scope_condition)
+        )
+        paginated = (
+            base_query.order_by(desc(Survey.created_at)).limit(limit).offset(offset)
+        )
+        total = (await self.db.execute(count_query)).scalar_one()
+        rows = (await self.db.execute(paginated)).all()
+        return [(row[0], row[1]) for row in rows], total
+
+    @staticmethod
+    def _available_scope_condition(actor_establishment_ids: list[UUID] | None):
+        if actor_establishment_ids is None:
+            return true()
+        targeted_match = and_(
+            Survey.scope == SurveyScope.TARGETED,
+            exists().where(
+                SurveyEstablishment.survey_id == Survey.id,
+                SurveyEstablishment.establishment_id.in_(actor_establishment_ids),
+            ),
+        )
+        return or_(Survey.scope == SurveyScope.GENERIC, targeted_match)
 
     # -- Internal helpers --
 
