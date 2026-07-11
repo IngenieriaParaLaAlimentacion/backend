@@ -51,6 +51,8 @@ async def bad_request_handler(request: Request, exc: BadRequestError):
 
 async def conflict_handler(request: Request, exc: ConflictError):
     return _build_error_response(exc, request, status.HTTP_409_CONFLICT)
+
+
 async def email_delivery_handler(request: Request, exc: EmailDeliveryError):
     return _build_error_response(exc, request, status.HTTP_502_BAD_GATEWAY)
 
