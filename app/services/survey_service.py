@@ -76,7 +76,7 @@ class SurveyService:
         for question in survey.questions:
             new = new_by_id.get(question.id)
             if new is None:
-                raise SurveyLockedError()  # question deleted
+                raise SurveyLockedError()
             if new.response_type != question.response_type:
                 raise SurveyLockedError()
             if new.is_required and not question.is_required:
@@ -88,7 +88,7 @@ class SurveyService:
                 if await self.uow.survey_response_repo.is_option_referenced(
                     survey.id, question.id, option.id
                 ):
-                    raise SurveyLockedError()  # a referenced option was removed
+                    raise SurveyLockedError()
 
     async def _validate_structure(
         self,

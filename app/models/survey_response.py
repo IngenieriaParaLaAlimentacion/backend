@@ -31,9 +31,6 @@ class SurveyResponse(Base):
         nullable=False,
         index=True,
     )
-    # {question_id (str) -> answer value}. Shape per question.response_type:
-    # TEXT -> str, NUMERIC -> number, DATE -> ISO date str,
-    # SINGLE_CHOICE -> option id (str), MULTIPLE_CHOICE -> list[option id (str)].
     answers = Column(JSONB, nullable=False)
     event_at = Column(DateTime(timezone=True), nullable=False)
     created_at = Column(
