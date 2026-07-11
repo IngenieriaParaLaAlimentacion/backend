@@ -221,9 +221,38 @@ class SurveyService:
         await self.uow.commit()
         return SurveyDomain.from_db(survey)
 
-    async def get(self, survey_id: UUID) -> SurveyDomain:
-        """Return a full survey configuration, or raise SurveyNotFoundError."""
-        return SurveyDomain.from_db(await self._get_or_raise(survey_id))
+    async def _assert_field_worker_can_view(
+        self, actor: UserActor, survey: Survey
+    ) -> None:
+        """A field worker may view a survey's full detail under the same
+        eligibility rule as ``/available``: generic, or targeted at one of
+        their approved establishments."""
+        if survey.scope == SurveyScope.GENERIC:
+            return
+        relations = await self.uow.user_establishment_repo.get_by_user_id(
+            actor.user_id
+        )
+        approved_ids = {
+            r.establishment_id
+            for r in relations
+            if r.status == UserEstablishmentStatus.APPROVED
+        }
+        target_ids = {e.id for e in survey.establishments}
+        if not (approved_ids & target_ids):
+            raise ForbiddenError()
+
+    async def get(self, survey_id: UUID, actor: UserActor) -> SurveyDomain:
+        """Return a full survey configuration.
+
+        Raises:
+            SurveyNotFoundError.
+            ForbiddenError: a field worker requesting a targeted survey they
+                have no approved establishment access to.
+        """
+        survey = await self._get_or_raise(survey_id)
+        if actor.role == UserRole.FIELD_WORKER:
+            await self._assert_field_worker_can_view(actor, survey)
+        return SurveyDomain.from_db(survey)
 
     async def list_surveys(
         self,

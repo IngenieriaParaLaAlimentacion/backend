@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from app.domain.establishment import UserEstablishmentStatus
 from app.domain.pagination import PaginatedResult
 from app.domain.survey import (
     QuestionInputData,
@@ -106,6 +107,7 @@ def make_survey():
         name: str = "Encuesta A",
         scope: SurveyScope = SurveyScope.GENERIC,
         questions: list | None = None,
+        establishments: list | None = None,
     ):
         s = MagicMock()
         s.id = uuid.uuid4()
@@ -116,7 +118,7 @@ def make_survey():
         s.is_active = is_active
         s.response_count = response_count
         s.questions = questions if questions is not None else []
-        s.establishments = []
+        s.establishments = establishments if establishments is not None else []
         s.created_at = datetime(2026, 1, 1, tzinfo=timezone.utc)
         s.updated_at = datetime(2026, 1, 1, tzinfo=timezone.utc)
         return s
@@ -136,6 +138,7 @@ def make_uow(make_survey):
         uow.survey_repo.delete = AsyncMock()
         uow.survey_repo.update_active = AsyncMock(return_value=survey or make_survey())
         uow.establishment_repo.get_all_by_ids = AsyncMock(return_value=[])
+        uow.user_establishment_repo.get_by_user_id = AsyncMock(return_value=[])
         uow.survey_response_repo.is_option_referenced = AsyncMock(
             return_value=option_referenced
         )
@@ -280,17 +283,87 @@ class TestCreateStructureValidation:
 class TestGet:
     pytestmark = pytest.mark.asyncio
 
-    async def test_missing_raises(self, make_uow):
+    async def test_missing_raises(self, make_uow, admin_actor):
         uow = make_uow(survey=None)
         with pytest.raises(SurveyNotFoundError):
-            await SurveyService(uow).get(uuid.uuid4())
+            await SurveyService(uow).get(uuid.uuid4(), admin_actor)
 
-    async def test_returns_domain(self, make_uow, make_survey):
+    async def test_returns_domain(self, make_uow, make_survey, admin_actor):
         survey = make_survey()
         uow = make_uow(survey=survey)
-        result = await SurveyService(uow).get(survey.id)
+        result = await SurveyService(uow).get(survey.id, admin_actor)
         assert isinstance(result, SurveyDomain)
         assert result.id == survey.id
+
+    async def test_analyst_unrestricted_on_targeted_survey(
+        self, make_uow, make_survey, analyst_actor
+    ):
+        """Analysts (an author role) are not scoped by establishment access."""
+        survey = make_survey(
+            scope=SurveyScope.TARGETED, establishments=[MagicMock(id=uuid.uuid4())]
+        )
+        uow = make_uow(survey=survey)
+        result = await SurveyService(uow).get(survey.id, analyst_actor)
+        assert result.id == survey.id
+        uow.user_establishment_repo.get_by_user_id.assert_not_called()
+
+    async def test_field_worker_generic_survey_succeeds(
+        self, make_uow, make_survey, field_worker_actor
+    ):
+        survey = make_survey(scope=SurveyScope.GENERIC)
+        uow = make_uow(survey=survey)
+        result = await SurveyService(uow).get(survey.id, field_worker_actor)
+        assert result.id == survey.id
+        uow.user_establishment_repo.get_by_user_id.assert_not_called()
+
+    async def test_field_worker_targeted_survey_with_access_succeeds(
+        self, make_uow, make_survey, field_worker_actor
+    ):
+        establishment_id = uuid.uuid4()
+        survey = make_survey(
+            scope=SurveyScope.TARGETED,
+            establishments=[MagicMock(id=establishment_id)],
+        )
+        uow = make_uow(survey=survey)
+        relation = MagicMock(
+            establishment_id=establishment_id,
+            status=UserEstablishmentStatus.APPROVED,
+        )
+        uow.user_establishment_repo.get_by_user_id = AsyncMock(
+            return_value=[relation]
+        )
+        result = await SurveyService(uow).get(survey.id, field_worker_actor)
+        assert result.id == survey.id
+
+    async def test_field_worker_targeted_survey_without_access_forbidden(
+        self, make_uow, make_survey, field_worker_actor
+    ):
+        survey = make_survey(
+            scope=SurveyScope.TARGETED,
+            establishments=[MagicMock(id=uuid.uuid4())],
+        )
+        uow = make_uow(survey=survey)
+        with pytest.raises(ForbiddenError):
+            await SurveyService(uow).get(survey.id, field_worker_actor)
+
+    async def test_field_worker_targeted_survey_with_pending_access_forbidden(
+        self, make_uow, make_survey, field_worker_actor
+    ):
+        establishment_id = uuid.uuid4()
+        survey = make_survey(
+            scope=SurveyScope.TARGETED,
+            establishments=[MagicMock(id=establishment_id)],
+        )
+        uow = make_uow(survey=survey)
+        relation = MagicMock(
+            establishment_id=establishment_id,
+            status=UserEstablishmentStatus.PENDING,
+        )
+        uow.user_establishment_repo.get_by_user_id = AsyncMock(
+            return_value=[relation]
+        )
+        with pytest.raises(ForbiddenError):
+            await SurveyService(uow).get(survey.id, field_worker_actor)
 
 
 class TestList:

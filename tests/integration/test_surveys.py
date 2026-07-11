@@ -178,6 +178,92 @@ class TestCreateAndGet:
         assert response.json()["establishment_ids"] == [str(db_establishment.id)]
 
 
+class TestGetFieldWorkerAccess:
+    """A field worker may fetch full survey detail (needed to render the
+    response form) for generic surveys, or targeted surveys aimed at one of
+    their approved establishments — the same eligibility rule as `/available`."""
+
+    async def test_generic_survey_succeeds(
+        self, client, admin_author, field_worker_headers
+    ):
+        admin_headers, _ = admin_author
+        survey_id = (await _create(client, admin_headers)).json()["id"]
+        response = await client.get(
+            f"{SURVEYS_URL}/{survey_id}", headers=field_worker_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["questions"][0]["text"] == "¿Comió hoy?"
+
+    async def test_targeted_survey_without_access_returns_403(
+        self, client, admin_author, field_worker_headers, db_establishment
+    ):
+        admin_headers, _ = admin_author
+        survey_id = (
+            await _create(
+                client,
+                admin_headers,
+                scope="targeted",
+                establishment_ids=[str(db_establishment.id)],
+            )
+        ).json()["id"]
+        response = await client.get(
+            f"{SURVEYS_URL}/{survey_id}", headers=field_worker_headers
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_targeted_survey_with_approved_access_succeeds(
+        self, client, admin_author, db_establishment
+    ):
+        from app.db.database import AsyncSessionLocal
+        from app.domain.establishment import UserEstablishmentStatus
+        from app.domain.user import UserStatus
+        from app.models.user import User
+        from app.models.user import UserRole as ORMUserRole
+        from app.models.user_establishment import UserEstablishment
+
+        admin_headers, _ = admin_author
+        survey_id = (
+            await _create(
+                client,
+                admin_headers,
+                scope="targeted",
+                establishment_ids=[str(db_establishment.id)],
+            )
+        ).json()["id"]
+
+        user_id = uuid.uuid4()
+        async with AsyncSessionLocal() as session:
+            session.add(
+                User(
+                    id=user_id,
+                    name="Maria",
+                    last_name="Field Worker",
+                    email=f"{user_id}@test.com",
+                    role=ORMUserRole.FIELD_WORKER,
+                    status=UserStatus.ACTIVE,
+                )
+            )
+            session.add(
+                UserEstablishment(
+                    user_id=user_id,
+                    establishment_id=db_establishment.id,
+                    status=UserEstablishmentStatus.APPROVED,
+                )
+            )
+            await session.commit()
+        token = create_access_token(user_id, role=UserRole.FIELD_WORKER)
+        headers = {"Authorization": f"Bearer {token}"}
+
+        response = await client.get(f"{SURVEYS_URL}/{survey_id}", headers=headers)
+        assert response.status_code == status.HTTP_200_OK
+
+    async def test_missing_survey_returns_404(self, client, field_worker_headers):
+        response = await client.get(
+            f"{SURVEYS_URL}/{uuid.uuid4()}", headers=field_worker_headers
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
 class TestUpdate:
     async def test_reconcile_insert_update_delete(self, client, admin_author):
         headers, _ = admin_author
