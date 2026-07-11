@@ -58,16 +58,17 @@ class SurveyService:
             return
         raise ForbiddenError()
 
-    @staticmethod
-    def _assert_editable(
-        survey: Survey, new_questions: list[QuestionInputData]
+    async def _assert_editable(
+        self, survey: Survey, new_questions: list[QuestionInputData]
     ) -> None:
-        """CA8: once a survey has responses, block structural edits that would
+        """Once a survey has responses, block structural edits that would
         invalidate existing answers; allow safe ones.
 
         Blocked: deleting a question, changing a question's response_type,
-        flipping optional -> required, or removing a choice option.
-        Allowed: renaming, reordering, adding a new optional question.
+        flipping optional -> required, or removing a choice option that some
+        response already selected.
+        Allowed: renaming, reordering, adding a new optional question, and
+        removing a choice option nobody has selected yet.
         """
         if survey.response_count == 0:
             return
@@ -80,10 +81,14 @@ class SurveyService:
                 raise SurveyLockedError()
             if new.is_required and not question.is_required:
                 raise SurveyLockedError()
-            existing_option_ids = {o.id for o in question.options}
             new_option_ids = {o.id for o in new.options if o.id is not None}
-            if not existing_option_ids <= new_option_ids:
-                raise SurveyLockedError()  # an existing option was removed
+            for option in question.options:
+                if option.id in new_option_ids:
+                    continue
+                if await self.uow.survey_response_repo.is_option_referenced(
+                    survey.id, question.id, option.id
+                ):
+                    raise SurveyLockedError()  # a referenced option was removed
 
     async def _validate_structure(
         self,
@@ -100,7 +105,6 @@ class SurveyService:
             self._validate_question(question, index)
         self._validate_scope(scope, establishment_ids)
         if scope == SurveyScope.TARGETED:
-            # Raises EstablishmentNotFoundError if any id does not exist.
             await self.uow.establishment_repo.get_all_by_ids(establishment_ids)
 
     def _validate_question(self, question: QuestionInput, index: int) -> None:
@@ -174,6 +178,20 @@ class SurveyService:
                 return candidate
             suffix += 1
 
+    @staticmethod
+    def _build_survey_list_result(
+        rows: list[tuple[Survey, int]], total: int, page: int, page_size: int
+    ) -> PaginatedResult[SurveyListItemDomain]:
+        return PaginatedResult.build(
+            items=[
+                SurveyListItemDomain.from_db(s, question_count)
+                for s, question_count in rows
+            ],
+            total=total,
+            page=page,
+            page_size=page_size,
+        )
+
     async def create(self, data: SurveyCreateRequest, actor: UserActor) -> SurveyDomain:
         """Create a survey.
 
@@ -219,15 +237,7 @@ class SurveyService:
         surveys, total = await self.uow.survey_repo.list(
             limit=page_size, offset=offset, params=params
         )
-        return PaginatedResult.build(
-            items=[
-                SurveyListItemDomain.from_db(s, question_count)
-                for s, question_count in surveys
-            ],
-            total=total,
-            page=page,
-            page_size=page_size,
-        )
+        return self._build_survey_list_result(surveys, total, page, page_size)
 
     async def list_available_surveys(
         self,
@@ -235,7 +245,7 @@ class SurveyService:
         page: int,
         page_size: int,
     ) -> PaginatedResult[SurveyListItemDomain]:
-        """Return active surveys the caller may respond to (CA1).
+        """Return active surveys the caller may respond to.
 
         A field worker sees generic surveys plus targeted surveys aimed at one
         of their approved establishments; admins/superadmins see every active
@@ -258,15 +268,7 @@ class SurveyService:
             limit=page_size,
             offset=offset,
         )
-        return PaginatedResult.build(
-            items=[
-                SurveyListItemDomain.from_db(s, question_count)
-                for s, question_count in surveys
-            ],
-            total=total,
-            page=page,
-            page_size=page_size,
-        )
+        return self._build_survey_list_result(surveys, total, page, page_size)
 
     async def update(
         self, survey_id: UUID, data: SurveyUpdateRequest, actor: UserActor
@@ -281,7 +283,7 @@ class SurveyService:
         survey = await self._get_or_raise(survey_id)
         self._assert_can_edit(actor, survey)
         new_questions = self._to_question_inputs(data.questions)
-        self._assert_editable(survey, new_questions)
+        await self._assert_editable(survey, new_questions)
         if await self.uow.survey_repo.name_exists(data.name, exclude_id=survey.id):
             raise SurveyAlreadyExistsError(data.name)
         await self._validate_structure(

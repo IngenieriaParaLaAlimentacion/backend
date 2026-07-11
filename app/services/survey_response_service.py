@@ -72,9 +72,9 @@ class SurveyResponseService:
     def _validate_answers(
         questions: list[QuestionDomain], answers: dict[str, object]
     ) -> dict[str, object]:
-        """Enforce CA3: every required question must be answered; every provided
-        answer must match its question's response_type/options. No draft mode —
-        this either returns a fully valid answer set or raises."""
+        """Every required question must be answered; every provided answer must
+        match its question's response_type/options. No draft mode — this either
+        returns a fully valid answer set or raises."""
         question_by_id = {str(q.id): q for q in questions}
         for key in answers:
             if key not in question_by_id:
