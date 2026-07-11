@@ -184,12 +184,8 @@ async def invite_admin(
     "Returns the created user's id for the resend-invitation flow.",
     responses={
         status.HTTP_202_ACCEPTED: {"description": "Invitation sent successfully"},
-        **AUTH_RESPONSES,
-        status.HTTP_401_UNAUTHORIZED: {
-            "description": "Missing or invalid authentication token"
-        },
-        status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
         status.HTTP_409_CONFLICT: {"description": "Email already exists"},
+        **AUTH_RESPONSES,
     },
 )
 async def invite_analyst(

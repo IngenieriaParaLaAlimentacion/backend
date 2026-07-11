@@ -14,8 +14,7 @@ from app.models.user import User
 pytestmark = pytest.mark.asyncio
 
 INVITE_ADMIN_URL = "/api/v1/admin/invite-admin"
-INVITE_ANALYST_URL = "/api/v1/admin/invite-professional"
-INVITE_ANALYST_V2_URL = "/api/v2/admin/invite-analyst"
+INVITE_ANALYST_URL = "/api/v1/admin/invite-analyst"
 RESEND_INVITE_URL = "/api/v1/admin/users/{user_id}/resend-invite"
 
 
@@ -137,26 +136,6 @@ class TestInviteAnalystSuccess:
         with patch("app.services.admin_service.send_invite_email"):
             response = await client.post(
                 INVITE_ANALYST_URL, json={"email": email}, headers=admin_headers
-            )
-
-        assert response.status_code == status.HTTP_202_ACCEPTED
-
-        async with db_module.AsyncSessionLocal() as session:
-            result = await session.execute(select(User).where(User.email == email))
-            user = result.scalar_one()
-
-        assert user.role == UserRole.ANALYST
-        assert response.json() == {"user_id": str(user.id)}
-
-
-class TestInviteAnalystV2Success:
-    async def test_returns_202_with_created_user_id(self, client, admin_headers):
-        """v2 analyst invite should return 202 and the created user's id."""
-        email = f"analyst_{uuid.uuid4().hex[:6]}@test.com"
-
-        with patch("app.services.admin_service.send_invite_email"):
-            response = await client.post(
-                INVITE_ANALYST_V2_URL, json={"email": email}, headers=admin_headers
             )
 
         assert response.status_code == status.HTTP_202_ACCEPTED
