@@ -322,17 +322,41 @@ class TestSubmit:
         uow.survey_repo.increment_response_count.assert_awaited_once_with(survey.id)
         uow.commit.assert_called_once()
 
-    async def test_replayed_id_returns_existing_without_permission_check(
+    async def test_replayed_id_returns_existing_for_authorized_actor(
+        self, make_uow, request_factory, admin_actor
+    ):
+        existing = _make_response()
+        uow = make_uow(existing_response=existing)
+        data = request_factory(id=existing.id)
+        response, created = await SurveyResponseService(uow).submit(data, admin_actor)
+        assert created is False
+        assert response.id == existing.id
+        uow.survey_response_repo.create.assert_not_called()
+        uow.commit.assert_not_called()
+
+    async def test_replayed_id_still_forbidden_for_disallowed_role(
         self, make_uow, request_factory, analyst_actor
     ):
         existing = _make_response()
         uow = make_uow(existing_response=existing)
         data = request_factory(id=existing.id)
-        response, created = await SurveyResponseService(uow).submit(data, analyst_actor)
-        assert created is False
-        assert response.id == existing.id
+        with pytest.raises(ForbiddenError):
+            await SurveyResponseService(uow).submit(data, analyst_actor)
         uow.survey_response_repo.create.assert_not_called()
-        uow.commit.assert_not_called()
+
+    async def test_replayed_id_still_checks_establishment_access(
+        self, make_uow, request_factory, field_worker_actor
+    ):
+        """Knowing a response's id must not bypass the establishment-access
+        check: the field worker isn't related to the *existing* response's
+        establishment, even though relation=None wouldn't matter for the
+        (unused) payload establishment_id."""
+        existing = _make_response()
+        uow = make_uow(existing_response=existing, relation=None)
+        data = request_factory(id=existing.id)
+        with pytest.raises(ForbiddenError):
+            await SurveyResponseService(uow).submit(data, field_worker_actor)
+        uow.survey_response_repo.create.assert_not_called()
 
     async def test_race_on_create_returns_existing(
         self, make_uow, request_factory, admin_actor

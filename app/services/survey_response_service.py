@@ -133,21 +133,23 @@ class SurveyResponseService:
         """Idempotently register a survey response.
 
         Returns (response, created): created=False for a replayed id (200),
-        True for a brand-new response (201).
+        True for a brand-new response (201). Permission checks apply even on
+        replay, against the existing response's establishment.
 
         Raises:
-            ForbiddenError: role can't submit, or field worker lacks approved
-                establishment access.
+            ForbiddenError: role can't submit, or lacks establishment access.
             SurveyNotFoundError / EstablishmentNotFoundError.
             InvalidSurveyResponseError: establishment outside survey audience,
                 or answers fail validation.
         """
+        self._assert_can_submit(actor)
+
         if data.id is not None:
             existing = await self.uow.survey_response_repo.get_by_id(data.id)
             if existing is not None:
+                await self._check_establishment_access(actor, existing.establishment_id)
                 return SurveyResponseDomain.from_db(existing), False
 
-        self._assert_can_submit(actor)
         survey = await self._get_survey_or_raise(data.survey_id)
         await self._get_establishment_or_raise(data.establishment_id)
         await self._check_establishment_access(actor, data.establishment_id)

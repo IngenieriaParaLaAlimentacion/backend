@@ -9,6 +9,12 @@ from app.schemas.measurement_schema import EstablishmentRefResponse
 # -- Requests --
 
 
+def validate_event_at(v: datetime) -> datetime:
+    if v > datetime.now(timezone.utc):
+        raise ValueError("event_at cannot be in the future")
+    return v
+
+
 class SurveyResponseRequest(BaseModel):
     id: UUID | None = Field(
         default=None,
@@ -23,12 +29,7 @@ class SurveyResponseRequest(BaseModel):
     answers: dict[str, Any]
     event_at: datetime
 
-    @field_validator("event_at")
-    @classmethod
-    def event_at_not_future(cls, v: datetime) -> datetime:
-        if v > datetime.now(timezone.utc):
-            raise ValueError("event_at cannot be in the future")
-        return v
+    _check_event_at = field_validator("event_at")(validate_event_at)
 
 
 class SurveyResponseEditRequest(BaseModel):
@@ -42,12 +43,7 @@ class SurveyResponseEditRequest(BaseModel):
     answers: dict[str, Any]
     event_at: datetime
 
-    @field_validator("event_at")
-    @classmethod
-    def event_at_not_future(cls, v: datetime) -> datetime:
-        if v > datetime.now(timezone.utc):
-            raise ValueError("event_at cannot be in the future")
-        return v
+    _check_event_at = field_validator("event_at")(validate_event_at)
 
 
 # -- Responses --

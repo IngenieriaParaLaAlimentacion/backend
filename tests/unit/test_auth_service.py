@@ -190,6 +190,18 @@ def valid_logout_request():
 
 
 class TestRegisterFieldWorker:
+    @pytest.fixture(autouse=True)
+    def mock_send_verification_email(self, monkeypatch):
+        """Registration isn't about email delivery; stub it out so a raw AsyncMock
+        `uow.email_verification_repo.create().expires_at` never reaches the real
+        `send_verification_email`, which would call `.strftime()` on it and leak
+        an unawaited coroutine."""
+        mock_fn = AsyncMock()
+        monkeypatch.setattr(
+            "app.services.auth_service.send_verification_email", mock_fn
+        )
+        return mock_fn
+
     @pytest.mark.asyncio
     async def test_creates_field_worker_with_correct_role_and_status(
         self, make_uow, make_establishment, valid_register_request_all_fields
