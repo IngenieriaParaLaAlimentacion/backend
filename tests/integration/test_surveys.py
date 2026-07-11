@@ -263,6 +263,32 @@ class TestGetFieldWorkerAccess:
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
+    async def test_inactive_generic_survey_returns_403(
+        self, client, admin_author, field_worker_headers
+    ):
+        admin_headers, _ = admin_author
+        survey_id = (await _create(client, admin_headers)).json()["id"]
+        await client.patch(
+            f"{SURVEYS_URL}/{survey_id}/status",
+            json={"is_active": False},
+            headers=admin_headers,
+        )
+        response = await client.get(
+            f"{SURVEYS_URL}/{survey_id}", headers=field_worker_headers
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_admin_can_fetch_inactive_survey(self, client, admin_author):
+        admin_headers, _ = admin_author
+        survey_id = (await _create(client, admin_headers)).json()["id"]
+        await client.patch(
+            f"{SURVEYS_URL}/{survey_id}/status",
+            json={"is_active": False},
+            headers=admin_headers,
+        )
+        response = await client.get(f"{SURVEYS_URL}/{survey_id}", headers=admin_headers)
+        assert response.status_code == status.HTTP_200_OK
+
 
 class TestUpdate:
     async def test_reconcile_insert_update_delete(self, client, admin_author):

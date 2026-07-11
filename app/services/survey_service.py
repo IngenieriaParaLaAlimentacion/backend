@@ -1,7 +1,6 @@
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.domain.establishment import UserEstablishmentStatus
 from app.domain.pagination import PaginatedResult
 from app.domain.survey import (
     CHOICE_TYPES,
@@ -225,18 +224,17 @@ class SurveyService:
         self, actor: UserActor, survey: Survey
     ) -> None:
         """A field worker may view a survey's full detail under the same
-        eligibility rule as ``/available``: generic, or targeted at one of
-        their approved establishments."""
+        eligibility rule as ``/available``: active, and generic or targeted at
+        one of their approved establishments."""
+        if not survey.is_active:
+            raise ForbiddenError()
         if survey.scope == SurveyScope.GENERIC:
             return
-        relations = await self.uow.user_establishment_repo.get_by_user_id(
-            actor.user_id
+        approved_ids = (
+            await self.uow.user_establishment_repo.get_approved_establishment_ids(
+                actor.user_id
+            )
         )
-        approved_ids = {
-            r.establishment_id
-            for r in relations
-            if r.status == UserEstablishmentStatus.APPROVED
-        }
         target_ids = {e.id for e in survey.establishments}
         if not (approved_ids & target_ids):
             raise ForbiddenError()
@@ -282,14 +280,12 @@ class SurveyService:
         """
         actor_establishment_ids = None
         if actor.role == UserRole.FIELD_WORKER:
-            relations = await self.uow.user_establishment_repo.get_by_user_id(
-                actor.user_id
+            approved_ids = (
+                await self.uow.user_establishment_repo.get_approved_establishment_ids(
+                    actor.user_id
+                )
             )
-            actor_establishment_ids = [
-                r.establishment_id
-                for r in relations
-                if r.status == UserEstablishmentStatus.APPROVED
-            ]
+            actor_establishment_ids = list(approved_ids)
         page = max(1, page)
         offset = (page - 1) * page_size
         surveys, total = await self.uow.survey_repo.list_available(
