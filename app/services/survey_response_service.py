@@ -2,8 +2,12 @@ from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.establishment import UserEstablishmentStatus
+from app.domain.pagination import PaginatedResult
 from app.domain.survey import QuestionDomain, ResponseType, SurveyDomain, SurveyScope
-from app.domain.survey_response import SurveyResponseDomain
+from app.domain.survey_response import (
+    SurveyResponseDashboardItemDomain,
+    SurveyResponseDomain,
+)
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
@@ -23,6 +27,8 @@ from app.schemas.survey_response_schema import (
 _SUBMITTER_ROLES = {UserRole.FIELD_WORKER, UserRole.ADMIN, UserRole.SUPERADMIN}
 # Roles allowed to edit any response regardless of authorship.
 _ADMIN_ROLES = {UserRole.ADMIN, UserRole.SUPERADMIN}
+# Roles allowed to fetch and see responses
+_DASHBOARD_ROLES = {UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN}
 
 
 class SurveyResponseService:
@@ -235,3 +241,26 @@ class SurveyResponseService:
             )
         await self.uow.commit()
         return SurveyResponseDomain.from_db(response)
+
+    async def list_by_survey(
+        self, survey_id: UUID, actor: UserActor, page: int, page_size: int
+    ) -> PaginatedResult[SurveyResponseDashboardItemDomain]:
+        """Return a paginated list of a survey's responses, newest event_at first.
+
+        Raises:
+            ForbiddenError: actor role isn't a dashboard reader.
+            SurveyNotFoundError.
+        """
+        if actor.role not in _DASHBOARD_ROLES:
+            raise ForbiddenError()
+        await self._get_survey_or_raise(survey_id)
+
+        page = max(1, page)
+        offset = (page - 1) * page_size
+        responses, total = await self.uow.survey_response_repo.list_by_survey(
+            survey_id, limit=page_size, offset=offset
+        )
+        items = [SurveyResponseDashboardItemDomain.from_db(r) for r in responses]
+        return PaginatedResult.build(
+            items=items, total=total, page=page, page_size=page_size
+        )

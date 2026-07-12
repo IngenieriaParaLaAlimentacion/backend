@@ -1,10 +1,11 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import and_, cast, exists, literal, or_, select, union_all
+from sqlalchemy import and_, cast, exists, func, literal, or_, select, union_all
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.survey_response import SurveyResponse
@@ -19,6 +20,36 @@ class SurveyResponseRepository:
     async def get_by_id(self, response_id: UUID) -> SurveyResponse | None:
         """Return a survey response by id, or None if it does not exist."""
         return await self.db.get(SurveyResponse, response_id)
+
+    async def list_by_survey(
+        self, survey_id: UUID, *, limit: int, offset: int
+    ) -> tuple[list[SurveyResponse], int]:
+        """Return a page of responses to a survey, newest event_at first, plus
+        the total count matching the survey (ignoring pagination).
+
+        Eager-loads survey, establishment and submitted_by so the dashboard
+        list can serialize without triggering lazy-load N+1 queries.
+        """
+        base_query = select(SurveyResponse).where(SurveyResponse.survey_id == survey_id)
+
+        total = (
+            await self.db.execute(
+                select(func.count()).select_from(base_query.subquery())
+            )
+        ).scalar_one()
+
+        rows_query = (
+            base_query.options(
+                selectinload(SurveyResponse.survey),
+                selectinload(SurveyResponse.establishment),
+                selectinload(SurveyResponse.submitted_by),
+            )
+            .order_by(SurveyResponse.event_at.desc())
+            .limit(limit)
+            .offset(offset)
+        )
+        rows = (await self.db.execute(rows_query)).scalars().all()
+        return list(rows), total
 
     async def create(
         self,
