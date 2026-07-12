@@ -645,3 +645,173 @@ class TestListAvailable:
         headers, _ = analyst_user
         response = await client.get(f"{SURVEYS_URL}/available", headers=headers)
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+class TestListBySurvey:
+    async def test_shows_submitter_establishment_and_date(
+        self, client, db_establishment, admin_user, field_worker_with_access
+    ):
+        admin_headers, _ = admin_user
+        fw_headers, fw_id = field_worker_with_access
+        survey = await _create_survey(client, admin_headers)
+        created = (
+            await client.post(
+                SURVEY_RESPONSES_URL,
+                json=_response_body(
+                    survey["id"], db_establishment.id, _valid_answers(survey)
+                ),
+                headers=fw_headers,
+            )
+        ).json()
+
+        response = await client.get(
+            SURVEY_RESPONSES_URL,
+            params={"survey_id": survey["id"]},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert body["total"] == 1
+        item = body["items"][0]
+        assert item["id"] == created["id"]
+        assert item["survey"]["id"] == survey["id"]
+        assert item["establishment"]["id"] == str(db_establishment.id)
+        assert item["submitted_by"]["id"] == str(fw_id)
+        assert "event_at" in item
+
+    async def test_orders_by_event_at_desc(self, client, db_establishment, admin_user):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        older = (
+            await client.post(
+                SURVEY_RESPONSES_URL,
+                json=_response_body(
+                    survey["id"],
+                    db_establishment.id,
+                    _valid_answers(survey),
+                    event_at="2024-06-01T00:00:00Z",
+                ),
+                headers=headers,
+            )
+        ).json()
+        newer = (
+            await client.post(
+                SURVEY_RESPONSES_URL,
+                json=_response_body(
+                    survey["id"],
+                    db_establishment.id,
+                    _valid_answers(survey),
+                    id=str(uuid.uuid4()),
+                    event_at="2024-06-05T00:00:00Z",
+                ),
+                headers=headers,
+            )
+        ).json()
+
+        response = await client.get(
+            SURVEY_RESPONSES_URL,
+            params={"survey_id": survey["id"]},
+            headers=headers,
+        )
+
+        ids = [item["id"] for item in response.json()["items"]]
+        assert ids == [newer["id"], older["id"]]
+
+    async def test_paginates(self, client, db_establishment, admin_user):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        for _ in range(3):
+            await client.post(
+                SURVEY_RESPONSES_URL,
+                json=_response_body(
+                    survey["id"],
+                    db_establishment.id,
+                    _valid_answers(survey),
+                    id=str(uuid.uuid4()),
+                ),
+                headers=headers,
+            )
+
+        response = await client.get(
+            SURVEY_RESPONSES_URL,
+            params={"survey_id": survey["id"], "page": 1, "page_size": 2},
+            headers=headers,
+        )
+
+        body = response.json()
+        assert len(body["items"]) == 2
+        assert body["total"] == 3
+        assert body["total_pages"] == 2
+
+    async def test_only_returns_responses_for_requested_survey(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey_a = await _create_survey(client, headers, name="Encuesta A")
+        survey_b = await _create_survey(client, headers, name="Encuesta B")
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey_a["id"], db_establishment.id, _valid_answers(survey_a)
+            ),
+            headers=headers,
+        )
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey_b["id"], db_establishment.id, _valid_answers(survey_b)
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            SURVEY_RESPONSES_URL,
+            params={"survey_id": survey_a["id"]},
+            headers=headers,
+        )
+
+        assert response.json()["total"] == 1
+
+    async def test_field_worker_forbidden(
+        self, client, admin_user, field_worker_without_access
+    ):
+        admin_headers, _ = admin_user
+        fw_headers, _ = field_worker_without_access
+        survey = await _create_survey(client, admin_headers)
+
+        response = await client.get(
+            SURVEY_RESPONSES_URL,
+            params={"survey_id": survey["id"]},
+            headers=fw_headers,
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_analyst_allowed(self, client, admin_user, analyst_user):
+        admin_headers, _ = admin_user
+        analyst_headers, _ = analyst_user
+        survey = await _create_survey(client, admin_headers)
+
+        response = await client.get(
+            SURVEY_RESPONSES_URL,
+            params={"survey_id": survey["id"]},
+            headers=analyst_headers,
+        )
+        assert response.status_code == status.HTTP_200_OK
+
+    async def test_unknown_survey_returns_404(self, client, admin_user):
+        headers, _ = admin_user
+        response = await client.get(
+            SURVEY_RESPONSES_URL,
+            params={"survey_id": str(uuid.uuid4())},
+            headers=headers,
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_unauthenticated_returns_401(self, client, admin_user):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        response = await client.get(
+            SURVEY_RESPONSES_URL, params={"survey_id": survey["id"]}
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED

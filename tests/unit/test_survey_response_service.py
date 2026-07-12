@@ -532,3 +532,85 @@ class TestEdit:
                 response.id, edit_factory(answers={}), admin_actor
             )
         uow.survey_response_edit_repo.create.assert_not_called()
+
+
+class TestListBySurvey:
+    pytestmark = pytest.mark.asyncio
+
+    async def test_admin_gets_paginated_result(self, make_uow, admin_actor):
+        survey = _make_survey_orm()
+        response = _make_response(survey_id=survey.id)
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_by_survey = AsyncMock(
+            return_value=([response], 1)
+        )
+
+        result = await SurveyResponseService(uow).list_by_survey(
+            survey.id, admin_actor, page=1, page_size=20
+        )
+
+        assert result.total == 1
+        assert len(result.items) == 1
+        assert result.items[0].id == response.id
+        uow.survey_response_repo.list_by_survey.assert_awaited_once_with(
+            survey.id, limit=20, offset=0
+        )
+
+    async def test_analyst_can_list(self, make_uow, analyst_actor):
+        survey = _make_survey_orm()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
+
+        result = await SurveyResponseService(uow).list_by_survey(
+            survey.id, analyst_actor, page=1, page_size=20
+        )
+
+        assert result.total == 0
+
+    async def test_field_worker_forbidden(self, make_uow, field_worker_actor):
+        survey = _make_survey_orm()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
+
+        with pytest.raises(ForbiddenError):
+            await SurveyResponseService(uow).list_by_survey(
+                survey.id, field_worker_actor, page=1, page_size=20
+            )
+        uow.survey_repo.get_by_id.assert_not_awaited()
+        uow.survey_response_repo.list_by_survey.assert_not_awaited()
+
+    async def test_survey_not_found(self, make_uow, admin_actor):
+        uow = make_uow(survey=None)
+        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
+
+        with pytest.raises(SurveyNotFoundError):
+            await SurveyResponseService(uow).list_by_survey(
+                uuid.uuid4(), admin_actor, page=1, page_size=20
+            )
+        uow.survey_response_repo.list_by_survey.assert_not_awaited()
+
+    async def test_computes_offset_from_page(self, make_uow, admin_actor):
+        survey = _make_survey_orm()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
+
+        await SurveyResponseService(uow).list_by_survey(
+            survey.id, admin_actor, page=3, page_size=10
+        )
+
+        uow.survey_response_repo.list_by_survey.assert_awaited_once_with(
+            survey.id, limit=10, offset=20
+        )
+
+    async def test_clamps_page_below_one(self, make_uow, admin_actor):
+        survey = _make_survey_orm()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
+
+        await SurveyResponseService(uow).list_by_survey(
+            survey.id, admin_actor, page=0, page_size=10
+        )
+
+        uow.survey_response_repo.list_by_survey.assert_awaited_once_with(
+            survey.id, limit=10, offset=0
+        )
