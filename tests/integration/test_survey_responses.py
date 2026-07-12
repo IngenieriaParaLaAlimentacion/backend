@@ -5,7 +5,6 @@ import pytest_asyncio
 from fastapi import status
 from sqlalchemy import func, select
 
-from app.core.security import create_access_token
 from app.domain.user import UserRole
 
 pytestmark = pytest.mark.asyncio
@@ -14,30 +13,6 @@ SURVEY_RESPONSES_URL = "/api/v1/survey-responses"
 SURVEYS_URL = "/api/v1/surveys"
 
 NOW = "2024-06-01T12:00:00Z"
-
-
-async def _make_user(role: UserRole):
-    """Create a real DB user for the given role and return (headers, user_id)."""
-    from app.db.database import AsyncSessionLocal
-    from app.domain.user import UserStatus
-    from app.models.user import User
-    from app.models.user import UserRole as ORMUserRole
-
-    user_id = uuid.uuid4()
-    async with AsyncSessionLocal() as session:
-        session.add(
-            User(
-                id=user_id,
-                name="Test",
-                last_name=role.value.title(),
-                email=f"{user_id}@test.com",
-                role=ORMUserRole(role.value),
-                status=UserStatus.ACTIVE,
-            )
-        )
-        await session.commit()
-    token = create_access_token(user_id, role=role)
-    return {"Authorization": f"Bearer {token}"}, user_id
 
 
 async def _make_establishment(place_id: str = "place-test-002"):
@@ -61,58 +36,23 @@ async def _make_establishment(place_id: str = "place-test-002"):
 
 
 @pytest_asyncio.fixture
-async def admin_user(app):
-    return await _make_user(UserRole.ADMIN)
+async def admin_user(make_user_with_role):
+    return await make_user_with_role(UserRole.ADMIN)
 
 
 @pytest_asyncio.fixture
-async def superadmin_user(app):
-    return await _make_user(UserRole.SUPERADMIN)
+async def superadmin_user(make_user_with_role):
+    return await make_user_with_role(UserRole.SUPERADMIN)
 
 
 @pytest_asyncio.fixture
-async def analyst_user(app):
-    return await _make_user(UserRole.ANALYST)
+async def analyst_user(make_user_with_role):
+    return await make_user_with_role(UserRole.ANALYST)
 
 
 @pytest_asyncio.fixture
-async def field_worker_without_access(app):
-    return await _make_user(UserRole.FIELD_WORKER)
-
-
-@pytest_asyncio.fixture
-async def field_worker_with_access(app, db_establishment):
-    """Create a field worker with an APPROVED relation to db_establishment."""
-    from app.db.database import AsyncSessionLocal
-    from app.domain.establishment import UserEstablishmentStatus
-    from app.domain.user import UserStatus
-    from app.models.user import User
-    from app.models.user import UserRole as ORMUserRole
-    from app.models.user_establishment import UserEstablishment
-
-    user_id = uuid.uuid4()
-    async with AsyncSessionLocal() as session:
-        session.add(
-            User(
-                id=user_id,
-                name="Maria",
-                last_name="Field Worker",
-                email=f"{user_id}@test.com",
-                role=ORMUserRole.FIELD_WORKER,
-                status=UserStatus.ACTIVE,
-            )
-        )
-        session.add(
-            UserEstablishment(
-                user_id=user_id,
-                establishment_id=db_establishment.id,
-                status=UserEstablishmentStatus.APPROVED,
-            )
-        )
-        await session.commit()
-
-    token = create_access_token(user_id, role=UserRole.FIELD_WORKER)
-    return {"Authorization": f"Bearer {token}"}, user_id
+async def field_worker_without_access(make_user_with_role):
+    return await make_user_with_role(UserRole.FIELD_WORKER)
 
 
 async def _create_survey(client, headers, **overrides):

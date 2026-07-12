@@ -16,12 +16,6 @@ INVITE_ADMIN_URL = "/api/v1/admin/invite-admin"
 RESEND_INVITE_URL = "/api/v1/admin/users/{user_id}/resend-invite"
 
 
-@pytest.fixture
-def admin_headers():
-    token = create_access_token(uuid.uuid4(), role=UserRole.ADMIN)
-    return {"Authorization": f"Bearer {token}"}
-
-
 def _invite_body(**overrides):
     return {"email": f"admin_{uuid.uuid4().hex[:6]}@test.com", **overrides}
 

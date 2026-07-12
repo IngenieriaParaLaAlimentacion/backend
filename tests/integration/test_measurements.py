@@ -37,44 +37,6 @@ async def db_adult_subject(app):
 
 
 @pytest_asyncio.fixture
-async def db_field_worker_with_access(app, db_establishment):
-    """Create a field worker user with an APPROVED relation to db_establishment.
-
-    Returns (headers, user_id).
-    """
-    from app.db.database import AsyncSessionLocal
-    from app.domain.establishment import UserEstablishmentStatus
-    from app.domain.user import UserStatus
-    from app.models.user import User
-    from app.models.user import UserRole as ORMUserRole
-    from app.models.user_establishment import UserEstablishment
-
-    user_id = uuid.uuid4()
-    async with AsyncSessionLocal() as session:
-        session.add(
-            User(
-                id=user_id,
-                name="Maria",
-                last_name="Field Worker",
-                email=f"{user_id}@test.com",
-                role=ORMUserRole.FIELD_WORKER,
-                status=UserStatus.ACTIVE,
-            )
-        )
-        session.add(
-            UserEstablishment(
-                user_id=user_id,
-                establishment_id=db_establishment.id,
-                status=UserEstablishmentStatus.APPROVED,
-            )
-        )
-        await session.commit()
-
-    token = create_access_token(user_id, role=UserRole.FIELD_WORKER)
-    return {"Authorization": f"Bearer {token}"}, user_id
-
-
-@pytest_asyncio.fixture
 async def db_admin_headers(app):
     """Create a real admin user in the DB and return auth headers."""
     from app.db.database import AsyncSessionLocal
@@ -299,10 +261,10 @@ class TestEstablishmentAccess:
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     async def test_field_worker_with_approved_relation_returns_201(
-        self, client, db_adult_subject, db_establishment, db_field_worker_with_access
+        self, client, db_adult_subject, db_establishment, field_worker_with_access
     ):
         """A field worker with an APPROVED relation can upload a measurement."""
-        headers, _ = db_field_worker_with_access
+        headers, _ = field_worker_with_access
         response = await _upload(
             client,
             db_adult_subject.id,

@@ -72,12 +72,6 @@ def any_admin_request(request):
     return request.param
 
 
-@pytest.fixture
-def admin_headers():
-    token = create_access_token(uuid.uuid4(), role=UserRole.ADMIN)
-    return {"Authorization": f"Bearer {token}"}
-
-
 @pytest_asyncio.fixture
 async def db_establishment_2(app):
     """Insert a second Establishment row and return the ORM instance."""
