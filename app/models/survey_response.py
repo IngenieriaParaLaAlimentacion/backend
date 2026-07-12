@@ -45,3 +45,4 @@ class SurveyResponse(Base):
 
     survey = relationship("Survey")
     establishment = relationship("Establishment")
+    submitted_by = relationship("User")

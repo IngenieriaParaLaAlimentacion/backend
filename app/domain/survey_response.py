@@ -62,3 +62,40 @@ class SurveyResponseListItemDomain:
             survey=SurveyRefDomain(id=obj.survey.id, name=obj.survey.name),
             establishment=EstablishmentRefDomain.from_db(obj.establishment),
         )
+
+
+@dataclass
+class UserRefDomain:
+    """Minimal user identity for embedding in a response summary."""
+
+    id: UUID
+    name: str
+
+
+@dataclass
+class SurveyResponseDashboardItemDomain:
+    """An enriched response row for the admin/analyst dashboard view (CA2).
+
+    Unlike SurveyResponseListItemDomain (activity feed), this includes who
+    submitted the response, since here the viewer isn't the submitter.
+    """
+
+    id: UUID
+    event_at: datetime
+    survey: SurveyRefDomain
+    establishment: EstablishmentRefDomain
+    submitted_by: UserRefDomain
+
+    @classmethod
+    def from_db(cls, obj) -> "SurveyResponseDashboardItemDomain":
+        """Build from an ORM SurveyResponse with survey/establishment/submitted_by
+        loaded."""
+        return cls(
+            id=obj.id,
+            event_at=obj.event_at,
+            survey=SurveyRefDomain(id=obj.survey.id, name=obj.survey.name),
+            establishment=EstablishmentRefDomain.from_db(obj.establishment),
+            submitted_by=UserRefDomain(
+                id=obj.submitted_by.id, name=obj.submitted_by.name
+            ),
+        )

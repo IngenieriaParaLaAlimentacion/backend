@@ -86,3 +86,22 @@ class SurveyResponseListItem(BaseModel):
     event_at: datetime
     survey: SurveyRefResponse
     establishment: EstablishmentRefResponse
+
+
+class UserRefResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    name: str
+
+
+class SurveyResponseDashboardItem(BaseModel):
+    """An enriched response row for the admin/analyst dashboard view (CA2)."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    event_at: datetime
+    survey: SurveyRefResponse
+    establishment: EstablishmentRefResponse
+    submitted_by: UserRefResponse
