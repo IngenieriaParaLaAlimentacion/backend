@@ -60,6 +60,16 @@ class SurveyRepository:
         return bool(result.scalar())
 
     @staticmethod
+    def _question_count_subquery():
+        """Scalar subquery: number of questions belonging to the correlated survey."""
+        return (
+            select(func.count(SurveyQuestion.id))
+            .where(SurveyQuestion.survey_id == Survey.id)
+            .correlate(Survey)
+            .scalar_subquery()
+        )
+
+    @staticmethod
     def _listing_conditions(params: SurveyListingParams) -> list:
         """Build the filter conditions for a survey listing."""
         conditions = []
@@ -73,6 +83,108 @@ class SurveyRepository:
         if params.is_active is not None:
             conditions.append(Survey.is_active == params.is_active)
         return conditions
+
+    @staticmethod
+    def _available_scope_condition(actor_establishment_ids: list[UUID] | None):
+        if actor_establishment_ids is None:
+            return true()
+        targeted_match = and_(
+            Survey.scope == SurveyScope.TARGETED,
+            exists().where(
+                SurveyEstablishment.survey_id == Survey.id,
+                SurveyEstablishment.establishment_id.in_(actor_establishment_ids),
+            ),
+        )
+        return or_(Survey.scope == SurveyScope.GENERIC, targeted_match)
+
+    @staticmethod
+    def _build_question(
+        q: QuestionInputData | SurveyQuestion, position: int
+    ) -> SurveyQuestion:
+        return SurveyQuestion(
+            text=q.text,
+            response_type=q.response_type,
+            is_required=q.is_required,
+            position=position,
+            options=[
+                SurveyQuestionOption(text=o.text, position=i)
+                for i, o in enumerate(q.options)
+            ],
+        )
+
+    def _reconcile_questions(
+        self, survey: Survey, questions: list[QuestionInputData]
+    ) -> None:
+        existing = {q.id: q for q in survey.questions}
+        for q in questions:
+            if q.id is not None and q.id not in existing:
+                raise InvalidSurveyPayloadError(
+                    f"Question {q.id} does not belong to this survey."
+                )
+        new_questions = []
+        for position, q in enumerate(questions):
+            if q.id is not None:
+                question = existing[q.id]
+                question.text = q.text
+                question.response_type = q.response_type
+                question.is_required = q.is_required
+                question.position = position
+                self._reconcile_options(question, q.options)
+            else:
+                question = self._build_question(q, position)
+            new_questions.append(question)
+        # Reassigning the collection deletes orphaned questions via delete-orphan.
+        survey.questions = new_questions
+
+    @staticmethod
+    def _reconcile_options(question: SurveyQuestion, options) -> None:
+        existing = {o.id: o for o in question.options}
+        for o in options:
+            if o.id is not None and o.id not in existing:
+                raise InvalidSurveyPayloadError(
+                    f"Option {o.id} does not belong to question {question.id}."
+                )
+        new_options = []
+        for position, o in enumerate(options):
+            if o.id is not None:
+                option = existing[o.id]
+                option.text = o.text
+                option.position = position
+            else:
+                option = SurveyQuestionOption(text=o.text, position=position)
+            new_options.append(option)
+        # Reassigning the collection deletes orphaned options via delete-orphan.
+        question.options = new_options
+
+    async def _assign_establishments(
+        self, survey: Survey, establishment_ids: list[UUID]
+    ) -> None:
+        if establishment_ids:
+            result = await self.db.execute(
+                select(Establishment).where(Establishment.id.in_(establishment_ids))
+            )
+            survey.establishments = list(result.scalars().all())
+        else:
+            survey.establishments = []
+
+    async def _flush_aggregate(self, survey: Survey, name: str) -> None:
+        try:
+            async with self.db.begin_nested():
+                self.db.add(survey)
+                await self.db.flush()
+        except IntegrityError:
+            raise UniqueConstraintError("name", name)
+        await self._refresh_updated_at(survey)
+
+    async def _refresh_updated_at(self, survey: Survey) -> None:
+        """Reload the server-side ``updated_at`` within the async context.
+
+        ``updated_at`` uses ``onupdate=func.now()``; after an UPDATE SQLAlchemy
+        expires it, so building the domain object post-commit would otherwise
+        trigger a lazy (sync) reload and raise ``MissingGreenlet``. Scoped to this
+        one column so the eager-loaded questions/establishments stay intact.
+        """
+        await self.db.refresh(survey, attribute_names=["updated_at"])
 
     async def list(
         self,
@@ -88,12 +200,7 @@ class SurveyRepository:
         correlated subquery — avoiding hydrating every question/option/establishment
         just to call ``len()``.
         """
-        question_count = (
-            select(func.count(SurveyQuestion.id))
-            .where(SurveyQuestion.survey_id == Survey.id)
-            .correlate(Survey)
-            .scalar_subquery()
-        )
+        question_count = self._question_count_subquery()
         base_query = select(Survey, question_count.label("question_count")).options(
             noload(Survey.questions), noload(Survey.establishments)
         )
@@ -177,6 +284,10 @@ class SurveyRepository:
 
         The copy inherits the source's ``is_active`` state, so duplicating a paused
         survey yields a paused copy rather than silently publishing it.
+
+        Raises:
+            UniqueConstraintError: If ``new_name`` is already taken. The caller
+                pre-generates a free name; this guards against a race.
         """
         survey = Survey(
             name=new_name.strip(),
@@ -232,12 +343,7 @@ class SurveyRepository:
         admin/superadmin caller) matches every targeted survey unconditionally,
         mirroring the establishment-access bypass used for submission.
         """
-        question_count = (
-            select(func.count(SurveyQuestion.id))
-            .where(SurveyQuestion.survey_id == Survey.id)
-            .correlate(Survey)
-            .scalar_subquery()
-        )
+        question_count = self._question_count_subquery()
         scope_condition = self._available_scope_condition(actor_establishment_ids)
         base_query = (
             select(Survey, question_count.label("question_count"))
@@ -255,106 +361,3 @@ class SurveyRepository:
         total = (await self.db.execute(count_query)).scalar_one()
         rows = (await self.db.execute(paginated)).all()
         return [(row[0], row[1]) for row in rows], total
-
-    @staticmethod
-    def _available_scope_condition(actor_establishment_ids: list[UUID] | None):
-        if actor_establishment_ids is None:
-            return true()
-        targeted_match = and_(
-            Survey.scope == SurveyScope.TARGETED,
-            exists().where(
-                SurveyEstablishment.survey_id == Survey.id,
-                SurveyEstablishment.establishment_id.in_(actor_establishment_ids),
-            ),
-        )
-        return or_(Survey.scope == SurveyScope.GENERIC, targeted_match)
-
-    # -- Internal helpers --
-
-    @staticmethod
-    def _build_question(
-        q: QuestionInputData | SurveyQuestion, position: int
-    ) -> SurveyQuestion:
-        return SurveyQuestion(
-            text=q.text,
-            response_type=q.response_type,
-            is_required=q.is_required,
-            position=position,
-            options=[
-                SurveyQuestionOption(text=o.text, position=i)
-                for i, o in enumerate(q.options)
-            ],
-        )
-
-    def _reconcile_questions(
-        self, survey: Survey, questions: list[QuestionInputData]
-    ) -> None:
-        existing = {q.id: q for q in survey.questions}
-        for q in questions:
-            if q.id is not None and q.id not in existing:
-                raise InvalidSurveyPayloadError(
-                    f"Question {q.id} does not belong to this survey."
-                )
-        new_questions = []
-        for position, q in enumerate(questions):
-            if q.id is not None:
-                question = existing[q.id]
-                question.text = q.text
-                question.response_type = q.response_type
-                question.is_required = q.is_required
-                question.position = position
-                self._reconcile_options(question, q.options)
-            else:
-                question = self._build_question(q, position)
-            new_questions.append(question)
-        # Reassigning the collection deletes orphaned questions via delete-orphan.
-        survey.questions = new_questions
-
-    @staticmethod
-    def _reconcile_options(question: SurveyQuestion, options) -> None:
-        existing = {o.id: o for o in question.options}
-        for o in options:
-            if o.id is not None and o.id not in existing:
-                raise InvalidSurveyPayloadError(
-                    f"Option {o.id} does not belong to question {question.id}."
-                )
-        new_options = []
-        for position, o in enumerate(options):
-            if o.id is not None:
-                option = existing[o.id]
-                option.text = o.text
-                option.position = position
-            else:
-                option = SurveyQuestionOption(text=o.text, position=position)
-            new_options.append(option)
-        question.options = new_options
-
-    async def _assign_establishments(
-        self, survey: Survey, establishment_ids: list[UUID]
-    ) -> None:
-        if establishment_ids:
-            result = await self.db.execute(
-                select(Establishment).where(Establishment.id.in_(establishment_ids))
-            )
-            survey.establishments = list(result.scalars().all())
-        else:
-            survey.establishments = []
-
-    async def _flush_aggregate(self, survey: Survey, name: str) -> None:
-        try:
-            async with self.db.begin_nested():
-                self.db.add(survey)
-                await self.db.flush()
-        except IntegrityError:
-            raise UniqueConstraintError("name", name)
-        await self._refresh_updated_at(survey)
-
-    async def _refresh_updated_at(self, survey: Survey) -> None:
-        """Reload the server-side ``updated_at`` within the async context.
-
-        ``updated_at`` uses ``onupdate=func.now()``; after an UPDATE SQLAlchemy
-        expires it, so building the domain object post-commit would otherwise
-        trigger a lazy (sync) reload and raise ``MissingGreenlet``. Scoped to this
-        one column so the eager-loaded questions/establishments stay intact.
-        """
-        await self.db.refresh(survey, attribute_names=["updated_at"])

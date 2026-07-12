@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, status
 
 from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams, SurveyListingQuery
-from app.core.dependencies import get_survey_service, require_some
+from app.core.dependencies import get_survey_service, require_any, require_some
 from app.data.fies_template import build_fies_template
 from app.domain import UserActor
 from app.domain.user import UserRole
@@ -129,8 +129,12 @@ async def list_available_surveys(
     "/{survey_id}",
     response_model=SurveyResponse,
     summary="Get a survey",
-    description="Return a survey's full configuration with ordered questions "
-    "and options.",
+    description=(
+        "Return a survey's full configuration with ordered questions and options. "
+        "Accessible by admins, analysts and superadmins for any survey. A field "
+        "worker may fetch a generic survey, or a targeted survey aimed at one of "
+        "their approved establishments; otherwise forbidden."
+    ),
     responses={
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Survey not found"},
@@ -138,10 +142,10 @@ async def list_available_surveys(
 )
 async def get_survey(
     survey_id: UUID,
-    _: UserActor = Depends(require_survey_author),
+    actor: UserActor = Depends(require_any),
     service: SurveyService = Depends(get_survey_service),
 ) -> SurveyResponse:
-    survey = await service.get(survey_id)
+    survey = await service.get(survey_id, actor)
     return SurveyResponse.model_validate(survey)
 
 
@@ -179,7 +183,10 @@ async def update_survey(
     response_model=SurveyResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Duplicate a survey",
-    description="Deep-copy a survey under a unique '<name> (copy)' name.",
+    description=(
+        "Create a new survey from an existing one, deep-copying its questions, "
+        "options and audience under a unique '<name> (copy)' name."
+    ),
     responses={
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Survey not found"},

@@ -16,51 +16,14 @@ SURVEYS_URL = "/api/v1/surveys"
 SURVEY_RESPONSES_URL = "/api/v1/survey-responses"
 
 
-async def _make_field_worker_with_access(establishment_id):
-    """Create a real field worker user with APPROVED access to an establishment.
-
-    Returns (headers, user_id).
-    """
-    from app.db.database import AsyncSessionLocal
-    from app.domain.establishment import UserEstablishmentStatus
-    from app.domain.user import UserStatus
-    from app.models.user import User
-    from app.models.user import UserRole as ORMUserRole
-    from app.models.user_establishment import UserEstablishment
-
-    user_id = uuid.uuid4()
-    async with AsyncSessionLocal() as session:
-        session.add(
-            User(
-                id=user_id,
-                name="Field",
-                last_name="Worker",
-                email=f"{user_id}@test.com",
-                role=ORMUserRole.FIELD_WORKER,
-                status=UserStatus.ACTIVE,
-            )
-        )
-        session.add(
-            UserEstablishment(
-                user_id=user_id,
-                establishment_id=establishment_id,
-                status=UserEstablishmentStatus.APPROVED,
-            )
-        )
-        await session.commit()
-
-    token = create_access_token(user_id, role=UserRole.FIELD_WORKER)
-    return {"Authorization": f"Bearer {token}"}, user_id
+@pytest_asyncio.fixture
+async def field_worker_a(app, db_establishment, make_field_worker_with_access):
+    return await make_field_worker_with_access(db_establishment.id)
 
 
 @pytest_asyncio.fixture
-async def field_worker_a(app, db_establishment):
-    return await _make_field_worker_with_access(db_establishment.id)
-
-
-@pytest_asyncio.fixture
-async def field_worker_b(app, db_establishment):
-    return await _make_field_worker_with_access(db_establishment.id)
+async def field_worker_b(app, db_establishment, make_field_worker_with_access):
+    return await make_field_worker_with_access(db_establishment.id)
 
 
 @pytest_asyncio.fixture

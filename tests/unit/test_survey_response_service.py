@@ -377,6 +377,50 @@ class TestSubmit:
         uow.commit.assert_not_called()
 
 
+class TestGet:
+    pytestmark = pytest.mark.asyncio
+
+    async def test_response_not_found(self, make_uow, admin_actor):
+        uow = make_uow(existing_response=None)
+        with pytest.raises(SurveyResponseNotFoundError):
+            await SurveyResponseService(uow).get(uuid.uuid4(), admin_actor)
+
+    async def test_owner_field_worker_allowed(self, make_uow):
+        actor = UserActor(user_id=uuid.uuid4(), role=UserRole.FIELD_WORKER)
+        response = _make_response(submitted_by_id=actor.user_id, answers={"a": "b"})
+        uow = make_uow(existing_response=response)
+        result = await SurveyResponseService(uow).get(response.id, actor)
+        assert isinstance(result, SurveyResponseDomain)
+        assert result.answers == {"a": "b"}
+
+    async def test_non_owner_field_worker_forbidden(self, make_uow, field_worker_actor):
+        response = _make_response(submitted_by_id=uuid.uuid4())
+        uow = make_uow(existing_response=response)
+        with pytest.raises(ForbiddenError):
+            await SurveyResponseService(uow).get(response.id, field_worker_actor)
+
+    async def test_admin_can_view_any_response(self, make_uow, admin_actor):
+        response = _make_response(submitted_by_id=uuid.uuid4())
+        uow = make_uow(existing_response=response)
+        result = await SurveyResponseService(uow).get(response.id, admin_actor)
+        assert result.id == response.id
+
+    async def test_superadmin_can_view_any_response(self, make_uow):
+        actor = UserActor(user_id=uuid.uuid4(), role=UserRole.SUPERADMIN)
+        response = _make_response(submitted_by_id=uuid.uuid4())
+        uow = make_uow(existing_response=response)
+        result = await SurveyResponseService(uow).get(response.id, actor)
+        assert result.id == response.id
+
+    async def test_analyst_forbidden_for_someone_elses_response(
+        self, make_uow, analyst_actor
+    ):
+        response = _make_response(submitted_by_id=uuid.uuid4())
+        uow = make_uow(existing_response=response)
+        with pytest.raises(ForbiddenError):
+            await SurveyResponseService(uow).get(response.id, analyst_actor)
+
+
 class TestEdit:
     pytestmark = pytest.mark.asyncio
 

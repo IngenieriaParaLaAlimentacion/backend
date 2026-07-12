@@ -5,7 +5,6 @@ import pytest_asyncio
 from fastapi import status
 from sqlalchemy import func, select
 
-from app.core.security import create_access_token
 from app.domain.user import UserRole
 
 pytestmark = pytest.mark.asyncio
@@ -13,38 +12,14 @@ pytestmark = pytest.mark.asyncio
 SURVEYS_URL = "/api/v1/surveys"
 
 
-async def _make_author(role: UserRole = UserRole.ADMIN):
-    """Create a real DB user and return (headers, user_id) for that author."""
-    from app.db.database import AsyncSessionLocal
-    from app.domain.user import UserStatus
-    from app.models.user import User
-    from app.models.user import UserRole as ORMUserRole
-
-    user_id = uuid.uuid4()
-    async with AsyncSessionLocal() as session:
-        session.add(
-            User(
-                id=user_id,
-                name="Author",
-                last_name=role.value.title(),
-                email=f"{user_id}@test.com",
-                role=ORMUserRole(role.value),
-                status=UserStatus.ACTIVE,
-            )
-        )
-        await session.commit()
-    token = create_access_token(user_id, role=role)
-    return {"Authorization": f"Bearer {token}"}, user_id
+@pytest_asyncio.fixture
+async def admin_author(make_user_with_role):
+    return await make_user_with_role(UserRole.ADMIN)
 
 
 @pytest_asyncio.fixture
-async def admin_author(app):
-    return await _make_author(UserRole.ADMIN)
-
-
-@pytest_asyncio.fixture
-async def analyst_author(app):
-    return await _make_author(UserRole.ANALYST)
+async def analyst_author(make_user_with_role):
+    return await make_user_with_role(UserRole.ANALYST)
 
 
 def _survey_body(
@@ -176,6 +151,89 @@ class TestCreateAndGet:
         )
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["establishment_ids"] == [str(db_establishment.id)]
+
+
+class TestGetFieldWorkerAccess:
+    """A field worker may fetch full survey detail (needed to render the
+    response form) for generic surveys, or targeted surveys aimed at one of
+    their approved establishments — the same eligibility rule as `/available`."""
+
+    async def test_generic_survey_succeeds(
+        self, client, admin_author, field_worker_headers
+    ):
+        admin_headers, _ = admin_author
+        survey_id = (await _create(client, admin_headers)).json()["id"]
+        response = await client.get(
+            f"{SURVEYS_URL}/{survey_id}", headers=field_worker_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["questions"][0]["text"] == "¿Comió hoy?"
+
+    async def test_targeted_survey_without_access_returns_403(
+        self, client, admin_author, field_worker_headers, db_establishment
+    ):
+        admin_headers, _ = admin_author
+        survey_id = (
+            await _create(
+                client,
+                admin_headers,
+                scope="targeted",
+                establishment_ids=[str(db_establishment.id)],
+            )
+        ).json()["id"]
+        response = await client.get(
+            f"{SURVEYS_URL}/{survey_id}", headers=field_worker_headers
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_targeted_survey_with_approved_access_succeeds(
+        self, client, admin_author, db_establishment, field_worker_with_access
+    ):
+        admin_headers, _ = admin_author
+        fw_headers, _ = field_worker_with_access
+        survey_id = (
+            await _create(
+                client,
+                admin_headers,
+                scope="targeted",
+                establishment_ids=[str(db_establishment.id)],
+            )
+        ).json()["id"]
+
+        response = await client.get(f"{SURVEYS_URL}/{survey_id}", headers=fw_headers)
+        assert response.status_code == status.HTTP_200_OK
+
+    async def test_missing_survey_returns_404(self, client, field_worker_headers):
+        response = await client.get(
+            f"{SURVEYS_URL}/{uuid.uuid4()}", headers=field_worker_headers
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_inactive_generic_survey_returns_403(
+        self, client, admin_author, field_worker_headers
+    ):
+        admin_headers, _ = admin_author
+        survey_id = (await _create(client, admin_headers)).json()["id"]
+        await client.patch(
+            f"{SURVEYS_URL}/{survey_id}/status",
+            json={"is_active": False},
+            headers=admin_headers,
+        )
+        response = await client.get(
+            f"{SURVEYS_URL}/{survey_id}", headers=field_worker_headers
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_admin_can_fetch_inactive_survey(self, client, admin_author):
+        admin_headers, _ = admin_author
+        survey_id = (await _create(client, admin_headers)).json()["id"]
+        await client.patch(
+            f"{SURVEYS_URL}/{survey_id}/status",
+            json={"is_active": False},
+            headers=admin_headers,
+        )
+        response = await client.get(f"{SURVEYS_URL}/{survey_id}", headers=admin_headers)
+        assert response.status_code == status.HTTP_200_OK
 
 
 class TestUpdate:
