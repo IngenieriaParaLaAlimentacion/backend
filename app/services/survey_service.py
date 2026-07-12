@@ -38,7 +38,7 @@ _ADMIN_ROLES = {UserRole.ADMIN, UserRole.SUPERADMIN}
 
 
 class SurveyService:
-    """Business logic for backoffice survey authoring (Module 2)."""
+    """Business logic for backoffice survey authoring."""
 
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
@@ -60,18 +60,13 @@ class SurveyService:
     async def _assert_editable(
         self, survey: Survey, new_questions: list[QuestionInputData]
     ) -> None:
-        """Once a survey has responses, block structural edits that would
-        invalidate existing answers; allow safe ones.
-
-        Blocked: deleting a question, changing a question's response_type,
-        flipping optional -> required, or removing a choice option that some
-        response already selected.
-        Allowed: renaming, reordering, adding a new optional question, and
-        removing a choice option nobody has selected yet.
-        """
+        """Raise if a structural edit would invalidate existing answers: a
+        deleted question, a changed response_type, optional turning required,
+        or removing a choice option some response already selected."""
         if survey.response_count == 0:
             return
         new_by_id = {q.id: q for q in new_questions if q.id is not None}
+        removed_option_pairs: list[tuple[UUID, UUID]] = []
         for question in survey.questions:
             new = new_by_id.get(question.id)
             if new is None:
@@ -81,13 +76,17 @@ class SurveyService:
             if new.is_required and not question.is_required:
                 raise SurveyLockedError()
             new_option_ids = {o.id for o in new.options if o.id is not None}
-            for option in question.options:
-                if option.id in new_option_ids:
-                    continue
-                if await self.uow.survey_response_repo.is_option_referenced(
-                    survey.id, question.id, option.id
-                ):
-                    raise SurveyLockedError()
+            removed_option_pairs.extend(
+                (question.id, option.id)
+                for option in question.options
+                if option.id not in new_option_ids
+            )
+
+        referenced_ids = await self.uow.survey_response_repo.get_referenced_option_ids(
+            survey.id, removed_option_pairs
+        )
+        if referenced_ids:
+            raise SurveyLockedError()
 
     async def _validate_structure(
         self,
@@ -191,6 +190,24 @@ class SurveyService:
             page_size=page_size,
         )
 
+    async def _assert_field_worker_can_view(
+        self, actor: UserActor, survey: Survey
+    ) -> None:
+        """Raise unless the survey is active and either generic or targeted at
+        one of the field worker's approved establishments."""
+        if not survey.is_active:
+            raise ForbiddenError()
+        if survey.scope == SurveyScope.GENERIC:
+            return
+        approved_ids = (
+            await self.uow.user_establishment_repo.get_approved_establishment_ids(
+                actor.user_id
+            )
+        )
+        target_ids = {e.id for e in survey.establishments}
+        if not (approved_ids & target_ids):
+            raise ForbiddenError()
+
     async def create(self, data: SurveyCreateRequest, actor: UserActor) -> SurveyDomain:
         """Create a survey.
 
@@ -219,25 +236,6 @@ class SurveyService:
             raise SurveyAlreadyExistsError(data.name)
         await self.uow.commit()
         return SurveyDomain.from_db(survey)
-
-    async def _assert_field_worker_can_view(
-        self, actor: UserActor, survey: Survey
-    ) -> None:
-        """A field worker may view a survey's full detail under the same
-        eligibility rule as ``/available``: active, and generic or targeted at
-        one of their approved establishments."""
-        if not survey.is_active:
-            raise ForbiddenError()
-        if survey.scope == SurveyScope.GENERIC:
-            return
-        approved_ids = (
-            await self.uow.user_establishment_repo.get_approved_establishment_ids(
-                actor.user_id
-            )
-        )
-        target_ids = {e.id for e in survey.establishments}
-        if not (approved_ids & target_ids):
-            raise ForbiddenError()
 
     async def get(self, survey_id: UUID, actor: UserActor) -> SurveyDomain:
         """Return a full survey configuration.

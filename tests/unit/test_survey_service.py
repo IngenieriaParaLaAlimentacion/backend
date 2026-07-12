@@ -140,8 +140,12 @@ def make_uow(make_survey):
         uow.user_establishment_repo.get_approved_establishment_ids = AsyncMock(
             return_value=set()
         )
-        uow.survey_response_repo.is_option_referenced = AsyncMock(
-            return_value=option_referenced
+
+        async def _get_referenced_option_ids(survey_id, pairs):
+            return {option_id for _, option_id in pairs} if option_referenced else set()
+
+        uow.survey_response_repo.get_referenced_option_ids = AsyncMock(
+            side_effect=_get_referenced_option_ids
         )
         uow.commit = AsyncMock()
         return uow
@@ -516,8 +520,8 @@ class TestUpdatePermissionsAndLock:
         )
         with pytest.raises(SurveyLockedError):
             await SurveyService(uow).update(survey.id, data, admin_actor)
-        uow.survey_response_repo.is_option_referenced.assert_awaited_once_with(
-            survey.id, existing.id, removed_id
+        uow.survey_response_repo.get_referenced_option_ids.assert_awaited_once_with(
+            survey.id, [(existing.id, removed_id)]
         )
         uow.survey_repo.reconcile.assert_not_called()
 

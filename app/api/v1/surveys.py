@@ -183,7 +183,10 @@ async def update_survey(
     response_model=SurveyResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Duplicate a survey",
-    description="Deep-copy a survey under a unique '<name> (copy)' name.",
+    description=(
+        "Create a new survey from an existing one, deep-copying its questions, "
+        "options and audience under a unique '<name> (copy)' name."
+    ),
     responses={
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Survey not found"},

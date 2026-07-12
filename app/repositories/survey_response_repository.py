@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import cast, exists, or_, select
+from sqlalchemy import and_, cast, exists, literal, or_, select, union_all
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -69,19 +69,30 @@ class SurveyResponseRepository:
         await self.db.refresh(response, attribute_names=["updated_at"])
         return response
 
-    async def is_option_referenced(
-        self, survey_id: UUID, question_id: UUID, option_id: UUID
-    ) -> bool:
-        """Return True if any response to ``survey_id`` selected ``option_id``
-        for ``question_id`` — either as a SINGLE_CHOICE scalar value or inside
-        a MULTIPLE_CHOICE list."""
-        answer = SurveyResponse.answers[str(question_id)]
-        option_str = str(option_id)
-        condition = or_(
-            answer.astext == option_str,
-            answer.contains(cast([option_str], JSONB)),
-        )
-        result = await self.db.execute(
-            select(exists().where(SurveyResponse.survey_id == survey_id, condition))
-        )
-        return bool(result.scalar())
+    async def get_referenced_option_ids(
+        self, survey_id: UUID, question_option_pairs: list[tuple[UUID, UUID]]
+    ) -> set[UUID]:
+        """Return the subset of ``(question_id, option_id)`` pairs where some
+        response to ``survey_id`` selected that option — either as a
+        SINGLE_CHOICE scalar value or inside a MULTIPLE_CHOICE list.
+        """
+        if not question_option_pairs:
+            return set()
+
+        per_option_selects = []
+        for question_id, option_id in question_option_pairs:
+            answer = SurveyResponse.answers[str(question_id)]
+            option_str = str(option_id)
+            condition = and_(
+                SurveyResponse.survey_id == survey_id,
+                or_(
+                    answer.astext == option_str,
+                    answer.contains(cast([option_str], JSONB)),
+                ),
+            )
+            per_option_selects.append(
+                select(literal(option_str)).where(exists().where(condition))
+            )
+
+        result = await self.db.execute(union_all(*per_option_selects))
+        return {UUID(value) for value in result.scalars().all()}
