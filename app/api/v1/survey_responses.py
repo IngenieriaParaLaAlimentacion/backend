@@ -62,8 +62,7 @@ async def submit_survey_response(
     description=(
         "Return a response's full detail, including its answers. Restricted to "
         "the original submitter or an admin/superadmin — the same actors allowed "
-        "to edit it. Backs the mobile 'view a submitted response' screen reached "
-        "from a `/me/activity` entry, which only carries a summary."
+        "to edit it."
     ),
     responses={
         **AUTH_RESPONSES,

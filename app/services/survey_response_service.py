@@ -26,7 +26,7 @@ _ADMIN_ROLES = {UserRole.ADMIN, UserRole.SUPERADMIN}
 
 
 class SurveyResponseService:
-    """Business logic for survey response registration and editing (Module 2)."""
+    """Business logic for survey response registration, retrieval and editing."""
 
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
@@ -51,8 +51,7 @@ class SurveyResponseService:
     def _assert_establishment_in_survey_scope(
         survey: SurveyDomain, establishment_id: UUID
     ) -> None:
-        """Applies to every role, including admins: a TARGETED survey's audience
-        is a data-integrity boundary, not just a permission boundary."""
+        """Raise if establishment_id is outside a TARGETED survey's audience."""
         if survey.scope == SurveyScope.TARGETED and (
             establishment_id not in survey.establishment_ids
         ):
@@ -62,8 +61,7 @@ class SurveyResponseService:
 
     @staticmethod
     def _assert_owner_or_admin(actor: UserActor, response: SurveyResponse) -> None:
-        """Restrict to the original submitter or an admin/superadmin. Shared
-        by both viewing a response's full detail and editing it."""
+        """Raise unless actor is the original submitter or an admin/superadmin."""
         if actor.role in _ADMIN_ROLES:
             return
         if str(response.submitted_by_id) == str(actor.user_id):
@@ -74,9 +72,8 @@ class SurveyResponseService:
     def _validate_answers(
         questions: list[QuestionDomain], answers: dict[str, object]
     ) -> dict[str, object]:
-        """Every required question must be answered; every provided answer must
-        match its question's response_type/options. No draft mode — this either
-        returns a fully valid answer set or raises."""
+        """Validate answers against their questions' requirements and shape;
+        return them, or raise InvalidSurveyResponseError."""
         question_by_id = {str(q.id): q for q in questions}
         for key in answers:
             if key not in question_by_id:
@@ -93,6 +90,9 @@ class SurveyResponseService:
 
     @staticmethod
     def _validate_answer_shape(question: QuestionDomain, value: object) -> None:
+        """Raise if value doesn't match question's response_type. TEXT and DATE
+        are accepted as-is: DATE's ISO-8601 shape is already validated at the
+        schema layer, before this method runs."""
         option_ids = {str(o.id) for o in question.options}
         if question.response_type == ResponseType.SINGLE_CHOICE:
             if not isinstance(value, str) or value not in option_ids:
@@ -109,8 +109,6 @@ class SurveyResponseService:
                 raise InvalidSurveyResponseError(
                     f"Question '{question.text}' expects a number."
                 )
-        # TEXT/DATE: accepted as opaque strings; Pydantic validates DATE's
-        # ISO-8601 shape at the schema layer before this method ever runs.
 
     async def _get_survey_or_raise(self, survey_id: UUID) -> SurveyDomain:
         survey = await self.uow.survey_repo.get_by_id(survey_id)
@@ -132,9 +130,8 @@ class SurveyResponseService:
     async def get(self, response_id: UUID, actor: UserActor) -> SurveyResponseDomain:
         """Return a response's full detail, including its answers.
 
-        Restricted to the original submitter or an admin/superadmin — the same
-        actors allowed to edit it. Backs the mobile "tap an activity item" view,
-        since the activity feed only surfaces a summary.
+        Does not re-check establishment access, so a submitter keeps read access
+        to their own response even after losing access to its establishment.
 
         Raises:
             SurveyResponseNotFoundError.
@@ -149,9 +146,9 @@ class SurveyResponseService:
     ) -> tuple[SurveyResponseDomain, bool]:
         """Idempotently register a survey response.
 
-        Returns (response, created): created=False for a replayed id (200),
-        True for a brand-new response (201). Permission checks apply even on
-        replay, against the existing response's establishment.
+        Returns (response, created): created is False when replaying an existing
+        id, True for a new response. Permission checks apply even on replay,
+        against the existing response's establishment.
 
         Raises:
             ForbiddenError: role can't submit, or lacks establishment access.
@@ -200,7 +197,7 @@ class SurveyResponseService:
 
         Every edit attempt appends a row to ``survey_response_edits``; the
         response's current state only advances if ``event_at`` is at least as
-        recent as what it already has (last-write-wins, ADR-0004).
+        recent as what it already has (last-write-wins).
 
         Raises:
             SurveyResponseNotFoundError, ForbiddenError (not the submitter/admin),

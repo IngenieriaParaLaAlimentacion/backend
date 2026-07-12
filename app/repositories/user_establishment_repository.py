@@ -46,12 +46,13 @@ class UserEstablishmentRepository:
 
     async def get_approved_establishment_ids(self, user_id: UUID) -> set[UUID]:
         """Return the ids of establishments the user has approved access to."""
-        relations = await self.get_by_user_id(user_id)
-        return {
-            r.establishment_id
-            for r in relations
-            if r.status == UserEstablishmentStatus.APPROVED
-        }
+        result = await self.db.execute(
+            select(UserEstablishment.establishment_id).where(
+                UserEstablishment.user_id == user_id,
+                UserEstablishment.status == UserEstablishmentStatus.APPROVED,
+            )
+        )
+        return set(result.scalars().all())
 
     async def get_relation(
         self, user_id: UUID, establishment_id: UUID
