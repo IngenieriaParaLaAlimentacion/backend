@@ -7,6 +7,7 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 import aiosmtplib
 
 from app.core.config import settings
+from app.exceptions.domain_exceptions import EmailDeliveryError
 
 logger = logging.getLogger(__name__)
 
@@ -71,8 +72,15 @@ async def _send_email(
     body: str,
     html_body: str,
     log_label: str,
+    raise_on_failure: bool = False,
 ) -> None:
-    """Low-level SMTP dispatcher. Not intended for direct use."""
+    """Low-level SMTP dispatcher. Not intended for direct use.
+
+    When ``raise_on_failure`` is True a delivery error is re-raised as
+    ``EmailDeliveryError`` so the caller can surface it (e.g. invitations,
+    where the recipient must receive the email). Otherwise failures are
+    logged and swallowed (fire-and-forget notifications).
+    """
     if not settings.smtp_enabled:
         logger.info(
             "%s email skipped because SMTP is disabled: to=%s",
@@ -98,8 +106,10 @@ async def _send_email(
             password=settings.smtp_password or None,
             timeout=10,
         )
-    except (aiosmtplib.SMTPException, TimeoutError, OSError):
+    except (aiosmtplib.SMTPException, TimeoutError, OSError) as exc:
         logger.exception("%s email delivery failed", log_label)
+        if raise_on_failure:
+            raise EmailDeliveryError() from exc
 
 
 async def send_recovery_email(
@@ -252,4 +262,5 @@ async def send_invite_email(
         ),
         html_body=html_content,
         log_label="Admin invite",
+        raise_on_failure=True,
     )

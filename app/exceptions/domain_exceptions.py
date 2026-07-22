@@ -155,6 +155,23 @@ class SubjectNotFoundError(NotFoundError):
         )
 
 
+class EmailDeliveryError(BaseError):
+    """Raised when an outbound email cannot be delivered to the SMTP server.
+
+    The account/token has already been persisted at this point, so the caller
+    should be directed to the resend-invite flow rather than retrying creation.
+    """
+
+    def __init__(
+        self,
+        details: str = (
+            "The account was created but the invitation email could not be "
+            "delivered. Use the resend-invite endpoint to try again."
+        ),
+    ):
+        super().__init__("Email delivery failed", details)
+
+
 class UniqueConstraintError(Exception):
     """Raised by a repository when a unique constraint is violated.
 
