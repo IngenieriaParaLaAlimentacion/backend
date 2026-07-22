@@ -100,8 +100,8 @@ class AdminSubjectDetailResponse(SubjectResponse):
         )
 
 
-class InviteAdminResponse(BaseModel):
+class InviteUserResponse(BaseModel):
     user_id: UUID = Field(
-        description="ID of the newly created admin/analyst user. Use it to drive "
+        description="ID of the newly created user. Use it to drive "
         "the resend-invitation action."
     )
