@@ -58,6 +58,25 @@ def make_uow():
 
 
 @pytest.fixture
+def make_pending_uow():
+    def _make(users=None, total=0, establishment_ids_by_user=None, establishments=None):
+        uow = AsyncMock()
+        users = users or []
+        uow.user_repo.get_pending_field_workers = AsyncMock(return_value=(users, total))
+        uow.user_establishment_repo.get_by_user_ids = AsyncMock(
+            return_value=establishment_ids_by_user
+            if establishment_ids_by_user is not None
+            else {user.id: [] for user in users}
+        )
+        uow.establishment_repo.find_by_ids = AsyncMock(
+            return_value=establishments or []
+        )
+        return uow
+
+    return _make
+
+
+@pytest.fixture
 def make_service(mock_auth_service):
     def _make(uow):
         return AdminService(uow, mock_auth_service)
@@ -270,6 +289,65 @@ class TestGetPaginatedUsers:
         uow.user_repo.get_paginated.assert_called_once_with(
             role=None, status=None, limit=20, offset=0, search=None
         )
+
+
+class TestGetPendingFieldWorkers:
+    @pytest.mark.asyncio
+    async def test_calculates_offset_correctly(self, make_pending_uow, make_service):
+        uow = make_pending_uow()
+        service = make_service(uow)
+
+        await service.get_pending_field_workers(page=3, page_size=20)
+
+        uow.user_repo.get_pending_field_workers.assert_called_once_with(
+            limit=20, offset=40
+        )
+
+    @pytest.mark.asyncio
+    async def test_returns_correct_pagination_metadata(
+        self, make_pending_uow, make_service
+    ):
+        users = [_make_user(role=UserRole.FIELD_WORKER) for _ in range(3)]
+        service = make_service(make_pending_uow(users=users, total=3))
+
+        result = await service.get_pending_field_workers(page=1, page_size=20)
+
+        assert len(result.items) == 3
+        assert result.items[0].id == users[0].id
+        assert result.total == 3
+        assert result.total_pages == 1
+
+    @pytest.mark.asyncio
+    async def test_empty_result(self, make_pending_uow, make_service):
+        service = make_service(make_pending_uow())
+
+        result = await service.get_pending_field_workers(page=1, page_size=20)
+
+        assert result.items == []
+        assert result.total == 0
+        assert result.total_pages == 0
+        # No need to look up establishments when there are no users.
+        service.uow.user_establishment_repo.get_by_user_ids.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_hydrates_establishments(
+        self, make_pending_uow, make_service, make_establishment
+    ):
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        establishment = make_establishment(name="Comedor Sur")
+
+        uow = make_pending_uow(
+            users=[user],
+            total=1,
+            establishment_ids_by_user={user.id: [establishment.id]},
+            establishments=[establishment],
+        )
+        service = make_service(uow)
+
+        result = await service.get_pending_field_workers(page=1, page_size=20)
+
+        assert len(result.items[0].establishments) == 1
+        assert result.items[0].establishments[0].id == establishment.id
 
 
 class TestApproveEstablishments:

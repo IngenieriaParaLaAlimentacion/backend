@@ -1,4 +1,5 @@
 import uuid
+from unittest.mock import patch
 
 import pytest
 import pytest_asyncio
@@ -21,11 +22,17 @@ REGISTER_FIELD_WORKER_URL = "/api/v1/auth/register/field-worker"
 APPROVE_URL = "/api/v1/admin/field-worker/{user_id}/establishments/approve"
 REJECT_URL = "/api/v1/admin/field-worker/{user_id}/establishments/reject"
 REJECT_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/reject"
+PENDING_FIELD_WORKERS_URL = "/api/v1/admin/field-workers/pending"
 SUBJECTS_URL = "/api/v1/subjects"
+INVITE_ADMIN_URL = "/api/v1/admin/invite-admin"
 
 
 async def _make_list_request(client, *, headers=None):
     return await client.get(ADMIN_USERS_URL, headers=headers or {})
+
+
+async def _make_pending_field_workers_request(client, *, headers=None):
+    return await client.get(PENDING_FIELD_WORKERS_URL, headers=headers or {})
 
 
 async def _make_approve_request(client, *, headers=None):
@@ -54,6 +61,10 @@ async def _make_reject_field_worker_request(client, *, headers=None):
 @pytest.fixture(
     params=[
         pytest.param(_make_list_request, id="GET /admin/users"),
+        pytest.param(
+            _make_pending_field_workers_request,
+            id="GET /admin/field-workers/pending",
+        ),
         pytest.param(
             _make_approve_request,
             id="PATCH /admin/field-worker/{id}/establishments/approve",
@@ -471,6 +482,107 @@ class TestListUsersPagination:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["total"] == 2
+
+
+class TestPendingFieldWorkers:
+    async def _register_unverified(self, client, db_establishment, *, email=None):
+        response = await client.post(
+            REGISTER_FIELD_WORKER_URL,
+            json={
+                "email": email or f"unverified_{uuid.uuid4().hex[:6]}@test.com",
+                "password": "Password123!",
+                "name": "Unverified",
+                "last_name": "Worker",
+                "establishments": [str(db_establishment.id)],
+            },
+        )
+        assert response.status_code == status.HTTP_201_CREATED
+        return response.json()
+
+    async def test_returns_paginated_structure(self, client, admin_headers):
+        """Should return a response with all pagination fields."""
+        response = await client.get(PENDING_FIELD_WORKERS_URL, headers=admin_headers)
+
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert "items" in body
+        assert "total" in body
+        assert "page" in body
+        assert "page_size" in body
+        assert "total_pages" in body
+
+    async def test_includes_verified_pending_field_worker(
+        self, client, admin_headers, registered_field_worker
+    ):
+        """A field worker who verified their email while pending should appear."""
+        response = await client.get(PENDING_FIELD_WORKERS_URL, headers=admin_headers)
+
+        assert response.status_code == status.HTTP_200_OK
+        ids = [item["id"] for item in response.json()["items"]]
+        assert registered_field_worker["id"] in ids
+
+    async def test_excludes_unverified_field_worker(
+        self, client, admin_headers, db_establishment
+    ):
+        """A field worker who has not verified their email should not appear,
+        even though they are pending."""
+        unverified = await self._register_unverified(client, db_establishment)
+
+        response = await client.get(PENDING_FIELD_WORKERS_URL, headers=admin_headers)
+
+        assert response.status_code == status.HTTP_200_OK
+        ids = [item["id"] for item in response.json()["items"]]
+        assert unverified["id"] not in ids
+
+    async def test_excludes_active_field_worker(
+        self, client, admin_headers, registered_field_worker, db_establishment
+    ):
+        """A field worker already approved (active) should not appear as pending."""
+        await client.patch(
+            APPROVE_URL.format(user_id=registered_field_worker["id"]),
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        response = await client.get(PENDING_FIELD_WORKERS_URL, headers=admin_headers)
+
+        assert response.status_code == status.HTTP_200_OK
+        ids = [item["id"] for item in response.json()["items"]]
+        assert registered_field_worker["id"] not in ids
+
+    async def test_excludes_pending_admin_invite(self, client, admin_headers):
+        """A pending admin invite must never show up as a field worker request,
+        since admins never go through establishment approval."""
+        with patch("app.services.admin_service.send_invite_email"):
+            invite_response = await client.post(
+                INVITE_ADMIN_URL,
+                json={"email": f"admin_{uuid.uuid4().hex[:6]}@test.com"},
+                headers=admin_headers,
+            )
+        assert invite_response.status_code == status.HTTP_202_ACCEPTED
+        invited_id = invite_response.json()["user_id"]
+
+        response = await client.get(PENDING_FIELD_WORKERS_URL, headers=admin_headers)
+
+        assert response.status_code == status.HTTP_200_OK
+        ids = [item["id"] for item in response.json()["items"]]
+        assert invited_id not in ids
+
+    async def test_items_have_required_fields(
+        self, client, admin_headers, registered_field_worker
+    ):
+        """Each item should expose id, email, name, last_name, role,
+        status, is_email_verified and establishments."""
+        response = await client.get(PENDING_FIELD_WORKERS_URL, headers=admin_headers)
+
+        assert response.status_code == status.HTTP_200_OK
+        items = response.json()["items"]
+        assert len(items) > 0
+        for item in items:
+            assert item["role"] == UserRole.FIELD_WORKER
+            assert item["status"] == UserStatus.PENDING_VALIDATION
+            assert item["is_email_verified"] is True
+            assert "establishments" in item
 
 
 class TestApproveEstablishments:
