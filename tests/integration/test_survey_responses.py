@@ -815,3 +815,98 @@ class TestListBySurvey:
             SURVEY_RESPONSES_URL, params={"survey_id": survey["id"]}
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+class TestGetDashboardDetail:
+    async def test_shows_question_text_and_resolved_option_label(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        answers = _valid_answers(survey)
+        created = (
+            await client.post(
+                SURVEY_RESPONSES_URL,
+                json=_response_body(survey["id"], db_establishment.id, answers),
+                headers=headers,
+            )
+        ).json()
+
+        response = await client.get(
+            f"{SURVEY_RESPONSES_URL}/{created['id']}/dashboard-detail",
+            headers=headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert len(body["answers"]) == len(survey["questions"])
+        first_question = survey["questions"][0]
+        answer = next(
+            a for a in body["answers"] if a["question_id"] == first_question["id"]
+        )
+        assert answer["question_text"] == first_question["text"]
+        expected_option = next(
+            o
+            for o in first_question["options"]
+            if o["id"] == answers[first_question["id"]]
+        )
+        assert answer["value_label"] == expected_option["text"]
+
+    async def test_unanswered_optional_question_has_null_value(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        created = (
+            await client.post(
+                SURVEY_RESPONSES_URL,
+                json=_response_body(
+                    survey["id"], db_establishment.id, _valid_answers(survey)
+                ),
+                headers=headers,
+            )
+        ).json()
+
+        response = await client.get(
+            f"{SURVEY_RESPONSES_URL}/{created['id']}/dashboard-detail",
+            headers=headers,
+        )
+
+        comments_question = survey["questions"][1]
+        answer = next(
+            a
+            for a in response.json()["answers"]
+            if a["question_id"] == comments_question["id"]
+        )
+        assert answer["value"] is None
+        assert answer["value_label"] is None
+
+    async def test_field_worker_forbidden(
+        self, client, db_establishment, admin_user, field_worker_with_access
+    ):
+        admin_headers, _ = admin_user
+        fw_headers, _ = field_worker_with_access
+        survey = await _create_survey(client, admin_headers)
+        created = (
+            await client.post(
+                SURVEY_RESPONSES_URL,
+                json=_response_body(
+                    survey["id"], db_establishment.id, _valid_answers(survey)
+                ),
+                headers=fw_headers,
+            )
+        ).json()
+
+        response = await client.get(
+            f"{SURVEY_RESPONSES_URL}/{created['id']}/dashboard-detail",
+            headers=fw_headers,
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_response_not_found_returns_404(self, client, admin_user):
+        headers, _ = admin_user
+        response = await client.get(
+            f"{SURVEY_RESPONSES_URL}/{uuid.uuid4()}/dashboard-detail",
+            headers=headers,
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
