@@ -9,6 +9,7 @@ from app.domain.user import UserRole
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.survey_response_schema import (
     SurveyResponseDashboardItem,
+    SurveyResponseDetailResponse,
     SurveyResponseEditRequest,
     SurveyResponseRequest,
     SurveyResponseResponse,
@@ -137,3 +138,28 @@ async def edit_survey_response(
 ) -> SurveyResponseResponse:
     survey_response = await service.edit(response_id, data, actor)
     return SurveyResponseResponse.model_validate(survey_response)
+
+
+@router.get(
+    "/{response_id}/dashboard-detail",
+    response_model=SurveyResponseDetailResponse,
+    summary="Get full response detail for the dashboard",
+    description=(
+        "Return one user's full response detail: every question in the survey "
+        "and the value that user registered for it, with choice answers "
+        "resolved to option text. Restricted to admins, analysts and "
+        "superadmins (dashboard use — no ownership check, unlike "
+        "GET /survey-responses/{id})."
+    ),
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {"description": "Response not found"},
+    },
+)
+async def get_survey_response_dashboard_detail(
+    response_id: UUID,
+    actor: UserActor = Depends(_dashboard_reader),
+    service: SurveyResponseService = Depends(get_survey_response_service),
+) -> SurveyResponseDetailResponse:
+    detail = await service.get_response_detail(response_id, actor)
+    return SurveyResponseDetailResponse.model_validate(detail)

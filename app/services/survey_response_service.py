@@ -6,6 +6,7 @@ from app.domain.pagination import PaginatedResult
 from app.domain.survey import QuestionDomain, ResponseType, SurveyDomain, SurveyScope
 from app.domain.survey_response import (
     SurveyResponseDashboardItemDomain,
+    SurveyResponseDetailDomain,
     SurveyResponseDomain,
 )
 from app.domain.user import UserActor, UserRole
@@ -264,3 +265,20 @@ class SurveyResponseService:
         return PaginatedResult.build(
             items=items, total=total, page=page, page_size=page_size
         )
+
+    async def get_response_detail(
+        self, response_id: UUID, actor: UserActor
+    ) -> SurveyResponseDetailDomain:
+        """Return one user's full response detail for the dashboard: every
+        question in the survey and the value that user registered for it.
+
+        Raises:
+            ForbiddenError: actor role isn't a dashboard reader.
+            SurveyResponseNotFoundError.
+        """
+        if actor.role not in _DASHBOARD_ROLES:
+            raise ForbiddenError()
+        response = await self.uow.survey_response_repo.get_with_relations(response_id)
+        if response is None:
+            raise SurveyResponseNotFoundError(str(response_id))
+        return SurveyResponseDetailDomain.from_db(response)

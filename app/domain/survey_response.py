@@ -3,6 +3,7 @@ from datetime import datetime
 from uuid import UUID
 
 from app.domain.measurement import EstablishmentRefDomain
+from app.domain.survey import ResponseType
 
 
 @dataclass
@@ -99,3 +100,69 @@ class SurveyResponseDashboardItemDomain:
                 id=obj.submitted_by.id, name=obj.submitted_by.name
             ),
         )
+
+
+@dataclass
+class QuestionAnswerDomain:
+    """One question's text alongside the value that user registered for it,
+    with choice answers resolved to their option text for display."""
+
+    question_id: UUID
+    question_text: str
+    response_type: ResponseType
+    value: object | None
+    value_label: str | list[str] | None
+
+
+@dataclass
+class SurveyResponseDetailDomain:
+    """Full detail of one response for the dashboard: every question in
+    the survey, its text, and the value that specific user registered —
+    resolved to option text when the question is choice-based."""
+
+    id: UUID
+    event_at: datetime
+    survey: SurveyRefDomain
+    establishment: EstablishmentRefDomain
+    submitted_by: UserRefDomain
+    answers: list[QuestionAnswerDomain]
+
+    @classmethod
+    def from_db(cls, obj) -> "SurveyResponseDetailDomain":
+        """Build from an ORM SurveyResponse with survey.questions(.options),
+        establishment and submitted_by eager-loaded."""
+        answers = [
+            QuestionAnswerDomain(
+                question_id=question.id,
+                question_text=question.text,
+                response_type=question.response_type,
+                value=obj.answers.get(str(question.id)),
+                value_label=cls._resolve_label(
+                    question, obj.answers.get(str(question.id))
+                ),
+            )
+            for question in sorted(obj.survey.questions, key=lambda q: q.position)
+        ]
+        return cls(
+            id=obj.id,
+            event_at=obj.event_at,
+            survey=SurveyRefDomain(id=obj.survey.id, name=obj.survey.name),
+            establishment=EstablishmentRefDomain.from_db(obj.establishment),
+            submitted_by=UserRefDomain(
+                id=obj.submitted_by.id, name=obj.submitted_by.name
+            ),
+            answers=answers,
+        )
+
+    @staticmethod
+    def _resolve_label(question, value) -> str | list[str] | None:
+        """Resolve a choice answer's option id(s) to their display text.
+        Non-choice questions and unanswered questions return None."""
+        if value is None:
+            return None
+        option_by_id = {str(o.id): o.text for o in question.options}
+        if question.response_type == ResponseType.SINGLE_CHOICE:
+            return option_by_id.get(value)
+        if question.response_type == ResponseType.MULTIPLE_CHOICE:
+            return [option_by_id[v] for v in value if v in option_by_id]
+        return None
