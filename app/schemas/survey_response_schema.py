@@ -4,6 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.domain.survey import ResponseType
 from app.schemas.measurement_schema import EstablishmentRefResponse
 
 AnswerValue = str | int | float | list[str]
@@ -105,3 +106,27 @@ class SurveyResponseDashboardItem(BaseModel):
     survey: SurveyRefResponse
     establishment: EstablishmentRefResponse
     submitted_by: UserRefResponse
+
+
+class QuestionAnswerResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    question_id: UUID
+    question_text: str
+    response_type: ResponseType
+    value: AnswerValue | None
+    value_label: str | list[str] | None = None
+
+
+class SurveyResponseDetailResponse(BaseModel):
+    """Full response detail for the dashboard (CA3): every question in the
+    survey plus the value this specific user answered for it."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    event_at: datetime
+    survey: SurveyRefResponse
+    establishment: EstablishmentRefResponse
+    submitted_by: UserRefResponse
+    answers: list[QuestionAnswerResponse]

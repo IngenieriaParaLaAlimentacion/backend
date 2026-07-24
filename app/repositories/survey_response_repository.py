@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.exceptions.domain_exceptions import UniqueConstraintError
+from app.models.survey import Survey
 from app.models.survey_response import SurveyResponse
 
 
@@ -127,3 +128,22 @@ class SurveyResponseRepository:
 
         result = await self.db.execute(union_all(*per_option_selects))
         return {UUID(value) for value in result.scalars().all()}
+
+    async def get_with_relations(self, response_id: UUID) -> SurveyResponse | None:
+        """Return a response by id with survey.questions (each question's
+        options load automatically via SurveyQuestion.options' own
+        lazy="selectin"), establishment and submitted_by eager-loaded — for
+        the dashboard detail view, which needs question text and option
+        labels alongside each answer.
+        """
+        query = (
+            select(SurveyResponse)
+            .where(SurveyResponse.id == response_id)
+            .options(
+                selectinload(SurveyResponse.survey).selectinload(Survey.questions),
+                selectinload(SurveyResponse.establishment),
+                selectinload(SurveyResponse.submitted_by),
+            )
+        )
+        result = await self.db.execute(query)
+        return result.scalar_one_or_none()
