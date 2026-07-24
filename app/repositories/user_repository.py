@@ -90,9 +90,6 @@ class UserRepository:
         if status is not None:
             query = query.where(User.status == status)
             count_query = count_query.where(User.status == status)
-            if status == UserStatus.PENDING_VALIDATION:
-                query = query.where(User.is_email_verified.is_(True))
-                count_query = count_query.where(User.is_email_verified.is_(True))
         if search:
             escaped = (
                 search.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
@@ -137,17 +134,26 @@ class UserRepository:
             )
         )
 
-    async def get_pending(self) -> list[User]:
-        """Return all field workers awaiting admin approval whose email
-        has already been verified."""
+    async def get_pending_field_workers(
+        self, *, limit: int, offset: int
+    ) -> tuple[list[User], int]:
+        """Return a paginated list of field workers awaiting admin approval
+        whose email has already been verified, and the total matching count."""
+        conditions = (
+            User.role == UserRole.FIELD_WORKER,
+            User.status == UserStatus.PENDING_VALIDATION,
+            User.is_email_verified.is_(True),
+        )
         query = (
             select(User)
-            .where(
-                User.role == UserRole.FIELD_WORKER,
-                User.status == UserStatus.PENDING_VALIDATION,
-                User.is_email_verified.is_(True),
-            )
+            .where(*conditions)
             .order_by(User.created_at.desc())
+            .limit(limit)
+            .offset(offset)
         )
-        result = await self.db.execute(query)
-        return result.scalars().all()
+        count_query = select(func.count()).select_from(User).where(*conditions)
+
+        total = (await self.db.execute(count_query)).scalar_one()
+        users = (await self.db.execute(query)).scalars().all()
+
+        return users, total

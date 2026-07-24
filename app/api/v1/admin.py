@@ -50,6 +50,27 @@ async def list_users(
     return PaginatedUsersResponse.model_validate(result)
 
 
+@router.get(
+    "/field-workers/pending",
+    response_model=PaginatedUsersResponse,
+    status_code=status.HTTP_200_OK,
+    summary="List pending field worker requests",
+    description="Returns a paginated list of field workers awaiting admin "
+    "approval, whose email has already been verified. Accessible by admins only.",
+    responses=AUTH_RESPONSES,
+)
+async def list_pending_field_workers(
+    paginated: PaginatedQueryParams = Depends(),
+    _admin: UserActor = Depends(get_current_admin),
+    service: AdminService = Depends(get_admin_service),
+) -> PaginatedUsersResponse:
+    result = await service.get_pending_field_workers(
+        page=paginated.page,
+        page_size=paginated.page_size,
+    )
+    return PaginatedUsersResponse.model_validate(result)
+
+
 @router.patch(
     "/field-worker/{user_id}/establishments/approve",
     status_code=status.HTTP_204_NO_CONTENT,
