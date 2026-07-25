@@ -319,6 +319,7 @@ class SurveyService:
                 name=data.name,
                 description=data.description,
                 scope=data.scope,
+                instrument_type=data.instrument_type,
                 questions=new_questions,
                 establishment_ids=data.establishment_ids,
             )
