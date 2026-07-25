@@ -253,6 +253,7 @@ class SurveyRepository:
         name: str,
         description: str | None,
         scope,
+        instrument_type,
         questions: list[QuestionInputData],
         establishment_ids: list[UUID],
     ) -> Survey:
@@ -270,6 +271,7 @@ class SurveyRepository:
         survey.name = name.strip()
         survey.description = description
         survey.scope = scope
+        survey.instrument_type = instrument_type
         self._reconcile_questions(survey, questions)
         await self._assign_establishments(survey, establishment_ids)
         await self._flush_aggregate(survey, name)
@@ -295,6 +297,7 @@ class SurveyRepository:
             name=new_name.strip(),
             description=source.description,
             scope=source.scope,
+            instrument_type=source.instrument_type,
             is_active=source.is_active,
             created_by_id=created_by_id,
             questions=[
