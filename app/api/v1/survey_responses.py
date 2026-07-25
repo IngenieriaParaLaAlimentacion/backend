@@ -2,7 +2,11 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Response, status
 
-from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams
+from app.api.v1.params import (
+    AUTH_RESPONSES,
+    PaginatedQueryParams,
+    SurveyResponseListingQuery,
+)
 from app.core.dependencies import get_survey_response_service, require_some
 from app.domain import UserActor
 from app.domain.user import UserRole
@@ -88,23 +92,32 @@ async def get_survey_response(
     response_model=PaginatedResponse[SurveyResponseDashboardItem],
     summary="List responses to a survey",
     description=(
-        "Paginated list of a survey's responses, newest event_at first, each "
-        "showing who submitted it, the establishment, and the survey date. "
-        "Restricted to admins, analysts and superadmins (dashboard use)."
+        "Paginated, filterable list of a survey's responses, newest event_at "
+        "first, each showing who submitted it, the establishment, and the "
+        "survey date. Filter by establishment, event date range, and/or the "
+        "establishment's city/province. Restricted to admins, analysts and "
+        "superadmins (dashboard use)."
     ),
     responses={
         **AUTH_RESPONSES,
+        status.HTTP_400_BAD_REQUEST: {"description": "Invalid filter range"},
         status.HTTP_404_NOT_FOUND: {"description": "Survey not found"},
     },
 )
 async def list_survey_responses(
     survey_id: UUID,
+    query: SurveyResponseListingQuery = Depends(),
     paginated: PaginatedQueryParams = Depends(),
     actor: UserActor = Depends(_dashboard_reader),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> PaginatedResponse[SurveyResponseDashboardItem]:
+    query.validate()
     result = await service.list_by_survey(
-        survey_id, actor, page=paginated.page, page_size=paginated.page_size
+        survey_id,
+        actor,
+        page=paginated.page,
+        page_size=paginated.page_size,
+        params=query.to_domain(),
     )
     return PaginatedResponse[SurveyResponseDashboardItem](
         items=[SurveyResponseDashboardItem.model_validate(r) for r in result.items],

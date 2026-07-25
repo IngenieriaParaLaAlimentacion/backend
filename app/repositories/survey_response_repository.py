@@ -7,7 +7,9 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.domain.survey_response import SurveyResponseListingParams
 from app.exceptions.domain_exceptions import UniqueConstraintError
+from app.models.establishment import Establishment
 from app.models.survey import Survey
 from app.models.survey_response import SurveyResponse
 
@@ -21,36 +23,6 @@ class SurveyResponseRepository:
     async def get_by_id(self, response_id: UUID) -> SurveyResponse | None:
         """Return a survey response by id, or None if it does not exist."""
         return await self.db.get(SurveyResponse, response_id)
-
-    async def list_by_survey(
-        self, survey_id: UUID, *, limit: int, offset: int
-    ) -> tuple[list[SurveyResponse], int]:
-        """Return a page of responses to a survey, newest event_at first, plus
-        the total count matching the survey (ignoring pagination).
-
-        Eager-loads survey, establishment and submitted_by so the dashboard
-        list can serialize without triggering lazy-load N+1 queries.
-        """
-        base_query = select(SurveyResponse).where(SurveyResponse.survey_id == survey_id)
-
-        total = (
-            await self.db.execute(
-                select(func.count()).select_from(base_query.subquery())
-            )
-        ).scalar_one()
-
-        rows_query = (
-            base_query.options(
-                selectinload(SurveyResponse.survey),
-                selectinload(SurveyResponse.establishment),
-                selectinload(SurveyResponse.submitted_by),
-            )
-            .order_by(SurveyResponse.event_at.desc())
-            .limit(limit)
-            .offset(offset)
-        )
-        rows = (await self.db.execute(rows_query)).scalars().all()
-        return list(rows), total
 
     async def create(
         self,
@@ -155,3 +127,69 @@ class SurveyResponseRepository:
         )
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
+
+    @staticmethod
+    def _filter_conditions(params: SurveyResponseListingParams) -> list:
+        conditions = []
+        if params.establishment_id is not None:
+            conditions.append(
+                SurveyResponse.establishment_id == params.establishment_id
+            )
+        if params.event_at_from is not None:
+            conditions.append(SurveyResponse.event_at >= params.event_at_from)
+        if params.event_at_to is not None:
+            conditions.append(SurveyResponse.event_at <= params.event_at_to)
+        if params.city is not None:
+            conditions.append(Establishment.city.ilike(params.city))
+        if params.province is not None:
+            conditions.append(Establishment.province.ilike(params.province))
+        return conditions
+
+    async def list_by_survey(
+        self,
+        survey_id: UUID,
+        *,
+        limit: int,
+        offset: int,
+        params: SurveyResponseListingParams,
+    ) -> tuple[list[SurveyResponse], int]:
+        """Return a page of responses to a survey, newest event_at first, plus
+        the total count matching the survey and filters.
+
+        Joins Establishment only when city/province filters are present; the
+        eager-load via selectinload still fetches the full establishment for
+        every row regardless, so this join exists purely for filtering.
+        """
+        conditions = [SurveyResponse.survey_id == survey_id]
+        needs_establishment_join = (
+            params.city is not None or params.province is not None
+        )
+        conditions.extend(self._filter_conditions(params))
+
+        base_query = select(SurveyResponse)
+        count_query = select(func.count(SurveyResponse.id.distinct()))
+        if needs_establishment_join:
+            base_query = base_query.join(
+                Establishment, SurveyResponse.establishment_id == Establishment.id
+            )
+            count_query = count_query.join(
+                Establishment, SurveyResponse.establishment_id == Establishment.id
+            )
+        for condition in conditions:
+            base_query = base_query.where(condition)
+            count_query = count_query.where(condition)
+
+        total = (await self.db.execute(count_query)).scalar_one()
+
+        rows_query = (
+            base_query.options(
+                selectinload(SurveyResponse.survey),
+                selectinload(SurveyResponse.establishment),
+                selectinload(SurveyResponse.submitted_by),
+            )
+            .order_by(SurveyResponse.event_at.desc())
+            .limit(limit)
+            .offset(offset)
+        )
+        rows = (await self.db.execute(rows_query)).scalars().all()
+        return list(rows), total

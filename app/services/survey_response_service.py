@@ -14,6 +14,7 @@ from app.domain.survey_response import (
     SurveyResponseDashboardItemDomain,
     SurveyResponseDetailDomain,
     SurveyResponseDomain,
+    SurveyResponseListingParams,
 )
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
@@ -254,7 +255,12 @@ class SurveyResponseService:
         return SurveyResponseDomain.from_db(response)
 
     async def list_by_survey(
-        self, survey_id: UUID, actor: UserActor, page: int, page_size: int
+        self,
+        survey_id: UUID,
+        actor: UserActor,
+        page: int,
+        page_size: int,
+        params: SurveyResponseListingParams,
     ) -> PaginatedResult[SurveyResponseDashboardItemDomain]:
         """Return a paginated list of a survey's responses, newest event_at first.
 
@@ -269,7 +275,7 @@ class SurveyResponseService:
         page = max(1, page)
         offset = (page - 1) * page_size
         responses, total = await self.uow.survey_response_repo.list_by_survey(
-            survey_id, limit=page_size, offset=offset
+            survey_id, limit=page_size, offset=offset, params=params
         )
         items = [SurveyResponseDashboardItemDomain.from_db(r) for r in responses]
         return PaginatedResult.build(
