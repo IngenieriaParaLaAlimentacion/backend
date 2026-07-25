@@ -15,6 +15,7 @@ class SurveyResponseDomain:
     establishment_id: UUID
     submitted_by_id: UUID
     answers: dict[str, object]
+    score_fies: int | None
     event_at: datetime
     created_at: datetime
     updated_at: datetime
@@ -28,6 +29,7 @@ class SurveyResponseDomain:
             establishment_id=obj.establishment_id,
             submitted_by_id=obj.submitted_by_id,
             answers=obj.answers,
+            score_fies=obj.score_fies,
             event_at=obj.event_at,
             created_at=obj.created_at,
             updated_at=obj.updated_at,
@@ -75,7 +77,7 @@ class UserRefDomain:
 
 @dataclass
 class SurveyResponseDashboardItemDomain:
-    """An enriched response row for the admin/analyst dashboard view (CA2).
+    """An enriched response row for the admin/analyst dashboard view.
 
     Unlike SurveyResponseListItemDomain (activity feed), this includes who
     submitted the response, since here the viewer isn't the submitter.
@@ -86,6 +88,7 @@ class SurveyResponseDashboardItemDomain:
     survey: SurveyRefDomain
     establishment: EstablishmentRefDomain
     submitted_by: UserRefDomain
+    score_fies: int | None
 
     @classmethod
     def from_db(cls, obj) -> "SurveyResponseDashboardItemDomain":
@@ -99,6 +102,7 @@ class SurveyResponseDashboardItemDomain:
             submitted_by=UserRefDomain(
                 id=obj.submitted_by.id, name=obj.submitted_by.name
             ),
+            score_fies=obj.score_fies,
         )
 
 

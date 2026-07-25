@@ -66,6 +66,7 @@ class SurveyResponseResponse(BaseModel):
     establishment_id: UUID
     submitted_by_id: UUID
     answers: dict[str, Any]
+    score_fies: int | None
     event_at: datetime
     created_at: datetime
     updated_at: datetime
@@ -97,7 +98,7 @@ class UserRefResponse(BaseModel):
 
 
 class SurveyResponseDashboardItem(BaseModel):
-    """An enriched response row for the admin/analyst dashboard view (CA2)."""
+    """An enriched response row for the admin/analyst dashboard view."""
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -106,6 +107,7 @@ class SurveyResponseDashboardItem(BaseModel):
     survey: SurveyRefResponse
     establishment: EstablishmentRefResponse
     submitted_by: UserRefResponse
+    score_fies: int | None
 
 
 class QuestionAnswerResponse(BaseModel):
