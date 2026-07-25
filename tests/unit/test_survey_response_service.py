@@ -6,7 +6,7 @@ import pytest
 
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.survey import ResponseType, SurveyInstrumentType, SurveyScope
-from app.domain.survey_response import SurveyResponseDomain
+from app.domain.survey_response import SurveyResponseDomain, SurveyResponseListingParams
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
@@ -907,3 +907,60 @@ class TestFiesScoring:
         )
 
         uow.survey_response_repo.update_answers.assert_not_called()
+
+
+class TestSurveyResponseListingParams:
+    def test_blank_city_normalizes_to_none(self):
+        params = SurveyResponseListingParams(city="   ")
+        assert params.city is None
+
+    def test_city_is_stripped(self):
+        params = SurveyResponseListingParams(city="  Cordoba  ")
+        assert params.city == "Cordoba"
+
+    def test_none_city_stays_none(self):
+        params = SurveyResponseListingParams()
+        assert params.city is None
+        assert params.province is None
+
+
+class TestListBySurveyFilters:
+    pytestmark = pytest.mark.asyncio
+
+    async def test_passes_params_through_to_repo(self, make_uow, admin_actor):
+        survey = _make_survey_orm()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
+        establishment_id = uuid.uuid4()
+        params = SurveyResponseListingParams(
+            establishment_id=establishment_id,
+            event_at_from=NOW,
+            event_at_to=NOW,
+            city="Cordoba",
+            province="Cordoba",
+        )
+
+        await SurveyResponseService(uow).list_by_survey(
+            survey.id, admin_actor, page=1, page_size=20, params=params
+        )
+
+        uow.survey_response_repo.list_by_survey.assert_awaited_once_with(
+            survey.id, limit=20, offset=0, params=params
+        )
+
+    async def test_default_params_is_unfiltered(self, make_uow, admin_actor):
+        survey = _make_survey_orm()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
+
+        await SurveyResponseService(uow).list_by_survey(
+            survey.id,
+            admin_actor,
+            page=1,
+            page_size=20,
+            params=SurveyResponseListingParams(),
+        )
+
+        call = uow.survey_response_repo.list_by_survey.call_args
+        assert call.kwargs["params"].establishment_id is None
+        assert call.kwargs["params"].city is None

@@ -1083,3 +1083,183 @@ class TestFiesScoring:
             headers=headers,
         )
         assert detail.json()["score_fies"] == 5
+
+
+class TestListFilters:
+    async def test_filters_by_establishment(self, client, db_establishment, admin_user):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        other_establishment = await _make_establishment(place_id="place-filter-001")
+
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"], db_establishment.id, _valid_answers(survey)
+            ),
+            headers=headers,
+        )
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"], other_establishment.id, _valid_answers(survey)
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            SURVEY_RESPONSES_URL,
+            params={
+                "survey_id": survey["id"],
+                "establishment_id": str(db_establishment.id),
+            },
+            headers=headers,
+        )
+        body = response.json()
+        assert body["total"] == 1
+        assert body["items"][0]["establishment"]["id"] == str(db_establishment.id)
+
+    async def test_filters_by_event_at_range(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        old = (
+            await client.post(
+                SURVEY_RESPONSES_URL,
+                json=_response_body(
+                    survey["id"],
+                    db_establishment.id,
+                    _valid_answers(survey),
+                    event_at="2024-01-01T00:00:00Z",
+                ),
+                headers=headers,
+            )
+        ).json()
+        recent = (
+            await client.post(
+                SURVEY_RESPONSES_URL,
+                json=_response_body(
+                    survey["id"],
+                    db_establishment.id,
+                    _valid_answers(survey),
+                    id=str(uuid.uuid4()),
+                    event_at="2024-06-15T00:00:00Z",
+                ),
+                headers=headers,
+            )
+        ).json()
+
+        response = await client.get(
+            SURVEY_RESPONSES_URL,
+            params={
+                "survey_id": survey["id"],
+                "event_at_from": "2024-05-01T00:00:00Z",
+            },
+            headers=headers,
+        )
+        ids = [item["id"] for item in response.json()["items"]]
+        assert ids == [recent["id"]]
+        assert old["id"] not in ids
+
+    async def test_filters_by_city(self, client, db_establishment, admin_user):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        cordoba_establishment = await _make_establishment(place_id="place-filter-002")
+
+        buenos_aires_response = (
+            await client.post(
+                SURVEY_RESPONSES_URL,
+                json=_response_body(
+                    survey["id"], db_establishment.id, _valid_answers(survey)
+                ),
+                headers=headers,
+            )
+        ).json()
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"],
+                cordoba_establishment.id,
+                _valid_answers(survey),
+                id=str(uuid.uuid4()),
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            SURVEY_RESPONSES_URL,
+            params={"survey_id": survey["id"], "city": "Buenos Aires"},
+            headers=headers,
+        )
+        body = response.json()
+        assert body["total"] == 1
+        assert body["items"][0]["id"] == buenos_aires_response["id"]
+        assert body["items"][0]["establishment"]["city"] == "Buenos Aires"
+
+    async def test_filters_by_province(self, client, db_establishment, admin_user):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        cordoba_establishment = await _make_establishment(place_id="place-filter-003")
+
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"], db_establishment.id, _valid_answers(survey)
+            ),
+            headers=headers,
+        )
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"],
+                cordoba_establishment.id,
+                _valid_answers(survey),
+                id=str(uuid.uuid4()),
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            SURVEY_RESPONSES_URL,
+            params={"survey_id": survey["id"], "province": "Cordoba"},
+            headers=headers,
+        )
+        body = response.json()
+        assert body["total"] == 1
+        assert body["items"][0]["establishment"]["province"] == "Cordoba"
+
+    async def test_city_filter_case_insensitive(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"], db_establishment.id, _valid_answers(survey)
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            SURVEY_RESPONSES_URL,
+            params={"survey_id": survey["id"], "city": "buenos aires"},  # lowercase
+            headers=headers,
+        )
+        assert response.json()["total"] == 1
+
+    async def test_no_filters_returns_all(self, client, db_establishment, admin_user):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"], db_establishment.id, _valid_answers(survey)
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            SURVEY_RESPONSES_URL, params={"survey_id": survey["id"]}, headers=headers
+        )
+        assert response.json()["total"] == 1
