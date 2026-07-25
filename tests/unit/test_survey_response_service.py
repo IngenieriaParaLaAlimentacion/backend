@@ -569,14 +569,18 @@ class TestListBySurvey:
         )
 
         result = await SurveyResponseService(uow).list_by_survey(
-            survey.id, admin_actor, page=1, page_size=20
+            survey.id,
+            admin_actor,
+            page=1,
+            page_size=20,
+            params=SurveyResponseListingParams(),
         )
 
         assert result.total == 1
         assert len(result.items) == 1
         assert result.items[0].id == response.id
         uow.survey_response_repo.list_by_survey.assert_awaited_once_with(
-            survey.id, limit=20, offset=0
+            survey.id, limit=20, offset=0, params=SurveyResponseListingParams()
         )
 
     async def test_analyst_can_list(self, make_uow, analyst_actor):
@@ -585,7 +589,11 @@ class TestListBySurvey:
         uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
 
         result = await SurveyResponseService(uow).list_by_survey(
-            survey.id, analyst_actor, page=1, page_size=20
+            survey.id,
+            analyst_actor,
+            page=1,
+            page_size=20,
+            params=SurveyResponseListingParams(),
         )
 
         assert result.total == 0
@@ -597,7 +605,11 @@ class TestListBySurvey:
 
         with pytest.raises(ForbiddenError):
             await SurveyResponseService(uow).list_by_survey(
-                survey.id, field_worker_actor, page=1, page_size=20
+                survey.id,
+                field_worker_actor,
+                page=1,
+                page_size=20,
+                params=SurveyResponseListingParams(),
             )
         uow.survey_repo.get_by_id.assert_not_awaited()
         uow.survey_response_repo.list_by_survey.assert_not_awaited()
@@ -608,7 +620,11 @@ class TestListBySurvey:
 
         with pytest.raises(SurveyNotFoundError):
             await SurveyResponseService(uow).list_by_survey(
-                uuid.uuid4(), admin_actor, page=1, page_size=20
+                uuid.uuid4(),
+                admin_actor,
+                page=1,
+                page_size=20,
+                params=SurveyResponseListingParams(),
             )
         uow.survey_response_repo.list_by_survey.assert_not_awaited()
 
@@ -618,11 +634,15 @@ class TestListBySurvey:
         uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
 
         await SurveyResponseService(uow).list_by_survey(
-            survey.id, admin_actor, page=3, page_size=10
+            survey.id,
+            admin_actor,
+            page=3,
+            page_size=10,
+            params=SurveyResponseListingParams(),
         )
 
         uow.survey_response_repo.list_by_survey.assert_awaited_once_with(
-            survey.id, limit=10, offset=20
+            survey.id, limit=10, offset=20, params=SurveyResponseListingParams()
         )
 
     async def test_clamps_page_below_one(self, make_uow, admin_actor):
@@ -631,11 +651,15 @@ class TestListBySurvey:
         uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
 
         await SurveyResponseService(uow).list_by_survey(
-            survey.id, admin_actor, page=0, page_size=10
+            survey.id,
+            admin_actor,
+            page=0,
+            page_size=10,
+            params=SurveyResponseListingParams(),
         )
 
         uow.survey_response_repo.list_by_survey.assert_awaited_once_with(
-            survey.id, limit=10, offset=0
+            survey.id, limit=10, offset=0, params=SurveyResponseListingParams()
         )
 
 
