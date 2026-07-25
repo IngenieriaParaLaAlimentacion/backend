@@ -220,6 +220,7 @@ class SurveyRepository:
         name: str,
         description: str | None,
         scope,
+        instrument_type,
         created_by_id: UUID,
         questions: list[QuestionInputData],
         establishment_ids: list[UUID],
@@ -234,6 +235,7 @@ class SurveyRepository:
             name=name.strip(),
             description=description,
             scope=scope,
+            instrument_type=instrument_type,
             created_by_id=created_by_id,
             questions=[
                 self._build_question(q, position)

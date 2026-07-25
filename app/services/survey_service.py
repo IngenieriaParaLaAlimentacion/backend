@@ -228,6 +228,7 @@ class SurveyService:
                 name=data.name,
                 description=data.description,
                 scope=data.scope,
+                instrument_type=data.instrument_type,
                 created_by_id=actor.user_id,
                 questions=self._to_question_inputs(data.questions),
                 establishment_ids=data.establishment_ids,
