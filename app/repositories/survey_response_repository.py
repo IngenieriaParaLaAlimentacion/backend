@@ -60,6 +60,7 @@ class SurveyResponseRepository:
         establishment_id: UUID,
         submitted_by_id: UUID,
         answers: dict,
+        score_fies: int | None,
         event_at: datetime,
     ) -> SurveyResponse:
         """Persist a new response. ``id`` is optional; when None the server
@@ -77,6 +78,7 @@ class SurveyResponseRepository:
             establishment_id=establishment_id,
             submitted_by_id=submitted_by_id,
             answers=answers,
+            score_fies=score_fies,
             event_at=event_at,
         )
         if id is not None:
@@ -92,10 +94,16 @@ class SurveyResponseRepository:
         return response
 
     async def update_answers(
-        self, response: SurveyResponse, *, answers: dict, event_at: datetime
+        self,
+        response: SurveyResponse,
+        *,
+        answers: dict,
+        score_fies: int | None,
+        event_at: datetime,
     ) -> SurveyResponse:
         """Full-replace a response's answers and event_at."""
         response.answers = answers
+        response.score_fies = score_fies
         response.event_at = event_at
         await self.db.flush()
         await self.db.refresh(response, attribute_names=["updated_at"])

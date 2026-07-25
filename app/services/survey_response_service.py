@@ -3,7 +3,13 @@ from uuid import UUID
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.pagination import PaginatedResult
-from app.domain.survey import QuestionDomain, ResponseType, SurveyDomain, SurveyScope
+from app.domain.survey import (
+    QuestionDomain,
+    ResponseType,
+    SurveyDomain,
+    SurveyInstrumentType,
+    SurveyScope,
+)
 from app.domain.survey_response import (
     SurveyResponseDashboardItemDomain,
     SurveyResponseDetailDomain,
@@ -176,6 +182,7 @@ class SurveyResponseService:
         await self._check_establishment_access(actor, data.establishment_id)
         self._assert_establishment_in_survey_scope(survey, data.establishment_id)
         answers = self._validate_answers(survey.questions, data.answers)
+        score_fies = self._calculate_fies_score(survey, answers)
 
         try:
             response = await self.uow.survey_response_repo.create(
@@ -184,6 +191,7 @@ class SurveyResponseService:
                 establishment_id=data.establishment_id,
                 submitted_by_id=actor.user_id,
                 answers=answers,
+                score_fies=score_fies,
                 event_at=data.event_at,
             )
         except UniqueConstraintError:
@@ -204,7 +212,8 @@ class SurveyResponseService:
 
         Every edit attempt appends a row to ``survey_response_edits``; the
         response's current state only advances if ``event_at`` is at least as
-        recent as what it already has (last-write-wins).
+        recent as what it already has (last-write-wins).The FIES score is
+        recalculated from the new answers whenever the edit is applied.
 
         Raises:
             SurveyResponseNotFoundError, ForbiddenError (not the submitter/admin),
@@ -220,6 +229,7 @@ class SurveyResponseService:
 
         survey = await self._get_survey_or_raise(response.survey_id)
         answers = self._validate_answers(survey.questions, data.answers)
+        score_fies = self._calculate_fies_score(survey, answers)
 
         try:
             await self.uow.survey_response_edit_repo.create(
@@ -238,7 +248,7 @@ class SurveyResponseService:
 
         if data.event_at >= response.event_at:
             response = await self.uow.survey_response_repo.update_answers(
-                response, answers=answers, event_at=data.event_at
+                response, answers=answers, score_fies=score_fies, event_at=data.event_at
             )
         await self.uow.commit()
         return SurveyResponseDomain.from_db(response)
@@ -282,3 +292,29 @@ class SurveyResponseService:
         if response is None:
             raise SurveyResponseNotFoundError(str(response_id))
         return SurveyResponseDetailDomain.from_db(response)
+
+    @staticmethod
+    def _calculate_fies_score(
+        survey: SurveyDomain, answers: dict[str, object]
+    ) -> int | None:
+        """Return the FIES raw score (0-8): the count of affirmative answers
+        among this FIES survey's questions. None if the survey isn't FIES.
+
+        This is the raw score only. The FAO's full methodology additionally
+        calibrates raw scores against a Rasch (IRT) model with globally
+        published item-severity parameters, to make scores comparable across
+        populations — that equating step is out of scope here; it would run
+        as a periodic batch analysis over accumulated responses, not per
+        submission. See: FAO, "Voices of the Hungry" FIES methodology.
+
+        TODO: add Rasch-based equating as a separate offline/batch process
+        once there's a large enough response set to calibrate against.
+        """
+        if survey.instrument_type != SurveyInstrumentType.FIES:
+            return None
+        return sum(
+            1
+            for question in survey.questions
+            for option in question.options
+            if option.position == 0 and answers.get(str(question.id)) == str(option.id)
+        )

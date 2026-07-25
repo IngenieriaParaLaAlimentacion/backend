@@ -129,4 +129,5 @@ class SurveyResponseDetailResponse(BaseModel):
     survey: SurveyRefResponse
     establishment: EstablishmentRefResponse
     submitted_by: UserRefResponse
+    score_fies: int | None
     answers: list[QuestionAnswerResponse]

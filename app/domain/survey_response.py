@@ -125,6 +125,7 @@ class SurveyResponseDetailDomain:
     survey: SurveyRefDomain
     establishment: EstablishmentRefDomain
     submitted_by: UserRefDomain
+    score_fies: int | None
     answers: list[QuestionAnswerDomain]
 
     @classmethod
@@ -151,6 +152,7 @@ class SurveyResponseDetailDomain:
             submitted_by=UserRefDomain(
                 id=obj.submitted_by.id, name=obj.submitted_by.name
             ),
+            score_fies=obj.score_fies,
             answers=answers,
         )
 
