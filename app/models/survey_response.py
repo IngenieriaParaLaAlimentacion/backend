@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, ForeignKey, func
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship
 
@@ -32,6 +32,7 @@ class SurveyResponse(Base):
         index=True,
     )
     answers = Column(JSONB, nullable=False)
+    score_fies = Column(Integer, nullable=True)
     event_at = Column(DateTime(timezone=True), nullable=False)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
