@@ -172,3 +172,19 @@ class SurveyResponseDetailDomain:
         if question.response_type == ResponseType.MULTIPLE_CHOICE:
             return [option_by_id[v] for v in value if v in option_by_id]
         return None
+
+
+@dataclass
+class SurveyResponseListingParams:
+    """Filters for a survey's response listing: establishment, event
+    date range, and geographic zone (establishment's city/province)."""
+
+    establishment_id: UUID | None = None
+    event_at_from: datetime | None = None
+    event_at_to: datetime | None = None
+    city: str | None = None
+    province: str | None = None
+
+    def __post_init__(self) -> None:
+        self.city = self.city.strip() or None if self.city else None
+        self.province = self.province.strip() or None if self.province else None
