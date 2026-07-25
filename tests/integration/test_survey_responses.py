@@ -910,3 +910,176 @@ class TestGetDashboardDetail:
             headers=headers,
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+class TestFiesScoring:
+    @staticmethod
+    def _fies_survey_body(name: str) -> dict:
+        from app.data.fies_template import build_fies_template
+
+        template = build_fies_template()
+        return {
+            "name": name,
+            "description": template.description,
+            "scope": "generic",
+            "instrument_type": "fies",
+            "questions": [
+                {
+                    "text": q.text,
+                    "response_type": q.response_type.value,
+                    "is_required": q.is_required,
+                    "options": [{"text": o.text} for o in q.options],
+                }
+                for q in template.questions
+            ],
+            "establishment_ids": [],
+        }
+
+    async def test_fies_response_gets_partial_score(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = (
+            await client.post(
+                SURVEYS_URL,
+                json=self._fies_survey_body("FIES Julio 2026"),
+                headers=headers,
+            )
+        ).json()
+
+        answers = {
+            q["id"]: q["options"][0]["id"] if i < 3 else q["options"][1]["id"]
+            for i, q in enumerate(survey["questions"])
+        }
+        response = await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(survey["id"], db_establishment.id, answers),
+            headers=headers,
+        )
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.json()["score_fies"] == 3
+
+    async def test_fies_response_all_affirmative_scores_eight(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = (
+            await client.post(
+                SURVEYS_URL,
+                json=self._fies_survey_body("FIES All Yes"),
+                headers=headers,
+            )
+        ).json()
+        answers = {q["id"]: q["options"][0]["id"] for q in survey["questions"]}
+
+        response = await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(survey["id"], db_establishment.id, answers),
+            headers=headers,
+        )
+        assert response.json()["score_fies"] == 8
+
+    async def test_custom_survey_response_has_null_score(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)  # default instrument_type=custom
+        response = await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"], db_establishment.id, _valid_answers(survey)
+            ),
+            headers=headers,
+        )
+        assert response.json()["score_fies"] is None
+
+    async def test_editing_answers_recalculates_score(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = (
+            await client.post(
+                SURVEYS_URL,
+                json=self._fies_survey_body("FIES Edit Test"),
+                headers=headers,
+            )
+        ).json()
+        original_answers = {
+            q["id"]: q["options"][1]["id"] for q in survey["questions"]
+        }  # all "No"
+        created = (
+            await client.post(
+                SURVEY_RESPONSES_URL,
+                json=_response_body(
+                    survey["id"], db_establishment.id, original_answers
+                ),
+                headers=headers,
+            )
+        ).json()
+        assert created["score_fies"] == 0
+
+        new_answers = {
+            q["id"]: q["options"][0]["id"] for q in survey["questions"]
+        }  # all "Sí"
+        edited = (
+            await client.put(
+                f"{SURVEY_RESPONSES_URL}/{created['id']}",
+                json={"answers": new_answers, "event_at": NOW},
+                headers=headers,
+            )
+        ).json()
+        assert edited["score_fies"] == 8
+
+    async def test_score_appears_in_dashboard_list(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = (
+            await client.post(
+                SURVEYS_URL,
+                json=self._fies_survey_body("FIES Dashboard List"),
+                headers=headers,
+            )
+        ).json()
+        answers = {
+            q["id"]: q["options"][1]["id"] for q in survey["questions"]
+        }  # all "No"
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(survey["id"], db_establishment.id, answers),
+            headers=headers,
+        )
+
+        list_response = await client.get(
+            SURVEY_RESPONSES_URL, params={"survey_id": survey["id"]}, headers=headers
+        )
+        assert list_response.json()["items"][0]["score_fies"] == 0
+
+    async def test_score_appears_in_response_detail(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = (
+            await client.post(
+                SURVEYS_URL,
+                json=self._fies_survey_body("FIES Detail View"),
+                headers=headers,
+            )
+        ).json()
+        answers = {
+            q["id"]: q["options"][0]["id"] if i < 5 else q["options"][1]["id"]
+            for i, q in enumerate(survey["questions"])
+        }
+        created = (
+            await client.post(
+                SURVEY_RESPONSES_URL,
+                json=_response_body(survey["id"], db_establishment.id, answers),
+                headers=headers,
+            )
+        ).json()
+
+        detail = await client.get(
+            f"{SURVEY_RESPONSES_URL}/{created['id']}/dashboard-detail",
+            headers=headers,
+        )
+        assert detail.json()["score_fies"] == 5
