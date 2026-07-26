@@ -237,3 +237,27 @@ class SurveyResponseRepository:
         result = await self.db.execute(query)
         response_count, establishments_count, last_event_at = result.one()
         return response_count, establishments_count, last_event_at
+
+    async def list_all_for_export(
+        self, survey_id: UUID, establishment_id: UUID
+    ) -> list[SurveyResponse]:
+        """Return every response to a survey at one establishment, with
+        survey.questions(.options), establishment and submitted_by
+        eager-loaded — for  export, which needs every matching response's
+        full detail in one pass, not a paginated page.
+        """
+        query = (
+            select(SurveyResponse)
+            .where(
+                SurveyResponse.survey_id == survey_id,
+                SurveyResponse.establishment_id == establishment_id,
+            )
+            .options(
+                selectinload(SurveyResponse.survey).selectinload(Survey.questions),
+                selectinload(SurveyResponse.establishment),
+                selectinload(SurveyResponse.submitted_by),
+            )
+            .order_by(SurveyResponse.event_at.desc())
+        )
+        result = await self.db.execute(query)
+        return list(result.scalars().all())
