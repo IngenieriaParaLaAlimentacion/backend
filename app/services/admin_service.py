@@ -247,7 +247,6 @@ class AdminService:
         page_size: int,
         role: UserRole | None = None,
         status: UserStatus | None = None,
-        is_email_verified: bool | None = True,
         search: str | None = None,
     ) -> PaginatedResult[UserWithEstablishmentsDomain]:
         """Return a paginated list of users with their establishments.
@@ -261,7 +260,6 @@ class AdminService:
         users, total = await self.uow.user_repo.get_paginated(
             role=role,
             status=status,
-            is_email_verified=is_email_verified,
             limit=page_size,
             offset=offset,
             search=search,

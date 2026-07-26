@@ -27,9 +27,7 @@ router = APIRouter(prefix="/admin")
     status_code=status.HTTP_200_OK,
     summary="List registered users",
     description="Returns a paginated list of users, optionally filtered by role or "
-    "status, or searching by name, last name or email. By default only users with "
-    "a verified email are returned; pass email_verified=false to see unverified "
-    "signups. Accessible by admins only.",
+    "status, or searching by name, last name or email. Accessible by admins only.",
     responses=AUTH_RESPONSES,
 )
 async def list_users(
@@ -37,9 +35,6 @@ async def list_users(
     role: UserRole | None = Query(default=None, description="Filter by role."),
     status_filter: UserStatus | None = Query(
         default=None, alias="status", description="Filter by status."
-    ),
-    email_verified: bool | None = Query(
-        default=True, description="Filter by email verification status."
     ),
     search: str | None = Query(default=None, max_length=100),
     _admin: UserActor = Depends(get_current_admin),
@@ -50,7 +45,6 @@ async def list_users(
         page_size=paginated.page_size,
         role=role,
         status=status_filter,
-        is_email_verified=email_verified,
         search=search,
     )
     return PaginatedUsersResponse.model_validate(result)

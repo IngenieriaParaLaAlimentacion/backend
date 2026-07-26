@@ -117,12 +117,7 @@ class TestGetPaginatedUsers:
         await service.get_users_paginated(page=3, page_size=20)
 
         uow.user_repo.get_paginated.assert_called_once_with(
-            role=None,
-            status=None,
-            is_email_verified=True,
-            limit=20,
-            offset=40,
-            search=None,
+            role=None, status=None, limit=20, offset=40, search=None
         )
 
     @pytest.mark.asyncio
@@ -165,12 +160,7 @@ class TestGetPaginatedUsers:
 
         assert result.total_pages == 10
         uow.user_repo.get_paginated.assert_called_once_with(
-            role=None,
-            status=None,
-            is_email_verified=True,
-            limit=1,
-            offset=0,
-            search=None,
+            role=None, status=None, limit=1, offset=0, search=None
         )
 
     @pytest.mark.asyncio
@@ -181,12 +171,7 @@ class TestGetPaginatedUsers:
         await service.get_users_paginated(page=1, page_size=20, role=UserRole.ANALYST)
 
         uow.user_repo.get_paginated.assert_called_once_with(
-            role=UserRole.ANALYST,
-            status=None,
-            is_email_verified=True,
-            limit=20,
-            offset=0,
-            search=None,
+            role=UserRole.ANALYST, status=None, limit=20, offset=0, search=None
         )
 
     @pytest.mark.asyncio
@@ -199,46 +184,7 @@ class TestGetPaginatedUsers:
         )
 
         uow.user_repo.get_paginated.assert_called_once_with(
-            role=None,
-            status=UserStatus.ACTIVE,
-            is_email_verified=True,
-            limit=20,
-            offset=0,
-            search=None,
-        )
-
-    @pytest.mark.asyncio
-    async def test_forwards_is_email_verified_filter_to_repo(
-        self, make_uow, make_service
-    ):
-        uow = make_uow()
-        service = make_service(uow)
-
-        await service.get_users_paginated(page=1, page_size=20, is_email_verified=False)
-
-        uow.user_repo.get_paginated.assert_called_once_with(
-            role=None,
-            status=None,
-            is_email_verified=False,
-            limit=20,
-            offset=0,
-            search=None,
-        )
-
-    @pytest.mark.asyncio
-    async def test_defaults_is_email_verified_to_true(self, make_uow, make_service):
-        uow = make_uow()
-        service = make_service(uow)
-
-        await service.get_users_paginated(page=1, page_size=20)
-
-        uow.user_repo.get_paginated.assert_called_once_with(
-            role=None,
-            status=None,
-            is_email_verified=True,
-            limit=20,
-            offset=0,
-            search=None,
+            role=None, status=UserStatus.ACTIVE, limit=20, offset=0, search=None
         )
 
     @pytest.mark.asyncio
@@ -298,7 +244,6 @@ class TestGetPaginatedUsers:
         uow.user_repo.get_paginated.assert_called_once_with(
             role=None,
             status=UserStatus.ACTIVE,
-            is_email_verified=True,
             limit=20,
             offset=0,
             search="Name search",
@@ -312,12 +257,7 @@ class TestGetPaginatedUsers:
         await service.get_users_paginated(page=1, page_size=20, search="  john  ")
 
         uow.user_repo.get_paginated.assert_called_once_with(
-            role=None,
-            status=None,
-            is_email_verified=True,
-            limit=20,
-            offset=0,
-            search="john",
+            role=None, status=None, limit=20, offset=0, search="john"
         )
 
     @pytest.mark.asyncio
@@ -328,12 +268,7 @@ class TestGetPaginatedUsers:
         await service.get_users_paginated(page=1, page_size=20, search="   ")
 
         uow.user_repo.get_paginated.assert_called_once_with(
-            role=None,
-            status=None,
-            is_email_verified=True,
-            limit=20,
-            offset=0,
-            search=None,
+            role=None, status=None, limit=20, offset=0, search=None
         )
 
 

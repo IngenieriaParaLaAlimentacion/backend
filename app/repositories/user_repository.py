@@ -76,7 +76,6 @@ class UserRepository:
         offset: int,
         role: UserRole | None = None,
         status: UserStatus | None = None,
-        is_email_verified: bool | None = True,
         search: str | None = None,
     ) -> tuple[list[User], int]:
         """Return a paginated list of users and the total matching count.
@@ -92,11 +91,9 @@ class UserRepository:
         if status is not None:
             query = query.where(User.status == status)
             count_query = count_query.where(User.status == status)
-        if is_email_verified is not None:
-            query = query.where(User.is_email_verified.is_(is_email_verified))
-            count_query = count_query.where(
-                User.is_email_verified.is_(is_email_verified)
-            )
+            if status == UserStatus.PENDING_VALIDATION:
+                query = query.where(User.is_email_verified.is_(True))
+                count_query = count_query.where(User.is_email_verified.is_(True))
         if search:
             search_term = f"%{escape_like(search)}%"
             condition = (

@@ -210,9 +210,6 @@ class TestAdminAuth:
 
 class TestListUsersPagination:
     async def _register(self, client, db_establishment, *, name, last_name, email):
-        """Register a field worker and mark their email as verified, so they
-        appear under the default is_email_verified=True filter. These tests
-        exercise search, not the verification filter itself."""
         response = await client.post(
             REGISTER_FIELD_WORKER_URL,
             json={
@@ -224,12 +221,6 @@ class TestListUsersPagination:
             },
         )
         assert response.status_code == status.HTTP_201_CREATED
-        user_data = response.json()
-        async with db_module.AsyncSessionLocal() as session:
-            user = await session.get(User, user_data["id"])
-            user.is_email_verified = True
-            await session.commit()
-        return user_data
 
     async def test_returns_paginated_structure(self, client, admin_headers):
         """Should return a response with all pagination fields."""
@@ -483,47 +474,6 @@ class TestListUsersPagination:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["total"] == 2
-
-    async def _register_unverified(self, client, db_establishment, *, email=None):
-        response = await client.post(
-            REGISTER_FIELD_WORKER_URL,
-            json={
-                "email": email or f"unverified_{uuid.uuid4().hex[:6]}@test.com",
-                "password": "Password123!",
-                "name": "Unverified",
-                "last_name": "Worker",
-                "establishments": [str(db_establishment.id)],
-            },
-        )
-        assert response.status_code == status.HTTP_201_CREATED
-        return response.json()
-
-    async def test_default_excludes_unverified_users(
-        self, client, admin_headers, db_establishment
-    ):
-        """Users who haven't verified their email are hidden by default."""
-        unverified = await self._register_unverified(client, db_establishment)
-
-        response = await client.get(ADMIN_USERS_URL, headers=admin_headers)
-
-        assert response.status_code == status.HTTP_200_OK
-        ids = [item["id"] for item in response.json()["items"]]
-        assert unverified["id"] not in ids
-
-    async def test_email_verified_false_includes_unverified_users(
-        self, client, admin_headers, db_establishment
-    ):
-        """email_verified=false surfaces users still pending verification,
-        e.g. to check on invites that were never confirmed."""
-        unverified = await self._register_unverified(client, db_establishment)
-
-        response = await client.get(
-            f"{ADMIN_USERS_URL}?email_verified=false", headers=admin_headers
-        )
-
-        assert response.status_code == status.HTTP_200_OK
-        ids = [item["id"] for item in response.json()["items"]]
-        assert unverified["id"] in ids
 
     async def test_pending_field_worker_request_query_returns_verified_pending(
         self, client, admin_headers, registered_field_worker
