@@ -247,6 +247,7 @@ class AdminService:
         page_size: int,
         role: UserRole | None = None,
         status: UserStatus | None = None,
+        is_email_verified: bool | None = True,
         search: str | None = None,
     ) -> PaginatedResult[UserWithEstablishmentsDomain]:
         """Return a paginated list of users with their establishments.
@@ -258,20 +259,12 @@ class AdminService:
         search = search.strip() or None if search else None
 
         users, total = await self.uow.user_repo.get_paginated(
-            role=role, status=status, limit=page_size, offset=offset, search=search
-        )
-
-        return await self._build_paginated_users_result(users, total, page, page_size)
-
-    async def get_pending_field_workers(
-        self, page: int, page_size: int
-    ) -> PaginatedResult[UserWithEstablishmentsDomain]:
-        """Return a paginated list of field workers awaiting admin approval
-        whose email has already been verified, with their establishments."""
-        offset = (page - 1) * page_size
-
-        users, total = await self.uow.user_repo.get_pending_field_workers(
-            limit=page_size, offset=offset
+            role=role,
+            status=status,
+            is_email_verified=is_email_verified,
+            limit=page_size,
+            offset=offset,
+            search=search,
         )
 
         return await self._build_paginated_users_result(users, total, page, page_size)

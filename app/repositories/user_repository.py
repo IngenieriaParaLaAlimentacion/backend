@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.user import User, UserRole, UserStatus
+from app.utils.db import escape_like, execute_paginated
 
 
 class UserRepository:
@@ -75,6 +76,7 @@ class UserRepository:
         offset: int,
         role: UserRole | None = None,
         status: UserStatus | None = None,
+        is_email_verified: bool | None = True,
         search: str | None = None,
     ) -> tuple[list[User], int]:
         """Return a paginated list of users and the total matching count.
@@ -90,11 +92,13 @@ class UserRepository:
         if status is not None:
             query = query.where(User.status == status)
             count_query = count_query.where(User.status == status)
-        if search:
-            escaped = (
-                search.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        if is_email_verified is not None:
+            query = query.where(User.is_email_verified.is_(is_email_verified))
+            count_query = count_query.where(
+                User.is_email_verified.is_(is_email_verified)
             )
-            search_term = f"%{escaped}%"
+        if search:
+            search_term = f"%{escape_like(search)}%"
             condition = (
                 (User.email.ilike(search_term, escape="\\"))
                 | (User.name.ilike(search_term, escape="\\"))
@@ -103,12 +107,9 @@ class UserRepository:
             query = query.where(condition)
             count_query = count_query.where(condition)
 
-        query = query.order_by(User.created_at.desc()).limit(limit).offset(offset)
-
-        total = (await self.db.execute(count_query)).scalar_one()
-        users = (await self.db.execute(query)).scalars().all()
-
-        return users, total
+        return await execute_paginated(
+            self.db, query, count_query, User.created_at.desc(), limit, offset
+        )
 
     async def update_status(self, user_id: UUID, status: UserStatus) -> None:
         """Update the status of a user."""
@@ -133,27 +134,3 @@ class UserRepository:
                 email_verified_at=func.now(),
             )
         )
-
-    async def get_pending_field_workers(
-        self, *, limit: int, offset: int
-    ) -> tuple[list[User], int]:
-        """Return a paginated list of field workers awaiting admin approval
-        whose email has already been verified, and the total matching count."""
-        conditions = (
-            User.role == UserRole.FIELD_WORKER,
-            User.status == UserStatus.PENDING_VALIDATION,
-            User.is_email_verified.is_(True),
-        )
-        query = (
-            select(User)
-            .where(*conditions)
-            .order_by(User.created_at.desc())
-            .limit(limit)
-            .offset(offset)
-        )
-        count_query = select(func.count()).select_from(User).where(*conditions)
-
-        total = (await self.db.execute(count_query)).scalar_one()
-        users = (await self.db.execute(query)).scalars().all()
-
-        return users, total
