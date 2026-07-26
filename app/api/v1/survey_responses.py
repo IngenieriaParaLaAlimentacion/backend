@@ -18,6 +18,7 @@ from app.schemas.survey_response_schema import (
     SurveyResponseRequest,
     SurveyResponseResponse,
 )
+from app.services.exporters.factory import ExportFormat, get_exporter
 from app.services.survey_response_service import SurveyResponseService
 
 router = APIRouter(prefix="/survey-responses")
@@ -29,39 +30,37 @@ _submitter_or_editor = require_some(
 _dashboard_reader = require_some(UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN)
 
 
-@router.post(
-    "",
-    response_model=SurveyResponseResponse,
-    status_code=status.HTTP_201_CREATED,
-    summary="Submit a survey response",
+@router.get(
+    "/export",
+    summary="Export a survey's responses at one establishment",
     description=(
-        "Idempotent, offline-first submission of one anonymous individual's "
-        "answers to a survey at an establishment. Replaying the same id returns the "
-        "stored record unchanged. No draft mode: required questions must all "
-        "be answered or the submission is rejected outright."
+        "Export every response to a survey at one establishment into a "
+        "downloadable file including both response data and a visual "
+        "summary of indicators. Restricted to admins, analysts and "
+        "superadmins (dashboard use)."
     ),
     responses={
-        status.HTTP_200_OK: {
-            "description": "Response already existed; idempotent replay of the same id."
-        },
         **AUTH_RESPONSES,
-        status.HTTP_400_BAD_REQUEST: {
-            "description": "Answers invalid, or establishment outside the "
-            "survey's audience"
-        },
-        status.HTTP_404_NOT_FOUND: {"description": "Survey or establishment not found"},
+        status.HTTP_404_NOT_FOUND: {"description": "Survey not found"},
     },
 )
-async def submit_survey_response(
-    data: SurveyResponseRequest,
-    response: Response,
-    actor: UserActor = Depends(_submitter_or_editor),
+async def export_survey_responses(
+    survey_id: UUID,
+    establishment_id: UUID,
+    format: ExportFormat = ExportFormat.XLSX,
+    actor: UserActor = Depends(_dashboard_reader),
     service: SurveyResponseService = Depends(get_survey_response_service),
-) -> SurveyResponseResponse:
-    survey_response, created = await service.submit(data, actor)
-    if not created:
-        response.status_code = status.HTTP_200_OK
-    return SurveyResponseResponse.model_validate(survey_response)
+) -> Response:
+    exporter = get_exporter(format)
+    file_bytes = await service.export(survey_id, establishment_id, actor, exporter)
+    return Response(
+        content=file_bytes,
+        media_type=exporter.content_type,
+        headers={
+            "Content-Disposition": f'attachment; \
+                filename="export.{exporter.file_extension}"'
+        },
+    )
 
 
 @router.get(
@@ -126,6 +125,41 @@ async def list_survey_responses(
         page_size=result.page_size,
         total_pages=result.total_pages,
     )
+
+
+@router.post(
+    "",
+    response_model=SurveyResponseResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Submit a survey response",
+    description=(
+        "Idempotent, offline-first submission of one anonymous individual's "
+        "answers to a survey at an establishment. Replaying the same id returns the "
+        "stored record unchanged. No draft mode: required questions must all "
+        "be answered or the submission is rejected outright."
+    ),
+    responses={
+        status.HTTP_200_OK: {
+            "description": "Response already existed; idempotent replay of the same id."
+        },
+        **AUTH_RESPONSES,
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Answers invalid, or establishment outside the "
+            "survey's audience"
+        },
+        status.HTTP_404_NOT_FOUND: {"description": "Survey or establishment not found"},
+    },
+)
+async def submit_survey_response(
+    data: SurveyResponseRequest,
+    response: Response,
+    actor: UserActor = Depends(_submitter_or_editor),
+    service: SurveyResponseService = Depends(get_survey_response_service),
+) -> SurveyResponseResponse:
+    survey_response, created = await service.submit(data, actor)
+    if not created:
+        response.status_code = status.HTTP_200_OK
+    return SurveyResponseResponse.model_validate(survey_response)
 
 
 @router.put(

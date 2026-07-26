@@ -30,6 +30,7 @@ from app.schemas.survey_response_schema import (
     SurveyResponseEditRequest,
     SurveyResponseRequest,
 )
+from app.services.exporters.base import SurveyResponseExporter
 
 # Roles allowed to submit a response.
 _SUBMITTER_ROLES = {UserRole.FIELD_WORKER, UserRole.ADMIN, UserRole.SUPERADMIN}
@@ -324,3 +325,27 @@ class SurveyResponseService:
             for option in question.options
             if option.position == 0 and answers.get(str(question.id)) == str(option.id)
         )
+
+    async def export(
+        self,
+        survey_id: UUID,
+        establishment_id: UUID,
+        actor: UserActor,
+        exporter: SurveyResponseExporter,
+    ) -> bytes:
+        """Export every response to a survey at one establishment using the
+        given exporter strategy.
+
+        Raises:
+            ForbiddenError: actor role isn't a dashboard reader.
+            SurveyNotFoundError.
+        """
+        if actor.role not in _DASHBOARD_ROLES:
+            raise ForbiddenError()
+        survey = await self._get_survey_or_raise(survey_id)
+
+        responses = await self.uow.survey_response_repo.list_all_for_export(
+            survey_id, establishment_id
+        )
+        detailed = [SurveyResponseDetailDomain.from_db(r) for r in responses]
+        return exporter.export(survey, detailed)
