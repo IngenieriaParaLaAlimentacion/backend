@@ -1263,3 +1263,205 @@ class TestListFilters:
             SURVEY_RESPONSES_URL, params={"survey_id": survey["id"]}, headers=headers
         )
         assert response.json()["total"] == 1
+
+
+DASHBOARD_URL = "/api/v1/dashboard"
+
+
+class TestDashboardIndicators:
+    async def test_counts_all_responses_with_no_filters(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"],
+                db_establishment.id,
+                _valid_answers(survey),
+                event_at="2024-01-01T00:00:00Z",
+            ),
+            headers=headers,
+        )
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"],
+                db_establishment.id,
+                _valid_answers(survey),
+                id=str(uuid.uuid4()),
+                event_at="2024-06-01T00:00:00Z",
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(f"{DASHBOARD_URL}/indicators", headers=headers)
+
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert body["response_count"] == 2
+        assert body["participating_establishments_count"] == 1
+        assert body["last_event_at"] == "2024-06-01T00:00:00Z"
+
+    async def test_counts_distinct_establishments(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        other_establishment = await _make_establishment(place_id="place-indicators-001")
+
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"], db_establishment.id, _valid_answers(survey)
+            ),
+            headers=headers,
+        )
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"],
+                other_establishment.id,
+                _valid_answers(survey),
+                id=str(uuid.uuid4()),
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(f"{DASHBOARD_URL}/indicators", headers=headers)
+
+        assert response.json()["participating_establishments_count"] == 2
+
+    async def test_filters_by_survey_id(self, client, db_establishment, admin_user):
+        headers, _ = admin_user
+        survey_a = await _create_survey(client, headers, name="Encuesta A")
+        survey_b = await _create_survey(client, headers, name="Encuesta B")
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey_a["id"], db_establishment.id, _valid_answers(survey_a)
+            ),
+            headers=headers,
+        )
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey_b["id"], db_establishment.id, _valid_answers(survey_b)
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            f"{DASHBOARD_URL}/indicators",
+            params={"survey_id": survey_a["id"]},
+            headers=headers,
+        )
+
+        assert response.json()["response_count"] == 1
+
+    async def test_filters_by_event_at_range(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"],
+                db_establishment.id,
+                _valid_answers(survey),
+                event_at="2024-01-01T00:00:00Z",
+            ),
+            headers=headers,
+        )
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"],
+                db_establishment.id,
+                _valid_answers(survey),
+                id=str(uuid.uuid4()),
+                event_at="2024-06-15T00:00:00Z",
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            f"{DASHBOARD_URL}/indicators",
+            params={"event_at_from": "2024-05-01T00:00:00Z"},
+            headers=headers,
+        )
+
+        body = response.json()
+        assert body["response_count"] == 1
+        assert body["last_event_at"] == "2024-06-15T00:00:00Z"
+
+    async def test_filters_by_city(self, client, db_establishment, admin_user):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        cordoba_establishment = await _make_establishment(
+            place_id="place-indicators-002"
+        )
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"], db_establishment.id, _valid_answers(survey)
+            ),
+            headers=headers,
+        )
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"],
+                cordoba_establishment.id,
+                _valid_answers(survey),
+                id=str(uuid.uuid4()),
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            f"{DASHBOARD_URL}/indicators",
+            params={"city": "Buenos Aires"},
+            headers=headers,
+        )
+
+        assert response.json()["response_count"] == 1
+
+    async def test_no_responses_returns_zero_and_null_last_event_at(
+        self, client, admin_user
+    ):
+        headers, _ = admin_user
+        response = await client.get(f"{DASHBOARD_URL}/indicators", headers=headers)
+
+        body = response.json()
+        assert body["response_count"] == 0
+        assert body["participating_establishments_count"] == 0
+        assert body["last_event_at"] is None
+
+    async def test_invalid_date_range_returns_400(self, client, admin_user):
+        headers, _ = admin_user
+        response = await client.get(
+            f"{DASHBOARD_URL}/indicators",
+            params={
+                "event_at_from": "2024-06-01T00:00:00Z",
+                "event_at_to": "2024-01-01T00:00:00Z",
+            },
+            headers=headers,
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    async def test_field_worker_forbidden(self, client, field_worker_without_access):
+        headers, _ = field_worker_without_access
+        response = await client.get(f"{DASHBOARD_URL}/indicators", headers=headers)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_analyst_allowed(self, client, analyst_user):
+        headers, _ = analyst_user
+        response = await client.get(f"{DASHBOARD_URL}/indicators", headers=headers)
+        assert response.status_code == status.HTTP_200_OK
+
+    async def test_unauthenticated_returns_401(self, client):
+        response = await client.get(f"{DASHBOARD_URL}/indicators")
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
