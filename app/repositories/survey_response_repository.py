@@ -7,7 +7,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.domain.survey_response import SurveyResponseListingParams
+from app.domain.survey_response import (
+    DashboardIndicatorsParams,
+    SurveyResponseListingParams,
+)
 from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.establishment import Establishment
 from app.models.survey import Survey
@@ -193,3 +196,44 @@ class SurveyResponseRepository:
         )
         rows = (await self.db.execute(rows_query)).scalars().all()
         return list(rows), total
+
+    async def get_dashboard_indicators(
+        self, params: DashboardIndicatorsParams
+    ) -> tuple[int, int, datetime | None]:
+        """Return (response_count, participating_establishments_count,
+        last_event_at) over responses matching params — every filter optional,
+        unlike list_by_survey where survey_id is fixed by the caller."""
+        conditions = []
+        if params.survey_id is not None:
+            conditions.append(SurveyResponse.survey_id == params.survey_id)
+        if params.establishment_id is not None:
+            conditions.append(
+                SurveyResponse.establishment_id == params.establishment_id
+            )
+        if params.event_at_from is not None:
+            conditions.append(SurveyResponse.event_at >= params.event_at_from)
+        if params.event_at_to is not None:
+            conditions.append(SurveyResponse.event_at <= params.event_at_to)
+        if params.city is not None:
+            conditions.append(Establishment.city.ilike(params.city))
+        if params.province is not None:
+            conditions.append(Establishment.province.ilike(params.province))
+
+        needs_establishment_join = (
+            params.city is not None or params.province is not None
+        )
+        query = select(
+            func.count(SurveyResponse.id),
+            func.count(SurveyResponse.establishment_id.distinct()),
+            func.max(SurveyResponse.event_at),
+        )
+        if needs_establishment_join:
+            query = query.join(
+                Establishment, SurveyResponse.establishment_id == Establishment.id
+            )
+        for condition in conditions:
+            query = query.where(condition)
+
+        result = await self.db.execute(query)
+        response_count, establishments_count, last_event_at = result.one()
+        return response_count, establishments_count, last_event_at
