@@ -988,3 +988,57 @@ class TestListBySurveyFilters:
         call = uow.survey_response_repo.list_by_survey.call_args
         assert call.kwargs["params"].establishment_id is None
         assert call.kwargs["params"].city is None
+
+
+class TestExport:
+    pytestmark = pytest.mark.asyncio
+
+    async def test_admin_can_export(self, make_uow, admin_actor):
+        survey = _make_survey_orm()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_all_for_export = AsyncMock(return_value=[])
+        fake_exporter = MagicMock()
+        fake_exporter.export.return_value = b"fake-bytes"
+
+        result = await SurveyResponseService(uow).export(
+            survey.id, uuid.uuid4(), admin_actor, fake_exporter
+        )
+
+        assert result == b"fake-bytes"
+        fake_exporter.export.assert_called_once()
+
+    async def test_field_worker_forbidden(self, make_uow, field_worker_actor):
+        survey = _make_survey_orm()
+        uow = make_uow(survey=survey)
+        fake_exporter = MagicMock()
+
+        with pytest.raises(ForbiddenError):
+            await SurveyResponseService(uow).export(
+                survey.id, uuid.uuid4(), field_worker_actor, fake_exporter
+            )
+        fake_exporter.export.assert_not_called()
+
+    async def test_survey_not_found(self, make_uow, admin_actor):
+        uow = make_uow(survey=None)
+        fake_exporter = MagicMock()
+
+        with pytest.raises(SurveyNotFoundError):
+            await SurveyResponseService(uow).export(
+                uuid.uuid4(), uuid.uuid4(), admin_actor, fake_exporter
+            )
+
+    async def test_filters_by_establishment(self, make_uow, admin_actor):
+        survey = _make_survey_orm()
+        establishment_id = uuid.uuid4()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_all_for_export = AsyncMock(return_value=[])
+        fake_exporter = MagicMock()
+        fake_exporter.export.return_value = b""
+
+        await SurveyResponseService(uow).export(
+            survey.id, establishment_id, admin_actor, fake_exporter
+        )
+
+        uow.survey_response_repo.list_all_for_export.assert_awaited_once_with(
+            survey.id, establishment_id
+        )

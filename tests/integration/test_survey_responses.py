@@ -1465,3 +1465,76 @@ class TestDashboardIndicators:
     async def test_unauthenticated_returns_401(self, client):
         response = await client.get(f"{DASHBOARD_URL}/indicators")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+class TestExport:
+    async def test_admin_can_export_xlsx(self, client, db_establishment, admin_user):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"], db_establishment.id, _valid_answers(survey)
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            f"{SURVEY_RESPONSES_URL}/export",
+            params={
+                "survey_id": survey["id"],
+                "establishment_id": str(db_establishment.id),
+            },
+            headers=headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert "spreadsheetml" in response.headers["content-type"]
+        assert response.content[:2] == b"PK"  # xlsx is a zip archive
+
+    async def test_field_worker_forbidden(
+        self, client, db_establishment, admin_user, field_worker_with_access
+    ):
+        admin_headers, _ = admin_user
+        fw_headers, _ = field_worker_with_access
+        survey = await _create_survey(client, admin_headers)
+
+        response = await client.get(
+            f"{SURVEY_RESPONSES_URL}/export",
+            params={
+                "survey_id": survey["id"],
+                "establishment_id": str(db_establishment.id),
+            },
+            headers=fw_headers,
+        )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_unknown_survey_returns_404(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        response = await client.get(
+            f"{SURVEY_RESPONSES_URL}/export",
+            params={
+                "survey_id": str(uuid.uuid4()),
+                "establishment_id": str(db_establishment.id),
+            },
+            headers=headers,
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_export_with_no_responses_still_succeeds(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+
+        response = await client.get(
+            f"{SURVEY_RESPONSES_URL}/export",
+            params={
+                "survey_id": survey["id"],
+                "establishment_id": str(db_establishment.id),
+            },
+            headers=headers,
+        )
+        assert response.status_code == status.HTTP_200_OK
