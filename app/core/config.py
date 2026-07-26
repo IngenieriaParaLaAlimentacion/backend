@@ -70,13 +70,10 @@ class Settings(BaseSettings):
     backoffice_deeplink_base: AnyUrl = "http://i_need_deeplink.com"
 
     password_recovery_path: str = "/reset-password"
-    email_verification_path: str = (
-        "https://backoffice-production-d63b.up.railway.app/verify-email"
-    )
+    email_verification_path: str = "/verify-email"
 
-    def _build_deeplink(self, base: str) -> str:
+    def _build_deeplink(self, base: str, path: str) -> str:
         base = str(base).rstrip("/")
-        path = self.password_recovery_path
         if not path.startswith("/"):
             path = f"/{path}"
         return f"{base}{path}"
@@ -84,17 +81,21 @@ class Settings(BaseSettings):
     @property
     def password_recovery_deeplink_url(self) -> str:
         """Derived password recovery deeplink URL from base URL and path."""
-        return self._build_deeplink(self.app_deeplink_base)
+        return self._build_deeplink(self.app_deeplink_base, self.password_recovery_path)
 
     @property
     def admin_password_reset_deeplink(self) -> str:
         """Derived password reset deeplink URL for admin invitation."""
-        return self._build_deeplink(self.backoffice_deeplink_base)
+        return self._build_deeplink(
+            self.backoffice_deeplink_base, self.password_recovery_path
+        )
 
     @property
     def email_verification_deeplink_url(self) -> str:
         """Derived email verification deeplink URL from app base URL."""
-        return self._build_deeplink(self.app_deeplink_base)
+        return self._build_deeplink(
+            self.app_deeplink_base, self.email_verification_path
+        )
 
     @model_validator(mode="after")
     def build_database_url(self) -> "Settings":

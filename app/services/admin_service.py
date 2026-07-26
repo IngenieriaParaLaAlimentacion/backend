@@ -133,6 +133,35 @@ class AdminService:
             user.role,
         )
 
+    async def _build_paginated_users_result(
+        self, users: list[User], total: int, page: int, page_size: int
+    ) -> PaginatedResult[UserWithEstablishmentsDomain]:
+        """Hydrate establishments for `users` and wrap them in a PaginatedResult."""
+        if not users:
+            return PaginatedResult(
+                items=[],
+                total=total,
+                page=page,
+                page_size=page_size,
+                total_pages=0,
+            )
+
+        establishments_per_user = await self._get_establishments_per_user(
+            [user.id for user in users]
+        )
+
+        return PaginatedResult.build(
+            items=[
+                UserWithEstablishmentsDomain.from_db(
+                    user, establishments_per_user.get(user.id, [])
+                )
+                for user in users
+            ],
+            total=total,
+            page=page,
+            page_size=page_size,
+        )
+
     async def approve_establishments(
         self, user_id: UUID, establishment_ids: list[UUID]
     ) -> None:
@@ -229,33 +258,14 @@ class AdminService:
         search = search.strip() or None if search else None
 
         users, total = await self.uow.user_repo.get_paginated(
-            role=role, status=status, limit=page_size, offset=offset, search=search
+            role=role,
+            status=status,
+            limit=page_size,
+            offset=offset,
+            search=search,
         )
 
-        if not users:
-            return PaginatedResult(
-                items=[],
-                total=total,
-                page=page,
-                page_size=page_size,
-                total_pages=0,
-            )
-
-        establishments_per_user = await self._get_establishments_per_user(
-            [user.id for user in users]
-        )
-
-        return PaginatedResult.build(
-            items=[
-                UserWithEstablishmentsDomain.from_db(
-                    user, establishments_per_user.get(user.id, [])
-                )
-                for user in users
-            ],
-            total=total,
-            page=page,
-            page_size=page_size,
-        )
+        return await self._build_paginated_users_result(users, total, page, page_size)
 
     async def invite_user(self, data: InviteAdminRequest, role: UserRole) -> UUID:
         """Create a new admin user and send a password setup link by email.

@@ -1,4 +1,5 @@
 import uuid
+from unittest.mock import patch
 
 import pytest
 import pytest_asyncio
@@ -22,6 +23,7 @@ APPROVE_URL = "/api/v1/admin/field-worker/{user_id}/establishments/approve"
 REJECT_URL = "/api/v1/admin/field-worker/{user_id}/establishments/reject"
 REJECT_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/reject"
 SUBJECTS_URL = "/api/v1/subjects"
+INVITE_ADMIN_URL = "/api/v1/admin/invite-admin"
 
 
 async def _make_list_request(client, *, headers=None):
@@ -265,7 +267,7 @@ class TestListUsersPagination:
         self, client, admin_headers, registered_field_worker
     ):
         """Each item should expose id, email, name, last_name, role,
-        status and establishments."""
+        status, is_email_verified and establishments."""
         response = await client.get(ADMIN_USERS_URL, headers=admin_headers)
 
         assert response.status_code == status.HTTP_200_OK
@@ -278,6 +280,7 @@ class TestListUsersPagination:
             assert "last_name" in item
             assert "role" in item
             assert "status" in item
+            assert "is_email_verified" in item
             assert "establishments" in item
 
     async def test_filter_by_role_returns_only_matching_users(
@@ -471,6 +474,66 @@ class TestListUsersPagination:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["total"] == 2
+
+    async def test_pending_field_worker_request_query_returns_verified_pending(
+        self, client, admin_headers, registered_field_worker
+    ):
+        """role=field_worker&status=pending_validation (the query the frontend
+        uses to list field worker requests) returns field workers awaiting
+        admin approval, since their email is already verified by default."""
+        response = await client.get(
+            f"{ADMIN_USERS_URL}?role={UserRole.FIELD_WORKER.value}"
+            f"&status={UserStatus.PENDING_VALIDATION.value}",
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        ids = [item["id"] for item in response.json()["items"]]
+        assert registered_field_worker["id"] in ids
+
+    async def test_pending_field_worker_request_query_excludes_active(
+        self, client, admin_headers, registered_field_worker, db_establishment
+    ):
+        """A field worker already approved (active) should not appear as pending."""
+        await client.patch(
+            APPROVE_URL.format(user_id=registered_field_worker["id"]),
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        response = await client.get(
+            f"{ADMIN_USERS_URL}?role={UserRole.FIELD_WORKER.value}"
+            f"&status={UserStatus.PENDING_VALIDATION.value}",
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        ids = [item["id"] for item in response.json()["items"]]
+        assert registered_field_worker["id"] not in ids
+
+    async def test_pending_field_worker_request_query_excludes_admin_invites(
+        self, client, admin_headers
+    ):
+        """A pending admin invite must not show up when filtering for field
+        worker requests, since admins never go through establishment approval."""
+        with patch("app.services.admin_service.send_invite_email"):
+            invite_response = await client.post(
+                INVITE_ADMIN_URL,
+                json={"email": f"admin_{uuid.uuid4().hex[:6]}@test.com"},
+                headers=admin_headers,
+            )
+        assert invite_response.status_code == status.HTTP_202_ACCEPTED
+        invited_id = invite_response.json()["user_id"]
+
+        response = await client.get(
+            f"{ADMIN_USERS_URL}?role={UserRole.FIELD_WORKER.value}"
+            f"&status={UserStatus.PENDING_VALIDATION.value}",
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        ids = [item["id"] for item in response.json()["items"]]
+        assert invited_id not in ids
 
 
 class TestApproveEstablishments:
