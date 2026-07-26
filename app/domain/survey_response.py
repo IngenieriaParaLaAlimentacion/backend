@@ -188,3 +188,32 @@ class SurveyResponseListingParams:
     def __post_init__(self) -> None:
         self.city = self.city.strip() or None if self.city else None
         self.province = self.province.strip() or None if self.province else None
+
+
+@dataclass
+class DashboardIndicatorsParams:
+    """Filters for the dashboard's general indicators panel. Same shape
+    as SurveyResponseListingParams plus an optional survey_id, since here no
+    survey is preselected — every filter is optional."""
+
+    survey_id: UUID | None = None
+    establishment_id: UUID | None = None
+    event_at_from: datetime | None = None
+    event_at_to: datetime | None = None
+    city: str | None = None
+    province: str | None = None
+
+    def __post_init__(self) -> None:
+        self.city = self.city.strip() or None if self.city else None
+        self.province = self.province.strip() or None if self.province else None
+
+
+@dataclass
+class DashboardIndicatorsDomain:
+    """General dashboard indicators: total responses, distinct
+    participating establishments, and the most recent event_at — all
+    computed over whatever DashboardIndicatorsParams filtered."""
+
+    response_count: int
+    participating_establishments_count: int
+    last_event_at: datetime | None

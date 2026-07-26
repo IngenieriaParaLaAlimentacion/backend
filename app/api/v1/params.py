@@ -13,7 +13,10 @@ from app.domain.survey import (
     SurveyScope,
     SurveySortOrder,
 )
-from app.domain.survey_response import SurveyResponseListingParams
+from app.domain.survey_response import (
+    DashboardIndicatorsParams,
+    SurveyResponseListingParams,
+)
 from app.exceptions.domain_exceptions import InvalidListingFilterError
 
 AUTH_RESPONSES = {
@@ -128,6 +131,34 @@ class SurveyResponseListingQuery:
 
     def to_domain(self) -> SurveyResponseListingParams:
         return SurveyResponseListingParams(
+            establishment_id=self.establishment_id,
+            event_at_from=self.event_at_from,
+            event_at_to=self.event_at_to,
+            city=self.city,
+            province=self.province,
+        )
+
+
+@dataclass
+class DashboardIndicatorsQuery:
+    survey_id: Annotated[UUID | None, Query()] = None
+    establishment_id: Annotated[UUID | None, Query()] = None
+    event_at_from: Annotated[datetime | None, Query()] = None
+    event_at_to: Annotated[datetime | None, Query()] = None
+    city: Annotated[str | None, Query(max_length=100)] = None
+    province: Annotated[str | None, Query(max_length=100)] = None
+
+    def validate(self) -> None:
+        if (
+            self.event_at_from is not None
+            and self.event_at_to is not None
+            and self.event_at_from > self.event_at_to
+        ):
+            raise InvalidListingFilterError("event_at_from cannot be after event_at_to")
+
+    def to_domain(self) -> DashboardIndicatorsParams:
+        return DashboardIndicatorsParams(
+            survey_id=self.survey_id,
             establishment_id=self.establishment_id,
             event_at_from=self.event_at_from,
             event_at_to=self.event_at_to,

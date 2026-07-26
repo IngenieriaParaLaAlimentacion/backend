@@ -11,6 +11,7 @@ from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
 from app.services.activity_service import ActivityService
 from app.services.admin_service import AdminService
 from app.services.auth_service import AuthService
+from app.services.dashboard_service import DashboardService
 from app.services.establishment_service import EstablishmentService
 from app.services.measurement_service import MeasurementService
 from app.services.subject_service import SubjectService
@@ -77,6 +78,12 @@ async def get_survey_response_service() -> AsyncGenerator[SurveyResponseService,
     """Provide a SurveyResponseService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
         yield SurveyResponseService(uow)
+
+
+async def get_dashboard_service() -> AsyncGenerator[DashboardService, None]:
+    """Provide a DashboardService backed by a fresh UnitOfWork."""
+    async with UnitOfWork() as uow:
+        yield DashboardService(uow)
 
 
 def _decode_verified_payload(token: str) -> dict:
