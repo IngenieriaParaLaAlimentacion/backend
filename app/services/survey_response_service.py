@@ -329,12 +329,13 @@ class SurveyResponseService:
     async def export(
         self,
         survey_id: UUID,
-        establishment_id: UUID,
         actor: UserActor,
         exporter: SurveyResponseExporter,
+        establishment_id: UUID | None = None,
     ) -> bytes:
-        """Export every response to a survey at one establishment using the
-        given exporter strategy.
+        """Export every response to a survey using the given exporter.
+
+        Optionally filter by establishment.
 
         Raises:
             ForbiddenError: actor role isn't a dashboard reader.

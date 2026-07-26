@@ -1,6 +1,7 @@
+from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, Query, Response, status
 
 from app.api.v1.params import (
     AUTH_RESPONSES,
@@ -46,13 +47,13 @@ _dashboard_reader = require_some(UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPE
 )
 async def export_survey_responses(
     survey_id: UUID,
-    establishment_id: UUID,
+    establishment_id: Optional[UUID] = Query(default=None),
     format: ExportFormat = ExportFormat.XLSX,
     actor: UserActor = Depends(_dashboard_reader),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> Response:
     exporter = get_exporter(format)
-    file_bytes = await service.export(survey_id, establishment_id, actor, exporter)
+    file_bytes = await service.export(survey_id, actor, exporter, establishment_id)
     return Response(
         content=file_bytes,
         media_type=exporter.content_type,

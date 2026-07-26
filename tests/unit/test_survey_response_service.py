@@ -1001,7 +1001,7 @@ class TestExport:
         fake_exporter.export.return_value = b"fake-bytes"
 
         result = await SurveyResponseService(uow).export(
-            survey.id, uuid.uuid4(), admin_actor, fake_exporter
+            survey.id, admin_actor, fake_exporter, uuid.uuid4()
         )
 
         assert result == b"fake-bytes"
@@ -1014,7 +1014,7 @@ class TestExport:
 
         with pytest.raises(ForbiddenError):
             await SurveyResponseService(uow).export(
-                survey.id, uuid.uuid4(), field_worker_actor, fake_exporter
+                survey.id, field_worker_actor, fake_exporter, uuid.uuid4()
             )
         fake_exporter.export.assert_not_called()
 
@@ -1024,7 +1024,7 @@ class TestExport:
 
         with pytest.raises(SurveyNotFoundError):
             await SurveyResponseService(uow).export(
-                uuid.uuid4(), uuid.uuid4(), admin_actor, fake_exporter
+                uuid.uuid4(), admin_actor, fake_exporter, uuid.uuid4()
             )
 
     async def test_filters_by_establishment(self, make_uow, admin_actor):
@@ -1036,7 +1036,7 @@ class TestExport:
         fake_exporter.export.return_value = b""
 
         await SurveyResponseService(uow).export(
-            survey.id, establishment_id, admin_actor, fake_exporter
+            survey.id, admin_actor, fake_exporter, establishment_id
         )
 
         uow.survey_response_repo.list_all_for_export.assert_awaited_once_with(

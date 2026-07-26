@@ -134,15 +134,19 @@ class SurveyResponseRepository:
         return result.scalar_one_or_none()
 
     async def list_all_for_export(
-        self, survey_id: UUID, establishment_id: UUID
+        self, survey_id: UUID, establishment_id: UUID | None = None
     ) -> list[SurveyResponse]:
-        """Return every response to a survey at one establishment with relations."""
+        """Return every response to a survey with relations.
+
+        Optionally filter by establishment.
+        """
+        conditions = [SurveyResponse.survey_id == survey_id]
+        if establishment_id is not None:
+            conditions.append(SurveyResponse.establishment_id == establishment_id)
+
         query = (
             select(SurveyResponse)
-            .where(
-                SurveyResponse.survey_id == survey_id,
-                SurveyResponse.establishment_id == establishment_id,
-            )
+            .where(*conditions)
             .options(*self._full_relations_options())
             .order_by(SurveyResponse.event_at.desc())
         )
