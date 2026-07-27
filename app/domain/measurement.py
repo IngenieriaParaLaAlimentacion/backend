@@ -21,6 +21,64 @@ class AlertSeverity(str, Enum):
     MEDIUM = "medium"
 
 
+class NutritionalStatus(StrEnum):
+    """Nutritional classification carried by a single measurement.
+
+    Unlike AlertType this includes NORMAL, because a measurement that raised no
+    alert still has a clinical reading -- it is the healthy one. Absence of a
+    measurement is not a status: callers represent that as None.
+    """
+
+    NORMAL = "normal"
+    OVERWEIGHT = "overweight"
+    OBESE = "obese"
+    WASTED = "wasted"
+    SEVERELY_WASTED = "severely_wasted"
+    UNDERWEIGHT = "underweight"
+    SEVERE_UNDERWEIGHT = "severe_underweight"
+
+
+# ``evaluate_alerts`` emits at most one alert per measurement, so an alert type
+# maps one-to-one onto a nutritional status and "no alert" means NORMAL. If a
+# measurement ever carried several alerts, callers would have to collapse them
+# by picking the worst severity before using this mapping.
+ALERT_TO_STATUS: dict[AlertType, NutritionalStatus] = {
+    AlertType.SEVERELY_WASTED: NutritionalStatus.SEVERELY_WASTED,
+    AlertType.WASTED: NutritionalStatus.WASTED,
+    AlertType.OVERWEIGHT: NutritionalStatus.OVERWEIGHT,
+    AlertType.OBESE: NutritionalStatus.OBESE,
+    AlertType.SEVERE_UNDERWEIGHT: NutritionalStatus.SEVERE_UNDERWEIGHT,
+    AlertType.UNDERWEIGHT: NutritionalStatus.UNDERWEIGHT,
+}
+
+STATUS_TO_SEVERITY: dict[NutritionalStatus, AlertSeverity | None] = {
+    NutritionalStatus.NORMAL: None,
+    NutritionalStatus.OVERWEIGHT: AlertSeverity.MEDIUM,
+    NutritionalStatus.OBESE: AlertSeverity.HIGH,
+    NutritionalStatus.WASTED: AlertSeverity.HIGH,
+    NutritionalStatus.SEVERELY_WASTED: AlertSeverity.CRITICAL,
+    NutritionalStatus.UNDERWEIGHT: AlertSeverity.HIGH,
+    NutritionalStatus.SEVERE_UNDERWEIGHT: AlertSeverity.CRITICAL,
+}
+
+# Ranks severities so callers can pick the worst one present. Higher wins.
+SEVERITY_RANK: dict[AlertSeverity | None, int] = {
+    None: 0,
+    AlertSeverity.MEDIUM: 1,
+    AlertSeverity.HIGH: 2,
+    AlertSeverity.CRITICAL: 3,
+}
+
+
+def status_from_alerts(alerts) -> NutritionalStatus:
+    """Return the nutritional status a measurement's alert list represents.
+
+    An empty list means the measurement was taken and raised nothing, which is
+    NORMAL. Callers holding no measurement at all must not call this.
+    """
+    return ALERT_TO_STATUS[alerts[0].alert_type] if alerts else NutritionalStatus.NORMAL
+
+
 @dataclass
 class AlertDomain:
     """A clinical alert generated from a single measurement."""

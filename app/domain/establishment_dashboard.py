@@ -4,53 +4,9 @@ from enum import StrEnum
 from uuid import UUID
 
 from app.domain.establishment import EstablishmentDomain, UserEstablishmentStatus
-from app.domain.measurement import AlertDomain, AlertSeverity, AlertType
+from app.domain.measurement import AlertDomain, AlertSeverity, NutritionalStatus
 from app.domain.subject import Sex
 from app.domain.user import UserStatus
-
-
-class NutritionalStatus(StrEnum):
-    """Nutritional classification derived from a subject's latest measurement."""
-
-    NORMAL = "normal"
-    OVERWEIGHT = "overweight"
-    OBESE = "obese"
-    WASTED = "wasted"
-    SEVERELY_WASTED = "severely_wasted"
-    UNDERWEIGHT = "underweight"
-    SEVERE_UNDERWEIGHT = "severe_underweight"
-
-
-# ``evaluate_alerts`` emits at most one alert per measurement, so an alert type
-# maps one-to-one onto a nutritional status and "no alert" means NORMAL. If a
-# measurement ever carried several alerts, the service would have to collapse
-# them by picking the worst severity before using this mapping.
-ALERT_TO_STATUS: dict[AlertType, NutritionalStatus] = {
-    AlertType.SEVERELY_WASTED: NutritionalStatus.SEVERELY_WASTED,
-    AlertType.WASTED: NutritionalStatus.WASTED,
-    AlertType.OVERWEIGHT: NutritionalStatus.OVERWEIGHT,
-    AlertType.OBESE: NutritionalStatus.OBESE,
-    AlertType.SEVERE_UNDERWEIGHT: NutritionalStatus.SEVERE_UNDERWEIGHT,
-    AlertType.UNDERWEIGHT: NutritionalStatus.UNDERWEIGHT,
-}
-
-STATUS_TO_SEVERITY: dict[NutritionalStatus, AlertSeverity | None] = {
-    NutritionalStatus.NORMAL: None,
-    NutritionalStatus.OVERWEIGHT: AlertSeverity.MEDIUM,
-    NutritionalStatus.OBESE: AlertSeverity.HIGH,
-    NutritionalStatus.WASTED: AlertSeverity.HIGH,
-    NutritionalStatus.SEVERELY_WASTED: AlertSeverity.CRITICAL,
-    NutritionalStatus.UNDERWEIGHT: AlertSeverity.HIGH,
-    NutritionalStatus.SEVERE_UNDERWEIGHT: AlertSeverity.CRITICAL,
-}
-
-# Ranks severities so the service can pick the worst one present. Higher wins.
-SEVERITY_RANK: dict[AlertSeverity | None, int] = {
-    None: 0,
-    AlertSeverity.MEDIUM: 1,
-    AlertSeverity.HIGH: 2,
-    AlertSeverity.CRITICAL: 3,
-}
 
 
 class EstablishmentSubjectSortOrder(StrEnum):

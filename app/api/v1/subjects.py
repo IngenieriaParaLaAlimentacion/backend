@@ -15,6 +15,7 @@ from app.domain.user import UserRole
 from app.schemas.measurement_schema import SubjectEvolutionResponse
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.subject_schema import (
+    SubjectDetailResponse,
     SubjectRequest,
     SubjectResponse,
     SubjectSummaryResponse,
@@ -63,10 +64,15 @@ async def create_subject(
 
 @router.get(
     "/{subject_id}",
-    response_model=SubjectResponse,
+    response_model=SubjectDetailResponse,
     status_code=status.HTTP_200_OK,
     summary="Get a subject by ID",
-    description="Returns a subject's data. Accessible by all authenticated roles.",
+    description=(
+        "Returns a subject's data together with their latest measurement across "
+        "every establishment and the nutritional status derived from it. Both "
+        "are null when the subject has never been measured, which is distinct "
+        "from a `normal` status. Accessible by all authenticated roles."
+    ),
     responses={
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Subject not found"},
@@ -76,10 +82,10 @@ async def get_subject(
     subject_id: UUID,
     _: UserActor = Depends(require_any),
     service: SubjectService = Depends(get_subject_service),
-) -> SubjectResponse:
-    """Return a subject by id."""
+) -> SubjectDetailResponse:
+    """Return a subject by id, enriched with their latest measurement."""
     subject = await service.get_subject(subject_id)
-    return SubjectResponse.model_validate(subject)
+    return SubjectDetailResponse.model_validate(subject)
 
 
 @router.get(

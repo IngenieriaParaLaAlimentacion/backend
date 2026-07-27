@@ -1,10 +1,12 @@
 import uuid
-from datetime import date
+from datetime import date, datetime, timezone
 from math import ceil
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from app.domain.measurement import AlertSeverity, AlertType, NutritionalStatus
 from app.domain.pagination import PaginatedResult
 from app.domain.subject import Sex, SubjectBase, SubjectDomain
 from app.domain.subject_event import SubjectEventType
@@ -49,15 +51,45 @@ def make_subject():
 def make_uow(make_subject):
     """Return a factory that builds a mock UnitOfWork for SubjectService."""
 
-    def _make(listing=None, total=0):
+    def _make(listing=None, total=0, latest_measurement=None):
         uow = AsyncMock()
         uow.subject_repo.create = AsyncMock(return_value=make_subject())
         uow.subject_repo.get_subject_listing = AsyncMock(
             return_value=(listing or [], total)
         )
+        # Defaults to "never measured". Without an explicit None an AsyncMock
+        # would hand back a truthy mock and the detail builder would try to read
+        # alerts off it.
+        uow.measurement_repo.get_latest_for_subject = AsyncMock(
+            return_value=latest_measurement
+        )
         uow.subject_event_repo.append = AsyncMock()
         uow.commit = AsyncMock()
         return uow
+
+    return _make
+
+
+@pytest.fixture
+def make_measurement():
+    """Return a factory for an ORM-like Measurement with establishment and alerts."""
+
+    def _make(alerts=None):
+        establishment = MagicMock()
+        establishment.id = uuid.uuid4()
+        establishment.name = "Comedor Norte"
+        establishment.city = "La Plata"
+        establishment.province = "Buenos Aires"
+
+        m = MagicMock()
+        m.id = uuid.uuid4()
+        m.measured_at = datetime(2026, 7, 20, tzinfo=timezone.utc)
+        m.weight_kg = 21.0
+        m.height_cm = 118.0
+        m.bmi = 15.08
+        m.establishment = establishment
+        m.alerts = alerts or []
+        return m
 
     return _make
 
@@ -229,6 +261,67 @@ class TestGetSubject:
 
         with pytest.raises(SubjectNotFoundError):
             await service.get_subject(uuid.uuid4())
+
+    @pytest.mark.asyncio
+    async def test_never_measured_subject_has_no_status(self, make_subject, make_uow):
+        subject = make_subject()
+        uow = make_uow(latest_measurement=None)
+        uow.subject_repo.get_by_id = AsyncMock(return_value=subject)
+
+        result = await SubjectService(uow).get_subject(subject.id)
+
+        # None, not NORMAL: "never measured" is not a clinical reading.
+        assert result.nutritional_status is None
+        assert result.latest_measurement is None
+
+    @pytest.mark.asyncio
+    async def test_measured_subject_without_alerts_is_normal(
+        self, make_subject, make_uow, make_measurement
+    ):
+        subject = make_subject()
+        uow = make_uow(latest_measurement=make_measurement(alerts=[]))
+        uow.subject_repo.get_by_id = AsyncMock(return_value=subject)
+
+        result = await SubjectService(uow).get_subject(subject.id)
+
+        assert result.nutritional_status == NutritionalStatus.NORMAL
+        assert result.latest_measurement is not None
+
+    @pytest.mark.asyncio
+    async def test_status_is_derived_from_the_latest_alert(
+        self, make_subject, make_uow, make_measurement
+    ):
+        alert = SimpleNamespace(
+            id=uuid.uuid4(),
+            measurement_id=uuid.uuid4(),
+            alert_type=AlertType.WASTED,
+            severity=AlertSeverity.HIGH,
+            detail="...",
+            created_at=datetime(2026, 7, 20, tzinfo=timezone.utc),
+        )
+        subject = make_subject()
+        uow = make_uow(latest_measurement=make_measurement(alerts=[alert]))
+        uow.subject_repo.get_by_id = AsyncMock(return_value=subject)
+
+        result = await SubjectService(uow).get_subject(subject.id)
+
+        assert result.nutritional_status == NutritionalStatus.WASTED
+        assert result.latest_measurement.alerts[0].alert_type == AlertType.WASTED
+
+    @pytest.mark.asyncio
+    async def test_latest_measurement_carries_its_establishment(
+        self, make_subject, make_uow, make_measurement
+    ):
+        # The badge is the subject's global latest reading, so clients need to
+        # know which comedor it came from to label it.
+        subject = make_subject()
+        uow = make_uow(latest_measurement=make_measurement())
+        uow.subject_repo.get_by_id = AsyncMock(return_value=subject)
+
+        result = await SubjectService(uow).get_subject(subject.id)
+
+        assert result.latest_measurement.establishment.name == "Comedor Norte"
+        assert result.latest_measurement.bmi == 15.08
 
 
 class TestGetSubjectsPaginated:

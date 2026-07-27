@@ -115,6 +115,22 @@ class MeasurementRepository:
             self.db, base_query, count_query, order_by, limit, offset
         )
 
+    async def get_latest_for_subject(self, subject_id: UUID) -> Measurement | None:
+        """Return a subject's most recent measurement across every establishment.
+
+        Returns None when the subject has never been measured; callers must not
+        collapse that into a "normal" reading. ``id`` breaks ties between
+        measurements sharing ``measured_at`` so the pick is deterministic.
+        """
+        result = await self.db.execute(
+            select(Measurement)
+            .where(Measurement.subject_id == subject_id)
+            .options(selectinload(Measurement.establishment))
+            .order_by(desc(Measurement.measured_at), desc(Measurement.id))
+            .limit(1)
+        )
+        return result.scalar_one_or_none()
+
     async def get_subject_evolution(
         self,
         subject_id: UUID,

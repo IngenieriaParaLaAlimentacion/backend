@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 import pytest
 import pytest_asyncio
@@ -223,7 +223,22 @@ class TestGetSubject:
             f"{SUBJECTS_URL}/{created['id']}", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_200_OK
-        assert response.json() == created
+        # The detail view is a superset of the create response: it adds the
+        # subject's latest measurement and its derived status.
+        assert response.json().items() >= created.items()
+
+    async def test_never_measured_subject_has_null_status(
+        self, client, field_worker_headers
+    ):
+        """No measurement is not 'normal' -- both fields must come back null."""
+        created = (await _upload(client, field_worker_headers)).json()
+        body = (
+            await client.get(
+                f"{SUBJECTS_URL}/{created['id']}", headers=field_worker_headers
+            )
+        ).json()
+        assert body["nutritional_status"] is None
+        assert body["latest_measurement"] is None
 
     async def test_unknown_id_returns_404(self, client, field_worker_headers):
         """A random UUID that was never registered returns 404."""
@@ -236,6 +251,134 @@ class TestGetSubject:
         """No token on GET should return 401."""
         response = await client.get(f"{SUBJECTS_URL}/{uuid.uuid4()}")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+class TestGetSubjectLatestMeasurement:
+    """The detail view carries the subject's latest reading across all comedores."""
+
+    @pytest_asyncio.fixture
+    async def measured_subject(self, app, field_worker_user_id):
+        """Seed one subject measured twice, at two different establishments.
+
+        The older reading is at "Comedor Viejo" and is severely wasted; the newer
+        one is at "Comedor Nuevo" and is healthy. A per-establishment view of
+        Comedor Viejo would report the subject as severely wasted, so this fixture
+        pins down that the subject detail reports the global latest instead.
+        """
+        from app.db.database import AsyncSessionLocal
+        from app.domain.subject import Sex
+        from app.models.establishment import Establishment
+        from app.models.measurement import Measurement
+        from app.models.measurement_alert import MeasurementAlert
+        from app.models.subject import Subject
+        from app.utils.anthropometry import evaluate_alerts
+
+        async with AsyncSessionLocal() as session:
+            old_est = Establishment(
+                name="Comedor Viejo",
+                formatted_address="Calle 1",
+                latitude=-34.9,
+                longitude=-57.9,
+                place_id=f"place-{uuid.uuid4().hex[:8]}",
+                city="La Plata",
+                province="Buenos Aires",
+            )
+            new_est = Establishment(
+                name="Comedor Nuevo",
+                formatted_address="Calle 2",
+                latitude=-31.4,
+                longitude=-64.2,
+                place_id=f"place-{uuid.uuid4().hex[:8]}",
+                city="Cordoba",
+                province="Cordoba",
+            )
+            subject = Subject(
+                dni=71234567,
+                sex=Sex.MALE,
+                name="Nico",
+                last_name="Medido",
+                birth_date=date(2018, 1, 1),
+                is_rural=False,
+                is_indigenous=False,
+            )
+            session.add_all([old_est, new_est, subject])
+            await session.flush()
+
+            created = []
+            for weight, height, est, when in [
+                (10.0, 120.0, old_est, datetime(2024, 1, 10, tzinfo=timezone.utc)),
+                (20.0, 118.0, new_est, datetime(2024, 6, 10, tzinfo=timezone.utc)),
+            ]:
+                bmi = weight / (height / 100) ** 2
+                measurement = Measurement(
+                    subject_id=subject.id,
+                    responsible_id=field_worker_user_id,
+                    establishment_id=est.id,
+                    weight_kg=weight,
+                    height_cm=height,
+                    bmi=bmi,
+                    measured_at=when,
+                )
+                session.add(measurement)
+                created.append((measurement, bmi, when))
+
+            await session.flush()
+            for measurement, bmi, when in created:
+                for alert_type, severity, detail in evaluate_alerts(
+                    bmi=bmi,
+                    sex=subject.sex,
+                    birth_date=subject.birth_date,
+                    measured_at=when,
+                ):
+                    session.add(
+                        MeasurementAlert(
+                            measurement_id=measurement.id,
+                            alert_type=alert_type,
+                            severity=severity,
+                            detail=detail,
+                        )
+                    )
+            await session.commit()
+            return subject.id
+
+    @pytest_asyncio.fixture
+    async def body(self, client, field_worker_headers, measured_subject):
+        response = await client.get(
+            f"{SUBJECTS_URL}/{measured_subject}", headers=field_worker_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        return response.json()
+
+    async def test_reports_the_most_recent_measurement(self, body):
+        assert body["latest_measurement"]["measured_at"].startswith("2024-06-10")
+        assert body["latest_measurement"]["weight_kg"] == 20.0
+
+    async def test_latest_wins_across_establishments(self, body):
+        # The superseded reading was taken at a different comedor and was
+        # severely wasted; the global latest is the healthy one.
+        assert body["latest_measurement"]["establishment"]["name"] == "Comedor Nuevo"
+        assert body["nutritional_status"] == "normal"
+        assert body["latest_measurement"]["alerts"] == []
+
+    async def test_carries_the_establishment_reference(self, body):
+        establishment = body["latest_measurement"]["establishment"]
+        assert {"id", "name", "city", "province"} == establishment.keys()
+
+    async def test_measurement_shape(self, body):
+        assert {
+            "id",
+            "measured_at",
+            "weight_kg",
+            "height_cm",
+            "bmi",
+            "establishment",
+            "alerts",
+        } == body["latest_measurement"].keys()
+
+    async def test_still_carries_the_plain_subject_fields(self, body):
+        assert body["dni"] == 71234567
+        assert body["last_name"] == "Medido"
+        assert body["birth_date"] == "2018-01-01"
 
 
 class TestGetSubjectsPaginated:

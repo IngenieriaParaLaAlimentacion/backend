@@ -3,9 +3,6 @@ from uuid import UUID
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.establishment import EstablishmentDomain
 from app.domain.establishment_dashboard import (
-    ALERT_TO_STATUS,
-    SEVERITY_RANK,
-    STATUS_TO_SEVERITY,
     EstablishmentAlertStatusDomain,
     EstablishmentDashboardDomain,
     EstablishmentFieldWorkerItemDomain,
@@ -14,8 +11,14 @@ from app.domain.establishment_dashboard import (
     EstablishmentSubjectItemDomain,
     EstablishmentSubjectListingParams,
     LatestMeasurementDomain,
-    NutritionalStatus,
     StatusDistributionEntryDomain,
+)
+from app.domain.measurement import (
+    ALERT_TO_STATUS,
+    SEVERITY_RANK,
+    STATUS_TO_SEVERITY,
+    NutritionalStatus,
+    status_from_alerts,
 )
 from app.domain.pagination import PaginatedResult
 from app.exceptions.domain_exceptions import EstablishmentNotFoundError
@@ -179,12 +182,6 @@ class EstablishmentDashboardService:
     ) -> EstablishmentSubjectItemDomain:
         """Build a listing item from a subject's latest measurement."""
         subject = measurement.subject
-        alerts = measurement.alerts
-        status = (
-            ALERT_TO_STATUS[alerts[0].alert_type]
-            if alerts
-            else NutritionalStatus.NORMAL
-        )
         return EstablishmentSubjectItemDomain(
             id=subject.id,
             dni=subject.dni,
@@ -194,7 +191,7 @@ class EstablishmentDashboardService:
             birth_date=subject.birth_date,
             age_months=age_in_months(subject.birth_date, measurement.measured_at),
             measurement_count=measurement_count,
-            nutritional_status=status,
+            nutritional_status=status_from_alerts(measurement.alerts),
             latest_measurement=LatestMeasurementDomain.from_db(measurement),
         )
 
