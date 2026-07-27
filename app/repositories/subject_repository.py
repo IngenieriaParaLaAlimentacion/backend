@@ -11,6 +11,24 @@ from app.models.subject import Subject
 from app.utils.db import escape_like, execute_paginated
 
 
+def subject_search_condition(search: str | None):
+    """Case-insensitive name/last-name match for ``search``, or None.
+
+    DNI is matched exactly, and only when the term is fully numeric. Returns
+    None when ``search`` is empty so callers can skip the filter. Shared with
+    the dashboard so both subject listings search identically.
+    """
+    if not search:
+        return None
+    search_term = f"%{escape_like(search)}%"
+    condition = Subject.name.ilike(search_term, escape="\\") | Subject.last_name.ilike(
+        search_term, escape="\\"
+    )
+    if search.isdigit():
+        condition = condition | (Subject.dni == int(search))
+    return condition
+
+
 class SubjectRepository:
     """Persistence operations for Subject entities."""
 
@@ -97,13 +115,8 @@ class SubjectRepository:
         base_query = select(Subject)
         count_query = select(func.count()).select_from(Subject)
 
-        if search:
-            search_term = f"%{escape_like(search)}%"
-            condition = Subject.name.ilike(
-                search_term, escape="\\"
-            ) | Subject.last_name.ilike(search_term, escape="\\")
-            if search.isdigit():
-                condition = condition | (Subject.dni == int(search))
+        condition = subject_search_condition(search)
+        if condition is not None:
             base_query = base_query.where(condition)
             count_query = count_query.where(condition)
 

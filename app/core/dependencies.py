@@ -12,6 +12,7 @@ from app.services.activity_service import ActivityService
 from app.services.admin_service import AdminService
 from app.services.analytics_service import AnalyticsService
 from app.services.auth_service import AuthService
+from app.services.establishment_dashboard_service import EstablishmentDashboardService
 from app.services.establishment_service import EstablishmentService
 from app.services.measurement_service import MeasurementService
 from app.services.subject_service import SubjectService
@@ -85,6 +86,14 @@ async def get_analytics_service() -> AsyncGenerator[AnalyticsService, None]:
     async with UnitOfWork() as uow:
         yield AnalyticsService(uow)
 
+        
+async def get_establishment_dashboard_service() -> AsyncGenerator[
+    EstablishmentDashboardService, None
+]:
+    """Provide a DashboardService backed by a fresh UnitOfWork."""
+    async with UnitOfWork() as uow:
+        yield EstablishmentDashboardService(uow)
+
 
 def _decode_verified_payload(token: str) -> dict:
     """Verify a JWT signature and return its payload.
@@ -92,7 +101,7 @@ def _decode_verified_payload(token: str) -> dict:
     Raises UnauthorizedError if the token is malformed or has an invalid signature.
     """
     try:
-        claimed_role = jwt.get_unverified_claims(token).get("role")
+        claimed_role: str = jwt.get_unverified_claims(token).get("role", "")
     except JWTError:
         raise UnauthorizedError()
 
