@@ -2,8 +2,8 @@ from fastapi import APIRouter
 
 from app.api.v1 import (
     admin,
+    analytics,
     auth,
-    dashboard,
     establishments,
     measurements,
     subjects,
@@ -22,4 +22,4 @@ v1_router.include_router(subjects.router, tags=["Subjects V1"])
 v1_router.include_router(surveys.router, tags=["Surveys V1"])
 v1_router.include_router(survey_responses.router, tags=["Survey Responses V1"])
 v1_router.include_router(users.router, tags=["Users V1"])
-v1_router.include_router(dashboard.router, tags=["Dashboard V1"])
+v1_router.include_router(analytics.router, tags=["Analytics V1"])

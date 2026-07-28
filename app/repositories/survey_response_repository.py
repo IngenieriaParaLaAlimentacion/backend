@@ -9,8 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.domain.survey_response import (
-    DashboardIndicatorsParams,
     SurveyResponseListingParams,
+    SurveyResponseSummaryParams,
 )
 from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.establishment import Establishment
@@ -36,7 +36,7 @@ class SurveyResponseRepository:
     @staticmethod
     def _apply_filters(
         query: Any,
-        params: SurveyResponseListingParams | DashboardIndicatorsParams,
+        params: SurveyResponseListingParams | SurveyResponseSummaryParams,
         survey_id: UUID | None = None,
     ) -> Any:
         """Applies common filters and conditional joins to a SQLAlchemy query."""
@@ -186,10 +186,10 @@ class SurveyResponseRepository:
 
         return list(rows), total
 
-    async def get_dashboard_indicators(
-        self, params: DashboardIndicatorsParams
+    async def get_survey_response_summary(
+        self, params: SurveyResponseSummaryParams
     ) -> tuple[int, int, datetime | None]:
-        """Return aggregated indicators (response_count, establishments_count,
+        """Return aggregated metrics (response_count, establishments_count,
         last_event_at)."""
         base_query = select(
             func.count(SurveyResponse.id),

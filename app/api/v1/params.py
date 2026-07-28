@@ -14,8 +14,8 @@ from app.domain.survey import (
     SurveySortOrder,
 )
 from app.domain.survey_response import (
-    DashboardIndicatorsParams,
     SurveyResponseListingParams,
+    SurveyResponseSummaryParams,
 )
 from app.exceptions.domain_exceptions import InvalidListingFilterError
 
@@ -140,7 +140,7 @@ class SurveyResponseListingQuery:
 
 
 @dataclass
-class DashboardIndicatorsQuery:
+class SurveyResponseSummaryQuery:
     survey_id: Annotated[UUID | None, Query()] = None
     establishment_id: Annotated[UUID | None, Query()] = None
     event_at_from: Annotated[datetime | None, Query()] = None
@@ -156,8 +156,8 @@ class DashboardIndicatorsQuery:
         ):
             raise InvalidListingFilterError("event_at_from cannot be after event_at_to")
 
-    def to_domain(self) -> DashboardIndicatorsParams:
-        return DashboardIndicatorsParams(
+    def to_domain(self) -> SurveyResponseSummaryParams:
+        return SurveyResponseSummaryParams(
             survey_id=self.survey_id,
             establishment_id=self.establishment_id,
             event_at_from=self.event_at_from,

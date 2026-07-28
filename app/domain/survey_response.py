@@ -191,8 +191,8 @@ class SurveyResponseListingParams:
 
 
 @dataclass
-class DashboardIndicatorsParams:
-    """Filters for the dashboard's general indicators panel. Same shape
+class SurveyResponseSummaryParams:
+    """Filters for the survey response summary endpoint. Same shape
     as SurveyResponseListingParams plus an optional survey_id, since here no
     survey is preselected — every filter is optional."""
 
@@ -209,10 +209,10 @@ class DashboardIndicatorsParams:
 
 
 @dataclass
-class DashboardIndicatorsDomain:
-    """General dashboard indicators: total responses, distinct
+class SurveyResponseSummaryDomain:
+    """Aggregated metrics over survey responses: total responses, distinct
     participating establishments, and the most recent event_at — all
-    computed over whatever DashboardIndicatorsParams filtered."""
+    computed over whatever SurveyResponseSummaryParams filtered."""
 
     response_count: int
     participating_establishments_count: int

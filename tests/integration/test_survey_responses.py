@@ -1265,10 +1265,10 @@ class TestListFilters:
         assert response.json()["total"] == 1
 
 
-DASHBOARD_URL = "/api/v1/dashboard"
+ANALYTICS_URL = "/api/v1/analytics"
 
 
-class TestDashboardIndicators:
+class TestSurveyResponseSummary:
     async def test_counts_all_responses_with_no_filters(
         self, client, db_establishment, admin_user
     ):
@@ -1296,7 +1296,8 @@ class TestDashboardIndicators:
             headers=headers,
         )
 
-        response = await client.get(f"{DASHBOARD_URL}/indicators", headers=headers)
+        url = f"{ANALYTICS_URL}/survey-response-summary"
+        response = await client.get(url, headers=headers)
 
         assert response.status_code == status.HTTP_200_OK
         body = response.json()
@@ -1329,7 +1330,8 @@ class TestDashboardIndicators:
             headers=headers,
         )
 
-        response = await client.get(f"{DASHBOARD_URL}/indicators", headers=headers)
+        url = f"{ANALYTICS_URL}/survey-response-summary"
+        response = await client.get(url, headers=headers)
 
         assert response.json()["participating_establishments_count"] == 2
 
@@ -1353,7 +1355,7 @@ class TestDashboardIndicators:
         )
 
         response = await client.get(
-            f"{DASHBOARD_URL}/indicators",
+            f"{ANALYTICS_URL}/survey-response-summary",
             params={"survey_id": survey_a["id"]},
             headers=headers,
         )
@@ -1388,7 +1390,7 @@ class TestDashboardIndicators:
         )
 
         response = await client.get(
-            f"{DASHBOARD_URL}/indicators",
+            f"{ANALYTICS_URL}/survey-response-summary",
             params={"event_at_from": "2024-05-01T00:00:00Z"},
             headers=headers,
         )
@@ -1422,7 +1424,7 @@ class TestDashboardIndicators:
         )
 
         response = await client.get(
-            f"{DASHBOARD_URL}/indicators",
+            f"{ANALYTICS_URL}/survey-response-summary",
             params={"city": "Buenos Aires"},
             headers=headers,
         )
@@ -1433,7 +1435,8 @@ class TestDashboardIndicators:
         self, client, admin_user
     ):
         headers, _ = admin_user
-        response = await client.get(f"{DASHBOARD_URL}/indicators", headers=headers)
+        url = f"{ANALYTICS_URL}/survey-response-summary"
+        response = await client.get(url, headers=headers)
 
         body = response.json()
         assert body["response_count"] == 0
@@ -1443,7 +1446,7 @@ class TestDashboardIndicators:
     async def test_invalid_date_range_returns_400(self, client, admin_user):
         headers, _ = admin_user
         response = await client.get(
-            f"{DASHBOARD_URL}/indicators",
+            f"{ANALYTICS_URL}/survey-response-summary",
             params={
                 "event_at_from": "2024-06-01T00:00:00Z",
                 "event_at_to": "2024-01-01T00:00:00Z",
@@ -1454,16 +1457,18 @@ class TestDashboardIndicators:
 
     async def test_field_worker_forbidden(self, client, field_worker_without_access):
         headers, _ = field_worker_without_access
-        response = await client.get(f"{DASHBOARD_URL}/indicators", headers=headers)
+        url = f"{ANALYTICS_URL}/survey-response-summary"
+        response = await client.get(url, headers=headers)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     async def test_analyst_allowed(self, client, analyst_user):
         headers, _ = analyst_user
-        response = await client.get(f"{DASHBOARD_URL}/indicators", headers=headers)
+        url = f"{ANALYTICS_URL}/survey-response-summary"
+        response = await client.get(url, headers=headers)
         assert response.status_code == status.HTTP_200_OK
 
     async def test_unauthenticated_returns_401(self, client):
-        response = await client.get(f"{DASHBOARD_URL}/indicators")
+        response = await client.get(f"{ANALYTICS_URL}/survey-response-summary")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
