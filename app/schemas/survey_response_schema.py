@@ -5,6 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.domain.survey import ResponseType
+from app.schemas.common_schemas import NamedRefResponse
 from app.schemas.measurement_schema import EstablishmentRefResponse
 
 AnswerValue = str | int | float | list[str]
@@ -35,6 +36,14 @@ class SurveyResponseRequest(BaseModel):
     )
 
     _check_event_at = field_validator("event_at")(validate_event_at)
+
+
+class SurveyRefResponse(NamedRefResponse):
+    pass
+
+
+class UserRefResponse(NamedRefResponse):
+    pass
 
 
 class SurveyResponseEditRequest(BaseModel):
@@ -71,13 +80,6 @@ class SurveyResponseResponse(BaseModel):
     updated_at: datetime
 
 
-class SurveyRefResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID
-    name: str
-
-
 class SurveyResponseListItem(BaseModel):
     """An enriched response row for the activity-feed view."""
 
@@ -87,13 +89,6 @@ class SurveyResponseListItem(BaseModel):
     event_at: datetime
     survey: SurveyRefResponse
     establishment: EstablishmentRefResponse
-
-
-class UserRefResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID
-    name: str
 
 
 class SurveyResponseDashboardItem(BaseModel):
@@ -120,7 +115,7 @@ class QuestionAnswerResponse(BaseModel):
 
 
 class SurveyResponseDetailResponse(BaseModel):
-    """Full response detail for the dashboard: every question in the
+    """Full response detail for the dashboard (CA3): every question in the
     survey plus the value this specific user answered for it."""
 
     model_config = ConfigDict(from_attributes=True)
