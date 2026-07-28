@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, func
+from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship
 
@@ -11,6 +11,9 @@ class SurveyResponse(Base):
     """One individual's answers to a survey at an establishment."""
 
     __tablename__ = "survey_responses"
+    __table_args__ = (
+        Index("ix_survey_responses_survey_id_event_at", "survey_id", "event_at"),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     survey_id = Column(
