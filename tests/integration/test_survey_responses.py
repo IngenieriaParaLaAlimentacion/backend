@@ -1473,6 +1473,8 @@ class TestSurveyResponseSummary:
 
 
 class TestExport:
+    EXPORT_URL = f"{SURVEY_RESPONSES_URL}/{{survey_id}}/export"
+
     async def test_admin_can_export_xlsx(self, client, db_establishment, admin_user):
         headers, _ = admin_user
         survey = await _create_survey(client, headers)
@@ -1484,12 +1486,10 @@ class TestExport:
             headers=headers,
         )
 
+        url = self.EXPORT_URL.format(survey_id=survey["id"])
         response = await client.get(
-            f"{SURVEY_RESPONSES_URL}/export",
-            params={
-                "survey_id": survey["id"],
-                "establishment_id": str(db_establishment.id),
-            },
+            url,
+            params={"establishment_id": str(db_establishment.id)},
             headers=headers,
         )
 
@@ -1504,12 +1504,10 @@ class TestExport:
         fw_headers, _ = field_worker_with_access
         survey = await _create_survey(client, admin_headers)
 
+        url = self.EXPORT_URL.format(survey_id=survey["id"])
         response = await client.get(
-            f"{SURVEY_RESPONSES_URL}/export",
-            params={
-                "survey_id": survey["id"],
-                "establishment_id": str(db_establishment.id),
-            },
+            url,
+            params={"establishment_id": str(db_establishment.id)},
             headers=fw_headers,
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -1518,12 +1516,10 @@ class TestExport:
         self, client, db_establishment, admin_user
     ):
         headers, _ = admin_user
+        url = self.EXPORT_URL.format(survey_id=str(uuid.uuid4()))
         response = await client.get(
-            f"{SURVEY_RESPONSES_URL}/export",
-            params={
-                "survey_id": str(uuid.uuid4()),
-                "establishment_id": str(db_establishment.id),
-            },
+            url,
+            params={"establishment_id": str(db_establishment.id)},
             headers=headers,
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -1534,12 +1530,10 @@ class TestExport:
         headers, _ = admin_user
         survey = await _create_survey(client, headers)
 
+        url = self.EXPORT_URL.format(survey_id=survey["id"])
         response = await client.get(
-            f"{SURVEY_RESPONSES_URL}/export",
-            params={
-                "survey_id": survey["id"],
-                "establishment_id": str(db_establishment.id),
-            },
+            url,
+            params={"establishment_id": str(db_establishment.id)},
             headers=headers,
         )
         assert response.status_code == status.HTTP_200_OK

@@ -34,13 +34,13 @@ _submitter_or_editor = require_some(
 
 
 @router.get(
-    "/export",
-    summary="Export a survey's responses at one establishment",
+    "/{survey_id}/export",
+    summary="Export a survey's responses (optionally filtered by establishment)",
     description=(
-        "Export every response to a survey at one establishment into a "
-        "downloadable file including both response data and a visual "
-        "summary of indicators. Restricted to admins, analysts and "
-        "superadmins (dashboard use)."
+        "Export responses to a survey into a downloadable file including "
+        "both response data and a visual summary of indicators. Can optionally "
+        "be filtered by a specific establishment. Restricted to admins, analysts "
+        "and superadmins (dashboard use)."
     ),
     responses={
         **AUTH_RESPONSES,
@@ -54,14 +54,17 @@ async def export_survey_responses(
     actor: UserActor = Depends(require_analytics_reader),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> Response:
+
     exporter = get_exporter(format)
     file_bytes = await service.export(survey_id, actor, exporter, establishment_id)
+
     return Response(
         content=file_bytes,
         media_type=exporter.content_type,
         headers={
-            "Content-Disposition": f'attachment; \
-                filename="export.{exporter.file_extension}"'
+            "Content-Disposition": (
+                f'attachment; filename="export.{exporter.file_extension}"'
+            )
         },
     )
 
