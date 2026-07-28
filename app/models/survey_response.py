@@ -8,7 +8,7 @@ from .base import Base
 
 
 class SurveyResponse(Base):
-    """One individual's anonymous answers to a survey at an establishment."""
+    """One individual's answers to a survey at an establishment."""
 
     __tablename__ = "survey_responses"
 
