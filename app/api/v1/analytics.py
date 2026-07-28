@@ -1,15 +1,12 @@
 from fastapi import APIRouter, Depends, status
 
 from app.api.v1.params import AUTH_RESPONSES, SurveyResponseSummaryQuery
-from app.core.dependencies import get_analytics_service, require_some
+from app.core.dependencies import get_analytics_service, require_analytics_reader
 from app.domain import UserActor
-from app.domain.user import UserRole
 from app.schemas.analytics_schema import SurveyResponseSummaryResponse
 from app.services.analytics_service import AnalyticsService
 
 router = APIRouter(prefix="/analytics")
-
-_analytics_reader = require_some(UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN)
 
 
 @router.get(
@@ -29,7 +26,7 @@ _analytics_reader = require_some(UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPE
 )
 async def get_survey_response_summary(
     query: SurveyResponseSummaryQuery = Depends(),
-    actor: UserActor = Depends(_analytics_reader),
+    actor: UserActor = Depends(require_analytics_reader),
     service: AnalyticsService = Depends(get_analytics_service),
 ) -> SurveyResponseSummaryResponse:
     query.validate()

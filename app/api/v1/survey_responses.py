@@ -8,7 +8,11 @@ from app.api.v1.params import (
     PaginatedQueryParams,
     SurveyResponseListingQuery,
 )
-from app.core.dependencies import get_survey_response_service, require_some
+from app.core.dependencies import (
+    get_survey_response_service,
+    require_analytics_reader,
+    require_some,
+)
 from app.domain import UserActor
 from app.domain.user import UserRole
 from app.schemas.pagination import PaginatedResponse
@@ -27,8 +31,6 @@ router = APIRouter(prefix="/survey-responses")
 _submitter_or_editor = require_some(
     UserRole.FIELD_WORKER, UserRole.ADMIN, UserRole.SUPERADMIN
 )
-
-_dashboard_reader = require_some(UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN)
 
 
 @router.get(
@@ -49,7 +51,7 @@ async def export_survey_responses(
     survey_id: UUID,
     establishment_id: Optional[UUID] = Query(default=None),
     format: ExportFormat = ExportFormat.XLSX,
-    actor: UserActor = Depends(_dashboard_reader),
+    actor: UserActor = Depends(require_analytics_reader),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> Response:
     exporter = get_exporter(format)
@@ -108,7 +110,7 @@ async def list_survey_responses(
     survey_id: UUID,
     query: SurveyResponseListingQuery = Depends(),
     paginated: PaginatedQueryParams = Depends(),
-    actor: UserActor = Depends(_dashboard_reader),
+    actor: UserActor = Depends(require_analytics_reader),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> PaginatedResponse[SurveyResponseDashboardItem]:
     query.validate()
@@ -206,7 +208,7 @@ async def edit_survey_response(
 )
 async def get_survey_response_dashboard_detail(
     response_id: UUID,
-    actor: UserActor = Depends(_dashboard_reader),
+    actor: UserActor = Depends(require_analytics_reader),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> SurveyResponseDetailResponse:
     detail = await service.get_response_detail(response_id, actor)

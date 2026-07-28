@@ -168,6 +168,15 @@ def require_some(*roles: UserRole):
     return dep
 
 
+async def require_analytics_reader(
+    token: str = Depends(oauth2_scheme),
+) -> UserActor:
+    """Dependency that accepts admin, analyst and superadmin roles."""
+    return await _get_authenticated_actor(
+        token, {UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN}
+    )
+
+
 async def require_any(token: str = Depends(oauth2_scheme)) -> UserActor:
     """Dependency that accepts any authenticated role."""
     return await _get_authenticated_actor(
