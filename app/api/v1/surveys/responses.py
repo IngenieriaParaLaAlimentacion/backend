@@ -131,12 +131,13 @@ async def list_survey_responses(
     },
 )
 async def submit_survey_response(
+    survey_id: UUID,
     data: SurveyResponseRequest,
     response: Response,
     actor: UserActor = Depends(_submitter_or_editor),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> SurveyResponseResponse:
-    survey_response, created = await service.submit(data, actor)
+    survey_response, created = await service.submit(survey_id, data, actor)
     if not created:
         response.status_code = status.HTTP_200_OK
     return SurveyResponseResponse.model_validate(survey_response)

@@ -25,7 +25,6 @@ class SurveyResponseRequest(BaseModel):
             "the same id are idempotent. When omitted, the server generates one."
         ),
     )
-    survey_id: UUID
     establishment_id: UUID
     answers: dict[str, AnswerValue]
     event_at: datetime = Field(

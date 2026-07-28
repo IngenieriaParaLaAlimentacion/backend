@@ -319,9 +319,8 @@ class TestLockedAfterResponses:
         keep = created["questions"][0]
 
         submit = await client.post(
-            "/api/v1/survey-responses",
+            f"{SURVEYS_URL}/{survey_id}/responses",
             json={
-                "survey_id": survey_id,
                 "establishment_id": str(db_establishment.id),
                 "answers": {keep["id"]: keep["options"][0]["id"]},
                 "event_at": "2024-06-01T12:00:00Z",

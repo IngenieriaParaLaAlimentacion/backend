@@ -157,7 +157,7 @@ class SurveyResponseService:
         return SurveyResponseDomain.from_db(response)
 
     async def submit(
-        self, data: SurveyResponseRequest, actor: UserActor
+        self, survey_id: UUID, data: SurveyResponseRequest, actor: UserActor
     ) -> tuple[SurveyResponseDomain, bool]:
         """Idempotently register a survey response.
 
@@ -179,7 +179,7 @@ class SurveyResponseService:
                 await self._check_establishment_access(actor, existing.establishment_id)
                 return SurveyResponseDomain.from_db(existing), False
 
-        survey = await self._get_survey_or_raise(data.survey_id)
+        survey = await self._get_survey_or_raise(survey_id)
         await self._get_establishment_or_raise(data.establishment_id)
         await self._check_establishment_access(actor, data.establishment_id)
         self._assert_establishment_in_survey_scope(survey, data.establishment_id)
@@ -189,7 +189,7 @@ class SurveyResponseService:
         try:
             response = await self.uow.survey_response_repo.create(
                 id=data.id,
-                survey_id=data.survey_id,
+                survey_id=survey_id,
                 establishment_id=data.establishment_id,
                 submitted_by_id=actor.user_id,
                 answers=answers,
