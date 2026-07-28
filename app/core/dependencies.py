@@ -168,12 +168,22 @@ def require_some(*roles: UserRole):
     return dep
 
 
-async def require_analytics_reader(
+async def require_admin_analyst_or_superadmin(
     token: str = Depends(oauth2_scheme),
 ) -> UserActor:
     """Dependency that accepts admin, analyst and superadmin roles."""
     return await _get_authenticated_actor(
         token, {UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN}
+    )
+
+
+async def require_field_worker_admin_or_superadmin(
+    token: str = Depends(oauth2_scheme),
+) -> UserActor:
+    """Dependency that accepts field worker, admin and superadmin roles."""
+
+    return await _get_authenticated_actor(
+        token, {UserRole.FIELD_WORKER, UserRole.ADMIN, UserRole.SUPERADMIN}
     )
 
 
