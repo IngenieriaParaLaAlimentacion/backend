@@ -45,6 +45,13 @@ _submitter_or_editor = require_some(
     responses={
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Survey not found"},
+        status.HTTP_200_OK: {
+            "content": {
+                # Excel
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {},
+            },
+            "description": "The exported file in the requested format.",
+        },
     },
 )
 async def export_survey_responses(
