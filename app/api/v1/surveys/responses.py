@@ -10,7 +10,7 @@ from app.api.v1.params import (
 )
 from app.core.dependencies import (
     get_survey_response_service,
-    require_analytics_reader,
+    require_admin_analyst_or_superadmin,
     require_some,
 )
 from app.domain import UserActor
@@ -26,7 +26,7 @@ from app.schemas.survey_response_schema import (
 from app.services.exporters.factory import ExportFormat, get_exporter
 from app.services.survey_response_service import SurveyResponseService
 
-router = APIRouter(prefix="/survey-responses")
+router = APIRouter(prefix="/surveys/{survey_id}/responses")
 
 _submitter_or_editor = require_some(
     UserRole.FIELD_WORKER, UserRole.ADMIN, UserRole.SUPERADMIN
@@ -34,37 +34,28 @@ _submitter_or_editor = require_some(
 
 
 @router.get(
-    "/{survey_id}/export",
+    "/export",
     summary="Export a survey's responses (optionally filtered by establishment)",
     description=(
         "Export responses to a survey into a downloadable file including "
         "both response data and a visual summary of indicators. Can optionally "
         "be filtered by a specific establishment. Restricted to admins, analysts "
-        "and superadmins (dashboard use)."
+        "and superadmins."
     ),
     responses={
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Survey not found"},
-        status.HTTP_200_OK: {
-            "content": {
-                # Excel
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {},
-            },
-            "description": "The exported file in the requested format.",
-        },
     },
 )
 async def export_survey_responses(
     survey_id: UUID,
     establishment_id: Optional[UUID] = Query(default=None),
     format: ExportFormat = ExportFormat.XLSX,
-    actor: UserActor = Depends(require_analytics_reader),
+    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> Response:
-
     exporter = get_exporter(format)
     file_bytes = await service.export(survey_id, actor, exporter, establishment_id)
-
     return Response(
         content=file_bytes,
         media_type=exporter.content_type,
@@ -77,29 +68,6 @@ async def export_survey_responses(
 
 
 @router.get(
-    "/{response_id}",
-    response_model=SurveyResponseResponse,
-    summary="Get a survey response",
-    description=(
-        "Return a response's full detail, including its answers. Restricted to "
-        "the original submitter or an admin/superadmin — the same actors allowed "
-        "to edit it."
-    ),
-    responses={
-        **AUTH_RESPONSES,
-        status.HTTP_404_NOT_FOUND: {"description": "Response not found"},
-    },
-)
-async def get_survey_response(
-    response_id: UUID,
-    actor: UserActor = Depends(_submitter_or_editor),
-    service: SurveyResponseService = Depends(get_survey_response_service),
-) -> SurveyResponseResponse:
-    survey_response = await service.get(response_id, actor)
-    return SurveyResponseResponse.model_validate(survey_response)
-
-
-@router.get(
     "",
     response_model=PaginatedResponse[SurveyResponseDashboardItem],
     summary="List responses to a survey",
@@ -108,7 +76,7 @@ async def get_survey_response(
         "first, each showing who submitted it, the establishment, and the "
         "survey date. Filter by establishment, event date range, and/or the "
         "establishment's city/province. Restricted to admins, analysts and "
-        "superadmins (dashboard use)."
+        "superadmins."
     ),
     responses={
         **AUTH_RESPONSES,
@@ -120,10 +88,9 @@ async def list_survey_responses(
     survey_id: UUID,
     query: SurveyResponseListingQuery = Depends(),
     paginated: PaginatedQueryParams = Depends(),
-    actor: UserActor = Depends(require_analytics_reader),
+    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> PaginatedResponse[SurveyResponseDashboardItem]:
-    query.validate()
     result = await service.list_by_survey(
         survey_id,
         actor,
@@ -175,6 +142,30 @@ async def submit_survey_response(
     return SurveyResponseResponse.model_validate(survey_response)
 
 
+@router.get(
+    "/{response_id}",
+    response_model=SurveyResponseDetailResponse,
+    summary="Get a survey response with full detail",
+    description=(
+        "Return one response with every question in the survey and the value "
+        "that was registered, with choice answers resolved to option text. "
+        "Includes who submitted it, the establishment, and the survey reference. "
+        "Restricted to admins, analysts and superadmins."
+    ),
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {"description": "Response not found"},
+    },
+)
+async def get_survey_response(
+    response_id: UUID,
+    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
+    service: SurveyResponseService = Depends(get_survey_response_service),
+) -> SurveyResponseDetailResponse:
+    detail = await service.get_response_detail(response_id, actor)
+    return SurveyResponseDetailResponse.model_validate(detail)
+
+
 @router.put(
     "/{response_id}",
     response_model=SurveyResponseResponse,
@@ -198,28 +189,3 @@ async def edit_survey_response(
 ) -> SurveyResponseResponse:
     survey_response = await service.edit(response_id, data, actor)
     return SurveyResponseResponse.model_validate(survey_response)
-
-
-@router.get(
-    "/{response_id}/dashboard-detail",
-    response_model=SurveyResponseDetailResponse,
-    summary="Get full response detail for the dashboard",
-    description=(
-        "Return one user's full response detail: every question in the survey "
-        "and the value that user registered for it, with choice answers "
-        "resolved to option text. Restricted to admins, analysts and "
-        "superadmins (dashboard use — no ownership check, unlike "
-        "GET /survey-responses/{id})."
-    ),
-    responses={
-        **AUTH_RESPONSES,
-        status.HTTP_404_NOT_FOUND: {"description": "Response not found"},
-    },
-)
-async def get_survey_response_dashboard_detail(
-    response_id: UUID,
-    actor: UserActor = Depends(require_analytics_reader),
-    service: SurveyResponseService = Depends(get_survey_response_service),
-) -> SurveyResponseDetailResponse:
-    detail = await service.get_response_detail(response_id, actor)
-    return SurveyResponseDetailResponse.model_validate(detail)

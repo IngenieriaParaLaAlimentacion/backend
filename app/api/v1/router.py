@@ -7,10 +7,10 @@ from app.api.v1 import (
     establishments,
     measurements,
     subjects,
-    survey_responses,
-    surveys,
     users,
 )
+from app.api.v1.surveys import responses as survey_responses
+from app.api.v1.surveys import surveys
 
 v1_router = APIRouter(prefix="/api/v1")
 
