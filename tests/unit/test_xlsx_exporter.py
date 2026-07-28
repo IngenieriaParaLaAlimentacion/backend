@@ -14,7 +14,6 @@ from app.domain.survey import (
 from app.domain.survey_response import (
     EstablishmentRefDomain,
     QuestionAnswerDomain,
-    SurveyRefDomain,
     SurveyResponseDetailDomain,
     UserRefDomain,
 )
@@ -57,7 +56,7 @@ def _detail_response(
     return SurveyResponseDetailDomain(
         id=uuid.uuid4(),
         event_at=NOW,
-        survey=SurveyRefDomain(id=survey.id, name=survey.name),
+        survey=UserRefDomain(id=survey.id, name=survey.name),
         establishment=EstablishmentRefDomain(
             id=uuid.uuid4(),
             name="Comedor Test",

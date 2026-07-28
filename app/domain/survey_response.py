@@ -37,8 +37,8 @@ class SurveyResponseDomain:
 
 
 @dataclass
-class SurveyRefDomain:
-    """Minimal survey identity for embedding in a response summary."""
+class UserRefDomain:
+    """Minimal user identity for embedding in a response summary."""
 
     id: UUID
     name: str
@@ -53,7 +53,7 @@ class SurveyResponseListItemDomain:
 
     id: UUID
     event_at: datetime
-    survey: SurveyRefDomain
+    survey: UserRefDomain
     establishment: EstablishmentRefDomain
 
     @classmethod
@@ -62,17 +62,9 @@ class SurveyResponseListItemDomain:
         return cls(
             id=obj.id,
             event_at=obj.event_at,
-            survey=SurveyRefDomain(id=obj.survey.id, name=obj.survey.name),
+            survey=UserRefDomain(id=obj.survey.id, name=obj.survey.name),
             establishment=EstablishmentRefDomain.from_db(obj.establishment),
         )
-
-
-@dataclass
-class UserRefDomain:
-    """Minimal user identity for embedding in a response summary."""
-
-    id: UUID
-    name: str
 
 
 @dataclass
@@ -85,7 +77,7 @@ class SurveyResponseDashboardItemDomain:
 
     id: UUID
     event_at: datetime
-    survey: SurveyRefDomain
+    survey: UserRefDomain
     establishment: EstablishmentRefDomain
     submitted_by: UserRefDomain
     score_fies: int | None
@@ -97,7 +89,7 @@ class SurveyResponseDashboardItemDomain:
         return cls(
             id=obj.id,
             event_at=obj.event_at,
-            survey=SurveyRefDomain(id=obj.survey.id, name=obj.survey.name),
+            survey=UserRefDomain(id=obj.survey.id, name=obj.survey.name),
             establishment=EstablishmentRefDomain.from_db(obj.establishment),
             submitted_by=UserRefDomain(
                 id=obj.submitted_by.id, name=obj.submitted_by.name
@@ -126,7 +118,7 @@ class SurveyResponseDetailDomain:
 
     id: UUID
     event_at: datetime
-    survey: SurveyRefDomain
+    survey: UserRefDomain
     establishment: EstablishmentRefDomain
     submitted_by: UserRefDomain
     score_fies: int | None
@@ -151,7 +143,7 @@ class SurveyResponseDetailDomain:
         return cls(
             id=obj.id,
             event_at=obj.event_at,
-            survey=SurveyRefDomain(id=obj.survey.id, name=obj.survey.name),
+            survey=UserRefDomain(id=obj.survey.id, name=obj.survey.name),
             establishment=EstablishmentRefDomain.from_db(obj.establishment),
             submitted_by=UserRefDomain(
                 id=obj.submitted_by.id, name=obj.submitted_by.name
