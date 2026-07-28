@@ -11,10 +11,9 @@ from app.api.v1.params import (
 from app.core.dependencies import (
     get_survey_response_service,
     require_admin_analyst_or_superadmin,
-    require_some,
+    require_field_worker_admin_or_superadmin,
 )
 from app.domain import UserActor
-from app.domain.user import UserRole
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.survey_response_schema import (
     SurveyResponseDashboardItem,
@@ -27,10 +26,6 @@ from app.services.exporters.factory import ExportFormat, get_exporter
 from app.services.survey_response_service import SurveyResponseService
 
 router = APIRouter(prefix="/surveys/{survey_id}/responses")
-
-_submitter_or_editor = require_some(
-    UserRole.FIELD_WORKER, UserRole.ADMIN, UserRole.SUPERADMIN
-)
 
 
 @router.get(
@@ -134,7 +129,7 @@ async def submit_survey_response(
     survey_id: UUID,
     data: SurveyResponseRequest,
     response: Response,
-    actor: UserActor = Depends(_submitter_or_editor),
+    actor: UserActor = Depends(require_field_worker_admin_or_superadmin),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> SurveyResponseResponse:
     survey_response, created = await service.submit(survey_id, data, actor)
@@ -145,6 +140,29 @@ async def submit_survey_response(
 
 @router.get(
     "/{response_id}",
+    response_model=SurveyResponseResponse,
+    summary="Get a survey response (Standard)",
+    description=(
+        "Return a response's full detail, including its answers. Restricted to "
+        "the original submitter or an admin/superadmin — the same actors allowed "
+        "to edit it."
+    ),
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {"description": "Response not found"},
+    },
+)
+async def get_survey_response(
+    response_id: UUID,
+    actor: UserActor = Depends(require_field_worker_admin_or_superadmin),
+    service: SurveyResponseService = Depends(get_survey_response_service),
+) -> SurveyResponseResponse:
+    survey_response = await service.get(response_id, actor)
+    return SurveyResponseResponse.model_validate(survey_response)
+
+
+@router.get(
+    "/{response_id}/detail",
     response_model=SurveyResponseDetailResponse,
     summary="Get a survey response with full detail",
     description=(
@@ -158,9 +176,9 @@ async def submit_survey_response(
         status.HTTP_404_NOT_FOUND: {"description": "Response not found"},
     },
 )
-async def get_survey_response(
+async def get_survey_response_detail(
     response_id: UUID,
-    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
+    actor: UserActor = Depends(require_field_worker_admin_or_superadmin),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> SurveyResponseDetailResponse:
     detail = await service.get_response_detail(response_id, actor)
@@ -185,7 +203,7 @@ async def get_survey_response(
 async def edit_survey_response(
     response_id: UUID,
     data: SurveyResponseEditRequest,
-    actor: UserActor = Depends(_submitter_or_editor),
+    actor: UserActor = Depends(require_field_worker_admin_or_superadmin),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> SurveyResponseResponse:
     survey_response = await service.edit(response_id, data, actor)
