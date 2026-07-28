@@ -253,7 +253,6 @@ class TestSubmit:
     def request_factory(self):
         def _make(**overrides):
             data = dict(
-                survey_id=uuid.uuid4(),
                 establishment_id=uuid.uuid4(),
                 answers={},
                 event_at=NOW,
@@ -266,9 +265,9 @@ class TestSubmit:
     async def test_analyst_forbidden(self, make_uow, request_factory, analyst_actor):
         survey = _make_survey_orm()
         uow = make_uow(survey=survey)
-        data = request_factory(survey_id=survey.id)
+        data = request_factory()
         with pytest.raises(ForbiddenError):
-            await SurveyResponseService(uow).submit(data, analyst_actor)
+            await SurveyResponseService(uow).submit(survey.id, data, analyst_actor)
         uow.commit.assert_not_called()
 
     async def test_field_worker_without_access_forbidden(
@@ -276,9 +275,9 @@ class TestSubmit:
     ):
         survey = _make_survey_orm()
         uow = make_uow(survey=survey, relation=None)
-        data = request_factory(survey_id=survey.id)
+        data = request_factory()
         with pytest.raises(ForbiddenError):
-            await SurveyResponseService(uow).submit(data, field_worker_actor)
+            await SurveyResponseService(uow).submit(survey.id, data, field_worker_actor)
         uow.commit.assert_not_called()
 
     async def test_field_worker_with_approved_access_allowed(
@@ -287,9 +286,9 @@ class TestSubmit:
         survey = _make_survey_orm()
         relation = MagicMock(status=UserEstablishmentStatus.APPROVED)
         uow = make_uow(survey=survey, relation=relation)
-        data = request_factory(survey_id=survey.id)
+        data = request_factory()
         response, created = await SurveyResponseService(uow).submit(
-            data, field_worker_actor
+            survey.id, data, field_worker_actor
         )
         assert created is True
         assert isinstance(response, SurveyResponseDomain)
@@ -299,16 +298,16 @@ class TestSubmit:
         uow = make_uow(survey=None)
         data = request_factory()
         with pytest.raises(SurveyNotFoundError):
-            await SurveyResponseService(uow).submit(data, admin_actor)
+            await SurveyResponseService(uow).submit(uuid.uuid4(), data, admin_actor)
 
     async def test_establishment_not_found(
         self, make_uow, request_factory, admin_actor
     ):
         survey = _make_survey_orm()
         uow = make_uow(survey=survey, establishment=None)
-        data = request_factory(survey_id=survey.id)
+        data = request_factory()
         with pytest.raises(EstablishmentNotFoundError):
-            await SurveyResponseService(uow).submit(data, admin_actor)
+            await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
 
     async def test_admin_outside_targeted_audience_rejected(
         self, make_uow, request_factory, admin_actor
@@ -318,9 +317,9 @@ class TestSubmit:
             scope=SurveyScope.TARGETED, establishment_ids=[allowed_id]
         )
         uow = make_uow(survey=survey)
-        data = request_factory(survey_id=survey.id, establishment_id=uuid.uuid4())
+        data = request_factory(establishment_id=uuid.uuid4())
         with pytest.raises(InvalidSurveyResponseError):
-            await SurveyResponseService(uow).submit(data, admin_actor)
+            await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
 
     async def test_required_question_missing_rejected_no_partial_save(
         self, make_uow, request_factory, admin_actor
@@ -328,9 +327,9 @@ class TestSubmit:
         question = _make_question(is_required=True)
         survey = _make_survey_orm(questions=[question])
         uow = make_uow(survey=survey)
-        data = request_factory(survey_id=survey.id, answers={})
+        data = request_factory(answers={})
         with pytest.raises(InvalidSurveyResponseError):
-            await SurveyResponseService(uow).submit(data, admin_actor)
+            await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
         uow.survey_response_repo.create.assert_not_called()
         uow.commit.assert_not_called()
 
@@ -339,8 +338,10 @@ class TestSubmit:
     ):
         survey = _make_survey_orm()
         uow = make_uow(survey=survey)
-        data = request_factory(survey_id=survey.id)
-        response, created = await SurveyResponseService(uow).submit(data, admin_actor)
+        data = request_factory()
+        response, created = await SurveyResponseService(uow).submit(
+            survey.id, data, admin_actor
+        )
         assert created is True
         uow.survey_repo.increment_response_count.assert_awaited_once_with(survey.id)
         uow.commit.assert_called_once()
@@ -351,7 +352,9 @@ class TestSubmit:
         existing = _make_response()
         uow = make_uow(existing_response=existing)
         data = request_factory(id=existing.id)
-        response, created = await SurveyResponseService(uow).submit(data, admin_actor)
+        response, created = await SurveyResponseService(uow).submit(
+            uuid.uuid4(), data, admin_actor
+        )
         assert created is False
         assert response.id == existing.id
         uow.survey_response_repo.create.assert_not_called()
@@ -364,7 +367,7 @@ class TestSubmit:
         uow = make_uow(existing_response=existing)
         data = request_factory(id=existing.id)
         with pytest.raises(ForbiddenError):
-            await SurveyResponseService(uow).submit(data, analyst_actor)
+            await SurveyResponseService(uow).submit(uuid.uuid4(), data, analyst_actor)
         uow.survey_response_repo.create.assert_not_called()
 
     async def test_replayed_id_still_checks_establishment_access(
@@ -378,7 +381,9 @@ class TestSubmit:
         uow = make_uow(existing_response=existing, relation=None)
         data = request_factory(id=existing.id)
         with pytest.raises(ForbiddenError):
-            await SurveyResponseService(uow).submit(data, field_worker_actor)
+            await SurveyResponseService(uow).submit(
+                uuid.uuid4(), data, field_worker_actor
+            )
         uow.survey_response_repo.create.assert_not_called()
 
     async def test_race_on_create_returns_existing(
@@ -393,8 +398,10 @@ class TestSubmit:
         uow.survey_response_repo.create = AsyncMock(
             side_effect=UniqueConstraintError("id", response_id)
         )
-        data = request_factory(id=response_id, survey_id=survey.id)
-        response, created = await SurveyResponseService(uow).submit(data, admin_actor)
+        data = request_factory(id=response_id)
+        response, created = await SurveyResponseService(uow).submit(
+            survey.id, data, admin_actor
+        )
         assert created is False
         assert response.id == response_id
         uow.commit.assert_not_called()
@@ -802,7 +809,6 @@ class TestFiesScoring:
     def request_factory(self):
         def _make(**overrides):
             data = dict(
-                survey_id=uuid.uuid4(),
                 establishment_id=uuid.uuid4(),
                 answers={},
                 event_at=NOW,
@@ -827,9 +833,9 @@ class TestFiesScoring:
         survey, questions = _make_fies_survey_orm(num_questions=8)
         answers = {str(q.id): str(q.options[0].id) for q in questions}  # all "Sí"
         uow = make_uow(survey=survey)
-        data = request_factory(survey_id=survey.id, answers=answers)
+        data = request_factory(answers=answers)
 
-        await SurveyResponseService(uow).submit(data, admin_actor)
+        await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
 
         create_call = uow.survey_response_repo.create.call_args
         assert create_call.kwargs["score_fies"] == 8
@@ -840,9 +846,9 @@ class TestFiesScoring:
         survey, questions = _make_fies_survey_orm(num_questions=8)
         answers = {str(q.id): str(q.options[1].id) for q in questions}  # all "No"
         uow = make_uow(survey=survey)
-        data = request_factory(survey_id=survey.id, answers=answers)
+        data = request_factory(answers=answers)
 
-        await SurveyResponseService(uow).submit(data, admin_actor)
+        await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
 
         create_call = uow.survey_response_repo.create.call_args
         assert create_call.kwargs["score_fies"] == 0
@@ -856,9 +862,9 @@ class TestFiesScoring:
             for i, q in enumerate(questions)
         }
         uow = make_uow(survey=survey)
-        data = request_factory(survey_id=survey.id, answers=answers)
+        data = request_factory(answers=answers)
 
-        await SurveyResponseService(uow).submit(data, admin_actor)
+        await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
 
         create_call = uow.survey_response_repo.create.call_args
         assert create_call.kwargs["score_fies"] == 3
@@ -870,9 +876,9 @@ class TestFiesScoring:
         survey = _make_survey_orm(questions=[question])
         survey.instrument_type = SurveyInstrumentType.CUSTOM
         uow = make_uow(survey=survey)
-        data = request_factory(survey_id=survey.id, answers={})
+        data = request_factory(answers={})
 
-        await SurveyResponseService(uow).submit(data, admin_actor)
+        await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
 
         create_call = uow.survey_response_repo.create.call_args
         assert create_call.kwargs["score_fies"] is None
@@ -886,9 +892,9 @@ class TestFiesScoring:
             str(q.id): str(q.options[0].id) for q in questions[1:]
         }  # first question left unanswered, rest all "Sí"
         uow = make_uow(survey=survey)
-        data = request_factory(survey_id=survey.id, answers=answers)
+        data = request_factory(answers=answers)
 
-        await SurveyResponseService(uow).submit(data, admin_actor)
+        await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
 
         create_call = uow.survey_response_repo.create.call_args
         assert create_call.kwargs["score_fies"] == 7

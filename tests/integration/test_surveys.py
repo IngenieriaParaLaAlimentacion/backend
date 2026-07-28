@@ -387,9 +387,8 @@ class TestLockedAfterResponses:
         picked_option = question["options"][picked_option_index]
 
         submit = await client.post(
-            "/api/v1/survey-responses",
+            f"{SURVEYS_URL}/{survey_id}/responses",
             json={
-                "survey_id": survey_id,
                 "establishment_id": str(db_establishment.id),
                 "answers": {question["id"]: picked_option["id"]},
                 "event_at": "2024-06-01T12:00:00Z",
@@ -432,9 +431,8 @@ class TestLockedAfterResponses:
         second = created["questions"][1]
 
         submit = await client.post(
-            "/api/v1/survey-responses",
+            f"{SURVEYS_URL}/{survey_id}/responses",
             json={
-                "survey_id": survey_id,
                 "establishment_id": str(db_establishment.id),
                 "answers": {keep["id"]: keep["options"][0]["id"]},
                 "event_at": "2024-06-01T12:00:00Z",
@@ -501,9 +499,8 @@ class TestLockedAfterResponses:
 
         # Picked as one of two options inside the MULTIPLE_CHOICE list.
         submit = await client.post(
-            "/api/v1/survey-responses",
+            f"{SURVEYS_URL}/{survey_id}/responses",
             json={
-                "survey_id": survey_id,
                 "establishment_id": str(db_establishment.id),
                 "answers": {question["id"]: [verduras["id"], lacteos["id"]]},
                 "event_at": "2024-06-01T12:00:00Z",

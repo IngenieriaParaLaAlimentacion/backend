@@ -835,7 +835,7 @@ class TestGetDashboardDetail:
         ).json()
 
         response = await client.get(
-            _responses_url(created["survey_id"], created["id"]),
+            _responses_url(created["survey_id"], created["id"], "detail"),
             headers=headers,
         )
 
@@ -870,7 +870,7 @@ class TestGetDashboardDetail:
         ).json()
 
         response = await client.get(
-            _responses_url(created["survey_id"], created["id"]),
+            _responses_url(created["survey_id"], created["id"], "detail"),
             headers=headers,
         )
 
@@ -900,7 +900,7 @@ class TestGetDashboardDetail:
         ).json()
 
         response = await client.get(
-            _responses_url(created["survey_id"], created["id"]),
+            _responses_url(created["survey_id"], created["id"], "detail"),
             headers=fw_headers,
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN

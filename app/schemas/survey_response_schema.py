@@ -120,7 +120,7 @@ class QuestionAnswerResponse(BaseModel):
 
 
 class SurveyResponseDetailResponse(BaseModel):
-    """Full response detail for the dashboard (CA3): every question in the
+    """Full response detail for the dashboard: every question in the
     survey plus the value this specific user answered for it."""
 
     model_config = ConfigDict(from_attributes=True)
