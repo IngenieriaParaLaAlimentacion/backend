@@ -259,6 +259,23 @@ class TestSubmitValidation:
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
+    async def test_future_event_at_returns_422(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        response = await client.post(
+            SURVEY_RESPONSES_URL,
+            json=_response_body(
+                survey["id"],
+                db_establishment.id,
+                _valid_answers(survey),
+                event_at="2099-01-01T00:00:00Z",
+            ),
+            headers=headers,
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
     async def test_establishment_inside_targeted_audience_succeeds(
         self, client, db_establishment, admin_user
     ):
