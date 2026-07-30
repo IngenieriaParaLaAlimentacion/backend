@@ -2,6 +2,7 @@ import secrets
 from typing import Any
 from uuid import UUID
 
+from app.core.config import settings
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.core.security import hash_password
 from app.domain.establishment import EstablishmentDomain, UserEstablishmentStatus
@@ -82,7 +83,7 @@ class AdminService:
         user = await self.uow.user_repo.get_by_id(user_id)
         if user is None:
             raise UserNotFoundError(str(user_id))
-        if not user.is_email_verified:
+        if settings.environment != "development" and not user.is_email_verified:
             raise ForbiddenError(
                 "Email not verified",
                 "The user's email has not been verified yet.",
