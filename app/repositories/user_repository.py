@@ -24,6 +24,7 @@ class UserRepository:
         locality: str | None = None,
         description: str | None = None,
         contact_phone: str | None = None,
+        is_email_verified: bool = False,
     ) -> User:
         """Persist a new user. Password and establishments are handled separately."""
         user = User(
@@ -35,6 +36,7 @@ class UserRepository:
             locality=locality,
             description=description,
             contact_phone=contact_phone,
+            is_email_verified=is_email_verified,
         )
         self.db.add(user)
         await self.db.flush()
