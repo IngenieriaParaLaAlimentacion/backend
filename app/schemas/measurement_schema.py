@@ -1,4 +1,4 @@
-from datetime import date, datetime, timezone
+from datetime import date, datetime
 from typing import Annotated
 from uuid import UUID
 
@@ -12,6 +12,7 @@ from pydantic import (
 
 from app.domain.measurement import AlertSeverity, AlertType
 from app.domain.subject import Sex
+from app.utils.dates import is_future_date
 
 # BMI carries full precision in storage and alert computation; it is rounded to
 # two decimals only when serialized for API responses.
@@ -38,7 +39,7 @@ class MeasurementRequest(BaseModel):
     @field_validator("measured_at")
     @classmethod
     def measured_at_not_future(cls, v: datetime) -> datetime:
-        if v > datetime.now(timezone.utc):
+        if is_future_date(v):
             raise ValueError("measured_at cannot be in the future")
         return v
 

@@ -1,16 +1,17 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.schemas.measurement_schema import EstablishmentRefResponse
+from app.utils.dates import is_future_date
 
 AnswerValue = str | int | float | list[str]
 
 
 def validate_event_at(v: datetime) -> datetime:
-    if v > datetime.now(timezone.utc):
+    if is_future_date(v):
         raise ValueError("event_at cannot be in the future")
     return v
 

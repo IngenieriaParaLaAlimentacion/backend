@@ -1,4 +1,4 @@
-from datetime import date, datetime, timezone
+from datetime import date, datetime
 from typing import Any
 from uuid import UUID
 
@@ -7,10 +7,11 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from app.domain.subject import Sex
 from app.domain.subject_event import SubjectEventType
 from app.schemas.types import ValidStr
+from app.utils.dates import today_in_argentina
 
 
 def validate_date(v: date | None) -> date | None:
-    if v is not None and v > datetime.now(timezone.utc).date():
+    if v is not None and v > today_in_argentina():
         raise ValueError("birth date cannot be in the future")
     return v
 
