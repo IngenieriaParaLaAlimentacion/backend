@@ -141,6 +141,7 @@ async def get_current_field_worker(token: str = Depends(oauth2_scheme)) -> UserA
 
 
 async def get_current_analyst(token: str = Depends(oauth2_scheme)) -> UserActor:
+    # TODO: check if this is still necessary
     return await _get_authenticated_actor(
         token, {UserRole.ANALYST, UserRole.SUPERADMIN}
     )

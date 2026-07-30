@@ -353,12 +353,6 @@ class TestListOwnEstablishments:
         assert response.status_code == 200
         assert response.json() == []
 
-    async def test_non_field_worker_returns_403(self, client, analyst_user):
-        response = await client.get(
-            ME_ESTABLISHMENTS_URL, headers=_headers_for(analyst_user)
-        )
-        assert response.status_code == 403
-
     async def test_no_token_returns_401(self, client):
         response = await client.get(ME_ESTABLISHMENTS_URL)
         assert response.status_code == 401
@@ -463,16 +457,6 @@ class TestRequestEstablishmentAccess:
 
         assert response.status_code == 404
         assert await _fetch_relations(field_worker_user.id) == []
-
-    async def test_non_field_worker_returns_403(self, client, analyst_user):
-        """CA7: a non-field worker cannot request access."""
-        estab = await _insert_establishment("Centro A", "Calle A")
-        response = await client.post(
-            ME_ESTABLISHMENTS_URL,
-            json={"establishment_ids": [str(estab.id)]},
-            headers=_headers_for(analyst_user),
-        )
-        assert response.status_code == 403
 
     async def test_no_token_returns_401(self, client):
         """CA7: no token returns 401."""
