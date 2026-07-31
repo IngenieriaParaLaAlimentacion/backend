@@ -5,7 +5,7 @@ already imports ``Sex`` from there; importing measurement types back into
 subject.py would be circular.
 """
 
-from dataclasses import dataclass, fields
+from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
 
@@ -58,7 +58,7 @@ class SubjectDetailDomain(SubjectDomain):
     @classmethod
     def build(cls, subject, measurement) -> "SubjectDetailDomain":
         """Combine an ORM Subject with its latest ORM Measurement, if any."""
-        base = {f.name: getattr(subject, f.name) for f in fields(SubjectDomain)}
+        base = vars(SubjectDomain.from_db(subject))
         if measurement is None:
             return cls(**base, nutritional_status=None, latest_measurement=None)
         return cls(

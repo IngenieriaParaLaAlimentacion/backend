@@ -175,7 +175,7 @@ async def get_establishment_detail(
     "/{establishment_id}/dashboard",
     response_model=EstablishmentDashboardResponse,
     status_code=status.HTTP_200_OK,
-    summary="Get the dashboard of a single establishment",
+    summary="Get aggregated metrics and alert status for an establishment",
     description=(
         "Returns the establishment's identification data, aggregated metrics "
         "(number of subjects and averages of height, weight, BMI and age) and "
@@ -204,7 +204,7 @@ async def get_establishment_dashboard(
     summary="List the subjects attending an establishment",
     description=(
         "Returns a paginated list of the subjects measured at this establishment, "
-        "enriched with their latest measurement and derived nutritional status. "
+        "enriched with their latest measurement and derived anthropometric status. "
         "Supports searching by name, last name or DNI, and sorting by measurement "
         "date, name, BMI or age. Accessible by admins and analysts."
     ),
@@ -238,7 +238,7 @@ async def list_establishment_subjects(
     "/{establishment_id}/field-workers",
     response_model=PaginatedResponse[EstablishmentFieldWorkerListItem],
     status_code=status.HTTP_200_OK,
-    summary="List the field workers enrolled in an establishment",
+    summary="List the field workers enrolled at an establishment",
     description=(
         "Returns a paginated list of the users enrolled in this establishment "
         "together with how many measurements each has taken here and when they "

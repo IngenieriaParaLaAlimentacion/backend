@@ -42,7 +42,7 @@ class IUnitOfWork(ABC):
     survey_repo: SurveyRepository
     survey_response_repo: SurveyResponseRepository
     survey_response_edit_repo: SurveyResponseEditRepository
-    dashboard_repo: EstablishmentDashboardRepository
+    establishment_dashboard_repo: EstablishmentDashboardRepository
 
     @abstractmethod
     async def commit(self) -> None: ...

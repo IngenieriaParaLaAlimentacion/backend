@@ -69,7 +69,7 @@ async def create_subject(
     summary="Get a subject by ID",
     description=(
         "Returns a subject's data together with their latest measurement across "
-        "every establishment and the nutritional status derived from it. Both "
+        "every establishment and the anthropometric status derived from it. Both "
         "are null when the subject has never been measured, which is distinct "
         "from a `normal` status. Accessible by all authenticated roles."
     ),

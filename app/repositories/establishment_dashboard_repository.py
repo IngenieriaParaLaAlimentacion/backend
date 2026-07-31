@@ -2,7 +2,7 @@ from uuid import UUID
 
 from sqlalchemy import Row, asc, desc, extract, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import contains_eager
 
 from app.domain.establishment_dashboard import (
     EstablishmentFieldWorkerListingParams,
@@ -150,7 +150,7 @@ class EstablishmentDashboardRepository:
             .select_from(latest)
             .join(Measurement, Measurement.id == latest.c.id)
             .join(Subject, Measurement.subject_id == Subject.id)
-            .options(selectinload(Measurement.subject))
+            .options(contains_eager(Measurement.subject))
         )
         count_query = (
             select(func.count())

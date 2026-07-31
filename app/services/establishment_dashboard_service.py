@@ -49,51 +49,6 @@ class EstablishmentDashboardService:
             raise EstablishmentNotFoundError(str(establishment_id))
         return establishment
 
-    async def get_establishment_dashboard(
-        self, establishment_id: UUID
-    ) -> EstablishmentDashboardDomain:
-        """Return identification data, aggregated metrics and the alert state
-        for one establishment.
-
-        Raises:
-            EstablishmentNotFoundError: If the establishment does not exist.
-        """
-        establishment = await self._get_establishment(establishment_id)
-
-        row = await self.uow.dashboard_repo.get_metrics(establishment_id)
-        subject_count = row.subject_count or 0
-
-        if subject_count == 0:
-            return EstablishmentDashboardDomain(
-                establishment=EstablishmentDomain.from_db(establishment),
-                has_data=False,
-                metrics=EstablishmentMetricsDomain.empty(),
-                alert_status=EstablishmentAlertStatusDomain.empty(),
-            )
-
-        measurement_count = await self.uow.dashboard_repo.count_measurements(
-            establishment_id
-        )
-        metrics = EstablishmentMetricsDomain(
-            subject_count=subject_count,
-            measurement_count=measurement_count,
-            last_measured_at=row.last_measured_at,
-            avg_height_cm=_round(row.avg_height_cm),
-            avg_weight_kg=_round(row.avg_weight_kg),
-            avg_bmi=_round(row.avg_bmi),
-            avg_age_months=round(float(row.avg_age_months)),
-        )
-
-        rows = await self.uow.dashboard_repo.get_status_distribution(establishment_id)
-        alert_status = self._build_alert_status(rows, subject_count)
-
-        return EstablishmentDashboardDomain(
-            establishment=EstablishmentDomain.from_db(establishment),
-            has_data=True,
-            metrics=metrics,
-            alert_status=alert_status,
-        )
-
     @staticmethod
     def _build_alert_status(rows: list, total: int) -> EstablishmentAlertStatusDomain:
         """Roll up per-subject nutritional states into an establishment-wide one.
@@ -144,38 +99,6 @@ class EstablishmentDashboardService:
             distribution=distribution,
         )
 
-    async def list_establishment_subjects(
-        self,
-        establishment_id: UUID,
-        page: int,
-        page_size: int,
-        params: EstablishmentSubjectListingParams,
-    ) -> PaginatedResult[EstablishmentSubjectItemDomain]:
-        """Return the subjects attending an establishment, enriched with their
-        latest measurement and nutritional status.
-
-        Raises:
-            EstablishmentNotFoundError: If the establishment does not exist.
-        """
-        await self._get_establishment(establishment_id)
-
-        page = max(1, page)
-        offset = (page - 1) * page_size
-        rows, total = await self.uow.dashboard_repo.get_subject_listing(
-            establishment_id=establishment_id,
-            limit=page_size,
-            offset=offset,
-            params=params,
-        )
-
-        items = [
-            self._build_subject_item(row.Measurement, row.measurement_count)
-            for row in rows
-        ]
-        return PaginatedResult.build(
-            items=items, total=total, page=page, page_size=page_size
-        )
-
     @staticmethod
     def _build_subject_item(
         measurement, measurement_count: int
@@ -195,6 +118,87 @@ class EstablishmentDashboardService:
             latest_measurement=LatestMeasurementDomain.from_db(measurement),
         )
 
+    async def get_establishment_dashboard(
+        self, establishment_id: UUID
+    ) -> EstablishmentDashboardDomain:
+        """Return identification data, aggregated metrics and the alert state
+        for one establishment.
+
+        Raises:
+            EstablishmentNotFoundError: If the establishment does not exist.
+        """
+        establishment = await self._get_establishment(establishment_id)
+
+        row = await self.uow.establishment_dashboard_repo.get_metrics(establishment_id)
+        subject_count = row.subject_count or 0
+
+        if subject_count == 0:
+            return EstablishmentDashboardDomain(
+                establishment=EstablishmentDomain.from_db(establishment),
+                has_data=False,
+                metrics=EstablishmentMetricsDomain.empty(),
+                alert_status=EstablishmentAlertStatusDomain.empty(),
+            )
+
+        measurement_count = (
+            await self.uow.establishment_dashboard_repo.count_measurements(
+                establishment_id
+            )
+        )
+        metrics = EstablishmentMetricsDomain(
+            subject_count=subject_count,
+            measurement_count=measurement_count,
+            last_measured_at=row.last_measured_at,
+            avg_height_cm=_round(row.avg_height_cm),
+            avg_weight_kg=_round(row.avg_weight_kg),
+            avg_bmi=_round(row.avg_bmi),
+            avg_age_months=round(float(row.avg_age_months)),
+        )
+
+        rows = await self.uow.establishment_dashboard_repo.get_status_distribution(
+            establishment_id
+        )
+        alert_status = self._build_alert_status(rows, subject_count)
+
+        return EstablishmentDashboardDomain(
+            establishment=EstablishmentDomain.from_db(establishment),
+            has_data=True,
+            metrics=metrics,
+            alert_status=alert_status,
+        )
+
+    async def list_establishment_subjects(
+        self,
+        establishment_id: UUID,
+        page: int,
+        page_size: int,
+        params: EstablishmentSubjectListingParams,
+    ) -> PaginatedResult[EstablishmentSubjectItemDomain]:
+        """Return the subjects attending an establishment, enriched with their
+        latest measurement and nutritional status.
+
+        Raises:
+            EstablishmentNotFoundError: If the establishment does not exist.
+        """
+        await self._get_establishment(establishment_id)
+
+        page = max(1, page)
+        offset = (page - 1) * page_size
+        rows, total = await self.uow.establishment_dashboard_repo.get_subject_listing(
+            establishment_id=establishment_id,
+            limit=page_size,
+            offset=offset,
+            params=params,
+        )
+
+        items = [
+            self._build_subject_item(row.Measurement, row.measurement_count)
+            for row in rows
+        ]
+        return PaginatedResult.build(
+            items=items, total=total, page=page, page_size=page_size
+        )
+
     async def list_establishment_field_workers(
         self,
         establishment_id: UUID,
@@ -211,7 +215,10 @@ class EstablishmentDashboardService:
 
         page = max(1, page)
         offset = (page - 1) * page_size
-        rows, total = await self.uow.dashboard_repo.get_field_worker_listing(
+        (
+            rows,
+            total,
+        ) = await self.uow.establishment_dashboard_repo.get_field_worker_listing(
             establishment_id=establishment_id,
             limit=page_size,
             offset=offset,
