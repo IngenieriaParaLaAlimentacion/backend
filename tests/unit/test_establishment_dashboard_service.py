@@ -63,16 +63,16 @@ def make_dashboard_uow(establishment):
         uow.establishment_repo.get_by_id = AsyncMock(
             return_value=establishment if found else None
         )
-        uow.dashboard_repo.get_metrics = AsyncMock(
+        uow.establishment_dashboard_repo.get_metrics = AsyncMock(
             return_value=metrics_row if metrics_row is not None else _metrics_row(0)
         )
-        uow.dashboard_repo.count_measurements = AsyncMock(
+        uow.establishment_dashboard_repo.count_measurements = AsyncMock(
             return_value=measurement_count
         )
-        uow.dashboard_repo.get_status_distribution = AsyncMock(
+        uow.establishment_dashboard_repo.get_status_distribution = AsyncMock(
             return_value=distribution or []
         )
-        uow.dashboard_repo.get_subject_listing = AsyncMock(
+        uow.establishment_dashboard_repo.get_subject_listing = AsyncMock(
             return_value=(subject_rows or [], subject_total)
         )
         return uow
@@ -185,8 +185,8 @@ class TestGetEstablishmentDashboard:
             uuid.uuid4()
         )
 
-        uow.dashboard_repo.count_measurements.assert_not_called()
-        uow.dashboard_repo.get_status_distribution.assert_not_called()
+        uow.establishment_dashboard_repo.count_measurements.assert_not_called()
+        uow.establishment_dashboard_repo.get_status_distribution.assert_not_called()
 
     async def test_populated_establishment_rounds_its_averages(
         self, make_dashboard_uow
@@ -303,7 +303,7 @@ class TestSubjectListing:
             page_size=10,
             params=EstablishmentSubjectListingParams(),
         )
-        _, kwargs = uow.dashboard_repo.get_subject_listing.call_args
+        _, kwargs = uow.establishment_dashboard_repo.get_subject_listing.call_args
         assert kwargs["offset"] == 20
         assert kwargs["limit"] == 10
 
@@ -315,6 +315,6 @@ class TestSubjectListing:
             page_size=10,
             params=EstablishmentSubjectListingParams(),
         )
-        _, kwargs = uow.dashboard_repo.get_subject_listing.call_args
+        _, kwargs = uow.establishment_dashboard_repo.get_subject_listing.call_args
         assert kwargs["offset"] == 0
         assert result.page == 1

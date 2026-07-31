@@ -53,7 +53,9 @@ class UnitOfWork(IUnitOfWork):
         self.survey_repo = SurveyRepository(self.session)
         self.survey_response_repo = SurveyResponseRepository(self.session)
         self.survey_response_edit_repo = SurveyResponseEditRepository(self.session)
-        self.dashboard_repo = EstablishmentDashboardRepository(self.session)
+        self.establishment_dashboard_repo = EstablishmentDashboardRepository(
+            self.session
+        )
         return self
 
     async def commit(self) -> None:
