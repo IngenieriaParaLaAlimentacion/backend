@@ -5,7 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.domain.survey import ResponseType
-from app.schemas.common_schemas import NamedRefResponse
+from app.schemas.common_schemas import IdentifierRefSchema
 from app.schemas.measurement_schema import EstablishmentRefResponse
 
 AnswerValue = str | int | float | list[str]
@@ -38,11 +38,11 @@ class SurveyResponseRequest(BaseModel):
     _check_event_at = field_validator("event_at")(validate_event_at)
 
 
-class SurveyRefResponse(NamedRefResponse):
+class SurveyRefResponse(IdentifierRefSchema):
     pass
 
 
-class UserRefResponse(NamedRefResponse):
+class UserRefResponse(IdentifierRefSchema):
     pass
 
 
@@ -115,7 +115,7 @@ class QuestionAnswerResponse(BaseModel):
 
 
 class SurveyResponseDetailResponse(BaseModel):
-    """Full response detail for the dashboard (CA3): every question in the
+    """Full response detail for the dashboard: every question in the
     survey plus the value this specific user answered for it."""
 
     model_config = ConfigDict(from_attributes=True)

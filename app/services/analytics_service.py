@@ -10,7 +10,7 @@ _ANALYTICS_ROLES = {UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN}
 
 
 class AnalyticsService:
-    """Business logic for cross-module analytics (CA4)."""
+    """Business logic for cross-module analytics."""
 
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow

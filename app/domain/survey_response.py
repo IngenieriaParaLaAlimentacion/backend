@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
 
+from app.domain.common_domains import IdentifierRefDomain
 from app.domain.measurement import EstablishmentRefDomain
 from app.domain.survey import ResponseType
 
@@ -37,14 +38,6 @@ class SurveyResponseDomain:
 
 
 @dataclass
-class UserRefDomain:
-    """Minimal user identity for embedding in a response summary."""
-
-    id: UUID
-    name: str
-
-
-@dataclass
 class SurveyResponseListItemDomain:
     """An enriched response row for the activity-feed view.
 
@@ -53,7 +46,7 @@ class SurveyResponseListItemDomain:
 
     id: UUID
     event_at: datetime
-    survey: UserRefDomain
+    survey: IdentifierRefDomain
     establishment: EstablishmentRefDomain
 
     @classmethod
@@ -62,7 +55,7 @@ class SurveyResponseListItemDomain:
         return cls(
             id=obj.id,
             event_at=obj.event_at,
-            survey=UserRefDomain(id=obj.survey.id, name=obj.survey.name),
+            survey=IdentifierRefDomain(id=obj.survey.id, name=obj.survey.name),
             establishment=EstablishmentRefDomain.from_db(obj.establishment),
         )
 
@@ -77,9 +70,9 @@ class SurveyResponseDashboardItemDomain:
 
     id: UUID
     event_at: datetime
-    survey: UserRefDomain
+    survey: IdentifierRefDomain
     establishment: EstablishmentRefDomain
-    submitted_by: UserRefDomain
+    submitted_by: IdentifierRefDomain
     score_fies: int | None
 
     @classmethod
@@ -89,9 +82,9 @@ class SurveyResponseDashboardItemDomain:
         return cls(
             id=obj.id,
             event_at=obj.event_at,
-            survey=UserRefDomain(id=obj.survey.id, name=obj.survey.name),
+            survey=IdentifierRefDomain(id=obj.survey.id, name=obj.survey.name),
             establishment=EstablishmentRefDomain.from_db(obj.establishment),
-            submitted_by=UserRefDomain(
+            submitted_by=IdentifierRefDomain(
                 id=obj.submitted_by.id, name=obj.submitted_by.name
             ),
             score_fies=obj.score_fies,
@@ -118,9 +111,9 @@ class SurveyResponseDetailDomain:
 
     id: UUID
     event_at: datetime
-    survey: UserRefDomain
+    survey: IdentifierRefDomain
     establishment: EstablishmentRefDomain
-    submitted_by: UserRefDomain
+    submitted_by: IdentifierRefDomain
     score_fies: int | None
     answers: list[QuestionAnswerDomain]
 
@@ -143,9 +136,9 @@ class SurveyResponseDetailDomain:
         return cls(
             id=obj.id,
             event_at=obj.event_at,
-            survey=UserRefDomain(id=obj.survey.id, name=obj.survey.name),
+            survey=IdentifierRefDomain(id=obj.survey.id, name=obj.survey.name),
             establishment=EstablishmentRefDomain.from_db(obj.establishment),
-            submitted_by=UserRefDomain(
+            submitted_by=IdentifierRefDomain(
                 id=obj.submitted_by.id, name=obj.submitted_by.name
             ),
             score_fies=obj.score_fies,

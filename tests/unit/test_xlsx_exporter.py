@@ -4,6 +4,7 @@ from io import BytesIO
 
 from openpyxl import load_workbook
 
+from app.domain.common_domains import IdentifierRefDomain
 from app.domain.survey import (
     QuestionDomain,
     ResponseType,
@@ -15,7 +16,6 @@ from app.domain.survey_response import (
     EstablishmentRefDomain,
     QuestionAnswerDomain,
     SurveyResponseDetailDomain,
-    UserRefDomain,
 )
 from app.services.exporters.xlsx_exporter import XlsxSurveyResponseExporter
 
@@ -56,14 +56,14 @@ def _detail_response(
     return SurveyResponseDetailDomain(
         id=uuid.uuid4(),
         event_at=NOW,
-        survey=UserRefDomain(id=survey.id, name=survey.name),
+        survey=IdentifierRefDomain(id=survey.id, name=survey.name),
         establishment=EstablishmentRefDomain(
             id=uuid.uuid4(),
             name="Comedor Test",
             city="Buenos Aires",
             province="Buenos Aires",
         ),
-        submitted_by=UserRefDomain(id=uuid.uuid4(), name="Juana Pérez"),
+        submitted_by=IdentifierRefDomain(id=uuid.uuid4(), name="Juana Pérez"),
         score_fies=score_fies,
         answers=[
             QuestionAnswerDomain(

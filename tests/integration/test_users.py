@@ -244,7 +244,7 @@ class TestProfileEdit:
         assert body["last_name"] == analyst_user.last_name
 
     async def test_empty_name_returns_422_and_keeps_db(self, client, analyst_user):
-        """CA2: an empty name fails validation (422) and persists nothing."""
+        """An empty name fails validation (422) and persists nothing."""
         response = await client.patch(
             ME_URL, json={"name": ""}, headers=_headers_for(analyst_user)
         )
@@ -254,7 +254,7 @@ class TestProfileEdit:
         assert stored.name == analyst_user.name
 
     async def test_empty_body_returns_400(self, client, analyst_user):
-        """CA2: a defined-but-empty body is rejected by the service (400)."""
+        """A defined-but-empty body is rejected by the service (400)."""
         response = await client.patch(
             ME_URL, json={}, headers=_headers_for(analyst_user)
         )
@@ -272,7 +272,7 @@ class TestProfileEdit:
     async def test_non_editable_fields_return_422_and_keep_db(
         self, client, analyst_user, payload
     ):
-        """CA3: editing email/role/status (or any unknown field) is rejected (422)."""
+        """editing email/role/status (or any unknown field) is rejected (422)."""
         response = await client.patch(
             ME_URL, json=payload, headers=_headers_for(analyst_user)
         )

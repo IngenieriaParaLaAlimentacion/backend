@@ -4,7 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class SurveyResponseSummaryResponse(BaseModel):
-    """Aggregated metrics over survey responses (CA4)."""
+    """Aggregated metrics over survey responses."""
 
     model_config = ConfigDict(from_attributes=True)
 
