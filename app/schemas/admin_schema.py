@@ -98,3 +98,10 @@ class AdminSubjectDetailResponse(SubjectResponse):
                 ),
             }
         )
+
+
+class InviteUserResponse(BaseModel):
+    user_id: UUID = Field(
+        description="ID of the newly created user. Use it to drive "
+        "the resend-invitation action."
+    )

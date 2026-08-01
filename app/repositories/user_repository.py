@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.user import User, UserRole, UserStatus
+from app.utils.db import escape_like, execute_paginated
 
 
 class UserRepository:
@@ -23,6 +24,7 @@ class UserRepository:
         locality: str | None = None,
         description: str | None = None,
         contact_phone: str | None = None,
+        is_email_verified: bool = False,
     ) -> User:
         """Persist a new user. Password and establishments are handled separately."""
         user = User(
@@ -34,6 +36,7 @@ class UserRepository:
             locality=locality,
             description=description,
             contact_phone=contact_phone,
+            is_email_verified=is_email_verified,
         )
         self.db.add(user)
         await self.db.flush()
@@ -94,10 +97,7 @@ class UserRepository:
                 query = query.where(User.is_email_verified.is_(True))
                 count_query = count_query.where(User.is_email_verified.is_(True))
         if search:
-            escaped = (
-                search.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-            )
-            search_term = f"%{escaped}%"
+            search_term = f"%{escape_like(search)}%"
             condition = (
                 (User.email.ilike(search_term, escape="\\"))
                 | (User.name.ilike(search_term, escape="\\"))
@@ -106,12 +106,9 @@ class UserRepository:
             query = query.where(condition)
             count_query = count_query.where(condition)
 
-        query = query.order_by(User.created_at.desc()).limit(limit).offset(offset)
-
-        total = (await self.db.execute(count_query)).scalar_one()
-        users = (await self.db.execute(query)).scalars().all()
-
-        return users, total
+        return await execute_paginated(
+            self.db, query, count_query, User.created_at.desc(), limit, offset
+        )
 
     async def update_status(self, user_id: UUID, status: UserStatus) -> None:
         """Update the status of a user."""
@@ -136,18 +133,3 @@ class UserRepository:
                 email_verified_at=func.now(),
             )
         )
-
-    async def get_pending(self) -> list[User]:
-        """Return all field workers awaiting admin approval whose email
-        has already been verified."""
-        query = (
-            select(User)
-            .where(
-                User.role == UserRole.FIELD_WORKER,
-                User.status == UserStatus.PENDING_VALIDATION,
-                User.is_email_verified.is_(True),
-            )
-            .order_by(User.created_at.desc())
-        )
-        result = await self.db.execute(query)
-        return result.scalars().all()

@@ -2,6 +2,7 @@ import secrets
 from typing import Any
 from uuid import UUID
 
+from app.core.config import settings
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.core.security import hash_password
 from app.domain.establishment import EstablishmentDomain, UserEstablishmentStatus
@@ -82,7 +83,7 @@ class AdminService:
         user = await self.uow.user_repo.get_by_id(user_id)
         if user is None:
             raise UserNotFoundError(str(user_id))
-        if not user.is_email_verified:
+        if settings.environment != "development" and not user.is_email_verified:
             raise ForbiddenError(
                 "Email not verified",
                 "The user's email has not been verified yet.",
@@ -117,7 +118,11 @@ class AdminService:
 
     async def _issue_and_send_invite(self, user: User) -> None:
         """Generate a fresh recovery token for `user` and email the invite
-        deeplink. Shared by invite_user and resend_invite."""
+        deeplink. Shared by invite_user and resend_invite.
+
+        Raises:
+            EmailDeliveryError: If the invitation email could not be delivered.
+        """
         created_token, plain_token = await self.auth_service.create_recovery_token(
             user.id
         )
@@ -127,6 +132,35 @@ class AdminService:
             build_recovery_deeplink(plain_token, user.role),
             created_token.expires_at,
             user.role,
+        )
+
+    async def _build_paginated_users_result(
+        self, users: list[User], total: int, page: int, page_size: int
+    ) -> PaginatedResult[UserWithEstablishmentsDomain]:
+        """Hydrate establishments for `users` and wrap them in a PaginatedResult."""
+        if not users:
+            return PaginatedResult(
+                items=[],
+                total=total,
+                page=page,
+                page_size=page_size,
+                total_pages=0,
+            )
+
+        establishments_per_user = await self._get_establishments_per_user(
+            [user.id for user in users]
+        )
+
+        return PaginatedResult.build(
+            items=[
+                UserWithEstablishmentsDomain.from_db(
+                    user, establishments_per_user.get(user.id, [])
+                )
+                for user in users
+            ],
+            total=total,
+            page=page,
+            page_size=page_size,
         )
 
     async def approve_establishments(
@@ -225,41 +259,26 @@ class AdminService:
         search = search.strip() or None if search else None
 
         users, total = await self.uow.user_repo.get_paginated(
-            role=role, status=status, limit=page_size, offset=offset, search=search
+            role=role,
+            status=status,
+            limit=page_size,
+            offset=offset,
+            search=search,
         )
 
-        if not users:
-            return PaginatedResult(
-                items=[],
-                total=total,
-                page=page,
-                page_size=page_size,
-                total_pages=0,
-            )
+        return await self._build_paginated_users_result(users, total, page, page_size)
 
-        establishments_per_user = await self._get_establishments_per_user(
-            [user.id for user in users]
-        )
-
-        return PaginatedResult.build(
-            items=[
-                UserWithEstablishmentsDomain.from_db(
-                    user, establishments_per_user.get(user.id, [])
-                )
-                for user in users
-            ],
-            total=total,
-            page=page,
-            page_size=page_size,
-        )
-
-    async def invite_user(self, data: InviteAdminRequest, role: UserRole) -> None:
+    async def invite_user(self, data: InviteAdminRequest, role: UserRole) -> UUID:
         """Create a new admin user and send a password setup link by email.
+
+        Returns:
+            The id of the newly created user.
 
         Raises:
             UserAlreadyExistsError: If the email already belongs to a user,
                 regardless of that user's status. Use resend_invite to
                 re-send a pending invitation.
+            EmailDeliveryError: If the invitation email could not be delivered.
         """
         if await self.uow.user_repo.get_by_email(data.email):
             raise UserAlreadyExistsError(data.email)
@@ -278,6 +297,7 @@ class AdminService:
         await self.uow.commit()
 
         await self._issue_and_send_invite(user)
+        return user.id
 
     async def resend_invite(self, user_id: UUID) -> None:
         """Re-send the invitation email for a still-pending invited user.
@@ -286,6 +306,7 @@ class AdminService:
             UserNotFoundError: If no user with the given id exists.
             BadRequestError: If the user already completed onboarding
                 (status is not PENDING_VALIDATION).
+            EmailDeliveryError: If the invitation email could not be delivered.
         """
         user = await self.uow.user_repo.get_by_id(user_id)
         if user is None:

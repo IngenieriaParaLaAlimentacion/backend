@@ -8,11 +8,13 @@ from sqlalchemy import select
 import app.db.database as db_module
 from app.core.security import create_access_token
 from app.domain.user import UserRole, UserStatus
+from app.exceptions.domain_exceptions import EmailDeliveryError
 from app.models.user import User
 
 pytestmark = pytest.mark.asyncio
 
 INVITE_ADMIN_URL = "/api/v1/admin/invite-admin"
+INVITE_ANALYST_URL = "/api/v1/admin/invite-analyst"
 RESEND_INVITE_URL = "/api/v1/admin/users/{user_id}/resend-invite"
 
 
@@ -103,13 +105,41 @@ class TestInviteAdminSuccess:
         mock_send.assert_called_once()
         assert mock_send.call_args[0][0] == email
 
-    async def test_response_body_is_empty(self, client, admin_headers):
-        """202 response should have no body."""
+    async def test_response_returns_created_user_id(self, client, admin_headers):
+        """202 response should carry the created user's id in the body."""
+        email = f"admin_{uuid.uuid4().hex[:6]}@test.com"
+
         with patch("app.services.admin_service.send_invite_email"):
             response = await client.post(
-                INVITE_ADMIN_URL, json=_invite_body(), headers=admin_headers
+                INVITE_ADMIN_URL, json={"email": email}, headers=admin_headers
             )
-        assert response.content == b""
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(select(User).where(User.email == email))
+            user = result.scalar_one()
+
+        body = response.json()
+        assert body == {"user_id": str(user.id)}
+
+
+class TestInviteAnalystSuccess:
+    async def test_returns_202_with_created_user_id(self, client, admin_headers):
+        """Analyst invite should return 202 and the created user's id."""
+        email = f"analyst_{uuid.uuid4().hex[:6]}@test.com"
+
+        with patch("app.services.admin_service.send_invite_email"):
+            response = await client.post(
+                INVITE_ANALYST_URL, json={"email": email}, headers=admin_headers
+            )
+
+        assert response.status_code == status.HTTP_202_ACCEPTED
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(select(User).where(User.email == email))
+            user = result.scalar_one()
+
+        assert user.role == UserRole.ANALYST
+        assert response.json() == {"user_id": str(user.id)}
 
 
 class TestInviteAdminConflict:
@@ -144,6 +174,41 @@ class TestInviteAdminConflict:
             users = result.scalars().all()
 
         assert len(users) == 1
+
+
+class TestInviteAdminEmailFailure:
+    async def test_returns_502_when_email_delivery_fails(self, client, admin_headers):
+        """A failed invite email should surface as 502, not a false 202."""
+        with patch(
+            "app.services.admin_service.send_invite_email",
+            side_effect=EmailDeliveryError(),
+        ):
+            response = await client.post(
+                INVITE_ADMIN_URL, json=_invite_body(), headers=admin_headers
+            )
+
+        assert response.status_code == status.HTTP_502_BAD_GATEWAY
+
+    async def test_account_persists_for_resend_when_email_fails(
+        self, client, admin_headers
+    ):
+        """Even though delivery failed, the pending account is committed so the
+        admin can recover via resend-invite."""
+        email = f"admin_{uuid.uuid4().hex[:6]}@test.com"
+
+        with patch(
+            "app.services.admin_service.send_invite_email",
+            side_effect=EmailDeliveryError(),
+        ):
+            await client.post(
+                INVITE_ADMIN_URL, json={"email": email}, headers=admin_headers
+            )
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(select(User).where(User.email == email))
+            user = result.scalar_one()
+
+        assert user.status == UserStatus.PENDING_VALIDATION
 
 
 class TestInviteAdminValidation:

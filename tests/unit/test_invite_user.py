@@ -109,6 +109,23 @@ class TestInviteAdmin:
         )
 
     @pytest.mark.asyncio
+    async def test_returns_created_user_id(self, make_uow, make_service):
+        """Should return the id of the newly created user."""
+        created_user = _make_user()
+        uow = make_uow(created_user=created_user)
+        service = make_service(uow)
+
+        with (
+            patch("app.services.admin_service.send_invite_email"),
+            patch("app.services.admin_service.build_recovery_deeplink"),
+        ):
+            result = await service.invite_user(
+                MagicMock(email="new@test.com"), UserRole.ADMIN
+            )
+
+        assert result == created_user.id
+
+    @pytest.mark.asyncio
     async def test_creates_password_for_new_user(self, make_uow, make_service):
         """Should call password_repo.create with the new user's id."""
         created_user = _make_user()

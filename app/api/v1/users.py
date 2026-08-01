@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends, Query, status
 from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams
 from app.core.dependencies import (
     get_activity_service,
-    get_current_field_worker,
     get_user_service,
     require_any,
 )
@@ -81,12 +80,12 @@ async def update_my_profile(
     response_model=list[EstablishmentWithStatusResponse],
     status_code=status.HTTP_200_OK,
     summary="List own establishment relations",
-    description="Returns the field worker's establishments, each with its approval "
-    "status. Field worker only.",
+    description="Returns the caller's establishments, each with its approval "
+    "status. Accessible by all authenticated roles.",
     responses=AUTH_RESPONSES,
 )
 async def list_my_establishments(
-    actor: UserActor = Depends(get_current_field_worker),
+    actor: UserActor = Depends(require_any),
     service: UserService = Depends(get_user_service),
 ) -> list[EstablishmentWithStatusResponse]:
     relations = await service.get_own_establishments(actor)
@@ -100,7 +99,7 @@ async def list_my_establishments(
     summary="Request establishment access",
     description="Requests access to one or more establishments. Idempotent: "
     "already-approved/pending stay unchanged, rejected ones are re-requested "
-    "(set to pending). Field worker only.",
+    "(set to pending). Accessible by all authenticated roles.",
     responses={
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
@@ -108,7 +107,7 @@ async def list_my_establishments(
 )
 async def request_establishment_access(
     data: EstablishmentAccessRequest,
-    actor: UserActor = Depends(get_current_field_worker),
+    actor: UserActor = Depends(require_any),
     service: UserService = Depends(get_user_service),
 ) -> list[EstablishmentWithStatusResponse]:
     relations = await service.request_establishment_access(

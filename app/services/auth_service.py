@@ -62,6 +62,7 @@ class AuthService:
             data.establishments
         )
 
+        is_email_verified = settings.environment == "development"
         user = await self.uow.user_repo.create(
             email=data.email,
             name=data.name,
@@ -71,6 +72,7 @@ class AuthService:
             locality=data.locality,
             description=data.description,
             contact_phone=data.contact_phone,
+            is_email_verified=is_email_verified,
         )
         await self.uow.password_repo.create(user.id, hash_password(data.password))
         for establishment in establishments:
@@ -87,7 +89,7 @@ class AuthService:
             last_name=user.last_name,
             role=user.role,
             status=user.status,
-            is_email_verified=False,
+            is_email_verified=is_email_verified,
             establishments=[establishment.id for establishment in establishments],
             locality=user.locality,
             description=user.description,

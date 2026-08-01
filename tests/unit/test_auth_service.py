@@ -220,7 +220,28 @@ class TestRegisterFieldWorker:
             locality=valid_register_request_all_fields.locality,
             description=valid_register_request_all_fields.description,
             contact_phone=valid_register_request_all_fields.contact_phone,
+            is_email_verified=True,
         )
+
+    @pytest.mark.asyncio
+    async def test_non_development_env_creates_unverified_email(
+        self,
+        make_uow,
+        make_establishment,
+        monkeypatch,
+        valid_register_request_obligatory_fields,
+    ):
+        monkeypatch.setattr(
+            "app.services.auth_service.settings.environment", "production"
+        )
+        establishment = make_establishment()
+        uow = make_uow(establishments=[establishment])
+
+        await AuthService(uow).register_field_worker(
+            valid_register_request_obligatory_fields
+        )
+
+        assert uow.user_repo.create.call_args.kwargs["is_email_verified"] is False
 
     @pytest.mark.asyncio
     async def test_registration_creates_password(
@@ -309,6 +330,7 @@ class TestRegisterFieldWorker:
             locality=None,
             description=None,
             contact_phone=None,
+            is_email_verified=True,
         )
 
 
