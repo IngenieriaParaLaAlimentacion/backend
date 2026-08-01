@@ -39,6 +39,12 @@ router = APIRouter(prefix="/surveys/{survey_id}/responses")
     ),
     responses={
         **AUTH_RESPONSES,
+        status.HTTP_200_OK: {
+            "description": "Survey responses exported successfully",
+            "content": {
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            },
+        },
         status.HTTP_404_NOT_FOUND: {"description": "Survey not found"},
     },
 )
