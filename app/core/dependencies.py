@@ -10,6 +10,7 @@ from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
 from app.services.activity_service import ActivityService
 from app.services.admin_service import AdminService
+from app.services.analytics_service import AnalyticsService
 from app.services.auth_service import AuthService
 from app.services.establishment_service import EstablishmentService
 from app.services.measurement_service import MeasurementService
@@ -77,6 +78,12 @@ async def get_survey_response_service() -> AsyncGenerator[SurveyResponseService,
     """Provide a SurveyResponseService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
         yield SurveyResponseService(uow)
+
+
+async def get_analytics_service() -> AsyncGenerator[AnalyticsService, None]:
+    """Provide an AnalyticsService backed by a fresh UnitOfWork."""
+    async with UnitOfWork() as uow:
+        yield AnalyticsService(uow)
 
 
 def _decode_verified_payload(token: str) -> dict:
@@ -160,6 +167,25 @@ def require_some(*roles: UserRole):
         return UserActor(user_id=payload["sub"], role=payload["role"])
 
     return dep
+
+
+async def require_admin_analyst_or_superadmin(
+    token: str = Depends(oauth2_scheme),
+) -> UserActor:
+    """Dependency that accepts admin, analyst and superadmin roles."""
+    return await _get_authenticated_actor(
+        token, {UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN}
+    )
+
+
+async def require_field_worker_admin_or_superadmin(
+    token: str = Depends(oauth2_scheme),
+) -> UserActor:
+    """Dependency that accepts field worker, admin and superadmin roles."""
+
+    return await _get_authenticated_actor(
+        token, {UserRole.FIELD_WORKER, UserRole.ADMIN, UserRole.SUPERADMIN}
+    )
 
 
 async def require_any(token: str = Depends(oauth2_scheme)) -> UserActor:

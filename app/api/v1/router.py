@@ -2,14 +2,15 @@ from fastapi import APIRouter
 
 from app.api.v1 import (
     admin,
+    analytics,
     auth,
     establishments,
     measurements,
     subjects,
-    survey_responses,
-    surveys,
     users,
 )
+from app.api.v1.surveys import responses as survey_responses
+from app.api.v1.surveys import surveys
 
 v1_router = APIRouter(prefix="/api/v1")
 
@@ -21,3 +22,4 @@ v1_router.include_router(subjects.router, tags=["Subjects V1"])
 v1_router.include_router(surveys.router, tags=["Surveys V1"])
 v1_router.include_router(survey_responses.router, tags=["Survey Responses V1"])
 v1_router.include_router(users.router, tags=["Users V1"])
+v1_router.include_router(analytics.router, tags=["Analytics V1"])

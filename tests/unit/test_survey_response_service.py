@@ -5,8 +5,8 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.domain.establishment import UserEstablishmentStatus
-from app.domain.survey import ResponseType, SurveyScope
-from app.domain.survey_response import SurveyResponseDomain
+from app.domain.survey import ResponseType, SurveyInstrumentType, SurveyScope
+from app.domain.survey_response import SurveyResponseDomain, SurveyResponseListingParams
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
@@ -96,8 +96,31 @@ def _make_response(
     return r
 
 
-def _apply_update_answers(response, answers, event_at):
+def _make_fies_survey_orm(num_questions: int = 8) -> tuple[MagicMock, list[MagicMock]]:
+    """A FIES-marked survey ORM double with `num_questions` dichotomous
+    single_choice questions: option[0]="Sí" (affirmative, position 0),
+    option[1]="No" (position 1)."""
+    questions = []
+    for i in range(num_questions):
+        yes = _make_option("Sí")
+        yes.position = 0
+        no = _make_option("No")
+        no.position = 1
+        q = _make_question(
+            response_type=ResponseType.SINGLE_CHOICE,
+            is_required=True,
+            options=[yes, no],
+        )
+        q.position = i
+        questions.append(q)
+    survey = _make_survey_orm(questions=questions)
+    survey.instrument_type = SurveyInstrumentType.FIES
+    return survey, questions
+
+
+def _apply_update_answers(response, answers, score_fies, event_at):
     response.answers = answers
+    response.score_fies = score_fies
     response.event_at = event_at
     return response
 
@@ -230,7 +253,6 @@ class TestSubmit:
     def request_factory(self):
         def _make(**overrides):
             data = dict(
-                survey_id=uuid.uuid4(),
                 establishment_id=uuid.uuid4(),
                 answers={},
                 event_at=NOW,
@@ -243,9 +265,9 @@ class TestSubmit:
     async def test_analyst_forbidden(self, make_uow, request_factory, analyst_actor):
         survey = _make_survey_orm()
         uow = make_uow(survey=survey)
-        data = request_factory(survey_id=survey.id)
+        data = request_factory()
         with pytest.raises(ForbiddenError):
-            await SurveyResponseService(uow).submit(data, analyst_actor)
+            await SurveyResponseService(uow).submit(survey.id, data, analyst_actor)
         uow.commit.assert_not_called()
 
     async def test_field_worker_without_access_forbidden(
@@ -253,9 +275,9 @@ class TestSubmit:
     ):
         survey = _make_survey_orm()
         uow = make_uow(survey=survey, relation=None)
-        data = request_factory(survey_id=survey.id)
+        data = request_factory()
         with pytest.raises(ForbiddenError):
-            await SurveyResponseService(uow).submit(data, field_worker_actor)
+            await SurveyResponseService(uow).submit(survey.id, data, field_worker_actor)
         uow.commit.assert_not_called()
 
     async def test_field_worker_with_approved_access_allowed(
@@ -264,9 +286,9 @@ class TestSubmit:
         survey = _make_survey_orm()
         relation = MagicMock(status=UserEstablishmentStatus.APPROVED)
         uow = make_uow(survey=survey, relation=relation)
-        data = request_factory(survey_id=survey.id)
+        data = request_factory()
         response, created = await SurveyResponseService(uow).submit(
-            data, field_worker_actor
+            survey.id, data, field_worker_actor
         )
         assert created is True
         assert isinstance(response, SurveyResponseDomain)
@@ -276,16 +298,16 @@ class TestSubmit:
         uow = make_uow(survey=None)
         data = request_factory()
         with pytest.raises(SurveyNotFoundError):
-            await SurveyResponseService(uow).submit(data, admin_actor)
+            await SurveyResponseService(uow).submit(uuid.uuid4(), data, admin_actor)
 
     async def test_establishment_not_found(
         self, make_uow, request_factory, admin_actor
     ):
         survey = _make_survey_orm()
         uow = make_uow(survey=survey, establishment=None)
-        data = request_factory(survey_id=survey.id)
+        data = request_factory()
         with pytest.raises(EstablishmentNotFoundError):
-            await SurveyResponseService(uow).submit(data, admin_actor)
+            await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
 
     async def test_admin_outside_targeted_audience_rejected(
         self, make_uow, request_factory, admin_actor
@@ -295,9 +317,9 @@ class TestSubmit:
             scope=SurveyScope.TARGETED, establishment_ids=[allowed_id]
         )
         uow = make_uow(survey=survey)
-        data = request_factory(survey_id=survey.id, establishment_id=uuid.uuid4())
+        data = request_factory(establishment_id=uuid.uuid4())
         with pytest.raises(InvalidSurveyResponseError):
-            await SurveyResponseService(uow).submit(data, admin_actor)
+            await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
 
     async def test_required_question_missing_rejected_no_partial_save(
         self, make_uow, request_factory, admin_actor
@@ -305,9 +327,9 @@ class TestSubmit:
         question = _make_question(is_required=True)
         survey = _make_survey_orm(questions=[question])
         uow = make_uow(survey=survey)
-        data = request_factory(survey_id=survey.id, answers={})
+        data = request_factory(answers={})
         with pytest.raises(InvalidSurveyResponseError):
-            await SurveyResponseService(uow).submit(data, admin_actor)
+            await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
         uow.survey_response_repo.create.assert_not_called()
         uow.commit.assert_not_called()
 
@@ -316,8 +338,10 @@ class TestSubmit:
     ):
         survey = _make_survey_orm()
         uow = make_uow(survey=survey)
-        data = request_factory(survey_id=survey.id)
-        response, created = await SurveyResponseService(uow).submit(data, admin_actor)
+        data = request_factory()
+        response, created = await SurveyResponseService(uow).submit(
+            survey.id, data, admin_actor
+        )
         assert created is True
         uow.survey_repo.increment_response_count.assert_awaited_once_with(survey.id)
         uow.commit.assert_called_once()
@@ -328,7 +352,9 @@ class TestSubmit:
         existing = _make_response()
         uow = make_uow(existing_response=existing)
         data = request_factory(id=existing.id)
-        response, created = await SurveyResponseService(uow).submit(data, admin_actor)
+        response, created = await SurveyResponseService(uow).submit(
+            uuid.uuid4(), data, admin_actor
+        )
         assert created is False
         assert response.id == existing.id
         uow.survey_response_repo.create.assert_not_called()
@@ -341,7 +367,7 @@ class TestSubmit:
         uow = make_uow(existing_response=existing)
         data = request_factory(id=existing.id)
         with pytest.raises(ForbiddenError):
-            await SurveyResponseService(uow).submit(data, analyst_actor)
+            await SurveyResponseService(uow).submit(uuid.uuid4(), data, analyst_actor)
         uow.survey_response_repo.create.assert_not_called()
 
     async def test_replayed_id_still_checks_establishment_access(
@@ -355,7 +381,9 @@ class TestSubmit:
         uow = make_uow(existing_response=existing, relation=None)
         data = request_factory(id=existing.id)
         with pytest.raises(ForbiddenError):
-            await SurveyResponseService(uow).submit(data, field_worker_actor)
+            await SurveyResponseService(uow).submit(
+                uuid.uuid4(), data, field_worker_actor
+            )
         uow.survey_response_repo.create.assert_not_called()
 
     async def test_race_on_create_returns_existing(
@@ -370,8 +398,10 @@ class TestSubmit:
         uow.survey_response_repo.create = AsyncMock(
             side_effect=UniqueConstraintError("id", response_id)
         )
-        data = request_factory(id=response_id, survey_id=survey.id)
-        response, created = await SurveyResponseService(uow).submit(data, admin_actor)
+        data = request_factory(id=response_id)
+        response, created = await SurveyResponseService(uow).submit(
+            survey.id, data, admin_actor
+        )
         assert created is False
         assert response.id == response_id
         uow.commit.assert_not_called()
@@ -532,3 +562,489 @@ class TestEdit:
                 response.id, edit_factory(answers={}), admin_actor
             )
         uow.survey_response_edit_repo.create.assert_not_called()
+
+
+class TestListBySurvey:
+    pytestmark = pytest.mark.asyncio
+
+    async def test_admin_gets_paginated_result(self, make_uow, admin_actor):
+        survey = _make_survey_orm()
+        response = _make_response(survey_id=survey.id)
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_by_survey = AsyncMock(
+            return_value=([response], 1)
+        )
+
+        result = await SurveyResponseService(uow).list_by_survey(
+            survey.id,
+            admin_actor,
+            page=1,
+            page_size=20,
+            params=SurveyResponseListingParams(),
+        )
+
+        assert result.total == 1
+        assert len(result.items) == 1
+        assert result.items[0].id == response.id
+        uow.survey_response_repo.list_by_survey.assert_awaited_once_with(
+            survey.id, limit=20, offset=0, params=SurveyResponseListingParams()
+        )
+
+    async def test_analyst_can_list(self, make_uow, analyst_actor):
+        survey = _make_survey_orm()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
+
+        result = await SurveyResponseService(uow).list_by_survey(
+            survey.id,
+            analyst_actor,
+            page=1,
+            page_size=20,
+            params=SurveyResponseListingParams(),
+        )
+
+        assert result.total == 0
+
+    async def test_field_worker_forbidden(self, make_uow, field_worker_actor):
+        survey = _make_survey_orm()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
+
+        with pytest.raises(ForbiddenError):
+            await SurveyResponseService(uow).list_by_survey(
+                survey.id,
+                field_worker_actor,
+                page=1,
+                page_size=20,
+                params=SurveyResponseListingParams(),
+            )
+        uow.survey_repo.get_by_id.assert_not_awaited()
+        uow.survey_response_repo.list_by_survey.assert_not_awaited()
+
+    async def test_survey_not_found(self, make_uow, admin_actor):
+        uow = make_uow(survey=None)
+        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
+
+        with pytest.raises(SurveyNotFoundError):
+            await SurveyResponseService(uow).list_by_survey(
+                uuid.uuid4(),
+                admin_actor,
+                page=1,
+                page_size=20,
+                params=SurveyResponseListingParams(),
+            )
+        uow.survey_response_repo.list_by_survey.assert_not_awaited()
+
+    async def test_computes_offset_from_page(self, make_uow, admin_actor):
+        survey = _make_survey_orm()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
+
+        await SurveyResponseService(uow).list_by_survey(
+            survey.id,
+            admin_actor,
+            page=3,
+            page_size=10,
+            params=SurveyResponseListingParams(),
+        )
+
+        uow.survey_response_repo.list_by_survey.assert_awaited_once_with(
+            survey.id, limit=10, offset=20, params=SurveyResponseListingParams()
+        )
+
+    async def test_clamps_page_below_one(self, make_uow, admin_actor):
+        survey = _make_survey_orm()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
+
+        await SurveyResponseService(uow).list_by_survey(
+            survey.id,
+            admin_actor,
+            page=0,
+            page_size=10,
+            params=SurveyResponseListingParams(),
+        )
+
+        uow.survey_response_repo.list_by_survey.assert_awaited_once_with(
+            survey.id, limit=10, offset=0, params=SurveyResponseListingParams()
+        )
+
+
+def _make_response_with_detail(
+    questions: list,
+    answers: dict,
+    submitted_by_id: uuid.UUID | None = None,
+    submitted_by_name: str = "Juana Pérez",
+) -> MagicMock:
+    survey = MagicMock()
+    survey.id = uuid.uuid4()
+    survey.name = "Encuesta FIES"
+    survey.questions = questions
+
+    establishment = MagicMock()
+    establishment.id = uuid.uuid4()
+
+    submitter = MagicMock()
+    submitter.id = submitted_by_id or uuid.uuid4()
+    submitter.name = submitted_by_name
+
+    r = MagicMock()
+    r.id = uuid.uuid4()
+    r.event_at = NOW
+    r.answers = answers
+    r.survey = survey
+    r.establishment = establishment
+    r.submitted_by = submitter
+    return r
+
+
+class TestGetDashboardDetail:
+    pytestmark = pytest.mark.asyncio
+
+    async def test_admin_gets_full_detail_with_resolved_labels(
+        self, make_uow, admin_actor
+    ):
+        option_yes = _make_option("Sí")
+        option_no = _make_option("No")
+        choice_question = _make_question(
+            response_type=ResponseType.SINGLE_CHOICE, options=[option_yes, option_no]
+        )
+        choice_question.position = 0
+        text_question = _make_question(response_type=ResponseType.TEXT)
+        text_question.position = 1
+
+        response = _make_response_with_detail(
+            questions=[text_question, choice_question],
+            answers={
+                str(choice_question.id): str(option_yes.id),
+                str(text_question.id): "Todo bien",
+            },
+        )
+        uow = make_uow()
+        uow.survey_response_repo.get_with_relations = AsyncMock(return_value=response)
+
+        result = await SurveyResponseService(uow).get_response_detail(
+            response.id, admin_actor
+        )
+
+        assert [a.question_id for a in result.answers] == [
+            choice_question.id,
+            text_question.id,
+        ]
+        choice_answer, text_answer = result.answers
+        assert text_answer.value == "Todo bien"
+        assert text_answer.value_label is None
+        assert choice_answer.value_label == "Sí"
+        assert result.submitted_by.name == "Juana Pérez"
+
+    async def test_multiple_choice_resolves_all_labels(self, make_uow, admin_actor):
+        option_a = _make_option("Verduras")
+        option_b = _make_option("Frutas")
+        question = _make_question(
+            response_type=ResponseType.MULTIPLE_CHOICE, options=[option_a, option_b]
+        )
+        response = _make_response_with_detail(
+            questions=[question],
+            answers={str(question.id): [str(option_a.id), str(option_b.id)]},
+        )
+        uow = make_uow()
+        uow.survey_response_repo.get_with_relations = AsyncMock(return_value=response)
+
+        result = await SurveyResponseService(uow).get_response_detail(
+            response.id, admin_actor
+        )
+
+        assert result.answers[0].value_label == ["Verduras", "Frutas"]
+
+    async def test_unanswered_question_has_none_value_and_label(
+        self, make_uow, admin_actor
+    ):
+        question = _make_question(response_type=ResponseType.TEXT, is_required=False)
+        response = _make_response_with_detail(questions=[question], answers={})
+        uow = make_uow()
+        uow.survey_response_repo.get_with_relations = AsyncMock(return_value=response)
+
+        result = await SurveyResponseService(uow).get_response_detail(
+            response.id, admin_actor
+        )
+
+        assert result.answers[0].value is None
+        assert result.answers[0].value_label is None
+
+    async def test_analyst_can_view(self, make_uow, analyst_actor):
+        question = _make_question(response_type=ResponseType.TEXT)
+        response = _make_response_with_detail(questions=[question], answers={})
+        uow = make_uow()
+        uow.survey_response_repo.get_with_relations = AsyncMock(return_value=response)
+
+        result = await SurveyResponseService(uow).get_response_detail(
+            response.id, analyst_actor
+        )
+        assert result.id == response.id
+
+    async def test_field_worker_forbidden(self, make_uow, field_worker_actor):
+        uow = make_uow()
+        uow.survey_response_repo.get_with_relations = AsyncMock()
+
+        with pytest.raises(ForbiddenError):
+            await SurveyResponseService(uow).get_response_detail(
+                uuid.uuid4(), field_worker_actor
+            )
+        uow.survey_response_repo.get_with_relations.assert_not_awaited()
+
+    async def test_response_not_found(self, make_uow, admin_actor):
+        uow = make_uow()
+        uow.survey_response_repo.get_with_relations = AsyncMock(return_value=None)
+
+        with pytest.raises(SurveyResponseNotFoundError):
+            await SurveyResponseService(uow).get_response_detail(
+                uuid.uuid4(), admin_actor
+            )
+
+
+class TestFiesScoring:
+    pytestmark = pytest.mark.asyncio
+
+    @pytest.fixture
+    def request_factory(self):
+        def _make(**overrides):
+            data = dict(
+                establishment_id=uuid.uuid4(),
+                answers={},
+                event_at=NOW,
+            )
+            data.update(overrides)
+            return SurveyResponseRequest(**data)
+
+        return _make
+
+    @pytest.fixture
+    def edit_factory(self):
+        def _make(**overrides):
+            data = dict(answers={}, event_at=NOW)
+            data.update(overrides)
+            return SurveyResponseEditRequest(**data)
+
+        return _make
+
+    async def test_all_affirmative_scores_max(
+        self, make_uow, request_factory, admin_actor
+    ):
+        survey, questions = _make_fies_survey_orm(num_questions=8)
+        answers = {str(q.id): str(q.options[0].id) for q in questions}  # all "Sí"
+        uow = make_uow(survey=survey)
+        data = request_factory(answers=answers)
+
+        await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
+
+        create_call = uow.survey_response_repo.create.call_args
+        assert create_call.kwargs["score_fies"] == 8
+
+    async def test_all_negative_scores_zero(
+        self, make_uow, request_factory, admin_actor
+    ):
+        survey, questions = _make_fies_survey_orm(num_questions=8)
+        answers = {str(q.id): str(q.options[1].id) for q in questions}  # all "No"
+        uow = make_uow(survey=survey)
+        data = request_factory(answers=answers)
+
+        await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
+
+        create_call = uow.survey_response_repo.create.call_args
+        assert create_call.kwargs["score_fies"] == 0
+
+    async def test_partial_affirmative_scores_correctly(
+        self, make_uow, request_factory, admin_actor
+    ):
+        survey, questions = _make_fies_survey_orm(num_questions=8)
+        answers = {
+            str(q.id): str(q.options[0].id if i < 3 else q.options[1].id)
+            for i, q in enumerate(questions)
+        }
+        uow = make_uow(survey=survey)
+        data = request_factory(answers=answers)
+
+        await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
+
+        create_call = uow.survey_response_repo.create.call_args
+        assert create_call.kwargs["score_fies"] == 3
+
+    async def test_custom_survey_has_null_score(
+        self, make_uow, request_factory, admin_actor
+    ):
+        question = _make_question(is_required=False)
+        survey = _make_survey_orm(questions=[question])
+        survey.instrument_type = SurveyInstrumentType.CUSTOM
+        uow = make_uow(survey=survey)
+        data = request_factory(answers={})
+
+        await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
+
+        create_call = uow.survey_response_repo.create.call_args
+        assert create_call.kwargs["score_fies"] is None
+
+    async def test_unanswered_fies_question_not_counted(
+        self, make_uow, request_factory, admin_actor
+    ):
+        survey, questions = _make_fies_survey_orm(num_questions=8)
+        questions[0].is_required = False  # allow leaving it unanswered
+        answers = {
+            str(q.id): str(q.options[0].id) for q in questions[1:]
+        }  # first question left unanswered, rest all "Sí"
+        uow = make_uow(survey=survey)
+        data = request_factory(answers=answers)
+
+        await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
+
+        create_call = uow.survey_response_repo.create.call_args
+        assert create_call.kwargs["score_fies"] == 7
+
+    async def test_edit_recalculates_score(self, make_uow, edit_factory, admin_actor):
+        survey, questions = _make_fies_survey_orm(num_questions=8)
+        original_answers = {
+            str(q.id): str(q.options[1].id) for q in questions
+        }  # all "No"
+        response = _make_response(survey_id=survey.id, answers=original_answers)
+        uow = make_uow(survey=survey, existing_response=response)
+
+        new_answers = {str(q.id): str(q.options[0].id) for q in questions}  # all "Sí"
+        await SurveyResponseService(uow).edit(
+            response.id, edit_factory(answers=new_answers, event_at=NOW), admin_actor
+        )
+
+        update_call = uow.survey_response_repo.update_answers.call_args
+        assert update_call.kwargs["score_fies"] == 8
+
+    async def test_edit_with_older_event_at_does_not_call_update(
+        self, make_uow, edit_factory, admin_actor
+    ):
+        """When the edit is older than the response's current event_at, the
+        audit row is still logged but update_answers (and its score
+        recalculation) is never applied."""
+        survey, questions = _make_fies_survey_orm(num_questions=8)
+        original_answers = {str(q.id): str(q.options[1].id) for q in questions}
+        response = _make_response(
+            survey_id=survey.id, answers=original_answers, event_at=NOW
+        )
+        uow = make_uow(survey=survey, existing_response=response)
+        older_time = NOW - timedelta(hours=1)
+        new_answers = {str(q.id): str(q.options[0].id) for q in questions}
+
+        await SurveyResponseService(uow).edit(
+            response.id,
+            edit_factory(answers=new_answers, event_at=older_time),
+            admin_actor,
+        )
+
+        uow.survey_response_repo.update_answers.assert_not_called()
+
+
+class TestSurveyResponseListingParams:
+    def test_blank_city_normalizes_to_none(self):
+        params = SurveyResponseListingParams(city="   ")
+        assert params.city is None
+
+    def test_city_is_stripped(self):
+        params = SurveyResponseListingParams(city="  Cordoba  ")
+        assert params.city == "Cordoba"
+
+    def test_none_city_stays_none(self):
+        params = SurveyResponseListingParams()
+        assert params.city is None
+        assert params.province is None
+
+
+class TestListBySurveyFilters:
+    pytestmark = pytest.mark.asyncio
+
+    async def test_passes_params_through_to_repo(self, make_uow, admin_actor):
+        survey = _make_survey_orm()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
+        establishment_id = uuid.uuid4()
+        params = SurveyResponseListingParams(
+            establishment_id=establishment_id,
+            event_at_from=NOW,
+            event_at_to=NOW,
+            city="Cordoba",
+            province="Cordoba",
+        )
+
+        await SurveyResponseService(uow).list_by_survey(
+            survey.id, admin_actor, page=1, page_size=20, params=params
+        )
+
+        uow.survey_response_repo.list_by_survey.assert_awaited_once_with(
+            survey.id, limit=20, offset=0, params=params
+        )
+
+    async def test_default_params_is_unfiltered(self, make_uow, admin_actor):
+        survey = _make_survey_orm()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
+
+        await SurveyResponseService(uow).list_by_survey(
+            survey.id,
+            admin_actor,
+            page=1,
+            page_size=20,
+            params=SurveyResponseListingParams(),
+        )
+
+        call = uow.survey_response_repo.list_by_survey.call_args
+        assert call.kwargs["params"].establishment_id is None
+        assert call.kwargs["params"].city is None
+
+
+class TestExport:
+    pytestmark = pytest.mark.asyncio
+
+    async def test_admin_can_export(self, make_uow, admin_actor):
+        survey = _make_survey_orm()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_all_for_export = AsyncMock(return_value=[])
+        fake_exporter = MagicMock()
+        fake_exporter.export.return_value = b"fake-bytes"
+
+        result = await SurveyResponseService(uow).export(
+            survey.id, admin_actor, fake_exporter, uuid.uuid4()
+        )
+
+        assert result == b"fake-bytes"
+        fake_exporter.export.assert_called_once()
+
+    async def test_field_worker_forbidden(self, make_uow, field_worker_actor):
+        survey = _make_survey_orm()
+        uow = make_uow(survey=survey)
+        fake_exporter = MagicMock()
+
+        with pytest.raises(ForbiddenError):
+            await SurveyResponseService(uow).export(
+                survey.id, field_worker_actor, fake_exporter, uuid.uuid4()
+            )
+        fake_exporter.export.assert_not_called()
+
+    async def test_survey_not_found(self, make_uow, admin_actor):
+        uow = make_uow(survey=None)
+        fake_exporter = MagicMock()
+
+        with pytest.raises(SurveyNotFoundError):
+            await SurveyResponseService(uow).export(
+                uuid.uuid4(), admin_actor, fake_exporter, uuid.uuid4()
+            )
+
+    async def test_filters_by_establishment(self, make_uow, admin_actor):
+        survey = _make_survey_orm()
+        establishment_id = uuid.uuid4()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_all_for_export = AsyncMock(return_value=[])
+        fake_exporter = MagicMock()
+        fake_exporter.export.return_value = b""
+
+        await SurveyResponseService(uow).export(
+            survey.id, admin_actor, fake_exporter, establishment_id
+        )
+
+        uow.survey_response_repo.list_all_for_export.assert_awaited_once_with(
+            survey.id, establishment_id
+        )

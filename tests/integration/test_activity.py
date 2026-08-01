@@ -13,7 +13,11 @@ ACTIVITY_URL = "/api/v1/users/me/activity"
 SUBJECTS_URL = "/api/v1/subjects"
 MEASUREMENTS_URL = "/api/v1/measurements"
 SURVEYS_URL = "/api/v1/surveys"
-SURVEY_RESPONSES_URL = "/api/v1/survey-responses"
+
+
+def _responses_url(survey_id, *parts):
+    segments = [SURVEYS_URL, str(survey_id), "responses"] + [str(p) for p in parts]
+    return "/".join(segments)
 
 
 @pytest_asyncio.fixture
@@ -126,7 +130,9 @@ async def _submit_survey_response(
         "event_at": event_at,
         **overrides,
     }
-    response = await client.post(SURVEY_RESPONSES_URL, json=body, headers=headers)
+    response = await client.post(
+        _responses_url(survey["id"]), json=body, headers=headers
+    )
     assert response.status_code == status.HTTP_201_CREATED
     return response.json()["id"]
 

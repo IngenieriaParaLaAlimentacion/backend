@@ -13,6 +13,10 @@ from app.domain.survey import (
     SurveyScope,
     SurveySortOrder,
 )
+from app.domain.survey_response import (
+    SurveyResponseListingParams,
+    SurveyResponseSummaryParams,
+)
 from app.exceptions.domain_exceptions import InvalidListingFilterError
 
 AUTH_RESPONSES = {
@@ -21,6 +25,24 @@ AUTH_RESPONSES = {
     },
     status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
 }
+
+
+def _validate_date_range(
+    start: datetime | None, end: datetime | None, field_prefix: str
+) -> None:
+    """Helper to validate that a 'from' date is not after a 'to' date."""
+    if start is not None and end is not None and start > end:
+        raise InvalidListingFilterError(
+            f"{field_prefix}_from cannot be after {field_prefix}_to"
+        )
+
+
+@dataclass
+class LocationQuery:
+    """Base query params for endpoints that filter by location."""
+
+    city: Annotated[str | None, Query(max_length=100)] = None
+    province: Annotated[str | None, Query(max_length=100)] = None
 
 
 @dataclass
@@ -32,10 +54,8 @@ class PaginatedQueryParams:
 
 
 @dataclass
-class EstablishmentListingQuery:
+class EstablishmentListingQuery(LocationQuery):
     search: Annotated[str | None, Query(max_length=100)] = None
-    city: Annotated[str | None, Query(max_length=100)] = None
-    province: Annotated[str | None, Query(max_length=100)] = None
     sort_order: EstablishmentSortOrder = EstablishmentSortOrder.NEWEST
 
     def to_domain(self) -> EstablishmentListingParams:
@@ -48,11 +68,9 @@ class EstablishmentListingQuery:
 
 
 @dataclass
-class MeasurementListingQuery:
+class MeasurementListingQuery(LocationQuery):
     subject_id: Annotated[UUID | None, Query()] = None
     establishment_id: Annotated[UUID | None, Query()] = None
-    city: Annotated[str | None, Query(max_length=100)] = None
-    province: Annotated[str | None, Query(max_length=100)] = None
     responsible_id: Annotated[UUID | None, Query()] = None
     measured_from: Annotated[datetime | None, Query()] = None
     measured_to: Annotated[datetime | None, Query()] = None
@@ -61,19 +79,14 @@ class MeasurementListingQuery:
     sort_order: MeasurementSortOrder = MeasurementSortOrder.DATE_DESC
 
     def validate(self) -> None:
-        """Validate cross-field constraints. Raises InvalidListingFilterError."""
         if (
             self.min_age is not None
             and self.max_age is not None
             and self.min_age > self.max_age
         ):
             raise InvalidListingFilterError("min_age cannot be greater than max_age")
-        if (
-            self.measured_from is not None
-            and self.measured_to is not None
-            and self.measured_from > self.measured_to
-        ):
-            raise InvalidListingFilterError("measured_from cannot be after measured_to")
+
+        _validate_date_range(self.measured_from, self.measured_to, "measured")
 
     def to_domain(self) -> MeasurementListingParams:
         return MeasurementListingParams(
@@ -105,4 +118,44 @@ class SurveyListingQuery:
             scope=self.scope,
             is_active=self.is_active,
             sort_order=self.sort_order,
+        )
+
+
+@dataclass
+class SurveyResponseListingQuery(LocationQuery):
+    establishment_id: Annotated[UUID | None, Query()] = None
+    event_at_from: Annotated[datetime | None, Query()] = None
+    event_at_to: Annotated[datetime | None, Query()] = None
+
+    def validate(self) -> None:
+        _validate_date_range(self.event_at_from, self.event_at_to, "event_at")
+
+    def to_domain(self) -> SurveyResponseListingParams:
+        return SurveyResponseListingParams(
+            establishment_id=self.establishment_id,
+            event_at_from=self.event_at_from,
+            event_at_to=self.event_at_to,
+            city=self.city,
+            province=self.province,
+        )
+
+
+@dataclass
+class SurveyResponseSummaryQuery(LocationQuery):
+    survey_id: Annotated[UUID | None, Query()] = None
+    establishment_id: Annotated[UUID | None, Query()] = None
+    event_at_from: Annotated[datetime | None, Query()] = None
+    event_at_to: Annotated[datetime | None, Query()] = None
+
+    def validate(self) -> None:
+        _validate_date_range(self.event_at_from, self.event_at_to, "event_at")
+
+    def to_domain(self) -> SurveyResponseSummaryParams:
+        return SurveyResponseSummaryParams(
+            survey_id=self.survey_id,
+            establishment_id=self.establishment_id,
+            event_at_from=self.event_at_from,
+            event_at_to=self.event_at_to,
+            city=self.city,
+            province=self.province,
         )

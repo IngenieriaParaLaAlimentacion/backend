@@ -4,6 +4,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.domain.survey import ResponseType
+from app.schemas.common_schemas import IdentifierRefSchema
 from app.schemas.measurement_schema import EstablishmentRefResponse
 from app.utils.dates import is_future_date
 
@@ -25,7 +27,6 @@ class SurveyResponseRequest(BaseModel):
             "the same id are idempotent. When omitted, the server generates one."
         ),
     )
-    survey_id: UUID
     establishment_id: UUID
     answers: dict[str, AnswerValue]
     event_at: datetime = Field(
@@ -36,6 +37,14 @@ class SurveyResponseRequest(BaseModel):
     )
 
     _check_event_at = field_validator("event_at")(validate_event_at)
+
+
+class SurveyRefResponse(IdentifierRefSchema):
+    pass
+
+
+class UserRefResponse(IdentifierRefSchema):
+    pass
 
 
 class SurveyResponseEditRequest(BaseModel):
@@ -66,16 +75,10 @@ class SurveyResponseResponse(BaseModel):
     establishment_id: UUID
     submitted_by_id: UUID
     answers: dict[str, Any]
+    score_fies: int | None
     event_at: datetime
     created_at: datetime
     updated_at: datetime
-
-
-class SurveyRefResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID
-    name: str
 
 
 class SurveyResponseListItem(BaseModel):
@@ -87,3 +90,41 @@ class SurveyResponseListItem(BaseModel):
     event_at: datetime
     survey: SurveyRefResponse
     establishment: EstablishmentRefResponse
+
+
+class SurveyResponseDashboardItem(BaseModel):
+    """An enriched response row for the admin/analyst dashboard view."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    event_at: datetime
+    survey: SurveyRefResponse
+    establishment: EstablishmentRefResponse
+    submitted_by: UserRefResponse
+    score_fies: int | None
+
+
+class QuestionAnswerResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    question_id: UUID
+    question_text: str
+    response_type: ResponseType
+    value: AnswerValue | None
+    value_label: str | list[str] | None = None
+
+
+class SurveyResponseDetailResponse(BaseModel):
+    """Full response detail for the dashboard: every question in the
+    survey plus the value this specific user answered for it."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    event_at: datetime
+    survey: SurveyRefResponse
+    establishment: EstablishmentRefResponse
+    submitted_by: UserRefResponse
+    score_fies: int | None
+    answers: list[QuestionAnswerResponse]

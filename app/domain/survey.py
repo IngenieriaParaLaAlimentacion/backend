@@ -14,6 +14,13 @@ class ResponseType(str, Enum):
     DATE = "date"
 
 
+class SurveyInstrumentType(str, Enum):
+    """Whether a survey is the canonical FAO FIES instrument or a custom one."""
+
+    CUSTOM = "custom"
+    FIES = "fies"
+
+
 class SurveyScope(str, Enum):
     """Audience scope of a survey."""
 
@@ -113,6 +120,7 @@ class SurveyDomain:
     name: str
     description: str | None
     scope: SurveyScope
+    instrument_type: SurveyInstrumentType
     created_by_id: UUID
     is_active: bool
     response_count: int
@@ -129,6 +137,7 @@ class SurveyDomain:
             name=obj.name,
             description=obj.description,
             scope=obj.scope,
+            instrument_type=obj.instrument_type,
             created_by_id=obj.created_by_id,
             is_active=obj.is_active,
             response_count=obj.response_count,

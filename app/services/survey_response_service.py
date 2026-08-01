@@ -2,8 +2,20 @@ from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.establishment import UserEstablishmentStatus
-from app.domain.survey import QuestionDomain, ResponseType, SurveyDomain, SurveyScope
-from app.domain.survey_response import SurveyResponseDomain
+from app.domain.pagination import PaginatedResult
+from app.domain.survey import (
+    QuestionDomain,
+    ResponseType,
+    SurveyDomain,
+    SurveyInstrumentType,
+    SurveyScope,
+)
+from app.domain.survey_response import (
+    SurveyResponseDashboardItemDomain,
+    SurveyResponseDetailDomain,
+    SurveyResponseDomain,
+    SurveyResponseListingParams,
+)
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
@@ -18,11 +30,14 @@ from app.schemas.survey_response_schema import (
     SurveyResponseEditRequest,
     SurveyResponseRequest,
 )
+from app.services.exporters.base import SurveyResponseExporter
 
 # Roles allowed to submit a response.
 _SUBMITTER_ROLES = {UserRole.FIELD_WORKER, UserRole.ADMIN, UserRole.SUPERADMIN}
 # Roles allowed to edit any response regardless of authorship.
 _ADMIN_ROLES = {UserRole.ADMIN, UserRole.SUPERADMIN}
+# Roles allowed to fetch and see responses
+_DASHBOARD_ROLES = {UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN}
 
 
 class SurveyResponseService:
@@ -142,7 +157,7 @@ class SurveyResponseService:
         return SurveyResponseDomain.from_db(response)
 
     async def submit(
-        self, data: SurveyResponseRequest, actor: UserActor
+        self, survey_id: UUID, data: SurveyResponseRequest, actor: UserActor
     ) -> tuple[SurveyResponseDomain, bool]:
         """Idempotently register a survey response.
 
@@ -164,19 +179,21 @@ class SurveyResponseService:
                 await self._check_establishment_access(actor, existing.establishment_id)
                 return SurveyResponseDomain.from_db(existing), False
 
-        survey = await self._get_survey_or_raise(data.survey_id)
+        survey = await self._get_survey_or_raise(survey_id)
         await self._get_establishment_or_raise(data.establishment_id)
         await self._check_establishment_access(actor, data.establishment_id)
         self._assert_establishment_in_survey_scope(survey, data.establishment_id)
         answers = self._validate_answers(survey.questions, data.answers)
+        score_fies = self._calculate_fies_score(survey, answers)
 
         try:
             response = await self.uow.survey_response_repo.create(
                 id=data.id,
-                survey_id=data.survey_id,
+                survey_id=survey_id,
                 establishment_id=data.establishment_id,
                 submitted_by_id=actor.user_id,
                 answers=answers,
+                score_fies=score_fies,
                 event_at=data.event_at,
             )
         except UniqueConstraintError:
@@ -197,7 +214,8 @@ class SurveyResponseService:
 
         Every edit attempt appends a row to ``survey_response_edits``; the
         response's current state only advances if ``event_at`` is at least as
-        recent as what it already has (last-write-wins).
+        recent as what it already has (last-write-wins).The FIES score is
+        recalculated from the new answers whenever the edit is applied.
 
         Raises:
             SurveyResponseNotFoundError, ForbiddenError (not the submitter/admin),
@@ -213,6 +231,7 @@ class SurveyResponseService:
 
         survey = await self._get_survey_or_raise(response.survey_id)
         answers = self._validate_answers(survey.questions, data.answers)
+        score_fies = self._calculate_fies_score(survey, answers)
 
         try:
             await self.uow.survey_response_edit_repo.create(
@@ -231,7 +250,103 @@ class SurveyResponseService:
 
         if data.event_at >= response.event_at:
             response = await self.uow.survey_response_repo.update_answers(
-                response, answers=answers, event_at=data.event_at
+                response, answers=answers, score_fies=score_fies, event_at=data.event_at
             )
         await self.uow.commit()
         return SurveyResponseDomain.from_db(response)
+
+    async def list_by_survey(
+        self,
+        survey_id: UUID,
+        actor: UserActor,
+        page: int,
+        page_size: int,
+        params: SurveyResponseListingParams,
+    ) -> PaginatedResult[SurveyResponseDashboardItemDomain]:
+        """Return a paginated list of a survey's responses, newest event_at first.
+
+        Raises:
+            ForbiddenError: actor role isn't a dashboard reader.
+            SurveyNotFoundError.
+        """
+        if actor.role not in _DASHBOARD_ROLES:
+            raise ForbiddenError()
+        await self._get_survey_or_raise(survey_id)
+
+        page = max(1, page)
+        offset = (page - 1) * page_size
+        responses, total = await self.uow.survey_response_repo.list_by_survey(
+            survey_id, limit=page_size, offset=offset, params=params
+        )
+        items = [SurveyResponseDashboardItemDomain.from_db(r) for r in responses]
+        return PaginatedResult.build(
+            items=items, total=total, page=page, page_size=page_size
+        )
+
+    async def get_response_detail(
+        self, response_id: UUID, actor: UserActor
+    ) -> SurveyResponseDetailDomain:
+        """Return one user's full response detail for the dashboard: every
+        question in the survey and the value that user registered for it.
+
+        Raises:
+            ForbiddenError: actor role isn't a dashboard reader.
+            SurveyResponseNotFoundError.
+        """
+        if actor.role not in _DASHBOARD_ROLES:
+            raise ForbiddenError()
+        response = await self.uow.survey_response_repo.get_with_relations(response_id)
+        if response is None:
+            raise SurveyResponseNotFoundError(str(response_id))
+        return SurveyResponseDetailDomain.from_db(response)
+
+    @staticmethod
+    def _calculate_fies_score(
+        survey: SurveyDomain, answers: dict[str, object]
+    ) -> int | None:
+        """Return the FIES raw score (0-8): the count of affirmative answers
+        among this FIES survey's questions. None if the survey isn't FIES.
+
+        This is the raw score only. The FAO's full methodology additionally
+        calibrates raw scores against a Rasch (IRT) model with globally
+        published item-severity parameters, to make scores comparable across
+        populations — that equating step is out of scope here; it would run
+        as a periodic batch analysis over accumulated responses, not per
+        submission. See: FAO, "Voices of the Hungry" FIES methodology.
+
+        TODO: add Rasch-based equating as a separate offline/batch process
+        once there's a large enough response set to calibrate against.
+        """
+        if survey.instrument_type != SurveyInstrumentType.FIES:
+            return None
+        return sum(
+            1
+            for question in survey.questions
+            for option in question.options
+            if option.position == 0 and answers.get(str(question.id)) == str(option.id)
+        )
+
+    async def export(
+        self,
+        survey_id: UUID,
+        actor: UserActor,
+        exporter: SurveyResponseExporter,
+        establishment_id: UUID | None = None,
+    ) -> bytes:
+        """Export every response to a survey using the given exporter.
+
+        Optionally filter by establishment.
+
+        Raises:
+            ForbiddenError: actor role isn't a dashboard reader.
+            SurveyNotFoundError.
+        """
+        if actor.role not in _DASHBOARD_ROLES:
+            raise ForbiddenError()
+        survey = await self._get_survey_or_raise(survey_id)
+
+        responses = await self.uow.survey_response_repo.list_all_for_export(
+            survey_id, establishment_id
+        )
+        detailed = [SurveyResponseDetailDomain.from_db(r) for r in responses]
+        return exporter.export(survey, detailed)

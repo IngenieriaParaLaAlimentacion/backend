@@ -9,6 +9,7 @@ from app.domain.survey import (
     OPTION_TEXT_MAX,
     QUESTION_TEXT_MAX,
     ResponseType,
+    SurveyInstrumentType,
     SurveyScope,
 )
 
@@ -68,6 +69,7 @@ class SurveyCreateRequest(BaseModel):
     name: str = Field(min_length=1, max_length=NAME_MAX)
     description: str | None = Field(default=None, max_length=DESCRIPTION_MAX)
     scope: SurveyScope
+    instrument_type: SurveyInstrumentType = SurveyInstrumentType.CUSTOM
     questions: list[QuestionInput] = Field(default_factory=list)
     establishment_ids: list[UUID] = Field(default_factory=list)
 

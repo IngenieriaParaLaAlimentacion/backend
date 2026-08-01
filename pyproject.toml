@@ -19,6 +19,7 @@ asyncpg = "^0.31.0"
 alembic = "^1.18.4"
 greenlet = "^3.5.0"
 aiosmtplib = "^5.1.2"
+openpyxl = "^3.1.5"
 tzdata = "^2026.3"
 
 [tool.poetry.group.dev.dependencies]
