@@ -10,13 +10,13 @@ from app.domain.establishment_dashboard import (
     EstablishmentMetricsDomain,
     EstablishmentSubjectItemDomain,
     EstablishmentSubjectListingParams,
-    LatestMeasurementAtEstablishmentDomain,
     StatusDistributionEntryDomain,
 )
 from app.domain.measurement import (
     ALERT_TO_STATUS,
     SEVERITY_RANK,
     STATUS_TO_SEVERITY,
+    MeasurementSummaryDomain,
     NutritionalStatus,
     status_from_alerts,
 )
@@ -115,7 +115,7 @@ class EstablishmentDashboardService:
             age_months=age_in_months(subject.birth_date, measurement.measured_at),
             measurement_count=measurement_count,
             nutritional_status=status_from_alerts(measurement.alerts),
-            latest_measurement=LatestMeasurementAtEstablishmentDomain.from_db(measurement),
+            latest_measurement=MeasurementSummaryDomain.from_db(measurement),
         )
 
     async def get_establishment_dashboard(

@@ -4,14 +4,13 @@ from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.measurement import (
     EvolutionOrder,
-    EvolutionPointDomain,
     MeasurementDomain,
     MeasurementListingParams,
     MeasurementListItemDomain,
-    SubjectEvolutionDomain,
     SubjectRefDomain,
 )
 from app.domain.pagination import PaginatedResult
+from app.domain.subject_detail import EvolutionPointDomain, SubjectEvolutionDomain
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,

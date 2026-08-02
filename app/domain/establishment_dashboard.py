@@ -4,7 +4,11 @@ from enum import StrEnum
 from uuid import UUID
 
 from app.domain.establishment import EstablishmentDomain, UserEstablishmentStatus
-from app.domain.measurement import AlertDomain, AlertSeverity, NutritionalStatus
+from app.domain.measurement import (
+    AlertSeverity,
+    MeasurementSummaryDomain,
+    NutritionalStatus,
+)
 from app.domain.subject import Sex
 from app.domain.user import UserStatus
 
@@ -123,30 +127,6 @@ class EstablishmentDashboardDomain:
 
 
 @dataclass
-class LatestMeasurementAtEstablishmentDomain:
-    """A subject's most recent measurement at a given establishment."""
-
-    id: UUID
-    measured_at: datetime
-    weight_kg: float
-    height_cm: float
-    bmi: float
-    alerts: list[AlertDomain]
-
-    @classmethod
-    def from_db(cls, obj) -> "LatestMeasurementAtEstablishmentDomain":
-        """Build from an ORM Measurement with its alerts loaded."""
-        return cls(
-            id=obj.id,
-            measured_at=obj.measured_at,
-            weight_kg=obj.weight_kg,
-            height_cm=obj.height_cm,
-            bmi=obj.bmi,
-            alerts=[AlertDomain.from_db(a) for a in obj.alerts],
-        )
-
-
-@dataclass
 class EstablishmentSubjectItemDomain:
     """A subject attending an establishment, enriched with their latest data."""
 
@@ -159,7 +139,8 @@ class EstablishmentSubjectItemDomain:
     age_months: int
     measurement_count: int
     nutritional_status: NutritionalStatus
-    latest_measurement: LatestMeasurementAtEstablishmentDomain
+    # Latest measurement AT THIS establishment
+    latest_measurement: MeasurementSummaryDomain
 
 
 @dataclass

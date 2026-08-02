@@ -66,6 +66,8 @@ class EstablishmentDashboardResponse(BaseModel):
 
 
 class LatestMeasurementResponse(BaseModel):
+    """The subject's latest reading at the establishment being viewed."""
+
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID

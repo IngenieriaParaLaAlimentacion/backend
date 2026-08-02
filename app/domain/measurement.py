@@ -1,9 +1,28 @@
 from dataclasses import dataclass
 from datetime import date, datetime
 from enum import Enum, StrEnum
+from typing import Self
 from uuid import UUID
 
 from app.domain.subject import Sex
+
+
+class MeasurementSortOrder(StrEnum):
+    """Sort orders accepted by the measurement listing."""
+
+    DATE_DESC = "date_desc"
+    DATE_ASC = "date_asc"
+    WEIGHT_DESC = "weight_desc"
+    WEIGHT_ASC = "weight_asc"
+    HEIGHT_DESC = "height_desc"
+    HEIGHT_ASC = "height_asc"
+
+
+class EvolutionOrder(StrEnum):
+    """Chronological order for a subject's anthropometric evolution series."""
+
+    OLDEST_FIRST = "oldest_first"
+    NEWEST_FIRST = "newest_first"
 
 
 class AlertType(str, Enum):
@@ -104,6 +123,37 @@ class AlertDomain:
 
 
 @dataclass
+class MeasurementBase:
+    """The anthropometric values one measurement records, with its alerts."""
+
+    measured_at: datetime
+    weight_kg: float
+    height_cm: float
+    bmi: float
+    alerts: list[AlertDomain]
+
+    @classmethod
+    def _base_kwargs(cls, obj) -> dict:
+        """Copy the shared measurement values off an ORM Measurement."""
+        return dict(
+            measured_at=obj.measured_at,
+            weight_kg=obj.weight_kg,
+            height_cm=obj.height_cm,
+            bmi=obj.bmi,
+            alerts=[AlertDomain.from_db(a) for a in obj.alerts],
+        )
+
+    @classmethod
+    def from_db(cls, obj) -> Self:
+        """Build from an ORM Measurement with its alerts loaded.
+
+        Subclasses that attach context references override this and feed
+        ``_base_kwargs`` alongside their own fields.
+        """
+        return cls(**cls._base_kwargs(obj))
+
+
+@dataclass
 class MeasurementDomain:
     """A registered anthropometric measurement with its clinical alerts."""
 
@@ -133,24 +183,6 @@ class MeasurementDomain:
             created_at=obj.created_at,
             alerts=[AlertDomain.from_db(a) for a in obj.alerts],
         )
-
-
-class MeasurementSortOrder(StrEnum):
-    """Sort orders accepted by the measurement listing."""
-
-    DATE_DESC = "date_desc"
-    DATE_ASC = "date_asc"
-    WEIGHT_DESC = "weight_desc"
-    WEIGHT_ASC = "weight_asc"
-    HEIGHT_DESC = "height_desc"
-    HEIGHT_ASC = "height_asc"
-
-
-class EvolutionOrder(StrEnum):
-    """Chronological order for a subject's anthropometric evolution series."""
-
-    OLDEST_FIRST = "oldest_first"
-    NEWEST_FIRST = "newest_first"
 
 
 @dataclass
@@ -211,6 +243,23 @@ class EstablishmentRefDomain:
 
 
 @dataclass
+class MeasurementSummaryDomain(MeasurementBase):
+    """A single measurement reduced to its clinically relevant facts."""
+
+    id: UUID
+    establishment: EstablishmentRefDomain
+
+    @classmethod
+    def from_db(cls, obj) -> "MeasurementSummaryDomain":
+        """Build from an ORM Measurement with establishment and alerts loaded."""
+        return cls(
+            **cls._base_kwargs(obj),
+            id=obj.id,
+            establishment=EstablishmentRefDomain.from_db(obj.establishment),
+        )
+
+
+@dataclass
 class ResponsibleRefDomain:
     """Minimal user reference for the responsible of a measurement."""
 
@@ -224,59 +273,21 @@ class ResponsibleRefDomain:
 
 
 @dataclass
-class MeasurementListItemDomain:
+class MeasurementListItemDomain(MeasurementBase):
     """An enriched measurement row for the listing view."""
 
     id: UUID
-    measured_at: datetime
-    weight_kg: float
-    height_cm: float
-    bmi: float
     subject: SubjectRefDomain
     establishment: EstablishmentRefDomain
     responsible: ResponsibleRefDomain
-    alerts: list[AlertDomain]
 
     @classmethod
     def from_db(cls, obj) -> "MeasurementListItemDomain":
         """Build a listing item from an ORM Measurement with loaded relations."""
         return cls(
+            **cls._base_kwargs(obj),
             id=obj.id,
-            measured_at=obj.measured_at,
-            weight_kg=obj.weight_kg,
-            height_cm=obj.height_cm,
-            bmi=obj.bmi,
             subject=SubjectRefDomain.from_db(obj.subject),
             establishment=EstablishmentRefDomain.from_db(obj.establishment),
             responsible=ResponsibleRefDomain.from_db(obj.responsible),
-            alerts=[AlertDomain.from_db(a) for a in obj.alerts],
         )
-
-
-@dataclass
-class EvolutionPointDomain:
-    """A single point in a subject's anthropometric evolution series."""
-
-    measured_at: datetime
-    weight_kg: float
-    height_cm: float
-    bmi: float
-    alerts: list[AlertDomain]
-
-    @classmethod
-    def from_db(cls, obj) -> "EvolutionPointDomain":
-        return cls(
-            measured_at=obj.measured_at,
-            weight_kg=obj.weight_kg,
-            height_cm=obj.height_cm,
-            bmi=obj.bmi,
-            alerts=[AlertDomain.from_db(a) for a in obj.alerts],
-        )
-
-
-@dataclass
-class SubjectEvolutionDomain:
-    """A subject's full chronological anthropometric evolution."""
-
-    subject: SubjectRefDomain
-    points: list[EvolutionPointDomain]

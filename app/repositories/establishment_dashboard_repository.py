@@ -9,6 +9,7 @@ from app.domain.establishment_dashboard import (
     EstablishmentSubjectListingParams,
     EstablishmentSubjectSortOrder,
 )
+from app.models.establishment import Establishment
 from app.models.measurement import Measurement
 from app.models.measurement_alert import MeasurementAlert
 from app.models.subject import Subject
@@ -150,7 +151,11 @@ class EstablishmentDashboardRepository:
             .select_from(latest)
             .join(Measurement, Measurement.id == latest.c.id)
             .join(Subject, Measurement.subject_id == Subject.id)
-            .options(contains_eager(Measurement.subject))
+            .join(Establishment, Measurement.establishment_id == Establishment.id)
+            .options(
+                contains_eager(Measurement.subject),
+                contains_eager(Measurement.establishment),
+            )
         )
         count_query = (
             select(func.count())

@@ -6,54 +6,30 @@ subject.py would be circular.
 """
 
 from dataclasses import dataclass
-from datetime import datetime
-from uuid import UUID
 
 from app.domain.measurement import (
-    AlertDomain,
-    EstablishmentRefDomain,
+    MeasurementBase,
+    MeasurementSummaryDomain,
     NutritionalStatus,
+    SubjectRefDomain,
     status_from_alerts,
 )
 from app.domain.subject import SubjectDomain
 
 
 @dataclass
-class SubjectLatestMeasurementDomain:
-    """A subject's most recent measurement, taken at any establishment."""
-
-    id: UUID
-    measured_at: datetime
-    weight_kg: float
-    height_cm: float
-    bmi: float
-    establishment: EstablishmentRefDomain
-    alerts: list[AlertDomain]
-
-    @classmethod
-    def from_db(cls, obj) -> "SubjectLatestMeasurementDomain":
-        """Build from an ORM Measurement with establishment and alerts loaded."""
-        return cls(
-            id=obj.id,
-            measured_at=obj.measured_at,
-            weight_kg=obj.weight_kg,
-            height_cm=obj.height_cm,
-            bmi=obj.bmi,
-            establishment=EstablishmentRefDomain.from_db(obj.establishment),
-            alerts=[AlertDomain.from_db(a) for a in obj.alerts],
-        )
-
-
-@dataclass
 class SubjectDetailDomain(SubjectDomain):
     """Full subject data plus the clinical reading of their latest measurement.
 
-    Both extra fields are None for a subject that has never been measured. That
-    is deliberately distinct from NORMAL, which means "measured and healthy".
+    ``latest_measurement`` is the subject's most recent reading at *any*
+    establishment, unlike the establishment dashboard where it is scoped to a
+    single one. Both extra fields are None for a subject that has never been
+    measured. That is deliberately distinct from NORMAL, which means "measured
+    and healthy".
     """
 
     nutritional_status: NutritionalStatus | None
-    latest_measurement: SubjectLatestMeasurementDomain | None
+    latest_measurement: MeasurementSummaryDomain | None
 
     @classmethod
     def build(cls, subject, measurement) -> "SubjectDetailDomain":
@@ -64,5 +40,18 @@ class SubjectDetailDomain(SubjectDomain):
         return cls(
             **base,
             nutritional_status=status_from_alerts(measurement.alerts),
-            latest_measurement=SubjectLatestMeasurementDomain.from_db(measurement),
+            latest_measurement=MeasurementSummaryDomain.from_db(measurement),
         )
+
+
+@dataclass
+class EvolutionPointDomain(MeasurementBase):
+    """A single point in a subject's anthropometric evolution series."""
+
+
+@dataclass
+class SubjectEvolutionDomain:
+    """A subject's full chronological anthropometric evolution."""
+
+    subject: SubjectRefDomain
+    points: list[EvolutionPointDomain]

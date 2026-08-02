@@ -434,9 +434,14 @@ class TestSubjectListing:
             "nutritional_status",
             "latest_measurement",
         } <= item.keys()
-        assert {"measured_at", "weight_kg", "height_cm", "bmi", "alerts"} <= item[
-            "latest_measurement"
-        ].keys()
+        assert {
+            "id",
+            "measured_at",
+            "weight_kg",
+            "height_cm",
+            "bmi",
+            "alerts",
+        } == item["latest_measurement"].keys()
 
     async def test_latest_measurement_supersedes_older_ones(self, body):
         bruno = next(i for i in body["items"] if i["last_name"] == "Normal")
