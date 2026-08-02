@@ -120,7 +120,7 @@ class MeasurementDomain:
 
     @classmethod
     def from_db(cls, obj) -> "MeasurementDomain":
-        """Build an MeasurementDomain from ORM."""
+        """Build a MeasurementDomain from ORM."""
         return cls(
             id=obj.id,
             subject_id=obj.subject_id,

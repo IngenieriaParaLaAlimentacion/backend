@@ -86,7 +86,7 @@ async def get_analytics_service() -> AsyncGenerator[AnalyticsService, None]:
     async with UnitOfWork() as uow:
         yield AnalyticsService(uow)
 
-        
+
 async def get_establishment_dashboard_service() -> AsyncGenerator[
     EstablishmentDashboardService, None
 ]:

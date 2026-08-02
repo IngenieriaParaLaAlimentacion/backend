@@ -39,9 +39,6 @@ _FIELD_WORKER_ROLES = {UserRole.FIELD_WORKER, UserRole.SUPERADMIN}
 require_admin_or_analyst = require_some(
     UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN
 )
-NOT_FOUND_RESPONSE = {
-    status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"}
-}
 
 
 @router.post(
@@ -184,7 +181,10 @@ async def get_establishment_detail(
         "measurements, `has_data` is false and every average is null rather than "
         "zero. Accessible by admins and analysts."
     ),
-    responses={**AUTH_RESPONSES, **NOT_FOUND_RESPONSE},
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
+    },
 )
 async def get_establishment_dashboard(
     establishment_id: UUID,
@@ -208,7 +208,10 @@ async def get_establishment_dashboard(
         "Supports searching by name, last name or DNI, and sorting by measurement "
         "date, name, BMI or age. Accessible by admins and analysts."
     ),
-    responses={**AUTH_RESPONSES, **NOT_FOUND_RESPONSE},
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
+    },
 )
 async def list_establishment_subjects(
     establishment_id: UUID,
@@ -245,7 +248,10 @@ async def list_establishment_subjects(
         "last did. Defaults to approved enrollments; use `relation_status` to see "
         "pending or rejected ones. Accessible by admins and analysts."
     ),
-    responses={**AUTH_RESPONSES, **NOT_FOUND_RESPONSE},
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
+    },
 )
 async def list_establishment_field_workers(
     establishment_id: UUID,

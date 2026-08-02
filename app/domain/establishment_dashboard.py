@@ -123,7 +123,7 @@ class EstablishmentDashboardDomain:
 
 
 @dataclass
-class LatestMeasurementDomain:
+class LatestMeasurementAtEstablishmentDomain:
     """A subject's most recent measurement at a given establishment."""
 
     id: UUID
@@ -134,7 +134,7 @@ class LatestMeasurementDomain:
     alerts: list[AlertDomain]
 
     @classmethod
-    def from_db(cls, obj) -> "LatestMeasurementDomain":
+    def from_db(cls, obj) -> "LatestMeasurementAtEstablishmentDomain":
         """Build from an ORM Measurement with its alerts loaded."""
         return cls(
             id=obj.id,
@@ -159,7 +159,7 @@ class EstablishmentSubjectItemDomain:
     age_months: int
     measurement_count: int
     nutritional_status: NutritionalStatus
-    latest_measurement: LatestMeasurementDomain
+    latest_measurement: LatestMeasurementAtEstablishmentDomain
 
 
 @dataclass
