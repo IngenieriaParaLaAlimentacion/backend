@@ -140,6 +140,7 @@ class EstablishmentDashboardService:
             avg_height_cm=_round(row.avg_height_cm),
             avg_weight_kg=_round(row.avg_weight_kg),
             avg_bmi=_round(row.avg_bmi),
+            # Completed months, not a 2-decimal average: _round would give a float.
             avg_age_months=round(float(row.avg_age_months)),
         )
 
