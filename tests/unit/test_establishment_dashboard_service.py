@@ -48,7 +48,7 @@ def establishment(make_establishment):
 
 
 @pytest.fixture
-def make_dashboard_uow(establishment):
+def make_dashboard_uow(establishment, stub_establishment_lookup):
     """Build an AsyncMock UnitOfWork wired for the dashboard repository."""
 
     def _make(
@@ -60,9 +60,7 @@ def make_dashboard_uow(establishment):
         found=True,
     ):
         uow = AsyncMock()
-        uow.establishment_repo.get_by_id = AsyncMock(
-            return_value=establishment if found else None
-        )
+        stub_establishment_lookup(uow, establishment if found else None)
         uow.establishment_dashboard_repo.get_metrics = AsyncMock(
             return_value=metrics_row if metrics_row is not None else _metrics_row(0)
         )

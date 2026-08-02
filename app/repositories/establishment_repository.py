@@ -57,6 +57,21 @@ class EstablishmentRepository:
         """Return an establishment by ID, or None if it does not exist."""
         return await self.db.get(Establishment, id)
 
+    async def get_by_id_or_raise(self, id: UUID) -> Establishment:
+        """Return an establishment by ID.
+
+        Callers that resolve an establishment before doing any work use this so
+        an unknown id answers 404 rather than an empty result, which would be
+        indistinguishable from a real establishment with no data.
+
+        Raises:
+            EstablishmentNotFoundError: if the establishment does not exist.
+        """
+        establishment = await self.get_by_id(id)
+        if establishment is None:
+            raise EstablishmentNotFoundError(str(id))
+        return establishment
+
     async def find_by_ids(self, ids: list[UUID]) -> list[Establishment]:
         """Return establishments for the given IDs, silently skipping any
         that do not exist."""

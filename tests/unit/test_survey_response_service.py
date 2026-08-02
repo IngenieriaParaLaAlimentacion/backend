@@ -131,7 +131,7 @@ _UNSET = object()
 
 
 @pytest.fixture
-def make_uow():
+def make_uow(stub_establishment_lookup):
     def _make(
         survey=None,
         establishment=_UNSET,
@@ -142,8 +142,8 @@ def make_uow():
     ):
         uow = AsyncMock()
         uow.survey_repo.get_by_id = AsyncMock(return_value=survey)
-        uow.establishment_repo.get_by_id = AsyncMock(
-            return_value=MagicMock() if establishment is _UNSET else establishment
+        stub_establishment_lookup(
+            uow, MagicMock() if establishment is _UNSET else establishment
         )
         uow.user_establishment_repo.get_relation = AsyncMock(return_value=relation)
         uow.survey_response_repo.get_by_id = AsyncMock(return_value=existing_response)

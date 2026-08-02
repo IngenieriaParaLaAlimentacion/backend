@@ -3,7 +3,30 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from app.exceptions.domain_exceptions import EstablishmentNotFoundError
 from app.models import UserRole, UserStatus
+
+
+@pytest.fixture
+def stub_establishment_lookup():
+    """Wire ``establishment_repo.get_by_id_or_raise`` on a mocked UoW.
+
+    Mirrors the real repository: passing None makes the lookup raise instead of
+    returning it, so services under test take the same branch they do in
+    production rather than receiving a truthy AsyncMock.
+    """
+
+    def _stub(uow, establishment):
+        uow.establishment_repo.get_by_id_or_raise = AsyncMock(
+            return_value=establishment,
+            side_effect=(
+                None
+                if establishment is not None
+                else EstablishmentNotFoundError(str(uuid.uuid4()))
+            ),
+        )
+
+    return _stub
 
 
 @pytest.fixture

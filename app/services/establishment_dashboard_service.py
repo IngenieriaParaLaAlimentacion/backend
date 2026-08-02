@@ -21,8 +21,6 @@ from app.domain.measurement import (
     status_from_alerts,
 )
 from app.domain.pagination import PaginatedResult
-from app.exceptions.domain_exceptions import EstablishmentNotFoundError
-from app.models.establishment import Establishment
 from app.utils.anthropometry import age_in_months
 
 
@@ -36,18 +34,6 @@ class EstablishmentDashboardService:
 
     def __init__(self, uow: IUnitOfWork):
         self.uow = uow
-
-    async def _get_establishment(self, establishment_id: UUID) -> Establishment:
-        """Return the establishment or raise if it does not exist.
-
-        Every dashboard endpoint resolves the establishment first so an unknown
-        id answers 404 rather than an empty page, which would be
-        indistinguishable from a real establishment with no data.
-        """
-        establishment = await self.uow.establishment_repo.get_by_id(establishment_id)
-        if establishment is None:
-            raise EstablishmentNotFoundError(str(establishment_id))
-        return establishment
 
     @staticmethod
     def _build_alert_status(rows: list, total: int) -> EstablishmentAlertStatusDomain:
@@ -127,7 +113,9 @@ class EstablishmentDashboardService:
         Raises:
             EstablishmentNotFoundError: If the establishment does not exist.
         """
-        establishment = await self._get_establishment(establishment_id)
+        establishment = await self.uow.establishment_repo.get_by_id_or_raise(
+            establishment_id
+        )
 
         row = await self.uow.establishment_dashboard_repo.get_metrics(establishment_id)
         subject_count = row.subject_count or 0
@@ -180,7 +168,7 @@ class EstablishmentDashboardService:
         Raises:
             EstablishmentNotFoundError: If the establishment does not exist.
         """
-        await self._get_establishment(establishment_id)
+        await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
 
         page = max(1, page)
         offset = (page - 1) * page_size
@@ -211,7 +199,7 @@ class EstablishmentDashboardService:
         Raises:
             EstablishmentNotFoundError: If the establishment does not exist.
         """
-        await self._get_establishment(establishment_id)
+        await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
 
         page = max(1, page)
         offset = (page - 1) * page_size

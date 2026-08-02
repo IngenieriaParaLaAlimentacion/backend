@@ -58,7 +58,7 @@ def make_measurement():
 
 
 @pytest.fixture
-def make_uow(make_subject, make_measurement):
+def make_uow(make_subject, make_measurement, stub_establishment_lookup):
     def _make(
         subject=None,
         establishment=MagicMock(),
@@ -67,7 +67,7 @@ def make_uow(make_subject, make_measurement):
     ):
         uow = AsyncMock()
         uow.subject_repo.get_by_id = AsyncMock(return_value=subject or make_subject())
-        uow.establishment_repo.get_by_id = AsyncMock(return_value=establishment)
+        stub_establishment_lookup(uow, establishment)
         uow.user_establishment_repo.get_relation = AsyncMock(return_value=relation)
         uow.measurement_repo.get_by_id = AsyncMock(return_value=None)
         uow.measurement_repo.create = AsyncMock(

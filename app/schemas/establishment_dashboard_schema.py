@@ -5,8 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, PlainSerializer
 
 from app.domain.establishment import UserEstablishmentStatus
-from app.domain.establishment_dashboard import NutritionalStatus
-from app.domain.measurement import AlertSeverity
+from app.domain.measurement import AlertSeverity, NutritionalStatus
 from app.domain.subject import Sex
 from app.domain.user import UserStatus
 from app.schemas.establishment_schema import EstablishmentResponse

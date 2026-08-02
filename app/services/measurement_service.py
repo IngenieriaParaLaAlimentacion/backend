@@ -13,7 +13,6 @@ from app.domain.pagination import PaginatedResult
 from app.domain.subject_detail import EvolutionPointDomain, SubjectEvolutionDomain
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
-    EstablishmentNotFoundError,
     ForbiddenError,
     SubjectNotFoundError,
     UniqueConstraintError,
@@ -34,11 +33,6 @@ class MeasurementService:
         if subject is None:
             raise SubjectNotFoundError(str(subject_id))
         return subject
-
-    async def _get_establishment_or_raise(self, establishment_id: UUID) -> None:
-        establishment = await self.uow.establishment_repo.get_by_id(establishment_id)
-        if establishment is None:
-            raise EstablishmentNotFoundError(str(establishment_id))
 
     async def _check_establishment_access(
         self, actor: UserActor, establishment_id: UUID
@@ -72,7 +66,7 @@ class MeasurementService:
                 return MeasurementDomain.from_db(existing), False
 
         subject = await self._get_subject_or_raise(data.subject_id)
-        await self._get_establishment_or_raise(data.establishment_id)
+        await self.uow.establishment_repo.get_by_id_or_raise(data.establishment_id)
         await self._check_establishment_access(actor, data.establishment_id)
 
         bmi = data.weight_kg / (data.height_cm / 100) ** 2
