@@ -5,7 +5,6 @@ from app.domain.establishment import EstablishmentDomain, EstablishmentListingPa
 from app.domain.pagination import PaginatedResult
 from app.exceptions.domain_exceptions import (
     EstablishmentAlreadyExistsError,
-    EstablishmentNotFoundError,
 )
 from app.models import Establishment
 from app.schemas.establishment_schema import (
@@ -52,9 +51,9 @@ class EstablishmentService:
             EstablishmentAlreadyExistsError: If the new place_id is already
                 taken by a different establishment.
         """
-        establishment = await self.uow.establishment_repo.get_by_id(establishment_id)
-        if establishment is None:
-            raise EstablishmentNotFoundError(str(establishment_id))
+        establishment = await self.uow.establishment_repo.get_by_id_or_raise(
+            establishment_id
+        )
 
         if data.place_id is not None:
             duplicate = await self.uow.establishment_repo.get_by_place_id(data.place_id)
@@ -77,9 +76,9 @@ class EstablishmentService:
         Raises:
             EstablishmentNotFoundError: If no establishment with that ID exists.
         """
-        establishment = await self.uow.establishment_repo.get_by_id(establishment_id)
-        if establishment is None:
-            raise EstablishmentNotFoundError(str(establishment_id))
+        establishment = await self.uow.establishment_repo.get_by_id_or_raise(
+            establishment_id
+        )
         return EstablishmentDomain.from_db(establishment)
 
     async def get_establishments_paginated(

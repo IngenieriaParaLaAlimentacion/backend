@@ -5,7 +5,16 @@ from uuid import UUID
 
 from fastapi import Query, status
 
-from app.domain.establishment import EstablishmentListingParams, EstablishmentSortOrder
+from app.domain.establishment import (
+    EstablishmentListingParams,
+    EstablishmentSortOrder,
+    UserEstablishmentStatus,
+)
+from app.domain.establishment_dashboard import (
+    EstablishmentFieldWorkerListingParams,
+    EstablishmentSubjectListingParams,
+    EstablishmentSubjectSortOrder,
+)
 from app.domain.measurement import MeasurementListingParams, MeasurementSortOrder
 from app.domain.survey import (
     NAME_MAX,
@@ -100,6 +109,44 @@ class MeasurementListingQuery(LocationQuery):
             min_age=self.min_age,
             max_age=self.max_age,
             sort_order=self.sort_order,
+        )
+
+
+@dataclass
+class EstablishmentSubjectsQuery:
+    search: Annotated[
+        str | None,
+        Query(
+            max_length=100,
+            description="Partial match on name/last name, exact match on DNI.",
+        ),
+    ] = None
+    sort_order: EstablishmentSubjectSortOrder = (
+        EstablishmentSubjectSortOrder.MEASURED_AT_DESC
+    )
+
+    def to_domain(self) -> EstablishmentSubjectListingParams:
+        return EstablishmentSubjectListingParams(
+            search=self.search,
+            sort_order=self.sort_order,
+        )
+
+
+@dataclass
+class EstablishmentFieldWorkersQuery:
+    search: Annotated[
+        str | None,
+        Query(max_length=100, description="Partial match on name, last name or email."),
+    ] = None
+    relation_status: Annotated[
+        UserEstablishmentStatus,
+        Query(description="Enrollment status of the user at this establishment."),
+    ] = UserEstablishmentStatus.APPROVED
+
+    def to_domain(self) -> EstablishmentFieldWorkerListingParams:
+        return EstablishmentFieldWorkerListingParams(
+            search=self.search,
+            relation_status=self.relation_status,
         )
 
 

@@ -4,8 +4,14 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.domain.measurement import NutritionalStatus
 from app.domain.subject import Sex
 from app.domain.subject_event import SubjectEventType
+from app.schemas.measurement_schema import (
+    AlertResponse,
+    EstablishmentRefResponse,
+    RoundedBmi,
+)
 from app.schemas.types import ValidStr
 from app.utils.dates import today_in_argentina
 
@@ -77,6 +83,30 @@ class SubjectResponse(SubjectSummaryResponse):
     birth_date: date
     is_rural: bool
     is_indigenous: bool
+
+
+class SubjectLatestMeasurementResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    measured_at: datetime
+    weight_kg: float
+    height_cm: float
+    bmi: RoundedBmi
+    establishment: EstablishmentRefResponse
+    alerts: list[AlertResponse]
+
+
+class SubjectDetailResponse(SubjectResponse):
+    """Subject record plus the clinical reading of their latest measurement.
+
+    ``nutritional_status`` and ``latest_measurement`` are both null for a
+    subject that has never been measured -- which is not the same as ``normal``,
+    and clients must render it as "sin datos" rather than a healthy badge.
+    """
+
+    nutritional_status: NutritionalStatus | None
+    latest_measurement: SubjectLatestMeasurementResponse | None
 
 
 class EventPayloadResponse(BaseModel):

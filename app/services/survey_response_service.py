@@ -18,7 +18,6 @@ from app.domain.survey_response import (
 )
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
-    EstablishmentNotFoundError,
     ForbiddenError,
     InvalidSurveyResponseError,
     SurveyNotFoundError,
@@ -131,11 +130,6 @@ class SurveyResponseService:
             raise SurveyNotFoundError(str(survey_id))
         return SurveyDomain.from_db(survey)
 
-    async def _get_establishment_or_raise(self, establishment_id: UUID) -> None:
-        establishment = await self.uow.establishment_repo.get_by_id(establishment_id)
-        if establishment is None:
-            raise EstablishmentNotFoundError(str(establishment_id))
-
     async def _get_response_or_raise(self, response_id: UUID) -> SurveyResponse:
         response = await self.uow.survey_response_repo.get_by_id(response_id)
         if response is None:
@@ -180,7 +174,7 @@ class SurveyResponseService:
                 return SurveyResponseDomain.from_db(existing), False
 
         survey = await self._get_survey_or_raise(survey_id)
-        await self._get_establishment_or_raise(data.establishment_id)
+        await self.uow.establishment_repo.get_by_id_or_raise(data.establishment_id)
         await self._check_establishment_access(actor, data.establishment_id)
         self._assert_establishment_in_survey_scope(survey, data.establishment_id)
         answers = self._validate_answers(survey.questions, data.answers)

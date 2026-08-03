@@ -266,10 +266,10 @@ class TestGetEstablishmentById:
     pytestmark = pytest.mark.asyncio
 
     @pytest.fixture
-    def make_uow(self, make_establishment):
+    def make_uow(self, make_establishment, stub_establishment_lookup):
         def _make(found=None):
             uow = AsyncMock()
-            uow.establishment_repo.get_by_id = AsyncMock(return_value=found)
+            stub_establishment_lookup(uow, found)
             return uow
 
         return _make
@@ -299,10 +299,10 @@ class TestUpdateEstablishment:
     pytestmark = pytest.mark.asyncio
 
     @pytest.fixture
-    def make_uow(self, make_establishment):
+    def make_uow(self, make_establishment, stub_establishment_lookup):
         def _make(found=None, duplicate=None):
             uow = AsyncMock()
-            uow.establishment_repo.get_by_id = AsyncMock(return_value=found)
+            stub_establishment_lookup(uow, found)
             uow.establishment_repo.get_by_place_id = AsyncMock(return_value=duplicate)
             uow.establishment_repo.update = AsyncMock(side_effect=lambda est: est)
             uow.commit = AsyncMock()

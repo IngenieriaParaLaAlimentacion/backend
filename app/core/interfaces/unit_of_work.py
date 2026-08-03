@@ -4,6 +4,9 @@ from app.repositories.activity_repository import ActivityRepository
 from app.repositories.email_verification_repository import (
     EmailVerificationTokenRepository,
 )
+from app.repositories.establishment_dashboard_repository import (
+    EstablishmentDashboardRepository,
+)
 from app.repositories.establishment_repository import EstablishmentRepository
 from app.repositories.measurement_alert_repository import MeasurementAlertRepository
 from app.repositories.measurement_repository import MeasurementRepository
@@ -39,6 +42,7 @@ class IUnitOfWork(ABC):
     survey_repo: SurveyRepository
     survey_response_repo: SurveyResponseRepository
     survey_response_edit_repo: SurveyResponseEditRepository
+    establishment_dashboard_repo: EstablishmentDashboardRepository
 
     @abstractmethod
     async def commit(self) -> None: ...

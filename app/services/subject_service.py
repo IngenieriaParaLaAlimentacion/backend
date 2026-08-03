@@ -4,6 +4,7 @@ from uuid import UUID
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.pagination import PaginatedResult
 from app.domain.subject import SubjectBase, SubjectDomain
+from app.domain.subject_detail import SubjectDetailDomain
 from app.domain.subject_event import EventPayload, SubjectEventType
 from app.exceptions.domain_exceptions import (
     EmptyUpdateRequestError,
@@ -83,8 +84,12 @@ class SubjectService:
         await self.uow.commit()
         return SubjectDomain.from_db(subject), True
 
-    async def get_subject(self, subject_id: UUID) -> SubjectDomain:
-        """Return a subject by id.
+    async def get_subject(self, subject_id: UUID) -> SubjectDetailDomain:
+        """Return a subject by id, enriched with their latest measurement.
+
+        The latest measurement is the subject's most recent one across every
+        establishment, so the derived status is their current clinical reading
+        rather than a per-establishment one.
 
         Raises:
             SubjectNotFoundError: If no subject with the given id exists.
@@ -92,7 +97,8 @@ class SubjectService:
         subject = await self.uow.subject_repo.get_by_id(subject_id)
         if subject is None:
             raise SubjectNotFoundError(str(subject_id))
-        return SubjectDomain.from_db(subject)
+        latest = await self.uow.measurement_repo.get_latest_for_subject(subject_id)
+        return SubjectDetailDomain.build(subject, latest)
 
     async def get_subject_listing(
         self,
