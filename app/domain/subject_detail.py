@@ -26,6 +26,11 @@ class SubjectDetailDomain(SubjectDomain):
     single one. Both extra fields are None for a subject that has never been
     measured. That is deliberately distinct from NORMAL, which means "measured
     and healthy".
+
+    Also used to build the subject listing, which has no use for
+    ``nutritional_status`` -- computing it is free once the measurement is
+    loaded, and ``SubjectListingResponse`` simply doesn't declare the field,
+    so it never reaches the client.
     """
 
     nutritional_status: NutritionalStatus | None

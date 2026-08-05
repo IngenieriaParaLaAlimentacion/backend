@@ -16,9 +16,9 @@ from app.schemas.measurement_schema import SubjectEvolutionResponse
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.subject_schema import (
     SubjectDetailResponse,
+    SubjectListingResponse,
     SubjectRequest,
     SubjectResponse,
-    SubjectSummaryResponse,
     SubjectUpdateRequest,
 )
 from app.services.measurement_service import MeasurementService
@@ -90,7 +90,7 @@ async def get_subject(
 
 @router.get(
     "",
-    response_model=PaginatedResponse[SubjectSummaryResponse],
+    response_model=PaginatedResponse[SubjectListingResponse],
     status_code=status.HTTP_200_OK,
     summary="List subjects",
     description="Returns a paginated list of subjects ordered by creation date. "
@@ -103,14 +103,14 @@ async def list_subjects(
     search: str | None = Query(default=None, max_length=100),
     _: UserActor = Depends(require_any),
     service: SubjectService = Depends(get_subject_service),
-) -> PaginatedResponse[SubjectSummaryResponse]:
+) -> PaginatedResponse[SubjectListingResponse]:
     result = await service.get_subject_listing(
         page=paginated.page, page_size=paginated.page_size, search=search
     )
 
-    return PaginatedResponse[SubjectSummaryResponse](
+    return PaginatedResponse[SubjectListingResponse](
         items=[
-            SubjectSummaryResponse.model_validate(subject) for subject in result.items
+            SubjectListingResponse.model_validate(subject) for subject in result.items
         ],
         total=result.total,
         page=result.page,

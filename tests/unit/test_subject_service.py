@@ -51,7 +51,7 @@ def make_subject():
 def make_uow(make_subject):
     """Return a factory that builds a mock UnitOfWork for SubjectService."""
 
-    def _make(listing=None, total=0, latest_measurement=None):
+    def _make(listing=None, total=0, latest_measurement=None, latest_by_subject=None):
         uow = AsyncMock()
         uow.subject_repo.create = AsyncMock(return_value=make_subject())
         uow.subject_repo.get_subject_listing = AsyncMock(
@@ -62,6 +62,10 @@ def make_uow(make_subject):
         # alerts off it.
         uow.measurement_repo.get_latest_for_subject = AsyncMock(
             return_value=latest_measurement
+        )
+        # Defaults to "nobody in the page has a measurement" for the same reason.
+        uow.measurement_repo.get_latest_for_subjects = AsyncMock(
+            return_value=latest_by_subject or {}
         )
         uow.subject_event_repo.append = AsyncMock()
         uow.commit = AsyncMock()
