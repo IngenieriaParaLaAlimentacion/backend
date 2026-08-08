@@ -873,6 +873,7 @@ class TestGetSubjectsPaginatedEstablishmentFilter:
     async def test_returns_subjects_measured_at_establishment(
         self, client, field_worker_headers, subjects_by_establishment
     ):
+        """X (measured only there) and Z (measured there too) both match."""
         ids = subjects_by_establishment
         response = await client.get(
             SUBJECTS_URL,
@@ -886,6 +887,7 @@ class TestGetSubjectsPaginatedEstablishmentFilter:
     async def test_matches_the_other_establishment_independently(
         self, client, field_worker_headers, subjects_by_establishment
     ):
+        """Filtering by Comedor B returns Y and Z, not X -- the filter isn't global."""
         ids = subjects_by_establishment
         response = await client.get(
             SUBJECTS_URL,
@@ -898,6 +900,7 @@ class TestGetSubjectsPaginatedEstablishmentFilter:
     async def test_never_measured_subject_is_never_included(
         self, client, field_worker_headers, subjects_by_establishment
     ):
+        """W, who has no measurements anywhere, matches neither establishment."""
         ids = subjects_by_establishment
         for key in ("establishment_a", "establishment_b"):
             response = await client.get(
@@ -911,6 +914,7 @@ class TestGetSubjectsPaginatedEstablishmentFilter:
     async def test_unknown_establishment_id_returns_empty(
         self, client, field_worker_headers, subjects_by_establishment
     ):
+        """An establishment id with no measurements returns an empty page, not 404."""
         response = await client.get(
             SUBJECTS_URL,
             params={"establishment_id": str(uuid.uuid4())},
@@ -947,6 +951,7 @@ class TestGetSubjectsPaginatedAttributeFilters:
     async def test_filters_by_is_rural(
         self, client, field_worker_headers, four_subjects
     ):
+        """Only the two rural subjects are returned, regardless of the other fields."""
         response = await client.get(
             SUBJECTS_URL, params={"is_rural": True}, headers=field_worker_headers
         )
@@ -956,6 +961,7 @@ class TestGetSubjectsPaginatedAttributeFilters:
     async def test_filters_by_is_indigenous(
         self, client, field_worker_headers, four_subjects
     ):
+        """Only the two indigenous subjects are returned."""
         response = await client.get(
             SUBJECTS_URL, params={"is_indigenous": True}, headers=field_worker_headers
         )
@@ -963,6 +969,7 @@ class TestGetSubjectsPaginatedAttributeFilters:
         assert dnis == {83111111, 83111113}
 
     async def test_filters_by_sex(self, client, field_worker_headers, four_subjects):
+        """Only the two female subjects are returned."""
         response = await client.get(
             SUBJECTS_URL, params={"sex": "female"}, headers=field_worker_headers
         )
@@ -1016,35 +1023,48 @@ class TestGetSubjectsPaginatedSortOrder:
     async def test_default_sort_is_newest_created_first(
         self, client, field_worker_headers, three_ordered_subjects
     ):
+        """With no sort_order, subjects come back newest-created-first, as before."""
         response = await client.get(SUBJECTS_URL, headers=field_worker_headers)
         names = [item["name"] for item in response.json()["items"]]
+        assert names == ["Beatriz", "Ana", "Carlos"]
+
+    async def test_created_at_desc_explicit(
+        self, client, field_worker_headers, three_ordered_subjects
+    ):
+        """The default behavior is also reachable as an explicit query value."""
+        names = await self._names(client, field_worker_headers, "created_at_desc")
         assert names == ["Beatriz", "Ana", "Carlos"]
 
     async def test_created_at_asc(
         self, client, field_worker_headers, three_ordered_subjects
     ):
+        """Oldest-created-first is the reverse of the default order."""
         names = await self._names(client, field_worker_headers, "created_at_asc")
         assert names == ["Carlos", "Ana", "Beatriz"]
 
     async def test_name_asc(self, client, field_worker_headers, three_ordered_subjects):
+        """Alphabetical order by name, independent of creation order."""
         names = await self._names(client, field_worker_headers, "name_asc")
         assert names == ["Ana", "Beatriz", "Carlos"]
 
     async def test_name_desc(
         self, client, field_worker_headers, three_ordered_subjects
     ):
+        """Reverse-alphabetical order by name."""
         names = await self._names(client, field_worker_headers, "name_desc")
         assert names == ["Carlos", "Beatriz", "Ana"]
 
     async def test_birth_date_asc(
         self, client, field_worker_headers, three_ordered_subjects
     ):
+        """Oldest-born-first -- this is also how a frontend would sort by age desc."""
         names = await self._names(client, field_worker_headers, "birth_date_asc")
         assert names == ["Ana", "Carlos", "Beatriz"]
 
     async def test_birth_date_desc(
         self, client, field_worker_headers, three_ordered_subjects
     ):
+        """Youngest-born-first -- this is also how a frontend would sort by age asc."""
         names = await self._names(client, field_worker_headers, "birth_date_desc")
         assert names == ["Beatriz", "Carlos", "Ana"]
 
@@ -1055,6 +1075,8 @@ class TestGetSubjectsPaginatedValidation:
     async def test_birth_date_from_after_birth_date_to_returns_400(
         self, client, field_worker_headers
     ):
+        """An inverted range is rejected with the same detail InvalidListingFilterError
+        produces for other listings (e.g. MeasurementListingQuery)."""
         response = await client.get(
             SUBJECTS_URL,
             params={"birth_date_from": "2020-01-01", "birth_date_to": "2019-01-01"},
