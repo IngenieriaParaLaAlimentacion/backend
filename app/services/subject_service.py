@@ -108,17 +108,14 @@ class SubjectService:
     ) -> PaginatedResult[SubjectDetailDomain]:
         """Return a paginated list of subjects with metadata.
 
-        ``search`` matches case-insensitively against name, last name or DNI.
-        Whitespace-only values are treated as no filter. Reuses
-        ``SubjectDetailDomain`` (see its docstring) so listing and detail share
-        one enrichment path; ``SubjectListingResponse`` is the one that decides
-        ``nutritional_status`` isn't part of the listing contract.
+        Reuses ``SubjectDetailDomain`` (see its docstring) so listing and detail
+        share one enrichment path; ``SubjectListingResponse`` is the one that
+        decides ``nutritional_status`` isn't part of the listing contract.
         """
         page = max(1, page)
         offset = (page - 1) * page_size
-        search_term = (params.search or "").strip() or None
         subjects, total = await self.uow.subject_repo.get_subject_listing(
-            limit=page_size, offset=offset, search=search_term
+            limit=page_size, offset=offset, params=params
         )
         latest_by_subject = await self.uow.measurement_repo.get_latest_for_subjects(
             [subject.id for subject in subjects]

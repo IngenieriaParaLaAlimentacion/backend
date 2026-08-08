@@ -8,7 +8,7 @@ import pytest
 
 from app.domain.measurement import AlertSeverity, AlertType, NutritionalStatus
 from app.domain.pagination import PaginatedResult
-from app.domain.subject import Sex, SubjectBase, SubjectDomain
+from app.domain.subject import Sex, SubjectBase, SubjectDomain, SubjectListingParams
 from app.domain.subject_event import SubjectEventType
 from app.exceptions.domain_exceptions import (
     EmptyUpdateRequestError,
@@ -334,7 +334,9 @@ class TestGetSubjectsPaginated:
         subjects = [make_subject(), make_subject()]
         service = SubjectService(uow=make_uow(listing=subjects, total=2))
 
-        result = await service.get_subject_listing(page=1, page_size=20, search=None)
+        result = await service.get_subject_listing(
+            page=1, page_size=20, params=SubjectListingParams()
+        )
 
         assert isinstance(result, PaginatedResult)
         assert len(result.items) == 2
@@ -347,7 +349,9 @@ class TestGetSubjectsPaginated:
         subjects = [make_subject() for _ in range(5)]
         service = SubjectService(uow=make_uow(listing=subjects, total=23))
 
-        result = await service.get_subject_listing(page=1, page_size=5, search=None)
+        result = await service.get_subject_listing(
+            page=1, page_size=5, params=SubjectListingParams()
+        )
 
         assert result.total_pages == ceil(23 / 5)
 
@@ -355,7 +359,9 @@ class TestGetSubjectsPaginated:
     async def test_empty(self, make_uow):
         service = SubjectService(uow=make_uow([], total=0))
 
-        result = await service.get_subject_listing(page=1, page_size=20, search=None)
+        result = await service.get_subject_listing(
+            page=1, page_size=20, params=SubjectListingParams()
+        )
 
         assert result.items == []
         assert result.total == 0
@@ -366,10 +372,12 @@ class TestGetSubjectsPaginated:
         uow = make_uow([], total=0)
         service = SubjectService(uow=uow)
 
-        await service.get_subject_listing(page=3, page_size=10, search=None)
+        await service.get_subject_listing(
+            page=3, page_size=10, params=SubjectListingParams()
+        )
 
         uow.subject_repo.get_subject_listing.assert_called_once_with(
-            limit=10, offset=20, search=None
+            limit=10, offset=20, params=SubjectListingParams()
         )
 
     @pytest.mark.asyncio
@@ -377,7 +385,9 @@ class TestGetSubjectsPaginated:
         subjects = [make_subject()]
         service = SubjectService(uow=make_uow(listing=subjects, total=1))
 
-        result = await service.get_subject_listing(page=1, page_size=20, search=None)
+        result = await service.get_subject_listing(
+            page=1, page_size=20, params=SubjectListingParams()
+        )
 
         assert all(isinstance(item, SubjectBase) for item in result.items)
 
@@ -396,7 +406,9 @@ class TestGetSubjectsPaginated:
         )
         service = SubjectService(uow=uow)
 
-        result = await service.get_subject_listing(page=1, page_size=20, search=None)
+        result = await service.get_subject_listing(
+            page=1, page_size=20, params=SubjectListingParams()
+        )
 
         by_id = {item.id: item for item in result.items}
         assert by_id[subject_a.id].latest_measurement is None
@@ -411,51 +423,25 @@ class TestGetSubjectsPaginated:
         uow = make_uow(listing=subjects, total=2)
         service = SubjectService(uow=uow)
 
-        await service.get_subject_listing(page=1, page_size=20, search=None)
+        await service.get_subject_listing(
+            page=1, page_size=20, params=SubjectListingParams()
+        )
 
         uow.measurement_repo.get_latest_for_subjects.assert_called_once_with(
             [subject.id for subject in subjects]
         )
 
     @pytest.mark.asyncio
-    async def test_forwards_search_to_repo(self, make_uow):
+    async def test_forwards_params_to_repo(self, make_uow):
+        """The service passes the params object through to the repo untouched."""
         uow = make_uow([], total=0)
         service = SubjectService(uow=uow)
+        params = SubjectListingParams(search="Subject search")
 
-        await service.get_subject_listing(page=1, page_size=20, search="Subject search")
-
-        uow.subject_repo.get_subject_listing.assert_called_once_with(
-            limit=20,
-            offset=0,
-            search="Subject search",
-        )
-
-    @pytest.mark.asyncio
-    async def test_strips_whitespace_from_search(self, make_uow):
-        uow = make_uow([], total=0)
-        service = SubjectService(uow=uow)
-
-        await service.get_subject_listing(
-            page=1, page_size=20, search="    Subject search     "
-        )
+        await service.get_subject_listing(page=1, page_size=20, params=params)
 
         uow.subject_repo.get_subject_listing.assert_called_once_with(
-            limit=20,
-            offset=0,
-            search="Subject search",
-        )
-
-    @pytest.mark.asyncio
-    async def test_whitespace_only_search_passes_none(self, make_uow):
-        uow = make_uow([], total=0)
-        service = SubjectService(uow=uow)
-
-        await service.get_subject_listing(page=1, page_size=20, search="       ")
-
-        uow.subject_repo.get_subject_listing.assert_called_once_with(
-            limit=20,
-            offset=0,
-            search=None,
+            limit=20, offset=0, params=params
         )
 
 
