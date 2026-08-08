@@ -397,7 +397,7 @@ class TestGetSubjectsPaginated:
         assert data["total_pages"] == 0
 
     async def test_returns_subject_fields(self, client, field_worker_headers):
-        """Response items include id, dni, name, last_name and sex."""
+        """Response items carry the correct value for each plain subject field."""
         await _upload(client, field_worker_headers)
         response = await client.get(SUBJECTS_URL, headers=field_worker_headers)
         assert response.status_code == status.HTTP_200_OK
@@ -407,6 +407,31 @@ class TestGetSubjectsPaginated:
         assert item["name"] == "Juan"
         assert item["last_name"] == "Perez"
         assert item["sex"] == "male"
+        assert item["birth_date"] == "2010-01-01"
+
+    async def test_item_shape(self, client, field_worker_headers):
+        """An item exposes exactly the listing fields -- no more, no less."""
+        await _upload(client, field_worker_headers)
+        response = await client.get(SUBJECTS_URL, headers=field_worker_headers)
+        item = response.json()["items"][0]
+        assert {
+            "id",
+            "dni",
+            "name",
+            "last_name",
+            "sex",
+            "birth_date",
+            "latest_measurement",
+        } == item.keys()
+
+    async def test_never_measured_subject_has_null_latest_measurement(
+        self, client, field_worker_headers
+    ):
+        """A subject with no measurements lists a null latest_measurement."""
+        await _upload(client, field_worker_headers)
+        response = await client.get(SUBJECTS_URL, headers=field_worker_headers)
+        item = response.json()["items"][0]
+        assert item["latest_measurement"] is None
 
     async def test_pagination_metadata(self, client, field_worker_headers):
         """With 5 subjects and page_size=2, total_pages should be 3."""
@@ -551,6 +576,122 @@ class TestGetSubjectsPaginated:
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["total"] == 2
+
+
+class TestGetSubjectsPaginatedLatestMeasurement:
+    """Each listing item carries the subject's own latest reading, across comedores."""
+
+    @pytest_asyncio.fixture
+    async def two_measured_subjects(self, app, field_worker_user_id):
+        """Seed two subjects, each with their own measurement history.
+
+        Subject A is measured twice, at two different establishments -- the
+        older reading is at "Comedor Viejo", the newer one at "Comedor Nuevo".
+        Subject B is measured once, at Comedor Viejo, and
+        must not pick up A's measurement when both are resolved in the same
+        batched listing query.
+        """
+        from app.db.database import AsyncSessionLocal
+        from app.domain.subject import Sex
+        from app.models.establishment import Establishment
+        from app.models.measurement import Measurement
+        from app.models.subject import Subject
+
+        async with AsyncSessionLocal() as session:
+            old_est = Establishment(
+                name="Comedor Viejo",
+                formatted_address="Calle 1",
+                latitude=-34.9,
+                longitude=-57.9,
+                place_id=f"place-{uuid.uuid4().hex[:8]}",
+                city="La Plata",
+                province="Buenos Aires",
+            )
+            new_est = Establishment(
+                name="Comedor Nuevo",
+                formatted_address="Calle 2",
+                latitude=-31.4,
+                longitude=-64.2,
+                place_id=f"place-{uuid.uuid4().hex[:8]}",
+                city="Cordoba",
+                province="Cordoba",
+            )
+            subject_a = Subject(
+                dni=71234567,
+                sex=Sex.MALE,
+                name="Nico",
+                last_name="Medido",
+                birth_date=date(2018, 1, 1),
+                is_rural=False,
+                is_indigenous=False,
+            )
+            subject_b = Subject(
+                dni=71234568,
+                sex=Sex.FEMALE,
+                name="Sol",
+                last_name="Medida",
+                birth_date=date(2019, 2, 2),
+                is_rural=False,
+                is_indigenous=False,
+            )
+            session.add_all([old_est, new_est, subject_a, subject_b])
+            await session.flush()
+
+            for weight, height, est, when in [
+                (10.0, 120.0, old_est, datetime(2024, 1, 10, tzinfo=timezone.utc)),
+                (20.0, 118.0, new_est, datetime(2024, 6, 10, tzinfo=timezone.utc)),
+            ]:
+                session.add(
+                    Measurement(
+                        subject_id=subject_a.id,
+                        responsible_id=field_worker_user_id,
+                        establishment_id=est.id,
+                        weight_kg=weight,
+                        height_cm=height,
+                        bmi=weight / (height / 100) ** 2,
+                        measured_at=when,
+                    )
+                )
+            session.add(
+                Measurement(
+                    subject_id=subject_b.id,
+                    responsible_id=field_worker_user_id,
+                    establishment_id=old_est.id,
+                    weight_kg=15.0,
+                    height_cm=100.0,
+                    bmi=15.0 / (100 / 100) ** 2,
+                    measured_at=datetime(2024, 3, 1, tzinfo=timezone.utc),
+                )
+            )
+            await session.commit()
+            return subject_a.id, subject_b.id
+
+    @pytest_asyncio.fixture
+    async def items_by_id(self, client, field_worker_headers, two_measured_subjects):
+        response = await client.get(SUBJECTS_URL, headers=field_worker_headers)
+        assert response.status_code == status.HTTP_200_OK
+        return {item["id"]: item for item in response.json()["items"]}
+
+    async def test_latest_measurement_wins_across_establishments(
+        self, items_by_id, two_measured_subjects
+    ):
+        """A's listed reading is the global latest, not the Comedor Viejo one."""
+        subject_a_id, _ = two_measured_subjects
+        latest = items_by_id[str(subject_a_id)]["latest_measurement"]
+        assert latest["measured_at"].startswith("2024-06-10")
+        assert latest["establishment"]["name"] == "Comedor Nuevo"
+
+    async def test_each_subject_gets_its_own_measurement(
+        self, items_by_id, two_measured_subjects
+    ):
+        """The batched query doesn't cross-assign A's measurement to B,
+        or vice versa."""
+        subject_a_id, subject_b_id = two_measured_subjects
+        latest_a = items_by_id[str(subject_a_id)]["latest_measurement"]
+        latest_b = items_by_id[str(subject_b_id)]["latest_measurement"]
+        assert latest_a["id"] != latest_b["id"]
+        assert latest_b["weight_kg"] == 15.0
+        assert latest_b["establishment"]["name"] == "Comedor Viejo"
 
 
 class TestSubjectEventLog:

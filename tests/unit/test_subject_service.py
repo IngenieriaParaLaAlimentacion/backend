@@ -382,6 +382,42 @@ class TestGetSubjectsPaginated:
         assert all(isinstance(item, SubjectBase) for item in result.items)
 
     @pytest.mark.asyncio
+    async def test_maps_latest_measurement_by_subject_id(
+        self, make_subject, make_measurement, make_uow
+    ):
+        """Each item gets its own measurement, not the first one found for the page."""
+        subject_a = make_subject()
+        subject_b = make_subject()
+        measurement_b = make_measurement()
+        uow = make_uow(
+            listing=[subject_a, subject_b],
+            total=2,
+            latest_by_subject={subject_b.id: measurement_b},
+        )
+        service = SubjectService(uow=uow)
+
+        result = await service.get_subject_listing(page=1, page_size=20, search=None)
+
+        by_id = {item.id: item for item in result.items}
+        assert by_id[subject_a.id].latest_measurement is None
+        assert by_id[subject_b.id].latest_measurement.id == measurement_b.id
+
+    @pytest.mark.asyncio
+    async def test_requests_latest_measurements_for_all_page_subject_ids(
+        self, make_subject, make_uow
+    ):
+        """The batched lookup is called once with every subject id of the page."""
+        subjects = [make_subject(), make_subject()]
+        uow = make_uow(listing=subjects, total=2)
+        service = SubjectService(uow=uow)
+
+        await service.get_subject_listing(page=1, page_size=20, search=None)
+
+        uow.measurement_repo.get_latest_for_subjects.assert_called_once_with(
+            [subject.id for subject in subjects]
+        )
+
+    @pytest.mark.asyncio
     async def test_forwards_search_to_repo(self, make_uow):
         uow = make_uow([], total=0)
         service = SubjectService(uow=uow)
