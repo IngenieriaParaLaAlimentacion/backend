@@ -3,7 +3,7 @@ from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.pagination import PaginatedResult
-from app.domain.subject import SubjectDomain
+from app.domain.subject import SubjectDomain, SubjectListingParams
 from app.domain.subject_detail import SubjectDetailDomain
 from app.domain.subject_event import EventPayload, SubjectEventType
 from app.exceptions.domain_exceptions import (
@@ -104,7 +104,7 @@ class SubjectService:
         self,
         page: int,
         page_size: int,
-        search: str | None,
+        params: SubjectListingParams,
     ) -> PaginatedResult[SubjectDetailDomain]:
         """Return a paginated list of subjects with metadata.
 
@@ -116,7 +116,7 @@ class SubjectService:
         """
         page = max(1, page)
         offset = (page - 1) * page_size
-        search_term = (search or "").strip() or None
+        search_term = (params.search or "").strip() or None
         subjects, total = await self.uow.subject_repo.get_subject_listing(
             limit=page_size, offset=offset, search=search_term
         )
