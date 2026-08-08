@@ -694,6 +694,393 @@ class TestGetSubjectsPaginatedLatestMeasurement:
         assert latest_b["establishment"]["name"] == "Comedor Viejo"
 
 
+class TestGetSubjectsPaginatedBirthDateFilter:
+    """GET /subjects filters by birth_date_from/birth_date_to, both inclusive."""
+
+    @pytest_asyncio.fixture
+    async def three_subjects(self, client, field_worker_headers):
+        """Seed three subjects with distinct, spread-out birthdays."""
+        for dni, birth_date in [
+            (81111111, "2015-01-01"),
+            (81111112, "2018-06-15"),
+            (81111113, "2020-12-31"),
+        ]:
+            response = await _upload(
+                client, field_worker_headers, dni=dni, birth_date=birth_date
+            )
+            assert response.status_code == status.HTTP_201_CREATED
+
+    async def test_filters_by_range(self, client, field_worker_headers, three_subjects):
+        """Only the subject strictly inside the range is returned."""
+        response = await client.get(
+            f"{SUBJECTS_URL}?birth_date_from=2016-01-01&birth_date_to=2019-01-01",
+            headers=field_worker_headers,
+        )
+        assert response.status_code == status.HTTP_200_OK
+        items = response.json()["items"]
+        assert [item["birth_date"] for item in items] == ["2018-06-15"]
+
+    async def test_range_boundaries_are_inclusive(
+        self, client, field_worker_headers, three_subjects
+    ):
+        """Subjects born exactly on birth_date_from or birth_date_to are included."""
+        response = await client.get(
+            f"{SUBJECTS_URL}?birth_date_from=2015-01-01&birth_date_to=2020-12-31",
+            headers=field_worker_headers,
+        )
+        assert response.status_code == status.HTTP_200_OK
+        birth_dates = {item["birth_date"] for item in response.json()["items"]}
+        assert birth_dates == {"2015-01-01", "2018-06-15", "2020-12-31"}
+
+    async def test_birth_date_from_alone_is_open_ended_above(
+        self, client, field_worker_headers, three_subjects
+    ):
+        """With only birth_date_from set, subjects born on or after it all match."""
+        response = await client.get(
+            f"{SUBJECTS_URL}?birth_date_from=2018-01-01",
+            headers=field_worker_headers,
+        )
+        assert response.status_code == status.HTTP_200_OK
+        birth_dates = {item["birth_date"] for item in response.json()["items"]}
+        assert birth_dates == {"2018-06-15", "2020-12-31"}
+
+    async def test_birth_date_to_alone_is_open_ended_below(
+        self, client, field_worker_headers, three_subjects
+    ):
+        """With only birth_date_to set, subjects born on or before it all match."""
+        response = await client.get(
+            f"{SUBJECTS_URL}?birth_date_to=2018-01-01",
+            headers=field_worker_headers,
+        )
+        assert response.status_code == status.HTTP_200_OK
+        birth_dates = {item["birth_date"] for item in response.json()["items"]}
+        assert birth_dates == {"2015-01-01"}
+
+    async def test_no_subject_in_range_returns_empty(
+        self, client, field_worker_headers, three_subjects
+    ):
+        """A range that matches nobody returns an empty list, not an error."""
+        response = await client.get(
+            f"{SUBJECTS_URL}?birth_date_from=2021-01-01&birth_date_to=2022-01-01",
+            headers=field_worker_headers,
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["items"] == []
+
+
+class TestGetSubjectsPaginatedEstablishmentFilter:
+    """GET /subjects filters by establishment_id: any measurement there counts."""
+
+    @pytest_asyncio.fixture
+    async def subjects_by_establishment(self, app, field_worker_user_id):
+        """Seed two establishments and four subjects.
+
+        X was measured only at Comedor A, Y only at Comedor B, Z at both (so it
+        must match either filter), and W was never measured (so it must match
+        neither). Returns a dict of establishment and subject ids.
+        """
+        from app.db.database import AsyncSessionLocal
+        from app.domain.subject import Sex
+        from app.models.establishment import Establishment
+        from app.models.measurement import Measurement
+        from app.models.subject import Subject
+
+        async with AsyncSessionLocal() as session:
+            est_a = Establishment(
+                name="Comedor A",
+                formatted_address="Calle A",
+                latitude=-34.9,
+                longitude=-57.9,
+                place_id=f"place-{uuid.uuid4().hex[:8]}",
+                city="La Plata",
+                province="Buenos Aires",
+            )
+            est_b = Establishment(
+                name="Comedor B",
+                formatted_address="Calle B",
+                latitude=-31.4,
+                longitude=-64.2,
+                place_id=f"place-{uuid.uuid4().hex[:8]}",
+                city="Cordoba",
+                province="Cordoba",
+            )
+            subject_x = Subject(
+                dni=82111111,
+                sex=Sex.MALE,
+                name="X",
+                last_name="Subject",
+                birth_date=date(2015, 1, 1),
+                is_rural=False,
+                is_indigenous=False,
+            )
+            subject_y = Subject(
+                dni=82111112,
+                sex=Sex.MALE,
+                name="Y",
+                last_name="Subject",
+                birth_date=date(2015, 1, 1),
+                is_rural=False,
+                is_indigenous=False,
+            )
+            subject_z = Subject(
+                dni=82111113,
+                sex=Sex.MALE,
+                name="Z",
+                last_name="Subject",
+                birth_date=date(2015, 1, 1),
+                is_rural=False,
+                is_indigenous=False,
+            )
+            subject_w = Subject(
+                dni=82111114,
+                sex=Sex.MALE,
+                name="W",
+                last_name="Subject",
+                birth_date=date(2015, 1, 1),
+                is_rural=False,
+                is_indigenous=False,
+            )
+            session.add_all([est_a, est_b, subject_x, subject_y, subject_z, subject_w])
+            await session.flush()
+
+            for subject, est in [
+                (subject_x, est_a),
+                (subject_y, est_b),
+                (subject_z, est_a),
+                (subject_z, est_b),
+            ]:
+                session.add(
+                    Measurement(
+                        subject_id=subject.id,
+                        responsible_id=field_worker_user_id,
+                        establishment_id=est.id,
+                        weight_kg=15.0,
+                        height_cm=100.0,
+                        bmi=15.0,
+                        measured_at=datetime(2024, 1, 1, tzinfo=timezone.utc),
+                    )
+                )
+            await session.commit()
+            return {
+                "establishment_a": est_a.id,
+                "establishment_b": est_b.id,
+                "x": subject_x.id,
+                "y": subject_y.id,
+                "z": subject_z.id,
+                "w": subject_w.id,
+            }
+
+    async def test_returns_subjects_measured_at_establishment(
+        self, client, field_worker_headers, subjects_by_establishment
+    ):
+        ids = subjects_by_establishment
+        response = await client.get(
+            SUBJECTS_URL,
+            params={"establishment_id": str(ids["establishment_a"])},
+            headers=field_worker_headers,
+        )
+        assert response.status_code == status.HTTP_200_OK
+        returned = {item["id"] for item in response.json()["items"]}
+        assert returned == {str(ids["x"]), str(ids["z"])}
+
+    async def test_matches_the_other_establishment_independently(
+        self, client, field_worker_headers, subjects_by_establishment
+    ):
+        ids = subjects_by_establishment
+        response = await client.get(
+            SUBJECTS_URL,
+            params={"establishment_id": str(ids["establishment_b"])},
+            headers=field_worker_headers,
+        )
+        returned = {item["id"] for item in response.json()["items"]}
+        assert returned == {str(ids["y"]), str(ids["z"])}
+
+    async def test_never_measured_subject_is_never_included(
+        self, client, field_worker_headers, subjects_by_establishment
+    ):
+        ids = subjects_by_establishment
+        for key in ("establishment_a", "establishment_b"):
+            response = await client.get(
+                SUBJECTS_URL,
+                params={"establishment_id": str(ids[key])},
+                headers=field_worker_headers,
+            )
+            returned = {item["id"] for item in response.json()["items"]}
+            assert str(ids["w"]) not in returned
+
+    async def test_unknown_establishment_id_returns_empty(
+        self, client, field_worker_headers, subjects_by_establishment
+    ):
+        response = await client.get(
+            SUBJECTS_URL,
+            params={"establishment_id": str(uuid.uuid4())},
+            headers=field_worker_headers,
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["items"] == []
+
+
+class TestGetSubjectsPaginatedAttributeFilters:
+    """GET /subjects filters by is_rural, is_indigenous and sex, exact match."""
+
+    @pytest_asyncio.fixture
+    async def four_subjects(self, client, field_worker_headers):
+        """Seed subjects covering every combination of rurality and indigenous
+        status, plus both sexes."""
+        combos = [
+            (83111111, "male", True, True),
+            (83111112, "female", True, False),
+            (83111113, "female", False, True),
+            (83111114, "male", False, False),
+        ]
+        for dni, sex, is_rural, is_indigenous in combos:
+            response = await _upload(
+                client,
+                field_worker_headers,
+                dni=dni,
+                sex=sex,
+                is_rural=is_rural,
+                is_indigenous=is_indigenous,
+            )
+            assert response.status_code == status.HTTP_201_CREATED
+
+    async def test_filters_by_is_rural(
+        self, client, field_worker_headers, four_subjects
+    ):
+        response = await client.get(
+            SUBJECTS_URL, params={"is_rural": True}, headers=field_worker_headers
+        )
+        dnis = {item["dni"] for item in response.json()["items"]}
+        assert dnis == {83111111, 83111112}
+
+    async def test_filters_by_is_indigenous(
+        self, client, field_worker_headers, four_subjects
+    ):
+        response = await client.get(
+            SUBJECTS_URL, params={"is_indigenous": True}, headers=field_worker_headers
+        )
+        dnis = {item["dni"] for item in response.json()["items"]}
+        assert dnis == {83111111, 83111113}
+
+    async def test_filters_by_sex(self, client, field_worker_headers, four_subjects):
+        response = await client.get(
+            SUBJECTS_URL, params={"sex": "female"}, headers=field_worker_headers
+        )
+        dnis = {item["dni"] for item in response.json()["items"]}
+        assert dnis == {83111112, 83111113}
+
+    async def test_combines_filters_with_and(
+        self, client, field_worker_headers, four_subjects
+    ):
+        """is_rural and sex combine with AND, not OR."""
+        response = await client.get(
+            SUBJECTS_URL,
+            params={"is_rural": True, "sex": "female"},
+            headers=field_worker_headers,
+        )
+        dnis = {item["dni"] for item in response.json()["items"]}
+        assert dnis == {83111112}
+
+
+class TestGetSubjectsPaginatedSortOrder:
+    """GET /subjects sorts by name, created_at or birth_date, in either direction."""
+
+    @pytest_asyncio.fixture
+    async def three_ordered_subjects(self, client, field_worker_headers):
+        """Seed three subjects whose creation order, names and birth dates each
+        yield a different, unambiguous permutation.
+
+        Creation order: Carlos, Ana, Beatriz.
+        Name order (asc): Ana, Beatriz, Carlos.
+        Birthdate order (asc, oldest first): Ana (1990), Carlos (2000), Beatriz (2010).
+        """
+        for dni, name, birth_date in [
+            (84111111, "Carlos", "2000-01-01"),
+            (84111112, "Ana", "1990-01-01"),
+            (84111113, "Beatriz", "2010-01-01"),
+        ]:
+            response = await _upload(
+                client, field_worker_headers, dni=dni, name=name, birth_date=birth_date
+            )
+            assert response.status_code == status.HTTP_201_CREATED
+
+    async def _names(self, client, field_worker_headers, sort_order):
+        response = await client.get(
+            SUBJECTS_URL,
+            params={"sort_order": sort_order},
+            headers=field_worker_headers,
+        )
+        assert response.status_code == status.HTTP_200_OK
+        return [item["name"] for item in response.json()["items"]]
+
+    async def test_default_sort_is_newest_created_first(
+        self, client, field_worker_headers, three_ordered_subjects
+    ):
+        response = await client.get(SUBJECTS_URL, headers=field_worker_headers)
+        names = [item["name"] for item in response.json()["items"]]
+        assert names == ["Beatriz", "Ana", "Carlos"]
+
+    async def test_created_at_asc(
+        self, client, field_worker_headers, three_ordered_subjects
+    ):
+        names = await self._names(client, field_worker_headers, "created_at_asc")
+        assert names == ["Carlos", "Ana", "Beatriz"]
+
+    async def test_name_asc(self, client, field_worker_headers, three_ordered_subjects):
+        names = await self._names(client, field_worker_headers, "name_asc")
+        assert names == ["Ana", "Beatriz", "Carlos"]
+
+    async def test_name_desc(
+        self, client, field_worker_headers, three_ordered_subjects
+    ):
+        names = await self._names(client, field_worker_headers, "name_desc")
+        assert names == ["Carlos", "Beatriz", "Ana"]
+
+    async def test_birth_date_asc(
+        self, client, field_worker_headers, three_ordered_subjects
+    ):
+        names = await self._names(client, field_worker_headers, "birth_date_asc")
+        assert names == ["Ana", "Carlos", "Beatriz"]
+
+    async def test_birth_date_desc(
+        self, client, field_worker_headers, three_ordered_subjects
+    ):
+        names = await self._names(client, field_worker_headers, "birth_date_desc")
+        assert names == ["Beatriz", "Carlos", "Ana"]
+
+
+class TestGetSubjectsPaginatedValidation:
+    """GET /subjects rejects an inverted birth_date range with 400."""
+
+    async def test_birth_date_from_after_birth_date_to_returns_400(
+        self, client, field_worker_headers
+    ):
+        response = await client.get(
+            SUBJECTS_URL,
+            params={"birth_date_from": "2020-01-01", "birth_date_to": "2019-01-01"},
+            headers=field_worker_headers,
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert (
+            response.json()["detail"] == "birth_date_from cannot be after birth_date_to"
+        )
+
+    async def test_equal_from_and_to_is_a_valid_single_day_range(
+        self, client, field_worker_headers
+    ):
+        """from == to is a one-day range, not an inverted one."""
+        await _upload(
+            client, field_worker_headers, dni=85111111, birth_date="2020-01-01"
+        )
+        response = await client.get(
+            SUBJECTS_URL,
+            params={"birth_date_from": "2020-01-01", "birth_date_to": "2020-01-01"},
+            headers=field_worker_headers,
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["total"] == 1
+
+
 class TestSubjectEventLog:
     async def test_registration_creates_event(
         self, client, field_worker_headers, field_worker_user_id
