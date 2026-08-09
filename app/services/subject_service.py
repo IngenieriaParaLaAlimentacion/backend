@@ -106,12 +106,8 @@ class SubjectService:
         page_size: int,
         params: SubjectListingParams,
     ) -> PaginatedResult[SubjectDetailDomain]:
-        """Return a paginated list of subjects with metadata.
-
-        Reuses ``SubjectDetailDomain`` (see its docstring) so listing and detail
-        share one enrichment path; ``SubjectListingResponse`` is the one that
-        decides ``nutritional_status`` isn't part of the listing contract.
-        """
+        """Return a paginated list of subjects, each enriched with its
+        latest measurement."""
         page = max(1, page)
         offset = (page - 1) * page_size
         subjects, total = await self.uow.subject_repo.get_subject_listing(

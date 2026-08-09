@@ -209,7 +209,8 @@ class TestGetSubject:
 
 
 class TestGetSubjectLatestMeasurement:
-    """The detail view carries the subject's latest reading across all comedores."""
+    """The detail view carries the subject's latest reading across all
+    establishments."""
 
     @pytest_asyncio.fixture
     async def measured_subject(self, app, field_worker_user_id):
@@ -293,7 +294,7 @@ class TestGetSubjectLatestMeasurement:
         assert body["latest_measurement"]["weight_kg"] == 20.0
 
     async def test_latest_wins_across_establishments(self, body):
-        # The superseded reading was taken at a different comedor and was
+        # The superseded reading was taken at a different establishment and was
         # severely wasted; the global latest is the healthy one.
         assert body["latest_measurement"]["establishment"]["name"] == "Comedor Nuevo"
         assert body["nutritional_status"] == "normal"

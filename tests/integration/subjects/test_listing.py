@@ -215,7 +215,8 @@ class TestGetSubjectsPaginated:
 
 
 class TestGetSubjectsPaginatedLatestMeasurement:
-    """Each listing item carries the subject's own latest reading, across comedores."""
+    """Each listing item carries the subject's own latest reading, across
+    establishments."""
 
     @pytest_asyncio.fixture
     async def two_measured_subjects(self, app, field_worker_user_id):

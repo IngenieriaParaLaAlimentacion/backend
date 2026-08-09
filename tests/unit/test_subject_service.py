@@ -317,7 +317,7 @@ class TestGetSubject:
         self, make_subject, make_uow, make_measurement
     ):
         # The badge is the subject's global latest reading, so clients need to
-        # know which comedor it came from to label it.
+        # know which establishment it came from to label it.
         subject = make_subject()
         uow = make_uow(latest_measurement=make_measurement())
         uow.subject_repo.get_by_id = AsyncMock(return_value=subject)
