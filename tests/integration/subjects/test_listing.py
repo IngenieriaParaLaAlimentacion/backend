@@ -1,384 +1,20 @@
 import uuid
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timezone
 
 import pytest
 import pytest_asyncio
 from fastapi import status
-from jose import jwt
 
-from app.core.security import create_access_token
-from app.domain.user import UserRole
-from tests.integration.conftest import make_token_for_role
+from app.domain.subject import SubjectSortOrder
+from tests.integration.subjects.conftest import (
+    SUBJECTS_URL,
+    _make_establishment,
+    _make_measurement,
+    _make_subject,
+    _upload,
+)
 
 pytestmark = pytest.mark.asyncio
-
-SUBJECTS_URL = "/api/v1/subjects"
-
-
-@pytest_asyncio.fixture
-async def field_worker_user_id(app):
-    from app.db.database import AsyncSessionLocal
-    from app.models.user import User, UserStatus
-    from app.models.user import UserRole as ORMUserRole
-
-    user_id = uuid.uuid4()
-    async with AsyncSessionLocal() as session:
-        session.add(
-            User(
-                id=user_id,
-                name="Test",
-                last_name="Field Worker",
-                email=f"{user_id}@test.com",
-                role=ORMUserRole.FIELD_WORKER,
-                status=UserStatus.ACTIVE,
-            )
-        )
-        await session.commit()
-    return user_id
-
-
-@pytest_asyncio.fixture
-async def field_worker_headers(field_worker_user_id):
-    token = create_access_token(field_worker_user_id, role=UserRole.FIELD_WORKER)
-    return {"Authorization": f"Bearer {token}"}
-
-
-def _body(**overrides):
-    return {
-        "dni": 12345678,
-        "sex": "male",
-        "name": "Juan",
-        "last_name": "Perez",
-        "birth_date": "2010-01-01",
-        "is_rural": False,
-        "is_indigenous": False,
-        **overrides,
-    }
-
-
-async def _upload(client, headers=None, **overrides):
-    return await client.post(
-        SUBJECTS_URL, json=_body(**overrides), headers=headers or {}
-    )
-
-
-async def _upload_with_id(client, headers, subject_id, **overrides):
-    return await _upload(client, headers, id=str(subject_id), **overrides)
-
-
-class TestUploadSubject:
-    async def test_unauthenticated_returns_401(self, client):
-        """No token provided should return 401."""
-        response = await _upload(client)
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-    async def test_malformed_token_returns_401(self, client):
-        """A non-JWT string as token should return 401."""
-        response = await _upload(
-            client, headers={"Authorization": "Bearer token_invalido"}
-        )
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-    async def test_token_signed_with_wrong_secret_returns_401(self, client):
-        """A JWT signed with the wrong secret should return 401."""
-        forged = jwt.encode(
-            {
-                "sub": str(uuid.uuid4()),
-                "role": "field_worker",
-                "type": "access",
-            },
-            "wrong_secret",
-            algorithm="HS256",
-        )
-        response = await _upload(client, headers={"Authorization": f"Bearer {forged}"})
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-    async def test_admin_role_returns_201(self, client):
-        """A valid token with admin role should return 201."""
-        token = await make_token_for_role(UserRole.ADMIN)
-        response = await _upload(client, headers={"Authorization": f"Bearer {token}"})
-        assert response.status_code == status.HTTP_201_CREATED
-
-    async def test_analyst_role_returns_201(self, client):
-        """A valid token with analyst role should return 201."""
-        token = await make_token_for_role(UserRole.ANALYST)
-        response = await _upload(client, headers={"Authorization": f"Bearer {token}"})
-        assert response.status_code == status.HTTP_201_CREATED
-
-    async def test_valid_request_returns_201(self, client, field_worker_headers):
-        """A well-formed request with a field worker token returns 201."""
-        response = await _upload(client, field_worker_headers)
-        assert response.status_code == status.HTTP_201_CREATED
-
-    async def test_valid_request_returns_subject_data(
-        self, client, field_worker_headers
-    ):
-        """Response body includes all submitted fields and a generated id."""
-        response = await _upload(client, field_worker_headers)
-        data = response.json()
-        assert "id" in data
-        assert data["dni"] == 12345678
-        assert data["sex"] == "male"
-        assert data["name"] == "Juan"
-        assert data["last_name"] == "Perez"
-        assert data["birth_date"] == "2010-01-01"
-        assert data["is_rural"] is False
-        assert data["is_indigenous"] is False
-
-    async def test_duplicate_dni_returns_409(self, client, field_worker_headers):
-        """A second subject with the same DNI returns 409 with the canonical subject."""
-        first = (await _upload(client, field_worker_headers)).json()
-        response = await _upload(client, field_worker_headers)
-        assert response.status_code == status.HTTP_409_CONFLICT
-        canonical = response.json()["canonical_subject"]
-        assert canonical["id"] == first["id"]
-        assert canonical["dni"] == first["dni"]
-
-    async def test_client_supplied_id_is_used_as_pk(self, client, field_worker_headers):
-        """A client-supplied id becomes the subject's primary key."""
-        subject_id = uuid.uuid4()
-        response = await _upload_with_id(client, field_worker_headers, subject_id)
-        assert response.status_code == status.HTTP_201_CREATED
-        assert response.json()["id"] == str(subject_id)
-
-        got = await client.get(
-            f"{SUBJECTS_URL}/{subject_id}", headers=field_worker_headers
-        )
-        assert got.status_code == status.HTTP_200_OK
-        assert got.json()["id"] == str(subject_id)
-
-    async def test_same_id_replay_returns_200(self, client, field_worker_headers):
-        """Re-POSTing the same id is an idempotent replay returning 200."""
-        subject_id = uuid.uuid4()
-        first = await _upload_with_id(client, field_worker_headers, subject_id)
-        assert first.status_code == status.HTTP_201_CREATED
-        second = await _upload_with_id(client, field_worker_headers, subject_id)
-        assert second.status_code == status.HTTP_200_OK
-        assert second.json() == first.json()
-
-    async def test_dni_conflict_different_id_returns_409_with_canonical(
-        self, client, field_worker_headers
-    ):
-        """Same DNI under a different id returns 409 carrying the canonical subject."""
-        id_a = uuid.uuid4()
-        id_b = uuid.uuid4()
-        first = await _upload_with_id(client, field_worker_headers, id_a, dni=30111222)
-        assert first.status_code == status.HTTP_201_CREATED
-        response = await _upload_with_id(
-            client, field_worker_headers, id_b, dni=30111222
-        )
-        assert response.status_code == status.HTTP_409_CONFLICT
-        canonical = response.json()["canonical_subject"]
-        assert canonical["id"] == str(id_a)
-        assert canonical["dni"] == 30111222
-
-    async def test_missing_id_still_returns_201(self, client, field_worker_headers):
-        """Omitting id preserves the backoffice create path."""
-        response = await _upload(client, field_worker_headers)
-        assert response.status_code == status.HTTP_201_CREATED
-        assert "id" in response.json()
-
-    async def test_future_birth_date_returns_422(self, client, field_worker_headers):
-        """A birthdate in the future is rejected with 422."""
-        future = (datetime.now(timezone.utc).date() + timedelta(days=1)).isoformat()
-        response = await _upload(client, field_worker_headers, birth_date=future)
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_dni_zero_returns_422(self, client, field_worker_headers):
-        """DNI 0 is below the minimum allowed value."""
-        response = await _upload(client, field_worker_headers, dni=0)
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_dni_above_max_returns_422(self, client, field_worker_headers):
-        """DNI above 99999999 exceeds the Argentine DNI range."""
-        response = await _upload(client, field_worker_headers, dni=100000000)
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_whitespace_name_returns_422(self, client, field_worker_headers):
-        """A name composed only of whitespace is rejected after stripping."""
-        response = await _upload(client, field_worker_headers, name="   ")
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    @pytest.mark.parametrize(
-        "field",
-        ["dni", "sex", "name", "last_name", "birth_date", "is_rural", "is_indigenous"],
-    )
-    async def test_each_required_field_is_mandatory(
-        self, client, field_worker_headers, field
-    ):
-        """Omitting any single required field returns 422."""
-        body = _body()
-        del body[field]
-        response = await client.post(
-            SUBJECTS_URL, json=body, headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-
-class TestGetSubject:
-    async def test_returns_200_with_subject_data(self, client, field_worker_headers):
-        """A subject that was just created can be retrieved by id."""
-        created = (await _upload(client, field_worker_headers)).json()
-        response = await client.get(
-            f"{SUBJECTS_URL}/{created['id']}", headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_200_OK
-        # The detail view is a superset of the create response: it adds the
-        # subject's latest measurement and its derived status.
-        assert response.json().items() >= created.items()
-
-    async def test_never_measured_subject_has_null_status(
-        self, client, field_worker_headers
-    ):
-        """No measurement is not 'normal' -- both fields must come back null."""
-        created = (await _upload(client, field_worker_headers)).json()
-        body = (
-            await client.get(
-                f"{SUBJECTS_URL}/{created['id']}", headers=field_worker_headers
-            )
-        ).json()
-        assert body["nutritional_status"] is None
-        assert body["latest_measurement"] is None
-
-    async def test_unknown_id_returns_404(self, client, field_worker_headers):
-        """A random UUID that was never registered returns 404."""
-        response = await client.get(
-            f"{SUBJECTS_URL}/{uuid.uuid4()}", headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-
-    async def test_unauthenticated_returns_401(self, client):
-        """No token on GET should return 401."""
-        response = await client.get(f"{SUBJECTS_URL}/{uuid.uuid4()}")
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-
-class TestGetSubjectLatestMeasurement:
-    """The detail view carries the subject's latest reading across all comedores."""
-
-    @pytest_asyncio.fixture
-    async def measured_subject(self, app, field_worker_user_id):
-        """Seed one subject measured twice, at two different establishments.
-
-        The older reading is at "Comedor Viejo" and is severely wasted; the newer
-        one is at "Comedor Nuevo" and is healthy. A per-establishment view of
-        Comedor Viejo would report the subject as severely wasted, so this fixture
-        pins down that the subject detail reports the global latest instead.
-        """
-        from app.db.database import AsyncSessionLocal
-        from app.domain.subject import Sex
-        from app.models.establishment import Establishment
-        from app.models.measurement import Measurement
-        from app.models.measurement_alert import MeasurementAlert
-        from app.models.subject import Subject
-        from app.utils.anthropometry import evaluate_alerts
-
-        async with AsyncSessionLocal() as session:
-            old_est = Establishment(
-                name="Comedor Viejo",
-                formatted_address="Calle 1",
-                latitude=-34.9,
-                longitude=-57.9,
-                place_id=f"place-{uuid.uuid4().hex[:8]}",
-                city="La Plata",
-                province="Buenos Aires",
-            )
-            new_est = Establishment(
-                name="Comedor Nuevo",
-                formatted_address="Calle 2",
-                latitude=-31.4,
-                longitude=-64.2,
-                place_id=f"place-{uuid.uuid4().hex[:8]}",
-                city="Cordoba",
-                province="Cordoba",
-            )
-            subject = Subject(
-                dni=71234567,
-                sex=Sex.MALE,
-                name="Nico",
-                last_name="Medido",
-                birth_date=date(2018, 1, 1),
-                is_rural=False,
-                is_indigenous=False,
-            )
-            session.add_all([old_est, new_est, subject])
-            await session.flush()
-
-            created = []
-            for weight, height, est, when in [
-                (10.0, 120.0, old_est, datetime(2024, 1, 10, tzinfo=timezone.utc)),
-                (20.0, 118.0, new_est, datetime(2024, 6, 10, tzinfo=timezone.utc)),
-            ]:
-                bmi = weight / (height / 100) ** 2
-                measurement = Measurement(
-                    subject_id=subject.id,
-                    responsible_id=field_worker_user_id,
-                    establishment_id=est.id,
-                    weight_kg=weight,
-                    height_cm=height,
-                    bmi=bmi,
-                    measured_at=when,
-                )
-                session.add(measurement)
-                created.append((measurement, bmi, when))
-
-            await session.flush()
-            for measurement, bmi, when in created:
-                for alert_type, severity, detail in evaluate_alerts(
-                    bmi=bmi,
-                    sex=subject.sex,
-                    birth_date=subject.birth_date,
-                    measured_at=when,
-                ):
-                    session.add(
-                        MeasurementAlert(
-                            measurement_id=measurement.id,
-                            alert_type=alert_type,
-                            severity=severity,
-                            detail=detail,
-                        )
-                    )
-            await session.commit()
-            return subject.id
-
-    @pytest_asyncio.fixture
-    async def body(self, client, field_worker_headers, measured_subject):
-        response = await client.get(
-            f"{SUBJECTS_URL}/{measured_subject}", headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_200_OK
-        return response.json()
-
-    async def test_reports_the_most_recent_measurement(self, body):
-        assert body["latest_measurement"]["measured_at"].startswith("2024-06-10")
-        assert body["latest_measurement"]["weight_kg"] == 20.0
-
-    async def test_latest_wins_across_establishments(self, body):
-        # The superseded reading was taken at a different comedor and was
-        # severely wasted; the global latest is the healthy one.
-        assert body["latest_measurement"]["establishment"]["name"] == "Comedor Nuevo"
-        assert body["nutritional_status"] == "normal"
-        assert body["latest_measurement"]["alerts"] == []
-
-    async def test_carries_the_establishment_reference(self, body):
-        establishment = body["latest_measurement"]["establishment"]
-        assert {"id", "name", "city", "province"} == establishment.keys()
-
-    async def test_measurement_shape(self, body):
-        assert {
-            "id",
-            "measured_at",
-            "weight_kg",
-            "height_cm",
-            "bmi",
-            "establishment",
-            "alerts",
-        } == body["latest_measurement"].keys()
-
-    async def test_still_carries_the_plain_subject_fields(self, body):
-        assert body["dni"] == 71234567
-        assert body["last_name"] == "Medido"
-        assert body["birth_date"] == "2018-01-01"
 
 
 class TestGetSubjectsPaginated:
@@ -593,46 +229,27 @@ class TestGetSubjectsPaginatedLatestMeasurement:
         """
         from app.db.database import AsyncSessionLocal
         from app.domain.subject import Sex
-        from app.models.establishment import Establishment
-        from app.models.measurement import Measurement
-        from app.models.subject import Subject
 
         async with AsyncSessionLocal() as session:
-            old_est = Establishment(
-                name="Comedor Viejo",
-                formatted_address="Calle 1",
+            old_est = _make_establishment(
+                "Comedor Viejo",
+                "Calle 1",
                 latitude=-34.9,
                 longitude=-57.9,
-                place_id=f"place-{uuid.uuid4().hex[:8]}",
                 city="La Plata",
                 province="Buenos Aires",
             )
-            new_est = Establishment(
-                name="Comedor Nuevo",
-                formatted_address="Calle 2",
+            new_est = _make_establishment(
+                "Comedor Nuevo",
+                "Calle 2",
                 latitude=-31.4,
                 longitude=-64.2,
-                place_id=f"place-{uuid.uuid4().hex[:8]}",
                 city="Cordoba",
                 province="Cordoba",
             )
-            subject_a = Subject(
-                dni=71234567,
-                sex=Sex.MALE,
-                name="Nico",
-                last_name="Medido",
-                birth_date=date(2018, 1, 1),
-                is_rural=False,
-                is_indigenous=False,
-            )
-            subject_b = Subject(
-                dni=71234568,
-                sex=Sex.FEMALE,
-                name="Sol",
-                last_name="Medida",
-                birth_date=date(2019, 2, 2),
-                is_rural=False,
-                is_indigenous=False,
+            subject_a = _make_subject(71234567, "Nico", "Medido", date(2018, 1, 1))
+            subject_b = _make_subject(
+                71234568, "Sol", "Medida", date(2019, 2, 2), sex=Sex.FEMALE
             )
             session.add_all([old_est, new_est, subject_a, subject_b])
             await session.flush()
@@ -642,24 +259,22 @@ class TestGetSubjectsPaginatedLatestMeasurement:
                 (20.0, 118.0, new_est, datetime(2024, 6, 10, tzinfo=timezone.utc)),
             ]:
                 session.add(
-                    Measurement(
-                        subject_id=subject_a.id,
-                        responsible_id=field_worker_user_id,
-                        establishment_id=est.id,
+                    _make_measurement(
+                        subject_a.id,
+                        field_worker_user_id,
+                        est.id,
                         weight_kg=weight,
                         height_cm=height,
-                        bmi=weight / (height / 100) ** 2,
                         measured_at=when,
                     )
                 )
             session.add(
-                Measurement(
-                    subject_id=subject_b.id,
-                    responsible_id=field_worker_user_id,
-                    establishment_id=old_est.id,
+                _make_measurement(
+                    subject_b.id,
+                    field_worker_user_id,
+                    old_est.id,
                     weight_kg=15.0,
                     height_cm=100.0,
-                    bmi=15.0 / (100 / 100) ** 2,
                     measured_at=datetime(2024, 3, 1, tzinfo=timezone.utc),
                 )
             )
@@ -780,65 +395,32 @@ class TestGetSubjectsPaginatedEstablishmentFilter:
         neither). Returns a dict of establishment and subject ids.
         """
         from app.db.database import AsyncSessionLocal
-        from app.domain.subject import Sex
-        from app.models.establishment import Establishment
-        from app.models.measurement import Measurement
-        from app.models.subject import Subject
 
         async with AsyncSessionLocal() as session:
-            est_a = Establishment(
-                name="Comedor A",
-                formatted_address="Calle A",
+            est_a = _make_establishment(
+                "Comedor A",
+                "Calle A",
                 latitude=-34.9,
                 longitude=-57.9,
-                place_id=f"place-{uuid.uuid4().hex[:8]}",
                 city="La Plata",
                 province="Buenos Aires",
             )
-            est_b = Establishment(
-                name="Comedor B",
-                formatted_address="Calle B",
+            est_b = _make_establishment(
+                "Comedor B",
+                "Calle B",
                 latitude=-31.4,
                 longitude=-64.2,
-                place_id=f"place-{uuid.uuid4().hex[:8]}",
                 city="Cordoba",
                 province="Cordoba",
             )
-            subject_x = Subject(
-                dni=82111111,
-                sex=Sex.MALE,
-                name="X",
-                last_name="Subject",
-                birth_date=date(2015, 1, 1),
-                is_rural=False,
-                is_indigenous=False,
-            )
-            subject_y = Subject(
-                dni=82111112,
-                sex=Sex.MALE,
-                name="Y",
-                last_name="Subject",
-                birth_date=date(2015, 1, 1),
-                is_rural=False,
-                is_indigenous=False,
-            )
-            subject_z = Subject(
-                dni=82111113,
-                sex=Sex.MALE,
-                name="Z",
-                last_name="Subject",
-                birth_date=date(2015, 1, 1),
-                is_rural=False,
-                is_indigenous=False,
-            )
-            subject_w = Subject(
-                dni=82111114,
-                sex=Sex.MALE,
-                name="W",
-                last_name="Subject",
-                birth_date=date(2015, 1, 1),
-                is_rural=False,
-                is_indigenous=False,
+            subject_x, subject_y, subject_z, subject_w = (
+                _make_subject(dni, name, "Subject", date(2015, 1, 1))
+                for dni, name in [
+                    (82111111, "X"),
+                    (82111112, "Y"),
+                    (82111113, "Z"),
+                    (82111114, "W"),
+                ]
             )
             session.add_all([est_a, est_b, subject_x, subject_y, subject_z, subject_w])
             await session.flush()
@@ -850,13 +432,12 @@ class TestGetSubjectsPaginatedEstablishmentFilter:
                 (subject_z, est_b),
             ]:
                 session.add(
-                    Measurement(
-                        subject_id=subject.id,
-                        responsible_id=field_worker_user_id,
-                        establishment_id=est.id,
+                    _make_measurement(
+                        subject.id,
+                        field_worker_user_id,
+                        est.id,
                         weight_kg=15.0,
                         height_cm=100.0,
-                        bmi=15.0,
                         measured_at=datetime(2024, 1, 1, tzinfo=timezone.utc),
                     )
                 )
@@ -1032,40 +613,52 @@ class TestGetSubjectsPaginatedSortOrder:
         self, client, field_worker_headers, three_ordered_subjects
     ):
         """The default behavior is also reachable as an explicit query value."""
-        names = await self._names(client, field_worker_headers, "created_at_desc")
+        names = await self._names(
+            client, field_worker_headers, SubjectSortOrder.CREATED_AT_DESC
+        )
         assert names == ["Beatriz", "Ana", "Carlos"]
 
     async def test_created_at_asc(
         self, client, field_worker_headers, three_ordered_subjects
     ):
         """Oldest-created-first is the reverse of the default order."""
-        names = await self._names(client, field_worker_headers, "created_at_asc")
+        names = await self._names(
+            client, field_worker_headers, SubjectSortOrder.CREATED_AT_ASC
+        )
         assert names == ["Carlos", "Ana", "Beatriz"]
 
     async def test_name_asc(self, client, field_worker_headers, three_ordered_subjects):
         """Alphabetical order by name, independent of creation order."""
-        names = await self._names(client, field_worker_headers, "name_asc")
+        names = await self._names(
+            client, field_worker_headers, SubjectSortOrder.NAME_ASC
+        )
         assert names == ["Ana", "Beatriz", "Carlos"]
 
     async def test_name_desc(
         self, client, field_worker_headers, three_ordered_subjects
     ):
         """Reverse-alphabetical order by name."""
-        names = await self._names(client, field_worker_headers, "name_desc")
+        names = await self._names(
+            client, field_worker_headers, SubjectSortOrder.NAME_DESC
+        )
         assert names == ["Carlos", "Beatriz", "Ana"]
 
     async def test_birth_date_asc(
         self, client, field_worker_headers, three_ordered_subjects
     ):
         """Oldest-born-first -- this is also how a frontend would sort by age desc."""
-        names = await self._names(client, field_worker_headers, "birth_date_asc")
+        names = await self._names(
+            client, field_worker_headers, SubjectSortOrder.BIRTH_DATE_ASC
+        )
         assert names == ["Ana", "Carlos", "Beatriz"]
 
     async def test_birth_date_desc(
         self, client, field_worker_headers, three_ordered_subjects
     ):
         """Youngest-born-first -- this is also how a frontend would sort by age asc."""
-        names = await self._names(client, field_worker_headers, "birth_date_desc")
+        names = await self._names(
+            client, field_worker_headers, SubjectSortOrder.BIRTH_DATE_DESC
+        )
         assert names == ["Beatriz", "Carlos", "Ana"]
 
 
@@ -1101,144 +694,3 @@ class TestGetSubjectsPaginatedValidation:
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["total"] == 1
-
-
-class TestSubjectEventLog:
-    async def test_registration_creates_event(
-        self, client, field_worker_headers, field_worker_user_id
-    ):
-        """Creating a subject persists a SUBJECT_CREATED event linked to the actor."""
-        from sqlalchemy import select
-
-        from app.db.database import AsyncSessionLocal
-        from app.domain.subject_event import SubjectEventType
-        from app.models.subject_event import SubjectEvent
-
-        response = await _upload(client, field_worker_headers)
-        assert response.status_code == status.HTTP_201_CREATED
-        subject_id = uuid.UUID(response.json()["id"])
-
-        async with AsyncSessionLocal() as session:
-            result = await session.execute(
-                select(SubjectEvent).where(SubjectEvent.subject_id == subject_id)
-            )
-            events = result.scalars().all()
-
-        assert len(events) == 1
-        assert events[0].event_type == SubjectEventType.SUBJECT_CREATED
-        assert events[0].actor_id == field_worker_user_id
-        assert events[0].payload is None
-
-    async def test_failed_registration_creates_no_event(
-        self, client, field_worker_headers
-    ):
-        """A rejected registration (duplicate DNI) does not persist any event."""
-        from sqlalchemy import select
-
-        from app.db.database import AsyncSessionLocal
-        from app.models.subject_event import SubjectEvent
-
-        await _upload(client, field_worker_headers)
-        response = await _upload(client, field_worker_headers)
-        assert response.status_code == status.HTTP_409_CONFLICT
-
-        async with AsyncSessionLocal() as session:
-            result = await session.execute(select(SubjectEvent))
-            events = result.scalars().all()
-
-        assert len(events) == 1
-
-    async def test_replay_creates_no_second_event(self, client, field_worker_headers):
-        """Replaying the same id does not append a second SUBJECT_CREATED event."""
-        from sqlalchemy import select
-
-        from app.db.database import AsyncSessionLocal
-        from app.models.subject_event import SubjectEvent
-
-        subject_id = uuid.uuid4()
-        await _upload_with_id(client, field_worker_headers, subject_id)
-        replay = await _upload_with_id(client, field_worker_headers, subject_id)
-        assert replay.status_code == status.HTTP_200_OK
-
-        async with AsyncSessionLocal() as session:
-            result = await session.execute(
-                select(SubjectEvent).where(SubjectEvent.subject_id == subject_id)
-            )
-            events = result.scalars().all()
-
-        assert len(events) == 1
-
-
-class TestUpdateSubject:
-    async def test_returns_200_with_updated_data(self, client, field_worker_headers):
-        """A valid PATCH returns 200 with the updated field reflected."""
-        created = (await _upload(client, field_worker_headers)).json()
-        response = await client.patch(
-            f"{SUBJECTS_URL}/{created['id']}",
-            json={"name": "Carlos"},
-            headers=field_worker_headers,
-        )
-        assert response.status_code == status.HTTP_200_OK
-        assert response.json()["name"] == "Carlos"
-
-    async def test_partial_update_does_not_affect_other_fields(
-        self, client, field_worker_headers
-    ):
-        """Fields not included in the request must remain unchanged."""
-        created = (await _upload(client, field_worker_headers)).json()
-        await client.patch(
-            f"{SUBJECTS_URL}/{created['id']}",
-            json={"name": "Carlos"},
-            headers=field_worker_headers,
-        )
-        response = await client.get(
-            f"{SUBJECTS_URL}/{created['id']}", headers=field_worker_headers
-        )
-        data = response.json()
-        assert data["last_name"] == created["last_name"]
-        assert data["dni"] == created["dni"]
-        assert data["birth_date"] == created["birth_date"]
-        assert data["is_rural"] == created["is_rural"]
-        assert data["is_indigenous"] == created["is_indigenous"]
-
-    async def test_unknown_id_returns_404(self, client, field_worker_headers):
-        """Patching a subject that does not exist returns 404."""
-        response = await client.patch(
-            f"{SUBJECTS_URL}/{uuid.uuid4()}",
-            json={"name": "Carlos"},
-            headers=field_worker_headers,
-        )
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-
-    async def test_duplicate_dni_returns_409(self, client, field_worker_headers):
-        """Setting a DNI that already belongs to another subject returns 409."""
-        await _upload(client, field_worker_headers, dni=11111111)
-        second = (await _upload(client, field_worker_headers, dni=22222222)).json()
-        response = await client.patch(
-            f"{SUBJECTS_URL}/{second['id']}",
-            json={"dni": 11111111},
-            headers=field_worker_headers,
-        )
-        assert response.status_code == status.HTTP_409_CONFLICT
-
-    async def test_empty_body_returns_400(self, client, field_worker_headers):
-        """An empty body with no fields to update returns 400."""
-        created = (await _upload(client, field_worker_headers)).json()
-        response = await client.patch(
-            f"{SUBJECTS_URL}/{created['id']}",
-            json={},
-            headers=field_worker_headers,
-        )
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-
-    async def test_update_birth_date_returns_200(self, client, field_worker_headers):
-        """Updating birth_date succeeds and the event payload is persisted correctly."""
-        created = (await _upload(client, field_worker_headers)).json()
-        new_date = "2011-06-15"
-        response = await client.patch(
-            f"{SUBJECTS_URL}/{created['id']}",
-            json={"birth_date": new_date},
-            headers=field_worker_headers,
-        )
-        assert response.status_code == status.HTTP_200_OK
-        assert response.json()["birth_date"] == new_date
