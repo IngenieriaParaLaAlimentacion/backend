@@ -24,7 +24,7 @@ jobs:
 
           if [ "$BASE_REF" = "main" ]; then
             if [ "$HEAD_REF" != "develop" ]; then
-              MSG="**Branch policy violation**: PRs to \`main\` are only allowed from \`develop\`. This PR is from \`${HEAD_REF}\`."
+              MSG="**Branch policy violation**: PRs to main are only allowed from \`develop\`. This PR is from ${HEAD_REF}."
               echo "::error::${MSG}"
               echo "error_message=${MSG}" >> "$GITHUB_OUTPUT"
               exit 1
