@@ -9,6 +9,12 @@ class UserEstablishmentStatus(str, Enum):
     REJECTED = "rejected"
 
 
+# TODO:check if we can reuse user status for establishments,
+# to have somthing like a StatusEnum
+class EstablishmentRequestStatus(StrEnum):
+    PENDING = "pending"
+
+
 class EstablishmentSortOrder(StrEnum):
     NEWEST = "newest"
     OLDEST = "oldest"
