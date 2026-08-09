@@ -1,4 +1,4 @@
-# ADR-0005: Establishment creation requests live in their own dedicated table
+# ADR-0006: Establishment creation requests live in their own dedicated table
 
 - **Status**: Accepted
 - **Date**: 2026-08-09
