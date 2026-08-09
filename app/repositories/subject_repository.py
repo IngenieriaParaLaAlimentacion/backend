@@ -152,10 +152,10 @@ class SubjectRepository:
     ) -> tuple[list[Subject], int]:
         """Return a paginated list of subjects and the total matching count.
 
-        ``search`` matches case-insensitively against name and last name (partial),
-        and exactly against DNI (only if the search term is fully numeric).
-        ``establishment_id`` matches a subject with at least one measurement there,
-        not necessarily their most recent one.
+        ``params.search`` matches case-insensitively against name and last name
+        (partial), and exactly against DNI (only if the search term is fully
+        numeric). ``params.establishment_id`` matches a subject with at least
+        one measurement there, not necessarily their most recent one.
         """
         base_query = select(Subject)
         count_query = select(func.count()).select_from(Subject)
