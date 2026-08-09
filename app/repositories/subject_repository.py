@@ -11,15 +11,17 @@ from app.models.measurement import Measurement
 from app.models.subject import Subject
 from app.utils.db import escape_like, execute_paginated
 
-# Maps each SubjectSortOrder value to its SQLAlchemy order clause.
+# Maps each SubjectSortOrder value to its SQLAlchemy order clause(s).
+# Each pairs the sort column with `id` as a tiebreaker, so subjects sharing a
+# value still page consistently instead of shuffling between requests.
 # KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
 _SORT_CLAUSES = {
-    SubjectSortOrder.CREATED_AT_DESC: desc(Subject.created_at),
-    SubjectSortOrder.CREATED_AT_ASC: asc(Subject.created_at),
-    SubjectSortOrder.NAME_ASC: asc(Subject.name),
-    SubjectSortOrder.NAME_DESC: desc(Subject.name),
-    SubjectSortOrder.BIRTH_DATE_ASC: asc(Subject.birth_date),
-    SubjectSortOrder.BIRTH_DATE_DESC: desc(Subject.birth_date),
+    SubjectSortOrder.CREATED_AT_DESC: (desc(Subject.created_at), desc(Subject.id)),
+    SubjectSortOrder.CREATED_AT_ASC: (asc(Subject.created_at), asc(Subject.id)),
+    SubjectSortOrder.NAME_ASC: (asc(Subject.name), asc(Subject.id)),
+    SubjectSortOrder.NAME_DESC: (desc(Subject.name), desc(Subject.id)),
+    SubjectSortOrder.BIRTH_DATE_ASC: (asc(Subject.birth_date), asc(Subject.id)),
+    SubjectSortOrder.BIRTH_DATE_DESC: (desc(Subject.birth_date), desc(Subject.id)),
 }
 
 
