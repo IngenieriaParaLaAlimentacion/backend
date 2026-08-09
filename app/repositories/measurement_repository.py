@@ -136,9 +136,7 @@ class MeasurementRepository:
     ) -> dict[UUID, Measurement]:
         """Return each subject's most recent measurement, keyed by subject id.
 
-        Subjects with no measurements are absent from the returned dict. Uses
-        ``DISTINCT ON`` to pick one row per subject in a single query instead
-        of one round trip per subject.
+        Subjects with no measurements are absent from the returned dict.
         """
         if not subject_ids:
             return {}
