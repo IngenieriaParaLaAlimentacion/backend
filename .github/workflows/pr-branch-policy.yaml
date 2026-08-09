@@ -45,7 +45,7 @@ jobs:
           fi
 
       - name: Comment on PR with failure reason
-        if: failure() && steps.validate.outputs.error_message != ''
+        if: failure() || steps.validate.outputs.error_message != ''
         uses: actions/github-script@v7
         with:
           script: |
