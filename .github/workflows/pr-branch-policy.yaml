@@ -1,0 +1,38 @@
+name: PR Branch Policy
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    branches:
+      - develop
+      - main
+
+jobs:
+  check-branch-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR source branch
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          echo "PR: '${HEAD_REF}' -> '${BASE_REF}'"
+
+          if [ "$BASE_REF" = "main" ]; then
+            if [ "$HEAD_REF" != "develop" ]; then
+              echo "::error::PRs to 'main' are only allowed from 'develop'. This PR is from '${HEAD_REF}'."
+              exit 1
+            fi
+            echo "OK: develop -> main"
+
+          elif [ "$BASE_REF" = "develop" ]; then
+            case "$HEAD_REF" in
+              feat/*|fix/*|refactor/*)
+                echo "OK: ${HEAD_REF} -> develop"
+                ;;
+              *)
+                echo "::error::PRs to 'develop' must come from a feat/*, fix/*, or refactor/* branch. This PR is from '${HEAD_REF}'."
+                exit 1
+                ;;
+            esac
+          fi
