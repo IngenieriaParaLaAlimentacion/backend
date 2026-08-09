@@ -78,7 +78,7 @@ async def create_establishment(
     "registered. All fields are optional: the field worker provides as much "
     "as they know, possibly nothing.",
     responses={
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Invalid data"},
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {"description": "Invalid data"},
         **AUTH_RESPONSES,
     },
 )
