@@ -30,12 +30,14 @@ class UserRepository:
     ) -> User:
         """Persist a new user. Password and establishments are handled separately.
 
+        The email is stored lowercased, matching how it is looked up.
+
         Raises:
             UserAlreadyExistsError: If the email is already taken. Guards against
                 races where two requests pass their pre-check concurrently.
         """
         user = User(
-            email=email,
+            email=email.strip().lower(),
             name=name,
             last_name=last_name,
             role=role,
@@ -61,15 +63,18 @@ class UserRepository:
     async def exists_by_email(self, email: str) -> bool:
         """Return whether any user already owns this email, ignoring case."""
         result = await self.db.execute(
-            select(User.id).where(func.lower(User.email) == email.lower()).limit(1)
+            select(User.id)
+            .where(func.lower(User.email) == email.strip().lower())
+            .limit(1)
         )
         return result.first() is not None
 
     async def get_by_email(self, email: str) -> User | None:
-        """Return a user by email, or None if it does not exist."""
+        """Return a user by email, ignoring case, or None if it does not exist.
+        """
         result = await self.db.execute(
             select(User)
-            .where(User.email == email)
+            .where(func.lower(User.email) == email.strip().lower())
             .options(selectinload(User.establishments))
         )
         return result.scalar_one_or_none()

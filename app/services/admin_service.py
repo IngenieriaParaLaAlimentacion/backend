@@ -126,7 +126,10 @@ class AdminService:
             EmailDeliveryError: If the invitation email could not be delivered.
         """
         if user.role not in BACKOFFICE_ROLES:
-            raise BadRequestError("Invalid user role")
+            raise BadRequestError(
+                "Invalid user role",
+                "Only backoffice users (admin, analyst) receive invitations.",
+            )
 
         created_token, plain_token = await self.auth_service.create_recovery_token(
             user.id
