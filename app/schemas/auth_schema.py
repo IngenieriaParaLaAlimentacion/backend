@@ -20,7 +20,11 @@ class RegisterFieldWorkerRequest(BaseModel):
     password: str
     name: ValidStr
     last_name: ValidStr
-    establishments: Annotated[list[UUID], Field(min_length=1)]
+    establishments: list[UUID] = Field(
+        default_factory=list,
+        description="Establishments the field worker requests access to. "
+        "Optional: account access does not depend on them.",
+    )
     locality: ValidStr | None = None
     description: DescriptionStr | None = None
     contact_phone: PhoneStr | None = None

@@ -281,6 +281,21 @@ class TestRegisterFieldWorker:
         assert uow.user_establishment_repo.preset_relation.call_count == 3
 
     @pytest.mark.asyncio
+    async def test_registration_without_establishments_creates_no_relation(
+        self, make_uow, valid_register_request_obligatory_fields
+    ):
+        """Account access does not depend on establishments."""
+        valid_register_request_obligatory_fields.establishments = []
+        uow = make_uow(establishments=[])
+
+        user = await AuthService(uow).register_field_worker(
+            valid_register_request_obligatory_fields
+        )
+
+        uow.user_establishment_repo.preset_relation.assert_not_called()
+        assert user.establishments == []
+
+    @pytest.mark.asyncio
     async def test_raises_if_email_already_exists(
         self, make_uow, make_user, valid_register_request_obligatory_fields
     ):
