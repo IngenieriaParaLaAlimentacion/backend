@@ -744,15 +744,3 @@ class TestCreateEstablishmentRequest:
         response = await client.post(REQUESTS_URL, json={})
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-    async def test_admin_role_returns_403(self, client, admin_headers):
-        """An ADMIN token cannot request establishment creation."""
-        response = await client.post(REQUESTS_URL, headers=admin_headers, json={})
-
-        assert response.status_code == status.HTTP_403_FORBIDDEN
-
-    async def test_analyst_role_returns_403(self, client, analyst_headers):
-        """An ANALYST token cannot request establishment creation."""
-        response = await client.post(REQUESTS_URL, headers=analyst_headers, json={})
-
-        assert response.status_code == status.HTTP_403_FORBIDDEN

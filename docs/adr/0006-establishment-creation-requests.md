@@ -20,7 +20,7 @@ The request payload differs structurally from an `Establishment` row in two ways
   `place_id`, `city`, and `province` (all `nullable=False`).
 - **It has no georeferencing data.** `place_id`/`latitude`/`longitude` come from
   the Google Places API at registration time; a field worker describing a missing
-  comedor has none of it. Fabricating values just to satisfy
+  establishment has none of it. Fabricating values just to satisfy
   `Establishment`'s NOT NULL columns — either empty strings or placeholders —
   would pollute the georeferenced catalog and its future mapping features.
 
@@ -42,7 +42,7 @@ compatible with the target table.
 
 - The public `establishments` catalog (including the field-worker
   `available=true` listing) never shows rows that are not real, georeferenced
-  comedores — a request does not masquerade as an establishment.
+  establishments — a request does not masquerade as an establishment.
 - The admin review flow (`repositories`/`services` layer of the `establishments`
   module) can later read pending requests, complete their nullable fields, and
   create the `Establishment` without touching schema again.
