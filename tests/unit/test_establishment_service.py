@@ -6,6 +6,8 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.domain.establishment import (
+    EstablishmentCreationRequestListingParams,
+    EstablishmentCreationRequestWithRequesterDomain,
     EstablishmentDomain,
     EstablishmentListingParams,
     EstablishmentRequestDomain,
@@ -40,6 +42,18 @@ def _make_request(**overrides) -> EstablishmentRequest:
     return EstablishmentRequest(**defaults)
 
 
+def _make_requester(**overrides) -> MagicMock:
+    """Build a mock User ORM row for an EstablishmentRequest's requester."""
+    user = MagicMock()
+    user.id = uuid.uuid4()
+    user.name = "Maria"
+    user.last_name = "Field Worker"
+    user.email = "maria@test.com"
+    for key, value in overrides.items():
+        setattr(user, key, value)
+    return user
+
+
 def _make_request_orm(user_id: uuid.UUID, **overrides) -> MagicMock:
     """Build a mock EstablishmentRequest ORM row with the given attributes."""
     request = MagicMock()
@@ -51,6 +65,7 @@ def _make_request_orm(user_id: uuid.UUID, **overrides) -> MagicMock:
     request.province = None
     request.status = EstablishmentRequestStatus.PENDING
     request.created_at = datetime.now(timezone.utc)
+    request.user = _make_requester(id=user_id)
     for key, value in overrides.items():
         setattr(request, key, value)
     return request
@@ -486,3 +501,105 @@ class TestCreateEstablishmentRequest:
         assert result.status == "pending"
         assert result.name == "Comedor Esperanza"
         assert result.created_at is not None
+
+
+class TestListEstablishmentRequestsPaginated:
+    pytestmark = pytest.mark.asyncio
+
+    @pytest.fixture
+    def make_uow(self):
+        def _make(requests, total):
+            uow = AsyncMock()
+            uow.establishment_request_repo.get_paginated = AsyncMock(
+                return_value=(requests, total)
+            )
+            return uow
+
+        return _make
+
+    async def test_returns_items(self, make_uow):
+        requests = [_make_request_orm(uuid.uuid4()), _make_request_orm(uuid.uuid4())]
+        service = EstablishmentService(uow=make_uow(requests, total=2))
+
+        result = await service.list_establishment_requests_paginated(
+            page=1,
+            page_size=20,
+            params=EstablishmentCreationRequestListingParams(),
+        )
+
+        assert isinstance(result, PaginatedResult)
+        assert len(result.items) == 2
+        assert result.total == 2
+        assert result.page == 1
+        assert result.page_size == 20
+
+    async def test_calculates_total_pages(self, make_uow):
+        requests = [_make_request_orm(uuid.uuid4()) for _ in range(5)]
+        service = EstablishmentService(uow=make_uow(requests, total=23))
+
+        result = await service.list_establishment_requests_paginated(
+            page=1,
+            page_size=5,
+            params=EstablishmentCreationRequestListingParams(),
+        )
+
+        assert result.total_pages == ceil(23 / 5)
+
+    async def test_empty(self, make_uow):
+        service = EstablishmentService(uow=make_uow([], total=0))
+
+        result = await service.list_establishment_requests_paginated(
+            page=1,
+            page_size=20,
+            params=EstablishmentCreationRequestListingParams(),
+        )
+
+        assert result.items == []
+        assert result.total == 0
+        assert result.total_pages == 0
+
+    async def test_passes_correct_offset_and_forwards_params(self, make_uow):
+        """The service computes the offset from page/page_size and forwards
+        the params object to the repo unchanged."""
+        uow = make_uow([], total=0)
+        service = EstablishmentService(uow=uow)
+        params = EstablishmentCreationRequestListingParams(search="Comedor")
+
+        await service.list_establishment_requests_paginated(
+            page=3, page_size=10, params=params
+        )
+
+        uow.establishment_request_repo.get_paginated.assert_called_once_with(
+            limit=10, offset=20, params=params
+        )
+
+    async def test_items_are_domain_instances_with_requester_identity(self, make_uow):
+        """Each item is an EstablishmentCreationRequestWithRequesterDomain
+        with the reported fields and the requester's identity flattened
+        from the eager-loaded ``user`` relationship."""
+        user_id = uuid.uuid4()
+        requester = _make_requester(
+            id=user_id, name="Maria", last_name="Perez", email="maria@test.com"
+        )
+        request = _make_request_orm(
+            user_id,
+            name="Comedor Esperanza",
+            formatted_address="Av. Siempre Viva 742",
+            user=requester,
+        )
+        service = EstablishmentService(uow=make_uow([request], total=1))
+
+        result = await service.list_establishment_requests_paginated(
+            page=1,
+            page_size=20,
+            params=EstablishmentCreationRequestListingParams(),
+        )
+
+        [item] = result.items
+        assert isinstance(item, EstablishmentCreationRequestWithRequesterDomain)
+        assert item.id == request.id
+        assert item.name == "Comedor Esperanza"
+        assert item.formatted_address == "Av. Siempre Viva 742"
+        assert item.requester_name == "Maria"
+        assert item.requester_last_name == "Perez"
+        assert item.requester_email == "maria@test.com"
