@@ -1,10 +1,16 @@
 import uuid
+from datetime import datetime, timezone
 from math import ceil
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.domain.establishment import EstablishmentDomain, EstablishmentListingParams
+from app.domain.establishment import (
+    EstablishmentDomain,
+    EstablishmentListingParams,
+    EstablishmentRequestDomain,
+    EstablishmentRequestStatus,
+)
 from app.domain.pagination import PaginatedResult
 from app.exceptions.domain_exceptions import (
     EstablishmentAlreadyExistsError,
@@ -12,6 +18,7 @@ from app.exceptions.domain_exceptions import (
 )
 from app.models import Establishment
 from app.schemas.establishment_schema import (
+    EstablishmentCreationRequestCreate,
     EstablishmentRequest,
     EstablishmentResponse,
     EstablishmentUpdateRequest,
@@ -31,6 +38,22 @@ def _make_request(**overrides) -> EstablishmentRequest:
     }
     defaults.update(overrides)
     return EstablishmentRequest(**defaults)
+
+
+def _make_request_orm(user_id: uuid.UUID, **overrides) -> MagicMock:
+    """Build a mock EstablishmentRequest ORM row with the given attributes."""
+    request = MagicMock()
+    request.id = uuid.uuid4()
+    request.user_id = user_id
+    request.name = None
+    request.formatted_address = None
+    request.city = None
+    request.province = None
+    request.status = EstablishmentRequestStatus.PENDING
+    request.created_at = datetime.now(timezone.utc)
+    for key, value in overrides.items():
+        setattr(request, key, value)
+    return request
 
 
 @pytest.fixture
@@ -361,3 +384,105 @@ class TestUpdateEstablishment:
         )
 
         uow.establishment_repo.update.assert_called_once_with(existing)
+
+
+class TestCreateEstablishmentRequest:
+    pytestmark = pytest.mark.asyncio
+
+    @pytest.fixture
+    def make_uow(self):
+        def _make(created):
+            uow = AsyncMock()
+            uow.establishment_request_repo.create = AsyncMock(return_value=created)
+            uow.commit = AsyncMock()
+            return uow
+
+        return _make
+
+    async def test_delegates_to_repo_with_pending_status_and_user_id(
+        self, make_uow, make_establishment
+    ):
+        """The ORM row carries the caller's user_id and PENDING status."""
+        user_id = uuid.uuid4()
+        created = _make_request_orm(user_id)
+        uow = make_uow(created)
+        service = EstablishmentService(uow=uow)
+
+        await service.create_establishment_request(
+            user_id,
+            EstablishmentCreationRequestCreate(
+                name="Comedor Esperanza", formatted_address="Av. Siempre Viva 742"
+            ),
+        )
+
+        uow.establishment_request_repo.create.assert_called_once()
+        call_arg = uow.establishment_request_repo.create.call_args[0][0]
+        assert call_arg.user_id == user_id
+        assert call_arg.status == EstablishmentRequestStatus.PENDING
+        assert call_arg.name == "Comedor Esperanza"
+        assert call_arg.formatted_address == "Av. Siempre Viva 742"
+
+    async def test_name_and_address_are_not_optional(self, make_uow):
+        """An empty payload still persists a request with None fields."""
+        user_id = uuid.uuid4()
+        created = _make_request_orm(user_id)
+        uow = make_uow(created)
+        service = EstablishmentService(uow=uow)
+
+        await service.create_establishment_request(
+            user_id,
+            EstablishmentCreationRequestCreate(
+                name="Comedor Esperanza", formatted_address="Av. Siempre Viva 742"
+            ),
+        )
+
+        call_arg = uow.establishment_request_repo.create.call_args[0][0]
+        assert call_arg.name is not None
+        assert call_arg.formatted_address is not None
+        assert call_arg.city is None
+        assert call_arg.province is None
+
+    async def test_commits(self, make_uow):
+        """The created request is committed."""
+        user_id = uuid.uuid4()
+        uow = make_uow(_make_request_orm(user_id))
+        service = EstablishmentService(uow=uow)
+
+        await service.create_establishment_request(
+            user_id,
+            EstablishmentCreationRequestCreate(
+                name="Comedor", formatted_address="Av. Pez Sherman 242"
+            ),
+        )
+
+        uow.commit.assert_called_once()
+
+    async def test_returns_domain(self, make_uow):
+        """The service returns an EstablishmentRequestDomain built from the row."""
+        user_id = uuid.uuid4()
+        created = _make_request_orm(
+            user_id,
+            name="Comedor Esperanza",
+            formatted_address="Av. Siempre Viva 742",
+            city="Cordoba",
+            province="Cordoba",
+        )
+        uow = make_uow(created)
+        service = EstablishmentService(uow=uow)
+
+        result = await service.create_establishment_request(
+            user_id,
+            EstablishmentCreationRequestCreate(
+                name="Comedor Esperanza",
+                formatted_address="Av. Siempre Viva 742",
+                city="Cordoba",
+                province="Cordoba",
+            ),
+        )
+
+        assert isinstance(result, EstablishmentRequestDomain)
+        assert result.id == created.id
+        assert result.user_id == user_id
+        assert result.status == "pending"
+        assert result.name == "Comedor Esperanza"
+        assert result.created_at is not None

@@ -1,6 +1,7 @@
 from .base import Base
 from .email_verification_token import EmailVerificationToken
 from .establishment import Establishment
+from .establishment_request import EstablishmentRequest
 from .measurement import Measurement
 from .measurement_alert import MeasurementAlert
 from .password_recovery_token import PasswordRecoveryToken
@@ -24,6 +25,7 @@ __all__ = [
     "UserRole",
     "UserStatus",
     "Establishment",
+    "EstablishmentRequest",
     "UserEstablishment",
     "Subject",
     "Sex",

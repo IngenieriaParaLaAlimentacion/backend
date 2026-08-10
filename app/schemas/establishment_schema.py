@@ -1,10 +1,33 @@
 import uuid
+from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, model_validator
 
 from app.schemas.types import Latitude, Longitude, ValidStr
 
 # -- Request --
+
+
+class EstablishmentCreationRequestCreate(BaseModel):
+    """Payload for a field worker requesting the creation of a
+    missing establishment. Every field is optional: the field worker
+    provides as much as they know, possibly nothing."""
+
+    name: ValidStr
+    formatted_address: ValidStr
+    city: ValidStr | None = None
+    province: ValidStr | None = None
+
+
+class EstablishmentCreationRequestResponse(EstablishmentCreationRequestCreate):
+    """An establishment creation request as returned by the API."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    user_id: uuid.UUID
+    status: str
+    created_at: datetime
 
 
 class EstablishmentRequest(BaseModel):

@@ -1,13 +1,22 @@
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.domain.establishment import EstablishmentDomain, EstablishmentListingParams
+from app.domain.establishment import (
+    EstablishmentDomain,
+    EstablishmentListingParams,
+    EstablishmentRequestDomain,
+    EstablishmentRequestStatus,
+)
 from app.domain.pagination import PaginatedResult
 from app.exceptions.domain_exceptions import (
     EstablishmentAlreadyExistsError,
 )
 from app.models import Establishment
+from app.models.establishment_request import (
+    EstablishmentRequest as EstablishmentRequestModel,
+)
 from app.schemas.establishment_schema import (
+    EstablishmentCreationRequestCreate,
     EstablishmentRequest,
     EstablishmentUpdateRequest,
 )
@@ -40,6 +49,25 @@ class EstablishmentService:
         )
         await self.uow.commit()
         return EstablishmentDomain.from_db(establishment)
+
+    async def create_establishment_request(
+        self, user_id: UUID, data: EstablishmentCreationRequestCreate
+    ) -> EstablishmentRequestDomain:
+        """Register a notification requesting the creation of a missing
+        establishment, attributed to the authenticated field worker.
+
+        The notification is persisted with ``pending`` status and the
+        creation timestamp.
+        """
+        request = await self.uow.establishment_request_repo.create(
+            EstablishmentRequestModel(
+                user_id=user_id,
+                status=EstablishmentRequestStatus.PENDING,
+                **data.model_dump(),
+            )
+        )
+        await self.uow.commit()
+        return EstablishmentRequestDomain.from_db(request)
 
     async def update_establishment(
         self, establishment_id: UUID, data: EstablishmentUpdateRequest

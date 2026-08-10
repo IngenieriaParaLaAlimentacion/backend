@@ -8,6 +8,9 @@ from app.repositories.establishment_dashboard_repository import (
     EstablishmentDashboardRepository,
 )
 from app.repositories.establishment_repository import EstablishmentRepository
+from app.repositories.establishment_request_repository import (
+    EstablishmentRequestRepository,
+)
 from app.repositories.measurement_alert_repository import MeasurementAlertRepository
 from app.repositories.measurement_repository import MeasurementRepository
 from app.repositories.password_recovery_repository import (
@@ -42,6 +45,7 @@ class UnitOfWork(IUnitOfWork):
         self.password_repo = UserPasswordRepository(self.session)
         self.token_repo = TokenRepository(self.session)
         self.establishment_repo = EstablishmentRepository(self.session)
+        self.establishment_request_repo = EstablishmentRequestRepository(self.session)
         self.user_establishment_repo = UserEstablishmentRepository(self.session)
         self.subject_repo = SubjectRepository(self.session)
         self.subject_event_repo = SubjectEventRepository(self.session)

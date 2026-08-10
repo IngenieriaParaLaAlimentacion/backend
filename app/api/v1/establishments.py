@@ -24,6 +24,8 @@ from app.schemas.establishment_dashboard_schema import (
     EstablishmentSubjectListItem,
 )
 from app.schemas.establishment_schema import (
+    EstablishmentCreationRequestCreate,
+    EstablishmentCreationRequestResponse,
     EstablishmentRequest,
     EstablishmentResponse,
     EstablishmentUpdateRequest,
@@ -34,7 +36,10 @@ from app.services.establishment_service import EstablishmentService
 
 router = APIRouter(prefix="/establishments")
 
-_FIELD_WORKER_ROLES = {UserRole.FIELD_WORKER, UserRole.SUPERADMIN}
+_FIELD_WORKER_ROLES = {
+    UserRole.FIELD_WORKER,
+    UserRole.SUPERADMIN,
+}  # TODO: review, not sure if its necessary
 
 require_admin_or_analyst = require_some(
     UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN
@@ -61,6 +66,30 @@ async def create_establishment(
     """Register a new establishment."""
     establishment = await service.create_establishment(data)
     return EstablishmentResponse.model_validate(establishment)
+
+
+@router.post(
+    "/requests",
+    response_model=EstablishmentCreationRequestResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Request creation of a missing establishment",
+    description="Notifies an admin that the establishment the field worker "
+    "needs access to is missing from the catalog, so it can be reviewed and "
+    "registered. All fields are optional: the field worker provides as much "
+    "as they know, possibly nothing.",
+    responses={
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {"description": "Invalid data"},
+        **AUTH_RESPONSES,
+    },
+)
+async def create_establishment_request(
+    data: EstablishmentCreationRequestCreate,
+    actor: UserActor = Depends(require_any),
+    service: EstablishmentService = Depends(get_establishment_service),
+) -> EstablishmentCreationRequestResponse:
+    """Register a notification requesting the creation of a missing establishment."""
+    request = await service.create_establishment_request(actor.user_id, data)
+    return EstablishmentCreationRequestResponse.model_validate(request)
 
 
 @router.patch(

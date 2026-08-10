@@ -653,3 +653,81 @@ class TestUpdateEstablishment:
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+REQUESTS_URL = f"{ESTABLISHMENT_URL}/requests"
+
+
+class TestCreateEstablishmentRequest:
+    async def test_creates_request_with_full_body(self, client, make_user_with_role):
+        """Provided fields are echoed back with status pending."""
+        headers, user_id = await make_user_with_role(UserRole.FIELD_WORKER)
+        response = await client.post(
+            REQUESTS_URL,
+            headers=headers,
+            json={
+                "name": "Comedor Esperanza",
+                "formatted_address": "Av. Siempre Viva 742",
+                "city": "Cordoba",
+                "province": "Cordoba",
+            },
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        data = response.json()
+        assert data["user_id"] == str(user_id)
+        assert data["status"] == "pending"
+        assert data["name"] == "Comedor Esperanza"
+        assert data["formatted_address"] == "Av. Siempre Viva 742"
+        assert data["city"] == "Cordoba"
+        assert data["province"] == "Cordoba"
+
+    async def test_request_is_persisted(self, client, make_user_with_role):
+        """The notification row is stored with pending status and the creator."""
+        headers, user_id = await make_user_with_role(UserRole.FIELD_WORKER)
+        await client.post(
+            REQUESTS_URL,
+            headers=headers,
+            json={
+                "name": "Comedor Esperanza",
+                "formatted_address": "Av. Siempre Viva 742",
+            },
+        )
+
+        from sqlalchemy import select
+
+        from app.db.database import AsyncSessionLocal
+        from app.models.establishment_request import EstablishmentRequest
+
+        async with AsyncSessionLocal() as session:
+            result = await session.execute(select(EstablishmentRequest))
+            row = result.scalar_one()
+
+        assert row.name == "Comedor Esperanza"
+        assert row.user_id == user_id
+        assert row.status == "pending"
+        assert row.created_at is not None
+
+    async def test_field_over_100_chars_returns_422(self, client, make_user_with_role):
+        """Fields longer than 100 characters are rejected, like establishments."""
+        headers, _ = await make_user_with_role(UserRole.FIELD_WORKER)
+        response = await client.post(
+            REQUESTS_URL, headers=headers, json={"name": "x" * 101}
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_blank_field_returns_422(self, client, make_user_with_role):
+        """Whitespace-only fields are rejected with 422."""
+        headers, _ = await make_user_with_role(UserRole.FIELD_WORKER)
+        response = await client.post(
+            REQUESTS_URL, headers=headers, json={"name": "   "}
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_missing_token_returns_401(self, client):
+        """Requests without a token are rejected with 401."""
+        response = await client.post(REQUESTS_URL, json={})
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
