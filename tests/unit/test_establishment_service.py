@@ -422,7 +422,7 @@ class TestCreateEstablishmentRequest:
         assert call_arg.name == "Comedor Esperanza"
         assert call_arg.formatted_address == "Av. Siempre Viva 742"
 
-    async def test_all_fields_optional(self, make_uow):
+    async def test_name_and_address_are_not_optional(self, make_uow):
         """An empty payload still persists a request with None fields."""
         user_id = uuid.uuid4()
         created = _make_request_orm(user_id)
@@ -430,12 +430,15 @@ class TestCreateEstablishmentRequest:
         service = EstablishmentService(uow=uow)
 
         await service.create_establishment_request(
-            user_id, EstablishmentCreationRequestCreate()
+            user_id,
+            EstablishmentCreationRequestCreate(
+                name="Comedor Esperanza", formatted_address="Av. Siempre Viva 742"
+            ),
         )
 
         call_arg = uow.establishment_request_repo.create.call_args[0][0]
-        assert call_arg.name is None
-        assert call_arg.formatted_address is None
+        assert call_arg.name is not None
+        assert call_arg.formatted_address is not None
         assert call_arg.city is None
         assert call_arg.province is None
 
@@ -446,7 +449,10 @@ class TestCreateEstablishmentRequest:
         service = EstablishmentService(uow=uow)
 
         await service.create_establishment_request(
-            user_id, EstablishmentCreationRequestCreate(name="Comedor")
+            user_id,
+            EstablishmentCreationRequestCreate(
+                name="Comedor", formatted_address="Av. Pez Sherman 242"
+            ),
         )
 
         uow.commit.assert_called_once()
