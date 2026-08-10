@@ -109,6 +109,11 @@ class SubjectDetailResponse(SubjectResponse):
     latest_measurement: SubjectLatestMeasurementResponse | None
 
 
+class SubjectListingResponse(SubjectSummaryResponse):
+    birth_date: date
+    latest_measurement: SubjectLatestMeasurementResponse | None
+
+
 class EventPayloadResponse(BaseModel):
     before: dict[str, Any] | None = None
     after: dict[str, Any] | None = None

@@ -3,7 +3,7 @@ from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.pagination import PaginatedResult
-from app.domain.subject import SubjectBase, SubjectDomain
+from app.domain.subject import SubjectDomain, SubjectListingParams
 from app.domain.subject_detail import SubjectDetailDomain
 from app.domain.subject_event import EventPayload, SubjectEventType
 from app.exceptions.domain_exceptions import (
@@ -104,21 +104,23 @@ class SubjectService:
         self,
         page: int,
         page_size: int,
-        search: str | None,
-    ) -> PaginatedResult[SubjectBase]:
-        """Return a paginated list of subjects with metadata.
-
-        ``search`` matches case-insensitively against name, last name or DNI.
-        Whitespace-only values are treated as no filter.
-        """
+        params: SubjectListingParams,
+    ) -> PaginatedResult[SubjectDetailDomain]:
+        """Return a paginated list of subjects, each enriched with its
+        latest measurement."""
         page = max(1, page)
         offset = (page - 1) * page_size
-        search_term = (search or "").strip() or None
         subjects, total = await self.uow.subject_repo.get_subject_listing(
-            limit=page_size, offset=offset, search=search_term
+            limit=page_size, offset=offset, params=params
+        )
+        latest_by_subject = await self.uow.measurement_repo.get_latest_for_subjects(
+            [subject.id for subject in subjects]
         )
         return PaginatedResult.build(
-            items=[SubjectBase.from_db(subject) for subject in subjects],
+            items=[
+                SubjectDetailDomain.build(subject, latest_by_subject.get(subject.id))
+                for subject in subjects
+            ],
             total=total,
             page=page,
             page_size=page_size,

@@ -21,11 +21,12 @@ from app.domain.subject import SubjectDomain
 class SubjectDetailDomain(SubjectDomain):
     """Full subject data plus the clinical reading of their latest measurement.
 
-    ``latest_measurement`` is the subject's most recent reading at *any*
-    establishment, unlike the establishment dashboard where it is scoped to a
-    single one. Both extra fields are None for a subject that has never been
-    measured. That is deliberately distinct from NORMAL, which means "measured
-    and healthy".
+    ``latest_measurement`` is the subject's most recent reading across every
+    establishment they've been measured at, not the latest at any one in
+    particular.
+    Both extra fields are None for a subject that has never been
+    measured -- deliberately distinct from NORMAL, which means "measured and
+    healthy".
     """
 
     nutritional_status: NutritionalStatus | None

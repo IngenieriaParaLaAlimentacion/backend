@@ -1,14 +1,28 @@
 import datetime
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import asc, desc, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.subject import Sex
+from app.domain.subject import Sex, SubjectListingParams, SubjectSortOrder
 from app.exceptions.domain_exceptions import UniqueConstraintError
+from app.models.measurement import Measurement
 from app.models.subject import Subject
 from app.utils.db import escape_like, execute_paginated
+
+# Maps each SubjectSortOrder value to its SQLAlchemy order clause(s).
+# Each pairs the sort column with `id` as a tiebreaker, so subjects sharing a
+# value still page consistently instead of shuffling between requests.
+# KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
+_SORT_CLAUSES = {
+    SubjectSortOrder.CREATED_AT_DESC: (desc(Subject.created_at), desc(Subject.id)),
+    SubjectSortOrder.CREATED_AT_ASC: (asc(Subject.created_at), asc(Subject.id)),
+    SubjectSortOrder.NAME_ASC: (asc(Subject.name), asc(Subject.id)),
+    SubjectSortOrder.NAME_DESC: (desc(Subject.name), desc(Subject.id)),
+    SubjectSortOrder.BIRTH_DATE_ASC: (asc(Subject.birth_date), asc(Subject.id)),
+    SubjectSortOrder.BIRTH_DATE_DESC: (desc(Subject.birth_date), desc(Subject.id)),
+}
 
 
 def subject_search_condition(search: str | None):
@@ -34,6 +48,35 @@ class SubjectRepository:
 
     def __init__(self, db: AsyncSession):
         self.db = db
+
+    @staticmethod
+    def _listing_conditions(params: SubjectListingParams) -> list:
+        """Build the filter conditions for a subject listing."""
+        conditions = []
+
+        search_condition = subject_search_condition(params.search)
+        if search_condition is not None:
+            conditions.append(search_condition)
+        if params.birth_date_from is not None:
+            conditions.append(Subject.birth_date >= params.birth_date_from)
+        if params.birth_date_to is not None:
+            conditions.append(Subject.birth_date <= params.birth_date_to)
+        if params.establishment_id is not None:
+            conditions.append(
+                Subject.id.in_(
+                    select(Measurement.subject_id).where(
+                        Measurement.establishment_id == params.establishment_id
+                    )
+                )
+            )
+        if params.is_rural is not None:
+            conditions.append(Subject.is_rural == params.is_rural)
+        if params.is_indigenous is not None:
+            conditions.append(Subject.is_indigenous == params.is_indigenous)
+        if params.sex is not None:
+            conditions.append(Subject.sex == params.sex)
+
+        return conditions
 
     async def create(
         self,
@@ -105,21 +148,23 @@ class SubjectRepository:
         self,
         limit: int,
         offset: int,
-        search: str | None = None,
+        params: SubjectListingParams,
     ) -> tuple[list[Subject], int]:
         """Return a paginated list of subjects and the total matching count.
 
-        ``search`` matches case-insensitively against name and last name (partial),
-        and exactly against DNI (only if the search term is fully numeric).
+        ``params.search`` matches case-insensitively against name and last name
+        (partial), and exactly against DNI (only if the search term is fully
+        numeric). ``params.establishment_id`` matches a subject with at least
+        one measurement there, not necessarily their most recent one.
         """
         base_query = select(Subject)
         count_query = select(func.count()).select_from(Subject)
 
-        condition = subject_search_condition(search)
-        if condition is not None:
+        for condition in self._listing_conditions(params):
             base_query = base_query.where(condition)
             count_query = count_query.where(condition)
 
+        order_by = _SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
-            self.db, base_query, count_query, Subject.created_at.desc(), limit, offset
+            self.db, base_query, count_query, order_by, limit, offset
         )

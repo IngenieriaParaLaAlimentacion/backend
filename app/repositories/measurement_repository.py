@@ -131,6 +131,28 @@ class MeasurementRepository:
         )
         return result.scalar_one_or_none()
 
+    async def get_latest_for_subjects(
+        self, subject_ids: list[UUID]
+    ) -> dict[UUID, Measurement]:
+        """Return each subject's most recent measurement, keyed by subject id.
+
+        Subjects with no measurements are absent from the returned dict.
+        """
+        if not subject_ids:
+            return {}
+        result = await self.db.execute(
+            select(Measurement)
+            .where(Measurement.subject_id.in_(subject_ids))
+            .options(selectinload(Measurement.establishment))
+            .order_by(
+                Measurement.subject_id,
+                desc(Measurement.measured_at),
+                desc(Measurement.id),
+            )
+            .distinct(Measurement.subject_id)
+        )
+        return {m.subject_id: m for m in result.scalars().all()}
+
     async def get_subject_evolution(
         self,
         subject_id: UUID,

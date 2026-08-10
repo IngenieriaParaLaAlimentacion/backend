@@ -18,8 +18,13 @@ async def execute_paginated(
     limit: int,
     offset: int,
 ) -> tuple[list, int]:
-    """Execute a paginated query and return (items, total)."""
-    paginated = base_query.order_by(order_by).limit(limit).offset(offset)
+    """Execute a paginated query and return (items, total).
+
+    ``order_by`` accepts a single sort criterion or several, e.g. a main
+    criterion plus a tiebreaker for values it doesn't sort uniquely.
+    """
+    order_by_clauses = order_by if isinstance(order_by, (list, tuple)) else (order_by,)
+    paginated = base_query.order_by(*order_by_clauses).limit(limit).offset(offset)
     total = (await db.execute(count_query)).scalar_one()
     items = (await db.execute(paginated)).scalars().all()
     return items, total

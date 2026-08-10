@@ -6,64 +6,19 @@ import pytest_asyncio
 from fastapi import status
 from jose import jwt
 
-from app.core.security import create_access_token
 from app.domain.user import UserRole
 from tests.integration.conftest import make_token_for_role
+from tests.integration.subjects.conftest import (
+    SUBJECTS_URL,
+    _make_establishment,
+    _make_measurement,
+    _make_subject,
+    _subject_payload,
+    _upload,
+    _upload_with_id,
+)
 
 pytestmark = pytest.mark.asyncio
-
-SUBJECTS_URL = "/api/v1/subjects"
-
-
-@pytest_asyncio.fixture
-async def field_worker_user_id(app):
-    from app.db.database import AsyncSessionLocal
-    from app.models.user import User, UserStatus
-    from app.models.user import UserRole as ORMUserRole
-
-    user_id = uuid.uuid4()
-    async with AsyncSessionLocal() as session:
-        session.add(
-            User(
-                id=user_id,
-                name="Test",
-                last_name="Field Worker",
-                email=f"{user_id}@test.com",
-                role=ORMUserRole.FIELD_WORKER,
-                status=UserStatus.ACTIVE,
-            )
-        )
-        await session.commit()
-    return user_id
-
-
-@pytest_asyncio.fixture
-async def field_worker_headers(field_worker_user_id):
-    token = create_access_token(field_worker_user_id, role=UserRole.FIELD_WORKER)
-    return {"Authorization": f"Bearer {token}"}
-
-
-def _body(**overrides):
-    return {
-        "dni": 12345678,
-        "sex": "male",
-        "name": "Juan",
-        "last_name": "Perez",
-        "birth_date": "2010-01-01",
-        "is_rural": False,
-        "is_indigenous": False,
-        **overrides,
-    }
-
-
-async def _upload(client, headers=None, **overrides):
-    return await client.post(
-        SUBJECTS_URL, json=_body(**overrides), headers=headers or {}
-    )
-
-
-async def _upload_with_id(client, headers, subject_id, **overrides):
-    return await _upload(client, headers, id=str(subject_id), **overrides)
 
 
 class TestUploadSubject:
@@ -207,7 +162,7 @@ class TestUploadSubject:
         self, client, field_worker_headers, field
     ):
         """Omitting any single required field returns 422."""
-        body = _body()
+        body = _subject_payload()
         del body[field]
         response = await client.post(
             SUBJECTS_URL, json=body, headers=field_worker_headers
@@ -254,7 +209,8 @@ class TestGetSubject:
 
 
 class TestGetSubjectLatestMeasurement:
-    """The detail view carries the subject's latest reading across all comedores."""
+    """The detail view carries the subject's latest reading across all
+    establishments."""
 
     @pytest_asyncio.fixture
     async def measured_subject(self, app, field_worker_user_id):
@@ -266,41 +222,27 @@ class TestGetSubjectLatestMeasurement:
         pins down that the subject detail reports the global latest instead.
         """
         from app.db.database import AsyncSessionLocal
-        from app.domain.subject import Sex
-        from app.models.establishment import Establishment
-        from app.models.measurement import Measurement
         from app.models.measurement_alert import MeasurementAlert
-        from app.models.subject import Subject
         from app.utils.anthropometry import evaluate_alerts
 
         async with AsyncSessionLocal() as session:
-            old_est = Establishment(
-                name="Comedor Viejo",
-                formatted_address="Calle 1",
+            old_est = _make_establishment(
+                "Comedor Viejo",
+                "Calle 1",
                 latitude=-34.9,
                 longitude=-57.9,
-                place_id=f"place-{uuid.uuid4().hex[:8]}",
                 city="La Plata",
                 province="Buenos Aires",
             )
-            new_est = Establishment(
-                name="Comedor Nuevo",
-                formatted_address="Calle 2",
+            new_est = _make_establishment(
+                "Comedor Nuevo",
+                "Calle 2",
                 latitude=-31.4,
                 longitude=-64.2,
-                place_id=f"place-{uuid.uuid4().hex[:8]}",
                 city="Cordoba",
                 province="Cordoba",
             )
-            subject = Subject(
-                dni=71234567,
-                sex=Sex.MALE,
-                name="Nico",
-                last_name="Medido",
-                birth_date=date(2018, 1, 1),
-                is_rural=False,
-                is_indigenous=False,
-            )
+            subject = _make_subject(71234567, "Nico", "Medido", date(2018, 1, 1))
             session.add_all([old_est, new_est, subject])
             await session.flush()
 
@@ -309,18 +251,16 @@ class TestGetSubjectLatestMeasurement:
                 (10.0, 120.0, old_est, datetime(2024, 1, 10, tzinfo=timezone.utc)),
                 (20.0, 118.0, new_est, datetime(2024, 6, 10, tzinfo=timezone.utc)),
             ]:
-                bmi = weight / (height / 100) ** 2
-                measurement = Measurement(
-                    subject_id=subject.id,
-                    responsible_id=field_worker_user_id,
-                    establishment_id=est.id,
+                measurement = _make_measurement(
+                    subject.id,
+                    field_worker_user_id,
+                    est.id,
                     weight_kg=weight,
                     height_cm=height,
-                    bmi=bmi,
                     measured_at=when,
                 )
                 session.add(measurement)
-                created.append((measurement, bmi, when))
+                created.append((measurement, measurement.bmi, when))
 
             await session.flush()
             for measurement, bmi, when in created:
@@ -354,7 +294,7 @@ class TestGetSubjectLatestMeasurement:
         assert body["latest_measurement"]["weight_kg"] == 20.0
 
     async def test_latest_wins_across_establishments(self, body):
-        # The superseded reading was taken at a different comedor and was
+        # The superseded reading was taken at a different establishment and was
         # severely wasted; the global latest is the healthy one.
         assert body["latest_measurement"]["establishment"]["name"] == "Comedor Nuevo"
         assert body["nutritional_status"] == "normal"
@@ -379,244 +319,6 @@ class TestGetSubjectLatestMeasurement:
         assert body["dni"] == 71234567
         assert body["last_name"] == "Medido"
         assert body["birth_date"] == "2018-01-01"
-
-
-class TestGetSubjectsPaginated:
-    async def test_unauthenticated_returns_401(self, client):
-        """No token on GET /subjects should return 401."""
-        response = await client.get(SUBJECTS_URL)
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-    async def test_empty_list_returns_200(self, client, field_worker_headers):
-        """No subjects in the DB returns an empty list with zeroed metadata."""
-        response = await client.get(SUBJECTS_URL, headers=field_worker_headers)
-        assert response.status_code == status.HTTP_200_OK
-        data = response.json()
-        assert data["items"] == []
-        assert data["total"] == 0
-        assert data["total_pages"] == 0
-
-    async def test_returns_subject_fields(self, client, field_worker_headers):
-        """Response items include id, dni, name, last_name and sex."""
-        await _upload(client, field_worker_headers)
-        response = await client.get(SUBJECTS_URL, headers=field_worker_headers)
-        assert response.status_code == status.HTTP_200_OK
-        item = response.json()["items"][0]
-        assert "id" in item
-        assert item["dni"] == 12345678
-        assert item["name"] == "Juan"
-        assert item["last_name"] == "Perez"
-        assert item["sex"] == "male"
-
-    async def test_pagination_metadata(self, client, field_worker_headers):
-        """With 5 subjects and page_size=2, total_pages should be 3."""
-        for i in range(5):
-            await _upload(client, field_worker_headers, dni=10000000 + i)
-        response = await client.get(
-            f"{SUBJECTS_URL}?page=1&page_size=2", headers=field_worker_headers
-        )
-        data = response.json()
-        assert data["total"] == 5
-        assert data["page"] == 1
-        assert data["page_size"] == 2
-        assert data["total_pages"] == 3
-
-    async def test_page_size_limits_results(self, client, field_worker_headers):
-        """page_size controls how many items are returned."""
-        for i in range(5):
-            await _upload(client, field_worker_headers, dni=10000000 + i)
-        response = await client.get(
-            f"{SUBJECTS_URL}?page_size=3", headers=field_worker_headers
-        )
-        assert len(response.json()["items"]) == 3
-
-    async def test_second_page_returns_different_items(
-        self, client, field_worker_headers
-    ):
-        """Two consecutive pages share no subjects."""
-        for i in range(4):
-            await _upload(client, field_worker_headers, dni=10000000 + i)
-        page1 = await client.get(
-            f"{SUBJECTS_URL}?page=1&page_size=2", headers=field_worker_headers
-        )
-        page2 = await client.get(
-            f"{SUBJECTS_URL}?page=2&page_size=2", headers=field_worker_headers
-        )
-        ids1 = {i["id"] for i in page1.json()["items"]}
-        ids2 = {i["id"] for i in page2.json()["items"]}
-        assert ids1.isdisjoint(ids2)
-
-    async def test_offset_past_last_record_returns_empty(
-        self, client, field_worker_headers
-    ):
-        """Requesting a page whose offset exceeds the total returns an empty list."""
-        await _upload(client, field_worker_headers)
-        response = await client.get(
-            f"{SUBJECTS_URL}?page=99&page_size=20", headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_200_OK
-        assert response.json()["items"] == []
-
-    async def test_invalid_page_returns_422(self, client, field_worker_headers):
-        """page=0 is invalid, minimum is 1."""
-        response = await client.get(
-            f"{SUBJECTS_URL}?page=0", headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_invalid_page_size_zero_returns_422(
-        self, client, field_worker_headers
-    ):
-        """page_size=0 is invalid, minimum is 1."""
-        response = await client.get(
-            f"{SUBJECTS_URL}?page_size=0", headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_invalid_page_size_above_max_returns_422(
-        self, client, field_worker_headers
-    ):
-        """page_size=101 exceeds the maximum of 100."""
-        response = await client.get(
-            f"{SUBJECTS_URL}?page_size=101", headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_search_by_name_returns_matching(self, client, field_worker_headers):
-        """Only subjects whose name contains the search term are returned."""
-        await _upload(client, field_worker_headers, dni=11111111, name="Juan")
-        await _upload(client, field_worker_headers, dni=22222222, name="Maria")
-        response = await client.get(
-            f"{SUBJECTS_URL}?search=Juan", headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_200_OK
-        items = response.json()["items"]
-        assert len(items) == 1
-        assert items[0]["name"] == "Juan"
-
-    async def test_search_by_last_name_returns_matching(
-        self, client, field_worker_headers
-    ):
-        """Only subjects whose last name contains the search term are returned."""
-        await _upload(client, field_worker_headers, dni=11111111, last_name="Perez")
-        await _upload(client, field_worker_headers, dni=22222222, last_name="Garcia")
-        response = await client.get(
-            f"{SUBJECTS_URL}?search=Garcia", headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_200_OK
-        items = response.json()["items"]
-        assert len(items) == 1
-        assert items[0]["last_name"] == "Garcia"
-
-    async def test_search_by_dni_returns_matching(self, client, field_worker_headers):
-        """A numeric search term matches against DNI exactly."""
-        await _upload(client, field_worker_headers, dni=11111111)
-        await _upload(client, field_worker_headers, dni=22222222)
-        response = await client.get(
-            f"{SUBJECTS_URL}?search=11111111", headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_200_OK
-        items = response.json()["items"]
-        assert len(items) == 1
-        assert items[0]["dni"] == 11111111
-
-    async def test_search_is_case_insensitive(self, client, field_worker_headers):
-        """Search is case-insensitive: 'juan' matches 'Juan'."""
-        await _upload(client, field_worker_headers, name="Juan")
-        response = await client.get(
-            f"{SUBJECTS_URL}?search=juan", headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_200_OK
-        assert len(response.json()["items"]) == 1
-
-    async def test_search_no_match_returns_empty(self, client, field_worker_headers):
-        """A search term that matches nothing returns an empty list."""
-        await _upload(client, field_worker_headers)
-        response = await client.get(
-            f"{SUBJECTS_URL}?search=zzznomatch", headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_200_OK
-        data = response.json()
-        assert data["items"] == []
-        assert data["total"] == 0
-
-    async def test_search_whitespace_only_returns_all(
-        self, client, field_worker_headers
-    ):
-        """A whitespace-only search is treated as no filter and returns all records."""
-        await _upload(client, field_worker_headers, dni=11111111)
-        await _upload(client, field_worker_headers, dni=22222222)
-        response = await client.get(
-            f"{SUBJECTS_URL}?search=   ", headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_200_OK
-        assert response.json()["total"] == 2
-
-
-class TestSubjectEventLog:
-    async def test_registration_creates_event(
-        self, client, field_worker_headers, field_worker_user_id
-    ):
-        """Creating a subject persists a SUBJECT_CREATED event linked to the actor."""
-        from sqlalchemy import select
-
-        from app.db.database import AsyncSessionLocal
-        from app.domain.subject_event import SubjectEventType
-        from app.models.subject_event import SubjectEvent
-
-        response = await _upload(client, field_worker_headers)
-        assert response.status_code == status.HTTP_201_CREATED
-        subject_id = uuid.UUID(response.json()["id"])
-
-        async with AsyncSessionLocal() as session:
-            result = await session.execute(
-                select(SubjectEvent).where(SubjectEvent.subject_id == subject_id)
-            )
-            events = result.scalars().all()
-
-        assert len(events) == 1
-        assert events[0].event_type == SubjectEventType.SUBJECT_CREATED
-        assert events[0].actor_id == field_worker_user_id
-        assert events[0].payload is None
-
-    async def test_failed_registration_creates_no_event(
-        self, client, field_worker_headers
-    ):
-        """A rejected registration (duplicate DNI) does not persist any event."""
-        from sqlalchemy import select
-
-        from app.db.database import AsyncSessionLocal
-        from app.models.subject_event import SubjectEvent
-
-        await _upload(client, field_worker_headers)
-        response = await _upload(client, field_worker_headers)
-        assert response.status_code == status.HTTP_409_CONFLICT
-
-        async with AsyncSessionLocal() as session:
-            result = await session.execute(select(SubjectEvent))
-            events = result.scalars().all()
-
-        assert len(events) == 1
-
-    async def test_replay_creates_no_second_event(self, client, field_worker_headers):
-        """Replaying the same id does not append a second SUBJECT_CREATED event."""
-        from sqlalchemy import select
-
-        from app.db.database import AsyncSessionLocal
-        from app.models.subject_event import SubjectEvent
-
-        subject_id = uuid.uuid4()
-        await _upload_with_id(client, field_worker_headers, subject_id)
-        replay = await _upload_with_id(client, field_worker_headers, subject_id)
-        assert replay.status_code == status.HTTP_200_OK
-
-        async with AsyncSessionLocal() as session:
-            result = await session.execute(
-                select(SubjectEvent).where(SubjectEvent.subject_id == subject_id)
-            )
-            events = result.scalars().all()
-
-        assert len(events) == 1
 
 
 class TestUpdateSubject:

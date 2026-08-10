@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from typing import Annotated
 from uuid import UUID
 
@@ -16,6 +16,7 @@ from app.domain.establishment_dashboard import (
     EstablishmentSubjectSortOrder,
 )
 from app.domain.measurement import MeasurementListingParams, MeasurementSortOrder
+from app.domain.subject import Sex, SubjectListingParams, SubjectSortOrder
 from app.domain.survey import (
     NAME_MAX,
     SurveyListingParams,
@@ -37,9 +38,13 @@ AUTH_RESPONSES = {
 
 
 def _validate_date_range(
-    start: datetime | None, end: datetime | None, field_prefix: str
+    start: date | None, end: date | None, field_prefix: str
 ) -> None:
-    """Helper to validate that a 'from' date is not after a 'to' date."""
+    """Raise InvalidListingFilterError if ``start`` is after ``end``.
+
+    Accepts plain dates or full timestamps (``datetime`` is a subclass of
+    ``date``), so it covers both date-only and datetime-range filters.
+    """
     if start is not None and end is not None and start > end:
         raise InvalidListingFilterError(
             f"{field_prefix}_from cannot be after {field_prefix}_to"
@@ -205,4 +210,31 @@ class SurveyResponseSummaryQuery(LocationQuery):
             event_at_to=self.event_at_to,
             city=self.city,
             province=self.province,
+        )
+
+
+@dataclass
+class SubjectListingQuery:
+    search: Annotated[str | None, Query(max_length=100)] = None
+    birth_date_from: Annotated[date | None, Query()] = None
+    birth_date_to: Annotated[date | None, Query()] = None
+    establishment_id: Annotated[UUID | None, Query()] = None
+    is_rural: Annotated[bool | None, Query()] = None
+    is_indigenous: Annotated[bool | None, Query()] = None
+    sex: Annotated[Sex | None, Query()] = None
+    sort_order: SubjectSortOrder = SubjectSortOrder.CREATED_AT_DESC
+
+    def validate(self) -> None:
+        _validate_date_range(self.birth_date_from, self.birth_date_to, "birth_date")
+
+    def to_domain(self) -> SubjectListingParams:
+        return SubjectListingParams(
+            search=self.search,
+            birth_date_from=self.birth_date_from,
+            birth_date_to=self.birth_date_to,
+            establishment_id=self.establishment_id,
+            is_rural=self.is_rural,
+            is_indigenous=self.is_indigenous,
+            sex=self.sex,
+            sort_order=self.sort_order,
         )

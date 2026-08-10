@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Response, status
 
-from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams
+from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams, SubjectListingQuery
 from app.core.dependencies import (
     get_measurement_service,
     get_subject_service,
@@ -16,9 +16,9 @@ from app.schemas.measurement_schema import SubjectEvolutionResponse
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.subject_schema import (
     SubjectDetailResponse,
+    SubjectListingResponse,
     SubjectRequest,
     SubjectResponse,
-    SubjectSummaryResponse,
     SubjectUpdateRequest,
 )
 from app.services.measurement_service import MeasurementService
@@ -90,27 +90,34 @@ async def get_subject(
 
 @router.get(
     "",
-    response_model=PaginatedResponse[SubjectSummaryResponse],
+    response_model=PaginatedResponse[SubjectListingResponse],
     status_code=status.HTTP_200_OK,
     summary="List subjects",
-    description="Returns a paginated list of subjects ordered by creation date. "
-    "Supports optional search filtering by name, last name, or DNI. Accessible by "
-    "all authenticated roles.",
-    responses=AUTH_RESPONSES,
+    description=(
+        "Returns a paginated list of subjects. Supports search by name, last "
+        "name or DNI; filtering by birth date range, establishment, rurality, "
+        "indigenous status and sex; and sorting by name, creation date or "
+        "birth date in either direction. Accessible by all authenticated roles."
+    ),
+    responses={
+        status.HTTP_400_BAD_REQUEST: {"description": "Inconsistent filter parameters"},
+        **AUTH_RESPONSES,
+    },
 )
 async def list_subjects(
     paginated: PaginatedQueryParams = Depends(),
-    search: str | None = Query(default=None, max_length=100),
+    query: SubjectListingQuery = Depends(),
     _: UserActor = Depends(require_any),
     service: SubjectService = Depends(get_subject_service),
-) -> PaginatedResponse[SubjectSummaryResponse]:
+) -> PaginatedResponse[SubjectListingResponse]:
+    query.validate()
     result = await service.get_subject_listing(
-        page=paginated.page, page_size=paginated.page_size, search=search
+        page=paginated.page, page_size=paginated.page_size, params=query.to_domain()
     )
 
-    return PaginatedResponse[SubjectSummaryResponse](
+    return PaginatedResponse[SubjectListingResponse](
         items=[
-            SubjectSummaryResponse.model_validate(subject) for subject in result.items
+            SubjectListingResponse.model_validate(subject) for subject in result.items
         ],
         total=result.total,
         page=result.page,
