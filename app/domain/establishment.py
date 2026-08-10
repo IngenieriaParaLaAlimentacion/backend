@@ -13,7 +13,9 @@ class UserEstablishmentStatus(str, Enum):
 # TODO:check if we can reuse user status for establishments,
 # to have somthing like a StatusEnum
 class EstablishmentRequestStatus(StrEnum):
+    APPROVED = "approved"
     PENDING = "pending"
+    REJECTED = "rejected"
 
 
 class EstablishmentSortOrder(StrEnum):
