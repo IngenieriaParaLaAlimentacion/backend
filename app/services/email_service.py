@@ -7,6 +7,7 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 import aiosmtplib
 
 from app.core.config import settings
+from app.domain.user import UserRole
 from app.exceptions.domain_exceptions import EmailDeliveryError
 
 logger = logging.getLogger(__name__)
@@ -29,25 +30,32 @@ def _build_deeplink(deeplink_url: str, token: str) -> str:
     )
 
 
-def build_recovery_deeplink(token: str, user_rol: str = "user") -> str:
-    """Build the password recovery deep link, injecting the opaque token."""
-    deeplink_url = (
-        settings.admin_password_reset_deeplink
-        if user_rol in ("admin", "superadmin")
-        else settings.password_recovery_deeplink_url
-    )
+_BACKOFFICE_ROLES = {UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.ANALYST}
+
+
+def build_recovery_deeplink(token: str, user_role: UserRole) -> str:
+    """Build the password recovery deep link, injecting the opaque token.
+
+    Backoffice roles are sent to the backoffice origin;
+    field workers to the mobile app origin.
+    """
+    if user_role in _BACKOFFICE_ROLES:
+        deeplink_url = settings.backoffice_password_reset_deeplink
+    elif user_role == UserRole.FIELD_WORKER:
+        deeplink_url = settings.app_password_recovery_deeplink
+    else:
+        raise ValueError(f"Unknown user role: {user_role}")
+
     return _build_deeplink(deeplink_url, token)
 
 
-def build_invite_deeplink(token: str, user_rol: str = "admin") -> str:
+def build_invite_deeplink(token: str, user_role: UserRole) -> str:
     """Build the invitation deep link, injecting the opaque token.
-
-    Invitations only target backoffice roles, so the link resolves to
-    ``<backoffice-origin>/invite/<role>?token=<token>``. Any role other than
-    ``analyst`` falls back to the admin path.
+    Invalid `user_role` values raise a ValueError.
     """
-    role = "analyst" if user_rol == "analyst" else "admin"
-    return _build_deeplink(settings.invite_deeplink_url(role), token)
+    if user_role not in _BACKOFFICE_ROLES:
+        raise ValueError("Invalid user role")
+    return _build_deeplink(settings.invite_deeplink_url(user_role), token)
 
 
 def _render_base_template(

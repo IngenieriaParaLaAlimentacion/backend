@@ -1,11 +1,11 @@
 from dataclasses import dataclass, fields
-from enum import Enum
+from enum import Enum, StrEnum
 from uuid import UUID
 
 from app.domain.establishment import EstablishmentDomain, EstablishmentWithStatusDomain
 
 
-class UserRole(str, Enum):
+class UserRole(StrEnum):
     """Roles that determine a user's permissions within the system."""
 
     SUPERADMIN = "superadmin"

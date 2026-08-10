@@ -4,6 +4,8 @@ from typing import Optional
 from pydantic import AnyUrl, EmailStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.domain.user import UserRole
+
 
 class LogLevel(str, enum.Enum):
     """Possible log levels."""
@@ -80,12 +82,12 @@ class Settings(BaseSettings):
         return f"{base}{path}"
 
     @property
-    def password_recovery_deeplink_url(self) -> str:
+    def app_password_recovery_deeplink(self) -> str:
         """Derived password recovery deeplink URL from base URL and path."""
         return self._build_deeplink(self.app_deeplink_base, self.password_recovery_path)
 
     @property
-    def admin_password_reset_deeplink(self) -> str:
+    def backoffice_password_reset_deeplink(self) -> str:
         """Derived password reset deeplink URL for admin invitation."""
         return self._build_deeplink(
             self.backoffice_deeplink_base, self.password_recovery_path
@@ -98,12 +100,8 @@ class Settings(BaseSettings):
             self.app_deeplink_base, self.email_verification_path
         )
 
-    def invite_deeplink_url(self, role: str) -> str:
-        """Derived invitation deeplink URL for a backoffice role.
-
-        Invitations are only issued to backoffice users, so the link always
-        points at the backoffice origin: ``<origin>/invite/<role>``.
-        """
+    def invite_deeplink_url(self, role: UserRole) -> str:
+        """Derived invitation deeplink URL for a backoffice role."""
         return self._build_deeplink(
             self.backoffice_deeplink_base, f"{self.invite_path}/{role}"
         )
