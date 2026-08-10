@@ -108,3 +108,26 @@ class EstablishmentCreationRequestListingParams:
         self.search = self.search.strip() or None if self.search else None
         self.city = self.city.strip() or None if self.city else None
         self.province = self.province.strip() or None if self.province else None
+
+
+@dataclass
+class EstablishmentCreationRequestWithRequesterDomain(EstablishmentRequestDomain):
+    """Establishment creation request data with the requesting field
+    worker's identity."""
+
+    requester_name: str
+    requester_last_name: str
+    requester_email: str
+
+    @classmethod
+    def from_db(cls, obj) -> "EstablishmentCreationRequestWithRequesterDomain":
+        base_fields = {
+            field.name: getattr(obj, field.name)
+            for field in fields(EstablishmentRequestDomain)
+        }
+        return cls(
+            **base_fields,
+            requester_name=obj.user.name,
+            requester_last_name=obj.user.last_name,
+            requester_email=obj.user.email,
+        )

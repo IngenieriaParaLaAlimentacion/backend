@@ -2,6 +2,8 @@ from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.establishment import (
+    EstablishmentCreationRequestListingParams,
+    EstablishmentCreationRequestWithRequesterDomain,
     EstablishmentDomain,
     EstablishmentListingParams,
     EstablishmentRequestDomain,
@@ -30,6 +32,21 @@ class EstablishmentService:
         uow: IUnitOfWork,
     ):
         self.uow = uow
+
+    @staticmethod
+    def _build_page(
+        establishments: list[Establishment],
+        total: int,
+        page: int,
+        page_size: int,
+    ) -> PaginatedResult[EstablishmentDomain]:
+        """Build a paginated EstablishmentDomain result from a repo page."""
+        return PaginatedResult.build(
+            items=[EstablishmentDomain.from_db(e) for e in establishments],
+            total=total,
+            page=page,
+            page_size=page_size,
+        )
 
     async def create_establishment(
         self, data: EstablishmentRequest
@@ -144,16 +161,29 @@ class EstablishmentService:
         )
         return self._build_page(establishments, total, page, page_size)
 
-    @staticmethod
-    def _build_page(
-        establishments: list[Establishment],
-        total: int,
+    async def list_establishment_requests_paginated(
+        self,
         page: int,
         page_size: int,
-    ) -> PaginatedResult[EstablishmentDomain]:
-        """Build a paginated EstablishmentDomain result from a repo page."""
+        params: EstablishmentCreationRequestListingParams,
+    ) -> PaginatedResult[EstablishmentCreationRequestWithRequesterDomain]:
+        """Return a paginated list of establishment creation requests, each
+        with its requester's identity.
+
+        ``search`` is a partial, case-insensitive match against the reported
+        name/address or the requester's name, last name or email. ``city``
+        and ``province`` are partial, case-insensitive matches. ``status``
+        is an exact match, filtering by review status.
+        """
+        offset = (page - 1) * page_size
+        requests, total = await self.uow.establishment_request_repo.get_paginated(
+            limit=page_size, offset=offset, params=params
+        )
         return PaginatedResult.build(
-            items=[EstablishmentDomain.from_db(e) for e in establishments],
+            items=[
+                EstablishmentCreationRequestWithRequesterDomain.from_db(r)
+                for r in requests
+            ],
             total=total,
             page=page,
             page_size=page_size,
