@@ -191,6 +191,43 @@ class AdminService:
         )
         await self.uow.commit()
 
+    async def approve_field_worker(self, user_id: UUID) -> None:
+        """Activate a field worker without granting establishment access.
+
+        Account access no longer depends on establishments, so the pending
+        requests are resolved as rejected: the user is in, but not into any
+        establishment yet. Use approve_establishments to grant access.
+
+        Raises:
+            UserNotFoundError: If the user does not exist.
+            BadRequestError: If the user is not a field worker, or is not in
+                pending status.
+        """
+        user, relations = await self._get_field_worker_relations(user_id)
+        if user.role != UserRole.FIELD_WORKER:
+            raise BadRequestError(
+                "User is not a field worker",
+                "Only field workers go through establishment approval.",
+            )
+        if user.status != UserStatus.PENDING_VALIDATION:
+            raise BadRequestError(
+                "Field worker is not pending",
+                "Only field workers with pending status can be approved through "
+                "this endpoint.",
+            )
+
+        pending_ids = [
+            rel.establishment_id
+            for rel in relations
+            if rel.status == UserEstablishmentStatus.PENDING
+        ]
+        if pending_ids:
+            await self.uow.user_establishment_repo.update_status_for_ids(
+                user_id, pending_ids, UserEstablishmentStatus.REJECTED
+            )
+        await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
+        await self.uow.commit()
+
     async def reject_field_worker(self, user_id: UUID) -> None:
         """Reject all establishment access for the given field worker and
         mark them inactive.

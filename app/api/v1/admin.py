@@ -103,6 +103,30 @@ async def reject_establishments(
 
 
 @router.patch(
+    "/field-worker/{user_id}/approve",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Approve a field worker without granting establishment access",
+    description="Activates the field worker's account and resolves their pending "
+    "establishment requests as rejected. Use the establishments/approve endpoint "
+    "to grant access to specific establishments. Accessible by admins only.",
+    responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Target user is not a field worker, or is not pending"
+        },
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {"description": "Field worker not found"},
+    },
+)
+async def approve_field_worker(
+    user_id: UUID,
+    _admin: UserActor = Depends(get_current_admin),
+    service: AdminService = Depends(get_admin_service),
+) -> Response:
+    await service.approve_field_worker(user_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.patch(
     "/field-worker/{user_id}/reject",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Reject all access for a field worker",

@@ -21,6 +21,7 @@ ADMIN_SUBJECTS_URL = "/api/v1/admin/subjects"
 REGISTER_FIELD_WORKER_URL = "/api/v1/auth/register/field-worker"
 APPROVE_URL = "/api/v1/admin/field-worker/{user_id}/establishments/approve"
 REJECT_URL = "/api/v1/admin/field-worker/{user_id}/establishments/reject"
+APPROVE_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/approve"
 REJECT_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/reject"
 SUBJECTS_URL = "/api/v1/subjects"
 INVITE_ADMIN_URL = "/api/v1/admin/invite-admin"
@@ -46,6 +47,13 @@ async def _make_reject_request(client, *, headers=None):
     )
 
 
+async def _make_approve_field_worker_request(client, *, headers=None):
+    return await client.patch(
+        APPROVE_FIELD_WORKER_URL.format(user_id=uuid.uuid4()),
+        headers=headers or {},
+    )
+
+
 async def _make_reject_field_worker_request(client, *, headers=None):
     return await client.patch(
         REJECT_FIELD_WORKER_URL.format(user_id=uuid.uuid4()),
@@ -63,6 +71,10 @@ async def _make_reject_field_worker_request(client, *, headers=None):
         pytest.param(
             _make_reject_request,
             id="PATCH /admin/field-worker/{id}/establishments/reject",
+        ),
+        pytest.param(
+            _make_approve_field_worker_request,
+            id="PATCH /admin/field-worker/{id}/approve",
         ),
         pytest.param(
             _make_reject_field_worker_request,
@@ -709,6 +721,111 @@ class TestRejectEstablishments:
             headers=admin_headers,
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+class TestApproveFieldWorker:
+    async def test_returns_no_content(
+        self, client, admin_headers, registered_field_worker
+    ):
+        """Should return 204 without a body."""
+        url = APPROVE_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"])
+        response = await client.patch(url, headers=admin_headers)
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    async def test_field_worker_status_becomes_active(
+        self, client, admin_headers, registered_field_worker
+    ):
+        """The account should be usable after approval."""
+        url = APPROVE_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"])
+        await client.patch(url, headers=admin_headers)
+
+        async with db_module.AsyncSessionLocal() as session:
+            user = await session.get(User, registered_field_worker["id"])
+
+        assert user.status == UserStatus.ACTIVE
+
+    async def test_pending_establishments_become_rejected(
+        self, client, admin_headers, registered_field_worker, db_establishment
+    ):
+        """Account access must not carry establishment access."""
+        url = APPROVE_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"])
+        await client.patch(url, headers=admin_headers)
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(UserEstablishment).where(
+                    UserEstablishment.establishment_id == db_establishment.id
+                )
+            )
+            relation = result.scalar_one()
+
+        assert relation.status.value == "rejected"
+
+    async def test_no_establishments_still_becomes_active(self, client, admin_headers):
+        """A field worker without requests can still be let in."""
+        user_id = await _insert_user(
+            UserRole.FIELD_WORKER, UserStatus.PENDING_VALIDATION
+        )
+        url = APPROVE_FIELD_WORKER_URL.format(user_id=user_id)
+
+        response = await client.patch(url, headers=admin_headers)
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        async with db_module.AsyncSessionLocal() as session:
+            user = await session.get(User, user_id)
+        assert user.status == UserStatus.ACTIVE
+
+    async def test_user_not_found_returns_404(self, client, admin_headers):
+        """Should return 404 if the field worker does not exist."""
+        url = APPROVE_FIELD_WORKER_URL.format(user_id=uuid.uuid4())
+        response = await client.patch(url, headers=admin_headers)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_registers_without_establishments_then_gets_approved(
+        self, client, admin_headers
+    ):
+        """End to end: sign up with no establishments and still be let in."""
+        register_response = await client.post(
+            REGISTER_FIELD_WORKER_URL,
+            json={
+                "email": f"field_worker_{uuid.uuid4().hex[:6]}@test.com",
+                "password": "Password123!",
+                "name": "Test",
+                "last_name": "Field Worker",
+            },
+        )
+        assert register_response.status_code == status.HTTP_201_CREATED
+        user_id = register_response.json()["id"]
+
+        response = await client.patch(
+            APPROVE_FIELD_WORKER_URL.format(user_id=user_id), headers=admin_headers
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        async with db_module.AsyncSessionLocal() as session:
+            user = await session.get(User, user_id)
+        assert user.status == UserStatus.ACTIVE
+
+    async def test_active_field_worker_returns_400(self, client, admin_headers):
+        """Only pending field workers can be approved."""
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        url = APPROVE_FIELD_WORKER_URL.format(user_id=user_id)
+
+        response = await client.patch(url, headers=admin_headers)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    async def test_non_field_worker_returns_400(self, client, admin_headers):
+        """A pending admin invite must not be activated through this endpoint."""
+        user_id = await _insert_user(UserRole.ADMIN, UserStatus.PENDING_VALIDATION)
+        url = APPROVE_FIELD_WORKER_URL.format(user_id=user_id)
+
+        response = await client.patch(url, headers=admin_headers)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        async with db_module.AsyncSessionLocal() as session:
+            user = await session.get(User, user_id)
+        assert user.status == UserStatus.PENDING_VALIDATION
 
 
 class TestRejectFieldWorker:
