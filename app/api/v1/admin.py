@@ -2,10 +2,15 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Response, status
 
-from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams
+from app.api.v1.params import (
+    AUTH_RESPONSES,
+    EstablishmentCreationRequestListingQuery,
+    PaginatedQueryParams,
+)
 from app.core.dependencies import (
     get_admin_service,
     get_current_admin,
+    get_establishment_service,
 )
 from app.domain.user import UserActor, UserRole, UserStatus
 from app.schemas.admin_schema import (
@@ -16,7 +21,10 @@ from app.schemas.admin_schema import (
     InviteUserResponse,
     PaginatedUsersResponse,
 )
+from app.schemas.establishment_schema import EstablishmentCreationRequestAdminView
+from app.schemas.pagination import PaginatedResponse
 from app.services.admin_service import AdminService
+from app.services.establishment_service import EstablishmentService
 
 router = APIRouter(prefix="/admin")
 
@@ -244,3 +252,30 @@ async def get_user(
     """
     result = await service.get_user_info(user_id)
     return FullUserAdminView.model_validate(result)
+
+
+@router.get(
+    "/establishment-requests",
+    response_model=PaginatedResponse[EstablishmentCreationRequestAdminView],
+    status_code=status.HTTP_200_OK,
+    summary="List establishment creation requests",
+    description="Returns a paginated list of establishment-missing "
+    "notifications, optionally filtered by status/city/province or searched "
+    "by reported name/address or requester identity, including the "
+    "requesting field worker's identity. Accessible by admins only.",
+    responses=AUTH_RESPONSES,
+)
+async def list_establishment_requests(
+    paginated: PaginatedQueryParams = Depends(),
+    query: EstablishmentCreationRequestListingQuery = Depends(),
+    _admin: UserActor = Depends(get_current_admin),
+    service: EstablishmentService = Depends(get_establishment_service),
+) -> PaginatedResponse[EstablishmentCreationRequestAdminView]:
+    result = await service.list_establishment_requests_paginated(
+        page=paginated.page,
+        page_size=paginated.page_size,
+        params=query.to_domain(),
+    )
+    return PaginatedResponse[EstablishmentCreationRequestAdminView].model_validate(
+        result, from_attributes=True
+    )

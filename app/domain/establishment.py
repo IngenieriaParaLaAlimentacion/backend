@@ -85,3 +85,26 @@ class EstablishmentRequestDomain:
     @classmethod
     def from_db(cls, obj) -> "EstablishmentRequestDomain":
         return cls(**{field.name: getattr(obj, field.name) for field in fields(cls)})
+
+
+class EstablishmentCreationRequestSortOrder(StrEnum):
+    NEWEST = "newest"
+    OLDEST = "oldest"
+
+
+@dataclass
+class EstablishmentCreationRequestListingParams:
+    """Query parameters for a paginated establishment request listing."""
+
+    search: str | None = None
+    city: str | None = None
+    province: str | None = None
+    status: EstablishmentRequestStatus | None = None
+    sort_order: EstablishmentCreationRequestSortOrder = (
+        EstablishmentCreationRequestSortOrder.OLDEST
+    )
+
+    def __post_init__(self) -> None:
+        self.search = self.search.strip() or None if self.search else None
+        self.city = self.city.strip() or None if self.city else None
+        self.province = self.province.strip() or None if self.province else None

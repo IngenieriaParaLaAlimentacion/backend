@@ -18,17 +18,6 @@ class EstablishmentCreationRequestCreate(BaseModel):
     province: ValidStr | None = None
 
 
-class EstablishmentCreationRequestResponse(EstablishmentCreationRequestCreate):
-    """An establishment creation request as returned by the API."""
-
-    model_config = ConfigDict(from_attributes=True)
-
-    id: uuid.UUID
-    user_id: uuid.UUID
-    status: str
-    created_at: datetime
-
-
 class EstablishmentRequest(BaseModel):
     name: ValidStr
     formatted_address: ValidStr
@@ -69,6 +58,17 @@ class EstablishmentUpdateRequest(BaseModel):
 # -- Response --
 
 
+class EstablishmentCreationRequestResponse(EstablishmentCreationRequestCreate):
+    """An establishment creation request as returned by the API."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    user_id: uuid.UUID
+    status: str
+    created_at: datetime
+
+
 class EstablishmentResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -80,3 +80,12 @@ class EstablishmentResponse(BaseModel):
     place_id: str
     city: str
     province: str
+
+
+class EstablishmentCreationRequestAdminView(EstablishmentCreationRequestResponse):
+    """An establishment request as seen by an admin reviewing it, including
+    the requesting field worker's identity."""
+
+    requester_name: str
+    requester_last_name: str
+    requester_email: str

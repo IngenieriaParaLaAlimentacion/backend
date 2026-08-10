@@ -6,7 +6,10 @@ from uuid import UUID
 from fastapi import Query, status
 
 from app.domain.establishment import (
+    EstablishmentCreationRequestListingParams,
+    EstablishmentCreationRequestSortOrder,
     EstablishmentListingParams,
+    EstablishmentRequestStatus,
     EstablishmentSortOrder,
     UserEstablishmentStatus,
 )
@@ -236,5 +239,33 @@ class SubjectListingQuery:
             is_rural=self.is_rural,
             is_indigenous=self.is_indigenous,
             sex=self.sex,
+            sort_order=self.sort_order,
+        )
+
+
+@dataclass
+class EstablishmentCreationRequestListingQuery(LocationQuery):
+    search: Annotated[
+        str | None,
+        Query(
+            max_length=100,
+            description="Partial match on the reported name/address, or on the "
+            "requester's name, last name or email.",
+        ),
+    ] = None
+    status: Annotated[
+        EstablishmentRequestStatus | None,
+        Query(description="Filter by review status."),
+    ] = None
+    sort_order: EstablishmentCreationRequestSortOrder = (
+        EstablishmentCreationRequestSortOrder.OLDEST
+    )
+
+    def to_domain(self) -> EstablishmentCreationRequestListingParams:
+        return EstablishmentCreationRequestListingParams(
+            search=self.search,
+            city=self.city,
+            province=self.province,
+            status=self.status,
             sort_order=self.sort_order,
         )
