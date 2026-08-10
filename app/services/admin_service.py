@@ -10,6 +10,7 @@ from app.domain.pagination import PaginatedResult
 from app.domain.subject import SubjectDomain
 from app.domain.subject_event import SubjectEventRecord
 from app.domain.user import (
+    BACKOFFICE_ROLES,
     UserRole,
     UserStatus,
     UserWithEstablishmentsDomain,
@@ -121,8 +122,12 @@ class AdminService:
         deeplink. Shared by invite_user and resend_invite.
 
         Raises:
+            BadRequestError: If the user's role is not a backoffice role.
             EmailDeliveryError: If the invitation email could not be delivered.
         """
+        if user.role not in BACKOFFICE_ROLES:
+            raise BadRequestError("Invalid user role")
+
         created_token, plain_token = await self.auth_service.create_recovery_token(
             user.id
         )
@@ -306,7 +311,9 @@ class AdminService:
         Raises:
             UserNotFoundError: If no user with the given id exists.
             BadRequestError: If the user already completed onboarding
-                (status is not PENDING_VALIDATION).
+                (status is not PENDING_VALIDATION), or is not a backoffice
+                user (e.g. a self-registered field worker, who is also
+                PENDING_VALIDATION but was never invited).
             EmailDeliveryError: If the invitation email could not be delivered.
         """
         user = await self.uow.user_repo.get_by_id(user_id)

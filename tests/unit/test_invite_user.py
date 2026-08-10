@@ -288,6 +288,24 @@ class TestResendInvite:
         uow.commit.assert_not_called()
 
     @pytest.mark.asyncio
+    async def test_raises_if_user_is_a_field_worker(self, make_uow, make_service):
+        """Should raise BadRequestError for a pending self-registered field worker.
+
+        Field workers are also PENDING_VALIDATION after self-registration, but
+        they are never invited and have no backoffice invite deeplink.
+        """
+        field_worker = _make_pending_user()
+        field_worker.role = UserRole.FIELD_WORKER
+        uow = make_uow()
+        uow.user_repo.get_by_id = AsyncMock(return_value=field_worker)
+        service = make_service(uow)
+
+        with pytest.raises(BadRequestError):
+            await service.resend_invite(field_worker.id)
+
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
     async def test_does_not_create_new_user_or_password(self, make_uow, make_service):
         """Should not call user_repo.create or password_repo.create on resend."""
         pending_user = _make_pending_user()

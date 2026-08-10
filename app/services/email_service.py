@@ -7,7 +7,7 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 import aiosmtplib
 
 from app.core.config import settings
-from app.domain.user import UserRole
+from app.domain.user import BACKOFFICE_ROLES, UserRole
 from app.exceptions.domain_exceptions import EmailDeliveryError
 
 logger = logging.getLogger(__name__)
@@ -30,9 +30,6 @@ def _build_deeplink(deeplink_url: str, token: str) -> str:
     )
 
 
-_BACKOFFICE_ROLES = {UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.ANALYST}
-
-
 def build_recovery_deeplink(token: str) -> str:
     """Build the password recovery deep link, injecting the opaque token.
 
@@ -45,7 +42,7 @@ def build_invite_deeplink(token: str, user_role: UserRole) -> str:
     """Build the invitation deep link, injecting the opaque token.
     Invalid `user_role` values raise a ValueError.
     """
-    if user_role not in _BACKOFFICE_ROLES:
+    if user_role not in BACKOFFICE_ROLES:
         raise ValueError("Invalid user role")
     return _build_deeplink(settings.invite_deeplink_url(user_role), token)
 
