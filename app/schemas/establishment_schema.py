@@ -13,8 +13,8 @@ class EstablishmentCreationRequestCreate(BaseModel):
     missing establishment. Every field is optional: the field worker
     provides as much as they know, possibly nothing."""
 
-    name: ValidStr | None = None
-    formatted_address: ValidStr | None = None
+    name: ValidStr
+    formatted_address: ValidStr
     city: ValidStr | None = None
     province: ValidStr | None = None
 

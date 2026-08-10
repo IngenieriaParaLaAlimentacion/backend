@@ -659,22 +659,6 @@ REQUESTS_URL = f"{ESTABLISHMENT_URL}/requests"
 
 
 class TestCreateEstablishmentRequest:
-    async def test_creates_request_with_empty_body(self, client, make_user_with_role):
-        """A field worker can request a missing establishment knowing nothing."""
-        headers, user_id = await make_user_with_role(UserRole.FIELD_WORKER)
-        response = await client.post(REQUESTS_URL, headers=headers, json={})
-
-        assert response.status_code == status.HTTP_201_CREATED
-        data = response.json()
-        assert data["id"]
-        assert data["user_id"] == str(user_id)
-        assert data["status"] == "pending"
-        assert data["created_at"]
-        assert data["name"] is None
-        assert data["formatted_address"] is None
-        assert data["city"] is None
-        assert data["province"] is None
-
     async def test_creates_request_with_full_body(self, client, make_user_with_role):
         """Provided fields are echoed back with status pending."""
         headers, user_id = await make_user_with_role(UserRole.FIELD_WORKER)
@@ -704,7 +688,10 @@ class TestCreateEstablishmentRequest:
         await client.post(
             REQUESTS_URL,
             headers=headers,
-            json={"name": "Comedor Esperanza"},
+            json={
+                "name": "Comedor Esperanza",
+                "formatted_address": "Av. Siempre Viva 742",
+            },
         )
 
         from sqlalchemy import select
