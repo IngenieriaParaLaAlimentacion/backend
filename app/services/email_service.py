@@ -39,8 +39,7 @@ def build_recovery_deeplink(token: str) -> str:
 
 
 def build_invite_deeplink(token: str, user_role: UserRole) -> str:
-    """Build the invitation deep link, injecting the opaque token.
-    """
+    """Build the invitation deep link, injecting the opaque token."""
     return _build_deeplink(settings.invite_deeplink_url(user_role), token)
 
 

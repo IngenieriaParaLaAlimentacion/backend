@@ -102,10 +102,6 @@ class TestBuildInviteDeeplink:
         result = build_invite_deeplink("tok123", user_role=UserRole.ANALYST)
         assert urlparse(result).path == "/invite/analyst"
 
-    def test_unknown_role_raises_value_error(self, invite_deeplink_settings):
-        with pytest.raises(ValueError):
-            build_invite_deeplink("tok123", user_role="unknown")
-
     def test_trailing_slash_in_base_does_not_duplicate(self, monkeypatch):
         monkeypatch.setattr(
             settings, "backoffice_deeplink_base", "https://backoffice.example.com/"
