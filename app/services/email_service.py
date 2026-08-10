@@ -33,20 +33,12 @@ def _build_deeplink(deeplink_url: str, token: str) -> str:
 _BACKOFFICE_ROLES = {UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.ANALYST}
 
 
-def build_recovery_deeplink(token: str, user_role: UserRole) -> str:
+def build_recovery_deeplink(token: str) -> str:
     """Build the password recovery deep link, injecting the opaque token.
 
-    Backoffice roles are sent to the backoffice origin;
-    field workers to the mobile app origin.
+    Every role is sent to the backoffice origin.
     """
-    if user_role in _BACKOFFICE_ROLES:
-        deeplink_url = settings.backoffice_password_reset_deeplink
-    elif user_role == UserRole.FIELD_WORKER:
-        deeplink_url = settings.app_password_recovery_deeplink
-    else:
-        raise ValueError(f"Unknown user role: {user_role}")
-
-    return _build_deeplink(deeplink_url, token)
+    return _build_deeplink(settings.backoffice_password_reset_deeplink, token)
 
 
 def build_invite_deeplink(token: str, user_role: UserRole) -> str:
@@ -198,19 +190,7 @@ async def send_access_granted_email(
 
 def build_verification_deeplink(token: str) -> str:
     """Build the email verification deep link, injecting the opaque token."""
-    deeplink_url = settings.email_verification_deeplink_url
-    parsed = urlsplit(deeplink_url)
-    query = dict(parse_qsl(parsed.query, keep_blank_values=True))
-    query["token"] = token
-    return urlunsplit(
-        (
-            parsed.scheme,
-            parsed.netloc,
-            parsed.path,
-            urlencode(query),
-            parsed.fragment,
-        )
-    )
+    return _build_deeplink(settings.email_verification_deeplink_url, token)
 
 
 async def send_verification_email(

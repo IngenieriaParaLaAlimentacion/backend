@@ -61,16 +61,13 @@ class TestPasswordRecoveryRequest:
         token = parse_qs(urlparse(capture_deeplink["deeplink"]).query).get("token")
         assert token and token[0]
 
-    async def test_admin_deeplink_uses_backoffice_origin(
+    async def test_deeplink_uses_backoffice_origin(
         self, client, db_active_user, capture_deeplink, monkeypatch
     ):
-        """db_active_user is an ADMIN, so the link must target the backoffice."""
+        """Every role is sent to the backoffice origin."""
         monkeypatch.setattr(
             "app.core.config.settings.backoffice_deeplink_base",
             "https://backoffice.example.com",
-        )
-        monkeypatch.setattr(
-            "app.core.config.settings.app_deeplink_base", "https://app.example.com"
         )
 
         await client.post(REQUEST_URL, json={"email": "ana@test.com"})

@@ -220,7 +220,7 @@ class AuthService:
         )
 
         await self.uow.commit()
-        deeplink = build_recovery_deeplink(recovery_token, user.role)
+        deeplink = build_recovery_deeplink(recovery_token)
         await send_recovery_email(user.email, deeplink, created_token.expires_at)
 
     async def confirm_password_recovery(
