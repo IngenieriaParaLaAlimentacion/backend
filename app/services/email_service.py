@@ -7,7 +7,7 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 import aiosmtplib
 
 from app.core.config import settings
-from app.domain.user import BACKOFFICE_ROLES, UserRole
+from app.domain.user import UserRole
 from app.exceptions.domain_exceptions import EmailDeliveryError
 
 logger = logging.getLogger(__name__)
