@@ -71,8 +71,9 @@ class Settings(BaseSettings):
 
     password_recovery_path: str = "/reset-password"
     email_verification_path: str = "/verify-email"
+    invite_path: str = "/invite"
 
-    def _build_deeplink(self, base: str, path: str) -> str:
+    def _build_deeplink(self, base: str | AnyUrl, path: str) -> str:
         base = str(base).rstrip("/")
         if not path.startswith("/"):
             path = f"/{path}"
@@ -95,6 +96,16 @@ class Settings(BaseSettings):
         """Derived email verification deeplink URL from app base URL."""
         return self._build_deeplink(
             self.app_deeplink_base, self.email_verification_path
+        )
+
+    def invite_deeplink_url(self, role: str) -> str:
+        """Derived invitation deeplink URL for a backoffice role.
+
+        Invitations are only issued to backoffice users, so the link always
+        points at the backoffice origin: ``<origin>/invite/<role>``.
+        """
+        return self._build_deeplink(
+            self.backoffice_deeplink_base, f"{self.invite_path}/{role}"
         )
 
     @model_validator(mode="after")

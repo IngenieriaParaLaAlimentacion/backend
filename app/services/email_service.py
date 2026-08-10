@@ -12,13 +12,8 @@ from app.exceptions.domain_exceptions import EmailDeliveryError
 logger = logging.getLogger(__name__)
 
 
-def build_recovery_deeplink(token: str, user_rol: str = "user") -> str:
-    """Build the password recovery deep link, injecting the opaque token."""
-    deeplink_url = (
-        settings.admin_password_reset_deeplink
-        if user_rol in ("admin", "superadmin")
-        else settings.password_recovery_deeplink_url
-    )
+def _build_deeplink(deeplink_url: str, token: str) -> str:
+    """Inject the opaque token as a query param into a deep link URL."""
     parsed = urlsplit(deeplink_url)
     query = dict(parse_qsl(parsed.query, keep_blank_values=True))
     query["token"] = token
@@ -32,6 +27,27 @@ def build_recovery_deeplink(token: str, user_rol: str = "user") -> str:
             parsed.fragment,
         )
     )
+
+
+def build_recovery_deeplink(token: str, user_rol: str = "user") -> str:
+    """Build the password recovery deep link, injecting the opaque token."""
+    deeplink_url = (
+        settings.admin_password_reset_deeplink
+        if user_rol in ("admin", "superadmin")
+        else settings.password_recovery_deeplink_url
+    )
+    return _build_deeplink(deeplink_url, token)
+
+
+def build_invite_deeplink(token: str, user_rol: str = "admin") -> str:
+    """Build the invitation deep link, injecting the opaque token.
+
+    Invitations only target backoffice roles, so the link resolves to
+    ``<backoffice-origin>/invite/<role>?token=<token>``. Any role other than
+    ``analyst`` falls back to the admin path.
+    """
+    role = "analyst" if user_rol == "analyst" else "admin"
+    return _build_deeplink(settings.invite_deeplink_url(role), token)
 
 
 def _render_base_template(

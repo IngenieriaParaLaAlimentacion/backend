@@ -117,7 +117,7 @@ class TestInviteAdmin:
 
         with (
             patch("app.services.admin_service.send_invite_email"),
-            patch("app.services.admin_service.build_recovery_deeplink"),
+            patch("app.services.admin_service.build_invite_deeplink"),
         ):
             result = await service.invite_user(
                 MagicMock(email="new@test.com"), UserRole.ADMIN
@@ -169,7 +169,7 @@ class TestInviteAdmin:
         with (
             patch("app.services.admin_service.send_invite_email") as mock_send,
             patch(
-                "app.services.admin_service.build_recovery_deeplink",
+                "app.services.admin_service.build_invite_deeplink",
                 return_value="https://deeplink/xyz",
             ),
         ):
@@ -188,7 +188,7 @@ class TestInviteAdmin:
     async def test_builds_deeplink_with_plain_token_and_role(
         self, make_uow, make_service, mock_auth_service
     ):
-        """Should call build_recovery_deeplink with the plain token and admin role."""
+        """Should call build_invite_deeplink with the plain token and admin role."""
         created_user = _make_user()
         mock_auth_service.create_recovery_token = AsyncMock(
             return_value=(_make_token(), "plain-xyz")
@@ -197,9 +197,7 @@ class TestInviteAdmin:
         service = make_service(uow)
 
         with (
-            patch(
-                "app.services.admin_service.build_recovery_deeplink"
-            ) as mock_deeplink,
+            patch("app.services.admin_service.build_invite_deeplink") as mock_deeplink,
             patch("app.services.admin_service.send_invite_email"),
         ):
             await service.invite_user(MagicMock(email="new@test.com"), UserRole.ADMIN)
@@ -277,7 +275,7 @@ class TestResendInvite:
         with (
             patch("app.services.admin_service.send_invite_email"),
             patch(
-                "app.services.admin_service.build_recovery_deeplink",
+                "app.services.admin_service.build_invite_deeplink",
                 return_value="https://deeplink/xyz",
             ),
         ):
@@ -300,7 +298,7 @@ class TestResendInvite:
         with (
             patch("app.services.admin_service.send_invite_email"),
             patch(
-                "app.services.admin_service.build_recovery_deeplink",
+                "app.services.admin_service.build_invite_deeplink",
                 return_value="https://deeplink/xyz",
             ),
         ):
@@ -347,7 +345,7 @@ class TestResendInvite:
         with (
             patch("app.services.admin_service.send_invite_email") as mock_send,
             patch(
-                "app.services.admin_service.build_recovery_deeplink",
+                "app.services.admin_service.build_invite_deeplink",
                 return_value="https://deeplink/resend",
             ),
         ):
@@ -364,7 +362,7 @@ class TestResendInvite:
     async def test_builds_deeplink_with_plain_token_and_user_role(
         self, make_uow, make_service, mock_auth_service
     ):
-        """Should call build_recovery_deeplink with
+        """Should call build_invite_deeplink with
         the new plain token and the user's role."""
         pending_user = _make_pending_user()
         mock_auth_service.create_recovery_token = AsyncMock(
@@ -375,9 +373,7 @@ class TestResendInvite:
         service = make_service(uow)
 
         with (
-            patch(
-                "app.services.admin_service.build_recovery_deeplink"
-            ) as mock_deeplink,
+            patch("app.services.admin_service.build_invite_deeplink") as mock_deeplink,
             patch("app.services.admin_service.send_invite_email"),
         ):
             await service.resend_invite(pending_user.id)

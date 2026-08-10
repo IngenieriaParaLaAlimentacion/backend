@@ -6,8 +6,10 @@ import aiosmtplib
 import pytest
 
 from app.core.config import settings
+from app.domain.user import UserRole
 from app.exceptions.domain_exceptions import EmailDeliveryError
 from app.services.email_service import (
+    build_invite_deeplink,
     build_recovery_deeplink,
     send_access_granted_email,
     send_invite_email,
@@ -29,6 +31,14 @@ def admin_deeplink_settings(monkeypatch):
         settings, "backoffice_deeplink_base", "https://backoffice.example.com"
     )
     monkeypatch.setattr(settings, "password_recovery_path", "/reset-password")
+
+
+@pytest.fixture
+def invite_deeplink_settings(monkeypatch):
+    monkeypatch.setattr(
+        settings, "backoffice_deeplink_base", "https://backoffice.example.com"
+    )
+    monkeypatch.setattr(settings, "invite_path", "/invite")
 
 
 @pytest.fixture
@@ -95,6 +105,40 @@ class TestBuildRecoveryDeeplink:
 
         result = build_recovery_deeplink("new-token")
         assert parse_qs(urlparse(result).query)["token"] == ["new-token"]
+
+
+class TestBuildInviteDeeplink:
+    def test_admin_role_uses_backoffice_invite_admin_path(
+        self, invite_deeplink_settings
+    ):
+        result = build_invite_deeplink("tok123", user_rol="admin")
+        assert result == "https://backoffice.example.com/invite/admin?token=tok123"
+
+    def test_analyst_role_uses_backoffice_invite_analyst_path(
+        self, invite_deeplink_settings
+    ):
+        result = build_invite_deeplink("tok123", user_rol="analyst")
+        assert result == "https://backoffice.example.com/invite/analyst?token=tok123"
+
+    def test_enum_role_resolves_to_its_value(self, invite_deeplink_settings):
+        result = build_invite_deeplink("tok123", user_rol=UserRole.ANALYST)
+        assert urlparse(result).path == "/invite/analyst"
+
+    def test_unknown_role_falls_back_to_admin_path(self, invite_deeplink_settings):
+        result = build_invite_deeplink("tok123", user_rol="field_worker")
+        assert urlparse(result).path == "/invite/admin"
+
+    def test_default_role_uses_admin_path(self, invite_deeplink_settings):
+        assert urlparse(build_invite_deeplink("tok123")).path == "/invite/admin"
+
+    def test_trailing_slash_in_base_does_not_duplicate(self, monkeypatch):
+        monkeypatch.setattr(
+            settings, "backoffice_deeplink_base", "https://backoffice.example.com/"
+        )
+        monkeypatch.setattr(settings, "invite_path", "/invite")
+
+        result = build_invite_deeplink("tok123", user_rol="analyst")
+        assert urlparse(result).path == "/invite/analyst"
 
 
 class TestSendRecoveryEmail:

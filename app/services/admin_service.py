@@ -26,7 +26,7 @@ from app.models.user import User
 from app.schemas.admin_schema import InviteAdminRequest
 from app.services.auth_service import AuthService
 from app.services.email_service import (
-    build_recovery_deeplink,
+    build_invite_deeplink,
     send_access_granted_email,
     send_invite_email,
 )
@@ -129,7 +129,7 @@ class AdminService:
         await self.uow.commit()
         await send_invite_email(
             user.email,
-            build_recovery_deeplink(plain_token, user.role),
+            build_invite_deeplink(plain_token, user.role),
             created_token.expires_at,
             user.role,
         )
