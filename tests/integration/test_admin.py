@@ -744,10 +744,10 @@ class TestApproveFieldWorker:
 
         assert user.status == UserStatus.ACTIVE
 
-    async def test_pending_establishments_become_rejected(
+    async def test_establishment_requests_stay_pending(
         self, client, admin_headers, registered_field_worker, db_establishment
     ):
-        """Account access must not carry establishment access."""
+        """Accepting the user must not resolve their establishment requests."""
         url = APPROVE_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"])
         await client.patch(url, headers=admin_headers)
 
@@ -759,7 +759,32 @@ class TestApproveFieldWorker:
             )
             relation = result.scalar_one()
 
-        assert relation.status.value == "rejected"
+        assert relation.status.value == "pending"
+
+    async def test_establishments_can_be_approved_afterwards(
+        self, client, admin_headers, registered_field_worker, db_establishment
+    ):
+        """The establishment flow keeps working once the user is accepted."""
+        user_id = registered_field_worker["id"]
+        await client.patch(
+            APPROVE_FIELD_WORKER_URL.format(user_id=user_id), headers=admin_headers
+        )
+
+        response = await client.patch(
+            APPROVE_URL.format(user_id=user_id),
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(UserEstablishment).where(
+                    UserEstablishment.establishment_id == db_establishment.id
+                )
+            )
+            relation = result.scalar_one()
+        assert relation.status.value == "approved"
 
     async def test_no_establishments_still_becomes_active(self, client, admin_headers):
         """A field worker without requests can still be let in."""
