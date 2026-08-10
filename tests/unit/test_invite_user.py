@@ -51,6 +51,9 @@ def make_uow():
     def _make(existing_user=None, created_user=None):
         uow = AsyncMock()
         uow.user_repo.get_by_email = AsyncMock(return_value=existing_user)
+        uow.user_repo.exists_by_email = AsyncMock(
+            return_value=existing_user is not None
+        )
         uow.user_repo.create = AsyncMock(return_value=created_user or _make_user())
         uow.password_repo.create = AsyncMock()
         uow.commit = AsyncMock()
@@ -89,6 +92,26 @@ class TestInviteAdmin:
             await service.invite_user(MagicMock(email=existing.email), UserRole.ADMIN)
 
         uow.user_repo.create.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_checks_existing_email_in_lowercase(self, make_uow, make_service):
+        """Should look the email up normalized, so casing cannot bypass the check."""
+        uow = make_uow()
+        service = make_service(uow)
+
+        await service.invite_user(MagicMock(email="  New@Test.com "), UserRole.ADMIN)
+
+        uow.user_repo.exists_by_email.assert_called_once_with("new@test.com")
+
+    @pytest.mark.asyncio
+    async def test_stores_email_in_lowercase(self, make_uow, make_service):
+        """Should persist the normalized email, not the raw input."""
+        uow = make_uow()
+        service = make_service(uow)
+
+        await service.invite_user(MagicMock(email="New@Test.com"), UserRole.ADMIN)
+
+        assert uow.user_repo.create.call_args.kwargs["email"] == "new@test.com"
 
     @pytest.mark.asyncio
     async def test_creates_user_with_admin_role_and_active_status(

@@ -276,15 +276,16 @@ class AdminService:
 
         Raises:
             UserAlreadyExistsError: If the email already belongs to a user,
-                regardless of that user's status. Use resend_invite to
-                re-send a pending invitation.
+                regardless of that user's status.
+                Use resend_invite to re-send a pending invitation.
             EmailDeliveryError: If the invitation email could not be delivered.
         """
-        if await self.uow.user_repo.get_by_email(data.email):
-            raise UserAlreadyExistsError(data.email)
+        email = data.email.strip().lower()
+        if await self.uow.user_repo.exists_by_email(email):
+            raise UserAlreadyExistsError(email)
 
         user = await self.uow.user_repo.create(
-            email=data.email,
+            email=email,
             name="",
             last_name="",
             role=role,

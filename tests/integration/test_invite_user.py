@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 from fastapi import status
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 import app.db.database as db_module
 from app.core.security import create_access_token
@@ -174,6 +174,64 @@ class TestInviteAdminConflict:
             users = result.scalars().all()
 
         assert len(users) == 1
+
+    async def test_returns_409_if_email_differs_only_in_case(
+        self, client, admin_headers
+    ):
+        """Casing must not bypass the duplicate check."""
+        email = f"admin_{uuid.uuid4().hex[:6]}@test.com"
+
+        with patch("app.services.admin_service.send_invite_email"):
+            await client.post(
+                INVITE_ADMIN_URL, json={"email": email}, headers=admin_headers
+            )
+            response = await client.post(
+                INVITE_ADMIN_URL,
+                json={"email": email.upper()},
+                headers=admin_headers,
+            )
+
+        assert response.status_code == status.HTTP_409_CONFLICT
+
+    async def test_case_variant_does_not_create_duplicate_user(
+        self, client, admin_headers
+    ):
+        """An upper-cased retry must not end up as a second account."""
+        email = f"admin_{uuid.uuid4().hex[:6]}@test.com"
+
+        with patch("app.services.admin_service.send_invite_email"):
+            await client.post(
+                INVITE_ADMIN_URL, json={"email": email}, headers=admin_headers
+            )
+            await client.post(
+                INVITE_ADMIN_URL,
+                json={"email": email.upper()},
+                headers=admin_headers,
+            )
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(User).where(func.lower(User.email) == email.lower())
+            )
+            users = result.scalars().all()
+
+        assert len(users) == 1
+
+    async def test_analyst_invite_returns_409_if_email_registered(
+        self, client, admin_headers
+    ):
+        """The conflict must also surface on the analyst endpoint."""
+        email = f"analyst_{uuid.uuid4().hex[:6]}@test.com"
+
+        with patch("app.services.admin_service.send_invite_email"):
+            await client.post(
+                INVITE_ANALYST_URL, json={"email": email}, headers=admin_headers
+            )
+            response = await client.post(
+                INVITE_ANALYST_URL, json={"email": email}, headers=admin_headers
+            )
+
+        assert response.status_code == status.HTTP_409_CONFLICT
 
 
 class TestInviteAdminEmailFailure:

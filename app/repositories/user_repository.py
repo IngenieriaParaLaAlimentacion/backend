@@ -1,9 +1,11 @@
 from uuid import UUID
 
 from sqlalchemy import func, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.exceptions.domain_exceptions import UserAlreadyExistsError
 from app.models.user import User, UserRole, UserStatus
 from app.utils.db import escape_like, execute_paginated
 
@@ -26,7 +28,12 @@ class UserRepository:
         contact_phone: str | None = None,
         is_email_verified: bool = False,
     ) -> User:
-        """Persist a new user. Password and establishments are handled separately."""
+        """Persist a new user. Password and establishments are handled separately.
+
+        Raises:
+            UserAlreadyExistsError: If the email is already taken. Guards against
+                races where two requests pass their pre-check concurrently.
+        """
         user = User(
             email=email,
             name=name,
@@ -38,14 +45,25 @@ class UserRepository:
             contact_phone=contact_phone,
             is_email_verified=is_email_verified,
         )
-        self.db.add(user)
-        await self.db.flush()
+        try:
+            async with self.db.begin_nested():
+                self.db.add(user)
+                await self.db.flush()
+        except IntegrityError:
+            raise UserAlreadyExistsError(email)
         await self.db.refresh(user)
         return user
 
     async def get_by_id(self, user_id: UUID) -> User | None:
         """Return a user by id, or None if it does not exist."""
         return await self.db.get(User, user_id)
+
+    async def exists_by_email(self, email: str) -> bool:
+        """Return whether any user already owns this email, ignoring case."""
+        result = await self.db.execute(
+            select(User.id).where(func.lower(User.email) == email.lower()).limit(1)
+        )
+        return result.first() is not None
 
     async def get_by_email(self, email: str) -> User | None:
         """Return a user by email, or None if it does not exist."""
