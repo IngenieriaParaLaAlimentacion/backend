@@ -476,10 +476,10 @@ class TestApproveFieldWorker:
             await service.approve_field_worker(uuid.uuid4())
 
     @pytest.mark.asyncio
-    async def test_activates_user_and_rejects_pending_establishments(
+    async def test_activates_user_without_touching_establishments(
         self, make_establishment, mock_auth_service
     ):
-        """Account access is granted, establishment access is not."""
+        """Accepting the user must leave the establishment requests alone."""
         user = _make_user(
             role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
         )
@@ -493,36 +493,9 @@ class TestApproveFieldWorker:
 
         await service.approve_field_worker(user.id)
 
-        uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
-            user.id, [estab1.id, estab2.id], UserEstablishmentStatus.REJECTED
-        )
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
         uow.user_repo.update_status.assert_called_once_with(user.id, UserStatus.ACTIVE)
         uow.commit.assert_called_once()
-
-    @pytest.mark.asyncio
-    async def test_leaves_already_approved_establishments_untouched(
-        self, make_establishment, mock_auth_service
-    ):
-        """Only pending requests are resolved; granted access stays granted."""
-        user = _make_user(
-            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
-        )
-        approved = make_establishment()
-        pending = make_establishment()
-        uow = _make_approve_uow(
-            user=user,
-            relations=[
-                _make_relation(approved.id, UserEstablishmentStatus.APPROVED),
-                _make_relation(pending.id),
-            ],
-        )
-        service = AdminService(uow, mock_auth_service)
-
-        await service.approve_field_worker(user.id)
-
-        uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
-            user.id, [pending.id], UserEstablishmentStatus.REJECTED
-        )
 
     @pytest.mark.asyncio
     async def test_no_establishments_still_activates(self, mock_auth_service):

@@ -78,9 +78,9 @@ class AdminService:
             ]
         return estab_data_by_user
 
-    async def _get_field_worker_relations(self, user_id: UUID) -> tuple[Any, list]:
-        """Return (user, relations) for a field worker, raising if the user does
-        not exist or their email is not yet verified."""
+    async def _get_verified_user(self, user_id: UUID) -> Any:
+        """Return the user, raising if they do not exist or their email is
+        not yet verified."""
         user = await self.uow.user_repo.get_by_id(user_id)
         if user is None:
             raise UserNotFoundError(str(user_id))
@@ -89,6 +89,12 @@ class AdminService:
                 "Email not verified",
                 "The user's email has not been verified yet.",
             )
+        return user
+
+    async def _get_field_worker_relations(self, user_id: UUID) -> tuple[Any, list]:
+        """Return (user, relations) for a field worker, raising if the user does
+        not exist or their email is not yet verified."""
+        user = await self._get_verified_user(user_id)
         relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
         return user, relations
 
@@ -200,18 +206,18 @@ class AdminService:
         await self.uow.commit()
 
     async def approve_field_worker(self, user_id: UUID) -> None:
-        """Activate a field worker without granting establishment access.
+        """Accept a field worker's account, leaving establishments untouched.
 
-        Account access no longer depends on establishments, so the pending
-        requests are resolved as rejected: the user is in, but not into any
-        establishment yet. Use approve_establishments to grant access.
+        Account access no longer depends on establishments: the requests stay
+        pending and are resolved separately through approve_establishments or
+        reject_establishments.
 
         Raises:
             UserNotFoundError: If the user does not exist.
             BadRequestError: If the user is not a field worker, or is not in
                 pending status.
         """
-        user, relations = await self._get_field_worker_relations(user_id)
+        user = await self._get_verified_user(user_id)
         if user.role != UserRole.FIELD_WORKER:
             raise BadRequestError(
                 "User is not a field worker",
@@ -224,15 +230,6 @@ class AdminService:
                 "this endpoint.",
             )
 
-        pending_ids = [
-            rel.establishment_id
-            for rel in relations
-            if rel.status == UserEstablishmentStatus.PENDING
-        ]
-        if pending_ids:
-            await self.uow.user_establishment_repo.update_status_for_ids(
-                user_id, pending_ids, UserEstablishmentStatus.REJECTED
-            )
         await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
         await self.uow.commit()
 
