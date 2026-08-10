@@ -75,8 +75,8 @@ class EstablishmentRequestDomain:
 
     id: UUID
     user_id: UUID
-    name: str | None
-    formatted_address: str | None
+    name: str
+    formatted_address: str
     city: str | None
     province: str | None
     status: str

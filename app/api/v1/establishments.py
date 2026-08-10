@@ -75,8 +75,7 @@ async def create_establishment(
     summary="Request creation of a missing establishment",
     description="Notifies an admin that the establishment the field worker "
     "needs access to is missing from the catalog, so it can be reviewed and "
-    "registered. All fields are optional: the field worker provides as much "
-    "as they know, possibly nothing.",
+    "registered. Name and address are not optional.",
     responses={
         status.HTTP_422_UNPROCESSABLE_CONTENT: {"description": "Invalid data"},
         **AUTH_RESPONSES,

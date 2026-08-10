@@ -10,8 +10,7 @@ from app.schemas.types import Latitude, Longitude, ValidStr
 
 class EstablishmentCreationRequestCreate(BaseModel):
     """Payload for a field worker requesting the creation of a
-    missing establishment. Every field is optional: the field worker
-    provides as much as they know, possibly nothing."""
+    missing establishment. Name and address are not optional."""
 
     name: ValidStr
     formatted_address: ValidStr

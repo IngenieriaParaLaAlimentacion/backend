@@ -51,7 +51,7 @@ compatible with the target table.
 **Negative**
 
 - One more table to maintain, and no uniqueness constraint prevents two field
-  workers from requesting the same comedor. This is accepted: duplicate requests
+  workers from requesting the same establishment. This is accepted: duplicate requests
   are visible to the admin in one review query, and deduplicating them is
   deliberately left out of the data layer (no `place_id` exists to key on
   anyway).
