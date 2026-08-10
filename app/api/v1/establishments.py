@@ -84,10 +84,7 @@ async def create_establishment(
 )
 async def create_establishment_request(
     data: EstablishmentCreationRequestCreate,
-    actor: UserActor = Depends(
-        require_some(UserRole.FIELD_WORKER, UserRole.SUPERADMIN)
-        # TODO: take into a new variable if it does not already exits, do not remember
-    ),
+    actor: UserActor = Depends(require_any),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> EstablishmentCreationRequestResponse:
     """Register a notification requesting the creation of a missing establishment."""
