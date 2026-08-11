@@ -15,7 +15,7 @@ def main() -> None:
     if str(PROJECT_ROOT) not in sys.path:
         sys.path.insert(0, str(PROJECT_ROOT))
 
-    from app.core.config import settings
+    from app.config.settings import settings
     from app.main import app
 
     schema = app.openapi()

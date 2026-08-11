@@ -4,7 +4,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from app.api.router import api_router
-from app.core.config import settings
+from app.config.settings import settings
 from app.core.openapi import configure_openapi
 from app.db.database import engine
 from app.exceptions.exception_handlers import register_exception_handlers

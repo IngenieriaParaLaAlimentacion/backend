@@ -1,7 +1,7 @@
 from datetime import timedelta
 from uuid import UUID
 
-from app.core.config import settings
+from app.config.settings import settings
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.core.security import (
     create_access_token,

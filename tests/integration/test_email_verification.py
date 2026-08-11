@@ -84,7 +84,7 @@ async def register_and_verify(client, db_establishment):
     Returns the email address of the verified user."""
 
     async def _make():
-        from app.core.config import settings
+        from app.config.settings import settings
         from app.core.security import create_email_verification_token
         from app.db.database import AsyncSessionLocal
         from app.models.email_verification_token import EmailVerificationToken

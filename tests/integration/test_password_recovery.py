@@ -66,7 +66,7 @@ class TestPasswordRecoveryRequest:
     ):
         """Every role is sent to the backoffice origin."""
         monkeypatch.setattr(
-            "app.core.config.settings.backoffice_deeplink_base",
+            "app.config.settings.settings.backoffice_deeplink_base",
             "https://backoffice.example.com",
         )
 

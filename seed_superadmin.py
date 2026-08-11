@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from app.core.config import settings
+from app.config.settings import settings
 from app.core.security import hash_password
 from app.db.unit_of_work import UnitOfWork
 from app.domain.user import UserRole, UserStatus

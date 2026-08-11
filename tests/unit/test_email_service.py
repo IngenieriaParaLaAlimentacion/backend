@@ -5,7 +5,7 @@ from urllib.parse import parse_qs, urlparse
 import aiosmtplib
 import pytest
 
-from app.core.config import settings
+from app.config.settings import settings
 from app.domain.user import UserRole
 from app.exceptions.domain_exceptions import EmailDeliveryError
 from app.services.email_service import (
