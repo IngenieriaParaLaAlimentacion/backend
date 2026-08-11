@@ -27,26 +27,20 @@ def setup_telemetry(app) -> LoggingHandler | None:
         }
     )
 
-    trace_exporter = OTLPSpanExporter(
-        endpoint=f"{settings.otel_exporter_otlp_endpoint}/v1/traces"
-    )
+    trace_exporter = OTLPSpanExporter()
     tracer_provider = TracerProvider(resource=resource)
     tracer_provider.add_span_processor(BatchSpanProcessor(trace_exporter))
     trace.set_tracer_provider(tracer_provider)
 
     # metrics config
-    metric_exporter = OTLPMetricExporter(
-        endpoint=f"{settings.otel_exporter_otlp_endpoint}/v1/metrics",
-    )
+    metric_exporter = OTLPMetricExporter()
     # by default every 60 secs sends metrics
     # TODO: ver cada cuanto querriamos exportar metricas nosotros
     metric_reader = PeriodicExportingMetricReader(metric_exporter)
     meter_provider = MeterProvider(resource=resource, metric_readers=[metric_reader])
     metrics.set_meter_provider(meter_provider)
 
-    log_exporter = OTLPLogExporter(
-        endpoint=f"{settings.otel_exporter_otlp_endpoint}/v1/logs"
-    )
+    log_exporter = OTLPLogExporter()
     logger_provider = LoggerProvider(resource=resource)
     logger_provider.add_log_record_processor(BatchLogRecordProcessor(log_exporter))
     _logs.set_logger_provider(logger_provider)
