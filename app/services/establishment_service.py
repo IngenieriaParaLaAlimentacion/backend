@@ -198,8 +198,8 @@ class EstablishmentService:
         """Approve a pending establishment creation request.
 
         Creates the establishment described by ``data``, or reuses an
-        existing one with the same name and address, grants the requesting
-        field worker approved access to it, and notifies them by email.
+        existing one with the same place_id, grants the requesting field
+        worker approved access to it, and notifies them by email.
 
         Raises:
             EstablishmentRequestNotFoundError: If no request with that ID
@@ -213,9 +213,7 @@ class EstablishmentService:
         if request.status != EstablishmentRequestStatus.PENDING:
             raise EstablishmentRequestAlreadyReviewedError(str(request_id))
 
-        establishment = await self.uow.establishment_repo.find_by_name_and_address(
-            data.name, data.formatted_address
-        )
+        establishment = await self.uow.establishment_repo.get_by_place_id(data.place_id)
         if establishment is None:
             establishment = await self.uow.establishment_repo.create(
                 Establishment(**data.model_dump())

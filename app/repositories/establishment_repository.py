@@ -72,25 +72,6 @@ class EstablishmentRepository:
             raise EstablishmentNotFoundError(str(id))
         return establishment
 
-    async def find_by_name_and_address(
-        self, name: str, formatted_address: str
-    ) -> Establishment | None:
-        """Return an establishment matching name and address case-insensitively,
-        or None if there is no match.
-
-        Used to dedup establishment creation requests: two requests approved
-        with the same reported name/address should resolve to the same
-        establishment instead of creating duplicates.
-        """
-        result = await self.db.execute(
-            select(Establishment).where(
-                func.lower(Establishment.name) == name.lower(),
-                func.lower(Establishment.formatted_address)
-                == formatted_address.lower(),
-            )
-        )
-        return result.scalar_one_or_none()
-
     async def find_by_ids(self, ids: list[UUID]) -> list[Establishment]:
         """Return establishments for the given IDs, silently skipping any
         that do not exist."""
