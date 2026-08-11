@@ -172,6 +172,30 @@ async def send_access_granted_email(
     )
 
 
+async def send_creation_denied_email(
+    to_email: str, establishment_name: str, reason: str | None = None
+) -> None:
+    """Notify a field worker that their establishment creation request was denied."""
+    reason_text = f"\n\nMotivo: {reason}" if reason else ""
+    reason_html = f"<p>Motivo: {reason}</p>" if reason else ""
+    await _send_email(
+        to_email=to_email,
+        subject="Creación de establecimientos denegada",
+        body=(
+            "Hola,\n\n"
+            "Tu solicitud de creación del siguiente establecimiento ha sido "
+            f"denegada:\n\n{establishment_name}.{reason_text}"
+        ),
+        html_body=(
+            f"<p>Tu solicitud de creación del siguiente establecimiento "
+            f"ha sido denegada:</p>"
+            f"<p>{establishment_name}</p>"
+            f"{reason_html}"
+        ),
+        log_label="Creation denied",
+    )
+
+
 def build_verification_deeplink(token: str) -> str:
     """Build the email verification deep link, injecting the opaque token."""
     deeplink_url = settings.email_verification_deeplink_url

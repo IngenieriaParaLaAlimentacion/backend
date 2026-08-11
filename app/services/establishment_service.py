@@ -13,6 +13,7 @@ from app.domain.pagination import PaginatedResult
 from app.exceptions.domain_exceptions import (
     EstablishmentAlreadyExistsError,
     EstablishmentRequestAlreadyReviewedError,
+    EstablishmentRequestNotFoundError,
 )
 from app.models import Establishment
 from app.models.establishment_request import (
@@ -21,10 +22,12 @@ from app.models.establishment_request import (
 from app.schemas.establishment_schema import (
     EstablishmentCreationRequestCreate,
     EstablishmentRequest,
-    EstablishmentResponse,
     EstablishmentUpdateRequest,
 )
-from app.services.email_service import send_access_granted_email
+from app.services.email_service import (
+    send_access_granted_email,
+    send_creation_denied_email,
+)
 
 
 class EstablishmentService:
@@ -50,6 +53,24 @@ class EstablishmentService:
             page=page,
             page_size=page_size,
         )
+
+    async def _get_pending_request_or_raise(
+        self, request_id: UUID
+    ) -> EstablishmentRequestModel:
+        """Return the request by ID, ensuring it is still pending review.
+
+        Raises:
+            EstablishmentRequestNotFoundError: If no request with that ID
+                exists.
+            EstablishmentRequestAlreadyReviewedError: If the request is not
+                pending.
+        """
+        request = await self.uow.establishment_request_repo.get_by_id(request_id)
+        if request is None:
+            raise EstablishmentRequestNotFoundError(str(request_id))
+        if request.status != EstablishmentRequestStatus.PENDING:
+            raise EstablishmentRequestAlreadyReviewedError(str(request_id))
+        return request
 
     async def create_establishment(
         self, data: EstablishmentRequest
@@ -207,11 +228,7 @@ class EstablishmentService:
             EstablishmentRequestAlreadyReviewedError: If the request is not
                 pending.
         """
-        request = await self.uow.establishment_request_repo.get_by_id_or_raise(
-            request_id
-        )
-        if request.status != EstablishmentRequestStatus.PENDING:
-            raise EstablishmentRequestAlreadyReviewedError(str(request_id))
+        request = await self._get_pending_request_or_raise(request_id)
 
         establishment = await self.uow.establishment_repo.get_by_place_id(data.place_id)
         if establishment is None:
@@ -230,5 +247,22 @@ class EstablishmentService:
 
         return EstablishmentDomain.from_db(establishment)
 
-    async def reject_creation_request(self, request_id: UUID) -> EstablishmentResponse:
-        pass
+    async def reject_creation_request(
+        self, request_id: UUID, reason: str | None = None
+    ) -> None:
+        """Reject a pending establishment creation request and notify the
+        requesting field worker by email, optionally including the admin's
+        reason. No establishment is created or linked.
+
+        Raises:
+            EstablishmentRequestNotFoundError: If no request with that ID
+                exists.
+            EstablishmentRequestAlreadyReviewedError: If the request is not
+                pending.
+        """
+        request = await self._get_pending_request_or_raise(request_id)
+        request.status = EstablishmentRequestStatus.REJECTED
+        await self.uow.commit()
+
+        requester = await self.uow.user_repo.get_by_id(request.user_id)
+        await send_creation_denied_email(requester.email, request.name, reason)

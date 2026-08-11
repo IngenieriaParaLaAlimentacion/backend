@@ -24,6 +24,7 @@ from app.schemas.admin_schema import (
 from app.schemas.establishment_schema import (
     EstablishmentCreationRequestAdminView,
     EstablishmentRequest,
+    EstablishmentRequestRejection,
     EstablishmentResponse,
 )
 from app.schemas.pagination import PaginatedResponse
@@ -315,8 +316,8 @@ async def approve_request(
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Reject an establishment creation request",
     description="Rejects the request and notifies the requesting field "
-    "worker by email. No establishment is created or linked. Accessible "
-    "by admins only.",
+    "worker by email, optionally including the admin's reason. No "
+    "establishment is created or linked. Accessible by admins only.",
     responses={
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Request not found"},
@@ -325,8 +326,9 @@ async def approve_request(
 )
 async def reject_request(
     request_id: UUID,
+    data: EstablishmentRequestRejection,
     _admin: UserActor = Depends(get_current_admin),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> Response:
-    await service.reject_creation_request(request_id)
+    await service.reject_creation_request(request_id, reason=data.reason)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

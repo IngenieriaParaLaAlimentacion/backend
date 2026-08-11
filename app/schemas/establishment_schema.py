@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, model_validator
 
-from app.schemas.types import Latitude, Longitude, ValidStr
+from app.schemas.types import DescriptionStr, Latitude, Longitude, ValidStr
 
 # -- Request --
 
@@ -26,6 +26,12 @@ class EstablishmentRequest(BaseModel):
     place_id: ValidStr
     city: ValidStr
     province: ValidStr
+
+
+class EstablishmentRequestRejection(BaseModel):
+    """Payload for an admin rejecting an establishment creation request."""
+
+    reason: DescriptionStr | None = None
 
 
 class EstablishmentUpdateRequest(BaseModel):
