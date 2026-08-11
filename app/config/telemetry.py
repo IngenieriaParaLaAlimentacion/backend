@@ -17,8 +17,6 @@ from app.config import settings
 
 
 def setup_telemetry(app) -> LoggingHandler | None:
-    if not settings.otel_exporter_otlp_endpoint:
-        return
 
     resource = Resource.create(
         {
