@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 from math import ceil
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -17,6 +17,8 @@ from app.domain.pagination import PaginatedResult
 from app.exceptions.domain_exceptions import (
     EstablishmentAlreadyExistsError,
     EstablishmentNotFoundError,
+    EstablishmentRequestAlreadyReviewedError,
+    EstablishmentRequestNotFoundError,
 )
 from app.models import Establishment
 from app.schemas.establishment_schema import (
@@ -69,6 +71,21 @@ def _make_request_orm(user_id: uuid.UUID, **overrides) -> MagicMock:
     for key, value in overrides.items():
         setattr(request, key, value)
     return request
+
+
+@pytest.fixture
+def make_request_review_uow():
+    """Build a UoW mocked for approve/reject-creation-request flows: wires
+    the pending-request lookup and requester email lookup shared by both."""
+
+    def _make(request=None, requester=None):
+        uow = AsyncMock()
+        uow.establishment_request_repo.get_by_id = AsyncMock(return_value=request)
+        uow.user_repo.get_by_id = AsyncMock(return_value=requester or _make_requester())
+        uow.commit = AsyncMock()
+        return uow
+
+    return _make
 
 
 @pytest.fixture
@@ -603,3 +620,208 @@ class TestListEstablishmentRequestsPaginated:
         assert item.requester_name == "Maria"
         assert item.requester_last_name == "Perez"
         assert item.requester_email == "maria@test.com"
+
+
+class TestApproveCreationRequest:
+    pytestmark = pytest.mark.asyncio
+
+    @pytest.fixture
+    def make_uow(self, make_request_review_uow, make_establishment):
+        def _make(
+            request=None,
+            existing_establishment=None,
+            created_establishment=None,
+            requester=None,
+        ):
+            uow = make_request_review_uow(request=request, requester=requester)
+            uow.establishment_repo.get_by_place_id = AsyncMock(
+                return_value=existing_establishment
+            )
+            uow.establishment_repo.create = AsyncMock(
+                return_value=created_establishment or make_establishment()
+            )
+            uow.user_establishment_repo.create_or_approve_relation = AsyncMock()
+            return uow
+
+        return _make
+
+    async def test_raises_when_request_not_found(self, make_uow):
+        """Raises EstablishmentRequestNotFoundError when the repo returns None."""
+        uow = make_uow(request=None)
+        service = EstablishmentService(uow=uow)
+
+        with pytest.raises(EstablishmentRequestNotFoundError):
+            await service.approve_creation_request(uuid.uuid4(), _make_request())
+
+    async def test_raises_when_already_reviewed(self, make_uow):
+        """Raises EstablishmentRequestAlreadyReviewedError when the request
+        is not pending."""
+        request = _make_request_orm(
+            uuid.uuid4(), status=EstablishmentRequestStatus.APPROVED
+        )
+        uow = make_uow(request=request)
+        service = EstablishmentService(uow=uow)
+
+        with pytest.raises(EstablishmentRequestAlreadyReviewedError):
+            await service.approve_creation_request(request.id, _make_request())
+
+    async def test_creates_new_establishment_when_no_place_id_match(
+        self, make_uow, make_establishment
+    ):
+        """Creates a new establishment when no place_id match is found."""
+        request = _make_request_orm(uuid.uuid4())
+        created = make_establishment(name="Centro Nuevo")
+        uow = make_uow(
+            request=request, existing_establishment=None, created_establishment=created
+        )
+        service = EstablishmentService(uow=uow)
+
+        result = await service.approve_creation_request(
+            request.id, _make_request(name="Centro Nuevo", place_id="place-new-001")
+        )
+
+        uow.establishment_repo.create.assert_called_once()
+        assert isinstance(result, EstablishmentDomain)
+        assert result.name == "Centro Nuevo"
+
+    async def test_reuses_existing_establishment_with_same_place_id(
+        self, make_uow, make_establishment
+    ):
+        """Reuses the matching establishment instead of creating a duplicate."""
+        existing = make_establishment(name="Centro Existente")
+        request = _make_request_orm(uuid.uuid4())
+        uow = make_uow(request=request, existing_establishment=existing)
+        service = EstablishmentService(uow=uow)
+
+        result = await service.approve_creation_request(
+            request.id, _make_request(place_id=existing.place_id)
+        )
+
+        uow.establishment_repo.create.assert_not_called()
+        assert result.id == existing.id
+
+    async def test_grants_access_to_requester(self, make_uow, make_establishment):
+        """Grants the requesting field worker approved access to the
+        resolved establishment."""
+        user_id = uuid.uuid4()
+        request = _make_request_orm(user_id)
+        existing = make_establishment()
+        uow = make_uow(request=request, existing_establishment=existing)
+        service = EstablishmentService(uow=uow)
+
+        await service.approve_creation_request(request.id, _make_request())
+
+        uow.user_establishment_repo.create_or_approve_relation.assert_called_once_with(
+            user_id, existing.id
+        )
+
+    async def test_sets_request_status_to_approved(self, make_uow, make_establishment):
+        """Flips the request status once approval succeeds."""
+        request = _make_request_orm(uuid.uuid4())
+        uow = make_uow(request=request, existing_establishment=make_establishment())
+        service = EstablishmentService(uow=uow)
+
+        await service.approve_creation_request(request.id, _make_request())
+
+        assert request.status == EstablishmentRequestStatus.APPROVED
+        uow.commit.assert_called_once()
+
+    async def test_sends_access_granted_email(self, make_uow, make_establishment):
+        """Notifies the requester by email with the resolved establishment's
+        name, using their address on file rather than the request payload."""
+        user_id = uuid.uuid4()
+        request = _make_request_orm(user_id)
+        requester = _make_requester(id=user_id, email="worker@test.com")
+        existing = make_establishment(name="Centro A")
+        uow = make_uow(
+            request=request, existing_establishment=existing, requester=requester
+        )
+        service = EstablishmentService(uow=uow)
+
+        with patch(
+            "app.services.establishment_service.send_access_granted_email",
+            new_callable=AsyncMock,
+        ) as mock_email:
+            await service.approve_creation_request(request.id, _make_request())
+
+        mock_email.assert_awaited_once_with("worker@test.com", ["Centro A"])
+
+
+class TestRejectCreationRequest:
+    pytestmark = pytest.mark.asyncio
+
+    @pytest.fixture
+    def make_uow(self, make_request_review_uow):
+        return make_request_review_uow
+
+    async def test_raises_when_request_not_found(self, make_uow):
+        """Raises EstablishmentRequestNotFoundError when the repo returns None."""
+        uow = make_uow(request=None)
+        service = EstablishmentService(uow=uow)
+
+        with pytest.raises(EstablishmentRequestNotFoundError):
+            await service.reject_creation_request(uuid.uuid4())
+
+    async def test_raises_when_already_reviewed(self, make_uow):
+        """Raises EstablishmentRequestAlreadyReviewedError when the request
+        is not pending."""
+        request = _make_request_orm(
+            uuid.uuid4(), status=EstablishmentRequestStatus.REJECTED
+        )
+        uow = make_uow(request=request)
+        service = EstablishmentService(uow=uow)
+
+        with pytest.raises(EstablishmentRequestAlreadyReviewedError):
+            await service.reject_creation_request(request.id)
+
+    async def test_sets_request_status_to_rejected(self, make_uow):
+        """Flips the request status and commits, without touching any
+        establishment or access relation."""
+        request = _make_request_orm(uuid.uuid4())
+        uow = make_uow(request=request)
+        service = EstablishmentService(uow=uow)
+
+        await service.reject_creation_request(request.id)
+
+        assert request.status == EstablishmentRequestStatus.REJECTED
+        uow.commit.assert_called_once()
+        uow.establishment_repo.create.assert_not_called()
+        uow.user_establishment_repo.create_or_approve_relation.assert_not_called()
+
+    async def test_sends_denial_email_with_reason(self, make_uow):
+        """Forwards the admin's reason through to the denial email."""
+        user_id = uuid.uuid4()
+        request = _make_request_orm(user_id, name="Comedor Esperanza")
+        requester = _make_requester(id=user_id, email="worker@test.com")
+        uow = make_uow(request=request, requester=requester)
+        service = EstablishmentService(uow=uow)
+
+        with patch(
+            "app.services.establishment_service.send_creation_denied_email",
+            new_callable=AsyncMock,
+        ) as mock_email:
+            await service.reject_creation_request(
+                request.id, reason="Datos incompletos"
+            )
+
+        mock_email.assert_awaited_once_with(
+            "worker@test.com", "Comedor Esperanza", "Datos incompletos"
+        )
+
+    async def test_sends_denial_email_without_reason(self, make_uow):
+        """The reason defaults to None when the admin doesn't provide one."""
+        user_id = uuid.uuid4()
+        request = _make_request_orm(user_id, name="Comedor Esperanza")
+        requester = _make_requester(id=user_id, email="worker@test.com")
+        uow = make_uow(request=request, requester=requester)
+        service = EstablishmentService(uow=uow)
+
+        with patch(
+            "app.services.establishment_service.send_creation_denied_email",
+            new_callable=AsyncMock,
+        ) as mock_email:
+            await service.reject_creation_request(request.id)
+
+        mock_email.assert_awaited_once_with(
+            "worker@test.com", "Comedor Esperanza", None
+        )
