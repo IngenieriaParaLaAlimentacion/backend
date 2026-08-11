@@ -19,6 +19,7 @@ from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
     EstablishmentRequestAlreadyReviewedError,
     EstablishmentRequestNotFoundError,
+    UniqueConstraintError,
 )
 from app.models import Establishment
 from app.schemas.establishment_schema import (
@@ -281,6 +282,19 @@ class TestCreateEstablishment:
     async def test_raises_when_already_exists(self, make_uow, make_establishment):
         """Raises EstablishmentAlreadyExistsError when place_id is taken."""
         uow = make_uow(existing=make_establishment())
+        service = EstablishmentService(uow=uow)
+
+        with pytest.raises(EstablishmentAlreadyExistsError):
+            await service.create_establishment(_make_request())
+
+    async def test_raises_when_concurrent_create_wins_the_race(self, make_uow):
+        """A UniqueConstraintError from a concurrent insert (missed by the
+        get_by_place_id pre-check) is translated into the same domain error
+        as the synchronous duplicate case."""
+        uow = make_uow(existing=None)
+        uow.establishment_repo.create = AsyncMock(
+            side_effect=UniqueConstraintError("place_id", "place-test-001")
+        )
         service = EstablishmentService(uow=uow)
 
         with pytest.raises(EstablishmentAlreadyExistsError):
@@ -683,6 +697,28 @@ class TestApproveCreationRequest:
         uow.establishment_repo.create.assert_called_once()
         assert isinstance(result, EstablishmentDomain)
         assert result.name == "Centro Nuevo"
+
+    async def test_reuses_establishment_created_by_a_concurrent_approval(
+        self, make_uow, make_establishment
+    ):
+        """If a concurrent approval creates the establishment first, the
+        unique constraint on place_id makes create() fail; the service
+        recovers by re-fetching and reusing the winner instead of erroring
+        out."""
+        request = _make_request_orm(uuid.uuid4())
+        winner = make_establishment(name="Centro Nuevo")
+        uow = make_uow(request=request, existing_establishment=None)
+        uow.establishment_repo.get_by_place_id = AsyncMock(side_effect=[None, winner])
+        uow.establishment_repo.create = AsyncMock(
+            side_effect=UniqueConstraintError("place_id", "place-new-001")
+        )
+        service = EstablishmentService(uow=uow)
+
+        result = await service.approve_creation_request(
+            request.id, _make_request(name="Centro Nuevo", place_id="place-new-001")
+        )
+
+        assert result.id == winner.id
 
     async def test_reuses_existing_establishment_with_same_place_id(
         self, make_uow, make_establishment

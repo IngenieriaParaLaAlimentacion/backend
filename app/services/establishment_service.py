@@ -14,6 +14,7 @@ from app.exceptions.domain_exceptions import (
     EstablishmentAlreadyExistsError,
     EstablishmentRequestAlreadyReviewedError,
     EstablishmentRequestNotFoundError,
+    UniqueConstraintError,
 )
 from app.models import Establishment
 from app.models.establishment_request import (
@@ -85,9 +86,13 @@ class EstablishmentService:
         if existing:
             raise EstablishmentAlreadyExistsError(data.place_id)
 
-        establishment = await self.uow.establishment_repo.create(
-            Establishment(**data.model_dump())
-        )
+        try:
+            establishment = await self.uow.establishment_repo.create(
+                Establishment(**data.model_dump())
+            )
+        except UniqueConstraintError:
+            # Concurrent create won the race for this place_id.
+            raise EstablishmentAlreadyExistsError(data.place_id)
         await self.uow.commit()
         return EstablishmentDomain.from_db(establishment)
 
@@ -232,9 +237,17 @@ class EstablishmentService:
 
         establishment = await self.uow.establishment_repo.get_by_place_id(data.place_id)
         if establishment is None:
-            establishment = await self.uow.establishment_repo.create(
-                Establishment(**data.model_dump())
-            )
+            try:
+                establishment = await self.uow.establishment_repo.create(
+                    Establishment(**data.model_dump())
+                )
+            except UniqueConstraintError:
+                # Concurrent approval created it first -> reuse it.
+                establishment = await self.uow.establishment_repo.get_by_place_id(
+                    data.place_id
+                )
+                if establishment is None:
+                    raise
 
         await self.uow.user_establishment_repo.create_or_approve_relation(
             request.user_id, establishment.id

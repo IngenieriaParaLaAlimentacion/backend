@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from sqlalchemy import asc, desc, func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.establishment import (
@@ -8,7 +9,10 @@ from app.domain.establishment import (
     EstablishmentSortOrder,
     UserEstablishmentStatus,
 )
-from app.exceptions.domain_exceptions import EstablishmentNotFoundError
+from app.exceptions.domain_exceptions import (
+    EstablishmentNotFoundError,
+    UniqueConstraintError,
+)
 from app.models.establishment import Establishment
 from app.models.user_establishment import UserEstablishment
 from app.utils.db import escape_like, execute_paginated
@@ -34,9 +38,22 @@ class EstablishmentRepository:
         self.db = db
 
     async def create(self, establishment: Establishment) -> Establishment:
-        """Persist a new establishment."""
-        self.db.add(establishment)
-        await self.db.flush()
+        """Persist a new establishment.
+
+        The insert runs inside a SAVEPOINT so a unique violation rolls back
+        only the failed row and leaves the session usable for the caller to
+        re-query.
+
+        Raises:
+            UniqueConstraintError: If place_id is already in use. The caller
+                is responsible for re-querying to decide the outcome.
+        """
+        try:
+            async with self.db.begin_nested():
+                self.db.add(establishment)
+                await self.db.flush()
+        except IntegrityError:
+            raise UniqueConstraintError("place_id", establishment.place_id)
         await self.db.refresh(establishment)
         return establishment
 
