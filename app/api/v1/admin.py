@@ -209,7 +209,17 @@ async def invite_analyst(
     response_class=Response,
     summary="Re-send invitation to admin/analyst user",
     description="Re-send invitation to an already invited admin/analyst",
-    responses=AUTH_RESPONSES,
+    responses={
+        status.HTTP_202_ACCEPTED: {"description": "Invitation re-sent successfully"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "User is not pending, or is not a valid user"
+        },
+        status.HTTP_404_NOT_FOUND: {"description": "User not found"},
+        status.HTTP_502_BAD_GATEWAY: {
+            "description": "Invitation email could not be delivered"
+        },
+        **AUTH_RESPONSES,
+    },
 )
 async def resend_invite(
     user_id: UUID,

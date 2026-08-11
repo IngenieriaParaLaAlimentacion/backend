@@ -4,6 +4,8 @@ from typing import Optional
 from pydantic import AnyUrl, EmailStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.domain.user import UserRole
+
 
 class LogLevel(str, enum.Enum):
     """Possible log levels."""
@@ -65,36 +67,37 @@ class Settings(BaseSettings):
     smtp_use_tls: bool = False
     smtp_sender_email: EmailStr = "no-reply@tpp.com"
 
-    # Shared base URL used by frontend deeplinks.s
-    app_deeplink_base: AnyUrl = "http://localhost:3000"
+    # Base URL used by every frontend deeplink (all links target the backoffice).
     backoffice_deeplink_base: AnyUrl = "http://i_need_deeplink.com"
 
     password_recovery_path: str = "/reset-password"
     email_verification_path: str = "/verify-email"
+    invite_path: str = "/invite"
 
-    def _build_deeplink(self, base: str, path: str) -> str:
+    def _build_deeplink(self, base: str | AnyUrl, path: str) -> str:
         base = str(base).rstrip("/")
         if not path.startswith("/"):
             path = f"/{path}"
         return f"{base}{path}"
 
     @property
-    def password_recovery_deeplink_url(self) -> str:
-        """Derived password recovery deeplink URL from base URL and path."""
-        return self._build_deeplink(self.app_deeplink_base, self.password_recovery_path)
-
-    @property
-    def admin_password_reset_deeplink(self) -> str:
-        """Derived password reset deeplink URL for admin invitation."""
+    def backoffice_password_reset_deeplink(self) -> str:
+        """Derived password reset deeplink URL from the backoffice base URL."""
         return self._build_deeplink(
             self.backoffice_deeplink_base, self.password_recovery_path
         )
 
     @property
     def email_verification_deeplink_url(self) -> str:
-        """Derived email verification deeplink URL from app base URL."""
+        """Derived email verification deeplink URL from the backoffice base URL."""
         return self._build_deeplink(
-            self.app_deeplink_base, self.email_verification_path
+            self.backoffice_deeplink_base, self.email_verification_path
+        )
+
+    def invite_deeplink_url(self, role: UserRole) -> str:
+        """Derived invitation deeplink URL for a backoffice role."""
+        return self._build_deeplink(
+            self.backoffice_deeplink_base, f"{self.invite_path}/{role}"
         )
 
     @model_validator(mode="after")
