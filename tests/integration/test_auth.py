@@ -3,8 +3,11 @@ import uuid
 import pytest
 import pytest_asyncio
 from fastapi import status
+from sqlalchemy import select
 
+import app.db.database as db_module
 from app.domain.user import UserRole
+from app.models.user_establishment import UserEstablishment
 
 pytestmark = pytest.mark.asyncio
 
@@ -59,9 +62,43 @@ class TestRegisterFieldWorker:
         response = await self._register(client, establishments=[str(uuid.uuid4())])
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    async def test_empty_establishments_returns_422(self, client):
+    async def test_empty_establishments_returns_201(self, client):
+        """Account access does not depend on establishments."""
         response = await self._register(client, establishments=[])
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+        assert response.status_code == status.HTTP_201_CREATED
+
+    async def test_omitted_establishments_returns_201(self, client):
+        """The field can be left out entirely."""
+        body = {
+            "email": "no_estab@example.com",
+            "password": "securepass123",
+            "name": "Juan",
+            "last_name": "Perez",
+        }
+        response = await client.post(REGISTER_URL, json=body)
+        assert response.status_code == status.HTTP_201_CREATED
+
+    async def test_registration_without_establishments_creates_no_relations(
+        self, client
+    ):
+        """A registration with no establishments must not stage any relation."""
+        response = await self._register(client, establishments=[])
+        user_id = response.json()["id"]
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(UserEstablishment).where(
+                    UserEstablishment.user_id == uuid.UUID(user_id)
+                )
+            )
+            relations = result.scalars().all()
+
+        assert relations == []
+
+    async def test_registration_without_establishments_returns_empty_list(self, client):
+        """The response should report no establishments rather than omitting them."""
+        response = await self._register(client, establishments=[])
+        assert response.json()["establishments"] == []
 
     async def test_short_password_returns_422(self, client):
         response = await self._register(client, password="short")

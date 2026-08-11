@@ -61,6 +61,20 @@ class TestPasswordRecoveryRequest:
         token = parse_qs(urlparse(capture_deeplink["deeplink"]).query).get("token")
         assert token and token[0]
 
+    async def test_deeplink_uses_backoffice_origin(
+        self, client, db_active_user, capture_deeplink, monkeypatch
+    ):
+        """Every role is sent to the backoffice origin."""
+        monkeypatch.setattr(
+            "app.core.config.settings.backoffice_deeplink_base",
+            "https://backoffice.example.com",
+        )
+
+        await client.post(REQUEST_URL, json={"email": "ana@test.com"})
+
+        deeplink = capture_deeplink["deeplink"]
+        assert urlparse(deeplink).netloc == "backoffice.example.com"
+
     async def test_smtp_failure_still_returns_202(
         self, client, db_active_user, monkeypatch
     ):

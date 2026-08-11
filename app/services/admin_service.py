@@ -10,6 +10,7 @@ from app.domain.pagination import PaginatedResult
 from app.domain.subject import SubjectDomain
 from app.domain.subject_event import SubjectEventRecord
 from app.domain.user import (
+    BACKOFFICE_ROLES,
     UserRole,
     UserStatus,
     UserWithEstablishmentsDomain,
@@ -26,7 +27,7 @@ from app.models.user import User
 from app.schemas.admin_schema import InviteAdminRequest
 from app.services.auth_service import AuthService
 from app.services.email_service import (
-    build_recovery_deeplink,
+    build_invite_deeplink,
     send_access_granted_email,
     send_invite_email,
 )
@@ -121,15 +122,22 @@ class AdminService:
         deeplink. Shared by invite_user and resend_invite.
 
         Raises:
+            BadRequestError: If the user's role is not a backoffice role.
             EmailDeliveryError: If the invitation email could not be delivered.
         """
+        if user.role not in BACKOFFICE_ROLES:
+            raise BadRequestError(
+                "Invalid user role",
+                "Only backoffice users (admin, analyst) receive invitations.",
+            )
+
         created_token, plain_token = await self.auth_service.create_recovery_token(
             user.id
         )
         await self.uow.commit()
         await send_invite_email(
             user.email,
-            build_recovery_deeplink(plain_token, user.role),
+            build_invite_deeplink(plain_token, user.role),
             created_token.expires_at,
             user.role,
         )
@@ -276,15 +284,16 @@ class AdminService:
 
         Raises:
             UserAlreadyExistsError: If the email already belongs to a user,
-                regardless of that user's status. Use resend_invite to
-                re-send a pending invitation.
+                regardless of that user's status.
+                Use resend_invite to re-send a pending invitation.
             EmailDeliveryError: If the invitation email could not be delivered.
         """
-        if await self.uow.user_repo.get_by_email(data.email):
-            raise UserAlreadyExistsError(data.email)
+        email = data.email.strip().lower()
+        if await self.uow.user_repo.exists_by_email(email):
+            raise UserAlreadyExistsError(email)
 
         user = await self.uow.user_repo.create(
-            email=data.email,
+            email=email,
             name="",
             last_name="",
             role=role,
@@ -305,7 +314,9 @@ class AdminService:
         Raises:
             UserNotFoundError: If no user with the given id exists.
             BadRequestError: If the user already completed onboarding
-                (status is not PENDING_VALIDATION).
+                (status is not PENDING_VALIDATION), or is not a backoffice
+                user (e.g. a self-registered field worker, who is also
+                PENDING_VALIDATION but was never invited).
             EmailDeliveryError: If the invitation email could not be delivered.
         """
         user = await self.uow.user_repo.get_by_id(user_id)

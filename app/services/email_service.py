@@ -7,18 +7,14 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 import aiosmtplib
 
 from app.core.config import settings
+from app.domain.user import UserRole
 from app.exceptions.domain_exceptions import EmailDeliveryError
 
 logger = logging.getLogger(__name__)
 
 
-def build_recovery_deeplink(token: str, user_rol: str = "user") -> str:
-    """Build the password recovery deep link, injecting the opaque token."""
-    deeplink_url = (
-        settings.admin_password_reset_deeplink
-        if user_rol in ("admin", "superadmin")
-        else settings.password_recovery_deeplink_url
-    )
+def _build_deeplink(deeplink_url: str, token: str) -> str:
+    """Inject the opaque token as a query param into a deep link URL."""
     parsed = urlsplit(deeplink_url)
     query = dict(parse_qsl(parsed.query, keep_blank_values=True))
     query["token"] = token
@@ -32,6 +28,19 @@ def build_recovery_deeplink(token: str, user_rol: str = "user") -> str:
             parsed.fragment,
         )
     )
+
+
+def build_recovery_deeplink(token: str) -> str:
+    """Build the password recovery deep link, injecting the opaque token.
+
+    Every role is sent to the backoffice origin.
+    """
+    return _build_deeplink(settings.backoffice_password_reset_deeplink, token)
+
+
+def build_invite_deeplink(token: str, user_role: UserRole) -> str:
+    """Build the invitation deep link, injecting the opaque token."""
+    return _build_deeplink(settings.invite_deeplink_url(user_role), token)
 
 
 def _render_base_template(
@@ -198,19 +207,7 @@ async def send_creation_denied_email(
 
 def build_verification_deeplink(token: str) -> str:
     """Build the email verification deep link, injecting the opaque token."""
-    deeplink_url = settings.email_verification_deeplink_url
-    parsed = urlsplit(deeplink_url)
-    query = dict(parse_qsl(parsed.query, keep_blank_values=True))
-    query["token"] = token
-    return urlunsplit(
-        (
-            parsed.scheme,
-            parsed.netloc,
-            parsed.path,
-            urlencode(query),
-            parsed.fragment,
-        )
-    )
+    return _build_deeplink(settings.email_verification_deeplink_url, token)
 
 
 async def send_verification_email(
