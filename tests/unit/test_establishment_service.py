@@ -694,7 +694,7 @@ class TestApproveCreationRequest:
         )
         service = EstablishmentService(uow=uow)
 
-        result = await service.approve_creation_request(
+        result, reused = await service.approve_creation_request(
             request.id,
             _make_request(name="Centro Nuevo", place_id="place-new-001"),
             reviewer_id=uuid.uuid4(),
@@ -703,6 +703,7 @@ class TestApproveCreationRequest:
         uow.establishment_repo.create.assert_called_once()
         assert isinstance(result, EstablishmentDomain)
         assert result.name == "Centro Nuevo"
+        assert reused is False
 
     async def test_reuses_establishment_created_by_a_concurrent_approval(
         self, make_uow, make_establishment
@@ -720,13 +721,14 @@ class TestApproveCreationRequest:
         )
         service = EstablishmentService(uow=uow)
 
-        result = await service.approve_creation_request(
+        result, reused = await service.approve_creation_request(
             request.id,
             _make_request(name="Centro Nuevo", place_id="place-new-001"),
             reviewer_id=uuid.uuid4(),
         )
 
         assert result.id == winner.id
+        assert reused is True
 
     async def test_reuses_existing_establishment_with_same_place_id(
         self, make_uow, make_establishment
@@ -737,7 +739,7 @@ class TestApproveCreationRequest:
         uow = make_uow(request=request, existing_establishment=existing)
         service = EstablishmentService(uow=uow)
 
-        result = await service.approve_creation_request(
+        result, reused = await service.approve_creation_request(
             request.id,
             _make_request(place_id=existing.place_id),
             reviewer_id=uuid.uuid4(),
@@ -745,6 +747,7 @@ class TestApproveCreationRequest:
 
         uow.establishment_repo.create.assert_not_called()
         assert result.id == existing.id
+        assert reused is True
 
     async def test_grants_access_to_requester(self, make_uow, make_establishment):
         """Grants the requesting field worker approved access to the

@@ -22,10 +22,10 @@ from app.schemas.admin_schema import (
     PaginatedUsersResponse,
 )
 from app.schemas.establishment_schema import (
+    EstablishmentApprovalResponse,
     EstablishmentCreationRequestAdminView,
     EstablishmentRequest,
     EstablishmentRequestRejection,
-    EstablishmentResponse,
 )
 from app.schemas.pagination import PaginatedResponse
 from app.services.admin_service import AdminService
@@ -288,13 +288,14 @@ async def list_establishment_requests(
 
 @router.patch(
     "/establishment-requests/{request_id}/approve",
-    response_model=EstablishmentResponse,
+    response_model=EstablishmentApprovalResponse,
     status_code=status.HTTP_200_OK,
     summary="Approve an establishment creation request",
     description="Approves the request using the admin-provided final data, "
     "creating a new establishment or reusing an existing one with the same "
-    "place_id, grants the requesting field worker access to it, and "
-    "notifies them by email. Accessible by admins only.",
+    "place_id (see the ``reused`` field), grants the requesting field "
+    "worker access to it, and notifies them by email. Accessible by "
+    "admins only.",
     responses={
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Request not found"},
@@ -306,11 +307,21 @@ async def approve_request(
     data: EstablishmentRequest,
     admin: UserActor = Depends(get_current_admin),
     service: EstablishmentService = Depends(get_establishment_service),
-) -> EstablishmentResponse:
-    establishment = await service.approve_creation_request(
+) -> EstablishmentApprovalResponse:
+    establishment, reused = await service.approve_creation_request(
         request_id, data, reviewer_id=admin.user_id
     )
-    return EstablishmentResponse.model_validate(establishment, from_attributes=True)
+    return EstablishmentApprovalResponse(
+        id=establishment.id,
+        name=establishment.name,
+        formatted_address=establishment.formatted_address,
+        latitude=establishment.latitude,
+        longitude=establishment.longitude,
+        place_id=establishment.place_id,
+        city=establishment.city,
+        province=establishment.province,
+        reused=reused,
+    )
 
 
 @router.patch(

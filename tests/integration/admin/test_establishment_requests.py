@@ -313,6 +313,7 @@ class TestApproveEstablishmentRequest:
         assert body["place_id"] == "place-test-001"
         assert body["city"] == "Buenos Aires"
         assert body["province"] == "Buenos Aires"
+        assert body["reused"] is False
 
     async def test_creates_establishment_row(self, client, make_user_with_role, app):
         """A new Establishment row is persisted with the admin-supplied data."""
@@ -395,6 +396,7 @@ class TestApproveEstablishmentRequest:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["id"] == str(existing.id)
+        assert response.json()["reused"] is True
         async with db_module.AsyncSessionLocal() as session:
             result = await session.execute(
                 select(Establishment).where(

@@ -88,6 +88,16 @@ class EstablishmentResponse(BaseModel):
     province: str
 
 
+class EstablishmentApprovalResponse(EstablishmentResponse):
+    """An establishment resolved by approving a creation request.
+
+    ``reused`` is True when the request was matched to an existing
+    establishment by place_id instead of creating a new one.
+    """
+
+    reused: bool
+
+
 class EstablishmentCreationRequestAdminView(EstablishmentCreationRequestResponse):
     """An establishment request as seen by an admin reviewing it, including
     the requesting field worker's identity."""

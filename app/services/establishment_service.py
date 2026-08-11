@@ -220,12 +220,17 @@ class EstablishmentService:
 
     async def approve_creation_request(
         self, request_id: UUID, data: EstablishmentRequest, reviewer_id: UUID
-    ) -> EstablishmentDomain:
+    ) -> tuple[EstablishmentDomain, bool]:
         """Approve a pending establishment creation request.
 
         Creates the establishment described by ``data``, or reuses an
         existing one with the same place_id, grants the requesting field
         worker approved access to it, and notifies them by email.
+
+        Returns an ``(establishment, reused)`` tuple: ``reused`` is True
+        when an existing establishment was matched by place_id instead of
+        creating a new one, so the admin-submitted data (other than
+        place_id) was not applied.
 
         Raises:
             EstablishmentRequestNotFoundError: If no request with that ID
@@ -236,6 +241,7 @@ class EstablishmentService:
         request = await self._get_pending_request_or_raise(request_id)
 
         establishment = await self.uow.establishment_repo.get_by_place_id(data.place_id)
+        reused = establishment is not None
         if establishment is None:
             try:
                 establishment = await self.uow.establishment_repo.create(
@@ -248,6 +254,7 @@ class EstablishmentService:
                 )
                 if establishment is None:
                     raise
+                reused = True
 
         await self.uow.user_establishment_repo.create_or_approve_relation(
             request.user_id, establishment.id
@@ -259,7 +266,7 @@ class EstablishmentService:
         requester = await self.uow.user_repo.get_by_id(request.user_id)
         await send_access_granted_email(requester.email, [establishment.name])
 
-        return EstablishmentDomain.from_db(establishment)
+        return EstablishmentDomain.from_db(establishment), reused
 
     async def reject_creation_request(
         self, request_id: UUID, reviewer_id: UUID, reason: str | None = None
