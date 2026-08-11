@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy import asc, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -6,6 +8,7 @@ from app.domain.establishment import (
     EstablishmentCreationRequestListingParams,
     EstablishmentCreationRequestSortOrder,
 )
+from app.exceptions.domain_exceptions import EstablishmentRequestNotFoundError
 from app.models.establishment_request import EstablishmentRequest
 from app.models.user import User
 from app.utils.db import escape_like, execute_paginated
@@ -64,6 +67,21 @@ class EstablishmentRequestRepository:
         self.db.add(request)
         await self.db.flush()
         await self.db.refresh(request)
+        return request
+
+    async def get_by_id(self, request_id: UUID) -> EstablishmentRequest | None:
+        """Return an establishment request by ID, or None if it does not exist."""
+        return await self.db.get(EstablishmentRequest, request_id)
+
+    async def get_by_id_or_raise(self, request_id: UUID) -> EstablishmentRequest:
+        """Return an establishment request by ID.
+
+        Raises:
+            EstablishmentRequestNotFoundError: if the request does not exist.
+        """
+        request = await self.get_by_id(request_id)
+        if request is None:
+            raise EstablishmentRequestNotFoundError(str(request_id))
         return request
 
     async def get_paginated(

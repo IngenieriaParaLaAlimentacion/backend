@@ -12,6 +12,7 @@ from app.domain.establishment import (
 from app.domain.pagination import PaginatedResult
 from app.exceptions.domain_exceptions import (
     EstablishmentAlreadyExistsError,
+    EstablishmentRequestAlreadyReviewedError,
 )
 from app.models import Establishment
 from app.models.establishment_request import (
@@ -20,8 +21,10 @@ from app.models.establishment_request import (
 from app.schemas.establishment_schema import (
     EstablishmentCreationRequestCreate,
     EstablishmentRequest,
+    EstablishmentResponse,
     EstablishmentUpdateRequest,
 )
+from app.services.email_service import send_access_granted_email
 
 
 class EstablishmentService:
@@ -188,3 +191,46 @@ class EstablishmentService:
             page=page,
             page_size=page_size,
         )
+
+    async def approve_creation_request(
+        self, request_id: UUID, data: EstablishmentRequest
+    ) -> EstablishmentDomain:
+        """Approve a pending establishment creation request.
+
+        Creates the establishment described by ``data``, or reuses an
+        existing one with the same name and address, grants the requesting
+        field worker approved access to it, and notifies them by email.
+
+        Raises:
+            EstablishmentRequestNotFoundError: If no request with that ID
+                exists.
+            EstablishmentRequestAlreadyReviewedError: If the request is not
+                pending.
+        """
+        request = await self.uow.establishment_request_repo.get_by_id_or_raise(
+            request_id
+        )
+        if request.status != EstablishmentRequestStatus.PENDING:
+            raise EstablishmentRequestAlreadyReviewedError(str(request_id))
+
+        establishment = await self.uow.establishment_repo.find_by_name_and_address(
+            data.name, data.formatted_address
+        )
+        if establishment is None:
+            establishment = await self.uow.establishment_repo.create(
+                Establishment(**data.model_dump())
+            )
+
+        await self.uow.user_establishment_repo.create_or_approve_relation(
+            request.user_id, establishment.id
+        )
+        request.status = EstablishmentRequestStatus.APPROVED
+        await self.uow.commit()
+
+        requester = await self.uow.user_repo.get_by_id(request.user_id)
+        await send_access_granted_email(requester.email, [establishment.name])
+
+        return EstablishmentDomain.from_db(establishment)
+
+    async def reject_creation_request(self, request_id: UUID) -> EstablishmentResponse:
+        pass
