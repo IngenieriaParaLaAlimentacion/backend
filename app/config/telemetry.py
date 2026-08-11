@@ -13,7 +13,7 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-from app.config import settings
+from app.config.settings import settings
 
 
 def setup_telemetry(app) -> LoggingHandler | None:
