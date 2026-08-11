@@ -16,6 +16,12 @@ ADMIN_USERS_URL = "/api/v1/admin/users"
 ADMIN_USER_URL = "/api/v1/admin/users/{user_id}"
 ADMIN_SUBJECTS_URL = "/api/v1/admin/subjects"
 ADMIN_ESTABLISHMENT_REQUESTS_URL = "/api/v1/admin/establishment-requests"
+APPROVE_ESTABLISHMENT_REQUEST_URL = (
+    "/api/v1/admin/establishment-requests/{request_id}/approve"
+)
+REJECT_ESTABLISHMENT_REQUEST_URL = (
+    "/api/v1/admin/establishment-requests/{request_id}/reject"
+)
 REGISTER_FIELD_WORKER_URL = "/api/v1/auth/register/field-worker"
 APPROVE_URL = "/api/v1/admin/field-worker/{user_id}/establishments/approve"
 REJECT_URL = "/api/v1/admin/field-worker/{user_id}/establishments/reject"
@@ -30,6 +36,30 @@ async def _make_list_request(client, *, headers=None):
 
 async def _make_list_establishment_requests_request(client, *, headers=None):
     return await client.get(ADMIN_ESTABLISHMENT_REQUESTS_URL, headers=headers or {})
+
+
+async def _make_approve_establishment_request_request(client, *, headers=None):
+    return await client.patch(
+        APPROVE_ESTABLISHMENT_REQUEST_URL.format(request_id=uuid.uuid4()),
+        json={
+            "name": "Comedor Test",
+            "formatted_address": "Calle Test 123",
+            "latitude": -34.6037,
+            "longitude": -58.3816,
+            "place_id": "place-test-001",
+            "city": "Buenos Aires",
+            "province": "Buenos Aires",
+        },
+        headers=headers or {},
+    )
+
+
+async def _make_reject_establishment_request_request(client, *, headers=None):
+    return await client.patch(
+        REJECT_ESTABLISHMENT_REQUEST_URL.format(request_id=uuid.uuid4()),
+        json={},
+        headers=headers or {},
+    )
 
 
 async def _make_approve_request(client, *, headers=None):
@@ -73,6 +103,14 @@ async def _make_reject_field_worker_request(client, *, headers=None):
         pytest.param(
             _make_list_establishment_requests_request,
             id="GET /admin/establishment-requests",
+        ),
+        pytest.param(
+            _make_approve_establishment_request_request,
+            id="PATCH /admin/establishment-requests/{id}/approve",
+        ),
+        pytest.param(
+            _make_reject_establishment_request_request,
+            id="PATCH /admin/establishment-requests/{id}/reject",
         ),
     ]
 )

@@ -1,17 +1,64 @@
+import uuid
 from datetime import datetime
 
 import pytest
 from fastapi import status
+from sqlalchemy import select
 
-from app.domain.establishment import EstablishmentRequestStatus
+import app.db.database as db_module
+from app.domain.establishment import EstablishmentRequestStatus, UserEstablishmentStatus
 from app.domain.user import UserRole, UserStatus
+from app.models.establishment import Establishment
+from app.models.establishment_request import EstablishmentRequest
+from app.models.user_establishment import UserEstablishment
 from tests.integration.admin.conftest import (
     ADMIN_ESTABLISHMENT_REQUESTS_URL,
+    APPROVE_ESTABLISHMENT_REQUEST_URL,
+    REJECT_ESTABLISHMENT_REQUEST_URL,
     _insert_establishment_request,
     _insert_user,
 )
 
 pytestmark = pytest.mark.asyncio
+
+
+def _approve_body(**overrides):
+    body = {
+        "name": "Comedor Esperanza",
+        "formatted_address": "Av. Siempre Viva 742",
+        "latitude": -34.6037,
+        "longitude": -58.3816,
+        "place_id": "place-test-001",
+        "city": "Buenos Aires",
+        "province": "Buenos Aires",
+    }
+    body.update(overrides)
+    return body
+
+
+async def _insert_db_establishment(**overrides) -> Establishment:
+    establishment = Establishment(
+        **{
+            "name": "Comedor Esperanza",
+            "formatted_address": "Av. Siempre Viva 742",
+            "latitude": -34.6037,
+            "longitude": -58.3816,
+            "place_id": "place-test-001",
+            "city": "Buenos Aires",
+            "province": "Buenos Aires",
+            **overrides,
+        }
+    )
+    async with db_module.AsyncSessionLocal() as session:
+        session.add(establishment)
+        await session.commit()
+        await session.refresh(establishment)
+    return establishment
+
+
+async def _get_request(request_id: uuid.UUID) -> EstablishmentRequest:
+    async with db_module.AsyncSessionLocal() as session:
+        return await session.get(EstablishmentRequest, request_id)
 
 
 class TestListEstablishmentRequests:
@@ -218,3 +265,224 @@ class TestListEstablishmentRequests:
         data = response.json()
         assert data["items"] == []
         assert data["total"] == 0
+
+
+class TestApproveEstablishmentRequest:
+    async def test_returns_200_with_establishment_body(
+        self, client, admin_headers, app
+    ):
+        """Approving returns 200 with the resolved establishment's data."""
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        request_id = await _insert_establishment_request(user_id)
+
+        response = await client.patch(
+            APPROVE_ESTABLISHMENT_REQUEST_URL.format(request_id=request_id),
+            json=_approve_body(),
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert body["name"] == "Comedor Esperanza"
+        assert body["formatted_address"] == "Av. Siempre Viva 742"
+        assert body["place_id"] == "place-test-001"
+        assert body["city"] == "Buenos Aires"
+        assert body["province"] == "Buenos Aires"
+
+    async def test_creates_establishment_row(self, client, admin_headers, app):
+        """A new Establishment row is persisted with the admin-supplied data."""
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        request_id = await _insert_establishment_request(user_id)
+
+        await client.patch(
+            APPROVE_ESTABLISHMENT_REQUEST_URL.format(request_id=request_id),
+            json=_approve_body(place_id="place-new-001"),
+            headers=admin_headers,
+        )
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(Establishment).where(Establishment.place_id == "place-new-001")
+            )
+            establishment = result.scalar_one()
+        assert establishment.name == "Comedor Esperanza"
+
+    async def test_grants_approved_access_to_requester(
+        self, client, admin_headers, app
+    ):
+        """The requesting field worker gets an APPROVED relation to the
+        resolved establishment."""
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        request_id = await _insert_establishment_request(user_id)
+
+        response = await client.patch(
+            APPROVE_ESTABLISHMENT_REQUEST_URL.format(request_id=request_id),
+            json=_approve_body(place_id="place-new-002"),
+            headers=admin_headers,
+        )
+        establishment_id = response.json()["id"]
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(UserEstablishment).where(
+                    UserEstablishment.user_id == user_id,
+                    UserEstablishment.establishment_id == establishment_id,
+                )
+            )
+            relation = result.scalar_one()
+        assert relation.status == UserEstablishmentStatus.APPROVED
+
+    async def test_marks_request_as_approved(self, client, admin_headers, app):
+        """The request's own status flips to approved."""
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        request_id = await _insert_establishment_request(user_id)
+
+        await client.patch(
+            APPROVE_ESTABLISHMENT_REQUEST_URL.format(request_id=request_id),
+            json=_approve_body(place_id="place-new-003"),
+            headers=admin_headers,
+        )
+
+        request = await _get_request(request_id)
+        assert request.status == EstablishmentRequestStatus.APPROVED
+
+    async def test_dedup_reuses_existing_establishment_with_same_place_id(
+        self, client, admin_headers, app
+    ):
+        """Approving with a place_id that already exists reuses that
+        establishment instead of creating a duplicate."""
+        existing = await _insert_db_establishment(place_id="place-existing-001")
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        request_id = await _insert_establishment_request(user_id)
+
+        response = await client.patch(
+            APPROVE_ESTABLISHMENT_REQUEST_URL.format(request_id=request_id),
+            json=_approve_body(place_id="place-existing-001"),
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["id"] == str(existing.id)
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(Establishment).where(
+                    Establishment.place_id == "place-existing-001"
+                )
+            )
+            assert len(result.scalars().all()) == 1
+
+    async def test_unknown_request_returns_404(self, client, admin_headers):
+        """Approving a nonexistent request id returns 404."""
+        response = await client.patch(
+            APPROVE_ESTABLISHMENT_REQUEST_URL.format(request_id=uuid.uuid4()),
+            json=_approve_body(),
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_already_reviewed_returns_409(self, client, admin_headers, app):
+        """Approving a request that was already resolved returns 409."""
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        request_id = await _insert_establishment_request(
+            user_id, request_status=EstablishmentRequestStatus.APPROVED
+        )
+
+        response = await client.patch(
+            APPROVE_ESTABLISHMENT_REQUEST_URL.format(request_id=request_id),
+            json=_approve_body(),
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_409_CONFLICT
+
+
+class TestRejectEstablishmentRequest:
+    async def test_returns_204_no_content(self, client, admin_headers, app):
+        """Rejecting returns 204 with no body."""
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        request_id = await _insert_establishment_request(user_id)
+
+        response = await client.patch(
+            REJECT_ESTABLISHMENT_REQUEST_URL.format(request_id=request_id),
+            json={},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert response.content == b""
+
+    async def test_accepts_optional_reason(self, client, admin_headers, app):
+        """A reason may be supplied without affecting the outcome."""
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        request_id = await _insert_establishment_request(user_id)
+
+        response = await client.patch(
+            REJECT_ESTABLISHMENT_REQUEST_URL.format(request_id=request_id),
+            json={"reason": "Datos incompletos"},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    async def test_marks_request_as_rejected(self, client, admin_headers, app):
+        """The request's status flips to rejected."""
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        request_id = await _insert_establishment_request(user_id)
+
+        await client.patch(
+            REJECT_ESTABLISHMENT_REQUEST_URL.format(request_id=request_id),
+            json={},
+            headers=admin_headers,
+        )
+
+        request = await _get_request(request_id)
+        assert request.status == EstablishmentRequestStatus.REJECTED
+
+    async def test_no_establishment_or_relation_created(
+        self, client, admin_headers, app
+    ):
+        """Rejecting must not create an establishment or an access relation."""
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        request_id = await _insert_establishment_request(user_id)
+
+        await client.patch(
+            REJECT_ESTABLISHMENT_REQUEST_URL.format(request_id=request_id),
+            json={},
+            headers=admin_headers,
+        )
+
+        async with db_module.AsyncSessionLocal() as session:
+            establishments = (
+                (await session.execute(select(Establishment))).scalars().all()
+            )
+            relations = (
+                (await session.execute(select(UserEstablishment))).scalars().all()
+            )
+        assert establishments == []
+        assert relations == []
+
+    async def test_unknown_request_returns_404(self, client, admin_headers):
+        """Rejecting a nonexistent request id returns 404."""
+        response = await client.patch(
+            REJECT_ESTABLISHMENT_REQUEST_URL.format(request_id=uuid.uuid4()),
+            json={},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_already_reviewed_returns_409(self, client, admin_headers, app):
+        """Rejecting a request that was already resolved returns 409."""
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        request_id = await _insert_establishment_request(
+            user_id, request_status=EstablishmentRequestStatus.REJECTED
+        )
+
+        response = await client.patch(
+            REJECT_ESTABLISHMENT_REQUEST_URL.format(request_id=request_id),
+            json={},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_409_CONFLICT
