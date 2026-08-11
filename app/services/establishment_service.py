@@ -219,7 +219,7 @@ class EstablishmentService:
         )
 
     async def approve_creation_request(
-        self, request_id: UUID, data: EstablishmentRequest
+        self, request_id: UUID, data: EstablishmentRequest, reviewer_id: UUID
     ) -> EstablishmentDomain:
         """Approve a pending establishment creation request.
 
@@ -253,6 +253,7 @@ class EstablishmentService:
             request.user_id, establishment.id
         )
         request.status = EstablishmentRequestStatus.APPROVED
+        request.reviewed_by = reviewer_id
         await self.uow.commit()
 
         requester = await self.uow.user_repo.get_by_id(request.user_id)
@@ -261,7 +262,7 @@ class EstablishmentService:
         return EstablishmentDomain.from_db(establishment)
 
     async def reject_creation_request(
-        self, request_id: UUID, reason: str | None = None
+        self, request_id: UUID, reviewer_id: UUID, reason: str | None = None
     ) -> None:
         """Reject a pending establishment creation request and notify the
         requesting field worker by email, optionally including the admin's
@@ -275,6 +276,7 @@ class EstablishmentService:
         """
         request = await self._get_pending_request_or_raise(request_id)
         request.status = EstablishmentRequestStatus.REJECTED
+        request.reviewed_by = reviewer_id
         await self.uow.commit()
 
         requester = await self.uow.user_repo.get_by_id(request.user_id)

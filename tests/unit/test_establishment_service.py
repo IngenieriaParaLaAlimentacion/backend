@@ -665,7 +665,9 @@ class TestApproveCreationRequest:
         service = EstablishmentService(uow=uow)
 
         with pytest.raises(EstablishmentRequestNotFoundError):
-            await service.approve_creation_request(uuid.uuid4(), _make_request())
+            await service.approve_creation_request(
+                uuid.uuid4(), _make_request(), reviewer_id=uuid.uuid4()
+            )
 
     async def test_raises_when_already_reviewed(self, make_uow):
         """Raises EstablishmentRequestAlreadyReviewedError when the request
@@ -677,7 +679,9 @@ class TestApproveCreationRequest:
         service = EstablishmentService(uow=uow)
 
         with pytest.raises(EstablishmentRequestAlreadyReviewedError):
-            await service.approve_creation_request(request.id, _make_request())
+            await service.approve_creation_request(
+                request.id, _make_request(), reviewer_id=uuid.uuid4()
+            )
 
     async def test_creates_new_establishment_when_no_place_id_match(
         self, make_uow, make_establishment
@@ -691,7 +695,9 @@ class TestApproveCreationRequest:
         service = EstablishmentService(uow=uow)
 
         result = await service.approve_creation_request(
-            request.id, _make_request(name="Centro Nuevo", place_id="place-new-001")
+            request.id,
+            _make_request(name="Centro Nuevo", place_id="place-new-001"),
+            reviewer_id=uuid.uuid4(),
         )
 
         uow.establishment_repo.create.assert_called_once()
@@ -715,7 +721,9 @@ class TestApproveCreationRequest:
         service = EstablishmentService(uow=uow)
 
         result = await service.approve_creation_request(
-            request.id, _make_request(name="Centro Nuevo", place_id="place-new-001")
+            request.id,
+            _make_request(name="Centro Nuevo", place_id="place-new-001"),
+            reviewer_id=uuid.uuid4(),
         )
 
         assert result.id == winner.id
@@ -730,7 +738,9 @@ class TestApproveCreationRequest:
         service = EstablishmentService(uow=uow)
 
         result = await service.approve_creation_request(
-            request.id, _make_request(place_id=existing.place_id)
+            request.id,
+            _make_request(place_id=existing.place_id),
+            reviewer_id=uuid.uuid4(),
         )
 
         uow.establishment_repo.create.assert_not_called()
@@ -745,7 +755,9 @@ class TestApproveCreationRequest:
         uow = make_uow(request=request, existing_establishment=existing)
         service = EstablishmentService(uow=uow)
 
-        await service.approve_creation_request(request.id, _make_request())
+        await service.approve_creation_request(
+            request.id, _make_request(), reviewer_id=uuid.uuid4()
+        )
 
         uow.user_establishment_repo.create_or_approve_relation.assert_called_once_with(
             user_id, existing.id
@@ -757,10 +769,25 @@ class TestApproveCreationRequest:
         uow = make_uow(request=request, existing_establishment=make_establishment())
         service = EstablishmentService(uow=uow)
 
-        await service.approve_creation_request(request.id, _make_request())
+        await service.approve_creation_request(
+            request.id, _make_request(), reviewer_id=uuid.uuid4()
+        )
 
         assert request.status == EstablishmentRequestStatus.APPROVED
         uow.commit.assert_called_once()
+
+    async def test_sets_reviewed_by_on_approval(self, make_uow, make_establishment):
+        """Records which admin approved the request."""
+        request = _make_request_orm(uuid.uuid4())
+        reviewer_id = uuid.uuid4()
+        uow = make_uow(request=request, existing_establishment=make_establishment())
+        service = EstablishmentService(uow=uow)
+
+        await service.approve_creation_request(
+            request.id, _make_request(), reviewer_id=reviewer_id
+        )
+
+        assert request.reviewed_by == reviewer_id
 
     async def test_sends_access_granted_email(self, make_uow, make_establishment):
         """Notifies the requester by email with the resolved establishment's
@@ -778,7 +805,9 @@ class TestApproveCreationRequest:
             "app.services.establishment_service.send_access_granted_email",
             new_callable=AsyncMock,
         ) as mock_email:
-            await service.approve_creation_request(request.id, _make_request())
+            await service.approve_creation_request(
+                request.id, _make_request(), reviewer_id=uuid.uuid4()
+            )
 
         mock_email.assert_awaited_once_with("worker@test.com", ["Centro A"])
 
@@ -796,7 +825,9 @@ class TestRejectCreationRequest:
         service = EstablishmentService(uow=uow)
 
         with pytest.raises(EstablishmentRequestNotFoundError):
-            await service.reject_creation_request(uuid.uuid4())
+            await service.reject_creation_request(
+                uuid.uuid4(), reviewer_id=uuid.uuid4()
+            )
 
     async def test_raises_when_already_reviewed(self, make_uow):
         """Raises EstablishmentRequestAlreadyReviewedError when the request
@@ -808,7 +839,7 @@ class TestRejectCreationRequest:
         service = EstablishmentService(uow=uow)
 
         with pytest.raises(EstablishmentRequestAlreadyReviewedError):
-            await service.reject_creation_request(request.id)
+            await service.reject_creation_request(request.id, reviewer_id=uuid.uuid4())
 
     async def test_sets_request_status_to_rejected(self, make_uow):
         """Flips the request status and commits, without touching any
@@ -817,12 +848,23 @@ class TestRejectCreationRequest:
         uow = make_uow(request=request)
         service = EstablishmentService(uow=uow)
 
-        await service.reject_creation_request(request.id)
+        await service.reject_creation_request(request.id, reviewer_id=uuid.uuid4())
 
         assert request.status == EstablishmentRequestStatus.REJECTED
         uow.commit.assert_called_once()
         uow.establishment_repo.create.assert_not_called()
         uow.user_establishment_repo.create_or_approve_relation.assert_not_called()
+
+    async def test_sets_reviewed_by_on_rejection(self, make_uow):
+        """Records which admin rejected the request."""
+        request = _make_request_orm(uuid.uuid4())
+        reviewer_id = uuid.uuid4()
+        uow = make_uow(request=request)
+        service = EstablishmentService(uow=uow)
+
+        await service.reject_creation_request(request.id, reviewer_id=reviewer_id)
+
+        assert request.reviewed_by == reviewer_id
 
     async def test_sends_denial_email_with_reason(self, make_uow):
         """Forwards the admin's reason through to the denial email."""
@@ -837,7 +879,7 @@ class TestRejectCreationRequest:
             new_callable=AsyncMock,
         ) as mock_email:
             await service.reject_creation_request(
-                request.id, reason="Datos incompletos"
+                request.id, reviewer_id=uuid.uuid4(), reason="Datos incompletos"
             )
 
         mock_email.assert_awaited_once_with(
@@ -856,7 +898,7 @@ class TestRejectCreationRequest:
             "app.services.establishment_service.send_creation_denied_email",
             new_callable=AsyncMock,
         ) as mock_email:
-            await service.reject_creation_request(request.id)
+            await service.reject_creation_request(request.id, reviewer_id=uuid.uuid4())
 
         mock_email.assert_awaited_once_with(
             "worker@test.com", "Comedor Esperanza", None

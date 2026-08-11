@@ -81,6 +81,8 @@ class EstablishmentRequestDomain:
     province: str | None
     status: str
     created_at: datetime
+    updated_at: datetime
+    reviewed_by: UUID | None
 
     @classmethod
     def from_db(cls, obj) -> "EstablishmentRequestDomain":

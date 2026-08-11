@@ -27,6 +27,11 @@ class EstablishmentRequest(Base):
     formatted_address = Column(String, nullable=True)
     city = Column(String, nullable=True)
     province = Column(String, nullable=True)
+    reviewed_by = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="RESTRICT"),
+        nullable=True,
+    )
     status = Column(
         SAEnum(
             EstablishmentRequestStatus,
@@ -46,4 +51,5 @@ class EstablishmentRequest(Base):
         nullable=False,
     )
 
-    user = relationship("User")
+    user = relationship("User", foreign_keys=[user_id])
+    reviewer = relationship("User", foreign_keys=[reviewed_by])

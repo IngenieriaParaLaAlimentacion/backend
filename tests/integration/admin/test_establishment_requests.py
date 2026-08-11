@@ -110,6 +110,30 @@ class TestListEstablishmentRequests:
         assert item["requester_name"] == "Maria"
         assert item["requester_last_name"] == "Perez"
         assert item["requester_email"] == "maria@test.com"
+        assert item["reviewed_by"] is None
+        assert "updated_at" in item
+
+    async def test_items_reflect_reviewer_after_approval(
+        self, client, admin_headers, make_user_with_role, app
+    ):
+        """Once a request is approved, the listing surfaces who reviewed it."""
+        reviewer_headers, reviewer_id = await make_user_with_role(UserRole.ADMIN)
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        request_id = await _insert_establishment_request(user_id)
+
+        await client.patch(
+            APPROVE_ESTABLISHMENT_REQUEST_URL.format(request_id=request_id),
+            json=_approve_body(),
+            headers=reviewer_headers,
+        )
+
+        response = await client.get(
+            ADMIN_ESTABLISHMENT_REQUESTS_URL, headers=admin_headers
+        )
+
+        [item] = response.json()["items"]
+        assert item["status"] == EstablishmentRequestStatus.APPROVED
+        assert item["reviewed_by"] == str(reviewer_id)
 
     async def test_filter_by_status_returns_only_matching(
         self, client, admin_headers, app
@@ -269,9 +293,10 @@ class TestListEstablishmentRequests:
 
 class TestApproveEstablishmentRequest:
     async def test_returns_200_with_establishment_body(
-        self, client, admin_headers, app
+        self, client, make_user_with_role, app
     ):
         """Approving returns 200 with the resolved establishment's data."""
+        admin_headers, _ = await make_user_with_role(UserRole.ADMIN)
         user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
         request_id = await _insert_establishment_request(user_id)
 
@@ -289,8 +314,9 @@ class TestApproveEstablishmentRequest:
         assert body["city"] == "Buenos Aires"
         assert body["province"] == "Buenos Aires"
 
-    async def test_creates_establishment_row(self, client, admin_headers, app):
+    async def test_creates_establishment_row(self, client, make_user_with_role, app):
         """A new Establishment row is persisted with the admin-supplied data."""
+        admin_headers, _ = await make_user_with_role(UserRole.ADMIN)
         user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
         request_id = await _insert_establishment_request(user_id)
 
@@ -308,10 +334,11 @@ class TestApproveEstablishmentRequest:
         assert establishment.name == "Comedor Esperanza"
 
     async def test_grants_approved_access_to_requester(
-        self, client, admin_headers, app
+        self, client, make_user_with_role, app
     ):
         """The requesting field worker gets an APPROVED relation to the
         resolved establishment."""
+        admin_headers, _ = await make_user_with_role(UserRole.ADMIN)
         user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
         request_id = await _insert_establishment_request(user_id)
 
@@ -332,8 +359,11 @@ class TestApproveEstablishmentRequest:
             relation = result.scalar_one()
         assert relation.status == UserEstablishmentStatus.APPROVED
 
-    async def test_marks_request_as_approved(self, client, admin_headers, app):
-        """The request's own status flips to approved."""
+    async def test_marks_request_as_approved_by_the_admin(
+        self, client, make_user_with_role, app
+    ):
+        """The request's status flips to approved and records the reviewer."""
+        admin_headers, admin_id = await make_user_with_role(UserRole.ADMIN)
         user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
         request_id = await _insert_establishment_request(user_id)
 
@@ -345,12 +375,14 @@ class TestApproveEstablishmentRequest:
 
         request = await _get_request(request_id)
         assert request.status == EstablishmentRequestStatus.APPROVED
+        assert request.reviewed_by == admin_id
 
     async def test_dedup_reuses_existing_establishment_with_same_place_id(
-        self, client, admin_headers, app
+        self, client, make_user_with_role, app
     ):
         """Approving with a place_id that already exists reuses that
         establishment instead of creating a duplicate."""
+        admin_headers, _ = await make_user_with_role(UserRole.ADMIN)
         existing = await _insert_db_establishment(place_id="place-existing-001")
         user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
         request_id = await _insert_establishment_request(user_id)
@@ -398,8 +430,9 @@ class TestApproveEstablishmentRequest:
 
 
 class TestRejectEstablishmentRequest:
-    async def test_returns_204_no_content(self, client, admin_headers, app):
+    async def test_returns_204_no_content(self, client, make_user_with_role, app):
         """Rejecting returns 204 with no body."""
+        admin_headers, _ = await make_user_with_role(UserRole.ADMIN)
         user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
         request_id = await _insert_establishment_request(user_id)
 
@@ -412,8 +445,9 @@ class TestRejectEstablishmentRequest:
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert response.content == b""
 
-    async def test_accepts_optional_reason(self, client, admin_headers, app):
+    async def test_accepts_optional_reason(self, client, make_user_with_role, app):
         """A reason may be supplied without affecting the outcome."""
+        admin_headers, _ = await make_user_with_role(UserRole.ADMIN)
         user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
         request_id = await _insert_establishment_request(user_id)
 
@@ -425,8 +459,11 @@ class TestRejectEstablishmentRequest:
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
-    async def test_marks_request_as_rejected(self, client, admin_headers, app):
-        """The request's status flips to rejected."""
+    async def test_marks_request_as_rejected_by_the_admin(
+        self, client, make_user_with_role, app
+    ):
+        """The request's status flips to rejected and records the reviewer."""
+        admin_headers, admin_id = await make_user_with_role(UserRole.ADMIN)
         user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
         request_id = await _insert_establishment_request(user_id)
 
@@ -438,11 +475,13 @@ class TestRejectEstablishmentRequest:
 
         request = await _get_request(request_id)
         assert request.status == EstablishmentRequestStatus.REJECTED
+        assert request.reviewed_by == admin_id
 
     async def test_no_establishment_or_relation_created(
-        self, client, admin_headers, app
+        self, client, make_user_with_role, app
     ):
         """Rejecting must not create an establishment or an access relation."""
+        admin_headers, _ = await make_user_with_role(UserRole.ADMIN)
         user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
         request_id = await _insert_establishment_request(user_id)
 

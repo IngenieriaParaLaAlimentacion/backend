@@ -304,10 +304,12 @@ async def list_establishment_requests(
 async def approve_request(
     request_id: UUID,
     data: EstablishmentRequest,
-    _admin: UserActor = Depends(get_current_admin),
+    admin: UserActor = Depends(get_current_admin),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> EstablishmentResponse:
-    establishment = await service.approve_creation_request(request_id, data)
+    establishment = await service.approve_creation_request(
+        request_id, data, reviewer_id=admin.user_id
+    )
     return EstablishmentResponse.model_validate(establishment, from_attributes=True)
 
 
@@ -327,8 +329,10 @@ async def approve_request(
 async def reject_request(
     request_id: UUID,
     data: EstablishmentRequestRejection,
-    _admin: UserActor = Depends(get_current_admin),
+    admin: UserActor = Depends(get_current_admin),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> Response:
-    await service.reject_creation_request(request_id, reason=data.reason)
+    await service.reject_creation_request(
+        request_id, reason=data.reason, reviewer_id=admin.user_id
+    )
     return Response(status_code=status.HTTP_204_NO_CONTENT)

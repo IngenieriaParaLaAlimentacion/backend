@@ -95,3 +95,5 @@ class EstablishmentCreationRequestAdminView(EstablishmentCreationRequestResponse
     requester_name: str
     requester_last_name: str
     requester_email: str
+    reviewed_by: uuid.UUID | None
+    updated_at: datetime
