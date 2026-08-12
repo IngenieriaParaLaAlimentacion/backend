@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, status
 
 from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams
-from app.core.dependencies import get_admin_service, get_current_admin
+from app.core.dependencies import get_admin_service, require_admin_or_superadmin
 from app.domain.user import UserActor
 from app.schemas.admin_schema import AdminSubjectDetailResponse
 from app.services.admin_service import AdminService
@@ -26,7 +26,7 @@ router = APIRouter()
 async def get_subject_detail(
     subject_id: UUID,
     paginated: PaginatedQueryParams = Depends(),
-    _admin: UserActor = Depends(get_current_admin),
+    _admin: UserActor = Depends(require_admin_or_superadmin),
     service: AdminService = Depends(get_admin_service),
 ) -> AdminSubjectDetailResponse:
     subject, history = await service.get_subject_detail(

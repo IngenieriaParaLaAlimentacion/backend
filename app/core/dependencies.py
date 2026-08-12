@@ -146,7 +146,7 @@ async def get_optional_actor(
     return await _get_authenticated_actor(token, set(UserRole))
 
 
-async def get_current_admin(token: str = Depends(oauth2_scheme)) -> UserActor:
+async def require_admin_or_superadmin(token: str = Depends(oauth2_scheme)) -> UserActor:
     return await _get_authenticated_actor(token, {UserRole.ADMIN, UserRole.SUPERADMIN})
 
 
