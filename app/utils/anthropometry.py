@@ -1,9 +1,9 @@
 import math
 from datetime import date, datetime
 
-from app.data.who_bmi_for_age import WHO_BMI_LMS
 from app.domain.measurement import AlertSeverity, AlertType
 from app.domain.subject import Sex
+from app.reference_data.who_bmi_for_age import WHO_BMI_LMS
 
 
 def age_in_months(birth_date: date, measured_at: datetime) -> int:
