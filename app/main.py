@@ -1,18 +1,23 @@
 from contextlib import asynccontextmanager
 
+import structlog
 import uvicorn
 from fastapi import FastAPI
 
 from app.api.router import api_router
+from app.config.logging import setup_logging
 from app.config.settings import settings
 from app.config.telemetry import setup_telemetry
 from app.core.openapi import configure_openapi
 from app.db.database import engine
 from app.exceptions.exception_handlers import register_exception_handlers
 
+logger = structlog.get_logger()
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logger.info("Ingenieria Para la Alimentacion service getting started")
     yield
     await engine.dispose()
 
@@ -27,6 +32,7 @@ app.include_router(api_router)
 configure_openapi(app)
 
 otel_handler = setup_telemetry(app)
+setup_logging(otel_handler=otel_handler)
 
 if __name__ == "__main__":
     uvicorn.run(app, host=settings.host, port=settings.port, log_config=None)
