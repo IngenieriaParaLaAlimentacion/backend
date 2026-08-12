@@ -5,6 +5,31 @@ from app.domain.measurement import AlertSeverity, AlertType
 from app.domain.subject import Sex
 from app.reference_data.who_bmi_for_age import WHO_BMI_LMS
 
+# The LMS z-score formula divides by L, which is undefined at L=0. WHO's LMS
+# method defines a separate log-based formula for that case. L is a fitted
+# float that lands extremely close to (but essentially never exactly at)
+# zero, so we treat anything within this tolerance as the L=0 case.
+LAMBDA_ZERO_TOLERANCE = 1e-10
+
+# WHO BMI-for-age reference tables (WHO_BMI_LMS) only cover ages 0-19 years.
+# Past that, WHO switches from age/sex-adjusted z-scores to fixed adult BMI
+# cutoffs (see BMI_* constants below).
+MAX_CHILD_AGE_MONTHS = 19 * 12  # 228
+
+# WHO BMI-for-age z-score cutoffs (ages 0-19y).
+# https://www.who.int/tools/growth-reference-data-for-5to19-years/indicators/bmi-for-age
+Z_SCORE_SEVERE_WASTING = -3  # z < -3 SD: severe acute malnutrition
+Z_SCORE_WASTING = -2  # z < -2 SD: moderate acute malnutrition
+Z_SCORE_OVERWEIGHT = 2  # z > +2 SD: overweight
+Z_SCORE_OBESE = 3  # z > +3 SD: obesity
+
+# WHO adult (>=19y) BMI classification cutoffs, in kg/m^2.
+# https://www.who.int/data/gho/data/themes/topics/topic-details/GHO/body-mass-index
+BMI_SEVERE_UNDERWEIGHT = 16.0
+BMI_UNDERWEIGHT = 18.5
+BMI_OVERWEIGHT = 25.0
+BMI_OBESE = 30.0
+
 
 def age_in_months(birth_date: date, measured_at: datetime) -> int:
     """Return completed months between birth_date and the measurement date."""
@@ -22,7 +47,7 @@ def compute_bmi_z_score(bmi: float, sex: Sex, months: int) -> float | None:
     if lms is None:
         return None
     lamda, median, sigma = lms
-    if abs(lamda) < 1e-10:
+    if abs(lamda) < LAMBDA_ZERO_TOLERANCE:
         return math.log(bmi / median) / sigma
     return ((bmi / median) ** lamda - 1) / (lamda * sigma)
 
@@ -33,7 +58,7 @@ def _child_alerts(
     z = compute_bmi_z_score(bmi, sex, months)
     if z is None:
         return []
-    if z < -3:
+    if z < Z_SCORE_SEVERE_WASTING:
         return [
             (
                 AlertType.SEVERELY_WASTED,
@@ -42,7 +67,7 @@ def _child_alerts(
                 f" (emaciación grave).",
             )
         ]
-    if z < -2:
+    if z < Z_SCORE_WASTING:
         return [
             (
                 AlertType.WASTED,
@@ -51,7 +76,7 @@ def _child_alerts(
                 f" (emaciación).",
             )
         ]
-    if z > 3:
+    if z > Z_SCORE_OBESE:
         return [
             (
                 AlertType.OBESE,
@@ -59,7 +84,7 @@ def _child_alerts(
                 f"BMI-for-age z-score {z:.2f} > +3 SD: obesity (obesidad).",
             )
         ]
-    if z > 2:
+    if z > Z_SCORE_OVERWEIGHT:
         return [
             (
                 AlertType.OVERWEIGHT,
@@ -71,7 +96,7 @@ def _child_alerts(
 
 
 def _adult_alerts(bmi: float) -> list[tuple[AlertType, AlertSeverity, str]]:
-    if bmi < 16:
+    if bmi < BMI_SEVERE_UNDERWEIGHT:
         return [
             (
                 AlertType.SEVERE_UNDERWEIGHT,
@@ -79,7 +104,7 @@ def _adult_alerts(bmi: float) -> list[tuple[AlertType, AlertSeverity, str]]:
                 f"IMC {bmi:.1f} < 16: delgadez severa.",
             )
         ]
-    if bmi < 18.5:
+    if bmi < BMI_UNDERWEIGHT:
         return [
             (
                 AlertType.UNDERWEIGHT,
@@ -87,7 +112,7 @@ def _adult_alerts(bmi: float) -> list[tuple[AlertType, AlertSeverity, str]]:
                 f"IMC {bmi:.1f} < 18.5: delgadez.",
             )
         ]
-    if bmi >= 30:
+    if bmi >= BMI_OBESE:
         return [
             (
                 AlertType.OBESE,
@@ -95,7 +120,7 @@ def _adult_alerts(bmi: float) -> list[tuple[AlertType, AlertSeverity, str]]:
                 f"IMC {bmi:.1f} ≥ 30: obesidad.",
             )
         ]
-    if bmi >= 25:
+    if bmi >= BMI_OVERWEIGHT:
         return [
             (
                 AlertType.OVERWEIGHT,
@@ -118,6 +143,6 @@ def evaluate_alerts(
     WHO reference data is unavailable for the subject's age.
     """
     months = age_in_months(birth_date, measured_at)
-    if months <= 228:
+    if months <= MAX_CHILD_AGE_MONTHS:
         return _child_alerts(bmi, sex, months)
     return _adult_alerts(bmi)
