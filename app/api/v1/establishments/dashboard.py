@@ -10,9 +10,9 @@ from app.api.v1.params import (
 )
 from app.core.dependencies import (
     get_establishment_dashboard_service,
-    require_some,
+    require_admin_analyst_or_superadmin,
 )
-from app.domain import UserActor, UserRole
+from app.domain import UserActor
 from app.schemas.establishment_dashboard_schema import (
     EstablishmentDashboardResponse,
     EstablishmentFieldWorkerListItem,
@@ -22,10 +22,6 @@ from app.schemas.pagination import PaginatedResponse
 from app.services.establishment_dashboard_service import EstablishmentDashboardService
 
 router = APIRouter(prefix="/establishments")
-
-require_admin_or_analyst = require_some(
-    UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN
-)
 
 
 @router.get(
@@ -48,7 +44,7 @@ require_admin_or_analyst = require_some(
 )
 async def get_establishment_dashboard(
     establishment_id: UUID,
-    _: UserActor = Depends(require_admin_or_analyst),
+    _: UserActor = Depends(require_admin_analyst_or_superadmin),
     service: EstablishmentDashboardService = Depends(
         get_establishment_dashboard_service
     ),
@@ -77,7 +73,7 @@ async def list_establishment_subjects(
     establishment_id: UUID,
     query: EstablishmentSubjectsQuery = Depends(),
     paginated: PaginatedQueryParams = Depends(),
-    _: UserActor = Depends(require_admin_or_analyst),
+    _: UserActor = Depends(require_admin_analyst_or_superadmin),
     service: EstablishmentDashboardService = Depends(
         get_establishment_dashboard_service
     ),
@@ -117,7 +113,7 @@ async def list_establishment_field_workers(
     establishment_id: UUID,
     query: EstablishmentFieldWorkersQuery = Depends(),
     paginated: PaginatedQueryParams = Depends(),
-    _: UserActor = Depends(require_admin_or_analyst),
+    _: UserActor = Depends(require_admin_analyst_or_superadmin),
     service: EstablishmentDashboardService = Depends(
         get_establishment_dashboard_service
     ),

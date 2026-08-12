@@ -100,7 +100,7 @@ async def get_fies_template(
     description=(
         "Paginated list of active surveys the caller may respond to: generic "
         "surveys, plus targeted surveys aimed at one of the caller's approved "
-        "establishments. Field worker, admin, and superadmin only."
+        "establishments. Accessible to any authenticated role."
     ),
     responses=AUTH_RESPONSES,
 )

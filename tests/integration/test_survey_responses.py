@@ -665,10 +665,10 @@ class TestListAvailable:
         response = await client.get(f"{SURVEYS_URL}/available", headers=fw_headers)
         assert response.json()["total"] == 0
 
-    async def test_analyst_forbidden(self, client, analyst_user):
+    async def test_analyst_allowed(self, client, analyst_user):
         headers, _ = analyst_user
         response = await client.get(f"{SURVEYS_URL}/available", headers=headers)
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_200_OK
 
 
 class TestListBySurvey:
