@@ -49,13 +49,13 @@ class TestAgeInMonths:
 
 class TestComputeBmiZScore:
     def test_returns_none_when_no_lms_data(self):
-        with patch("app.utils.anthropometry.WHO_BMI_LMS", {}):
+        with patch("app.reference_data.anthropometry.WHO_BMI_LMS", {}):
             assert compute_bmi_z_score(20.0, Sex.MALE, 60) is None
 
     def test_power_formula(self):
         # λ=1, M=16.0, S=0.1 → z = (bmi/M - 1) / (λ * S) = (17.6/16 - 1) / 0.1 = 1.0
         lms = {("male", 60): (1.0, 16.0, 0.1)}
-        with patch("app.utils.anthropometry.WHO_BMI_LMS", lms):
+        with patch("app.reference_data.anthropometry.WHO_BMI_LMS", lms):
             z = compute_bmi_z_score(17.6, Sex.MALE, 60)
         assert z == pytest.approx(1.0)
 
@@ -63,60 +63,78 @@ class TestComputeBmiZScore:
         # λ≈0, M=16.0, S=0.1 → z = ln(bmi/M) / S; bmi = M*e^(z*S) with z=1.0
         lms = {("male", 60): (0.0, 16.0, 0.1)}
         bmi = 16.0 * math.exp(0.1)
-        with patch("app.utils.anthropometry.WHO_BMI_LMS", lms):
+        with patch("app.reference_data.anthropometry.WHO_BMI_LMS", lms):
             z = compute_bmi_z_score(bmi, Sex.MALE, 60)
         assert z == pytest.approx(1.0)
 
     def test_female_sex_uses_female_key(self):
         lms = {("female", 60): (1.0, 15.0, 0.1)}
-        with patch("app.utils.anthropometry.WHO_BMI_LMS", lms):
+        with patch("app.reference_data.anthropometry.WHO_BMI_LMS", lms):
             assert compute_bmi_z_score(15.0, Sex.FEMALE, 60) == pytest.approx(0.0)
 
 
 class TestChildAlerts:
     def test_severely_wasted(self):
-        with patch("app.utils.anthropometry.compute_bmi_z_score", return_value=-3.5):
+        with patch(
+            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=-3.5
+        ):
             alerts = _child_alerts(10.0, Sex.MALE, 60)
         assert alerts[0][0] == AlertType.SEVERELY_WASTED
         assert alerts[0][1] == AlertSeverity.CRITICAL
 
     def test_wasted(self):
-        with patch("app.utils.anthropometry.compute_bmi_z_score", return_value=-2.5):
+        with patch(
+            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=-2.5
+        ):
             alerts = _child_alerts(12.0, Sex.MALE, 60)
         assert alerts[0][0] == AlertType.WASTED
         assert alerts[0][1] == AlertSeverity.HIGH
 
     def test_obese(self):
-        with patch("app.utils.anthropometry.compute_bmi_z_score", return_value=3.5):
+        with patch(
+            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=3.5
+        ):
             alerts = _child_alerts(25.0, Sex.MALE, 60)
         assert alerts[0][0] == AlertType.OBESE
         assert alerts[0][1] == AlertSeverity.HIGH
 
     def test_overweight(self):
-        with patch("app.utils.anthropometry.compute_bmi_z_score", return_value=2.5):
+        with patch(
+            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=2.5
+        ):
             alerts = _child_alerts(22.0, Sex.MALE, 60)
         assert alerts[0][0] == AlertType.OVERWEIGHT
         assert alerts[0][1] == AlertSeverity.MEDIUM
 
     def test_normal_range_no_alert(self):
-        with patch("app.utils.anthropometry.compute_bmi_z_score", return_value=0.5):
+        with patch(
+            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=0.5
+        ):
             assert _child_alerts(16.0, Sex.MALE, 60) == []
 
     def test_no_who_data_returns_empty(self):
-        with patch("app.utils.anthropometry.compute_bmi_z_score", return_value=None):
+        with patch(
+            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=None
+        ):
             assert _child_alerts(16.0, Sex.MALE, 60) == []
 
     def test_boundary_z_exactly_minus3_is_wasted_not_severely(self):
-        with patch("app.utils.anthropometry.compute_bmi_z_score", return_value=-3.0):
+        with patch(
+            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=-3.0
+        ):
             alerts = _child_alerts(10.0, Sex.MALE, 60)
         assert alerts[0][0] == AlertType.WASTED
 
     def test_boundary_z_exactly_2_is_no_alert(self):
-        with patch("app.utils.anthropometry.compute_bmi_z_score", return_value=2.0):
+        with patch(
+            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=2.0
+        ):
             assert _child_alerts(20.0, Sex.MALE, 60) == []
 
     def test_boundary_z_exactly_3_is_overweight_not_obese(self):
-        with patch("app.utils.anthropometry.compute_bmi_z_score", return_value=3.0):
+        with patch(
+            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=3.0
+        ):
             alerts = _child_alerts(24.0, Sex.MALE, 60)
         assert alerts[0][0] == AlertType.OVERWEIGHT
 
@@ -162,14 +180,18 @@ class TestEvaluateAlerts:
     def test_routes_child_path_for_age_under_228_months(self):
         birth = date(2020, 1, 1)
         measured = datetime(2024, 1, 1, tzinfo=timezone.utc)  # ~48 months
-        with patch("app.utils.anthropometry._child_alerts", return_value=[]) as mock:
+        with patch(
+            "app.reference_data.anthropometry._child_alerts", return_value=[]
+        ) as mock:
             evaluate_alerts(16.0, Sex.MALE, birth, measured)
         mock.assert_called_once()
 
     def test_routes_adult_path_for_age_over_228_months(self):
         birth = date(1990, 1, 1)
         measured = datetime(2024, 1, 1, tzinfo=timezone.utc)  # ~408 months
-        with patch("app.utils.anthropometry._adult_alerts", return_value=[]) as mock:
+        with patch(
+            "app.reference_data.anthropometry._adult_alerts", return_value=[]
+        ) as mock:
             evaluate_alerts(22.0, Sex.MALE, birth, measured)
         mock.assert_called_once()
 
@@ -178,10 +200,10 @@ class TestEvaluateAlerts:
         birth = date(2005, 1, 1)
         measured = datetime(2024, 1, 1, tzinfo=timezone.utc)
         with patch(
-            "app.utils.anthropometry._child_alerts", return_value=[]
+            "app.reference_data.anthropometry._child_alerts", return_value=[]
         ) as child_mock:
             with patch(
-                "app.utils.anthropometry._adult_alerts", return_value=[]
+                "app.reference_data.anthropometry._adult_alerts", return_value=[]
             ) as adult_mock:
                 evaluate_alerts(18.0, Sex.FEMALE, birth, measured)
         child_mock.assert_called_once()
