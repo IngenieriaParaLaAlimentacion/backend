@@ -6,12 +6,11 @@ from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams, SubjectListi
 from app.core.dependencies import (
     get_measurement_service,
     get_subject_service,
+    require_admin_analyst_or_superadmin,
     require_any,
-    require_some,
 )
 from app.domain import UserActor
 from app.domain.measurement import EvolutionOrder
-from app.domain.user import UserRole
 from app.schemas.measurement_schema import SubjectEvolutionResponse
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.subject_schema import (
@@ -25,10 +24,6 @@ from app.services.measurement_service import MeasurementService
 from app.services.subject_service import SubjectService
 
 router = APIRouter(prefix="/subjects")
-
-require_admin_or_analyst = require_some(
-    UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN
-)
 
 
 @router.post(
@@ -148,7 +143,7 @@ async def get_subject_evolution(
         default=EvolutionOrder.OLDEST_FIRST,
         description="Chronological order of the returned series.",
     ),
-    _: UserActor = Depends(require_admin_or_analyst),
+    _: UserActor = Depends(require_admin_analyst_or_superadmin),
     service: MeasurementService = Depends(get_measurement_service),
 ) -> SubjectEvolutionResponse:
     evolution = await service.get_subject_evolution(subject_id, order=order)

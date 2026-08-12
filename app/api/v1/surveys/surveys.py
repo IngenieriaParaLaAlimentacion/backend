@@ -7,7 +7,6 @@ from app.core.dependencies import (
     get_survey_service,
     require_admin_analyst_or_superadmin,
     require_any,
-    require_field_worker_admin_or_superadmin,
 )
 from app.domain import UserActor
 from app.reference_data.fies_template import build_fies_template
@@ -107,7 +106,7 @@ async def get_fies_template(
 )
 async def list_available_surveys(
     paginated: PaginatedQueryParams = Depends(),
-    actor: UserActor = Depends(require_field_worker_admin_or_superadmin),
+    actor: UserActor = Depends(require_any),
     service: SurveyService = Depends(get_survey_service),
 ) -> PaginatedResponse[SurveyListItem]:
     result = await service.list_available_surveys(

@@ -11,7 +11,7 @@ from app.api.v1.params import (
 from app.core.dependencies import (
     get_survey_response_service,
     require_admin_analyst_or_superadmin,
-    require_field_worker_admin_or_superadmin,
+    require_any,
 )
 from app.domain import UserActor
 from app.schemas.pagination import PaginatedResponse
@@ -135,7 +135,7 @@ async def submit_survey_response(
     survey_id: UUID,
     data: SurveyResponseRequest,
     response: Response,
-    actor: UserActor = Depends(require_field_worker_admin_or_superadmin),
+    actor: UserActor = Depends(require_any),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> SurveyResponseResponse:
     survey_response, created = await service.submit(survey_id, data, actor)
@@ -160,7 +160,7 @@ async def submit_survey_response(
 )
 async def get_survey_response(
     response_id: UUID,
-    actor: UserActor = Depends(require_field_worker_admin_or_superadmin),
+    actor: UserActor = Depends(require_any),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> SurveyResponseResponse:
     survey_response = await service.get(response_id, actor)
@@ -184,7 +184,7 @@ async def get_survey_response(
 )
 async def get_survey_response_detail(
     response_id: UUID,
-    actor: UserActor = Depends(require_field_worker_admin_or_superadmin),
+    actor: UserActor = Depends(require_any),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> SurveyResponseDetailResponse:
     detail = await service.get_response_detail(response_id, actor)
@@ -209,7 +209,7 @@ async def get_survey_response_detail(
 async def edit_survey_response(
     response_id: UUID,
     data: SurveyResponseEditRequest,
-    actor: UserActor = Depends(require_field_worker_admin_or_superadmin),
+    actor: UserActor = Depends(require_any),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> SurveyResponseResponse:
     survey_response = await service.edit(response_id, data, actor)

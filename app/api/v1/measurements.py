@@ -5,9 +5,12 @@ from app.api.v1.params import (
     MeasurementListingQuery,
     PaginatedQueryParams,
 )
-from app.core.dependencies import get_measurement_service, require_any, require_some
+from app.core.dependencies import (
+    get_measurement_service,
+    require_admin_analyst_or_superadmin,
+    require_any,
+)
 from app.domain import UserActor
-from app.domain.user import UserRole
 from app.schemas.measurement_schema import (
     MeasurementListItem,
     MeasurementRequest,
@@ -17,10 +20,6 @@ from app.schemas.pagination import PaginatedResponse
 from app.services.measurement_service import MeasurementService
 
 router = APIRouter(prefix="/measurements")
-
-require_admin_or_analyst = require_some(
-    UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN
-)
 
 
 @router.post(
@@ -78,7 +77,7 @@ async def upload_measurement(
 async def list_measurements(
     query: MeasurementListingQuery = Depends(),
     paginated: PaginatedQueryParams = Depends(),
-    _: UserActor = Depends(require_admin_or_analyst),
+    _: UserActor = Depends(require_admin_analyst_or_superadmin),
     service: MeasurementService = Depends(get_measurement_service),
 ) -> PaginatedResponse[MeasurementListItem]:
     query.validate()

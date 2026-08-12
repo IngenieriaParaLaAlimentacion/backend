@@ -130,7 +130,9 @@ async def get_establishments(
         "field worker can still request (excludes approved/pending). "
         "Field worker only.",
     ),
-    actor: UserActor | None = Depends(get_optional_actor),
+    actor: UserActor | None = Depends(
+        get_optional_actor
+    ),  # TODO: re-check since now we do not need to add an establishment to register
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> PaginatedResponse[EstablishmentResponse]:
     params = query.to_domain()
