@@ -6,7 +6,7 @@ import pytest
 
 from app.domain.measurement import AlertSeverity, AlertType
 from app.domain.subject import Sex
-from app.utils.anthropometry import (
+from app.reference_data.anthropometry import (
     _adult_alerts,
     _child_alerts,
     age_in_months,

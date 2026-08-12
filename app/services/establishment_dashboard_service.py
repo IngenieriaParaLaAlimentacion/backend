@@ -21,7 +21,7 @@ from app.domain.measurement import (
     status_from_alerts,
 )
 from app.domain.pagination import PaginatedResult
-from app.utils.anthropometry import age_in_months
+from app.reference_data.anthropometry import age_in_months
 
 
 def _round(value: float | None, digits: int = 2) -> float | None:

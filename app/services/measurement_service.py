@@ -18,8 +18,8 @@ from app.exceptions.domain_exceptions import (
     UniqueConstraintError,
 )
 from app.models.subject import Subject
+from app.reference_data.anthropometry import evaluate_alerts
 from app.schemas.measurement_schema import MeasurementRequest
-from app.utils.anthropometry import evaluate_alerts
 
 
 class MeasurementService:

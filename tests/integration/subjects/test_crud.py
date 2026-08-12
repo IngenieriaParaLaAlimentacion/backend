@@ -223,7 +223,7 @@ class TestGetSubjectLatestMeasurement:
         """
         from app.db.database import AsyncSessionLocal
         from app.models.measurement_alert import MeasurementAlert
-        from app.utils.anthropometry import evaluate_alerts
+        from app.reference_data.anthropometry import evaluate_alerts
 
         async with AsyncSessionLocal() as session:
             old_est = _make_establishment(

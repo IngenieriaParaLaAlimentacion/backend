@@ -52,7 +52,7 @@ async def scenario(app) -> Scenario:
     from app.models.subject import Subject
     from app.models.user import User
     from app.models.user_establishment import UserEstablishment
-    from app.utils.anthropometry import evaluate_alerts
+    from app.reference_data.anthropometry import evaluate_alerts
 
     def _establishment(name: str, city: str) -> Establishment:
         return Establishment(
