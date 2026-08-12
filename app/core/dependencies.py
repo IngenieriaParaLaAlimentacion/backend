@@ -132,6 +132,9 @@ async def _get_authenticated_actor(
     return UserActor(user_id=payload["sub"], role=payload["role"])
 
 
+# TODO: revisar cuales de estos metodos son necesarios y cuales estan duplicados
+
+
 async def get_optional_actor(
     token: str | None = Depends(oauth2_scheme_optional),
 ) -> UserActor | None:
@@ -170,19 +173,3 @@ async def require_admin_analyst_or_superadmin(
     return await _get_authenticated_actor(
         token, {UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN}
     )
-
-
-def require_some(*roles: UserRole):
-    """Return a dependency that accepts any of the given roles.
-    Used when multiple actors can send the request."""
-    # TODO: revisar cuales de estos metodos son necesarios y cuales estan duplicados
-
-    async def dep(token: str = Depends(oauth2_scheme)) -> UserActor:
-        payload = _decode_verified_payload(token)
-
-        if payload.get("role") not in roles:
-            raise ForbiddenError()
-
-        return UserActor(user_id=payload["sub"], role=payload["role"])
-
-    return dep
