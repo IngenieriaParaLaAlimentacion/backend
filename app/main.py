@@ -16,6 +16,13 @@ from app.exceptions.exception_handlers import register_exception_handlers
 logger = structlog.get_logger()
 
 
+async def _shutdown_provider(name: str, provider) -> None:
+    try:
+        await asyncio.to_thread(provider.shutdown)
+    except Exception:
+        logger.exception(f"Failed to shutdown {name}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Ingenieria Para la Alimentacion service getting started")
@@ -24,15 +31,11 @@ async def lifespan(app: FastAPI):
 
     logger.info("Shutting down service, flushing telemetry")
 
-    for provider_name, provider in (
-        ("tracer_provider", telemetry.tracer_provider),
-        ("meter_provider", telemetry.meter_provider),
-        ("logger_provider", telemetry.logger_provider),
-    ):
-        try:
-            await asyncio.to_thread(provider.shutdown)
-        except Exception:
-            logger.exception(f"Failed to shutdown {provider_name}")
+    await asyncio.gather(
+        _shutdown_provider("tracer_provider", telemetry.tracer_provider),
+        _shutdown_provider("meter_provider", telemetry.meter_provider),
+        _shutdown_provider("logger_provider", telemetry.logger_provider),
+    )
 
     await engine.dispose()
 
