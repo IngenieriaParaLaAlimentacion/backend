@@ -7,18 +7,17 @@ from pydantic import (
     EmailStr,
     Field,
     StringConstraints,
-    field_validator,
 )
 
 from app.schemas.common import ProfileFields
-from app.schemas.types import ValidStr
+from app.schemas.types import PasswordStr, ValidStr
 
 # -- Request --
 
 
 class RegisterFieldWorkerRequest(ProfileFields):
     email: EmailStr
-    password: str
+    password: PasswordStr
     name: ValidStr
     last_name: ValidStr
     establishments: list[UUID] = Field(
@@ -26,13 +25,6 @@ class RegisterFieldWorkerRequest(ProfileFields):
         description="Establishments the field worker requests access to. "
         "Optional: account access does not depend on them.",
     )
-
-    @field_validator("password")
-    @classmethod
-    def password_min_length(cls, v: str) -> str:
-        if len(v) < 8:
-            raise ValueError("Password must be at least 8 characters")
-        return v
 
 
 class LoginRequest(BaseModel):
@@ -57,14 +49,7 @@ class PasswordRecoveryRequest(BaseModel):
 
 class PasswordRecoveryConfirmRequest(BaseModel):
     token: Annotated[str, StringConstraints(strict=True, min_length=1)]
-    new_password: str
-
-    @field_validator("new_password")
-    @classmethod
-    def password_min_length(cls, v: str) -> str:
-        if len(v) < 8:
-            raise ValueError("Password must be at least 8 characters")
-        return v
+    new_password: PasswordStr
 
 
 class VerifyEmailRequest(BaseModel):
