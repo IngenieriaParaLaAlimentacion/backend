@@ -18,7 +18,7 @@ from sqlalchemy.orm import relationship
 
 from app.domain.survey import SurveyInstrumentType, SurveyScope
 
-from .base import Base
+from ..base import Base
 
 
 class Survey(Base):

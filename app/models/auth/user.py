@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 
 from app.domain.user import UserRole, UserStatus
 
-from .base import Base
+from ..base import Base
 
 
 class User(Base):

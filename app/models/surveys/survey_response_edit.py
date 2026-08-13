@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import Column, DateTime, ForeignKey, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 
-from .base import Base
+from ..base import Base
 
 
 class SurveyResponseEdit(Base):

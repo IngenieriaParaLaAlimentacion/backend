@@ -4,15 +4,15 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Index, String, fun
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from .base import Base
+from ..base import Base
 
 
-class EmailVerificationToken(Base):
-    """Persisted one-time token metadata for email verification."""
+class PasswordRecoveryToken(Base):
+    """Persisted one-time token metadata for password recovery."""
 
-    __tablename__ = "email_verification_tokens"
+    __tablename__ = "password_recovery_tokens"
     __table_args__ = (
-        Index("ix_email_verification_tokens_user_id_used", "user_id", "used"),
+        Index("ix_password_recovery_tokens_user_id_used", "user_id", "used"),
     )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -24,4 +24,4 @@ class EmailVerificationToken(Base):
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
 
-    user = relationship("User", back_populates="email_verification_tokens")
+    user = relationship("User", back_populates="recovery_tokens")

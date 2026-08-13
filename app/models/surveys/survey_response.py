@@ -4,7 +4,7 @@ from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship
 
-from .base import Base
+from ..base import Base
 
 
 class SurveyResponse(Base):

@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 
 from app.domain.establishment import EstablishmentRequestStatus
 
-from .base import Base
+from ..base import Base
 
 
 class EstablishmentRequest(Base):

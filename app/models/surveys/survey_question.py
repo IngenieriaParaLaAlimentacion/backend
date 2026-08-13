@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 
 from app.domain.survey import ResponseType
 
-from .base import Base
+from ..base import Base
 
 
 class SurveyQuestion(Base):

@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 
 from app.domain.measurement import AlertSeverity, AlertType
 
-from .base import Base
+from ..base import Base
 
 
 class MeasurementAlert(Base):

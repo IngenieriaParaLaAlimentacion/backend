@@ -17,7 +17,7 @@ from sqlalchemy.orm import relationship
 
 from app.domain.subject import Sex
 
-from .base import Base
+from ..base import Base
 
 
 class Subject(Base):

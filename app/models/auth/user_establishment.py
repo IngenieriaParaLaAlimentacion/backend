@@ -2,8 +2,9 @@ from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 
-from ..domain.establishment import UserEstablishmentStatus
-from .base import Base
+from app.domain.establishment import UserEstablishmentStatus
+
+from ..base import Base
 
 
 class UserEstablishment(Base):

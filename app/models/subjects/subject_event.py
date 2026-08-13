@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 from app.domain.subject_event import SubjectEventType
 
-from .base import Base
+from ..base import Base
 
 
 class SubjectEvent(Base):
