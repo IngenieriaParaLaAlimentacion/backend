@@ -18,8 +18,16 @@ logger = structlog.get_logger()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Ingenieria Para la Alimentacion service getting started")
+
     yield
-    await engine.dispose()
+
+    logger.info("Shutting down service, flushing telemetry")
+    try:
+        telemetry.tracer_provider.shutdown()
+        telemetry.meter_provider.shutdown()
+        telemetry.logger_provider.shutdown()
+    finally:
+        await engine.dispose()
 
 
 app = FastAPI(
@@ -31,8 +39,9 @@ app.include_router(api_router)
 
 configure_openapi(app)
 
-otel_handler = setup_telemetry(app)
-setup_logging(otel_handler=otel_handler)
+telemetry = setup_telemetry(app)
+
+setup_logging(otel_handler=telemetry.logging_handler)
 
 if __name__ == "__main__":
     uvicorn.run(app, host=settings.host, port=settings.port, log_config=None)
