@@ -2,7 +2,7 @@ from uuid import UUID
 
 from sqlalchemy import asc, desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import contains_eager
 
 from app.domain.establishment import (
     EstablishmentCreationRequestListingParams,
@@ -91,7 +91,7 @@ class EstablishmentRequestRepository:
         base_query = (
             select(EstablishmentRequest)
             .join(User, EstablishmentRequest.user_id == User.id)
-            .options(selectinload(EstablishmentRequest.user))
+            .options(contains_eager(EstablishmentRequest.user))
         )
         count_query = (
             select(func.count())
