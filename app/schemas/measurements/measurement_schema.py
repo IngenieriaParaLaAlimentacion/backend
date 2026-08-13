@@ -14,7 +14,7 @@ from app.domain.measurement import AlertSeverity, AlertType
 from app.domain.subject import Sex
 from app.schemas.common import IdentifierRefSchema
 from app.schemas.types import ClientGeneratedId
-from app.utils.dates import is_future_date
+from app.utils.dates import validate_not_future_datetime
 
 # BMI carries full precision in storage and alert computation; it is rounded to
 # two decimals only when serialized for API responses.
@@ -31,12 +31,7 @@ class MeasurementRequest(BaseModel):
     height_cm: float = Field(gt=20.0, le=250.0, description="Height in centimetres.")
     measured_at: datetime
 
-    @field_validator("measured_at")
-    @classmethod
-    def measured_at_not_future(cls, v: datetime) -> datetime:
-        if is_future_date(v):
-            raise ValueError("measured_at cannot be in the future")
-        return v
+    _check_measured_at = field_validator("measured_at")(validate_not_future_datetime)
 
 
 # -- Response --

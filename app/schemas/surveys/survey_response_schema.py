@@ -8,15 +8,9 @@ from app.domain.survey import ResponseType
 from app.schemas.common import IdentifierRefSchema
 from app.schemas.measurements.measurement_schema import EstablishmentRefResponse
 from app.schemas.types import ClientGeneratedId
-from app.utils.dates import is_future_date
+from app.utils.dates import validate_not_future_datetime
 
 AnswerValue = str | int | float | list[str]
-
-
-def validate_event_at(v: datetime) -> datetime:
-    if is_future_date(v):
-        raise ValueError("event_at cannot be in the future")
-    return v
 
 
 class SurveyResponseRequest(BaseModel):
@@ -30,7 +24,7 @@ class SurveyResponseRequest(BaseModel):
         ),
     )
 
-    _check_event_at = field_validator("event_at")(validate_event_at)
+    _check_event_at = field_validator("event_at")(validate_not_future_datetime)
 
 
 class SurveyRefResponse(IdentifierRefSchema):
@@ -58,7 +52,7 @@ class SurveyResponseEditRequest(BaseModel):
         ),
     )
 
-    _check_event_at = field_validator("event_at")(validate_event_at)
+    _check_event_at = field_validator("event_at")(validate_not_future_datetime)
 
 
 class SurveyResponseResponse(BaseModel):

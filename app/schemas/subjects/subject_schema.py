@@ -13,14 +13,7 @@ from app.schemas.measurements.measurement_schema import (
     RoundedBmi,
 )
 from app.schemas.types import ClientGeneratedId, ValidStr
-from app.utils.dates import today_in_argentina
-
-
-def validate_date(v: date | None) -> date | None:
-    if v is not None and v > today_in_argentina():
-        raise ValueError("birth date cannot be in the future")
-    return v
-
+from app.utils.dates import validate_not_future_date
 
 # -- Request --
 
@@ -39,7 +32,7 @@ class SubjectRequest(BaseModel):
         description="Bool indicating if the subject belongs to an indigenous population"
     )
 
-    _check_birth_date = field_validator("birth_date")(validate_date)
+    _check_birth_date = field_validator("birth_date")(validate_not_future_date)
 
 
 class SubjectUpdateRequest(BaseModel):
@@ -52,7 +45,7 @@ class SubjectUpdateRequest(BaseModel):
     is_rural: bool | None = None
     is_indigenous: bool | None = None
 
-    _check_birth_date = field_validator("birth_date")(validate_date)
+    _check_birth_date = field_validator("birth_date")(validate_not_future_date)
 
     def to_update_dict(self) -> dict:
         """Return only the fields explicitly set in the request."""
