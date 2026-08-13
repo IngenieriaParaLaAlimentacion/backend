@@ -6,8 +6,7 @@ from app.schemas.types import DescriptionStr, PhoneStr, ValidStr
 
 
 class IdentifierRefSchema(BaseModel):
-    # TODO: In refactor check there are some other schemas that could inherit from this
-    """Base schema for resources that to expose id and name."""
+    """Base schema for resources that expose id and name."""
 
     model_config = ConfigDict(from_attributes=True)
 

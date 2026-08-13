@@ -12,6 +12,7 @@ from pydantic import (
 
 from app.domain.measurement import AlertSeverity, AlertType
 from app.domain.subject import Sex
+from app.schemas.common import IdentifierRefSchema
 from app.utils.dates import is_future_date
 
 # BMI carries full precision in storage and alert computation; it is rounded to
@@ -81,20 +82,12 @@ class SubjectRefResponse(BaseModel):
     birth_date: date
 
 
-class EstablishmentRefResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID
-    name: str
+class EstablishmentRefResponse(IdentifierRefSchema):
     city: str
     province: str
 
 
-class ResponsibleRefResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID
-    name: str
+class ResponsibleRefResponse(IdentifierRefSchema):
     last_name: str
 
 
