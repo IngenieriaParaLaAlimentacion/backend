@@ -119,7 +119,7 @@ class QuestionResponse(BaseModel):
     options: list[OptionResponse]
 
 
-class SurveyResponse(BaseModel):
+class SurveyDetailResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
