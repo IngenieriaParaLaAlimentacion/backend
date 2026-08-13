@@ -1,6 +1,5 @@
 from .admin_schema import (
     AdminSubjectDetailResponse,
-    EstablishmentAccessRequest,
     FullUserAdminView,
     InviteAdminRequest,
     InviteUserResponse,
