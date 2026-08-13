@@ -4,6 +4,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.common import ProfileFields
+from app.schemas.establishments.establishment_schema import EstablishmentResponse
 from app.schemas.types import ValidStr
 
 # -- Request --
@@ -27,17 +28,7 @@ class EstablishmentAccessRequest(BaseModel):
 # -- Response --
 
 
-class EstablishmentWithStatusResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID
-    name: str
-    formatted_address: str
-    latitude: float
-    longitude: float
-    place_id: str
-    city: str
-    province: str
+class EstablishmentWithStatusResponse(EstablishmentResponse):
     status: str
 
 
