@@ -10,7 +10,7 @@ from app.domain.establishment import (
 )
 from app.models.establishment_request import EstablishmentRequest
 from app.models.user import User
-from app.utils.db import escape_like, execute_paginated
+from app.utils.db import execute_paginated, ilike_condition
 
 # Maps each EstablishmentCreationRequestSortOrder value to its SQLAlchemy
 # order clause. KeyError on an unmapped value is intentional: it surfaces
@@ -28,30 +28,25 @@ class EstablishmentRequestRepository:
         self.db = db
 
     @staticmethod
-    def _ilike_condition(column, value: str):
-        """Case-insensitive partial match condition for a column."""
-        return column.ilike(f"%{escape_like(value)}%", escape="\\")
-
-    @classmethod
-    def _search_condition(cls, search: str | None):
+    def _search_condition(search: str | None):
         """Case-insensitive match on the reported name/address or the
         requester's name, last name or email, or None for no search."""
         if not search:
             return None
         return or_(
-            cls._ilike_condition(EstablishmentRequest.name, search),
-            cls._ilike_condition(EstablishmentRequest.formatted_address, search),
-            cls._ilike_condition(User.name, search),
-            cls._ilike_condition(User.last_name, search),
-            cls._ilike_condition(User.email, search),
+            ilike_condition(EstablishmentRequest.name, search),
+            ilike_condition(EstablishmentRequest.formatted_address, search),
+            ilike_condition(User.name, search),
+            ilike_condition(User.last_name, search),
+            ilike_condition(User.email, search),
         )
 
-    @classmethod
-    def _append_ilike(cls, conditions: list, column, value: str | None) -> None:
+    @staticmethod
+    def _append_ilike(conditions: list, column, value: str | None) -> None:
         """Append a partial match condition for column to conditions,
         if value is given."""
         if value:
-            conditions.append(cls._ilike_condition(column, value))
+            conditions.append(ilike_condition(column, value))
 
     @classmethod
     def _listing_conditions(
@@ -104,11 +99,13 @@ class EstablishmentRequestRepository:
             .join(User, EstablishmentRequest.user_id == User.id)
         )
 
-        for condition in self._listing_conditions(params):
-            base_query = base_query.where(condition)
-            count_query = count_query.where(condition)
-
         order_by = _SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
-            self.db, base_query, count_query, order_by, limit, offset
+            self.db,
+            base_query,
+            count_query,
+            order_by,
+            limit,
+            offset,
+            conditions=self._listing_conditions(params),
         )

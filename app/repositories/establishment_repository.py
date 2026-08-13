@@ -15,7 +15,7 @@ from app.exceptions.domain_exceptions import (
 )
 from app.models.establishment import Establishment
 from app.models.user_establishment import UserEstablishment
-from app.utils.db import escape_like, execute_paginated
+from app.utils.db import execute_paginated, ilike_condition
 
 # Maps each EstablishmentSortOrder value to its SQLAlchemy order clause.
 # KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
@@ -115,12 +115,7 @@ class EstablishmentRepository:
         return establishments
 
     @staticmethod
-    def _ilike_condition(column, value: str):
-        """Case-insensitive partial match condition for a column."""
-        return column.ilike(f"%{escape_like(value)}%", escape="\\")
-
-    @classmethod
-    def _search_condition(cls, search: str | None):
+    def _search_condition(search: str | None):
         """Case-insensitive name/formatted_address match for ``search``, or None.
 
         Returns None when ``search`` is empty so callers can skip the filter.
@@ -128,17 +123,15 @@ class EstablishmentRepository:
         if not search:
             return None
         return or_(
-            cls._ilike_condition(Establishment.name, search),
-            cls._ilike_condition(Establishment.formatted_address, search),
+            ilike_condition(Establishment.name, search),
+            ilike_condition(Establishment.formatted_address, search),
         )
 
-    @classmethod
-    def _append_ilike(cls, conditions: list, column, value: str | None) -> None:
+    @staticmethod
+    def _append_ilike(conditions: list, column, value: str | None) -> None:
         """Append a partial match condition for column to conditions, if given."""
-        # TODO: move this helpers into a common/utils file, it is repeated between
-        #  many repositories
         if value:
-            conditions.append(cls._ilike_condition(column, value))
+            conditions.append(ilike_condition(column, value))
 
     @classmethod
     def _listing_conditions(cls, params: EstablishmentListingParams) -> list:
@@ -165,13 +158,15 @@ class EstablishmentRepository:
         base_query = select(Establishment)
         count_query = select(func.count()).select_from(Establishment)
 
-        for condition in self._listing_conditions(params):
-            base_query = base_query.where(condition)
-            count_query = count_query.where(condition)
-
         order_by = _SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
-            self.db, base_query, count_query, order_by, limit, offset
+            self.db,
+            base_query,
+            count_query,
+            order_by,
+            limit,
+            offset,
+            conditions=self._listing_conditions(params),
         )
 
     async def get_available_for_user(
@@ -201,11 +196,13 @@ class EstablishmentRepository:
             .where(Establishment.id.not_in(blocked))
         )
 
-        for condition in self._listing_conditions(params):
-            base_query = base_query.where(condition)
-            count_query = count_query.where(condition)
-
         order_by = _SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
-            self.db, base_query, count_query, order_by, limit, offset
+            self.db,
+            base_query,
+            count_query,
+            order_by,
+            limit,
+            offset,
+            conditions=self._listing_conditions(params),
         )

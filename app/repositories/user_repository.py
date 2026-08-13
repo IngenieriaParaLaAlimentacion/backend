@@ -1,13 +1,13 @@
 from uuid import UUID
 
-from sqlalchemy import func, select, update
+from sqlalchemy import func, or_, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.exceptions.domain_exceptions import UserAlreadyExistsError
 from app.models.user import User, UserRole, UserStatus
-from app.utils.db import escape_like, execute_paginated
+from app.utils.db import execute_paginated, ilike_condition
 
 
 class UserRepository:
@@ -119,11 +119,10 @@ class UserRepository:
                 query = query.where(User.is_email_verified.is_(True))
                 count_query = count_query.where(User.is_email_verified.is_(True))
         if search:
-            search_term = f"%{escape_like(search)}%"
-            condition = (
-                (User.email.ilike(search_term, escape="\\"))
-                | (User.name.ilike(search_term, escape="\\"))
-                | (User.last_name.ilike(search_term, escape="\\"))
+            condition = or_(
+                ilike_condition(User.email, search),
+                ilike_condition(User.name, search),
+                ilike_condition(User.last_name, search),
             )
             query = query.where(condition)
             count_query = count_query.where(condition)

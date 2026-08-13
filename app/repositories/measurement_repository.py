@@ -106,13 +106,15 @@ class MeasurementRepository:
             .join(Establishment, Measurement.establishment_id == Establishment.id)
         )
 
-        for condition in self._listing_conditions(params):
-            base_query = base_query.where(condition)
-            count_query = count_query.where(condition)
-
         order_by = _SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
-            self.db, base_query, count_query, order_by, limit, offset
+            self.db,
+            base_query,
+            count_query,
+            order_by,
+            limit,
+            offset,
+            conditions=self._listing_conditions(params),
         )
 
     async def get_latest_for_subject(self, subject_id: UUID) -> Measurement | None:

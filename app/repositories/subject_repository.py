@@ -1,7 +1,7 @@
 import datetime
 from uuid import UUID
 
-from sqlalchemy import asc, desc, func, select
+from sqlalchemy import asc, desc, func, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,7 +9,7 @@ from app.domain.subject import Sex, SubjectListingParams, SubjectSortOrder
 from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.measurement import Measurement
 from app.models.subject import Subject
-from app.utils.db import escape_like, execute_paginated
+from app.utils.db import execute_paginated, ilike_condition
 
 # Maps each SubjectSortOrder value to its SQLAlchemy order clause(s).
 # Each pairs the sort column with `id` as a tiebreaker, so subjects sharing a
@@ -34,9 +34,9 @@ def subject_search_condition(search: str | None):
     """
     if not search:
         return None
-    search_term = f"%{escape_like(search)}%"
-    condition = Subject.name.ilike(search_term, escape="\\") | Subject.last_name.ilike(
-        search_term, escape="\\"
+    condition = or_(
+        ilike_condition(Subject.name, search),
+        ilike_condition(Subject.last_name, search),
     )
     if search.isdigit():
         condition = condition | (Subject.dni == int(search))
@@ -160,11 +160,13 @@ class SubjectRepository:
         base_query = select(Subject)
         count_query = select(func.count()).select_from(Subject)
 
-        for condition in self._listing_conditions(params):
-            base_query = base_query.where(condition)
-            count_query = count_query.where(condition)
-
         order_by = _SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
-            self.db, base_query, count_query, order_by, limit, offset
+            self.db,
+            base_query,
+            count_query,
+            order_by,
+            limit,
+            offset,
+            conditions=self._listing_conditions(params),
         )
