@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 import structlog
@@ -22,12 +23,18 @@ async def lifespan(app: FastAPI):
     yield
 
     logger.info("Shutting down service, flushing telemetry")
-    try:
-        telemetry.tracer_provider.shutdown()
-        telemetry.meter_provider.shutdown()
-        telemetry.logger_provider.shutdown()
-    finally:
-        await engine.dispose()
+
+    for provider_name, provider in (
+        ("tracer_provider", telemetry.tracer_provider),
+        ("meter_provider", telemetry.meter_provider),
+        ("logger_provider", telemetry.logger_provider),
+    ):
+        try:
+            await asyncio.to_thread(provider.shutdown)
+        except Exception:
+            logger.exception(f"Failed to shutdown {provider_name}")
+
+    await engine.dispose()
 
 
 app = FastAPI(
