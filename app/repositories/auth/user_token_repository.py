@@ -5,7 +5,7 @@ from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.settings import settings
-from app.models.user_token import UserToken
+from app.models.auth.user_token import UserToken
 
 
 def _expiry_expression():

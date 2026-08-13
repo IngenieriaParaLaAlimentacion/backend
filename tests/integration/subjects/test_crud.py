@@ -222,7 +222,9 @@ class TestGetSubjectLatestMeasurement:
         pins down that the subject detail reports the global latest instead.
         """
         from app.db.database import AsyncSessionLocal
-        from app.models.measurement_alert import MeasurementAlert
+        from app.models.measurements.measurement_alert import (
+            MeasurementAlert,
+        )
         from app.reference_data.anthropometry import evaluate_alerts
 
         async with AsyncSessionLocal() as session:

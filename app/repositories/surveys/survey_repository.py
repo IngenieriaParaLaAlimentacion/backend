@@ -17,11 +17,11 @@ from app.exceptions.domain_exceptions import (
     InvalidSurveyPayloadError,
     UniqueConstraintError,
 )
-from app.models.establishment import Establishment
-from app.models.survey import Survey
-from app.models.survey_establishment import SurveyEstablishment
-from app.models.survey_question import SurveyQuestion
-from app.models.survey_question_option import SurveyQuestionOption
+from app.models.establishments.establishment import Establishment
+from app.models.surveys.survey import Survey
+from app.models.surveys.survey_establishment import SurveyEstablishment
+from app.models.surveys.survey_question import SurveyQuestion
+from app.models.surveys.survey_question_option import SurveyQuestionOption
 from app.utils.db import escape_like
 
 # Maps each SurveySortOrder value to its SQLAlchemy order clause.

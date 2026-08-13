@@ -24,7 +24,7 @@ from app.exceptions.domain_exceptions import (
     SurveyNotFoundError,
     UniqueConstraintError,
 )
-from app.models.survey import Survey
+from app.models.surveys.survey import Survey
 from app.schemas.survey_schema import (
     QuestionInput,
     SurveyCreateRequest,

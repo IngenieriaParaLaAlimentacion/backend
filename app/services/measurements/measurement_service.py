@@ -17,7 +17,7 @@ from app.exceptions.domain_exceptions import (
     SubjectNotFoundError,
     UniqueConstraintError,
 )
-from app.models.subject import Subject
+from app.models.subjects.subject import Subject
 from app.reference_data.anthropometry import evaluate_alerts
 from app.schemas.measurement_schema import MeasurementRequest
 

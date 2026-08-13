@@ -3,7 +3,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.survey_response_edit import SurveyResponseEdit
+from app.models.surveys.survey_response_edit import SurveyResponseEdit
 from app.utils.db import insert_with_savepoint
 
 

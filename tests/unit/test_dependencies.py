@@ -10,7 +10,7 @@ from app.core.dependencies import (
     require_any,
 )
 from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
-from app.models.user import UserRole
+from app.models.auth.user import UserRole
 
 # --- require_admin_or_superadmin ---
 

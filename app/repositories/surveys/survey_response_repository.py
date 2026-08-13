@@ -11,9 +11,9 @@ from app.domain.survey_response import (
     SurveyResponseListingParams,
     SurveyResponseSummaryParams,
 )
-from app.models.establishment import Establishment
-from app.models.survey import Survey
-from app.models.survey_response import SurveyResponse
+from app.models.establishments.establishment import Establishment
+from app.models.surveys.survey import Survey
+from app.models.surveys.survey_response import SurveyResponse
 from app.utils.db import insert_with_savepoint
 
 

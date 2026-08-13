@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.measurement import AlertSeverity, AlertType
-from app.models.measurement_alert import MeasurementAlert
+from app.models.measurements.measurement_alert import MeasurementAlert
 
 
 class MeasurementAlertRepository:

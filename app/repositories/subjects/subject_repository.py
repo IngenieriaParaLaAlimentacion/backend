@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.subject import Sex, SubjectListingParams, SubjectSortOrder
 from app.exceptions.domain_exceptions import UniqueConstraintError
-from app.models.measurement import Measurement
-from app.models.subject import Subject
+from app.models.measurements.measurement import Measurement
+from app.models.subjects.subject import Subject
 from app.utils.db import escape_like, execute_paginated
 
 # Maps each SubjectSortOrder value to its SQLAlchemy order clause(s).

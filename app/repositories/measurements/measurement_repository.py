@@ -12,9 +12,9 @@ from app.domain.measurement import (
     MeasurementSortOrder,
 )
 from app.exceptions.domain_exceptions import UniqueConstraintError
-from app.models.establishment import Establishment
-from app.models.measurement import Measurement
-from app.models.subject import Subject
+from app.models.establishments.establishment import Establishment
+from app.models.measurements.measurement import Measurement
+from app.models.subjects.subject import Subject
 from app.utils.db import execute_paginated
 
 # Maps each MeasurementSortOrder value to its SQLAlchemy order clause.

@@ -6,10 +6,10 @@ import pytest_asyncio
 from app.core.security import create_access_token
 from app.domain.subject import Sex
 from app.domain.user import UserRole, UserStatus
-from app.models.establishment import Establishment
-from app.models.measurement import Measurement
-from app.models.subject import Subject
-from app.models.user import User
+from app.models.auth.user import User
+from app.models.establishments.establishment import Establishment
+from app.models.measurements.measurement import Measurement
+from app.models.subjects.subject import Subject
 
 SUBJECTS_URL = "/api/v1/subjects"
 

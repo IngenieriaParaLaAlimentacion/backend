@@ -12,7 +12,7 @@ from app.exceptions.domain_exceptions import (
     EstablishmentAlreadyExistsError,
 )
 from app.models import Establishment
-from app.models.establishment_request import (
+from app.models.establishments.establishment_request import (
     EstablishmentRequest as EstablishmentRequestModel,
 )
 from app.schemas.establishment_schema import (

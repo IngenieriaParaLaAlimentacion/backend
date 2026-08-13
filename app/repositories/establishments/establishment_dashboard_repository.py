@@ -9,12 +9,12 @@ from app.domain.establishment_dashboard import (
     EstablishmentSubjectListingParams,
     EstablishmentSubjectSortOrder,
 )
-from app.models.establishment import Establishment
-from app.models.measurement import Measurement
-from app.models.measurement_alert import MeasurementAlert
-from app.models.subject import Subject
-from app.models.user import User
-from app.models.user_establishment import UserEstablishment
+from app.models.auth.user import User
+from app.models.auth.user_establishment import UserEstablishment
+from app.models.establishments.establishment import Establishment
+from app.models.measurements.measurement import Measurement
+from app.models.measurements.measurement_alert import MeasurementAlert
+from app.models.subjects.subject import Subject
 from app.repositories.subjects.subject_repository import subject_search_condition
 from app.utils.db import escape_like
 

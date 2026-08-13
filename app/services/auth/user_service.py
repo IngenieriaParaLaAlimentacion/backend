@@ -12,7 +12,7 @@ from app.exceptions.domain_exceptions import (
     EmptyUpdateRequestError,
     UserNotFoundError,
 )
-from app.models.user import User
+from app.models.auth.user import User
 from app.schemas.user_schema import ProfileUpdateRequest
 
 _ESTABLISHMENT_FIELDS = tuple(f.name for f in fields(EstablishmentDomain))

@@ -1,6 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.establishment_request import EstablishmentRequest
+from app.models.establishments.establishment_request import (
+    EstablishmentRequest,
+)
 
 
 class EstablishmentRequestRepository:

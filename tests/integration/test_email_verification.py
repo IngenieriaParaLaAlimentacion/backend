@@ -28,7 +28,7 @@ async def _get_user_by_email(email: str):
     from sqlalchemy import select
 
     from app.db.database import AsyncSessionLocal
-    from app.models.user import User
+    from app.models.auth.user import User
 
     async with AsyncSessionLocal() as session:
         result = await session.execute(select(User).where(User.email == email))
@@ -52,8 +52,8 @@ def make_db_unverified_user():
         from app.core.security import hash_password
         from app.db.database import AsyncSessionLocal
         from app.domain.user import UserRole, UserStatus
-        from app.models.user import User
-        from app.models.user_password import UserPassword
+        from app.models.auth.user import User
+        from app.models.auth.user_password import UserPassword
 
         async with AsyncSessionLocal() as session:
             user = User(
@@ -87,7 +87,7 @@ async def register_and_verify(client, db_establishment):
         from app.config.settings import settings
         from app.core.security import create_email_verification_token
         from app.db.database import AsyncSessionLocal
-        from app.models.email_verification_token import EmailVerificationToken
+        from app.models.auth.email_verification_token import EmailVerificationToken
 
         email = f"reg_verify_{uuid.uuid4().hex[:8]}@example.com"
         body = {

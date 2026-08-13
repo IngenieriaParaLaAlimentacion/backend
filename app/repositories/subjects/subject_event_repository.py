@@ -5,7 +5,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.subject_event import EventPayload, SubjectEventType
-from app.models.subject_event import SubjectEvent
+from app.models.subjects.subject_event import SubjectEvent
 from app.utils.db import execute_paginated
 
 

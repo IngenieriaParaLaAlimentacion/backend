@@ -24,7 +24,7 @@ from app.exceptions.domain_exceptions import (
     SurveyResponseNotFoundError,
     UniqueConstraintError,
 )
-from app.models.survey_response import SurveyResponse
+from app.models.surveys.survey_response import SurveyResponse
 from app.schemas.survey_response_schema import (
     SurveyResponseEditRequest,
     SurveyResponseRequest,

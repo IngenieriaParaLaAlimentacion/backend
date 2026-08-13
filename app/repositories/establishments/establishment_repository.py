@@ -9,8 +9,8 @@ from app.domain.establishment import (
     UserEstablishmentStatus,
 )
 from app.exceptions.domain_exceptions import EstablishmentNotFoundError
-from app.models.establishment import Establishment
-from app.models.user_establishment import UserEstablishment
+from app.models.auth.user_establishment import UserEstablishment
+from app.models.establishments.establishment import Establishment
 from app.utils.db import escape_like, execute_paginated
 
 # Maps each EstablishmentSortOrder value to its SQLAlchemy order clause.

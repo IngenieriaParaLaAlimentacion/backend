@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.password_recovery_token import PasswordRecoveryToken
+from app.models.auth.password_recovery_token import PasswordRecoveryToken
 
 
 class PasswordRecoveryTokenRepository:

@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.exceptions.domain_exceptions import UserAlreadyExistsError
-from app.models.user import User, UserRole, UserStatus
+from app.models.auth.user import User, UserRole, UserStatus
 from app.utils.db import escape_like, execute_paginated
 
 

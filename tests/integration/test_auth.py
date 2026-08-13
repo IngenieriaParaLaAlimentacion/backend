@@ -7,7 +7,7 @@ from sqlalchemy import select
 
 import app.db.database as db_module
 from app.domain.user import UserRole
-from app.models.user_establishment import UserEstablishment
+from app.models.auth.user_establishment import UserEstablishment
 
 pytestmark = pytest.mark.asyncio
 

@@ -23,7 +23,7 @@ from app.exceptions.domain_exceptions import (
     UserEstablishmentNotFoundError,
     UserNotFoundError,
 )
-from app.models.user import User
+from app.models.auth.user import User
 from app.schemas.admin_schema import InviteAdminRequest
 from app.services.auth.auth_service import AuthService
 from app.services.email_service import (

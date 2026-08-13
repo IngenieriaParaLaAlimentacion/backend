@@ -4,7 +4,7 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.establishment import UserEstablishmentStatus
-from app.models.user_establishment import UserEstablishment
+from app.models.auth.user_establishment import UserEstablishment
 
 
 class UserEstablishmentRepository:

@@ -22,7 +22,7 @@ NOW = "2024-06-01T12:00:00Z"
 
 async def _make_establishment(place_id: str = "place-test-002"):
     from app.db.database import AsyncSessionLocal
-    from app.models.establishment import Establishment
+    from app.models.establishments.establishment import Establishment
 
     async with AsyncSessionLocal() as session:
         establishment = Establishment(
@@ -305,7 +305,7 @@ class TestSubmitIdempotentReplay:
     async def test_same_client_id_replays_without_duplicate_row(
         self, client, db_establishment, admin_user
     ):
-        from app.models.survey_response import SurveyResponse
+        from app.models.surveys.survey_response import SurveyResponse
 
         headers, _ = admin_user
         survey = await _create_survey(client, headers)
@@ -433,7 +433,7 @@ class TestEdit:
         assert response.status_code == status.HTTP_200_OK
 
     async def test_edit_appends_audit_row(self, client, db_establishment, admin_user):
-        from app.models.survey_response_edit import SurveyResponseEdit
+        from app.models.surveys.survey_response_edit import SurveyResponseEdit
 
         headers, _ = admin_user
         survey = await _create_survey(client, headers)
@@ -492,7 +492,7 @@ class TestEdit:
         assert response.json()["answers"] == original_answers
 
         from app.db.database import AsyncSessionLocal
-        from app.models.survey_response_edit import SurveyResponseEdit
+        from app.models.surveys.survey_response_edit import SurveyResponseEdit
 
         async with AsyncSessionLocal() as session:
             count = await session.execute(

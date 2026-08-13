@@ -46,12 +46,12 @@ async def scenario(app) -> Scenario:
     from app.domain.establishment import UserEstablishmentStatus
     from app.domain.subject import Sex
     from app.domain.user import UserRole, UserStatus
-    from app.models.establishment import Establishment
-    from app.models.measurement import Measurement
-    from app.models.measurement_alert import MeasurementAlert
-    from app.models.subject import Subject
-    from app.models.user import User
-    from app.models.user_establishment import UserEstablishment
+    from app.models.auth.user import User
+    from app.models.auth.user_establishment import UserEstablishment
+    from app.models.establishments.establishment import Establishment
+    from app.models.measurements.measurement import Measurement
+    from app.models.measurements.measurement_alert import MeasurementAlert
+    from app.models.subjects.subject import Subject
     from app.reference_data.anthropometry import evaluate_alerts
 
     def _establishment(name: str, city: str) -> Establishment:
