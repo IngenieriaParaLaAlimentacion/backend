@@ -8,8 +8,8 @@ from app.domain.establishment import UserEstablishmentStatus
 from app.domain.measurement import AlertSeverity, NutritionalStatus
 from app.domain.subject import Sex
 from app.domain.user import UserStatus
-from app.schemas.establishment_schema import EstablishmentResponse
-from app.schemas.measurement_schema import AlertResponse, RoundedBmi
+from app.schemas.establishments.establishment_schema import EstablishmentResponse
+from app.schemas.measurements.measurement_schema import AlertResponse, RoundedBmi
 
 # Averages are absent (not zero) for an establishment with no data, so unlike
 # ``RoundedBmi`` this serializer has to survive None.

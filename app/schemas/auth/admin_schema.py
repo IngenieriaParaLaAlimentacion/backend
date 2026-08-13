@@ -6,9 +6,9 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from app.domain.pagination import PaginatedResult
 from app.domain.subject import SubjectDomain
 from app.domain.subject_event import SubjectEventRecord
-from app.schemas.establishment_schema import EstablishmentResponse
+from app.schemas.establishments.establishment_schema import EstablishmentResponse
 from app.schemas.pagination import PaginatedResponse
-from app.schemas.subject_schema import (
+from app.schemas.subjects.subject_schema import (
     EventPayloadResponse,
     SubjectEventResponse,
     SubjectResponse,

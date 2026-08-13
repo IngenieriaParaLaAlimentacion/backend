@@ -5,8 +5,8 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.domain.survey import ResponseType
-from app.schemas.common_schemas import IdentifierRefSchema
-from app.schemas.measurement_schema import EstablishmentRefResponse
+from app.schemas.common import IdentifierRefSchema
+from app.schemas.measurements.measurement_schema import EstablishmentRefResponse
 from app.utils.dates import is_future_date
 
 AnswerValue = str | int | float | list[str]

@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from app.domain.measurement import NutritionalStatus
 from app.domain.subject import Sex
 from app.domain.subject_event import SubjectEventType
-from app.schemas.measurement_schema import (
+from app.schemas.measurements.measurement_schema import (
     AlertResponse,
     EstablishmentRefResponse,
     RoundedBmi,
