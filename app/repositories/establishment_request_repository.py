@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import asc, desc, func, select
+from sqlalchemy import asc, desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -28,19 +28,30 @@ class EstablishmentRequestRepository:
         self.db = db
 
     @staticmethod
-    def _search_condition(search: str | None):
+    def _ilike_condition(column, value: str):
+        """Case-insensitive partial match condition for a column."""
+        return column.ilike(f"%{escape_like(value)}%", escape="\\")
+
+    @classmethod
+    def _search_condition(cls, search: str | None):
         """Case-insensitive match on the reported name/address or the
         requester's name, last name or email, or None for no search."""
         if not search:
             return None
-        term = f"%{escape_like(search)}%"
-        return (
-            EstablishmentRequest.name.ilike(term, escape="\\")
-            | EstablishmentRequest.formatted_address.ilike(term, escape="\\")
-            | User.name.ilike(term, escape="\\")
-            | User.last_name.ilike(term, escape="\\")
-            | User.email.ilike(term, escape="\\")
+        return or_(
+            cls._ilike_condition(EstablishmentRequest.name, search),
+            cls._ilike_condition(EstablishmentRequest.formatted_address, search),
+            cls._ilike_condition(User.name, search),
+            cls._ilike_condition(User.last_name, search),
+            cls._ilike_condition(User.email, search),
         )
+
+    @classmethod
+    def _append_ilike(cls, conditions: list, column, value: str | None) -> None:
+        """Append a partial match condition for column to conditions,
+        if value is given."""
+        if value:
+            conditions.append(cls._ilike_condition(column, value))
 
     @classmethod
     def _listing_conditions(
@@ -51,12 +62,8 @@ class EstablishmentRequestRepository:
         search_condition = cls._search_condition(params.search)
         if search_condition is not None:
             conditions.append(search_condition)
-        if params.city:
-            term = f"%{escape_like(params.city)}%"
-            conditions.append(EstablishmentRequest.city.ilike(term, escape="\\"))
-        if params.province:
-            term = f"%{escape_like(params.province)}%"
-            conditions.append(EstablishmentRequest.province.ilike(term, escape="\\"))
+        cls._append_ilike(conditions, EstablishmentRequest.city, params.city)
+        cls._append_ilike(conditions, EstablishmentRequest.province, params.province)
         if params.status is not None:
             conditions.append(EstablishmentRequest.status == params.status)
         return conditions
