@@ -20,11 +20,11 @@ from app.repositories.password_recovery_repository import (
 )
 from app.repositories.subject_event_repository import SubjectEventRepository
 from app.repositories.subject_repository import SubjectRepository
-from app.repositories.survey_repository import SurveyRepository
-from app.repositories.survey_response_edit_repository import (
+from app.repositories.surveys.survey_repository import SurveyRepository
+from app.repositories.surveys.survey_response_edit_repository import (
     SurveyResponseEditRepository,
 )
-from app.repositories.survey_response_repository import SurveyResponseRepository
+from app.repositories.surveys.survey_response_repository import SurveyResponseRepository
 from app.repositories.user_establishment_repository import UserEstablishmentRepository
 from app.repositories.user_password_repository import UserPasswordRepository
 from app.repositories.user_repository import UserRepository
