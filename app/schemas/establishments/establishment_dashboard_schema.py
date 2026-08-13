@@ -9,7 +9,9 @@ from app.domain.measurement import AlertSeverity, NutritionalStatus
 from app.domain.subject import Sex
 from app.domain.user import UserStatus
 from app.schemas.establishments.establishment_schema import EstablishmentResponse
-from app.schemas.measurements.measurement_schema import AlertResponse, RoundedBmi
+from app.schemas.measurements.measurement_schema import (
+    MeasurementSnapshotBase,
+)
 
 # Averages are absent (not zero) for an establishment with no data, so unlike
 # ``RoundedBmi`` this serializer has to survive None.
@@ -64,17 +66,10 @@ class EstablishmentDashboardResponse(BaseModel):
     alert_status: EstablishmentAlertStatusResponse
 
 
-class LatestMeasurementResponse(BaseModel):
+class LatestMeasurementResponse(MeasurementSnapshotBase):
     """The subject's latest reading at the establishment being viewed."""
 
-    model_config = ConfigDict(from_attributes=True)
-
     id: UUID
-    measured_at: datetime
-    weight_kg: float
-    height_cm: float
-    bmi: RoundedBmi
-    alerts: list[AlertResponse]
 
 
 class EstablishmentSubjectListItem(BaseModel):

@@ -56,6 +56,18 @@ class AlertResponse(BaseModel):
     detail: str
 
 
+class MeasurementSnapshotBase(BaseModel):
+    """A clinical reading of a measurement, shared by snapshots."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    measured_at: datetime
+    weight_kg: float
+    height_cm: float
+    bmi: RoundedBmi
+    alerts: list[AlertResponse]
+
+
 class MeasurementResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -105,14 +117,8 @@ class MeasurementListItem(BaseModel):
     alerts: list[AlertResponse]
 
 
-class EvolutionPoint(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    measured_at: datetime
-    weight_kg: float
-    height_cm: float
-    bmi: RoundedBmi
-    alerts: list[AlertResponse]
+class EvolutionPoint(MeasurementSnapshotBase):
+    pass
 
 
 class SubjectEvolutionResponse(BaseModel):
