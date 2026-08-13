@@ -1,4 +1,5 @@
 import logging
+from typing import NamedTuple
 
 from opentelemetry import _logs, metrics, trace
 from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter
@@ -16,7 +17,14 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from app.config.settings import settings
 
 
-def setup_telemetry(app) -> LoggingHandler | None:
+class Telemetry(NamedTuple):
+    logging_handler: LoggingHandler
+    tracer_provider: TracerProvider
+    meter_provider: MeterProvider
+    logger_provider: LoggerProvider
+
+
+def setup_telemetry(app) -> Telemetry:
 
     resource = Resource.create(
         {
@@ -49,4 +57,9 @@ def setup_telemetry(app) -> LoggingHandler | None:
 
     FastAPIInstrumentor.instrument_app(app)
 
-    return otel_log_handler
+    return Telemetry(
+        logging_handler=otel_log_handler,
+        tracer_provider=tracer_provider,
+        meter_provider=meter_provider,
+        logger_provider=logger_provider,
+    )
