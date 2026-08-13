@@ -4,11 +4,13 @@ from app.repositories.activity_repository import ActivityRepository
 from app.repositories.email_verification_repository import (
     EmailVerificationTokenRepository,
 )
-from app.repositories.establishment_dashboard_repository import (
+from app.repositories.establishments.establishment_dashboard_repository import (
     EstablishmentDashboardRepository,
 )
-from app.repositories.establishment_repository import EstablishmentRepository
-from app.repositories.establishment_request_repository import (
+from app.repositories.establishments.establishment_repository import (
+    EstablishmentRepository,
+)
+from app.repositories.establishments.establishment_request_repository import (
     EstablishmentRequestRepository,
 )
 from app.repositories.measurement_alert_repository import MeasurementAlertRepository
