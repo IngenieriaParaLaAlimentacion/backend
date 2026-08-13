@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from app.domain.survey import ResponseType
 from app.schemas.common import IdentifierRefSchema
 from app.schemas.measurements.measurement_schema import EstablishmentRefResponse
+from app.schemas.types import ClientGeneratedId
 from app.utils.dates import is_future_date
 
 AnswerValue = str | int | float | list[str]
@@ -19,14 +20,7 @@ def validate_event_at(v: datetime) -> datetime:
 
 
 class SurveyResponseRequest(BaseModel):
-    id: UUID | None = Field(
-        default=None,
-        description=(
-            "Client-generated UUID for offline-first idempotency. When provided "
-            "it becomes the response's primary key and repeated submissions with "
-            "the same id are idempotent. When omitted, the server generates one."
-        ),
-    )
+    id: ClientGeneratedId
     establishment_id: UUID
     answers: dict[str, AnswerValue]
     event_at: datetime = Field(

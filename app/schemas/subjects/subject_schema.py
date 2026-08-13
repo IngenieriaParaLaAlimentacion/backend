@@ -12,7 +12,7 @@ from app.schemas.measurements.measurement_schema import (
     EstablishmentRefResponse,
     RoundedBmi,
 )
-from app.schemas.types import ValidStr
+from app.schemas.types import ClientGeneratedId, ValidStr
 from app.utils.dates import today_in_argentina
 
 
@@ -26,14 +26,7 @@ def validate_date(v: date | None) -> date | None:
 
 
 class SubjectRequest(BaseModel):
-    id: UUID | None = Field(
-        default=None,
-        description=(
-            "Client-generated UUID for offline-first idempotency. When provided it "
-            "becomes the subject's primary key and repeated submissions with the same "
-            "id are idempotent. When omitted, the server generates one."
-        ),
-    )
+    id: ClientGeneratedId
     dni: int = Field(ge=1, le=99_999_999)
     sex: Sex
     name: ValidStr

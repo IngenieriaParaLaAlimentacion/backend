@@ -1,4 +1,5 @@
 from typing import Annotated
+from uuid import UUID
 
 from pydantic import AfterValidator, Field, StringConstraints
 
@@ -29,6 +30,18 @@ def _min_password_length(v: str) -> str:
 
 
 PasswordStr = Annotated[str, AfterValidator(_min_password_length)]
+
+ClientGeneratedId = Annotated[
+    UUID | None,
+    Field(
+        default=None,
+        description=(
+            "Client-generated UUID for offline-first idempotency. When provided it "
+            "becomes the resource's primary key and repeated submissions with the "
+            "same id are idempotent. When omitted, the server generates one."
+        ),
+    ),
+]
 
 Latitude = Annotated[float, Field(ge=-90, le=90)]
 Longitude = Annotated[float, Field(ge=-180, le=180)]

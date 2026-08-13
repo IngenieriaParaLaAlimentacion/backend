@@ -13,6 +13,7 @@ from pydantic import (
 from app.domain.measurement import AlertSeverity, AlertType
 from app.domain.subject import Sex
 from app.schemas.common import IdentifierRefSchema
+from app.schemas.types import ClientGeneratedId
 from app.utils.dates import is_future_date
 
 # BMI carries full precision in storage and alert computation; it is rounded to
@@ -23,14 +24,7 @@ RoundedBmi = Annotated[float, PlainSerializer(lambda v: round(v, 2), return_type
 
 
 class MeasurementRequest(BaseModel):
-    id: UUID | None = Field(
-        default=None,
-        description=(
-            "Client-generated UUID for offline-first idempotency. When provided it "
-            "becomes the measurement's primary key and repeated submissions with "
-            "the same id are idempotent. When omitted, the server generates one."
-        ),
-    )
+    id: ClientGeneratedId
     subject_id: UUID
     establishment_id: UUID
     weight_kg: float = Field(gt=0.5, le=300, description="Weight in kilograms.")
