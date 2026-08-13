@@ -15,7 +15,7 @@ from app.models.measurement_alert import MeasurementAlert
 from app.models.subject import Subject
 from app.models.user import User
 from app.models.user_establishment import UserEstablishment
-from app.repositories.subject_repository import subject_search_condition
+from app.repositories.subjects.subject_repository import subject_search_condition
 from app.utils.db import escape_like
 
 # Completed months between a subject's birth date and the moment they were
