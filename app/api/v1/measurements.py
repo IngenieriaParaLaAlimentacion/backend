@@ -11,7 +11,7 @@ from app.core.dependencies import (
     require_any,
 )
 from app.domain import UserActor
-from app.schemas.measurement_schema import (
+from app.schemas.measurements.measurement_schema import (
     MeasurementListItem,
     MeasurementRequest,
     MeasurementResponse,

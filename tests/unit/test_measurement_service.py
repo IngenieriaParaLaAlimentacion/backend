@@ -22,7 +22,7 @@ from app.exceptions.domain_exceptions import (
     SubjectNotFoundError,
     UniqueConstraintError,
 )
-from app.schemas.measurement_schema import MeasurementRequest
+from app.schemas.measurements.measurement_schema import MeasurementRequest
 from app.services.measurements.measurement_service import MeasurementService
 
 

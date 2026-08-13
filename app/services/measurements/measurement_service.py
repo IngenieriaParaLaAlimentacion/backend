@@ -19,7 +19,7 @@ from app.exceptions.domain_exceptions import (
 )
 from app.models.subjects.subject import Subject
 from app.reference_data.anthropometry import evaluate_alerts
-from app.schemas.measurement_schema import MeasurementRequest
+from app.schemas.measurements.measurement_schema import MeasurementRequest
 
 
 class MeasurementService:

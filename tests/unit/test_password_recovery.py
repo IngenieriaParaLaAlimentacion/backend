@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.exceptions.domain_exceptions import InvalidTokenError
-from app.schemas.auth_schema import PasswordRecoveryConfirmRequest
+from app.schemas.auth.auth_schema import PasswordRecoveryConfirmRequest
 from app.services.auth.auth_service import AuthService
 
 

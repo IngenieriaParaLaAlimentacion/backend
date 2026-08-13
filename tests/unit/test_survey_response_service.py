@@ -16,7 +16,7 @@ from app.exceptions.domain_exceptions import (
     SurveyResponseNotFoundError,
     UniqueConstraintError,
 )
-from app.schemas.survey_response_schema import (
+from app.schemas.surveys.survey_response_schema import (
     SurveyResponseEditRequest,
     SurveyResponseRequest,
 )

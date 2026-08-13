@@ -12,7 +12,7 @@ from app.exceptions.domain_exceptions import (
     SubjectNotFoundError,
     UniqueConstraintError,
 )
-from app.schemas.subject_schema import (
+from app.schemas.subjects.subject_schema import (
     SubjectRequest,
     SubjectResponse,
     SubjectUpdateRequest,

@@ -15,7 +15,7 @@ from app.core.dependencies import (
 )
 from app.domain import UserActor, UserRole
 from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
-from app.schemas.establishment_schema import (
+from app.schemas.establishments.establishment_schema import (
     EstablishmentCreationRequestCreate,
     EstablishmentCreationRequestResponse,
     EstablishmentRequest,

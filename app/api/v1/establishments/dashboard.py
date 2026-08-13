@@ -13,7 +13,7 @@ from app.core.dependencies import (
     require_admin_analyst_or_superadmin,
 )
 from app.domain import UserActor
-from app.schemas.establishment_dashboard_schema import (
+from app.schemas.establishments.establishment_dashboard_schema import (
     EstablishmentDashboardResponse,
     EstablishmentFieldWorkerListItem,
     EstablishmentSubjectListItem,

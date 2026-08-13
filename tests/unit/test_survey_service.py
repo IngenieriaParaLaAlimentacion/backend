@@ -22,7 +22,7 @@ from app.exceptions.domain_exceptions import (
     SurveyNotFoundError,
     UniqueConstraintError,
 )
-from app.schemas.survey_schema import (
+from app.schemas.surveys.survey_schema import (
     OptionInput,
     QuestionInput,
     SurveyCreateRequest,

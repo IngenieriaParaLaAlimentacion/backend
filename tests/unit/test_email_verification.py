@@ -5,7 +5,7 @@ import pytest
 
 from app.domain.user import UserStatus
 from app.exceptions.domain_exceptions import InvalidTokenError, UserNotFoundError
-from app.schemas.auth_schema import (
+from app.schemas.auth.auth_schema import (
     RegisterFieldWorkerRequest,
     ResendVerificationRequest,
     VerifyEmailRequest,

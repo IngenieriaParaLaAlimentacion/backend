@@ -11,7 +11,7 @@ from app.core.dependencies import (
 from app.domain import UserActor
 from app.reference_data.fies_template import build_fies_template
 from app.schemas.pagination import PaginatedResponse
-from app.schemas.survey_schema import (
+from app.schemas.surveys.survey_schema import (
     SurveyCreateRequest,
     SurveyListItem,
     SurveyResponse,

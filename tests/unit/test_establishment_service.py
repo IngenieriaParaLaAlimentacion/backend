@@ -17,7 +17,7 @@ from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
 )
 from app.models import Establishment
-from app.schemas.establishment_schema import (
+from app.schemas.establishments.establishment_schema import (
     EstablishmentCreationRequestCreate,
     EstablishmentRequest,
     EstablishmentResponse,

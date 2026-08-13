@@ -13,7 +13,7 @@ from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
     UserNotFoundError,
 )
-from app.schemas.user_schema import ProfileUpdateRequest
+from app.schemas.auth.user_schema import ProfileUpdateRequest
 from app.services.auth.user_service import UserService
 
 

@@ -11,7 +11,7 @@ from app.exceptions.domain_exceptions import (
     InvalidTokenError,
     UserAlreadyExistsError,
 )
-from app.schemas.auth_schema import (
+from app.schemas.auth.auth_schema import (
     LoginRequest,
     LogoutRequest,
     RefreshRequest,

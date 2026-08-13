@@ -22,7 +22,7 @@ from app.exceptions.domain_exceptions import (
     UserNotFoundError,
 )
 from app.models import PasswordRecoveryToken
-from app.schemas.auth_schema import (
+from app.schemas.auth.auth_schema import (
     LoginRequest,
     LogoutRequest,
     PasswordRecoveryConfirmRequest,

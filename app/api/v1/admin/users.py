@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Query, status
 from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams
 from app.core.dependencies import get_admin_service, require_admin_or_superadmin
 from app.domain.user import UserActor, UserRole, UserStatus
-from app.schemas.admin_schema import FullUserAdminView, PaginatedUsersResponse
+from app.schemas.auth.admin_schema import FullUserAdminView, PaginatedUsersResponse
 from app.services.admin_service import AdminService
 
 router = APIRouter()

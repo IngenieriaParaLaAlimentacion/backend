@@ -15,7 +15,7 @@ from app.models import Establishment
 from app.models.establishments.establishment_request import (
     EstablishmentRequest as EstablishmentRequestModel,
 )
-from app.schemas.establishment_schema import (
+from app.schemas.establishments.establishment_schema import (
     EstablishmentCreationRequestCreate,
     EstablishmentRequest,
     EstablishmentUpdateRequest,

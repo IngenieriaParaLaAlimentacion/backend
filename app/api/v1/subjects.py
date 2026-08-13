@@ -11,9 +11,9 @@ from app.core.dependencies import (
 )
 from app.domain import UserActor
 from app.domain.measurement import EvolutionOrder
-from app.schemas.measurement_schema import SubjectEvolutionResponse
+from app.schemas.measurements.measurement_schema import SubjectEvolutionResponse
 from app.schemas.pagination import PaginatedResponse
-from app.schemas.subject_schema import (
+from app.schemas.subjects.subject_schema import (
     SubjectDetailResponse,
     SubjectListingResponse,
     SubjectRequest,

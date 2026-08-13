@@ -15,7 +15,7 @@ from app.core.dependencies import (
 )
 from app.domain import UserActor
 from app.schemas.pagination import PaginatedResponse
-from app.schemas.survey_response_schema import (
+from app.schemas.surveys.survey_response_schema import (
     SurveyResponseDashboardItem,
     SurveyResponseDetailResponse,
     SurveyResponseEditRequest,

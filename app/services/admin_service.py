@@ -24,7 +24,7 @@ from app.exceptions.domain_exceptions import (
     UserNotFoundError,
 )
 from app.models.auth.user import User
-from app.schemas.admin_schema import InviteAdminRequest
+from app.schemas.auth.admin_schema import InviteAdminRequest
 from app.services.auth.auth_service import AuthService
 from app.services.email_service import (
     build_invite_deeplink,
