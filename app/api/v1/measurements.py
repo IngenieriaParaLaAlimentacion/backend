@@ -17,7 +17,7 @@ from app.schemas.measurement_schema import (
     MeasurementResponse,
 )
 from app.schemas.pagination import PaginatedResponse
-from app.services.measurement_service import MeasurementService
+from app.services.measurements.measurement_service import MeasurementService
 
 router = APIRouter(prefix="/measurements")
 

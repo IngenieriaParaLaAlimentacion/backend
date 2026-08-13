@@ -28,7 +28,7 @@ from app.schemas.survey_schema import (
     SurveyCreateRequest,
     SurveyUpdateRequest,
 )
-from app.services.survey_service import SurveyService
+from app.services.surveys.survey_service import SurveyService
 
 # -- Builders --
 

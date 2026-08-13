@@ -23,7 +23,7 @@ from app.schemas.survey_response_schema import (
     SurveyResponseResponse,
 )
 from app.services.exporters.factory import ExportFormat, get_exporter
-from app.services.survey_response_service import SurveyResponseService
+from app.services.surveys.survey_response_service import SurveyResponseService
 
 router = APIRouter(prefix="/surveys/{survey_id}/responses")
 

@@ -17,7 +17,7 @@ from app.exceptions.domain_exceptions import (
     UniqueConstraintError,
 )
 from app.schemas.subject_schema import SubjectRequest, SubjectUpdateRequest
-from app.services.subject_service import SubjectService
+from app.services.subjects.subject_service import SubjectService
 
 
 @pytest.fixture

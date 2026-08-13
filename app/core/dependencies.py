@@ -11,14 +11,16 @@ from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
 from app.services.activity_service import ActivityService
 from app.services.admin_service import AdminService
 from app.services.analytics_service import AnalyticsService
-from app.services.auth_service import AuthService
-from app.services.establishment_dashboard_service import EstablishmentDashboardService
-from app.services.establishment_service import EstablishmentService
-from app.services.measurement_service import MeasurementService
-from app.services.subject_service import SubjectService
-from app.services.survey_response_service import SurveyResponseService
-from app.services.survey_service import SurveyService
-from app.services.user_service import UserService
+from app.services.auth.auth_service import AuthService
+from app.services.auth.user_service import UserService
+from app.services.establishments.establishment_dashboard_service import (
+    EstablishmentDashboardService,
+)
+from app.services.establishments.establishment_service import EstablishmentService
+from app.services.measurements.measurement_service import MeasurementService
+from app.services.subjects.subject_service import SubjectService
+from app.services.surveys.survey_response_service import SurveyResponseService
+from app.services.surveys.survey_service import SurveyService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 oauth2_scheme_optional = OAuth2PasswordBearer(

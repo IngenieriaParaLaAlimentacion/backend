@@ -19,7 +19,9 @@ from app.schemas.establishment_dashboard_schema import (
     EstablishmentSubjectListItem,
 )
 from app.schemas.pagination import PaginatedResponse
-from app.services.establishment_dashboard_service import EstablishmentDashboardService
+from app.services.establishments.establishment_dashboard_service import (
+    EstablishmentDashboardService,
+)
 
 router = APIRouter(prefix="/establishments")
 

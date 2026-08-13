@@ -17,7 +17,7 @@ from app.schemas.user_schema import (
     ProfileUpdateRequest,
 )
 from app.services.activity_service import ActivityService
-from app.services.user_service import UserService
+from app.services.auth.user_service import UserService
 
 router = APIRouter(prefix="/users")
 

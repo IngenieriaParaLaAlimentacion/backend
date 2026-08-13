@@ -42,7 +42,7 @@ def capture_verification_deeplink(monkeypatch):
     async def _fake(to_email, deeplink, expires_at):
         captured["deeplink"] = deeplink
 
-    monkeypatch.setattr("app.services.auth_service.send_verification_email", _fake)
+    monkeypatch.setattr("app.services.auth.auth_service.send_verification_email", _fake)
     return captured
 
 

@@ -23,7 +23,7 @@ from app.schemas.establishment_schema import (
     EstablishmentResponse,
     EstablishmentUpdateRequest,
 )
-from app.services.establishment_service import EstablishmentService
+from app.services.establishments.establishment_service import EstablishmentService
 
 
 def _make_request(**overrides) -> EstablishmentRequest:

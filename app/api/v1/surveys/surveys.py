@@ -19,7 +19,7 @@ from app.schemas.survey_schema import (
     SurveyTemplateResponse,
     SurveyUpdateRequest,
 )
-from app.services.survey_service import SurveyService
+from app.services.surveys.survey_service import SurveyService
 
 router = APIRouter(prefix="/surveys")
 

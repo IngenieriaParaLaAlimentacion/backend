@@ -17,7 +17,7 @@ from app.schemas.auth_schema import (
     RefreshRequest,
     RegisterFieldWorkerRequest,
 )
-from app.services.auth_service import AuthService
+from app.services.auth.auth_service import AuthService
 
 
 @pytest.fixture
@@ -80,21 +80,23 @@ def make_uow(make_user):
 
 @pytest.fixture
 def mock_hash_password(monkeypatch):
-    monkeypatch.setattr("app.services.auth_service.hash_password", lambda p: "hashed")
+    monkeypatch.setattr(
+        "app.services.auth.auth_service.hash_password", lambda p: "hashed"
+    )
 
 
 @pytest.fixture
 def mock_security(monkeypatch):
     monkeypatch.setattr(
-        "app.services.auth_service.verify_password",
+        "app.services.auth.auth_service.verify_password",
         lambda plain, hashed: plain == "correct_password",
     )
     monkeypatch.setattr(
-        "app.services.auth_service.create_access_token",
+        "app.services.auth.auth_service.create_access_token",
         lambda user_id, role: f"access.{role}.mocked",
     )
     monkeypatch.setattr(
-        "app.services.auth_service.create_refresh_token",
+        "app.services.auth.auth_service.create_refresh_token",
         lambda: ("raw_refresh_token", "hashed_refresh_token"),
     )
 
@@ -102,7 +104,7 @@ def mock_security(monkeypatch):
 @pytest.fixture
 def mock_encode_refresh_token(monkeypatch):
     monkeypatch.setattr(
-        "app.services.auth_service.hash_token",
+        "app.services.auth.auth_service.hash_token",
         lambda token: "hashed_refresh_token",
     )
 
@@ -198,7 +200,7 @@ class TestRegisterFieldWorker:
         an unawaited coroutine."""
         mock_fn = AsyncMock()
         monkeypatch.setattr(
-            "app.services.auth_service.send_verification_email", mock_fn
+            "app.services.auth.auth_service.send_verification_email", mock_fn
         )
         return mock_fn
 
@@ -232,7 +234,7 @@ class TestRegisterFieldWorker:
         valid_register_request_obligatory_fields,
     ):
         monkeypatch.setattr(
-            "app.services.auth_service.settings.environment", "production"
+            "app.services.auth.auth_service.settings.environment", "production"
         )
         establishment = make_establishment()
         uow = make_uow(establishments=[establishment])

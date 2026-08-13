@@ -14,7 +14,7 @@ from app.exceptions.domain_exceptions import (
     UserNotFoundError,
 )
 from app.schemas.user_schema import ProfileUpdateRequest
-from app.services.user_service import UserService
+from app.services.auth.user_service import UserService
 
 
 def _make_user(

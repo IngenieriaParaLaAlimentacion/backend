@@ -20,8 +20,8 @@ from app.schemas.subject_schema import (
     SubjectResponse,
     SubjectUpdateRequest,
 )
-from app.services.measurement_service import MeasurementService
-from app.services.subject_service import SubjectService
+from app.services.measurements.measurement_service import MeasurementService
+from app.services.subjects.subject_service import SubjectService
 
 router = APIRouter(prefix="/subjects")
 

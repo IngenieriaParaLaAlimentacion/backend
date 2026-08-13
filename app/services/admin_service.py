@@ -25,7 +25,7 @@ from app.exceptions.domain_exceptions import (
 )
 from app.models.user import User
 from app.schemas.admin_schema import InviteAdminRequest
-from app.services.auth_service import AuthService
+from app.services.auth.auth_service import AuthService
 from app.services.email_service import (
     build_invite_deeplink,
     send_access_granted_email,
