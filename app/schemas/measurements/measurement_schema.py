@@ -13,12 +13,13 @@ from pydantic import (
 from app.domain.measurement import AlertSeverity, AlertType
 from app.domain.subject import Sex
 from app.schemas.common import IdentifierRefSchema
-from app.schemas.types import ClientGeneratedId
+from app.schemas.types import ClientGeneratedId, _round_to_2
 from app.utils.dates import validate_not_future_datetime
 
-# BMI carries full precision in storage and alert computation; it is rounded to
-# two decimals only when serialized for API responses.
-RoundedBmi = Annotated[float, PlainSerializer(lambda v: round(v, 2), return_type=float)]
+RoundedBmi = Annotated[
+    float,
+    PlainSerializer(_round_to_2, return_type=float),
+]
 
 # -- Request --
 

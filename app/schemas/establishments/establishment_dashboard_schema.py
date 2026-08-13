@@ -1,8 +1,7 @@
 from datetime import date, datetime
-from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, PlainSerializer
+from pydantic import BaseModel, ConfigDict
 
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.measurement import AlertSeverity, NutritionalStatus
@@ -12,15 +11,7 @@ from app.schemas.establishments.establishment_schema import EstablishmentRespons
 from app.schemas.measurements.measurement_schema import (
     MeasurementSnapshotBase,
 )
-
-# Averages are absent (not zero) for an establishment with no data, so unlike
-# ``RoundedBmi`` this serializer has to survive None.
-RoundedAverage = Annotated[
-    float | None,
-    PlainSerializer(
-        lambda v: None if v is None else round(v, 2), return_type=float | None
-    ),
-]
+from app.schemas.types import RoundedNullableFloat
 
 # -- Response --
 
@@ -31,9 +22,9 @@ class EstablishmentMetricsResponse(BaseModel):
     subject_count: int
     measurement_count: int
     last_measured_at: datetime | None
-    avg_height_cm: RoundedAverage
-    avg_weight_kg: RoundedAverage
-    avg_bmi: RoundedAverage
+    avg_height_cm: RoundedNullableFloat
+    avg_weight_kg: RoundedNullableFloat
+    avg_bmi: RoundedNullableFloat
     avg_age_months: int | None
 
 

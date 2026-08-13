@@ -13,8 +13,8 @@ from app.reference_data.fies_template import build_fies_template
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.surveys.survey_schema import (
     SurveyCreateRequest,
+    SurveyDetailResponse,
     SurveyListItem,
-    SurveyResponse,
     SurveyStatusRequest,
     SurveyTemplateResponse,
     SurveyUpdateRequest,
@@ -26,7 +26,7 @@ router = APIRouter(prefix="/surveys")
 
 @router.post(
     "",
-    response_model=SurveyResponse,
+    response_model=SurveyDetailResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Create a survey",
     description=(
@@ -44,9 +44,9 @@ async def create_survey(
     data: SurveyCreateRequest,
     actor: UserActor = Depends(require_admin_analyst_or_superadmin),
     service: SurveyService = Depends(get_survey_service),
-) -> SurveyResponse:
+) -> SurveyDetailResponse:
     survey = await service.create(data, actor)
-    return SurveyResponse.model_validate(survey)
+    return SurveyDetailResponse.model_validate(survey)
 
 
 @router.get(
@@ -123,7 +123,7 @@ async def list_available_surveys(
 
 @router.get(
     "/{survey_id}",
-    response_model=SurveyResponse,
+    response_model=SurveyDetailResponse,
     summary="Get a survey",
     description=(
         "Return a survey's full configuration with ordered questions and options. "
@@ -140,14 +140,14 @@ async def get_survey(
     survey_id: UUID,
     actor: UserActor = Depends(require_any),
     service: SurveyService = Depends(get_survey_service),
-) -> SurveyResponse:
+) -> SurveyDetailResponse:
     survey = await service.get(survey_id, actor)
-    return SurveyResponse.model_validate(survey)
+    return SurveyDetailResponse.model_validate(survey)
 
 
 @router.put(
     "/{survey_id}",
-    response_model=SurveyResponse,
+    response_model=SurveyDetailResponse,
     summary="Update a survey",
     description=(
         "Declaratively replace a survey's configuration. Questions and options are "
@@ -169,14 +169,14 @@ async def update_survey(
     data: SurveyUpdateRequest,
     actor: UserActor = Depends(require_admin_analyst_or_superadmin),
     service: SurveyService = Depends(get_survey_service),
-) -> SurveyResponse:
+) -> SurveyDetailResponse:
     survey = await service.update(survey_id, data, actor)
-    return SurveyResponse.model_validate(survey)
+    return SurveyDetailResponse.model_validate(survey)
 
 
 @router.post(
     "/{survey_id}/duplicate",
-    response_model=SurveyResponse,
+    response_model=SurveyDetailResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Duplicate a survey",
     description=(
@@ -193,9 +193,9 @@ async def duplicate_survey(
     survey_id: UUID,
     actor: UserActor = Depends(require_admin_analyst_or_superadmin),
     service: SurveyService = Depends(get_survey_service),
-) -> SurveyResponse:
+) -> SurveyDetailResponse:
     survey = await service.duplicate(survey_id, actor)
-    return SurveyResponse.model_validate(survey)
+    return SurveyDetailResponse.model_validate(survey)
 
 
 @router.delete(
@@ -220,7 +220,7 @@ async def delete_survey(
 
 @router.patch(
     "/{survey_id}/status",
-    response_model=SurveyResponse,
+    response_model=SurveyDetailResponse,
     summary="Activate or deactivate a survey",
     description=(
         "Toggle a survey's active flag. Bypasses the edit-lock so surveys with "
@@ -236,6 +236,6 @@ async def set_survey_status(
     data: SurveyStatusRequest,
     actor: UserActor = Depends(require_admin_analyst_or_superadmin),
     service: SurveyService = Depends(get_survey_service),
-) -> SurveyResponse:
+) -> SurveyDetailResponse:
     survey = await service.set_active(survey_id, data.is_active, actor)
-    return SurveyResponse.model_validate(survey)
+    return SurveyDetailResponse.model_validate(survey)

@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import AfterValidator, Field, StringConstraints
+from pydantic import AfterValidator, Field, PlainSerializer, StringConstraints
 
 ValidStr = Annotated[
     str,
@@ -41,6 +41,19 @@ ClientGeneratedId = Annotated[
             "same id are idempotent. When omitted, the server generates one."
         ),
     ),
+]
+
+
+def _round_to_2(v: float | None) -> float | None:
+    """Round to two decimals for serialization, passing None through."""
+    return None if v is None else round(v, 2)
+
+
+# Floats keep full precision in storage and alert computation; they are rounded
+# to two decimals only when serialized for API responses.
+RoundedNullableFloat = Annotated[
+    float | None,
+    PlainSerializer(_round_to_2, return_type=float | None),
 ]
 
 Latitude = Annotated[float, Field(ge=-90, le=90)]
