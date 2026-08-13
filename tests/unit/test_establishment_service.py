@@ -77,11 +77,24 @@ def _make_request_orm(user_id: uuid.UUID, **overrides) -> MagicMock:
 @pytest.fixture
 def make_request_review_uow():
     """Build a UoW mocked for approve/reject-creation-request flows: wires
-    the pending-request lookup and requester email lookup shared by both."""
+    the pending-request lookup, the atomic status transition, and the
+    requester email lookup shared by both."""
 
     def _make(request=None, requester=None):
+        async def _mark_reviewed_or_raise(request_id, status, reviewer_id):
+            if request is None:
+                raise EstablishmentRequestNotFoundError(str(request_id))
+            if request.status != EstablishmentRequestStatus.PENDING:
+                raise EstablishmentRequestAlreadyReviewedError(str(request_id))
+            request.status = status
+            request.reviewed_by = reviewer_id
+            return request
+
         uow = AsyncMock()
         uow.establishment_request_repo.get_by_id = AsyncMock(return_value=request)
+        uow.establishment_request_repo.mark_reviewed_or_raise = AsyncMock(
+            side_effect=_mark_reviewed_or_raise
+        )
         uow.user_repo.get_by_id = AsyncMock(return_value=requester or _make_requester())
         uow.commit = AsyncMock()
         return uow

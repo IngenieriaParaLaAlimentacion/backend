@@ -268,8 +268,8 @@ class EstablishmentService:
     async def reject_creation_request(
         self, request_id: UUID, reviewer_id: UUID, reason: str | None = None
     ) -> None:
-        """Reject a pending establishment creation request and notify the
-        requesting field worker by email, optionally including the admin's
+        """Reject a pending establishment creation request atomically and notify
+        the requesting field worker by email, optionally including the admin's
         reason. No establishment is created or linked.
 
         Raises:
@@ -278,9 +278,9 @@ class EstablishmentService:
             EstablishmentRequestAlreadyReviewedError: If the request is not
                 pending.
         """
-        request = await self._get_pending_request_or_raise(request_id)
-        request.status = EstablishmentRequestStatus.REJECTED
-        request.reviewed_by = reviewer_id
+        request = await self.uow.establishment_request_repo.mark_reviewed_or_raise(
+            request_id, EstablishmentRequestStatus.REJECTED, reviewer_id
+        )
         await self.uow.commit()
 
         requester = await self.uow.user_repo.get_by_id(request.user_id)

@@ -1,12 +1,17 @@
 from uuid import UUID
 
-from sqlalchemy import asc, desc, func, or_, select
+from sqlalchemy import asc, desc, func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
 
 from app.domain.establishment import (
     EstablishmentCreationRequestListingParams,
     EstablishmentCreationRequestSortOrder,
+    EstablishmentRequestStatus,
+)
+from app.exceptions.domain_exceptions import (
+    EstablishmentRequestAlreadyReviewedError,
+    EstablishmentRequestNotFoundError,
 )
 from app.models.establishment_request import EstablishmentRequest
 from app.models.user import User
@@ -73,6 +78,40 @@ class EstablishmentRequestRepository:
     async def get_by_id(self, request_id: UUID) -> EstablishmentRequest | None:
         """Return an establishment request by ID, or None if it does not exist."""
         return await self.db.get(EstablishmentRequest, request_id)
+
+    async def mark_reviewed_or_raise(
+        self,
+        request_id: UUID,
+        status: EstablishmentRequestStatus,
+        reviewer_id: UUID,
+    ) -> EstablishmentRequest:
+        """Atomically transition a pending request to ``status``, recording
+        the reviewer.
+
+        The ``WHERE status = pending`` condition is what makes this atomic:
+        concurrent reviews of the same request can't both succeed.
+
+        Raises:
+            EstablishmentRequestNotFoundError: If no request with that ID
+                exists.
+            EstablishmentRequestAlreadyReviewedError: If it was not pending.
+        """
+        result = await self.db.execute(
+            update(EstablishmentRequest)
+            .where(
+                EstablishmentRequest.id == request_id,
+                EstablishmentRequest.status == EstablishmentRequestStatus.PENDING,
+            )
+            .values(status=status, reviewed_by=reviewer_id)
+            .returning(EstablishmentRequest)
+        )
+        request = result.scalar_one_or_none()
+        if request is not None:
+            return request
+        existing = await self.get_by_id(request_id)
+        if existing is None:
+            raise EstablishmentRequestNotFoundError(str(request_id))
+        raise EstablishmentRequestAlreadyReviewedError(str(request_id))
 
     async def get_paginated(
         self,
