@@ -1,4 +1,3 @@
-from typing import Annotated
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
@@ -13,12 +12,6 @@ from app.schemas.subjects.subject_schema import (
     SubjectEventResponse,
     SubjectResponse,
 )
-
-# -- Request --
-
-
-class EstablishmentAccessRequest(BaseModel):
-    establishment_ids: Annotated[list[UUID], Field(min_length=1)]
 
 
 class InviteAdminRequest(BaseModel):
