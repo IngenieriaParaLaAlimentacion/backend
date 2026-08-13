@@ -4,7 +4,6 @@ from uuid import UUID
 
 from sqlalchemy import and_, cast, exists, func, literal, or_, select, union_all
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -12,10 +11,10 @@ from app.domain.survey_response import (
     SurveyResponseListingParams,
     SurveyResponseSummaryParams,
 )
-from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.establishment import Establishment
 from app.models.survey import Survey
 from app.models.survey_response import SurveyResponse
+from app.utils.db import insert_with_savepoint
 
 
 class SurveyResponseRepository:
@@ -97,15 +96,7 @@ class SurveyResponseRepository:
             fields["id"] = id
 
         response = SurveyResponse(**fields)
-        try:
-            async with self.db.begin_nested():
-                self.db.add(response)
-                await self.db.flush()
-        except IntegrityError:
-            raise UniqueConstraintError("id", id)
-
-        await self.db.refresh(response)
-        return response
+        return await insert_with_savepoint(self.db, response, "id", id)
 
     async def update_answers(
         self,

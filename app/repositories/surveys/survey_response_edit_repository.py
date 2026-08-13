@@ -1,11 +1,10 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.survey_response_edit import SurveyResponseEdit
+from app.utils.db import insert_with_savepoint
 
 
 class SurveyResponseEditRepository:
@@ -46,11 +45,4 @@ class SurveyResponseEditRepository:
         if id is not None:
             fields["id"] = id
         edit = SurveyResponseEdit(**fields)
-        try:
-            async with self.db.begin_nested():
-                self.db.add(edit)
-                await self.db.flush()
-        except IntegrityError:
-            raise UniqueConstraintError("id", id)
-        await self.db.refresh(edit)
-        return edit
+        return await insert_with_savepoint(self.db, edit, "id", id)
