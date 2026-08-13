@@ -164,7 +164,7 @@ class EstablishmentService:
         """Return a paginated list of establishments with metadata.
 
         ``search`` matches case-insensitively against name or address.
-        ``city`` and ``province`` are exact case-insensitive matches.
+        ``city`` and ``province`` are partial, case-insensitive matches.
         Whitespace-only values are treated as no filter.
         """
         offset = (page - 1) * page_size

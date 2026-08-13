@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import asc, desc, func, select
+from sqlalchemy import asc, desc, func, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -115,17 +115,30 @@ class EstablishmentRepository:
         return establishments
 
     @staticmethod
-    def _search_condition(search: str | None):
+    def _ilike_condition(column, value: str):
+        """Case-insensitive partial match condition for a column."""
+        return column.ilike(f"%{escape_like(value)}%", escape="\\")
+
+    @classmethod
+    def _search_condition(cls, search: str | None):
         """Case-insensitive name/formatted_address match for ``search``, or None.
 
         Returns None when ``search`` is empty so callers can skip the filter.
         """
         if not search:
             return None
-        search_term = f"%{escape_like(search)}%"
-        return Establishment.name.ilike(
-            search_term, escape="\\"
-        ) | Establishment.formatted_address.ilike(search_term, escape="\\")
+        return or_(
+            cls._ilike_condition(Establishment.name, search),
+            cls._ilike_condition(Establishment.formatted_address, search),
+        )
+
+    @classmethod
+    def _append_ilike(cls, conditions: list, column, value: str | None) -> None:
+        """Append a partial match condition for column to conditions, if given."""
+        # TODO: move this helpers into a common/utils file, it is repeated between
+        #  many repositories
+        if value:
+            conditions.append(cls._ilike_condition(column, value))
 
     @classmethod
     def _listing_conditions(cls, params: EstablishmentListingParams) -> list:
@@ -134,10 +147,8 @@ class EstablishmentRepository:
         search_condition = cls._search_condition(params.search)
         if search_condition is not None:
             conditions.append(search_condition)
-        if params.city:
-            conditions.append(Establishment.city.ilike(params.city))
-        if params.province:
-            conditions.append(Establishment.province.ilike(params.province))
+        cls._append_ilike(conditions, Establishment.city, params.city)
+        cls._append_ilike(conditions, Establishment.province, params.province)
         return conditions
 
     async def get_paginated(
@@ -149,7 +160,7 @@ class EstablishmentRepository:
         """Return a paginated list of establishments and the total matching count.
 
         ``search`` matches case-insensitively against name or formatted_address.
-        ``city`` and ``province`` are exact case-insensitive matches.
+        ``city`` and ``province`` are partial, case-insensitive matches.
         """
         base_query = select(Establishment)
         count_query = select(func.count()).select_from(Establishment)
