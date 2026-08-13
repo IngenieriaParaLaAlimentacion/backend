@@ -3,21 +3,19 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.schemas.types import DescriptionStr, PhoneStr, ValidStr
+from app.schemas.common import ProfileFields
+from app.schemas.types import ValidStr
 
 # -- Request --
 
 
-class ProfileUpdateRequest(BaseModel):
+class ProfileUpdateRequest(ProfileFields):
     """Editable profile fields. Any field other than these are rejected (422)."""
 
     model_config = ConfigDict(extra="forbid")
 
     name: ValidStr | None = None
     last_name: ValidStr | None = None
-    locality: ValidStr | None = None
-    description: DescriptionStr | None = None
-    contact_phone: PhoneStr | None = None
 
 
 class EstablishmentAccessRequest(BaseModel):
@@ -43,7 +41,7 @@ class EstablishmentWithStatusResponse(BaseModel):
     status: str
 
 
-class ProfileResponse(BaseModel):
+class ProfileResponse(ProfileFields):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
@@ -52,6 +50,3 @@ class ProfileResponse(BaseModel):
     last_name: str
     role: str
     establishments: list[EstablishmentWithStatusResponse] | None = None
-    locality: str | None = None
-    description: str | None = None
-    contact_phone: str | None = None

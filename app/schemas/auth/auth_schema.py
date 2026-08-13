@@ -10,12 +10,13 @@ from pydantic import (
     field_validator,
 )
 
-from app.schemas.types import DescriptionStr, PhoneStr, ValidStr
+from app.schemas.common import ProfileFields
+from app.schemas.types import ValidStr
 
 # -- Request --
 
 
-class RegisterFieldWorkerRequest(BaseModel):
+class RegisterFieldWorkerRequest(ProfileFields):
     email: EmailStr
     password: str
     name: ValidStr
@@ -25,9 +26,6 @@ class RegisterFieldWorkerRequest(BaseModel):
         description="Establishments the field worker requests access to. "
         "Optional: account access does not depend on them.",
     )
-    locality: ValidStr | None = None
-    description: DescriptionStr | None = None
-    contact_phone: PhoneStr | None = None
 
     @field_validator("password")
     @classmethod
@@ -80,7 +78,7 @@ class ResendVerificationRequest(BaseModel):
 # -- Response --
 
 
-class RegistrationResponse(BaseModel):
+class RegistrationResponse(ProfileFields):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
@@ -90,9 +88,6 @@ class RegistrationResponse(BaseModel):
     role: str
     status: str
     establishments: list[UUID]
-    locality: str | None = None
-    description: str | None = None
-    contact_phone: str | None = None
 
 
 class UserInTokenResponse(BaseModel):

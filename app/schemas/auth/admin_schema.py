@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from app.domain.pagination import PaginatedResult
 from app.domain.subject import SubjectDomain
 from app.domain.subject_event import SubjectEventRecord
+from app.schemas.common import ProfileFields
 from app.schemas.establishments.establishment_schema import EstablishmentResponse
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.subjects.subject_schema import (
@@ -34,7 +35,7 @@ class UserAdminView(BaseModel):
     establishments: list[EstablishmentResponse]
 
 
-class FullUserAdminView(BaseModel):
+class FullUserAdminView(ProfileFields):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
@@ -44,9 +45,6 @@ class FullUserAdminView(BaseModel):
     role: str
     status: str
     establishments: list[EstablishmentResponse]
-    locality: str | None = None
-    description: str | None = None
-    contact_phone: str | None = None
 
 
 class PaginatedUsersResponse(BaseModel):
