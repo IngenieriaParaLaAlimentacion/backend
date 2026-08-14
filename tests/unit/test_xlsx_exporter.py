@@ -1,20 +1,22 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from io import BytesIO
 
 from openpyxl import load_workbook
 
 from app.domain.common_domains import IdentifierRefDomain
+from app.domain.subject import Sex
 from app.domain.survey import (
     QuestionDomain,
     ResponseType,
     SurveyDomain,
     SurveyInstrumentType,
-    SurveyScope,
+    SurveyResponseTarget,
 )
 from app.domain.survey_response import (
     EstablishmentRefDomain,
     QuestionAnswerDomain,
+    SubjectRefDomain,
     SurveyResponseDetailDomain,
 )
 from app.services.exporters.xlsx_exporter import XlsxSurveyResponseExporter
@@ -22,7 +24,10 @@ from app.services.exporters.xlsx_exporter import XlsxSurveyResponseExporter
 NOW = datetime(2026, 1, 1, tzinfo=timezone.utc)
 
 
-def _survey_domain(fies: bool = False) -> SurveyDomain:
+def _survey_domain(
+    fies: bool = False,
+    response_target: SurveyResponseTarget = SurveyResponseTarget.ANONYMOUS,
+) -> SurveyDomain:
     question = QuestionDomain(
         id=uuid.uuid4(),
         text="¿Comió hoy?",
@@ -35,7 +40,7 @@ def _survey_domain(fies: bool = False) -> SurveyDomain:
         id=uuid.uuid4(),
         name="Encuesta Test",
         description=None,
-        scope=SurveyScope.GENERIC,
+        response_target=response_target,
         instrument_type=SurveyInstrumentType.FIES
         if fies
         else SurveyInstrumentType.CUSTOM,
@@ -43,26 +48,42 @@ def _survey_domain(fies: bool = False) -> SurveyDomain:
         is_active=True,
         response_count=0,
         questions=[question],
-        establishment_ids=[],
         created_at=NOW,
         updated_at=NOW,
     )
 
 
+def _subject_ref() -> SubjectRefDomain:
+    return SubjectRefDomain(
+        id=uuid.uuid4(),
+        dni=30111222,
+        sex=Sex.FEMALE,
+        name="María",
+        last_name="Gómez",
+        birth_date=date(1990, 5, 2),
+    )
+
+
 def _detail_response(
-    survey: SurveyDomain, score_fies: int | None = None
+    survey: SurveyDomain,
+    score_fies: int | None = None,
+    establishment: EstablishmentRefDomain | None = None,
+    subject: SubjectRefDomain | None = None,
 ) -> SurveyResponseDetailDomain:
     question = survey.questions[0]
-    return SurveyResponseDetailDomain(
-        id=uuid.uuid4(),
-        event_at=NOW,
-        survey=IdentifierRefDomain(id=survey.id, name=survey.name),
-        establishment=EstablishmentRefDomain(
+    if establishment is None and subject is None:
+        establishment = EstablishmentRefDomain(
             id=uuid.uuid4(),
             name="Comedor Test",
             city="Buenos Aires",
             province="Buenos Aires",
-        ),
+        )
+    return SurveyResponseDetailDomain(
+        id=uuid.uuid4(),
+        event_at=NOW,
+        survey=IdentifierRefDomain(id=survey.id, name=survey.name),
+        establishment=establishment,
+        subject=subject,
         submitted_by=IdentifierRefDomain(id=uuid.uuid4(), name="Juana Pérez"),
         score_fies=score_fies,
         answers=[
@@ -157,3 +178,55 @@ class TestXlsxSurveyResponseExporter:
         rows = list(sheet.iter_rows(values_only=True))
         assert ("Cantidad de respuestas", 0) in rows
         assert ("Último relevamiento", "N/A") in rows
+
+
+class TestSubjectIdentityColumns:
+    """A subject-targeted export identifies the person answering, so analysts
+    can join it against that subject's measurement history."""
+
+    def test_subject_targeted_export_has_identity_headers_first(self):
+        survey = _survey_domain(response_target=SurveyResponseTarget.SUBJECT)
+        responses = [_detail_response(survey, subject=_subject_ref())]
+        exporter = XlsxSurveyResponseExporter()
+
+        workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
+        header = [c.value for c in workbook["Respuestas"][1]]
+        assert header[:3] == ["Nombre", "Apellido", "DNI"]
+
+    def test_subject_targeted_export_writes_identity_values(self):
+        survey = _survey_domain(response_target=SurveyResponseTarget.SUBJECT)
+        subject = _subject_ref()
+        responses = [_detail_response(survey, subject=subject)]
+        exporter = XlsxSurveyResponseExporter()
+
+        workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
+        row = [c.value for c in workbook["Respuestas"][2]]
+        assert row[:3] == [subject.name, subject.last_name, subject.dni]
+
+    def test_anonymous_export_has_no_identity_columns(self):
+        survey = _survey_domain(response_target=SurveyResponseTarget.ANONYMOUS)
+        responses = [_detail_response(survey)]
+        exporter = XlsxSurveyResponseExporter()
+
+        workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
+        header = [c.value for c in workbook["Respuestas"][1]]
+        assert header[0] == "Completado por"
+        assert "DNI" not in header
+
+    def test_establishment_targeted_export_has_no_identity_columns(self):
+        survey = _survey_domain(response_target=SurveyResponseTarget.ESTABLISHMENT)
+        responses = [_detail_response(survey)]
+        exporter = XlsxSurveyResponseExporter()
+
+        workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
+        header = [c.value for c in workbook["Respuestas"][1]]
+        assert header[0] == "Completado por"
+
+    def test_missing_subject_writes_blanks_rather_than_raising(self):
+        survey = _survey_domain(response_target=SurveyResponseTarget.SUBJECT)
+        responses = [_detail_response(survey, subject=None)]
+        exporter = XlsxSurveyResponseExporter()
+
+        workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
+        row = [c.value for c in workbook["Respuestas"][2]]
+        assert row[:3] == [None, None, None]

@@ -4,9 +4,11 @@ from openpyxl import Workbook
 from openpyxl.chart import BarChart, Reference
 from openpyxl.worksheet.worksheet import Worksheet
 
-from app.domain.survey import SurveyDomain
+from app.domain.survey import SurveyDomain, SurveyResponseTarget
 from app.domain.survey_response import SurveyResponseDetailDomain
 from app.services.exporters.base import SurveyResponseExporter
+
+_SUBJECT_HEADERS = ["Nombre", "Apellido", "DNI"]
 
 
 class XlsxSurveyResponseExporter(SurveyResponseExporter):
@@ -37,13 +39,16 @@ class XlsxSurveyResponseExporter(SurveyResponseExporter):
         responses: list[SurveyResponseDetailDomain],
     ) -> None:
         sheet.title = "Respuestas"
-        headers = ["Completado por", "Fecha de relevamiento", "Score FIES"]
+        is_subject_targeted = survey.response_target == SurveyResponseTarget.SUBJECT
+        headers = list(_SUBJECT_HEADERS) if is_subject_targeted else []
+        headers += ["Completado por", "Fecha de relevamiento", "Score FIES"]
         headers += [q.text for q in survey.questions]
         sheet.append(headers)
 
         for response in responses:
             answer_by_question_id = {a.question_id: a for a in response.answers}
-            row = [
+            row = self._subject_cells(response) if is_subject_targeted else []
+            row += [
                 response.submitted_by.name,
                 response.event_at.replace(tzinfo=None),
                 response.score_fies if response.score_fies is not None else "",
@@ -56,6 +61,16 @@ class XlsxSurveyResponseExporter(SurveyResponseExporter):
                 value = answer.value_label if answer.value_label else answer.value
                 row.append(", ".join(value) if isinstance(value, list) else value)
             sheet.append(row)
+
+    @staticmethod
+    def _subject_cells(response: SurveyResponseDetailDomain) -> list:
+        if response.subject is None:
+            return ["", "", ""]
+        return [
+            response.subject.name,
+            response.subject.last_name,
+            response.subject.dni,
+        ]
 
     def _write_summary_sheet(
         self, sheet: Worksheet, responses: list[SurveyResponseDetailDomain]
