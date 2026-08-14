@@ -1,6 +1,7 @@
 from dataclasses import dataclass, fields
 from datetime import datetime
 from enum import Enum, StrEnum
+from typing import NamedTuple
 from uuid import UUID
 
 
@@ -60,6 +61,14 @@ class EstablishmentDomain:
     @classmethod
     def from_db(cls, obj) -> "EstablishmentDomain":
         return cls(**{field.name: getattr(obj, field.name) for field in fields(cls)})
+
+
+class EstablishmentApprovalResult(NamedTuple):
+    """Outcome of approving a creation request: the resolved establishment,
+    and whether it already existed rather than being newly created."""
+
+    establishment: EstablishmentDomain
+    reused: bool
 
 
 @dataclass

@@ -2,6 +2,7 @@ from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.establishment import (
+    EstablishmentApprovalResult,
     EstablishmentCreationRequestListingParams,
     EstablishmentCreationRequestWithRequesterDomain,
     EstablishmentDomain,
@@ -217,17 +218,12 @@ class EstablishmentService:
 
     async def approve_creation_request(
         self, request_id: UUID, data: EstablishmentRequest, reviewer_id: UUID
-    ) -> tuple[EstablishmentDomain, bool]:
+    ) -> EstablishmentApprovalResult:
         """Approve a pending establishment creation request.
 
         Creates the establishment described by ``data``, or reuses an
-        existing one with the same place_id, grants the requesting field
-        worker approved access to it, and notifies them by email.
-
-        Returns an ``(establishment, reused)`` tuple: ``reused`` is True
-        when an existing establishment was matched by place_id instead of
-        creating a new one, so the admin-submitted data (other than
-        place_id) was not applied.
+        existing one with the same place_id and notifies the requesting field
+        worker by email.
 
         Raises:
             EstablishmentRequestNotFoundError: If no request with that ID
@@ -263,7 +259,9 @@ class EstablishmentService:
         requester = await self.uow.user_repo.get_by_id(request.user_id)
         await send_access_granted_email(requester.email, [establishment.name])
 
-        return EstablishmentDomain.from_db(establishment), reused
+        return EstablishmentApprovalResult(
+            EstablishmentDomain.from_db(establishment), reused
+        )
 
     async def reject_creation_request(
         self, request_id: UUID, reviewer_id: UUID, reason: str | None = None

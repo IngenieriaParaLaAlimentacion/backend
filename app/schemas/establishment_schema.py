@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.schemas.types import DescriptionStr, Latitude, Longitude, ValidStr
 
@@ -89,13 +89,15 @@ class EstablishmentResponse(BaseModel):
 
 
 class EstablishmentApprovalResponse(EstablishmentResponse):
-    """An establishment resolved by approving a creation request.
+    """An establishment resolved by approving a creation request."""
 
-    ``reused`` is True when the request was matched to an existing
-    establishment by place_id instead of creating a new one.
-    """
-
-    reused: bool
+    reused: bool = Field(
+        description=(
+            "True when this place already existed (e.g. another request "
+            "for it was approved first): the field worker is linked to it "
+            "as-is, and the data submitted for this approval was discarded."
+        )
+    )
 
 
 class EstablishmentCreationRequestAdminView(EstablishmentCreationRequestResponse):
