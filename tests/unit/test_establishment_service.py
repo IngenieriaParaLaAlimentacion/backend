@@ -12,6 +12,7 @@ from app.domain.establishment import (
     EstablishmentListingParams,
     EstablishmentRequestDomain,
     EstablishmentRequestStatus,
+    UserEstablishmentStatus,
 )
 from app.domain.pagination import PaginatedResult
 from app.exceptions.domain_exceptions import (
@@ -659,6 +660,7 @@ class TestApproveCreationRequest:
             existing_establishment=None,
             created_establishment=None,
             requester=None,
+            existing_relation=None,
         ):
             uow = make_request_review_uow(request=request, requester=requester)
             uow.establishment_repo.get_by_place_id = AsyncMock(
@@ -667,7 +669,11 @@ class TestApproveCreationRequest:
             uow.establishment_repo.create = AsyncMock(
                 return_value=created_establishment or make_establishment()
             )
-            uow.user_establishment_repo.create_or_approve_relation = AsyncMock()
+            uow.user_establishment_repo.get_relation = AsyncMock(
+                return_value=existing_relation
+            )
+            uow.user_establishment_repo.preset_relation = AsyncMock()
+            uow.user_establishment_repo.update_status_for_ids = AsyncMock()
             return uow
 
         return _make
@@ -762,22 +768,98 @@ class TestApproveCreationRequest:
         assert result.id == existing.id
         assert reused is True
 
-    async def test_grants_access_to_requester(self, make_uow, make_establishment):
-        """Grants the requesting field worker approved access to the
-        resolved establishment."""
+    async def test_leaves_access_pending_when_establishment_is_new(
+        self, make_uow, make_establishment
+    ):
+        """A freshly created establishment can't have a prior relation yet,
+        so a pending one is staged directly without checking for one."""
+        user_id = uuid.uuid4()
+        request = _make_request_orm(user_id)
+        uow = make_uow(request=request, existing_establishment=None)
+        service = EstablishmentService(uow=uow)
+
+        result, reused = await service.approve_creation_request(
+            request.id, _make_request(), reviewer_id=uuid.uuid4()
+        )
+
+        assert reused is False
+        uow.user_establishment_repo.get_relation.assert_not_called()
+        uow.user_establishment_repo.preset_relation.assert_called_once_with(
+            user_id, result.id
+        )
+
+    async def test_leaves_access_pending_when_reused_establishment_has_no_relation(
+        self, make_uow, make_establishment
+    ):
+        """A reused establishment the requester never had a relation to
+        (approved, pending, or rejected) gets a pending one staged fresh."""
         user_id = uuid.uuid4()
         request = _make_request_orm(user_id)
         existing = make_establishment()
-        uow = make_uow(request=request, existing_establishment=existing)
+        uow = make_uow(
+            request=request, existing_establishment=existing, existing_relation=None
+        )
         service = EstablishmentService(uow=uow)
 
         await service.approve_creation_request(
             request.id, _make_request(), reviewer_id=uuid.uuid4()
         )
 
-        uow.user_establishment_repo.create_or_approve_relation.assert_called_once_with(
+        uow.user_establishment_repo.preset_relation.assert_called_once_with(
             user_id, existing.id
         )
+
+    async def test_reopens_a_rejected_relation_to_pending(
+        self, make_uow, make_establishment
+    ):
+        """A field worker previously rejected for this establishment gets
+        another chance at admin review instead of staying rejected."""
+        user_id = uuid.uuid4()
+        request = _make_request_orm(user_id)
+        existing = make_establishment()
+        relation = MagicMock(status=UserEstablishmentStatus.REJECTED)
+        uow = make_uow(
+            request=request,
+            existing_establishment=existing,
+            existing_relation=relation,
+        )
+        service = EstablishmentService(uow=uow)
+
+        await service.approve_creation_request(
+            request.id, _make_request(), reviewer_id=uuid.uuid4()
+        )
+
+        uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
+            user_id, [existing.id], UserEstablishmentStatus.PENDING
+        )
+        uow.user_establishment_repo.preset_relation.assert_not_called()
+
+    @pytest.mark.parametrize(
+        "status",
+        [UserEstablishmentStatus.APPROVED, UserEstablishmentStatus.PENDING],
+    )
+    async def test_leaves_an_approved_or_pending_relation_untouched(
+        self, make_uow, make_establishment, status
+    ):
+        """Access that's already approved or pending isn't reset just
+        because the requester's creation request got approved again."""
+        user_id = uuid.uuid4()
+        request = _make_request_orm(user_id)
+        existing = make_establishment()
+        relation = MagicMock(status=status)
+        uow = make_uow(
+            request=request,
+            existing_establishment=existing,
+            existing_relation=relation,
+        )
+        service = EstablishmentService(uow=uow)
+
+        await service.approve_creation_request(
+            request.id, _make_request(), reviewer_id=uuid.uuid4()
+        )
+
+        uow.user_establishment_repo.preset_relation.assert_not_called()
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
 
     async def test_sets_request_status_to_approved(self, make_uow, make_establishment):
         """Flips the request status once approval succeeds."""
@@ -805,7 +887,9 @@ class TestApproveCreationRequest:
 
         assert request.reviewed_by == reviewer_id
 
-    async def test_sends_access_granted_email(self, make_uow, make_establishment):
+    async def test_sends_establishment_created_email(
+        self, make_uow, make_establishment
+    ):
         """Notifies the requester by email with the resolved establishment's
         name, using their address on file rather than the request payload."""
         user_id = uuid.uuid4()
@@ -818,14 +902,14 @@ class TestApproveCreationRequest:
         service = EstablishmentService(uow=uow)
 
         with patch(
-            "app.services.establishment_service.send_access_granted_email",
+            "app.services.establishment_service.send_establishment_created_email",
             new_callable=AsyncMock,
         ) as mock_email:
             await service.approve_creation_request(
                 request.id, _make_request(), reviewer_id=uuid.uuid4()
             )
 
-        mock_email.assert_awaited_once_with("worker@test.com", ["Centro A"])
+        mock_email.assert_awaited_once_with("worker@test.com", "Centro A")
 
 
 class TestRejectCreationRequest:

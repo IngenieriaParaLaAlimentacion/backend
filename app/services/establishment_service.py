@@ -53,21 +53,20 @@ class EstablishmentService:
     async def _leave_access_pending(
         self, user_id: UUID, establishment_id: UUID, reused: bool
     ) -> None:
-        """Ensure the field worker has a pending access request for the
-        establishment, for an admin to review separately.
+        """Leave the field worker's access to the establishment pending,
+        for an admin to review separately.
 
-        When ``reused`` is False the establishment was just created, so no
-        prior relation can exist yet and a pending one is staged directly.
-        Otherwise the establishment predates this approval, so an existing
-        relation is checked first: approved or already-pending relations are
-        left as-is, a rejected one is reopened to pending, and only a
-        genuinely missing relation is staged fresh.
+        Only checks for an existing relation when the establishment was
+        reused (a fresh one can't have one yet): approved or pending
+        relations are left as-is, and a rejected one is reopened to
+        pending.
         """
         relation = None
         if reused:
             relation = await self.uow.user_establishment_repo.get_relation(
                 user_id, establishment_id
             )
+
         if relation is None:
             await self.uow.user_establishment_repo.preset_relation(
                 user_id, establishment_id
@@ -80,25 +79,22 @@ class EstablishmentService:
     async def _create_or_reuse_establishment(
         self, data: EstablishmentRequest
     ) -> tuple[Establishment, bool]:
-        """Create the establishment described by ``data``, or return the
-        existing one with the same place_id if one is already registered.
+        """Create the establishment described by ``data``, or reuse the
+        existing one with the same place_id.
 
-        Two field workers can independently request the same physical place
-        under different wording, so a concurrent approval may create it
-        first between the lookup and the insert here — that race is caught
-        and treated the same as finding it upfront.
-
-        Returns the establishment and whether it was reused instead of
-        freshly created.
+        A concurrent approval racing to create the same place first is
+        treated the same as finding it upfront. Returns the establishment
+        and whether it was reused.
         """
-        establishment = await self.uow.establishment_repo.get_by_place_id(data.place_id)
-        if establishment is not None:
-            return establishment, True
+        existing = await self.uow.establishment_repo.get_by_place_id(data.place_id)
+        if existing is not None:
+            return existing, True
 
         try:
-            establishment = await self.uow.establishment_repo.create(
+            created = await self.uow.establishment_repo.create(
                 Establishment(**data.model_dump())
             )
+            return created, False
         except UniqueConstraintError:
             establishment = await self.uow.establishment_repo.get_by_place_id(
                 data.place_id
@@ -106,8 +102,6 @@ class EstablishmentService:
             if establishment is None:
                 raise
             return establishment, True
-
-        return establishment, False
 
     async def create_establishment(
         self, data: EstablishmentRequest
@@ -272,7 +266,6 @@ class EstablishmentService:
             EstablishmentRequestAlreadyReviewedError: If the request is not
                 pending.
         """
-        # TODO: finish this flow
         request = await self.uow.establishment_request_repo.mark_reviewed_or_raise(
             request_id, EstablishmentRequestStatus.APPROVED, reviewer_id
         )

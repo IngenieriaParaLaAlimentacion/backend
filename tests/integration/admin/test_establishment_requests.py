@@ -334,11 +334,11 @@ class TestApproveEstablishmentRequest:
             establishment = result.scalar_one()
         assert establishment.name == "Comedor Esperanza"
 
-    async def test_grants_approved_access_to_requester(
+    async def test_leaves_access_pending_for_requester(
         self, client, make_user_with_role, app
     ):
-        """The requesting field worker gets an APPROVED relation to the
-        resolved establishment."""
+        """The requesting field worker gets a PENDING relation to the
+        resolved establishment, for an admin to review separately."""
         admin_headers, _ = await make_user_with_role(UserRole.ADMIN)
         user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
         request_id = await _insert_establishment_request(user_id)
@@ -358,7 +358,7 @@ class TestApproveEstablishmentRequest:
                 )
             )
             relation = result.scalar_one()
-        assert relation.status == UserEstablishmentStatus.APPROVED
+        assert relation.status == UserEstablishmentStatus.PENDING
 
     async def test_marks_request_as_approved_by_the_admin(
         self, client, make_user_with_role, app
