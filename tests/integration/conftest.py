@@ -108,7 +108,7 @@ def app(postgres_url):
     sync_url = postgres_url.replace("postgresql+psycopg2://", "postgresql://")
     asyncpg_url = sync_url.replace("postgresql://", "postgresql+asyncpg://", 1)
 
-    from app.core.config import settings
+    from app.config.settings import settings
 
     original_db_url = settings.database_url
     settings.database_url = asyncpg_url

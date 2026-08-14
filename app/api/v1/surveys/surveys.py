@@ -9,8 +9,8 @@ from app.core.dependencies import (
     require_any,
     require_field_worker_admin_or_superadmin,
 )
-from app.data.fies_template import build_fies_template
 from app.domain import UserActor
+from app.reference_data.fies_template import build_fies_template
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.survey_schema import (
     SurveyCreateRequest,

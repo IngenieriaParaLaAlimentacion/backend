@@ -6,7 +6,7 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from jose import JWTError, jwt
 
-from app.core.config import settings
+from app.config.settings import settings
 from app.models import UserRole
 
 _password_hasher = PasswordHasher()

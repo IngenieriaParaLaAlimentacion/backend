@@ -934,7 +934,7 @@ class TestGetDashboardDetail:
 class TestFiesScoring:
     @staticmethod
     def _fies_survey_body(name: str) -> dict:
-        from app.data.fies_template import build_fies_template
+        from app.reference_data.fies_template import build_fies_template
 
         template = build_fies_template()
         return {
