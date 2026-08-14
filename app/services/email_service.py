@@ -310,3 +310,32 @@ async def send_invite_email(
         log_label="Admin invite",
         raise_on_failure=True,
     )
+
+
+async def send_establishment_created_email(
+    to_email: str, establishment_name: str
+) -> None:
+    """Notify a field worker that their establishment creation request was
+    approved, and access is now pending an admin's review."""
+    html_content = _render_base_template(
+        title="Establecimiento creado",
+        content_html=(
+            "<p>Tu solicitud de creación del siguiente establecimiento ha "
+            "sido aprobada:</p>"
+            f"<p>{establishment_name}</p>"
+            "<p>Tu acceso está pendiente de revisión por un administrador. "
+            "Te notificaremos cuando sea aprobado.</p>"
+        ),
+    )
+    await _send_email(
+        to_email=to_email,
+        subject="Establecimiento creado",
+        body=(
+            "Hola,\n\n"
+            "Tu solicitud de creación del siguiente establecimiento ha sido "
+            f"aprobada:\n\n{establishment_name}\n\n"
+            "Tu acceso está pendiente de revisión por un administrador."
+        ),
+        html_body=html_content,
+        log_label="Establishment created",
+    )

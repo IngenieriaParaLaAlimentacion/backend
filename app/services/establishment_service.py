@@ -9,12 +9,11 @@ from app.domain.establishment import (
     EstablishmentListingParams,
     EstablishmentRequestDomain,
     EstablishmentRequestStatus,
+    UserEstablishmentStatus,
 )
 from app.domain.pagination import PaginatedResult
 from app.exceptions.domain_exceptions import (
     EstablishmentAlreadyExistsError,
-    EstablishmentRequestAlreadyReviewedError,
-    EstablishmentRequestNotFoundError,
     UniqueConstraintError,
 )
 from app.models import Establishment
@@ -27,8 +26,8 @@ from app.schemas.establishment_schema import (
     EstablishmentUpdateRequest,
 )
 from app.services.email_service import (
-    send_access_granted_email,
     send_creation_denied_email,
+    send_establishment_created_email,
 )
 
 
@@ -51,23 +50,64 @@ class EstablishmentService:
             page_size=page_size,
         )
 
-    async def _get_pending_request_or_raise(
-        self, request_id: UUID
-    ) -> EstablishmentRequestModel:
-        """Return the request by ID, ensuring it is still pending review.
+    async def _leave_access_pending(
+        self, user_id: UUID, establishment_id: UUID, reused: bool
+    ) -> None:
+        """Ensure the field worker has a pending access request for the
+        establishment, for an admin to review separately.
 
-        Raises:
-            EstablishmentRequestNotFoundError: If no request with that ID
-                exists.
-            EstablishmentRequestAlreadyReviewedError: If the request is not
-                pending.
+        When ``reused`` is False the establishment was just created, so no
+        prior relation can exist yet and a pending one is staged directly.
+        Otherwise the establishment predates this approval, so an existing
+        relation is checked first: approved or already-pending relations are
+        left as-is, a rejected one is reopened to pending, and only a
+        genuinely missing relation is staged fresh.
         """
-        request = await self.uow.establishment_request_repo.get_by_id(request_id)
-        if request is None:
-            raise EstablishmentRequestNotFoundError(str(request_id))
-        if request.status != EstablishmentRequestStatus.PENDING:
-            raise EstablishmentRequestAlreadyReviewedError(str(request_id))
-        return request
+        relation = None
+        if reused:
+            relation = await self.uow.user_establishment_repo.get_relation(
+                user_id, establishment_id
+            )
+        if relation is None:
+            await self.uow.user_establishment_repo.preset_relation(
+                user_id, establishment_id
+            )
+        elif relation.status == UserEstablishmentStatus.REJECTED:
+            await self.uow.user_establishment_repo.update_status_for_ids(
+                user_id, [establishment_id], UserEstablishmentStatus.PENDING
+            )
+
+    async def _create_or_reuse_establishment(
+        self, data: EstablishmentRequest
+    ) -> tuple[Establishment, bool]:
+        """Create the establishment described by ``data``, or return the
+        existing one with the same place_id if one is already registered.
+
+        Two field workers can independently request the same physical place
+        under different wording, so a concurrent approval may create it
+        first between the lookup and the insert here — that race is caught
+        and treated the same as finding it upfront.
+
+        Returns the establishment and whether it was reused instead of
+        freshly created.
+        """
+        establishment = await self.uow.establishment_repo.get_by_place_id(data.place_id)
+        if establishment is not None:
+            return establishment, True
+
+        try:
+            establishment = await self.uow.establishment_repo.create(
+                Establishment(**data.model_dump())
+            )
+        except UniqueConstraintError:
+            establishment = await self.uow.establishment_repo.get_by_place_id(
+                data.place_id
+            )
+            if establishment is None:
+                raise
+            return establishment, True
+
+        return establishment, False
 
     async def create_establishment(
         self, data: EstablishmentRequest
@@ -222,8 +262,9 @@ class EstablishmentService:
         """Approve a pending establishment creation request.
 
         Creates the establishment described by ``data``, or reuses an
-        existing one with the same place_id and notifies the requesting field
-        worker by email.
+        existing one with the same place_id, and leaves the requesting field
+        worker's access to it pending a separate admin review. Notifies them
+        by email that the establishment was created.
 
         Raises:
             EstablishmentRequestNotFoundError: If no request with that ID
@@ -231,33 +272,18 @@ class EstablishmentService:
             EstablishmentRequestAlreadyReviewedError: If the request is not
                 pending.
         """
-        request = await self._get_pending_request_or_raise(request_id)
-
-        establishment = await self.uow.establishment_repo.get_by_place_id(data.place_id)
-        reused = establishment is not None
-        if establishment is None:
-            try:
-                establishment = await self.uow.establishment_repo.create(
-                    Establishment(**data.model_dump())
-                )
-            except UniqueConstraintError:
-                # Concurrent approval created it first -> reuse it.
-                establishment = await self.uow.establishment_repo.get_by_place_id(
-                    data.place_id
-                )
-                if establishment is None:
-                    raise
-                reused = True
-
-        await self.uow.user_establishment_repo.create_or_approve_relation(
-            request.user_id, establishment.id
+        # TODO: finish this flow
+        request = await self.uow.establishment_request_repo.mark_reviewed_or_raise(
+            request_id, EstablishmentRequestStatus.APPROVED, reviewer_id
         )
-        request.status = EstablishmentRequestStatus.APPROVED
-        request.reviewed_by = reviewer_id
+
+        establishment, reused = await self._create_or_reuse_establishment(data)
+
+        await self._leave_access_pending(request.user_id, establishment.id, reused)
         await self.uow.commit()
 
         requester = await self.uow.user_repo.get_by_id(request.user_id)
-        await send_access_granted_email(requester.email, [establishment.name])
+        await send_establishment_created_email(requester.email, establishment.name)
 
         return EstablishmentApprovalResult(
             EstablishmentDomain.from_db(establishment), reused

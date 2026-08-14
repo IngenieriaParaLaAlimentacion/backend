@@ -303,8 +303,9 @@ async def list_establishment_requests(
     summary="Approve an establishment creation request",
     description="Approves the request using the admin-provided final data, "
     "creating a new establishment or reusing an existing one with the same "
-    "place_id. Notifies the field worker who requested it by email. "
-    "Accessible by admins only.",
+    "place_id. The field worker's access to it is left pending a separate "
+    "admin review; they're notified by email that the establishment was "
+    "created. Accessible by admins only.",
     responses={
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Request not found"},
