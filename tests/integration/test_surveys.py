@@ -24,9 +24,8 @@ async def analyst_author(make_user_with_role):
 
 def _survey_body(
     name: str = "Encuesta A",
-    scope: str = "generic",
+    response_target: str = "anonymous",
     questions=None,
-    establishment_ids=None,
     description=None,
 ):
     if questions is None:
@@ -47,9 +46,8 @@ def _survey_body(
     return {
         "name": name,
         "description": description,
-        "scope": scope,
+        "response_target": response_target,
         "questions": questions,
-        "establishment_ids": establishment_ids or [],
     }
 
 
@@ -82,7 +80,7 @@ class TestCreateAndGet:
         assert response.status_code == status.HTTP_201_CREATED
         body = response.json()
         assert body["name"] == "Encuesta A"
-        assert body["scope"] == "generic"
+        assert body["response_target"] == "anonymous"
         assert body["is_active"] is True
         assert body["created_by_id"] == str(user_id)
         assert [q["position"] for q in body["questions"]] == [0, 1]
@@ -127,81 +125,54 @@ class TestCreateAndGet:
         response = await _create(client, headers, questions=bad)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    async def test_targeted_unknown_establishment_returns_404(
-        self, client, admin_author
+    @pytest.mark.parametrize("target", ["subject", "establishment", "anonymous"])
+    async def test_every_response_target_round_trips(
+        self, client, admin_author, target
     ):
         headers, _ = admin_author
         response = await _create(
-            client,
-            headers,
-            scope="targeted",
-            establishment_ids=[str(uuid.uuid4())],
-        )
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-
-    async def test_targeted_with_establishment_succeeds(
-        self, client, admin_author, db_establishment
-    ):
-        headers, _ = admin_author
-        response = await _create(
-            client,
-            headers,
-            scope="targeted",
-            establishment_ids=[str(db_establishment.id)],
+            client, headers, name=f"Encuesta {target}", response_target=target
         )
         assert response.status_code == status.HTTP_201_CREATED
-        assert response.json()["establishment_ids"] == [str(db_establishment.id)]
+        assert response.json()["response_target"] == target
+
+    async def test_missing_response_target_returns_422(self, client, admin_author):
+        headers, _ = admin_author
+        body = _survey_body()
+        del body["response_target"]
+        response = await client.post(SURVEYS_URL, json=body, headers=headers)
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    async def test_scope_and_establishment_ids_are_gone(self, client, admin_author):
+        headers, _ = admin_author
+        body = (await _create(client, headers)).json()
+        assert "scope" not in body
+        assert "establishment_ids" not in body
 
 
 class TestGetFieldWorkerAccess:
     """A field worker may fetch full survey detail (needed to render the
-    response form) for generic surveys, or targeted surveys aimed at one of
-    their approved establishments — the same eligibility rule as `/available`."""
+    response form) for any active survey. Establishment-based gating is gone;
+    `is_active` is the only visibility rule left."""
 
-    async def test_generic_survey_succeeds(
-        self, client, admin_author, field_worker_headers
+    @pytest.mark.parametrize("target", ["subject", "establishment", "anonymous"])
+    async def test_any_active_survey_succeeds(
+        self, client, admin_author, field_worker_headers, target
     ):
         admin_headers, _ = admin_author
-        survey_id = (await _create(client, admin_headers)).json()["id"]
+        survey_id = (
+            await _create(
+                client,
+                admin_headers,
+                name=f"Encuesta {target}",
+                response_target=target,
+            )
+        ).json()["id"]
         response = await client.get(
             f"{SURVEYS_URL}/{survey_id}", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["questions"][0]["text"] == "¿Comió hoy?"
-
-    async def test_targeted_survey_without_access_returns_403(
-        self, client, admin_author, field_worker_headers, db_establishment
-    ):
-        admin_headers, _ = admin_author
-        survey_id = (
-            await _create(
-                client,
-                admin_headers,
-                scope="targeted",
-                establishment_ids=[str(db_establishment.id)],
-            )
-        ).json()["id"]
-        response = await client.get(
-            f"{SURVEYS_URL}/{survey_id}", headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_403_FORBIDDEN
-
-    async def test_targeted_survey_with_approved_access_succeeds(
-        self, client, admin_author, db_establishment, field_worker_with_access
-    ):
-        admin_headers, _ = admin_author
-        fw_headers, _ = field_worker_with_access
-        survey_id = (
-            await _create(
-                client,
-                admin_headers,
-                scope="targeted",
-                establishment_ids=[str(db_establishment.id)],
-            )
-        ).json()["id"]
-
-        response = await client.get(f"{SURVEYS_URL}/{survey_id}", headers=fw_headers)
-        assert response.status_code == status.HTTP_200_OK
 
     async def test_missing_survey_returns_404(self, client, field_worker_headers):
         response = await client.get(
@@ -209,7 +180,7 @@ class TestGetFieldWorkerAccess:
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    async def test_inactive_generic_survey_returns_403(
+    async def test_inactive_survey_returns_403(
         self, client, admin_author, field_worker_headers
     ):
         admin_headers, _ = admin_author
@@ -223,6 +194,50 @@ class TestGetFieldWorkerAccess:
             f"{SURVEYS_URL}/{survey_id}", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+class TestAvailableSurveys:
+    """`/available` no longer filters by establishment: a field worker with no
+    establishments at all sees every active survey."""
+
+    async def test_unattached_field_worker_sees_all_active_surveys(
+        self, client, admin_author, field_worker_headers
+    ):
+        admin_headers, _ = admin_author
+        for target in ("subject", "establishment", "anonymous"):
+            await _create(
+                client,
+                admin_headers,
+                name=f"Encuesta {target}",
+                response_target=target,
+            )
+
+        response = await client.get(
+            f"{SURVEYS_URL}/available", headers=field_worker_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert body["total"] == 3
+        assert {item["response_target"] for item in body["items"]} == {
+            "subject",
+            "establishment",
+            "anonymous",
+        }
+
+    async def test_inactive_surveys_are_excluded(
+        self, client, admin_author, field_worker_headers
+    ):
+        admin_headers, _ = admin_author
+        survey_id = (await _create(client, admin_headers)).json()["id"]
+        await client.patch(
+            f"{SURVEYS_URL}/{survey_id}/status",
+            json={"is_active": False},
+            headers=admin_headers,
+        )
+        response = await client.get(
+            f"{SURVEYS_URL}/available", headers=field_worker_headers
+        )
+        assert response.json()["total"] == 0
 
     async def test_admin_can_fetch_inactive_survey(self, client, admin_author):
         admin_headers, _ = admin_author
@@ -321,7 +336,6 @@ class TestLockedAfterResponses:
         submit = await client.post(
             f"{SURVEYS_URL}/{survey_id}/responses",
             json={
-                "establishment_id": str(db_establishment.id),
                 "answers": {keep["id"]: keep["options"][0]["id"]},
                 "event_at": "2024-06-01T12:00:00Z",
             },
@@ -389,7 +403,6 @@ class TestLockedAfterResponses:
         submit = await client.post(
             f"{SURVEYS_URL}/{survey_id}/responses",
             json={
-                "establishment_id": str(db_establishment.id),
                 "answers": {question["id"]: picked_option["id"]},
                 "event_at": "2024-06-01T12:00:00Z",
             },
@@ -433,7 +446,6 @@ class TestLockedAfterResponses:
         submit = await client.post(
             f"{SURVEYS_URL}/{survey_id}/responses",
             json={
-                "establishment_id": str(db_establishment.id),
                 "answers": {keep["id"]: keep["options"][0]["id"]},
                 "event_at": "2024-06-01T12:00:00Z",
             },
@@ -501,7 +513,6 @@ class TestLockedAfterResponses:
         submit = await client.post(
             f"{SURVEYS_URL}/{survey_id}/responses",
             json={
-                "establishment_id": str(db_establishment.id),
                 "answers": {question["id"]: [verduras["id"], lacteos["id"]]},
                 "event_at": "2024-06-01T12:00:00Z",
             },

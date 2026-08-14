@@ -20,7 +20,7 @@ from app.domain.subject import Sex, SubjectListingParams, SubjectSortOrder
 from app.domain.survey import (
     NAME_MAX,
     SurveyListingParams,
-    SurveyScope,
+    SurveyResponseTarget,
     SurveySortOrder,
 )
 from app.domain.survey_response import (
@@ -159,7 +159,7 @@ class EstablishmentFieldWorkersQuery:
 class SurveyListingQuery:
     search: Annotated[str | None, Query(max_length=NAME_MAX)] = None
     created_by: Annotated[UUID | None, Query()] = None
-    scope: Annotated[SurveyScope | None, Query()] = None
+    response_target: Annotated[SurveyResponseTarget | None, Query()] = None
     is_active: Annotated[bool | None, Query()] = None
     sort_order: SurveySortOrder = SurveySortOrder.NEWEST
 
@@ -167,7 +167,7 @@ class SurveyListingQuery:
         return SurveyListingParams(
             search=self.search,
             created_by=self.created_by,
-            scope=self.scope,
+            response_target=self.response_target,
             is_active=self.is_active,
             sort_order=self.sort_order,
         )

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from sqlalchemy import and_, asc, desc, exists, func, or_, select, true, update
+from sqlalchemy import asc, desc, exists, func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import noload
@@ -10,16 +10,14 @@ from sqlalchemy.orm import noload
 from app.domain.survey import (
     QuestionInputData,
     SurveyListingParams,
-    SurveyScope,
+    SurveyResponseTarget,
     SurveySortOrder,
 )
 from app.exceptions.domain_exceptions import (
     InvalidSurveyPayloadError,
     UniqueConstraintError,
 )
-from app.models.establishment import Establishment
 from app.models.survey import Survey
-from app.models.survey_establishment import SurveyEstablishment
 from app.models.survey_question import SurveyQuestion
 from app.models.survey_question_option import SurveyQuestionOption
 from app.utils.db import escape_like
@@ -35,9 +33,9 @@ _SORT_CLAUSES = {
 
 
 class SurveyRepository:
-    """Persistence for the survey aggregate (survey + questions + options + audience).
+    """Persistence for the survey aggregate (survey + questions + options).
 
-    The ``questions``/``options``/``establishments`` relationships are eager-loaded via
+    The ``questions``/``options`` relationships are eager-loaded via
     ``lazy="selectin"``, so a survey fetched here carries its full configuration.
     """
 
@@ -78,24 +76,11 @@ class SurveyRepository:
             conditions.append(Survey.name.ilike(pattern, escape="\\"))
         if params.created_by is not None:
             conditions.append(Survey.created_by_id == params.created_by)
-        if params.scope is not None:
-            conditions.append(Survey.scope == params.scope)
+        if params.response_target is not None:
+            conditions.append(Survey.response_target == params.response_target)
         if params.is_active is not None:
             conditions.append(Survey.is_active == params.is_active)
         return conditions
-
-    @staticmethod
-    def _available_scope_condition(actor_establishment_ids: list[UUID] | None):
-        if actor_establishment_ids is None:
-            return true()
-        targeted_match = and_(
-            Survey.scope == SurveyScope.TARGETED,
-            exists().where(
-                SurveyEstablishment.survey_id == Survey.id,
-                SurveyEstablishment.establishment_id.in_(actor_establishment_ids),
-            ),
-        )
-        return or_(Survey.scope == SurveyScope.GENERIC, targeted_match)
 
     @staticmethod
     def _build_question(
@@ -156,17 +141,6 @@ class SurveyRepository:
         # Reassigning the collection deletes orphaned options via delete-orphan.
         question.options = new_options
 
-    async def _assign_establishments(
-        self, survey: Survey, establishment_ids: list[UUID]
-    ) -> None:
-        if establishment_ids:
-            result = await self.db.execute(
-                select(Establishment).where(Establishment.id.in_(establishment_ids))
-            )
-            survey.establishments = list(result.scalars().all())
-        else:
-            survey.establishments = []
-
     async def _flush_aggregate(self, survey: Survey, name: str) -> None:
         try:
             async with self.db.begin_nested():
@@ -182,7 +156,7 @@ class SurveyRepository:
         ``updated_at`` uses ``onupdate=func.now()``; after an UPDATE SQLAlchemy
         expires it, so building the domain object post-commit would otherwise
         trigger a lazy (sync) reload and raise ``MissingGreenlet``. Scoped to this
-        one column so the eager-loaded questions/establishments stay intact.
+        one column so the eager-loaded questions stay intact.
         """
         await self.db.refresh(survey, attribute_names=["updated_at"])
 
@@ -195,14 +169,14 @@ class SurveyRepository:
         """Return a paginated list of ``(survey, question_count)`` rows and the
         total matching count.
 
-        The summary view needs only a question count, so ``questions`` and
-        ``establishments`` are suppressed with ``noload`` and the count comes from a
-        correlated subquery — avoiding hydrating every question/option/establishment
-        just to call ``len()``.
+        The summary view needs only a question count, so ``questions`` is
+        suppressed with ``noload`` and the count comes from a correlated
+        subquery — avoiding hydrating every question/option just to call
+        ``len()``.
         """
         question_count = self._question_count_subquery()
         base_query = select(Survey, question_count.label("question_count")).options(
-            noload(Survey.questions), noload(Survey.establishments)
+            noload(Survey.questions)
         )
         count_query = select(func.count()).select_from(Survey)
         for condition in self._listing_conditions(params):
@@ -219,11 +193,10 @@ class SurveyRepository:
         *,
         name: str,
         description: str | None,
-        scope,
+        response_target: SurveyResponseTarget,
         instrument_type,
         created_by_id: UUID,
         questions: list[QuestionInputData],
-        establishment_ids: list[UUID],
     ) -> Survey:
         """Persist a new survey aggregate.
 
@@ -234,7 +207,7 @@ class SurveyRepository:
         survey = Survey(
             name=name.strip(),
             description=description,
-            scope=scope,
+            response_target=response_target,
             instrument_type=instrument_type,
             created_by_id=created_by_id,
             questions=[
@@ -242,7 +215,6 @@ class SurveyRepository:
                 for position, q in enumerate(questions)
             ],
         )
-        await self._assign_establishments(survey, establishment_ids)
         await self._flush_aggregate(survey, name)
         return survey
 
@@ -252,10 +224,9 @@ class SurveyRepository:
         *,
         name: str,
         description: str | None,
-        scope,
+        response_target: SurveyResponseTarget,
         instrument_type,
         questions: list[QuestionInputData],
-        establishment_ids: list[UUID],
     ) -> Survey:
         """Declaratively reconcile a survey to match the supplied configuration.
 
@@ -270,10 +241,9 @@ class SurveyRepository:
         """
         survey.name = name.strip()
         survey.description = description
-        survey.scope = scope
+        survey.response_target = response_target
         survey.instrument_type = instrument_type
         self._reconcile_questions(survey, questions)
-        await self._assign_establishments(survey, establishment_ids)
         await self._flush_aggregate(survey, name)
         return survey
 
@@ -296,7 +266,7 @@ class SurveyRepository:
         survey = Survey(
             name=new_name.strip(),
             description=source.description,
-            scope=source.scope,
+            response_target=source.response_target,
             instrument_type=source.instrument_type,
             is_active=source.is_active,
             created_by_id=created_by_id,
@@ -305,7 +275,6 @@ class SurveyRepository:
                 for position, q in enumerate(source.questions)
             ],
         )
-        await self._assign_establishments(survey, [e.id for e in source.establishments])
         await self._flush_aggregate(survey, new_name)
         return survey
 
@@ -336,29 +305,19 @@ class SurveyRepository:
     async def list_available(
         self,
         *,
-        actor_establishment_ids: list[UUID] | None,
         limit: int,
         offset: int,
     ) -> tuple[list[tuple[Survey, int]], int]:
-        """Return ``(survey, question_count)`` rows for active surveys the caller
-        may respond to, and the total matching count.
-
-        Matches generic surveys plus targeted surveys aimed at one of
-        ``actor_establishment_ids``. ``actor_establishment_ids=None`` (an
-        admin/superadmin caller) matches every targeted survey unconditionally,
-        mirroring the establishment-access bypass used for submission.
-        """
+        """Return ``(survey, question_count)`` rows for every active survey, and
+        the total matching count."""
         question_count = self._question_count_subquery()
-        scope_condition = self._available_scope_condition(actor_establishment_ids)
         base_query = (
             select(Survey, question_count.label("question_count"))
-            .options(noload(Survey.questions), noload(Survey.establishments))
-            .where(Survey.is_active.is_(True), scope_condition)
+            .options(noload(Survey.questions))
+            .where(Survey.is_active.is_(True))
         )
         count_query = (
-            select(func.count())
-            .select_from(Survey)
-            .where(Survey.is_active.is_(True), scope_condition)
+            select(func.count()).select_from(Survey).where(Survey.is_active.is_(True))
         )
         paginated = (
             base_query.order_by(desc(Survey.created_at)).limit(limit).offset(offset)

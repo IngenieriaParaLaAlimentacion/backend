@@ -8,7 +8,6 @@ from .password_recovery_token import PasswordRecoveryToken
 from .subject import Sex, Subject
 from .subject_event import SubjectEvent
 from .survey import Survey
-from .survey_establishment import SurveyEstablishment
 from .survey_question import SurveyQuestion
 from .survey_question_option import SurveyQuestionOption
 from .survey_response import SurveyResponse
@@ -35,7 +34,6 @@ __all__ = [
     "Survey",
     "SurveyQuestion",
     "SurveyQuestionOption",
-    "SurveyEstablishment",
     "SurveyResponse",
     "SurveyResponseEdit",
     "UserPassword",

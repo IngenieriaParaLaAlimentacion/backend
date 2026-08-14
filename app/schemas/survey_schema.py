@@ -10,7 +10,7 @@ from app.domain.survey import (
     QUESTION_TEXT_MAX,
     ResponseType,
     SurveyInstrumentType,
-    SurveyScope,
+    SurveyResponseTarget,
 )
 
 
@@ -62,16 +62,20 @@ class SurveyCreateRequest(BaseModel):
     """Full declarative survey configuration for creation.
 
     Field-level shape (lengths, non-blank) is validated here; semantic structural
-    rules (question/option counts, scope↔audience, duplicate options) live in the
-    service so they surface as RFC 7807 problem responses.
+    rules (question/option counts, duplicate options) live in the service so they
+    surface as RFC 7807 problem responses.
     """
 
     name: str = Field(min_length=1, max_length=NAME_MAX)
     description: str | None = Field(default=None, max_length=DESCRIPTION_MAX)
-    scope: SurveyScope
+    response_target: SurveyResponseTarget = Field(
+        description=(
+            "What each response is about: a subject, an establishment, or "
+            "nobody in particular. Locked once the survey has responses."
+        )
+    )
     instrument_type: SurveyInstrumentType = SurveyInstrumentType.CUSTOM
     questions: list[QuestionInput] = Field(default_factory=list)
-    establishment_ids: list[UUID] = Field(default_factory=list)
 
     @field_validator("name")
     @classmethod
@@ -125,12 +129,11 @@ class SurveyResponse(BaseModel):
     id: UUID
     name: str
     description: str | None
-    scope: SurveyScope
+    response_target: SurveyResponseTarget
     is_active: bool
     created_by_id: UUID
     response_count: int
     questions: list[QuestionResponse]
-    establishment_ids: list[UUID]
     created_at: datetime
     updated_at: datetime
 
@@ -140,7 +143,7 @@ class SurveyListItem(BaseModel):
 
     id: UUID
     name: str
-    scope: SurveyScope
+    response_target: SurveyResponseTarget
     is_active: bool
     created_by_id: UUID
     question_count: int
@@ -168,5 +171,5 @@ class SurveyTemplateResponse(BaseModel):
 
     name: str
     description: str | None
-    scope: SurveyScope
+    response_target: SurveyResponseTarget
     questions: list[TemplateQuestion]

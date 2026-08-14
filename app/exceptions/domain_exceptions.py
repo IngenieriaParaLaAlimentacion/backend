@@ -275,8 +275,8 @@ class SurveyAlreadyExistsError(AlreadyExistsError):
 class SurveyLockedError(ConflictError):
     """Exception raised when a survey can no longer be modified.
 
-    Stub-enforced today (surveys never accumulate responses), it will gate edits
-    once response collection lands.
+    Gates structural edits — and changes to ``response_target`` — once a survey
+    has recorded at least one response.
     """
 
     def __init__(
@@ -289,7 +289,7 @@ class SurveyLockedError(ConflictError):
 
 
 class InvalidSurveyStructureError(BadRequestError):
-    """Exception raised when a survey's questions/options/scope are inconsistent."""
+    """Exception raised when a survey's questions or options are inconsistent."""
 
     def __init__(self, detail: str):
         super().__init__("Invalid survey structure", detail)
