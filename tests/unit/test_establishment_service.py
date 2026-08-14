@@ -953,7 +953,8 @@ class TestRejectCreationRequest:
         assert request.status == EstablishmentRequestStatus.REJECTED
         uow.commit.assert_called_once()
         uow.establishment_repo.create.assert_not_called()
-        uow.user_establishment_repo.create_or_approve_relation.assert_not_called()
+        uow.user_establishment_repo.preset_relation.assert_not_called()
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
 
     async def test_sets_reviewed_by_on_rejection(self, make_uow):
         """Records which admin rejected the request."""

@@ -3,7 +3,7 @@
 - **Status**: Accepted
 - **Date**: 2026-08-11
 - **Deciders**: Backend team
-- **Related**: [ADR-0006](0006-establishment-creation-requests.md), `docs/plans/admin_establishment_request_review.md`, `app/services/establishment_service.py`, `app/repositories/establishment_repository.py`, `app/models/establishment_request.py`
+- **Related**: [ADR-0006](0006-establishment-creation-requests.md), `app/services/establishment_service.py`, `app/repositories/establishment_repository.py`, `app/repositories/establishment_request_repository.py`, `app/models/establishment_request.py`, `AdminService.approve_establishments`/`reject_establishments`
 
 ## Context
 
@@ -16,46 +16,48 @@ sub-decisions made building it, each of which had a real alternative on the tabl
 Requirements driving the design:
 
 - Approving must **create or reuse** an `Establishment` (the request has no
-  `place_id`/lat/lng — the admin supplies the final, georeferenced data at review time)
-  and grant the requesting field worker approved access to it, in one step.
+  `place_id`/lat/lng — the admin supplies the final, georeferenced data at review time).
+  The requesting field worker's access to it is left **pending**, for an admin to approve
+  through the review flow that already exists for that
+  (`AdminService.approve_establishments`/`reject_establishments`, exposed at
+  `PATCH /admin/field-worker/{user_id}/establishments/approve|reject`).
 - Two admins (or a retried request) can race to approve requests that resolve to the
   same physical place. The result must not be a raw 500, and must not silently
-  double-create.
+  double-create. Two admins can also race to review the *same* request; only one may win.
 - Both outcomes notify the requester by email; rejecting must have zero side effects
   on the `establishments`/`user_establishments` tables.
-- The org wants to know *who* approved/rejected each request, for later audit.
+- Admins need to know *who* approved/rejected each request, for later audit.
 
 ## Decision
 
-### 1. Dedup by `place_id`, not by name/address
+### 1. Dedup by `place_id` only, reuse signaled via a `reused: bool` flag
 
 `approve_creation_request` looks up an existing establishment via
 `EstablishmentRepository.get_by_place_id(data.place_id)` before creating one — the same
-method `create_establishment` already uses for its own duplicate check. If found, that
-establishment is reused instead of inserting a new row.
+method `create_establishment` already uses for its own duplicate check. `place_id` is
+the single field checked, and the only one that could be: it's the external identifier
+the rest of the system already trusts as "same physical location," backed by a DB-level
+`uq_establishments_place_id` constraint. Matching on free-text `name`/`formatted_address`
+instead would silently merge two different real-world places that happen to share a
+name, and fail to merge the same place typed with a slightly different address — it's
+not a reliable enough signal to dedup on, `place_id` is.
 
-We built and then reverted a `find_by_name_and_address` alternative (case-insensitive
-match on `name`+`formatted_address`) before landing here. `place_id` is the single
-external identifier the rest of the system already trusts as "same physical location"
-(it has a DB-level `uq_establishments_place_id` constraint); free-text name/address
-matching would silently merge two different real-world places that happen to share a
-name, and would fail to merge the same place typed with a slightly different address.
-
-### 2. Reuse signaled via a `reused: bool` flag, not an error and not a silent overwrite
-
-When the request resolves to an existing establishment, the admin-submitted `name`,
-`formatted_address`, `city`, `province`, lat/lng are **not applied** — the existing row
-is returned as-is, plus `reused: true` in the response
+When a match is found, that establishment is **reused** instead of inserting a new row:
+the admin-submitted `name`, `formatted_address`, `city`, `province`, lat/lng are **not
+applied** to it — the existing row is returned as-is, plus `reused: true` in the response
 (`EstablishmentApprovalResponse`, a dedicated schema — not added to the generic
-`EstablishmentResponse` used by unrelated establishment endpoints).
+`EstablishmentResponse` used by unrelated establishment endpoints). Callers care about
+`reused` for two reasons that both come back later in this ADR: it decides how access is
+granted to the requester (point 2) and it's the signal a concurrent approval recovers
+with when it loses a creation race (point 3).
 
-Three alternatives were rejected:
+Three alternatives for representing that reuse were rejected:
 
 - **Raise `EstablishmentAlreadyExistsError` (409)** — the error `create_establishment`
   raises for the same underlying signal. Wrong here: approving a request for a place
   already in the catalog is the *expected success path* of create-or-reuse, not a
-  failure of admin intent. A 409 would abort the whole approval — no access granted, no
-  request closed — for something that isn't an error.
+  failure of admin intent. A 409 would abort the whole approval — no access left pending,
+  no request closed — for something that isn't an error.
 - **Overwrite the existing establishment with the newly submitted data** — rejected as
   unsafe: an unrelated pending request being approved could silently mutate an
   establishment that already has measurements/subjects/surveys tied to it, changed by an
@@ -88,7 +90,41 @@ Three alternatives were rejected:
     exists at all — a named field in the body is impossible to miss once you're already
     reading the payload.
 
-### 3. Concurrency: SAVEPOINT + `UniqueConstraintError`, not a bare `IntegrityError`
+### 2. Access-granting decoupled from request approval
+
+`approve_creation_request` originally granted the requesting field worker **approved**
+access to the establishment in the same step as approving the request
+(`create_or_approve_relation`). It now only creates/reuses the establishment and leaves
+a **pending** `UserEstablishment` relation via the private helper
+`_leave_access_pending`, for an admin to approve separately through the flow that
+already exists for that — the same one used when a field worker registers and requests
+access to an establishment that already exists.
+
+`_leave_access_pending` branches on whether the establishment was reused:
+
+- **Newly created** (`reused=False`): no prior relation can exist yet, so a pending one
+  is staged directly (`preset_relation`), no lookup needed.
+- **Reused** (`reused=True`): two field workers can independently request the same
+  physical place under different wording, so a relation may already exist from a prior,
+  unrelated review. It's looked up first (`get_relation`): approved or already-pending
+  relations are left as-is (approving *this* request must not silently downgrade or
+  reset access already granted through a different one), a rejected relation is reopened
+  to pending, and only a genuinely missing relation is staged fresh.
+
+The approval email changed accordingly: `send_access_granted_email` (still used by
+`AdminService.approve_establishments` for the actual access-grant step) is replaced on
+this endpoint by `send_establishment_created_email`, which tells the field worker the
+establishment was created and that access is pending admin review — it does not claim
+access was granted.
+
+**Rejected alternative**: keep granting access in the same step. This conflates two
+orthogonal concerns — *does the establishment exist* and *should this worker access
+it* — into one action, and doesn't hold up under reuse: an establishment resolved from
+one field worker's request may have nothing to do with another field worker's fitness to
+access it, and the existing admin-review flow for establishment access already exists
+specifically to make that a deliberate, separate decision.
+
+### 3. Concurrency on establishment creation: SAVEPOINT + `UniqueConstraintError`, not a bare `IntegrityError`
 
 `EstablishmentRepository.create()` runs the insert inside `self.db.begin_nested()` (a
 SAVEPOINT) and translates a unique-constraint violation on `place_id` into
@@ -98,22 +134,28 @@ their own id/uniqueness races. `approve_creation_request` catches it and re-fetc
 `place_id` to reuse the establishment the concurrent request created first (`reused` is
 `True` in that branch too); `create_establishment` catches it and raises
 `EstablishmentAlreadyExistsError`, matching its own synchronous-duplicate contract. Both
-callers share the repo-level fix; only their *recovery* differs, per point 2's reasoning.
+callers share the repo-level fix; only their *recovery* differs, per point 1's reasoning.
 
-### 4. 404/409 checks centralized in the service, not split across repo and service
+### 4. Concurrency on request review: atomic `UPDATE ... WHERE status = pending ... RETURNING`, not a service-level check-then-act
 
-`EstablishmentRequestRepository` exposes a plain `get_by_id() -> EstablishmentRequest |
-None` — no `get_by_id_or_raise`. A private service helper,
-`_get_pending_request_or_raise`, does both checks approve and reject need (request
-exists → `EstablishmentRequestNotFoundError`; request is still `pending` →
-`EstablishmentRequestAlreadyReviewedError`) in one place, shared by both flows.
+Two admins reviewing the *same* request at once is a separate race from point 3's — a
+TOCTOU on the request's own `pending` status, not on `place_id`. The original design
+(a private service helper doing `get_by_id` then checking `status == pending` in
+Python) had a window between the check and the write where a second reviewer could pass
+the same check before the first one committed, producing two establishments (or an
+establishment plus a stray pending-access row) for one request.
 
-We initially added a `get_by_id_or_raise` to the repo (mirroring
-`EstablishmentRepository`'s, which earns its keep with ~7 call sites across multiple
-services). For establishment *requests*, both call sites needing "not found" handling
-live in the same service and need the *same* additional pending-check right after — so
-splitting "not found" into the repo and "already reviewed" into the service bought
-nothing but an extra layer to read through. Removed once the shared helper existed.
+`EstablishmentRequestRepository.mark_reviewed_or_raise(request_id, status, reviewer_id)`
+closes it with a single atomic statement — `UPDATE ... WHERE id = :id AND status =
+'pending' ... RETURNING` — run as the **first step** of both `approve_creation_request`
+and `reject_creation_request`, before any other side effect. The `WHERE status =
+pending` clause is what makes it atomic: only one of two concurrent reviews can match
+and return a row. The loser gets `EstablishmentRequestAlreadyReviewedError` immediately,
+with no establishment created and no access relation touched — `get_by_id` is used only
+afterward, to distinguish "already reviewed" (409) from "never existed" (404) for the
+loser/caller. This puts the check in the repo rather than the service specifically
+because atomicity requires the check and the write to be the same statement — a
+service-layer check-then-act can't do that no matter how it's organized.
 
 ### 5. Audit trail: `reviewed_by` FK, no new `reviewed_at` column
 
@@ -147,11 +189,15 @@ non-critical notifications like this one.
 
 **Positive**
 
-- Approve is genuinely idempotent-ish under concurrency: two admins racing to approve
-  requests for the same place both succeed, both end with the requester granted access,
-  and neither gets an unhandled 500.
-- One shared validation path (`_get_pending_request_or_raise`) means the 404/409
-  semantics for approve and reject can't drift apart.
+- Approve is genuinely idempotent-ish under concurrency, on both axes: two admins racing
+  to approve requests for the same *place* both succeed and both resolve to the same
+  establishment (point 3); two admins racing to review the same *request* — approve,
+  reject, or one of each — have exactly one winner and one clean 409, with no partial
+  establishment/access side effects from the loser (point 4).
+- Resolving the establishment and granting the field worker access to it are now
+  separate decisions, made through their own dedicated flows — approving a creation
+  request can't accidentally grant or reset access tied to an unrelated prior review of
+  the same establishment.
 - `reviewed_by`/`updated_at` give real audit visibility (who, when) with a one-column
   migration, no redundant timestamp.
 - `create_establishment`'s existing duplicate-handling contract (`EstablishmentAlreadyExistsError`)
@@ -162,6 +208,10 @@ non-critical notifications like this one.
 
 - `reused: true` requires the API consumer to actually read the flag; there is no
   separate warning-level signal (e.g. a distinct status code) if they don't.
+- Approving a creation request no longer gets the field worker into the establishment in
+  one action — it now takes a second, separate admin action
+  (`PATCH /admin/field-worker/{user_id}/establishments/approve`) before they have access,
+  even though the establishment already exists after the first step.
 - Tests that reach the approve/reject commit path need a *real*, DB-inserted admin
   (`make_user_with_role`, not the stateless `admin_headers` fixture used everywhere
   else in `tests/integration/admin/`), because `reviewed_by`'s FK constraint rejects
@@ -171,18 +221,25 @@ non-critical notifications like this one.
 
 ## Alternatives considered
 
-**`find_by_name_and_address` dedup** — built, then reverted in favor of `place_id` (point 1).
-
 **Raise `EstablishmentAlreadyExistsError` on dedup** — rejected; would abort a successful
-create-or-reuse flow as if it were a failure (point 2).
+create-or-reuse flow as if it were a failure (point 1).
 
 **Auto-update the reused establishment with the newer submission** — rejected as an
 unsafe implicit side effect; still open as a possible future explicit action (e.g. the
 admin using the existing `PATCH /establishments/{id}` update endpoint deliberately,
-informed by the `reused` flag) rather than an automatic one (point 2).
+informed by the `reused` flag) rather than an automatic one (point 1).
 
 **Status code (`201`/`200`) instead of a `reused` body field** — rejected; conflates the
 approve action's own success (uniform, always "the request was resolved") with a fact
 about a nested sub-resource, wouldn't be spec-correct without a `Location` header we
 have no reason to add, and would force the OpenAPI-generated client to model two
-response shapes for one logical operation instead of one (point 2).
+response shapes for one logical operation instead of one (point 1).
+
+**Grant access in the same step as approval (original behavior)** — reverted; conflated
+resolving the establishment with deciding this specific worker should access it, and
+skipped the existing dedicated review flow for establishment access (point 2).
+
+**Service-level check-then-act for request review** (`_get_pending_request_or_raise`,
+doing `get_by_id` then checking `status == pending` in Python) — reverted for approve
+and reject alike, after this exact pattern turned out to have a TOCTOU race between two
+concurrent reviewers; replaced by the atomic `mark_reviewed_or_raise` (point 4).
