@@ -1,10 +1,19 @@
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
+from typing import TypeVar
 from uuid import UUID
 
 from app.domain.common_domains import IdentifierRefDomain
-from app.domain.measurement import EstablishmentRefDomain
+from app.domain.measurement import EstablishmentRefDomain, SubjectRefDomain
 from app.domain.survey import ResponseType
+
+RefT = TypeVar("RefT")
+
+
+def _optional_ref(obj: object, builder: Callable[[object], RefT]) -> RefT | None:
+    """Build a nested ref, or None when the relation is not set."""
+    return builder(obj) if obj is not None else None
 
 
 @dataclass
@@ -13,7 +22,8 @@ class SurveyResponseDomain:
 
     id: UUID
     survey_id: UUID
-    establishment_id: UUID
+    subject_id: UUID | None
+    establishment_id: UUID | None
     submitted_by_id: UUID
     answers: dict[str, object]
     score_fies: int | None
@@ -27,6 +37,7 @@ class SurveyResponseDomain:
         return cls(
             id=obj.id,
             survey_id=obj.survey_id,
+            subject_id=obj.subject_id,
             establishment_id=obj.establishment_id,
             submitted_by_id=obj.submitted_by_id,
             answers=obj.answers,
@@ -47,16 +58,21 @@ class SurveyResponseListItemDomain:
     id: UUID
     event_at: datetime
     survey: IdentifierRefDomain
-    establishment: EstablishmentRefDomain
+    establishment: EstablishmentRefDomain | None
+    subject: SubjectRefDomain | None
 
     @classmethod
     def from_db(cls, obj) -> "SurveyResponseListItemDomain":
-        """Build from an ORM SurveyResponse with ``survey``/``establishment`` loaded."""
+        """Build from an ORM SurveyResponse with ``survey``/``establishment``/
+        ``subject`` loaded."""
         return cls(
             id=obj.id,
             event_at=obj.event_at,
             survey=IdentifierRefDomain(id=obj.survey.id, name=obj.survey.name),
-            establishment=EstablishmentRefDomain.from_db(obj.establishment),
+            establishment=_optional_ref(
+                obj.establishment, EstablishmentRefDomain.from_db
+            ),
+            subject=_optional_ref(obj.subject, SubjectRefDomain.from_db),
         )
 
 
@@ -71,19 +87,23 @@ class SurveyResponseDashboardItemDomain:
     id: UUID
     event_at: datetime
     survey: IdentifierRefDomain
-    establishment: EstablishmentRefDomain
+    establishment: EstablishmentRefDomain | None
+    subject: SubjectRefDomain | None
     submitted_by: IdentifierRefDomain
     score_fies: int | None
 
     @classmethod
     def from_db(cls, obj) -> "SurveyResponseDashboardItemDomain":
-        """Build from an ORM SurveyResponse with survey/establishment/submitted_by
-        loaded."""
+        """Build from an ORM SurveyResponse with survey/establishment/subject/
+        submitted_by loaded."""
         return cls(
             id=obj.id,
             event_at=obj.event_at,
             survey=IdentifierRefDomain(id=obj.survey.id, name=obj.survey.name),
-            establishment=EstablishmentRefDomain.from_db(obj.establishment),
+            establishment=_optional_ref(
+                obj.establishment, EstablishmentRefDomain.from_db
+            ),
+            subject=_optional_ref(obj.subject, SubjectRefDomain.from_db),
             submitted_by=IdentifierRefDomain(
                 id=obj.submitted_by.id, name=obj.submitted_by.name
             ),
@@ -112,7 +132,8 @@ class SurveyResponseDetailDomain:
     id: UUID
     event_at: datetime
     survey: IdentifierRefDomain
-    establishment: EstablishmentRefDomain
+    establishment: EstablishmentRefDomain | None
+    subject: SubjectRefDomain | None
     submitted_by: IdentifierRefDomain
     score_fies: int | None
     answers: list[QuestionAnswerDomain]
@@ -120,7 +141,7 @@ class SurveyResponseDetailDomain:
     @classmethod
     def from_db(cls, obj) -> "SurveyResponseDetailDomain":
         """Build from an ORM SurveyResponse with survey.questions(.options),
-        establishment and submitted_by eager-loaded."""
+        establishment, subject and submitted_by eager-loaded."""
         answers = [
             QuestionAnswerDomain(
                 question_id=question.id,
@@ -137,7 +158,10 @@ class SurveyResponseDetailDomain:
             id=obj.id,
             event_at=obj.event_at,
             survey=IdentifierRefDomain(id=obj.survey.id, name=obj.survey.name),
-            establishment=EstablishmentRefDomain.from_db(obj.establishment),
+            establishment=_optional_ref(
+                obj.establishment, EstablishmentRefDomain.from_db
+            ),
+            subject=_optional_ref(obj.subject, SubjectRefDomain.from_db),
             submitted_by=IdentifierRefDomain(
                 id=obj.submitted_by.id, name=obj.submitted_by.name
             ),

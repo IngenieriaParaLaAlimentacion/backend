@@ -1,14 +1,13 @@
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.domain.establishment import UserEstablishmentStatus
 from app.domain.pagination import PaginatedResult
 from app.domain.survey import (
     QuestionDomain,
     ResponseType,
     SurveyDomain,
     SurveyInstrumentType,
-    SurveyScope,
+    SurveyResponseTarget,
 )
 from app.domain.survey_response import (
     SurveyResponseDashboardItemDomain,
@@ -19,15 +18,21 @@ from app.domain.survey_response import (
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     ForbiddenError,
+    InvalidListingFilterError,
     InvalidSurveyResponseError,
+    SubjectNotFoundError,
     SurveyNotFoundError,
+    SurveyResponseAlreadyExistsError,
     SurveyResponseNotFoundError,
     UniqueConstraintError,
 )
+from app.models.subject import Subject
 from app.models.survey_response import SurveyResponse
 from app.schemas.survey_response_schema import (
+    ExistingResponseRef,
     SurveyResponseEditRequest,
     SurveyResponseRequest,
+    UserRefResponse,
 )
 from app.services.exporters.base import SurveyResponseExporter
 
@@ -50,27 +55,51 @@ class SurveyResponseService:
         if actor.role not in _SUBMITTER_ROLES:
             raise ForbiddenError()
 
-    async def _check_establishment_access(
-        self, actor: UserActor, establishment_id: UUID
-    ) -> None:
-        if actor.role != UserRole.FIELD_WORKER:
-            return
-        relation = await self.uow.user_establishment_repo.get_relation(
-            actor.user_id, establishment_id
-        )
-        if relation is None or relation.status != UserEstablishmentStatus.APPROVED:
-            raise ForbiddenError()
+    @staticmethod
+    def _resolve_target(
+        survey: SurveyDomain, data: SurveyResponseRequest
+    ) -> tuple[UUID | None, UUID | None]:
+        """Return ``(subject_id, establishment_id)`` for this survey's target."""
+        target = survey.response_target
+        if target == SurveyResponseTarget.SUBJECT:
+            if data.subject_id is None or data.establishment_id is not None:
+                raise InvalidSurveyResponseError(
+                    "This survey requires a subject_id and no establishment_id."
+                )
+            return data.subject_id, None
+        if target == SurveyResponseTarget.ESTABLISHMENT:
+            if data.establishment_id is None or data.subject_id is not None:
+                raise InvalidSurveyResponseError(
+                    "This survey requires an establishment_id and no subject_id."
+                )
+            return None, data.establishment_id
+        if data.subject_id is not None or data.establishment_id is not None:
+            raise InvalidSurveyResponseError(
+                "This survey is anonymous and accepts no subject_id or "
+                "establishment_id."
+            )
+        return None, None
 
     @staticmethod
-    def _assert_establishment_in_survey_scope(
-        survey: SurveyDomain, establishment_id: UUID
+    def _assert_establishment_filters_applicable(
+        survey: SurveyDomain,
+        *,
+        establishment_id: UUID | None = None,
+        city: str | None = None,
+        province: str | None = None,
     ) -> None:
-        """Raise if establishment_id is outside a TARGETED survey's audience."""
-        if survey.scope == SurveyScope.TARGETED and (
-            establishment_id not in survey.establishment_ids
-        ):
-            raise InvalidSurveyResponseError(
-                "Establishment is outside this survey's audience."
+        """Reject establishment-based filters on a survey with no establishments."""
+        if survey.response_target == SurveyResponseTarget.ESTABLISHMENT:
+            return
+        if establishment_id is not None:
+            raise InvalidListingFilterError(
+                "The establishment filter only applies to surveys targeted at "
+                "establishments."
+            )
+        if city or province:
+            raise InvalidListingFilterError(
+                "City and province filters only apply to surveys targeted at "
+                "establishments."
             )
 
     @staticmethod
@@ -136,6 +165,55 @@ class SurveyResponseService:
             raise SurveyResponseNotFoundError(str(response_id))
         return response
 
+    async def _get_subject_or_raise(self, subject_id: UUID) -> Subject:
+        subject = await self.uow.subject_repo.get_by_id(subject_id)
+        if subject is None:
+            raise SubjectNotFoundError(str(subject_id))
+        return subject
+
+    @staticmethod
+    def _target_conflict_error(
+        existing: SurveyResponse,
+    ) -> SurveyResponseAlreadyExistsError:
+        """Build the 409 naming the response already recorded for a target.
+
+        Serialized here because the RFC 7807 handler passes extensions straight
+        to JSONResponse, which cannot encode a raw UUID or datetime.
+        """
+        return SurveyResponseAlreadyExistsError(
+            ExistingResponseRef(
+                id=existing.id,
+                submitted_by=UserRefResponse(
+                    id=existing.submitted_by.id, name=existing.submitted_by.name
+                ),
+                event_at=existing.event_at,
+            ).model_dump(mode="json")
+        )
+
+    async def _raise_if_target_answered(
+        self,
+        survey_id: UUID,
+        subject_id: UUID | None,
+        establishment_id: UUID | None,
+    ) -> None:
+        """Raise the 409 if this survey's target has already answered it."""
+        if subject_id is None and establishment_id is None:
+            return
+        existing = await self.uow.survey_response_repo.get_by_target(
+            survey_id, subject_id=subject_id, establishment_id=establishment_id
+        )
+        if existing is not None:
+            raise self._target_conflict_error(existing)
+
+    @staticmethod
+    def _replayed(existing: SurveyResponse, survey_id: UUID) -> SurveyResponseDomain:
+        """Return a replayed response, rejecting an id reused across surveys."""
+        if existing.survey_id != survey_id:
+            raise InvalidSurveyResponseError(
+                "This response id already belongs to a different survey."
+            )
+        return SurveyResponseDomain.from_db(existing)
+
     async def get(self, response_id: UUID, actor: UserActor) -> SurveyResponseDomain:
         """Return a response's full detail, including its answers.
 
@@ -156,27 +234,33 @@ class SurveyResponseService:
         """Idempotently register a survey response.
 
         Returns (response, created): created is False when replaying an existing
-        id, True for a new response. Permission checks apply even on replay,
-        against the existing response's establishment.
+        id, True for a new response. The id is checked before the
+        one-response-per-target rule, so a retried sync never conflicts with
+        itself.
 
         Raises:
-            ForbiddenError: role can't submit, or lacks establishment access.
-            SurveyNotFoundError / EstablishmentNotFoundError.
-            InvalidSurveyResponseError: establishment outside survey audience,
-                or answers fail validation.
+            ForbiddenError: role can't submit.
+            SurveyNotFoundError / EstablishmentNotFoundError / SubjectNotFoundError.
+            InvalidSurveyResponseError: payload names an entity that does not
+                match the survey's response target, answers fail validation, or
+                the replayed id belongs to a different survey.
+            SurveyResponseAlreadyExistsError: this subject or establishment has
+                already answered this survey.
         """
         self._assert_can_submit(actor)
 
         if data.id is not None:
             existing = await self.uow.survey_response_repo.get_by_id(data.id)
             if existing is not None:
-                await self._check_establishment_access(actor, existing.establishment_id)
-                return SurveyResponseDomain.from_db(existing), False
+                return self._replayed(existing, survey_id), False
 
         survey = await self._get_survey_or_raise(survey_id)
-        await self.uow.establishment_repo.get_by_id_or_raise(data.establishment_id)
-        await self._check_establishment_access(actor, data.establishment_id)
-        self._assert_establishment_in_survey_scope(survey, data.establishment_id)
+        subject_id, establishment_id = self._resolve_target(survey, data)
+        if establishment_id is not None:
+            await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
+        if subject_id is not None:
+            await self._get_subject_or_raise(subject_id)
+        await self._raise_if_target_answered(survey_id, subject_id, establishment_id)
         answers = self._validate_answers(survey.questions, data.answers)
         score_fies = self._calculate_fies_score(survey, answers)
 
@@ -184,17 +268,27 @@ class SurveyResponseService:
             response = await self.uow.survey_response_repo.create(
                 id=data.id,
                 survey_id=survey_id,
-                establishment_id=data.establishment_id,
+                subject_id=subject_id,
+                establishment_id=establishment_id,
                 submitted_by_id=actor.user_id,
                 answers=answers,
                 score_fies=score_fies,
                 event_at=data.event_at,
             )
-        except UniqueConstraintError:
+        except UniqueConstraintError as error:
+            # A target collision is a real conflict; an id collision is a raced
+            # replay. They take different paths.
+            if error.field in {"subject_id", "establishment_id"}:
+                await self._raise_if_target_answered(
+                    survey_id, subject_id, establishment_id
+                )
+                raise InvalidSurveyResponseError(
+                    "This survey has already been answered for that target."
+                )
             if data.id is not None:
                 raced = await self.uow.survey_response_repo.get_by_id(data.id)
                 if raced is not None:
-                    return SurveyResponseDomain.from_db(raced), False
+                    return self._replayed(raced, survey_id), False
             raise
 
         await self.uow.survey_repo.increment_response_count(survey.id)
@@ -262,10 +356,18 @@ class SurveyResponseService:
         Raises:
             ForbiddenError: actor role isn't a dashboard reader.
             SurveyNotFoundError.
+            InvalidListingFilterError: an establishment, city or province filter
+                was applied to a survey whose responses carry no establishment.
         """
         if actor.role not in _DASHBOARD_ROLES:
             raise ForbiddenError()
-        await self._get_survey_or_raise(survey_id)
+        survey = await self._get_survey_or_raise(survey_id)
+        self._assert_establishment_filters_applicable(
+            survey,
+            establishment_id=params.establishment_id,
+            city=params.city,
+            province=params.province,
+        )
 
         page = max(1, page)
         offset = (page - 1) * page_size
@@ -334,10 +436,15 @@ class SurveyResponseService:
         Raises:
             ForbiddenError: actor role isn't a dashboard reader.
             SurveyNotFoundError.
+            InvalidListingFilterError: an establishment filter was applied to a
+                survey whose responses carry no establishment.
         """
         if actor.role not in _DASHBOARD_ROLES:
             raise ForbiddenError()
         survey = await self._get_survey_or_raise(survey_id)
+        self._assert_establishment_filters_applicable(
+            survey, establishment_id=establishment_id
+        )
 
         responses = await self.uow.survey_response_repo.list_all_for_export(
             survey_id, establishment_id

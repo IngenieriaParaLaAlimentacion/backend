@@ -1,5 +1,6 @@
 import os
 import uuid
+from datetime import date
 
 import pytest
 import pytest_asyncio
@@ -16,6 +17,7 @@ from app.domain.establishment import UserEstablishmentStatus
 from app.domain.user import UserRole, UserStatus
 from app.models.base import Base
 from app.models.establishment import Establishment
+from app.models.subject import Sex, Subject
 from app.models.user import User
 from app.models.user_establishment import UserEstablishment
 from app.models.user_password import UserPassword
@@ -172,6 +174,25 @@ async def db_establishment():
         await session.commit()
         await session.refresh(establishment)
         return establishment
+
+
+@pytest_asyncio.fixture()
+async def db_subject():
+    """Insert a real Subject row and return the ORM instance."""
+    from app.db.database import AsyncSessionLocal
+
+    async with AsyncSessionLocal() as session:
+        subject = Subject(
+            dni=30111222,
+            sex=Sex.FEMALE,
+            name="María",
+            last_name="Gómez",
+            birth_date=date(1990, 5, 2),
+        )
+        session.add(subject)
+        await session.commit()
+        await session.refresh(subject)
+        return subject
 
 
 @pytest_asyncio.fixture()

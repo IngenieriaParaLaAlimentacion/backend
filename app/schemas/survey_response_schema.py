@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.domain.survey import ResponseType
 from app.schemas.common_schemas import IdentifierRefSchema
-from app.schemas.measurement_schema import EstablishmentRefResponse
+from app.schemas.measurement_schema import EstablishmentRefResponse, SubjectRefResponse
 from app.utils.dates import is_future_date
 
 AnswerValue = str | int | float | list[str]
@@ -27,7 +27,18 @@ class SurveyResponseRequest(BaseModel):
             "the same id are idempotent. When omitted, the server generates one."
         ),
     )
-    establishment_id: UUID
+    subject_id: UUID | None = Field(
+        default=None,
+        description=("Required when the survey targets subjects, forbidden otherwise."),
+    )
+    establishment_id: UUID | None = Field(
+        default=None,
+        description=(
+            "Required when the survey targets establishments, forbidden "
+            "otherwise. Any establishment is accepted — it records who "
+            "answered, not who is allowed to."
+        ),
+    )
     answers: dict[str, AnswerValue]
     event_at: datetime = Field(
         description=(
@@ -45,6 +56,15 @@ class SurveyRefResponse(IdentifierRefSchema):
 
 class UserRefResponse(IdentifierRefSchema):
     pass
+
+
+class ExistingResponseRef(BaseModel):
+    """The response already recorded for a target, returned in the 409 body
+    as the ``existing_response`` member."""
+
+    id: UUID
+    submitted_by: UserRefResponse
+    event_at: datetime
 
 
 class SurveyResponseEditRequest(BaseModel):
@@ -72,7 +92,8 @@ class SurveyResponseResponse(BaseModel):
 
     id: UUID
     survey_id: UUID
-    establishment_id: UUID
+    subject_id: UUID | None
+    establishment_id: UUID | None
     submitted_by_id: UUID
     answers: dict[str, Any]
     score_fies: int | None
@@ -89,7 +110,8 @@ class SurveyResponseListItem(BaseModel):
     id: UUID
     event_at: datetime
     survey: SurveyRefResponse
-    establishment: EstablishmentRefResponse
+    establishment: EstablishmentRefResponse | None
+    subject: SubjectRefResponse | None
 
 
 class SurveyResponseDashboardItem(BaseModel):
@@ -100,7 +122,8 @@ class SurveyResponseDashboardItem(BaseModel):
     id: UUID
     event_at: datetime
     survey: SurveyRefResponse
-    establishment: EstablishmentRefResponse
+    establishment: EstablishmentRefResponse | None
+    subject: SubjectRefResponse | None
     submitted_by: UserRefResponse
     score_fies: int | None
 
@@ -124,7 +147,8 @@ class SurveyResponseDetailResponse(BaseModel):
     id: UUID
     event_at: datetime
     survey: SurveyRefResponse
-    establishment: EstablishmentRefResponse
+    establishment: EstablishmentRefResponse | None
+    subject: SubjectRefResponse | None
     submitted_by: UserRefResponse
     score_fies: int | None
     answers: list[QuestionAnswerResponse]

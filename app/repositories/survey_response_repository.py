@@ -17,6 +17,28 @@ from app.models.establishment import Establishment
 from app.models.survey import Survey
 from app.models.survey_response import SurveyResponse
 
+_CONSTRAINT_FIELDS = {
+    "uq_survey_responses_survey_establishment": "establishment_id",
+    "uq_survey_responses_survey_subject": "subject_id",
+}
+
+
+def _violated_constraint(error: IntegrityError) -> str | None:
+    """Return the name of the constraint Postgres rejected the write on.
+
+    asyncpg carries it on the ``UniqueViolationError`` at ``orig.__cause__``,
+    psycopg2 under ``orig.diag``.
+    """
+    for candidate in (error.orig, getattr(error.orig, "__cause__", None)):
+        if candidate is None:
+            continue
+        name = getattr(candidate, "constraint_name", None) or getattr(
+            getattr(candidate, "diag", None), "constraint_name", None
+        )
+        if name:
+            return name
+    return None
+
 
 class SurveyResponseRepository:
     """Persistence operations for SurveyResponse entities."""
@@ -30,6 +52,7 @@ class SurveyResponseRepository:
         return (
             selectinload(SurveyResponse.survey).selectinload(Survey.questions),
             selectinload(SurveyResponse.establishment),
+            selectinload(SurveyResponse.subject),
             selectinload(SurveyResponse.submitted_by),
         )
 
@@ -78,15 +101,23 @@ class SurveyResponseRepository:
         *,
         id: UUID | None,
         survey_id: UUID,
-        establishment_id: UUID,
+        subject_id: UUID | None,
+        establishment_id: UUID | None,
         submitted_by_id: UUID,
         answers: dict,
         score_fies: int | None,
         event_at: datetime,
     ) -> SurveyResponse:
-        """Persist a new response inside a SAVEPOINT."""
+        """Persist a new response inside a SAVEPOINT.
+
+        Raises:
+            UniqueConstraintError: ``field`` names what collided — ``id`` for a
+                replayed primary key, ``subject_id`` / ``establishment_id`` when
+                the target already answered this survey.
+        """
         fields = dict(
             survey_id=survey_id,
+            subject_id=subject_id,
             establishment_id=establishment_id,
             submitted_by_id=submitted_by_id,
             answers=answers,
@@ -101,11 +132,38 @@ class SurveyResponseRepository:
             async with self.db.begin_nested():
                 self.db.add(response)
                 await self.db.flush()
-        except IntegrityError:
-            raise UniqueConstraintError("id", id)
+        except IntegrityError as error:
+            field = _CONSTRAINT_FIELDS.get(_violated_constraint(error), "id")
+            raise UniqueConstraintError(field, fields.get(field, id))
 
         await self.db.refresh(response)
         return response
+
+    async def get_by_target(
+        self,
+        survey_id: UUID,
+        *,
+        subject_id: UUID | None,
+        establishment_id: UUID | None,
+    ) -> SurveyResponse | None:
+        """Return the response already recorded for this survey's target, if any.
+
+        An anonymous response has no target, so None is returned without querying.
+        """
+        conditions = [SurveyResponse.survey_id == survey_id]
+        if subject_id is not None:
+            conditions.append(SurveyResponse.subject_id == subject_id)
+        elif establishment_id is not None:
+            conditions.append(SurveyResponse.establishment_id == establishment_id)
+        else:
+            return None
+
+        query = (
+            select(SurveyResponse)
+            .where(*conditions)
+            .options(selectinload(SurveyResponse.submitted_by))
+        )
+        return (await self.db.execute(query)).scalar_one_or_none()
 
     async def update_answers(
         self,
@@ -176,6 +234,7 @@ class SurveyResponseRepository:
             rows_query.options(
                 selectinload(SurveyResponse.survey),
                 selectinload(SurveyResponse.establishment),
+                selectinload(SurveyResponse.subject),
                 selectinload(SurveyResponse.submitted_by),
             )
             .order_by(SurveyResponse.event_at.desc())

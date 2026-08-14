@@ -143,6 +143,7 @@ class ActivityRepository:
             .options(
                 selectinload(SurveyResponse.survey),
                 selectinload(SurveyResponse.establishment),
+                selectinload(SurveyResponse.subject),
             )
             .where(SurveyResponse.id.in_(response_ids))
         )
