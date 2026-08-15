@@ -1,3 +1,4 @@
+import os
 import uuid
 from unittest.mock import AsyncMock, MagicMock
 
@@ -5,6 +6,8 @@ import pytest
 
 from app.exceptions.domain_exceptions import EstablishmentNotFoundError
 from app.models import UserRole, UserStatus
+
+os.environ.setdefault("OTEL_SDK_DISABLED", "true")
 
 
 @pytest.fixture
