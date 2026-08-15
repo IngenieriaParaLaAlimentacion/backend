@@ -180,14 +180,24 @@ class AdminService:
     async def approve_establishments(
         self, user_id: UUID, establishment_ids: list[UUID]
     ) -> None:
-        """Approve access to the given establishments and activate the field worker."""
+        """Approve access to the given establishments.
+
+        Raises:
+            UserNotFoundError: If the user does not exist.
+            BadRequestError: If the user's account is not active yet.
+        """
+        user = await self._get_verified_user(user_id)
+        if user.status != UserStatus.ACTIVE:
+            raise BadRequestError(
+                "User is not active",
+                "Only active users can be granted access to establishments.",
+            )
+
         await self._set_user_establishment_relation_status(
             user_id, establishment_ids, UserEstablishmentStatus.APPROVED
         )
-        await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
         await self.uow.commit()
 
-        user = await self.uow.user_repo.get_by_id(user_id)
         establishments = await self.uow.establishment_repo.find_by_ids(
             establishment_ids
         )
@@ -205,17 +215,20 @@ class AdminService:
         )
         await self.uow.commit()
 
-    async def approve_field_worker(self, user_id: UUID) -> None:
-        """Accept a field worker's account, leaving establishments untouched.
+    async def approve_field_worker(
+        self, user_id: UUID, establishment_ids: list[UUID]
+    ) -> None:
+        """Accept a field worker's request and approve the selected establishments.
 
-        Account access no longer depends on establishments: the requests stay
-        pending and are resolved separately through approve_establishments or
-        reject_establishments.
+        ``establishment_ids`` may be empty: the account is activated and every
+        establishment request stays pending.
 
         Raises:
             UserNotFoundError: If the user does not exist.
             BadRequestError: If the user is not a field worker, or is not in
                 pending status.
+            UserEstablishmentNotFoundError: If an establishment was not
+                requested by this field worker.
         """
         user = await self._get_verified_user(user_id)
         if user.role != UserRole.FIELD_WORKER:
@@ -231,7 +244,22 @@ class AdminService:
             )
 
         await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
+        if establishment_ids:
+            await self._set_user_establishment_relation_status(
+                user_id, establishment_ids, UserEstablishmentStatus.APPROVED
+            )
         await self.uow.commit()
+
+        if not establishment_ids:
+            return
+
+        establishments = await self.uow.establishment_repo.find_by_ids(
+            establishment_ids
+        )
+        await send_access_granted_email(
+            user.email,
+            [e.name for e in establishments],
+        )
 
     async def reject_field_worker(self, user_id: UUID) -> None:
         """Reject all establishment access for the given field worker and

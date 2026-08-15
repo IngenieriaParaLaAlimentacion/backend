@@ -50,6 +50,7 @@ async def _make_reject_request(client, *, headers=None):
 async def _make_approve_field_worker_request(client, *, headers=None):
     return await client.patch(
         APPROVE_FIELD_WORKER_URL.format(user_id=uuid.uuid4()),
+        json={"establishment_ids": []},
         headers=headers or {},
     )
 
@@ -130,6 +131,19 @@ async def registered_field_worker(client, db_establishment):
         user.is_email_verified = True
         await session.commit()
     return user_data
+
+
+@pytest_asyncio.fixture
+async def accepted_field_worker(client, admin_headers, registered_field_worker):
+    """Register a field worker and accept their account without approving any
+    establishment, leaving every request pending."""
+    response = await client.patch(
+        APPROVE_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"]),
+        json={"establishment_ids": []},
+        headers=admin_headers,
+    )
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    return registered_field_worker
 
 
 @pytest_asyncio.fixture
@@ -507,11 +521,12 @@ class TestListUsersPagination:
         self, client, admin_headers, registered_field_worker, db_establishment
     ):
         """A field worker already approved (active) should not appear as pending."""
-        await client.patch(
-            APPROVE_URL.format(user_id=registered_field_worker["id"]),
+        approve = await client.patch(
+            APPROVE_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"]),
             json={"establishment_ids": [str(db_establishment.id)]},
             headers=admin_headers,
         )
+        assert approve.status_code == status.HTTP_204_NO_CONTENT
 
         response = await client.get(
             f"{ADMIN_USERS_URL}?role={UserRole.FIELD_WORKER.value}"
@@ -550,10 +565,10 @@ class TestListUsersPagination:
 
 class TestApproveEstablishments:
     async def test_returns_no_content(
-        self, client, admin_headers, registered_field_worker, db_establishment
+        self, client, admin_headers, accepted_field_worker, db_establishment
     ):
         """Should return 204 on successful approval."""
-        url = APPROVE_URL.format(user_id=registered_field_worker["id"])
+        url = APPROVE_URL.format(user_id=accepted_field_worker["id"])
         response = await client.patch(
             url,
             json={"establishment_ids": [str(db_establishment.id)]},
@@ -561,11 +576,23 @@ class TestApproveEstablishments:
         )
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
-    async def test_idempotent_when_called_twice(
+    async def test_pending_account_returns_400(
         self, client, admin_headers, registered_field_worker, db_establishment
     ):
-        """Calling approve twice should return 204 both times."""
+        """Establishment access requires an already-accepted account."""
         url = APPROVE_URL.format(user_id=registered_field_worker["id"])
+        response = await client.patch(
+            url,
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    async def test_idempotent_when_called_twice(
+        self, client, admin_headers, accepted_field_worker, db_establishment
+    ):
+        """Calling approve twice should return 204 both times."""
+        url = APPROVE_URL.format(user_id=accepted_field_worker["id"])
         body = {"establishment_ids": [str(db_establishment.id)]}
 
         first = await client.patch(url, json=body, headers=admin_headers)
@@ -585,11 +612,11 @@ class TestApproveEstablishments:
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     async def test_establishment_not_associated_with_field_worker(
-        self, client, admin_headers, registered_field_worker
+        self, client, admin_headers, accepted_field_worker
     ):
         """Should return 404 if an establishment ID is not linked to
         this field worker."""
-        url = APPROVE_URL.format(user_id=registered_field_worker["id"])
+        url = APPROVE_URL.format(user_id=accepted_field_worker["id"])
         response = await client.patch(
             url,
             json={"establishment_ids": [str(uuid.uuid4())]},
@@ -729,7 +756,9 @@ class TestApproveFieldWorker:
     ):
         """Should return 204 without a body."""
         url = APPROVE_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"])
-        response = await client.patch(url, headers=admin_headers)
+        response = await client.patch(
+            url, json={"establishment_ids": []}, headers=admin_headers
+        )
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
     async def test_field_worker_status_becomes_active(
@@ -737,19 +766,25 @@ class TestApproveFieldWorker:
     ):
         """The account should be usable after approval."""
         url = APPROVE_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"])
-        await client.patch(url, headers=admin_headers)
+        response = await client.patch(
+            url, json={"establishment_ids": []}, headers=admin_headers
+        )
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
         async with db_module.AsyncSessionLocal() as session:
             user = await session.get(User, registered_field_worker["id"])
 
         assert user.status == UserStatus.ACTIVE
 
-    async def test_establishment_requests_stay_pending(
+    async def test_empty_selection_leaves_requests_pending(
         self, client, admin_headers, registered_field_worker, db_establishment
     ):
-        """Accepting the user must not resolve their establishment requests."""
+        """Approving with an empty selection must not resolve any request."""
         url = APPROVE_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"])
-        await client.patch(url, headers=admin_headers)
+        response = await client.patch(
+            url, json={"establishment_ids": []}, headers=admin_headers
+        )
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
         async with db_module.AsyncSessionLocal() as session:
             result = await session.execute(
@@ -766,9 +801,12 @@ class TestApproveFieldWorker:
     ):
         """The establishment flow keeps working once the user is accepted."""
         user_id = registered_field_worker["id"]
-        await client.patch(
-            APPROVE_FIELD_WORKER_URL.format(user_id=user_id), headers=admin_headers
+        accepted = await client.patch(
+            APPROVE_FIELD_WORKER_URL.format(user_id=user_id),
+            json={"establishment_ids": []},
+            headers=admin_headers,
         )
+        assert accepted.status_code == status.HTTP_204_NO_CONTENT
 
         response = await client.patch(
             APPROVE_URL.format(user_id=user_id),
@@ -793,17 +831,82 @@ class TestApproveFieldWorker:
         )
         url = APPROVE_FIELD_WORKER_URL.format(user_id=user_id)
 
-        response = await client.patch(url, headers=admin_headers)
+        response = await client.patch(
+            url, json={"establishment_ids": []}, headers=admin_headers
+        )
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
         async with db_module.AsyncSessionLocal() as session:
             user = await session.get(User, user_id)
         assert user.status == UserStatus.ACTIVE
 
+    async def test_approves_only_the_selected_establishments(
+        self, client, admin_headers, db_establishment, db_establishment_2
+    ):
+        """The admin accepts the account and picks a subset; the rest stay
+        pending for a later decision."""
+        register = await client.post(
+            REGISTER_FIELD_WORKER_URL,
+            json={
+                "email": f"field_worker_{uuid.uuid4().hex[:6]}@test.com",
+                "password": "Password123!",
+                "name": "Test",
+                "last_name": "Field Worker",
+                "establishments": [
+                    str(db_establishment.id),
+                    str(db_establishment_2.id),
+                ],
+            },
+        )
+        assert register.status_code == status.HTTP_201_CREATED
+        user_id = register.json()["id"]
+        async with db_module.AsyncSessionLocal() as session:
+            user = await session.get(User, user_id)
+            user.is_email_verified = True
+            await session.commit()
+
+        response = await client.patch(
+            APPROVE_FIELD_WORKER_URL.format(user_id=user_id),
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(UserEstablishment).where(
+                    UserEstablishment.user_id == uuid.UUID(user_id)
+                )
+            )
+            by_establishment = {
+                r.establishment_id: r.status.value for r in result.scalars()
+            }
+
+        assert by_establishment[db_establishment.id] == "approved"
+        assert by_establishment[db_establishment_2.id] == "pending"
+
+    async def test_unrequested_establishment_returns_404(
+        self, client, admin_headers, registered_field_worker
+    ):
+        """The admin cannot approve an establishment the worker never asked for."""
+        url = APPROVE_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"])
+        response = await client.patch(
+            url,
+            json={"establishment_ids": [str(uuid.uuid4())]},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        async with db_module.AsyncSessionLocal() as session:
+            user = await session.get(User, registered_field_worker["id"])
+        assert user.status == UserStatus.PENDING_VALIDATION
+
     async def test_user_not_found_returns_404(self, client, admin_headers):
         """Should return 404 if the field worker does not exist."""
         url = APPROVE_FIELD_WORKER_URL.format(user_id=uuid.uuid4())
-        response = await client.patch(url, headers=admin_headers)
+        response = await client.patch(
+            url, json={"establishment_ids": []}, headers=admin_headers
+        )
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     async def test_registers_without_establishments_then_gets_approved(
@@ -823,7 +926,9 @@ class TestApproveFieldWorker:
         user_id = register_response.json()["id"]
 
         response = await client.patch(
-            APPROVE_FIELD_WORKER_URL.format(user_id=user_id), headers=admin_headers
+            APPROVE_FIELD_WORKER_URL.format(user_id=user_id),
+            json={"establishment_ids": []},
+            headers=admin_headers,
         )
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
@@ -836,7 +941,9 @@ class TestApproveFieldWorker:
         user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
         url = APPROVE_FIELD_WORKER_URL.format(user_id=user_id)
 
-        response = await client.patch(url, headers=admin_headers)
+        response = await client.patch(
+            url, json={"establishment_ids": []}, headers=admin_headers
+        )
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
@@ -845,7 +952,9 @@ class TestApproveFieldWorker:
         user_id = await _insert_user(UserRole.ADMIN, UserStatus.PENDING_VALIDATION)
         url = APPROVE_FIELD_WORKER_URL.format(user_id=user_id)
 
-        response = await client.patch(url, headers=admin_headers)
+        response = await client.patch(
+            url, json={"establishment_ids": []}, headers=admin_headers
+        )
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         async with db_module.AsyncSessionLocal() as session:

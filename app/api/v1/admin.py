@@ -15,6 +15,7 @@ from app.schemas.admin_schema import (
     InviteAdminRequest,
     InviteUserResponse,
     PaginatedUsersResponse,
+    UserAccessRequest,
 )
 from app.services.admin_service import AdminService
 
@@ -54,11 +55,10 @@ async def list_users(
     "/field-worker/{user_id}/establishments/approve",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Approve establishment access for a field worker",
-    description="Approves the given establishments for the field worker and "
-    "activates the field worker's account. Accessible by admins only.",
+    description="Approves the given establishments for an active field worker.",
     responses={
         status.HTTP_400_BAD_REQUEST: {
-            "description": "Target user is not a field worker"
+            "description": "Target user's account is not active"
         },
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {
@@ -105,22 +105,29 @@ async def reject_establishments(
 @router.patch(
     "/field-worker/{user_id}/approve",
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Accept a field worker",
-    description="Activates the field worker's account. Accessible by admins only.",
+    summary="Accept a field worker and the selected establishments",
+    description="Activates the field worker's account and approves the given "
+    "establishments. `establishment_ids` may be empty, in which case the "
+    "account is activated and every establishment request stays pending. ",
     responses={
         status.HTTP_400_BAD_REQUEST: {
             "description": "Target user is not a field worker, or is not pending"
         },
         **AUTH_RESPONSES,
-        status.HTTP_404_NOT_FOUND: {"description": "Field worker not found"},
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Field worker not found, or an establishment was not "
+            "requested by this field worker"
+        },
     },
 )
 async def approve_field_worker(
     user_id: UUID,
+    data: UserAccessRequest,
     _admin: UserActor = Depends(get_current_admin),
     service: AdminService = Depends(get_admin_service),
 ) -> Response:
-    await service.approve_field_worker(user_id)
+    await service.approve_field_worker(user_id, data.establishment_ids)
+
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

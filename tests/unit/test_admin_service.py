@@ -276,9 +276,28 @@ class TestGetPaginatedUsers:
 
 class TestApproveEstablishments:
     @pytest.mark.asyncio
-    async def test_sets_user_status_to_active(
+    async def test_approves_relations_without_touching_user_status(
         self, make_establishment, mock_auth_service
     ):
+        """Granting establishment access must not change the account status."""
+        user = _make_user(role=UserRole.FIELD_WORKER, status=UserStatus.ACTIVE)
+        estab = make_establishment()
+        uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
+        service = AdminService(uow, mock_auth_service)
+
+        await service.approve_establishments(user.id, [estab.id])
+
+        uow.user_repo.update_status.assert_not_called()
+        uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
+            user.id, [estab.id], UserEstablishmentStatus.APPROVED
+        )
+        uow.commit.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_pending_user_raises_error(
+        self, make_establishment, mock_auth_service
+    ):
+        """Establishment access can only be granted once the account is active."""
         user = _make_user(
             role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
         )
@@ -286,13 +305,11 @@ class TestApproveEstablishments:
         uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
         service = AdminService(uow, mock_auth_service)
 
-        await service.approve_establishments(user.id, [estab.id])
+        with pytest.raises(BadRequestError):
+            await service.approve_establishments(user.id, [estab.id])
 
-        uow.user_repo.update_status.assert_called_once_with(user.id, UserStatus.ACTIVE)
-        uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
-            user.id, [estab.id], UserEstablishmentStatus.APPROVED
-        )
-        uow.commit.assert_called_once()
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.commit.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_user_not_found_raises_error(self, mock_auth_service):
@@ -320,7 +337,7 @@ class TestApproveEstablishments:
     ):
         user = _make_user(
             role=UserRole.FIELD_WORKER,
-            status=UserStatus.PENDING_VALIDATION,
+            status=UserStatus.ACTIVE,
             email="worker@test.com",
         )
         estab1 = make_establishment(name="Centro A")
@@ -342,9 +359,7 @@ class TestApproveEstablishments:
 
     @pytest.mark.asyncio
     async def test_email_sent_after_commit(self, make_establishment, mock_auth_service):
-        user = _make_user(
-            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
-        )
+        user = _make_user(role=UserRole.FIELD_WORKER, status=UserStatus.ACTIVE)
         estab = make_establishment()
         uow = _make_approve_uow(
             user=user,
@@ -473,13 +488,13 @@ class TestApproveFieldWorker:
         service = AdminService(uow, mock_auth_service)
 
         with pytest.raises(UserNotFoundError):
-            await service.approve_field_worker(uuid.uuid4())
+            await service.approve_field_worker(uuid.uuid4(), [])
 
     @pytest.mark.asyncio
-    async def test_activates_user_without_touching_establishments(
+    async def test_approves_only_the_selected_establishments(
         self, make_establishment, mock_auth_service
     ):
-        """Accepting the user must leave the establishment requests alone."""
+        """The admin picks a subset; unselected requests stay pending."""
         user = _make_user(
             role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
         )
@@ -488,14 +503,45 @@ class TestApproveFieldWorker:
         uow = _make_approve_uow(
             user=user,
             relations=[_make_relation(estab1.id), _make_relation(estab2.id)],
+            establishments=[estab1],
         )
         service = AdminService(uow, mock_auth_service)
 
-        await service.approve_field_worker(user.id)
+        with patch(
+            "app.services.admin_service.send_access_granted_email",
+            new_callable=AsyncMock,
+        ):
+            await service.approve_field_worker(user.id, [estab1.id])
 
-        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
         uow.user_repo.update_status.assert_called_once_with(user.id, UserStatus.ACTIVE)
+        uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
+            user.id, [estab1.id], UserEstablishmentStatus.APPROVED
+        )
         uow.commit.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_empty_selection_activates_and_leaves_requests_pending(
+        self, make_establishment, mock_auth_service
+    ):
+        """Selecting nothing is valid: the account opens, requests stay pending
+        and no access-granted email goes out."""
+        user = _make_user(
+            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
+        )
+        estab = make_establishment()
+        uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
+        service = AdminService(uow, mock_auth_service)
+
+        with patch(
+            "app.services.admin_service.send_access_granted_email",
+            new_callable=AsyncMock,
+        ) as mock_email:
+            await service.approve_field_worker(user.id, [])
+
+        uow.user_repo.update_status.assert_called_once_with(user.id, UserStatus.ACTIVE)
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.commit.assert_called_once()
+        mock_email.assert_not_awaited()
 
     @pytest.mark.asyncio
     async def test_no_establishments_still_activates(self, mock_auth_service):
@@ -506,10 +552,27 @@ class TestApproveFieldWorker:
         uow = _make_approve_uow(user=user, relations=[])
         service = AdminService(uow, mock_auth_service)
 
-        await service.approve_field_worker(user.id)
+        await service.approve_field_worker(user.id, [])
 
         uow.user_establishment_repo.update_status_for_ids.assert_not_called()
         uow.user_repo.update_status.assert_called_once_with(user.id, UserStatus.ACTIVE)
+
+    @pytest.mark.asyncio
+    async def test_unrequested_establishment_raises_error(
+        self, make_establishment, mock_auth_service
+    ):
+        """The admin cannot approve an establishment the worker never asked for."""
+        user = _make_user(
+            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
+        )
+        estab = make_establishment()
+        uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
+        service = AdminService(uow, mock_auth_service)
+
+        with pytest.raises(UserEstablishmentNotFoundError):
+            await service.approve_field_worker(user.id, [uuid.uuid4()])
+
+        uow.commit.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_non_field_worker_raises_error(self, mock_auth_service):
@@ -519,7 +582,7 @@ class TestApproveFieldWorker:
         service = AdminService(uow, mock_auth_service)
 
         with pytest.raises(BadRequestError):
-            await service.approve_field_worker(user.id)
+            await service.approve_field_worker(user.id, [])
 
         uow.user_repo.update_status.assert_not_called()
         uow.commit.assert_not_called()
@@ -532,7 +595,7 @@ class TestApproveFieldWorker:
         service = AdminService(uow, mock_auth_service)
 
         with pytest.raises(BadRequestError):
-            await service.approve_field_worker(user.id)
+            await service.approve_field_worker(user.id, [])
 
         uow.user_repo.update_status.assert_not_called()
 
