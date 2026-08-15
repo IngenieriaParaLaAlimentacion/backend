@@ -33,7 +33,7 @@ from app.domain.survey_response import (
 )
 from app.exceptions.domain_exceptions import InvalidListingFilterError
 
-AUTH_RESPONSES = {
+AUTH_RESPONSES: dict[int | str, dict[str, str]] = {
     status.HTTP_401_UNAUTHORIZED: {
         "description": "Missing or invalid authentication token"
     },
