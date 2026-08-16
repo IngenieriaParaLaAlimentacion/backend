@@ -17,7 +17,7 @@ class TestSubjectEventLog:
 
         from app.db.database import AsyncSessionLocal
         from app.domain.subject_event import SubjectEventType
-        from app.models.subject_event import SubjectEvent
+        from app.models.subjects.subject_event import SubjectEvent
 
         response = await _upload(client, field_worker_headers)
         assert response.status_code == status.HTTP_201_CREATED
@@ -41,7 +41,7 @@ class TestSubjectEventLog:
         from sqlalchemy import select
 
         from app.db.database import AsyncSessionLocal
-        from app.models.subject_event import SubjectEvent
+        from app.models.subjects.subject_event import SubjectEvent
 
         await _upload(client, field_worker_headers)
         response = await _upload(client, field_worker_headers)
@@ -58,7 +58,7 @@ class TestSubjectEventLog:
         from sqlalchemy import select
 
         from app.db.database import AsyncSessionLocal
-        from app.models.subject_event import SubjectEvent
+        from app.models.subjects.subject_event import SubjectEvent
 
         subject_id = uuid.uuid4()
         await _upload_with_id(client, field_worker_headers, subject_id)

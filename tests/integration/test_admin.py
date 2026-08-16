@@ -10,8 +10,8 @@ from sqlalchemy import select
 import app.db.database as db_module
 from app.core.security import create_access_token
 from app.domain.user import UserRole, UserStatus
-from app.models.user import User
-from app.models.user_establishment import UserEstablishment
+from app.models.auth.user import User
+from app.models.auth.user_establishment import UserEstablishment
 
 pytestmark = pytest.mark.asyncio
 
@@ -78,7 +78,7 @@ def any_admin_request(request):
 async def db_establishment_2(app):
     """Insert a second Establishment row and return the ORM instance."""
     from app.db.database import AsyncSessionLocal
-    from app.models.establishment import Establishment
+    from app.models.establishments.establishment import Establishment
 
     async with AsyncSessionLocal() as session:
         establishment = Establishment(

@@ -22,7 +22,7 @@ Sources:
 """
 
 from app.domain.survey import ResponseType, SurveyScope
-from app.schemas.survey_schema import (
+from app.schemas.surveys.survey_schema import (
     SurveyTemplateResponse,
     TemplateOption,
     TemplateQuestion,

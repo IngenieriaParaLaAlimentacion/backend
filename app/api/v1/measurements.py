@@ -5,22 +5,21 @@ from app.api.v1.params import (
     MeasurementListingQuery,
     PaginatedQueryParams,
 )
-from app.core.dependencies import get_measurement_service, require_any, require_some
+from app.core.dependencies import (
+    get_measurement_service,
+    require_admin_or_analyst,
+    require_any,
+)
 from app.domain import UserActor
-from app.domain.user import UserRole
-from app.schemas.measurement_schema import (
+from app.schemas.measurements.measurement_schema import (
     MeasurementListItem,
     MeasurementRequest,
     MeasurementResponse,
 )
 from app.schemas.pagination import PaginatedResponse
-from app.services.measurement_service import MeasurementService
+from app.services.measurements.measurement_service import MeasurementService
 
 router = APIRouter(prefix="/measurements")
-
-require_admin_or_analyst = require_some(
-    UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN
-)
 
 
 @router.post(

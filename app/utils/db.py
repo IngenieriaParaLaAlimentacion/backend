@@ -1,4 +1,7 @@
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.exceptions.domain_exceptions import UniqueConstraintError
 
 
 def escape_like(term: str) -> str:
@@ -28,3 +31,23 @@ async def execute_paginated(
     total = (await db.execute(count_query)).scalar_one()
     items = (await db.execute(paginated)).scalars().all()
     return items, total
+
+
+async def insert_with_savepoint(db: AsyncSession, entity, field: str, value) -> object:
+    """Insert ``entity`` inside a SAVEPOINT, mapping unique violations.
+
+    The SAVEPOINT rolls back only the failed row, leaving the session usable
+    for the caller to re-query.
+
+    Raises:
+        UniqueConstraintError: if ``field`` is already in use. The caller is
+            responsible for re-querying to decide the outcome.
+    """
+    try:
+        async with db.begin_nested():
+            db.add(entity)
+            await db.flush()
+    except IntegrityError:
+        raise UniqueConstraintError(field, value)
+    await db.refresh(entity)
+    return entity

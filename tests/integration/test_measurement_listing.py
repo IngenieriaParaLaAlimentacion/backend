@@ -41,11 +41,11 @@ async def scenario(app) -> Scenario:
     from app.db.database import AsyncSessionLocal
     from app.domain.subject import Sex
     from app.domain.user import UserStatus
-    from app.models.establishment import Establishment
-    from app.models.measurement import Measurement
-    from app.models.subject import Subject
-    from app.models.user import User
-    from app.models.user import UserRole as ORMUserRole
+    from app.models.auth.user import User
+    from app.models.auth.user import UserRole as ORMUserRole
+    from app.models.establishments.establishment import Establishment
+    from app.models.measurements.measurement import Measurement
+    from app.models.subjects.subject import Subject
 
     data = {}
     async with AsyncSessionLocal() as session:

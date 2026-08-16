@@ -580,8 +580,10 @@ class TestDuplicate:
 class TestDeleteCascade:
     async def test_delete_removes_survey_and_children(self, client, admin_author):
         from app.db.database import AsyncSessionLocal
-        from app.models.survey_question import SurveyQuestion
-        from app.models.survey_question_option import SurveyQuestionOption
+        from app.models.surveys.survey_question import SurveyQuestion
+        from app.models.surveys.survey_question_option import (
+            SurveyQuestionOption,
+        )
 
         headers, _ = admin_author
         survey_id = (await _create(client, headers)).json()["id"]

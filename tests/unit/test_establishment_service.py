@@ -17,13 +17,13 @@ from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
 )
 from app.models import Establishment
-from app.schemas.establishment_schema import (
+from app.schemas.establishments.establishment_schema import (
     EstablishmentCreationRequestCreate,
     EstablishmentRequest,
     EstablishmentResponse,
     EstablishmentUpdateRequest,
 )
-from app.services.establishment_service import EstablishmentService
+from app.services.establishments.establishment_service import EstablishmentService
 
 
 def _make_request(**overrides) -> EstablishmentRequest:
