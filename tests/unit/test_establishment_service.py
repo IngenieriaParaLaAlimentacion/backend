@@ -23,13 +23,13 @@ from app.exceptions.domain_exceptions import (
     UniqueConstraintError,
 )
 from app.models import Establishment
-from app.schemas.establishment_schema import (
+from app.schemas.establishments.establishment_schema import (
     EstablishmentCreationRequestCreate,
     EstablishmentRequest,
     EstablishmentResponse,
     EstablishmentUpdateRequest,
 )
-from app.services.establishment_service import EstablishmentService
+from app.services.establishments.establishment_service import EstablishmentService
 
 
 def _make_request(**overrides) -> EstablishmentRequest:
@@ -902,7 +902,7 @@ class TestApproveCreationRequest:
         service = EstablishmentService(uow=uow)
 
         with patch(
-            "app.services.establishment_service.send_establishment_created_email",
+            "app.services.establishments.establishment_service.send_establishment_created_email",
             new_callable=AsyncMock,
         ) as mock_email:
             await service.approve_creation_request(
@@ -976,7 +976,7 @@ class TestRejectCreationRequest:
         service = EstablishmentService(uow=uow)
 
         with patch(
-            "app.services.establishment_service.send_creation_denied_email",
+            "app.services.establishments.establishment_service.send_creation_denied_email",
             new_callable=AsyncMock,
         ) as mock_email:
             await service.reject_creation_request(
@@ -996,7 +996,7 @@ class TestRejectCreationRequest:
         service = EstablishmentService(uow=uow)
 
         with patch(
-            "app.services.establishment_service.send_creation_denied_email",
+            "app.services.establishments.establishment_service.send_creation_denied_email",
             new_callable=AsyncMock,
         ) as mock_email:
             await service.reject_creation_request(request.id, reviewer_id=uuid.uuid4())

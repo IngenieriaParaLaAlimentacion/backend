@@ -12,7 +12,9 @@ from app.domain.establishment_dashboard import (
 from app.domain.measurement import AlertSeverity, AlertType
 from app.domain.subject import Sex
 from app.exceptions.domain_exceptions import EstablishmentNotFoundError
-from app.services.establishment_dashboard_service import EstablishmentDashboardService
+from app.services.establishments.establishment_dashboard_service import (
+    EstablishmentDashboardService,
+)
 
 
 def _row(alert_type: AlertType | None, count: int) -> SimpleNamespace:

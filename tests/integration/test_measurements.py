@@ -18,7 +18,7 @@ async def db_adult_subject(app):
     """Insert an adult subject (born 1990) and return the ORM instance."""
     from app.db.database import AsyncSessionLocal
     from app.domain.subject import Sex
-    from app.models.subject import Subject
+    from app.models.subjects.subject import Subject
 
     async with AsyncSessionLocal() as session:
         subject = Subject(
@@ -41,8 +41,8 @@ async def db_admin_headers(app):
     """Create a real admin user in the DB and return auth headers."""
     from app.db.database import AsyncSessionLocal
     from app.domain.user import UserStatus
-    from app.models.user import User
-    from app.models.user import UserRole as ORMUserRole
+    from app.models.auth.user import User
+    from app.models.auth.user import UserRole as ORMUserRole
 
     user_id = uuid.uuid4()
     async with AsyncSessionLocal() as session:
@@ -224,9 +224,9 @@ class TestEstablishmentAccess:
         from app.db.database import AsyncSessionLocal
         from app.domain.establishment import UserEstablishmentStatus
         from app.domain.user import UserStatus
-        from app.models.user import User
-        from app.models.user import UserRole as ORMUserRole
-        from app.models.user_establishment import UserEstablishment
+        from app.models.auth.user import User
+        from app.models.auth.user import UserRole as ORMUserRole
+        from app.models.auth.user_establishment import UserEstablishment
 
         user_id = uuid.uuid4()
         async with AsyncSessionLocal() as session:
@@ -425,7 +425,9 @@ class TestAlerts:
         from sqlalchemy import select
 
         from app.db.database import AsyncSessionLocal
-        from app.models.measurement_alert import MeasurementAlert
+        from app.models.measurements.measurement_alert import (
+            MeasurementAlert,
+        )
 
         measurement_id = uuid.uuid4()
         await _upload_with_id(

@@ -6,7 +6,7 @@ from fastapi import status
 
 import app.db.database as db_module
 from app.domain.user import UserRole, UserStatus
-from app.models.user import User
+from app.models.auth.user import User
 from tests.integration.admin.conftest import (
     ADMIN_USER_URL,
     ADMIN_USERS_URL,

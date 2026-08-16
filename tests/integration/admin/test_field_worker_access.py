@@ -6,7 +6,7 @@ from sqlalchemy import select
 
 import app.db.database as db_module
 from app.domain.user import UserRole, UserStatus
-from app.models.user_establishment import UserEstablishment
+from app.models.auth.user_establishment import UserEstablishment
 from tests.integration.admin.conftest import (
     ADMIN_USERS_URL,
     APPROVE_URL,

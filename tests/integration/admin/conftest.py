@@ -9,8 +9,8 @@ import app.db.database as db_module
 from app.core.security import create_access_token
 from app.domain.establishment import EstablishmentRequestStatus
 from app.domain.user import UserRole, UserStatus
-from app.models.establishment_request import EstablishmentRequest
-from app.models.user import User
+from app.models.auth.user import User
+from app.models.establishments.establishment_request import EstablishmentRequest
 
 ADMIN_USERS_URL = "/api/v1/admin/users"
 ADMIN_USER_URL = "/api/v1/admin/users/{user_id}"
