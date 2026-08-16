@@ -50,11 +50,12 @@ class EstablishmentService:
             page_size=page_size,
         )
 
-    async def _leave_access_pending(
+    async def _set_access_pending(
         self, user_id: UUID, establishment_id: UUID, reused: bool
     ) -> None:
-        """Leave the field worker's access to the establishment pending,
-        for an admin to review separately.
+        """Set the field worker's access to the establishment as pending,
+        for an admin to review separately, without touching an access that
+        has already been resolved.
 
         Only checks for an existing relation when the establishment was
         reused (a fresh one can't have one yet): approved or pending
@@ -75,6 +76,7 @@ class EstablishmentService:
             await self.uow.user_establishment_repo.update_status_for_ids(
                 user_id, [establishment_id], UserEstablishmentStatus.PENDING
             )
+        # else: APPROVED or PENDING, already under review or resolved — leave as-is.
 
     async def _create_or_reuse_establishment(
         self, data: EstablishmentRequest
@@ -272,7 +274,7 @@ class EstablishmentService:
 
         establishment, reused = await self._create_or_reuse_establishment(data)
 
-        await self._leave_access_pending(request.user_id, establishment.id, reused)
+        await self._set_access_pending(request.user_id, establishment.id, reused)
         await self.uow.commit()
 
         requester = await self.uow.user_repo.get_by_id(request.user_id)
