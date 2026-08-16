@@ -14,7 +14,7 @@ from app.domain.survey_response import (
 from app.models.establishments.establishment import Establishment
 from app.models.surveys.survey import Survey
 from app.models.surveys.survey_response import SurveyResponse
-from app.utils.db import insert_with_savepoint
+from app.utils.db import ilike_condition, insert_with_savepoint
 
 
 class SurveyResponseRepository:
@@ -59,9 +59,11 @@ class SurveyResponseRepository:
                 Establishment, SurveyResponse.establishment_id == Establishment.id
             )
             if params.city:
-                conditions.append(Establishment.city.ilike(params.city))
+                conditions.append(ilike_condition(Establishment.city, params.city))
             if params.province:
-                conditions.append(Establishment.province.ilike(params.province))
+                conditions.append(
+                    ilike_condition(Establishment.province, params.province)
+                )
 
         if conditions:
             query = query.where(and_(*conditions))

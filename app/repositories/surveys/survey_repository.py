@@ -22,7 +22,7 @@ from app.models.surveys.survey import Survey
 from app.models.surveys.survey_establishment import SurveyEstablishment
 from app.models.surveys.survey_question import SurveyQuestion
 from app.models.surveys.survey_question_option import SurveyQuestionOption
-from app.utils.db import escape_like
+from app.utils.db import ilike_condition
 
 # Maps each SurveySortOrder value to its SQLAlchemy order clause.
 # KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
@@ -74,8 +74,7 @@ class SurveyRepository:
         """Build the filter conditions for a survey listing."""
         conditions = []
         if params.search:
-            pattern = f"%{escape_like(params.search)}%"
-            conditions.append(Survey.name.ilike(pattern, escape="\\"))
+            conditions.append(ilike_condition(Survey.name, params.search))
         if params.created_by is not None:
             conditions.append(Survey.created_by_id == params.created_by)
         if params.scope is not None:

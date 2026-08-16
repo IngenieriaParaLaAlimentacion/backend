@@ -1,9 +1,9 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from app.schemas.types import Latitude, Longitude, ValidStr
+from app.schemas.types import DescriptionStr, Latitude, Longitude, ValidStr
 
 # -- Request --
 
@@ -18,17 +18,6 @@ class EstablishmentCreationRequestCreate(BaseModel):
     province: ValidStr | None = None
 
 
-class EstablishmentCreationRequestResponse(EstablishmentCreationRequestCreate):
-    """An establishment creation request as returned by the API."""
-
-    model_config = ConfigDict(from_attributes=True)
-
-    id: uuid.UUID
-    user_id: uuid.UUID
-    status: str
-    created_at: datetime
-
-
 class EstablishmentRequest(BaseModel):
     name: ValidStr
     formatted_address: ValidStr
@@ -37,6 +26,12 @@ class EstablishmentRequest(BaseModel):
     place_id: ValidStr
     city: ValidStr
     province: ValidStr
+
+
+class EstablishmentRequestRejection(BaseModel):
+    """Payload for an admin rejecting an establishment creation request."""
+
+    reason: DescriptionStr | None = None
 
 
 class EstablishmentUpdateRequest(BaseModel):
@@ -69,6 +64,17 @@ class EstablishmentUpdateRequest(BaseModel):
 # -- Response --
 
 
+class EstablishmentCreationRequestResponse(EstablishmentCreationRequestCreate):
+    """An establishment creation request as returned by the API."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    user_id: uuid.UUID
+    status: str
+    created_at: datetime
+
+
 class EstablishmentResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -80,3 +86,26 @@ class EstablishmentResponse(BaseModel):
     place_id: str
     city: str
     province: str
+
+
+class EstablishmentApprovalResponse(EstablishmentResponse):
+    """An establishment resolved by approving a creation request."""
+
+    reused: bool = Field(
+        description=(
+            "True when this place already existed (e.g. another request "
+            "for it was approved first): the field worker is linked to it "
+            "as-is, and the data submitted for this approval was discarded."
+        )
+    )
+
+
+class EstablishmentCreationRequestAdminView(EstablishmentCreationRequestResponse):
+    """An establishment request as seen by an admin reviewing it, including
+    the requesting field worker's identity."""
+
+    requester_name: str
+    requester_last_name: str
+    requester_email: str
+    reviewed_by: uuid.UUID | None
+    updated_at: datetime

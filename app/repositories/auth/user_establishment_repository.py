@@ -25,6 +25,27 @@ class UserEstablishmentRepository:
         self.db.add(user_establishment)
         return user_establishment
 
+    async def create_or_approve_relation(
+        self, user_id: UUID, establishment_id: UUID
+    ) -> UserEstablishment:
+        """Grant the user approved access to the establishment.
+
+        Creates the relation as approved if none exists yet; if one already
+        exists (e.g. a pending relation from registration), flips it to
+        approved instead of creating a duplicate row.
+        """
+        relation = await self.get_relation(user_id, establishment_id)
+        if relation is None:
+            relation = UserEstablishment(
+                user_id=user_id,
+                establishment_id=establishment_id,
+                status=UserEstablishmentStatus.APPROVED,
+            )
+            self.db.add(relation)
+        else:
+            relation.status = UserEstablishmentStatus.APPROVED
+        return relation
+
     async def get_by_user_ids(self, user_ids: list[UUID]) -> dict[UUID, list[UUID]]:
         """Return a list of establishment ids for each of the given users."""
         result = await self.db.execute(

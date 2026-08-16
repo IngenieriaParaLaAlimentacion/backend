@@ -45,29 +45,46 @@ def build_invite_deeplink(token: str, user_role: UserRole) -> str:
 
 def _render_base_template(
     title: str,
-    pre_button_text: str,
-    button_text: str,
-    button_url: str,
-    button_color: str,
-    formatted_expiry: str,
+    content_html: str,
+    button_text: str | None = None,
+    button_url: str | None = None,
+    button_color: str | None = None,
+    formatted_expiry: str | None = None,
 ) -> str:
-    """Private helper to unify the visual design of all system emails."""
-    escaped_url = html.escape(button_url)
+    """Private helper to unify the visual design of all system emails.
+
+    ``content_html`` is the message-specific HTML after the greeting;
+    callers wrap it in their own ``<p>``/``<ul>``/etc. tags. The button and
+    the expiry note are only rendered when given, so plain notifications
+    with no call-to-action link can reuse the same shell.
+    """
+    button_html = ""
+    if button_text and button_url and button_color:
+        escaped_url = html.escape(button_url)
+        button_html = (
+            f'<div style="text-align: center; margin: 30px 0;">'
+            f'<a href="{escaped_url}" style="background-color: {button_color}; '
+            f"color: #ffffff; padding: 12px 24px; text-decoration: none; "
+            f"border-radius: 5px; font-weight: bold; "
+            f'display: inline-block;">{button_text}</a>'
+            f"</div>"
+        )
+
+    expiry_html = ""
+    if formatted_expiry:
+        expiry_html = (
+            f'<p style="font-size: 0.9em; color: #666666;">Este enlace expira el '
+            f"<strong>{formatted_expiry}</strong>.</p>"
+        )
 
     return (
         f'<div style="font-family: Arial, sans-serif; max-width: 550px; '
         f'margin: 0 auto; padding: 20px; color: #333333; line-height: 1.6;">'
         f'  <h2 style="color: #111111; margin-bottom: 20px;">{title}</h2>'
         f"  <p>Hola,</p>"
-        f"  <p>{pre_button_text}</p>"
-        f'  <div style="text-align: center; margin: 30px 0;">'
-        f'    <a href="{escaped_url}" style="background-color: {button_color}; '
-        f"color: #ffffff; padding: 12px 24px; text-decoration: none; "
-        f"border-radius: 5px; font-weight: bold; "
-        f'display: inline-block;">{button_text}</a>'
-        f"  </div>"
-        f'  <p style="font-size: 0.9em; color: #666666;">Este enlace expira el '
-        f"<strong>{formatted_expiry}</strong>.</p>"
+        f"  {content_html}"
+        f"  {button_html}"
+        f"  {expiry_html}"
         f'  <hr style="border: 0; border-top: 1px solid #eeeeee; margin: 20px 0;">'
         f'  <p style="font-size: 0.85em; color: #999999;">'
         f"Si no solicitaste esto, puedes ignorar este correo de forma segura.</p>"
@@ -129,11 +146,11 @@ async def send_recovery_email(
 
     html_content = _render_base_template(
         title="Restablece tu contraseña",
-        pre_button_text=(
-            "Hemos recibido una solicitud para restablecer la contraseña "
+        content_html=(
+            "<p>Hemos recibido una solicitud para restablecer la contraseña "
             "de tu cuenta. "
             # TODO: cuando tengamos nombre de app, customizamos
-            "Haz clic en el botón de abajo para continuar:"
+            "Haz clic en el botón de abajo para continuar:</p>"
         ),
         button_text="Restablecer Contraseña",
         button_url=deeplink,
@@ -162,6 +179,15 @@ async def send_access_granted_email(
 ) -> None:
     """Notify a field worker that their establishment access was approved."""
     names = ", ".join(establishment_names)
+    html_content = _render_base_template(
+        title="Acceso concedido a establecimientos",
+        content_html=(
+            "<p>Tu solicitud de acceso a los siguientes establecimientos ha "
+            "sido aprobada:</p>"
+            f"<ul><li>{'</li><li>'.join(establishment_names)}</li></ul>"
+            "<p>Ya puedes iniciar sesión y comenzar a trabajar.</p>"
+        ),
+    )
     await _send_email(
         to_email=to_email,
         subject="Acceso concedido a establecimientos",
@@ -171,13 +197,36 @@ async def send_access_granted_email(
             f"aprobada:\n\n{names}\n\n"
             "Ya puedes iniciar sesión y comenzar a trabajar."
         ),
-        html_body=(
-            f"<p>Tu solicitud de acceso a los siguientes establecimientos "
-            f"ha sido aprobada:</p>"
-            f"<ul><li>{'</li><li>'.join(establishment_names)}</li></ul>"
-            f"<p>Ya puedes iniciar sesión y comenzar a trabajar.</p>"
-        ),
+        html_body=html_content,
         log_label="Access granted",
+    )
+
+
+async def send_creation_denied_email(
+    to_email: str, establishment_name: str, reason: str | None = None
+) -> None:
+    """Notify a field worker that their establishment creation request was denied."""
+    reason_text = f"\n\nMotivo: {reason}" if reason else ""
+    reason_html = f"<p>Motivo: {reason}</p>" if reason else ""
+    html_content = _render_base_template(
+        title="Creación de establecimiento denegada",
+        content_html=(
+            "<p>Tu solicitud de creación del siguiente establecimiento ha "
+            "sido denegada:</p>"
+            f"<p>{establishment_name}</p>"
+            f"{reason_html}"
+        ),
+    )
+    await _send_email(
+        to_email=to_email,
+        subject="Creación de establecimientos denegada",
+        body=(
+            "Hola,\n\n"
+            "Tu solicitud de creación del siguiente establecimiento ha sido "
+            f"denegada:\n\n{establishment_name}.{reason_text}"
+        ),
+        html_body=html_content,
+        log_label="Creation denied",
     )
 
 
@@ -194,9 +243,9 @@ async def send_verification_email(
 
     html_content = _render_base_template(
         title="Verifica tu correo electrónico",
-        pre_button_text=(
-            "Gracias por registrarte. Por favor verifica tu dirección de correo "
-            "electrónico haciendo clic en el botón de abajo para activar tu cuenta:"
+        content_html=(
+            "<p>Gracias por registrarte. Por favor verifica tu dirección de correo "
+            "electrónico haciendo clic en el botón de abajo para activar tu cuenta:</p>"
         ),
         button_text="Verificar Correo",
         button_url=deeplink,
@@ -233,11 +282,11 @@ async def send_invite_email(
 
     html_content = _render_base_template(
         title="¡Bienvenido a Ingeniería Para la Alimentación!",
-        pre_button_text=(
-            f"Has sido invitado a unirte a"
+        content_html=(
+            f"<p>Has sido invitado a unirte a"
             f" <strong>Ingeniería Para la Alimentación</strong> "
             f"como {role_label}. Haz clic en el botón de abajo para configurar "
-            f"tu contraseña y activar tu cuenta:"
+            f"tu contraseña y activar tu cuenta:</p>"
         ),
         button_text="Configurar Contraseña",
         button_url=deeplink,
@@ -260,4 +309,33 @@ async def send_invite_email(
         html_body=html_content,
         log_label="Admin invite",
         raise_on_failure=True,
+    )
+
+
+async def send_establishment_created_email(
+    to_email: str, establishment_name: str
+) -> None:
+    """Notify a field worker that their establishment creation request was
+    approved, and access is now pending an admin's review."""
+    html_content = _render_base_template(
+        title="Establecimiento creado",
+        content_html=(
+            "<p>Tu solicitud de creación del siguiente establecimiento ha "
+            "sido aprobada:</p>"
+            f"<p>{establishment_name}</p>"
+            "<p>Tu acceso está pendiente de revisión por un administrador. "
+            "Te notificaremos cuando sea aprobado.</p>"
+        ),
+    )
+    await _send_email(
+        to_email=to_email,
+        subject="Establecimiento creado",
+        body=(
+            "Hola,\n\n"
+            "Tu solicitud de creación del siguiente establecimiento ha sido "
+            f"aprobada:\n\n{establishment_name}\n\n"
+            "Tu acceso está pendiente de revisión por un administrador."
+        ),
+        html_body=html_content,
+        log_label="Establishment created",
     )
