@@ -470,7 +470,7 @@ class TestTargetUniqueness:
         insert on, or the collision is mislabelled as an id replay and escapes
         as a 500 instead of this 409.
         """
-        from app.repositories.survey_response_repository import (
+        from app.repositories.surveys.survey_response_repository import (
             SurveyResponseRepository,
         )
 
