@@ -1,7 +1,6 @@
 from uuid import UUID
 
 from sqlalchemy import asc, desc, func, or_, select
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.establishment import (
@@ -9,13 +8,10 @@ from app.domain.establishment import (
     EstablishmentSortOrder,
     UserEstablishmentStatus,
 )
-from app.exceptions.domain_exceptions import (
-    EstablishmentNotFoundError,
-    UniqueConstraintError,
-)
+from app.exceptions.domain_exceptions import EstablishmentNotFoundError
 from app.models.auth.user_establishment import UserEstablishment
 from app.models.establishments.establishment import Establishment
-from app.utils.db import execute_paginated, ilike_condition
+from app.utils.db import execute_paginated, ilike_condition, insert_with_savepoint
 
 # Maps each EstablishmentSortOrder value to its SQLAlchemy order clause.
 # KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
@@ -48,14 +44,9 @@ class EstablishmentRepository:
             UniqueConstraintError: If place_id is already in use. The caller
                 is responsible for re-querying to decide the outcome.
         """
-        try:
-            async with self.db.begin_nested():
-                self.db.add(establishment)
-                await self.db.flush()
-        except IntegrityError:
-            raise UniqueConstraintError("place_id", establishment.place_id)
-        await self.db.refresh(establishment)
-        return establishment
+        return await insert_with_savepoint(
+            self.db, establishment, "place_id", establishment.place_id
+        )
 
     async def update(self, establishment: Establishment) -> Establishment:
         """Persist changes to an existing establishment."""
