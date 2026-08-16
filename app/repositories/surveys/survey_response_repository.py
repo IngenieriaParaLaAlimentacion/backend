@@ -16,6 +16,7 @@ from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.establishments.establishment import Establishment
 from app.models.surveys.survey import Survey
 from app.models.surveys.survey_response import SurveyResponse
+from app.utils.db import ilike_condition
 
 _CONSTRAINT_FIELDS = {
     "uq_survey_responses_survey_establishment": "establishment_id",
@@ -83,9 +84,11 @@ class SurveyResponseRepository:
                 Establishment, SurveyResponse.establishment_id == Establishment.id
             )
             if params.city:
-                conditions.append(Establishment.city.ilike(params.city))
+                conditions.append(ilike_condition(Establishment.city, params.city))
             if params.province:
-                conditions.append(Establishment.province.ilike(params.province))
+                conditions.append(
+                    ilike_condition(Establishment.province, params.province)
+                )
 
         if conditions:
             query = query.where(and_(*conditions))

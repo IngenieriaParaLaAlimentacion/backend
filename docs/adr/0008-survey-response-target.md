@@ -1,4 +1,4 @@
-# ADR-0007: A survey declares what its responses are about — subject, establishment, or nobody
+# ADR-0008: A survey declares what its responses are about — subject, establishment, or nobody
 
 - **Status**: Accepted
 - **Date**: 2026-08-14

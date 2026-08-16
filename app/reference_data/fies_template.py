@@ -6,7 +6,7 @@ wording before saving. Nothing here is persisted until the author submits a crea
 request, and FIES is intentionally *not* a distinct survey type (see ADR-0002) — once
 saved it is an ordinary survey.
 
-The draft defaults to ``response_target=ANONYMOUS`` (see ADR-0007): FIES measures food
+The draft defaults to ``response_target=ANONYMOUS`` (see ADR-0008): FIES measures food
 insecurity at the level of a household, which is neither a ``Subject`` nor an
 ``Establishment``. The author can still change it before the first response is recorded.
 

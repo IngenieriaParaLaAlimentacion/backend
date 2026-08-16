@@ -15,7 +15,7 @@ from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.establishments.establishment import Establishment
 from app.models.measurements.measurement import Measurement
 from app.models.subjects.subject import Subject
-from app.utils.db import execute_paginated
+from app.utils.db import execute_paginated, ilike_condition
 
 # Maps each MeasurementSortOrder value to its SQLAlchemy order clause.
 # KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
@@ -59,9 +59,9 @@ class MeasurementRepository:
         if params.responsible_id is not None:
             conditions.append(Measurement.responsible_id == params.responsible_id)
         if params.city:
-            conditions.append(Establishment.city.ilike(params.city))
+            conditions.append(ilike_condition(Establishment.city, params.city))
         if params.province:
-            conditions.append(Establishment.province.ilike(params.province))
+            conditions.append(ilike_condition(Establishment.province, params.province))
         if params.measured_from is not None:
             conditions.append(Measurement.measured_at >= params.measured_from)
         if params.measured_to is not None:
@@ -106,13 +106,15 @@ class MeasurementRepository:
             .join(Establishment, Measurement.establishment_id == Establishment.id)
         )
 
-        for condition in self._listing_conditions(params):
-            base_query = base_query.where(condition)
-            count_query = count_query.where(condition)
-
         order_by = _SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
-            self.db, base_query, count_query, order_by, limit, offset
+            self.db,
+            base_query,
+            count_query,
+            order_by,
+            limit,
+            offset,
+            conditions=self._listing_conditions(params),
         )
 
     async def get_latest_for_subject(self, subject_id: UUID) -> Measurement | None:

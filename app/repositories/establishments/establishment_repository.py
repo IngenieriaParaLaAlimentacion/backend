@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import asc, desc, func, select
+from sqlalchemy import asc, desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.establishment import (
@@ -11,7 +11,7 @@ from app.domain.establishment import (
 from app.exceptions.domain_exceptions import EstablishmentNotFoundError
 from app.models.auth.user_establishment import UserEstablishment
 from app.models.establishments.establishment import Establishment
-from app.utils.db import escape_like, execute_paginated
+from app.utils.db import execute_paginated, ilike_condition, insert_with_savepoint
 
 # Maps each EstablishmentSortOrder value to its SQLAlchemy order clause.
 # KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
@@ -34,11 +34,19 @@ class EstablishmentRepository:
         self.db = db
 
     async def create(self, establishment: Establishment) -> Establishment:
-        """Persist a new establishment."""
-        self.db.add(establishment)
-        await self.db.flush()
-        await self.db.refresh(establishment)
-        return establishment
+        """Persist a new establishment.
+
+        The insert runs inside a SAVEPOINT so a unique violation rolls back
+        only the failed row and leaves the session usable for the caller to
+        re-query.
+
+        Raises:
+            UniqueConstraintError: If place_id is already in use. The caller
+                is responsible for re-querying to decide the outcome.
+        """
+        return await insert_with_savepoint(
+            self.db, establishment, "place_id", establishment.place_id
+        )
 
     async def update(self, establishment: Establishment) -> Establishment:
         """Persist changes to an existing establishment."""
@@ -105,10 +113,16 @@ class EstablishmentRepository:
         """
         if not search:
             return None
-        search_term = f"%{escape_like(search)}%"
-        return Establishment.name.ilike(
-            search_term, escape="\\"
-        ) | Establishment.formatted_address.ilike(search_term, escape="\\")
+        return or_(
+            ilike_condition(Establishment.name, search),
+            ilike_condition(Establishment.formatted_address, search),
+        )
+
+    @staticmethod
+    def _append_ilike(conditions: list, column, value: str | None) -> None:
+        """Append a partial match condition for column to conditions, if given."""
+        if value:
+            conditions.append(ilike_condition(column, value))
 
     @classmethod
     def _listing_conditions(cls, params: EstablishmentListingParams) -> list:
@@ -117,10 +131,8 @@ class EstablishmentRepository:
         search_condition = cls._search_condition(params.search)
         if search_condition is not None:
             conditions.append(search_condition)
-        if params.city:
-            conditions.append(Establishment.city.ilike(params.city))
-        if params.province:
-            conditions.append(Establishment.province.ilike(params.province))
+        cls._append_ilike(conditions, Establishment.city, params.city)
+        cls._append_ilike(conditions, Establishment.province, params.province)
         return conditions
 
     async def get_paginated(
@@ -132,18 +144,20 @@ class EstablishmentRepository:
         """Return a paginated list of establishments and the total matching count.
 
         ``search`` matches case-insensitively against name or formatted_address.
-        ``city`` and ``province`` are exact case-insensitive matches.
+        ``city`` and ``province`` are partial, case-insensitive matches.
         """
         base_query = select(Establishment)
         count_query = select(func.count()).select_from(Establishment)
 
-        for condition in self._listing_conditions(params):
-            base_query = base_query.where(condition)
-            count_query = count_query.where(condition)
-
         order_by = _SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
-            self.db, base_query, count_query, order_by, limit, offset
+            self.db,
+            base_query,
+            count_query,
+            order_by,
+            limit,
+            offset,
+            conditions=self._listing_conditions(params),
         )
 
     async def get_available_for_user(
@@ -173,11 +187,13 @@ class EstablishmentRepository:
             .where(Establishment.id.not_in(blocked))
         )
 
-        for condition in self._listing_conditions(params):
-            base_query = base_query.where(condition)
-            count_query = count_query.where(condition)
-
         order_by = _SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
-            self.db, base_query, count_query, order_by, limit, offset
+            self.db,
+            base_query,
+            count_query,
+            order_by,
+            limit,
+            offset,
+            conditions=self._listing_conditions(params),
         )

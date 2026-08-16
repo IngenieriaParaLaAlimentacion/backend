@@ -4,8 +4,8 @@
 - **Date**: 2026-07-06
 - **Deciders**: Backoffice / backend team
 - **Related**: `docs/plans/survey_authoring.md`, [ADR-0001](0001-declarative-whole-survey-authoring-api.md)
-- **Amended by**: [ADR-0007](0007-survey-response-target.md) — the core decision (FIES is a
-  seed template, not a survey type) still holds. ADR-0007 only records that the template
+- **Amended by**: [ADR-0008](0008-survey-response-target.md) — the core decision (FIES is a
+  seed template, not a survey type) still holds. ADR-0008 only records that the template
   now also seeds `response_target: anonymous`, and revisits the `instrument_type` escape
   hatch this ADR anticipated.
 

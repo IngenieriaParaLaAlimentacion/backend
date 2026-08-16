@@ -4,7 +4,7 @@
 - **Date**: 2026-07-10
 - **Deciders**: Backend team (design interview with product owner)
 - **Related**: `docs/plans/survey_response_registration.md`, [ADR-0001](0001-declarative-whole-survey-authoring-api.md), [ADR-0002](0002-fies-as-template-no-survey-type.md)
-- **Superseded by**: [ADR-0007](0007-survey-response-target.md)
+- **Superseded by**: [ADR-0008](0008-survey-response-target.md)
 
 ## Context
 

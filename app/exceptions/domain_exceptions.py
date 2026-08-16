@@ -123,6 +123,21 @@ class UserEstablishmentNotFoundError(NotFoundError):
         )
 
 
+class EstablishmentRequestNotFoundError(NotFoundError):
+    """Exception raised when an establishment request does not exist.
+
+    Args:
+        request_id (str): The ID of the establishment request that was
+            not found.
+    """
+
+    def __init__(self, request_id: str):
+        super().__init__(
+            "Establishment request not found",
+            f"The establishment request with id {request_id} was not found.",
+        )
+
+
 class SubjectAlreadyExistsError(AlreadyExistsError):
     """Exception raised when trying to register a subject with an existing DNI.
 
@@ -241,6 +256,17 @@ class EstablishmentAlreadyExistsError(AlreadyExistsError):
         super().__init__(
             "Establishment already exists",
             f"An establishment with place_id {place_id} already exists.",
+        )
+
+
+class EstablishmentRequestAlreadyReviewedError(ConflictError):
+    """Raised when approving/rejecting a request that is no longer pending."""
+
+    def __init__(self, request_id: str):
+        super().__init__(
+            "Establishment request already reviewed",
+            f"The establishment request with id {request_id} has already "
+            "been resolved and can no longer be approved or rejected.",
         )
 
 

@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import Row, asc, desc, extract, func, select
+from sqlalchemy import Row, asc, desc, extract, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
 
@@ -16,7 +16,7 @@ from app.models.measurements.measurement import Measurement
 from app.models.measurements.measurement_alert import MeasurementAlert
 from app.models.subjects.subject import Subject
 from app.repositories.subjects.subject_repository import subject_search_condition
-from app.utils.db import escape_like
+from app.utils.db import ilike_condition
 
 # Completed months between a subject's birth date and the moment they were
 # measured. Postgres ``age()`` returns an interval of full years/months/days,
@@ -51,11 +51,10 @@ class EstablishmentDashboardRepository:
         """Case-insensitive name/last-name/email match for ``search``, or None."""
         if not search:
             return None
-        search_term = f"%{escape_like(search)}%"
-        return (
-            User.name.ilike(search_term, escape="\\")
-            | User.last_name.ilike(search_term, escape="\\")
-            | User.email.ilike(search_term, escape="\\")
+        return or_(
+            ilike_condition(User.name, search),
+            ilike_condition(User.last_name, search),
+            ilike_condition(User.email, search),
         )
 
     @staticmethod
