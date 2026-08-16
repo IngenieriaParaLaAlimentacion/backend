@@ -10,9 +10,8 @@ from app.domain.subject_event import SubjectEventType
 from app.schemas.measurements.measurement_schema import (
     AlertResponse,
     EstablishmentRefResponse,
-    RoundedBmi,
 )
-from app.schemas.types import ClientGeneratedId, ValidStr
+from app.schemas.types import ClientGeneratedId, RoundedBmi, ValidStr
 from app.utils.dates import validate_not_future_date
 
 # -- Request --

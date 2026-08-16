@@ -5,6 +5,7 @@ from .measurement_schema import (
     MeasurementListItem,
     MeasurementRequest,
     MeasurementResponse,
+    MeasurementSnapshotBase,
     ResponsibleRefResponse,
     SubjectEvolutionResponse,
     SubjectRefResponse,
@@ -20,4 +21,5 @@ __all__ = [
     "ResponsibleRefResponse",
     "SubjectEvolutionResponse",
     "SubjectRefResponse",
+    "MeasurementSnapshotBase",
 ]

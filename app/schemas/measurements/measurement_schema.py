@@ -1,25 +1,18 @@
 from datetime import date, datetime
-from typing import Annotated
 from uuid import UUID
 
 from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
-    PlainSerializer,
     field_validator,
 )
 
 from app.domain.measurement import AlertSeverity, AlertType
 from app.domain.subject import Sex
 from app.schemas.common import IdentifierRefSchema
-from app.schemas.types import ClientGeneratedId, _round_to_2
+from app.schemas.types import ClientGeneratedId, RoundedBmi
 from app.utils.dates import validate_not_future_datetime
-
-RoundedBmi = Annotated[
-    float,
-    PlainSerializer(_round_to_2, return_type=float),
-]
 
 # -- Request --
 
