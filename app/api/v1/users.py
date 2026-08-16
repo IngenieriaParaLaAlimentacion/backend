@@ -9,15 +9,15 @@ from app.core.dependencies import (
 from app.domain.activity import ActivityListingParams, ActivityType
 from app.domain.user import UserActor
 from app.schemas.activity_schema import ActivityItemResponse
-from app.schemas.pagination import PaginatedResponse
-from app.schemas.user_schema import (
+from app.schemas.auth.user_schema import (
     EstablishmentAccessRequest,
     EstablishmentWithStatusResponse,
     ProfileResponse,
     ProfileUpdateRequest,
 )
+from app.schemas.pagination import PaginatedResponse
 from app.services.activity_service import ActivityService
-from app.services.user_service import UserService
+from app.services.auth.user_service import UserService
 
 router = APIRouter(prefix="/users")
 

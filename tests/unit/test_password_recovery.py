@@ -4,8 +4,8 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.exceptions.domain_exceptions import InvalidTokenError
-from app.schemas.auth_schema import PasswordRecoveryConfirmRequest
-from app.services.auth_service import AuthService
+from app.schemas.auth.auth_schema import PasswordRecoveryConfirmRequest
+from app.services.auth.auth_service import AuthService
 
 
 @pytest.fixture
@@ -43,7 +43,7 @@ def make_uow_recovery(make_uow, make_recovery_token):
 @pytest.fixture
 def mock_encode_recovery_token(monkeypatch):
     monkeypatch.setattr(
-        "app.services.auth_service.hash_token",
+        "app.services.auth.auth_service.hash_token",
         lambda token: "hashed_recovery_token",
     )
 
@@ -51,7 +51,7 @@ def mock_encode_recovery_token(monkeypatch):
 @pytest.fixture
 def mock_hash_password_recovery(monkeypatch):
     monkeypatch.setattr(
-        "app.services.auth_service.hash_password",
+        "app.services.auth.auth_service.hash_password",
         lambda p: f"hashed_{p}",
     )
 

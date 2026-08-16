@@ -2,6 +2,7 @@
 
 [![es](https://img.shields.io/badge/lang-es-green.svg)](README.md)
 [![codecov](https://codecov.io/gh/IngenieriaParaLaAlimentacion/backend/graph/badge.svg?token=IJ7UM97UZI)](https://codecov.io/gh/IngenieriaParaLaAlimentacion/backend)
+[![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](pyproject.toml)
 
 REST API for the **Food Engineering** project, developed with FastAPI,
 SQLAlchemy (async), and asyncpg on Python 3.11+.

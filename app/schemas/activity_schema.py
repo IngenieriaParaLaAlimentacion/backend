@@ -3,9 +3,9 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 from app.domain.activity import ActivityType
-from app.schemas.measurement_schema import MeasurementListItem
-from app.schemas.subject_schema import SubjectSummaryResponse
-from app.schemas.survey_response_schema import SurveyResponseListItem
+from app.schemas.measurements.measurement_schema import MeasurementListItem
+from app.schemas.subjects.subject_schema import SubjectSummaryResponse
+from app.schemas.surveys.survey_response_schema import SurveyResponseListItem
 
 # -- Response --
 

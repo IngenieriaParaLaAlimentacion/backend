@@ -22,8 +22,8 @@ from app.exceptions.domain_exceptions import (
     SubjectNotFoundError,
     UniqueConstraintError,
 )
-from app.schemas.measurement_schema import MeasurementRequest
-from app.services.measurement_service import MeasurementService
+from app.schemas.measurements.measurement_schema import MeasurementRequest
+from app.services.measurements.measurement_service import MeasurementService
 
 
 @pytest.fixture
@@ -190,7 +190,7 @@ class TestRegisterPersistence:
 
         raw_alerts = [(AlertType.OVERWEIGHT, AlertSeverity.MEDIUM, "detail")]
         with patch(
-            "app.services.measurement_service.evaluate_alerts",
+            "app.services.measurements.measurement_service.evaluate_alerts",
             return_value=raw_alerts,
         ):
             await MeasurementService(uow).register(valid_request, admin_actor)
@@ -207,7 +207,10 @@ class TestRegisterPersistence:
         measurement = make_measurement()
         uow = make_uow(subject=subject, measurement=measurement)
 
-        with patch("app.services.measurement_service.evaluate_alerts", return_value=[]):
+        with patch(
+            "app.services.measurements.measurement_service.evaluate_alerts",
+            return_value=[],
+        ):
             await MeasurementService(uow).register(valid_request, admin_actor)
 
         uow.measurement_alert_repo.create_bulk.assert_not_called()
@@ -405,7 +408,10 @@ class TestRegisterReturnValue:
         measurement = make_measurement()
         uow = make_uow(measurement=measurement)
 
-        with patch("app.services.measurement_service.evaluate_alerts", return_value=[]):
+        with patch(
+            "app.services.measurements.measurement_service.evaluate_alerts",
+            return_value=[],
+        ):
             result, created = await MeasurementService(uow).register(
                 valid_request, admin_actor
             )

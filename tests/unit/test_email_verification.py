@@ -5,12 +5,12 @@ import pytest
 
 from app.domain.user import UserStatus
 from app.exceptions.domain_exceptions import InvalidTokenError, UserNotFoundError
-from app.schemas.auth_schema import (
+from app.schemas.auth.auth_schema import (
     RegisterFieldWorkerRequest,
     ResendVerificationRequest,
     VerifyEmailRequest,
 )
-from app.services.auth_service import AuthService
+from app.services.auth.auth_service import AuthService
 
 
 @pytest.fixture
@@ -88,7 +88,7 @@ def make_uow_verification(make_uow, make_verification_token):
 @pytest.fixture
 def mock_encode_verification_token(monkeypatch):
     monkeypatch.setattr(
-        "app.services.auth_service.hash_token",
+        "app.services.auth.auth_service.hash_token",
         lambda token: "hashed_verification_token",
     )
 
@@ -96,7 +96,7 @@ def mock_encode_verification_token(monkeypatch):
 @pytest.fixture
 def mock_create_email_verification_token(monkeypatch):
     monkeypatch.setattr(
-        "app.services.auth_service.create_email_verification_token",
+        "app.services.auth.auth_service.create_email_verification_token",
         lambda: ("raw_verification_token", "hashed_verification_token"),
     )
 
@@ -104,21 +104,25 @@ def mock_create_email_verification_token(monkeypatch):
 @pytest.fixture
 def mock_send_verification_email(monkeypatch):
     mock_fn = AsyncMock()
-    monkeypatch.setattr("app.services.auth_service.send_verification_email", mock_fn)
+    monkeypatch.setattr(
+        "app.services.auth.auth_service.send_verification_email", mock_fn
+    )
     return mock_fn
 
 
 @pytest.fixture
 def mock_build_verification_deeplink(monkeypatch):
     monkeypatch.setattr(
-        "app.services.auth_service.build_verification_deeplink",
+        "app.services.auth.auth_service.build_verification_deeplink",
         lambda token: f"https://example.com/verify?token={token}",
     )
 
 
 @pytest.fixture
 def mock_hash_password(monkeypatch):
-    monkeypatch.setattr("app.services.auth_service.hash_password", lambda p: "hashed")
+    monkeypatch.setattr(
+        "app.services.auth.auth_service.hash_password", lambda p: "hashed"
+    )
 
 
 @pytest.fixture

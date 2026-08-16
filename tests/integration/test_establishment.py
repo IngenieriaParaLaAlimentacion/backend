@@ -30,7 +30,7 @@ def _make_payload(**overrides) -> dict:
 
 async def _insert_field_worker() -> uuid.UUID:
     from app.db.database import AsyncSessionLocal
-    from app.models.user import User
+    from app.models.auth.user import User
 
     user_id = uuid.uuid4()
     async with AsyncSessionLocal() as session:
@@ -56,7 +56,7 @@ async def _insert_establishment(
     province: str = "Buenos Aires",
 ) -> SimpleNamespace:
     from app.db.database import AsyncSessionLocal
-    from app.models.establishment import Establishment
+    from app.models.establishments.establishment import Establishment
 
     async with AsyncSessionLocal() as session:
         establishment = Establishment(
@@ -82,7 +82,7 @@ async def _insert_relation(
     status_value: UserEstablishmentStatus,
 ) -> None:
     from app.db.database import AsyncSessionLocal
-    from app.models.user_establishment import UserEstablishment
+    from app.models.auth.user_establishment import UserEstablishment
 
     async with AsyncSessionLocal() as session:
         session.add(
@@ -103,7 +103,7 @@ def _field_worker_headers(user_id: uuid.UUID) -> dict:
 async def _seed_establishment(name: str, formatted_address: str) -> None:
     """Insert a single establishment with the given name and formatted_address."""
     from app.db.database import AsyncSessionLocal
-    from app.models.establishment import Establishment
+    from app.models.establishments.establishment import Establishment
 
     async with AsyncSessionLocal() as session:
         session.add(
@@ -123,7 +123,7 @@ async def _seed_establishment(name: str, formatted_address: str) -> None:
 async def _seed_establishments(n: int, app) -> list:
     """Insert n establishments and return their ORM instances."""
     from app.db.database import AsyncSessionLocal
-    from app.models.establishment import Establishment
+    from app.models.establishments.establishment import Establishment
 
     async with AsyncSessionLocal() as session:
         for i in range(n):
@@ -697,7 +697,9 @@ class TestCreateEstablishmentRequest:
         from sqlalchemy import select
 
         from app.db.database import AsyncSessionLocal
-        from app.models.establishment_request import EstablishmentRequest
+        from app.models.establishments.establishment_request import (
+            EstablishmentRequest,
+        )
 
         async with AsyncSessionLocal() as session:
             result = await session.execute(select(EstablishmentRequest))

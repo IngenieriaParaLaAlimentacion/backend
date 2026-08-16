@@ -22,11 +22,11 @@ from app.exceptions.domain_exceptions import (
     SurveyResponseNotFoundError,
     UniqueConstraintError,
 )
-from app.schemas.survey_response_schema import (
+from app.schemas.surveys.survey_response_schema import (
     SurveyResponseEditRequest,
     SurveyResponseRequest,
 )
-from app.services.survey_response_service import SurveyResponseService
+from app.services.surveys.survey_response_service import SurveyResponseService
 
 NOW = datetime(2026, 1, 1, tzinfo=timezone.utc)
 

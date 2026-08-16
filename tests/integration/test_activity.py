@@ -35,8 +35,8 @@ async def survey_author(app):
     """Create a real DB admin user (surveys.created_by_id is a real FK)."""
     from app.db.database import AsyncSessionLocal
     from app.domain.user import UserStatus
-    from app.models.user import User
-    from app.models.user import UserRole as ORMUserRole
+    from app.models.auth.user import User
+    from app.models.auth.user import UserRole as ORMUserRole
 
     user_id = uuid.uuid4()
     async with AsyncSessionLocal() as session:

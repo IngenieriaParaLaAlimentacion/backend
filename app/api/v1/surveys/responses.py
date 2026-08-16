@@ -10,12 +10,12 @@ from app.api.v1.params import (
 )
 from app.core.dependencies import (
     get_survey_response_service,
-    require_admin_analyst_or_superadmin,
-    require_field_worker_admin_or_superadmin,
+    require_admin_or_analyst,
+    require_any,
 )
 from app.domain import UserActor
 from app.schemas.pagination import PaginatedResponse
-from app.schemas.survey_response_schema import (
+from app.schemas.surveys.survey_response_schema import (
     SurveyResponseDashboardItem,
     SurveyResponseDetailResponse,
     SurveyResponseEditRequest,
@@ -23,7 +23,7 @@ from app.schemas.survey_response_schema import (
     SurveyResponseResponse,
 )
 from app.services.exporters.factory import ExportFormat, get_exporter
-from app.services.survey_response_service import SurveyResponseService
+from app.services.surveys.survey_response_service import SurveyResponseService
 
 router = APIRouter(prefix="/surveys/{survey_id}/responses")
 
@@ -58,7 +58,7 @@ async def export_survey_responses(
     survey_id: UUID,
     establishment_id: Optional[UUID] = Query(default=None),
     format: ExportFormat = ExportFormat.XLSX,
-    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
+    actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> Response:
     exporter = get_exporter(format)
@@ -100,7 +100,7 @@ async def list_survey_responses(
     survey_id: UUID,
     query: SurveyResponseListingQuery = Depends(),
     paginated: PaginatedQueryParams = Depends(),
-    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
+    actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> PaginatedResponse[SurveyResponseDashboardItem]:
     result = await service.list_by_survey(
@@ -156,7 +156,7 @@ async def submit_survey_response(
     survey_id: UUID,
     data: SurveyResponseRequest,
     response: Response,
-    actor: UserActor = Depends(require_field_worker_admin_or_superadmin),
+    actor: UserActor = Depends(require_any),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> SurveyResponseResponse:
     survey_response, created = await service.submit(survey_id, data, actor)
@@ -181,7 +181,7 @@ async def submit_survey_response(
 )
 async def get_survey_response(
     response_id: UUID,
-    actor: UserActor = Depends(require_field_worker_admin_or_superadmin),
+    actor: UserActor = Depends(require_any),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> SurveyResponseResponse:
     survey_response = await service.get(response_id, actor)
@@ -205,7 +205,7 @@ async def get_survey_response(
 )
 async def get_survey_response_detail(
     response_id: UUID,
-    actor: UserActor = Depends(require_field_worker_admin_or_superadmin),
+    actor: UserActor = Depends(require_any),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> SurveyResponseDetailResponse:
     detail = await service.get_response_detail(response_id, actor)
@@ -230,7 +230,7 @@ async def get_survey_response_detail(
 async def edit_survey_response(
     response_id: UUID,
     data: SurveyResponseEditRequest,
-    actor: UserActor = Depends(require_field_worker_admin_or_superadmin),
+    actor: UserActor = Depends(require_any),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> SurveyResponseResponse:
     survey_response = await service.edit(response_id, data, actor)

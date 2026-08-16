@@ -11,14 +11,16 @@ from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
 from app.services.activity_service import ActivityService
 from app.services.admin_service import AdminService
 from app.services.analytics_service import AnalyticsService
-from app.services.auth_service import AuthService
-from app.services.establishment_dashboard_service import EstablishmentDashboardService
-from app.services.establishment_service import EstablishmentService
-from app.services.measurement_service import MeasurementService
-from app.services.subject_service import SubjectService
-from app.services.survey_response_service import SurveyResponseService
-from app.services.survey_service import SurveyService
-from app.services.user_service import UserService
+from app.services.auth.auth_service import AuthService
+from app.services.auth.user_service import UserService
+from app.services.establishments.establishment_dashboard_service import (
+    EstablishmentDashboardService,
+)
+from app.services.establishments.establishment_service import EstablishmentService
+from app.services.measurements.measurement_service import MeasurementService
+from app.services.subjects.subject_service import SubjectService
+from app.services.surveys.survey_response_service import SurveyResponseService
+from app.services.surveys.survey_service import SurveyService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 oauth2_scheme_optional = OAuth2PasswordBearer(
@@ -146,55 +148,8 @@ async def get_optional_actor(
     return await _get_authenticated_actor(token, set(UserRole))
 
 
-async def get_current_admin(token: str = Depends(oauth2_scheme)) -> UserActor:
+async def require_admin(token: str = Depends(oauth2_scheme)) -> UserActor:
     return await _get_authenticated_actor(token, {UserRole.ADMIN, UserRole.SUPERADMIN})
-
-
-async def get_current_field_worker(token: str = Depends(oauth2_scheme)) -> UserActor:
-    return await _get_authenticated_actor(
-        token, {UserRole.FIELD_WORKER, UserRole.SUPERADMIN}
-    )
-
-
-async def get_current_analyst(token: str = Depends(oauth2_scheme)) -> UserActor:
-    # TODO: check if this is still necessary
-    return await _get_authenticated_actor(
-        token, {UserRole.ANALYST, UserRole.SUPERADMIN}
-    )
-
-
-def require_some(*roles: UserRole):
-    """Return a dependency that accepts any of the given roles.
-    Used when multiple actors can send the request."""
-
-    async def dep(token: str = Depends(oauth2_scheme)) -> UserActor:
-        payload = _decode_verified_payload(token)
-
-        if payload.get("role") not in roles:
-            raise ForbiddenError()
-
-        return UserActor(user_id=payload["sub"], role=payload["role"])
-
-    return dep
-
-
-async def require_admin_analyst_or_superadmin(
-    token: str = Depends(oauth2_scheme),
-) -> UserActor:
-    """Dependency that accepts admin, analyst and superadmin roles."""
-    return await _get_authenticated_actor(
-        token, {UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN}
-    )
-
-
-async def require_field_worker_admin_or_superadmin(
-    token: str = Depends(oauth2_scheme),
-) -> UserActor:
-    """Dependency that accepts field worker, admin and superadmin roles."""
-
-    return await _get_authenticated_actor(
-        token, {UserRole.FIELD_WORKER, UserRole.ADMIN, UserRole.SUPERADMIN}
-    )
 
 
 async def require_any(token: str = Depends(oauth2_scheme)) -> UserActor:
@@ -207,4 +162,13 @@ async def require_any(token: str = Depends(oauth2_scheme)) -> UserActor:
             UserRole.ADMIN,
             UserRole.SUPERADMIN,
         },
+    )
+
+
+async def require_admin_or_analyst(
+    token: str = Depends(oauth2_scheme),
+) -> UserActor:
+    """Dependency that accepts admin, analyst and superadmin roles."""
+    return await _get_authenticated_actor(
+        token, {UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN}
     )

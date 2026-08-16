@@ -16,8 +16,8 @@ from app.exceptions.domain_exceptions import (
     SubjectNotFoundError,
     UniqueConstraintError,
 )
-from app.schemas.subject_schema import SubjectRequest, SubjectUpdateRequest
-from app.services.subject_service import SubjectService
+from app.schemas.subjects.subject_schema import SubjectRequest, SubjectUpdateRequest
+from app.services.subjects.subject_service import SubjectService
 
 
 @pytest.fixture

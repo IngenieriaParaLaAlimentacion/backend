@@ -9,9 +9,9 @@ import app.db.database as db_module
 from app.core.security import create_access_token
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.user import UserRole, UserStatus
-from app.models.establishment import Establishment
-from app.models.user import User
-from app.models.user_establishment import UserEstablishment
+from app.models.auth.user import User
+from app.models.auth.user_establishment import UserEstablishment
+from app.models.establishments.establishment import Establishment
 
 pytestmark = pytest.mark.asyncio
 

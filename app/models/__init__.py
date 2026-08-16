@@ -1,21 +1,21 @@
+from .auth.email_verification_token import EmailVerificationToken
+from .auth.password_recovery_token import PasswordRecoveryToken
+from .auth.user import User, UserRole, UserStatus
+from .auth.user_establishment import UserEstablishment
+from .auth.user_password import UserPassword
+from .auth.user_token import UserToken
 from .base import Base
-from .email_verification_token import EmailVerificationToken
-from .establishment import Establishment
-from .establishment_request import EstablishmentRequest
-from .measurement import Measurement
-from .measurement_alert import MeasurementAlert
-from .password_recovery_token import PasswordRecoveryToken
-from .subject import Sex, Subject
-from .subject_event import SubjectEvent
-from .survey import Survey
-from .survey_question import SurveyQuestion
-from .survey_question_option import SurveyQuestionOption
-from .survey_response import SurveyResponse
-from .survey_response_edit import SurveyResponseEdit
-from .user import User, UserRole, UserStatus
-from .user_establishment import UserEstablishment
-from .user_password import UserPassword
-from .user_token import UserToken
+from .establishments.establishment import Establishment
+from .establishments.establishment_request import EstablishmentRequest
+from .measurements.measurement import Measurement
+from .measurements.measurement_alert import MeasurementAlert
+from .subjects.subject import Sex, Subject
+from .subjects.subject_event import SubjectEvent
+from .surveys.survey import Survey
+from .surveys.survey_question import SurveyQuestion
+from .surveys.survey_question_option import SurveyQuestionOption
+from .surveys.survey_response import SurveyResponse
+from .surveys.survey_response_edit import SurveyResponseEdit
 
 __all__ = [
     "Base",

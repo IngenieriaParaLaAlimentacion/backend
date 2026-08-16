@@ -5,29 +5,28 @@ from fastapi import APIRouter, Depends, status
 from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams, SurveyListingQuery
 from app.core.dependencies import (
     get_survey_service,
-    require_admin_analyst_or_superadmin,
+    require_admin_or_analyst,
     require_any,
-    require_field_worker_admin_or_superadmin,
 )
 from app.domain import UserActor
 from app.reference_data.fies_template import build_fies_template
 from app.schemas.pagination import PaginatedResponse
-from app.schemas.survey_schema import (
+from app.schemas.surveys.survey_schema import (
     SurveyCreateRequest,
+    SurveyDetailResponse,
     SurveyListItem,
-    SurveyResponse,
     SurveyStatusRequest,
     SurveyTemplateResponse,
     SurveyUpdateRequest,
 )
-from app.services.survey_service import SurveyService
+from app.services.surveys.survey_service import SurveyService
 
 router = APIRouter(prefix="/surveys")
 
 
 @router.post(
     "",
-    response_model=SurveyResponse,
+    response_model=SurveyDetailResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Create a survey",
     description=(
@@ -44,11 +43,11 @@ router = APIRouter(prefix="/surveys")
 )
 async def create_survey(
     data: SurveyCreateRequest,
-    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
+    actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyService = Depends(get_survey_service),
-) -> SurveyResponse:
+) -> SurveyDetailResponse:
     survey = await service.create(data, actor)
-    return SurveyResponse.model_validate(survey)
+    return SurveyDetailResponse.model_validate(survey)
 
 
 @router.get(
@@ -64,7 +63,7 @@ async def create_survey(
 async def list_surveys(
     query: SurveyListingQuery = Depends(),
     paginated: PaginatedQueryParams = Depends(),
-    _: UserActor = Depends(require_admin_analyst_or_superadmin),
+    _: UserActor = Depends(require_admin_or_analyst),
     service: SurveyService = Depends(get_survey_service),
 ) -> PaginatedResponse[SurveyListItem]:
     result = await service.list_surveys(
@@ -90,7 +89,7 @@ async def list_surveys(
     responses=AUTH_RESPONSES,
 )
 async def get_fies_template(
-    _: UserActor = Depends(require_admin_analyst_or_superadmin),
+    _: UserActor = Depends(require_admin_or_analyst),
 ) -> SurveyTemplateResponse:
     return build_fies_template()
 
@@ -104,13 +103,13 @@ async def get_fies_template(
         "Availability is not establishment-scoped: a field worker with no "
         "establishments sees the same list as anyone else. Each item carries "
         "`response_target`, so the client knows which entity to ask for before "
-        "opening the form. Field worker, admin, and superadmin only."
+        "opening the form. Accessible to any authenticated role."
     ),
     responses=AUTH_RESPONSES,
 )
 async def list_available_surveys(
     paginated: PaginatedQueryParams = Depends(),
-    _: UserActor = Depends(require_field_worker_admin_or_superadmin),
+    _: UserActor = Depends(require_any),
     service: SurveyService = Depends(get_survey_service),
 ) -> PaginatedResponse[SurveyListItem]:
     result = await service.list_available_surveys(
@@ -127,7 +126,7 @@ async def list_available_surveys(
 
 @router.get(
     "/{survey_id}",
-    response_model=SurveyResponse,
+    response_model=SurveyDetailResponse,
     summary="Get a survey",
     description=(
         "Return a survey's full configuration with ordered questions and options. "
@@ -143,14 +142,14 @@ async def get_survey(
     survey_id: UUID,
     actor: UserActor = Depends(require_any),
     service: SurveyService = Depends(get_survey_service),
-) -> SurveyResponse:
+) -> SurveyDetailResponse:
     survey = await service.get(survey_id, actor)
-    return SurveyResponse.model_validate(survey)
+    return SurveyDetailResponse.model_validate(survey)
 
 
 @router.put(
     "/{survey_id}",
-    response_model=SurveyResponse,
+    response_model=SurveyDetailResponse,
     summary="Update a survey",
     description=(
         "Declaratively replace a survey's configuration. Questions and options are "
@@ -170,16 +169,16 @@ async def get_survey(
 async def update_survey(
     survey_id: UUID,
     data: SurveyUpdateRequest,
-    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
+    actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyService = Depends(get_survey_service),
-) -> SurveyResponse:
+) -> SurveyDetailResponse:
     survey = await service.update(survey_id, data, actor)
-    return SurveyResponse.model_validate(survey)
+    return SurveyDetailResponse.model_validate(survey)
 
 
 @router.post(
     "/{survey_id}/duplicate",
-    response_model=SurveyResponse,
+    response_model=SurveyDetailResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Duplicate a survey",
     description=(
@@ -194,11 +193,11 @@ async def update_survey(
 )
 async def duplicate_survey(
     survey_id: UUID,
-    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
+    actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyService = Depends(get_survey_service),
-) -> SurveyResponse:
+) -> SurveyDetailResponse:
     survey = await service.duplicate(survey_id, actor)
-    return SurveyResponse.model_validate(survey)
+    return SurveyDetailResponse.model_validate(survey)
 
 
 @router.delete(
@@ -215,7 +214,7 @@ async def duplicate_survey(
 )
 async def delete_survey(
     survey_id: UUID,
-    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
+    actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyService = Depends(get_survey_service),
 ) -> None:
     await service.delete(survey_id, actor)
@@ -223,7 +222,7 @@ async def delete_survey(
 
 @router.patch(
     "/{survey_id}/status",
-    response_model=SurveyResponse,
+    response_model=SurveyDetailResponse,
     summary="Activate or deactivate a survey",
     description=(
         "Toggle a survey's active flag. Bypasses the edit-lock so surveys with "
@@ -237,8 +236,8 @@ async def delete_survey(
 async def set_survey_status(
     survey_id: UUID,
     data: SurveyStatusRequest,
-    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
+    actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyService = Depends(get_survey_service),
-) -> SurveyResponse:
+) -> SurveyDetailResponse:
     survey = await service.set_active(survey_id, data.is_active, actor)
-    return SurveyResponse.model_validate(survey)
+    return SurveyDetailResponse.model_validate(survey)

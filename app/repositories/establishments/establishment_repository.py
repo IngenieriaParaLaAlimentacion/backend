@@ -1,0 +1,183 @@
+from uuid import UUID
+
+from sqlalchemy import asc, desc, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.domain.establishment import (
+    EstablishmentListingParams,
+    EstablishmentSortOrder,
+    UserEstablishmentStatus,
+)
+from app.exceptions.domain_exceptions import EstablishmentNotFoundError
+from app.models.auth.user_establishment import UserEstablishment
+from app.models.establishments.establishment import Establishment
+from app.utils.db import escape_like, execute_paginated
+
+# Maps each EstablishmentSortOrder value to its SQLAlchemy order clause.
+# KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
+_SORT_CLAUSES = {
+    EstablishmentSortOrder.NEWEST: desc(Establishment.created_at),
+    EstablishmentSortOrder.OLDEST: asc(Establishment.created_at),
+    EstablishmentSortOrder.NAME_ASC: asc(Establishment.name),
+    EstablishmentSortOrder.NAME_DESC: desc(Establishment.name),
+    EstablishmentSortOrder.CITY_ASC: asc(Establishment.city),
+    EstablishmentSortOrder.CITY_DESC: desc(Establishment.city),
+    EstablishmentSortOrder.PROVINCE_ASC: asc(Establishment.province),
+    EstablishmentSortOrder.PROVINCE_DESC: desc(Establishment.province),
+}
+
+
+class EstablishmentRepository:
+    """Persistence operations for Establishment entities."""
+
+    def __init__(self, db: AsyncSession):
+        self.db = db
+
+    async def create(self, establishment: Establishment) -> Establishment:
+        """Persist a new establishment."""
+        self.db.add(establishment)
+        await self.db.flush()
+        await self.db.refresh(establishment)
+        return establishment
+
+    async def update(self, establishment: Establishment) -> Establishment:
+        """Persist changes to an existing establishment."""
+        await self.db.flush()
+        await self.db.refresh(establishment)
+        return establishment
+
+    async def get_by_place_id(self, place_id: str) -> Establishment | None:
+        """Return an establishment by place_id, or None if it does not exist."""
+        result = await self.db.execute(
+            select(Establishment).where(Establishment.place_id == place_id)
+        )
+        return result.scalar_one_or_none()
+
+    async def get_by_id(self, id: UUID) -> Establishment | None:
+        """Return an establishment by ID, or None if it does not exist."""
+        return await self.db.get(Establishment, id)
+
+    async def get_by_id_or_raise(self, id: UUID) -> Establishment:
+        """Return an establishment by ID.
+
+        Callers that resolve an establishment before doing any work use this so
+        an unknown id answers 404 rather than an empty result, which would be
+        indistinguishable from a real establishment with no data.
+
+        Raises:
+            EstablishmentNotFoundError: if the establishment does not exist.
+        """
+        establishment = await self.get_by_id(id)
+        if establishment is None:
+            raise EstablishmentNotFoundError(str(id))
+        return establishment
+
+    async def find_by_ids(self, ids: list[UUID]) -> list[Establishment]:
+        """Return establishments for the given IDs, silently skipping any
+        that do not exist."""
+        result = await self.db.execute(
+            select(Establishment).where(Establishment.id.in_(ids))
+        )
+        return result.scalars().all()
+
+    async def get_all_by_ids(self, ids: list[UUID]) -> list[Establishment]:
+        """Return establishments for all given IDs.
+
+        Raises:
+            EstablishmentNotFoundError: if any of the requested establishment
+            is missing.
+        """
+        establishments = await self.find_by_ids(ids)
+        id_set = set(ids)
+
+        if len(establishments) != len(id_set):
+            found_ids = {establishment.id for establishment in establishments}
+            missing = next(iter(id_set - found_ids))
+            raise EstablishmentNotFoundError(str(missing))
+
+        return establishments
+
+    @staticmethod
+    def _search_condition(search: str | None):
+        """Case-insensitive name/formatted_address match for ``search``, or None.
+
+        Returns None when ``search`` is empty so callers can skip the filter.
+        """
+        if not search:
+            return None
+        search_term = f"%{escape_like(search)}%"
+        return Establishment.name.ilike(
+            search_term, escape="\\"
+        ) | Establishment.formatted_address.ilike(search_term, escape="\\")
+
+    @classmethod
+    def _listing_conditions(cls, params: EstablishmentListingParams) -> list:
+        """Build the search/city/province filter conditions for a listing."""
+        conditions = []
+        search_condition = cls._search_condition(params.search)
+        if search_condition is not None:
+            conditions.append(search_condition)
+        if params.city:
+            conditions.append(Establishment.city.ilike(params.city))
+        if params.province:
+            conditions.append(Establishment.province.ilike(params.province))
+        return conditions
+
+    async def get_paginated(
+        self,
+        limit: int,
+        offset: int,
+        params: EstablishmentListingParams,
+    ) -> tuple[list[Establishment], int]:
+        """Return a paginated list of establishments and the total matching count.
+
+        ``search`` matches case-insensitively against name or formatted_address.
+        ``city`` and ``province`` are exact case-insensitive matches.
+        """
+        base_query = select(Establishment)
+        count_query = select(func.count()).select_from(Establishment)
+
+        for condition in self._listing_conditions(params):
+            base_query = base_query.where(condition)
+            count_query = count_query.where(condition)
+
+        order_by = _SORT_CLAUSES[params.sort_order]
+        return await execute_paginated(
+            self.db, base_query, count_query, order_by, limit, offset
+        )
+
+    async def get_available_for_user(
+        self,
+        user_id: UUID,
+        limit: int,
+        offset: int,
+        params: EstablishmentListingParams,
+    ) -> tuple[list[Establishment], int]:
+        """Return establishments the user can still request access to, paginated.
+
+        Excludes establishments where the user already has an ``approved`` or
+        ``pending`` relation; ``rejected`` relations are treated as available
+        (re-requestable). Applies the same search/city/province/sort filters as
+        ``get_paginated``.
+        """
+        blocked = select(UserEstablishment.establishment_id).where(
+            UserEstablishment.user_id == user_id,
+            UserEstablishment.status.in_(
+                [UserEstablishmentStatus.APPROVED, UserEstablishmentStatus.PENDING]
+            ),
+        )
+        base_query = select(Establishment).where(Establishment.id.not_in(blocked))
+        count_query = (
+            select(func.count())
+            .select_from(Establishment)
+            .where(Establishment.id.not_in(blocked))
+        )
+
+        for condition in self._listing_conditions(params):
+            base_query = base_query.where(condition)
+            count_query = count_query.where(condition)
+
+        order_by = _SORT_CLAUSES[params.sort_order]
+        return await execute_paginated(
+            self.db, base_query, count_query, order_by, limit, offset
+        )
