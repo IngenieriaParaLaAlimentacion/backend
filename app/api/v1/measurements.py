@@ -7,7 +7,7 @@ from app.api.v1.params import (
 )
 from app.core.dependencies import (
     get_measurement_service,
-    require_admin_analyst_or_superadmin,
+    require_admin_or_analyst,
     require_any,
 )
 from app.domain import UserActor
@@ -77,7 +77,7 @@ async def upload_measurement(
 async def list_measurements(
     query: MeasurementListingQuery = Depends(),
     paginated: PaginatedQueryParams = Depends(),
-    _: UserActor = Depends(require_admin_analyst_or_superadmin),
+    _: UserActor = Depends(require_admin_or_analyst),
     service: MeasurementService = Depends(get_measurement_service),
 ) -> PaginatedResponse[MeasurementListItem]:
     query.validate()

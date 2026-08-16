@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Response, status
 
 from app.api.v1.params import AUTH_RESPONSES
-from app.core.dependencies import get_admin_service, require_admin_or_superadmin
+from app.core.dependencies import get_admin_service, require_admin
 from app.domain.user import UserActor, UserRole
 from app.schemas.auth.admin_schema import InviteAdminRequest, InviteUserResponse
 from app.services.admin_service import AdminService
@@ -32,7 +32,7 @@ router = APIRouter()
 async def invite_admin(
     data: InviteAdminRequest,
     service: AdminService = Depends(get_admin_service),
-    _admin: UserActor = Depends(require_admin_or_superadmin),
+    _admin: UserActor = Depends(require_admin),
 ) -> InviteUserResponse:
     user_id = await service.invite_user(data, role=UserRole.ADMIN)
     return InviteUserResponse(user_id=user_id)
@@ -57,7 +57,7 @@ async def invite_admin(
 async def invite_analyst(
     data: InviteAdminRequest,
     service: AdminService = Depends(get_admin_service),
-    _admin: UserActor = Depends(require_admin_or_superadmin),
+    _admin: UserActor = Depends(require_admin),
 ) -> InviteUserResponse:
     user_id = await service.invite_user(data, role=UserRole.ANALYST)
     return InviteUserResponse(user_id=user_id)
@@ -84,7 +84,7 @@ async def invite_analyst(
 async def resend_invite(
     user_id: UUID,
     service: AdminService = Depends(get_admin_service),
-    _admin: UserActor = Depends(require_admin_or_superadmin),
+    _admin: UserActor = Depends(require_admin),
 ) -> Response:
     await service.resend_invite(user_id)
     return Response(status_code=status.HTTP_202_ACCEPTED)

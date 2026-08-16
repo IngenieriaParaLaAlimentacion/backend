@@ -10,7 +10,7 @@ from app.api.v1.params import (
 from app.core.dependencies import (
     get_establishment_service,
     get_optional_actor,
-    require_admin_or_superadmin,
+    require_admin,
     require_any,
 )
 from app.domain import UserActor, UserRole
@@ -47,7 +47,7 @@ _FIELD_WORKER_ROLES = {
 )
 async def create_establishment(
     data: EstablishmentRequest,
-    _: UserActor = Depends(require_admin_or_superadmin),
+    _: UserActor = Depends(require_admin),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> EstablishmentResponse:
     """Register a new establishment."""
@@ -94,7 +94,7 @@ async def create_establishment_request(
 async def update_establishment(
     establishment_id: UUID,
     data: EstablishmentUpdateRequest,
-    _: UserActor = Depends(require_admin_or_superadmin),
+    _: UserActor = Depends(require_admin),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> EstablishmentResponse:
     """Partially update an establishment."""

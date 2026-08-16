@@ -134,9 +134,6 @@ async def _get_authenticated_actor(
     return UserActor(user_id=payload["sub"], role=payload["role"])
 
 
-# TODO: revisar cuales de estos metodos son necesarios y cuales estan duplicados
-
-
 async def get_optional_actor(
     token: str | None = Depends(oauth2_scheme_optional),
 ) -> UserActor | None:
@@ -151,7 +148,7 @@ async def get_optional_actor(
     return await _get_authenticated_actor(token, set(UserRole))
 
 
-async def require_admin_or_superadmin(token: str = Depends(oauth2_scheme)) -> UserActor:
+async def require_admin(token: str = Depends(oauth2_scheme)) -> UserActor:
     return await _get_authenticated_actor(token, {UserRole.ADMIN, UserRole.SUPERADMIN})
 
 
@@ -168,7 +165,7 @@ async def require_any(token: str = Depends(oauth2_scheme)) -> UserActor:
     )
 
 
-async def require_admin_analyst_or_superadmin(
+async def require_admin_or_analyst(
     token: str = Depends(oauth2_scheme),
 ) -> UserActor:
     """Dependency that accepts admin, analyst and superadmin roles."""

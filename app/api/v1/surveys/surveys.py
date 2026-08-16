@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, status
 from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams, SurveyListingQuery
 from app.core.dependencies import (
     get_survey_service,
-    require_admin_analyst_or_superadmin,
+    require_admin_or_analyst,
     require_any,
 )
 from app.domain import UserActor
@@ -42,7 +42,7 @@ router = APIRouter(prefix="/surveys")
 )
 async def create_survey(
     data: SurveyCreateRequest,
-    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
+    actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyService = Depends(get_survey_service),
 ) -> SurveyDetailResponse:
     survey = await service.create(data, actor)
@@ -62,7 +62,7 @@ async def create_survey(
 async def list_surveys(
     query: SurveyListingQuery = Depends(),
     paginated: PaginatedQueryParams = Depends(),
-    _: UserActor = Depends(require_admin_analyst_or_superadmin),
+    _: UserActor = Depends(require_admin_or_analyst),
     service: SurveyService = Depends(get_survey_service),
 ) -> PaginatedResponse[SurveyListItem]:
     result = await service.list_surveys(
@@ -88,7 +88,7 @@ async def list_surveys(
     responses=AUTH_RESPONSES,
 )
 async def get_fies_template(
-    _: UserActor = Depends(require_admin_analyst_or_superadmin),
+    _: UserActor = Depends(require_admin_or_analyst),
 ) -> SurveyTemplateResponse:
     return build_fies_template()
 
@@ -167,7 +167,7 @@ async def get_survey(
 async def update_survey(
     survey_id: UUID,
     data: SurveyUpdateRequest,
-    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
+    actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyService = Depends(get_survey_service),
 ) -> SurveyDetailResponse:
     survey = await service.update(survey_id, data, actor)
@@ -191,7 +191,7 @@ async def update_survey(
 )
 async def duplicate_survey(
     survey_id: UUID,
-    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
+    actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyService = Depends(get_survey_service),
 ) -> SurveyDetailResponse:
     survey = await service.duplicate(survey_id, actor)
@@ -212,7 +212,7 @@ async def duplicate_survey(
 )
 async def delete_survey(
     survey_id: UUID,
-    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
+    actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyService = Depends(get_survey_service),
 ) -> None:
     await service.delete(survey_id, actor)
@@ -234,7 +234,7 @@ async def delete_survey(
 async def set_survey_status(
     survey_id: UUID,
     data: SurveyStatusRequest,
-    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
+    actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyService = Depends(get_survey_service),
 ) -> SurveyDetailResponse:
     survey = await service.set_active(survey_id, data.is_active, actor)

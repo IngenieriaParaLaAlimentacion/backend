@@ -10,7 +10,7 @@ from app.api.v1.params import (
 )
 from app.core.dependencies import (
     get_survey_response_service,
-    require_admin_analyst_or_superadmin,
+    require_admin_or_analyst,
     require_any,
 )
 from app.domain import UserActor
@@ -52,7 +52,7 @@ async def export_survey_responses(
     survey_id: UUID,
     establishment_id: Optional[UUID] = Query(default=None),
     format: ExportFormat = ExportFormat.XLSX,
-    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
+    actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> Response:
     exporter = get_exporter(format)
@@ -89,7 +89,7 @@ async def list_survey_responses(
     survey_id: UUID,
     query: SurveyResponseListingQuery = Depends(),
     paginated: PaginatedQueryParams = Depends(),
-    actor: UserActor = Depends(require_admin_analyst_or_superadmin),
+    actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> PaginatedResponse[SurveyResponseDashboardItem]:
     result = await service.list_by_survey(

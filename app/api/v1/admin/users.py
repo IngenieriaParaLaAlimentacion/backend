@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query, status
 
 from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams
-from app.core.dependencies import get_admin_service, require_admin_or_superadmin
+from app.core.dependencies import get_admin_service, require_admin
 from app.domain.user import UserActor, UserRole, UserStatus
 from app.schemas.auth.admin_schema import FullUserAdminView, PaginatedUsersResponse
 from app.services.admin_service import AdminService
@@ -27,7 +27,7 @@ async def list_users(
         default=None, alias="status", description="Filter by status."
     ),
     search: str | None = Query(default=None, max_length=100),
-    _admin: UserActor = Depends(require_admin_or_superadmin),
+    _admin: UserActor = Depends(require_admin),
     service: AdminService = Depends(get_admin_service),
 ) -> PaginatedUsersResponse:
     result = await service.get_users_paginated(
@@ -54,7 +54,7 @@ async def list_users(
 )
 async def get_user(
     user_id: UUID,
-    _admin: UserActor = Depends(require_admin_or_superadmin),
+    _admin: UserActor = Depends(require_admin),
     service: AdminService = Depends(get_admin_service),
 ) -> FullUserAdminView:
     """Return full profile data for the given user, including establishments.
