@@ -28,7 +28,7 @@ from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.establishments.establishment import Establishment
 from app.models.surveys.survey import Survey
 from app.models.surveys.survey_response import SurveyResponse
-from app.utils.db import ilike_condition
+from app.utils.db import execute_paginated, ilike_condition
 
 _CONSTRAINT_FIELDS = {
     "uq_survey_responses_survey_establishment": "establishment_id",
@@ -272,24 +272,22 @@ class SurveyResponseRepository:
             params,
             survey_id=survey_id,
         )
-        total = (await self.db.execute(count_query)).scalar_one()
-
         rows_query = self._apply_filters(
             select(SurveyResponse), params, survey_id=survey_id
+        ).options(
+            selectinload(SurveyResponse.survey),
+            selectinload(SurveyResponse.establishment),
+            selectinload(SurveyResponse.subject),
+            selectinload(SurveyResponse.submitted_by),
         )
-        rows_query = (
-            rows_query.options(
-                selectinload(SurveyResponse.survey),
-                selectinload(SurveyResponse.establishment),
-                selectinload(SurveyResponse.subject),
-                selectinload(SurveyResponse.submitted_by),
-            )
-            .order_by(*_SORT_CLAUSES[params.sort_order])
-            .limit(limit)
-            .offset(offset)
+        rows, total = await execute_paginated(
+            self.db,
+            rows_query,
+            count_query,
+            _SORT_CLAUSES[params.sort_order],
+            limit,
+            offset,
         )
-        rows = (await self.db.execute(rows_query)).scalars().all()
-
         return list(rows), total
 
     async def get_survey_response_summary(

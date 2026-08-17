@@ -20,7 +20,7 @@ from app.exceptions.domain_exceptions import (
 from app.models.surveys.survey import Survey
 from app.models.surveys.survey_question import SurveyQuestion
 from app.models.surveys.survey_question_option import SurveyQuestionOption
-from app.utils.db import ilike_condition
+from app.utils.db import execute_paginated_rows, ilike_condition
 
 # Maps each SurveySortOrder value to its SQLAlchemy order clause.
 # KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
@@ -178,14 +178,16 @@ class SurveyRepository:
             noload(Survey.questions)
         )
         count_query = select(func.count()).select_from(Survey)
-        for condition in self._listing_conditions(params):
-            base_query = base_query.where(condition)
-            count_query = count_query.where(condition)
-        order_by = _SORT_CLAUSES[params.sort_order]
-        paginated = base_query.order_by(order_by).limit(limit).offset(offset)
-        total = (await self.db.execute(count_query)).scalar_one()
-        rows = (await self.db.execute(paginated)).all()
-        return [(row[0], row[1]) for row in rows], total
+        rows, total = await execute_paginated_rows(
+            self.db,
+            base_query,
+            count_query,
+            _SORT_CLAUSES[params.sort_order],
+            limit,
+            offset,
+            conditions=self._listing_conditions(params),
+        )
+        return list(rows), total
 
     async def create(
         self,
@@ -318,9 +320,7 @@ class SurveyRepository:
         count_query = (
             select(func.count()).select_from(Survey).where(Survey.is_active.is_(True))
         )
-        paginated = (
-            base_query.order_by(desc(Survey.created_at)).limit(limit).offset(offset)
+        rows, total = await execute_paginated_rows(
+            self.db, base_query, count_query, desc(Survey.created_at), limit, offset
         )
-        total = (await self.db.execute(count_query)).scalar_one()
-        rows = (await self.db.execute(paginated)).all()
-        return [(row[0], row[1]) for row in rows], total
+        return list(rows), total
