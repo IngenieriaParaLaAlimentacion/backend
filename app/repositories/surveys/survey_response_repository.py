@@ -2,7 +2,18 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import and_, cast, exists, func, literal, or_, select, union_all
+from sqlalchemy import (
+    and_,
+    asc,
+    cast,
+    desc,
+    exists,
+    func,
+    literal,
+    or_,
+    select,
+    union_all,
+)
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,6 +21,7 @@ from sqlalchemy.orm import selectinload
 
 from app.domain.survey_response import (
     SurveyResponseListingParams,
+    SurveyResponseSortOrder,
     SurveyResponseSummaryParams,
 )
 from app.exceptions.domain_exceptions import UniqueConstraintError
@@ -21,6 +33,29 @@ from app.utils.db import ilike_condition
 _CONSTRAINT_FIELDS = {
     "uq_survey_responses_survey_establishment": "establishment_id",
     "uq_survey_responses_survey_subject": "subject_id",
+}
+
+# Maps each SurveyResponseSortOrder value to its SQLAlchemy order clause(s).
+# Each pairs the sort column with `id` as a tiebreaker, so responses sharing a
+# value still page consistently instead of shuffling between requests.
+# KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
+_SORT_CLAUSES = {
+    SurveyResponseSortOrder.EVENT_AT_DESC: (
+        desc(SurveyResponse.event_at),
+        desc(SurveyResponse.id),
+    ),
+    SurveyResponseSortOrder.EVENT_AT_ASC: (
+        asc(SurveyResponse.event_at),
+        asc(SurveyResponse.id),
+    ),
+    SurveyResponseSortOrder.CREATED_AT_DESC: (
+        desc(SurveyResponse.created_at),
+        desc(SurveyResponse.id),
+    ),
+    SurveyResponseSortOrder.CREATED_AT_ASC: (
+        asc(SurveyResponse.created_at),
+        asc(SurveyResponse.id),
+    ),
 }
 
 
@@ -65,10 +100,13 @@ class SurveyResponseRepository:
     ) -> Any:
         """Applies common filters and conditional joins to a SQLAlchemy query."""
         target_survey_id = survey_id or getattr(params, "survey_id", None)
+        subject_id = getattr(params, "subject_id", None)
         conditions = []
 
         if target_survey_id:
             conditions.append(SurveyResponse.survey_id == target_survey_id)
+        if subject_id:
+            conditions.append(SurveyResponse.subject_id == subject_id)
         if params.establishment_id:
             conditions.append(
                 SurveyResponse.establishment_id == params.establishment_id
@@ -195,15 +233,20 @@ class SurveyResponseRepository:
         return result.scalar_one_or_none()
 
     async def list_all_for_export(
-        self, survey_id: UUID, establishment_id: UUID | None = None
+        self,
+        survey_id: UUID,
+        establishment_id: UUID | None = None,
+        subject_id: UUID | None = None,
     ) -> list[SurveyResponse]:
         """Return every response to a survey with relations.
 
-        Optionally filter by establishment.
+        Optionally filter by the response's target.
         """
         conditions = [SurveyResponse.survey_id == survey_id]
         if establishment_id is not None:
             conditions.append(SurveyResponse.establishment_id == establishment_id)
+        if subject_id is not None:
+            conditions.append(SurveyResponse.subject_id == subject_id)
 
         query = (
             select(SurveyResponse)
@@ -222,7 +265,8 @@ class SurveyResponseRepository:
         offset: int,
         params: SurveyResponseListingParams,
     ) -> tuple[list[SurveyResponse], int]:
-        """Return a paginated list of responses to a survey plus total count."""
+        """Return a paginated list of responses to a survey plus total count,
+        in ``params.sort_order``."""
         count_query = self._apply_filters(
             select(func.count(SurveyResponse.id.distinct())),
             params,
@@ -240,7 +284,7 @@ class SurveyResponseRepository:
                 selectinload(SurveyResponse.subject),
                 selectinload(SurveyResponse.submitted_by),
             )
-            .order_by(SurveyResponse.event_at.desc())
+            .order_by(*_SORT_CLAUSES[params.sort_order])
             .limit(limit)
             .offset(offset)
         )

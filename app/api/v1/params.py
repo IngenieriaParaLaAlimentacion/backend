@@ -28,6 +28,7 @@ from app.domain.survey import (
 )
 from app.domain.survey_response import (
     SurveyResponseListingParams,
+    SurveyResponseSortOrder,
     SurveyResponseSummaryParams,
 )
 from app.exceptions.domain_exceptions import InvalidListingFilterError
@@ -178,20 +179,24 @@ class SurveyListingQuery:
 
 @dataclass
 class SurveyResponseListingQuery(LocationQuery):
+    subject_id: Annotated[UUID | None, Query()] = None
     establishment_id: Annotated[UUID | None, Query()] = None
     event_at_from: Annotated[datetime | None, Query()] = None
     event_at_to: Annotated[datetime | None, Query()] = None
+    sort_order: SurveyResponseSortOrder = SurveyResponseSortOrder.EVENT_AT_DESC
 
     def validate(self) -> None:
         _validate_date_range(self.event_at_from, self.event_at_to, "event_at")
 
     def to_domain(self) -> SurveyResponseListingParams:
         return SurveyResponseListingParams(
+            subject_id=self.subject_id,
             establishment_id=self.establishment_id,
             event_at_from=self.event_at_from,
             event_at_to=self.event_at_to,
             city=self.city,
             province=self.province,
+            sort_order=self.sort_order,
         )
 
 

@@ -73,13 +73,21 @@ survey responses. Worth revisiting when such a view exists.
 
 ## Consequences
 
-**Anonymous and subject-targeted responses have no geography.** The city, province and
-establishment filters all resolve through the response's `establishment_id`, so all
-three are rejected with a `400` (`InvalidListingFilterError`) on surveys that do not
-target establishments — on both the response listing and the export — rather than
-silently returning an empty page or workbook, which is indistinguishable from "no data
-matched". The global analytics summary keeps its establishment join, where matching only
-establishment-linked responses is the correct reading.
+**Every target filter is rejected on a survey that does not carry that target.** The
+city, province and establishment filters all resolve through the response's
+`establishment_id`, and `subject_id` through its subject column; a filter is rejected
+with a `400` (`InvalidListingFilterError`) on surveys targeted elsewhere — on both the
+response listing and the export — rather than silently returning an empty page or
+workbook, which is indistinguishable from "no data matched". The global analytics
+summary keeps its establishment join, where matching only establishment-linked
+responses is the correct reading.
+
+**`subject_id` and `establishment_id` are lookups, not filters.** The
+one-response-per-target indexes mean either one matches at most a single response on a
+route already scoped to one survey. They are kept for symmetry and for deep-linking to
+a known target's answers; `city`/`province` remain true filters, since many
+establishments share a locality. Listing every response a subject gave *across* surveys
+is a different query and has no endpoint today.
 
 **`participating_establishments_count` is `0`** for subject and anonymous surveys.
 That is literally true and was left alone; renaming it would break a field the

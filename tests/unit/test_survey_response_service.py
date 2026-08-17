@@ -9,7 +9,11 @@ from app.domain.survey import (
     SurveyInstrumentType,
     SurveyResponseTarget,
 )
-from app.domain.survey_response import SurveyResponseDomain, SurveyResponseListingParams
+from app.domain.survey_response import (
+    SurveyResponseDomain,
+    SurveyResponseListingParams,
+    SurveyResponseSortOrder,
+)
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
@@ -1207,6 +1211,42 @@ class TestListBySurveyFilters:
             )
         uow.survey_response_repo.list_by_survey.assert_not_called()
 
+    @pytest.mark.parametrize(
+        "target",
+        [SurveyResponseTarget.ESTABLISHMENT, SurveyResponseTarget.ANONYMOUS],
+    )
+    async def test_subject_filter_rejected_without_subjects(
+        self, make_uow, admin_actor, target
+    ):
+        """Mirror of the establishment case: ``subject_id`` is null on every
+        response to a survey not targeted at subjects."""
+        survey = _make_survey_orm(response_target=target)
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
+        params = SurveyResponseListingParams(subject_id=uuid.uuid4())
+
+        with pytest.raises(InvalidListingFilterError):
+            await SurveyResponseService(uow).list_by_survey(
+                survey.id, admin_actor, page=1, page_size=20, params=params
+            )
+        uow.survey_response_repo.list_by_survey.assert_not_called()
+
+    async def test_subject_filter_allowed_for_subject_survey(
+        self, make_uow, admin_actor
+    ):
+        survey = _make_survey_orm(response_target=SurveyResponseTarget.SUBJECT)
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
+
+        await SurveyResponseService(uow).list_by_survey(
+            survey.id,
+            admin_actor,
+            page=1,
+            page_size=20,
+            params=SurveyResponseListingParams(subject_id=uuid.uuid4()),
+        )
+        uow.survey_response_repo.list_by_survey.assert_awaited_once()
+
     async def test_location_filter_allowed_for_establishment_survey(
         self, make_uow, admin_actor
     ):
@@ -1238,7 +1278,9 @@ class TestListBySurveyFilters:
 
         call = uow.survey_response_repo.list_by_survey.call_args
         assert call.kwargs["params"].establishment_id is None
+        assert call.kwargs["params"].subject_id is None
         assert call.kwargs["params"].city is None
+        assert call.kwargs["params"].sort_order == SurveyResponseSortOrder.EVENT_AT_DESC
 
 
 class TestExport:
@@ -1291,7 +1333,7 @@ class TestExport:
         )
 
         uow.survey_response_repo.list_all_for_export.assert_awaited_once_with(
-            survey.id, establishment_id
+            survey.id, establishment_id, None
         )
 
     @pytest.mark.parametrize(
@@ -1324,5 +1366,39 @@ class TestExport:
         await SurveyResponseService(uow).export(survey.id, admin_actor, fake_exporter)
 
         uow.survey_response_repo.list_all_for_export.assert_awaited_once_with(
-            survey.id, None
+            survey.id, None, None
         )
+
+    async def test_filters_by_subject(self, make_uow, admin_actor):
+        survey = _make_survey_orm(response_target=SurveyResponseTarget.SUBJECT)
+        subject_id = uuid.uuid4()
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_all_for_export = AsyncMock(return_value=[])
+        fake_exporter = MagicMock()
+        fake_exporter.export.return_value = b""
+
+        await SurveyResponseService(uow).export(
+            survey.id, admin_actor, fake_exporter, subject_id=subject_id
+        )
+
+        uow.survey_response_repo.list_all_for_export.assert_awaited_once_with(
+            survey.id, None, subject_id
+        )
+
+    @pytest.mark.parametrize(
+        "target",
+        [SurveyResponseTarget.ESTABLISHMENT, SurveyResponseTarget.ANONYMOUS],
+    )
+    async def test_subject_filter_rejected_without_subjects(
+        self, make_uow, admin_actor, target
+    ):
+        survey = _make_survey_orm(response_target=target)
+        uow = make_uow(survey=survey)
+        uow.survey_response_repo.list_all_for_export = AsyncMock(return_value=[])
+        fake_exporter = MagicMock()
+
+        with pytest.raises(InvalidListingFilterError):
+            await SurveyResponseService(uow).export(
+                survey.id, admin_actor, fake_exporter, subject_id=uuid.uuid4()
+            )
+        uow.survey_response_repo.list_all_for_export.assert_not_called()

@@ -1,6 +1,7 @@
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
+from enum import StrEnum
 from typing import TypeVar
 from uuid import UUID
 
@@ -9,6 +10,15 @@ from app.domain.measurement import EstablishmentRefDomain, SubjectRefDomain
 from app.domain.survey import ResponseType
 
 RefT = TypeVar("RefT")
+
+
+class SurveyResponseSortOrder(StrEnum):
+    """Sort orders accepted by a survey's response listing."""
+
+    EVENT_AT_DESC = "event_at_desc"
+    EVENT_AT_ASC = "event_at_asc"
+    CREATED_AT_DESC = "created_at_desc"
+    CREATED_AT_ASC = "created_at_asc"
 
 
 def _optional_ref(obj: object, builder: Callable[[object], RefT]) -> RefT | None:
@@ -185,14 +195,17 @@ class SurveyResponseDetailDomain:
 
 @dataclass
 class SurveyResponseListingParams:
-    """Filters for a survey's response listing: establishment, event
-    date range, and geographic zone (establishment's city/province)."""
+    """Filters and sort order for a survey's response listing: subject,
+    establishment, event date range, and geographic zone (establishment's
+    city/province)."""
 
+    subject_id: UUID | None = None
     establishment_id: UUID | None = None
     event_at_from: datetime | None = None
     event_at_to: datetime | None = None
     city: str | None = None
     province: str | None = None
+    sort_order: SurveyResponseSortOrder = SurveyResponseSortOrder.EVENT_AT_DESC
 
     def __post_init__(self) -> None:
         self.city = self.city.strip() or None if self.city else None

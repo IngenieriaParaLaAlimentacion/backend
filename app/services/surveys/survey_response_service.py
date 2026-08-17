@@ -81,22 +81,31 @@ class SurveyResponseService:
         return None, None
 
     @staticmethod
-    def _assert_establishment_filters_applicable(
+    def _assert_target_filters_applicable(
         survey: SurveyDomain,
         *,
+        subject_id: UUID | None = None,
         establishment_id: UUID | None = None,
         city: str | None = None,
         province: str | None = None,
     ) -> None:
-        """Reject establishment-based filters on a survey with no establishments."""
-        if survey.response_target == SurveyResponseTarget.ESTABLISHMENT:
-            return
-        if establishment_id is not None:
+        """Reject filters that resolve through a target this survey's responses
+        do not carry."""
+        targets_subject = survey.response_target == SurveyResponseTarget.SUBJECT
+        targets_establishment = (
+            survey.response_target == SurveyResponseTarget.ESTABLISHMENT
+        )
+
+        if subject_id is not None and not targets_subject:
+            raise InvalidListingFilterError(
+                "The subject filter only applies to surveys targeted at subjects."
+            )
+        if establishment_id is not None and not targets_establishment:
             raise InvalidListingFilterError(
                 "The establishment filter only applies to surveys targeted at "
                 "establishments."
             )
-        if city or province:
+        if (city or province) and not targets_establishment:
             raise InvalidListingFilterError(
                 "City and province filters only apply to surveys targeted at "
                 "establishments."
@@ -351,19 +360,22 @@ class SurveyResponseService:
         page_size: int,
         params: SurveyResponseListingParams,
     ) -> PaginatedResult[SurveyResponseDashboardItemDomain]:
-        """Return a paginated list of a survey's responses, newest event_at first.
+        """Return a paginated list of a survey's responses in ``params.sort_order``.
 
         Raises:
             ForbiddenError: actor role isn't a dashboard reader.
             SurveyNotFoundError.
-            InvalidListingFilterError: an establishment, city or province filter
-                was applied to a survey whose responses carry no establishment.
+            InvalidListingFilterError: a filter was applied to a survey whose
+                responses carry no such target — a subject filter on a survey
+                not targeted at subjects, or an establishment/city/province one
+                on a survey not targeted at establishments.
         """
         if actor.role not in _DASHBOARD_ROLES:
             raise ForbiddenError()
         survey = await self._get_survey_or_raise(survey_id)
-        self._assert_establishment_filters_applicable(
+        self._assert_target_filters_applicable(
             survey,
+            subject_id=params.subject_id,
             establishment_id=params.establishment_id,
             city=params.city,
             province=params.province,
@@ -428,26 +440,27 @@ class SurveyResponseService:
         actor: UserActor,
         exporter: SurveyResponseExporter,
         establishment_id: UUID | None = None,
+        subject_id: UUID | None = None,
     ) -> bytes:
         """Export every response to a survey using the given exporter.
 
-        Optionally filter by establishment.
+        Optionally filter by the response's target.
 
         Raises:
             ForbiddenError: actor role isn't a dashboard reader.
             SurveyNotFoundError.
-            InvalidListingFilterError: an establishment filter was applied to a
-                survey whose responses carry no establishment.
+            InvalidListingFilterError: a target filter was applied to a survey
+                whose responses do not carry that target.
         """
         if actor.role not in _DASHBOARD_ROLES:
             raise ForbiddenError()
         survey = await self._get_survey_or_raise(survey_id)
-        self._assert_establishment_filters_applicable(
-            survey, establishment_id=establishment_id
+        self._assert_target_filters_applicable(
+            survey, subject_id=subject_id, establishment_id=establishment_id
         )
 
         responses = await self.uow.survey_response_repo.list_all_for_export(
-            survey_id, establishment_id
+            survey_id, establishment_id, subject_id
         )
         detailed = [SurveyResponseDetailDomain.from_db(r) for r in responses]
         return exporter.export(survey, detailed)

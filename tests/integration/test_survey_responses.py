@@ -40,6 +40,26 @@ async def _make_establishment(place_id: str = "place-test-002"):
         return establishment
 
 
+async def _make_subject(dni: int = 33444555):
+    from datetime import date
+
+    from app.db.database import AsyncSessionLocal
+    from app.models.subjects.subject import Sex, Subject
+
+    async with AsyncSessionLocal() as session:
+        subject = Subject(
+            dni=dni,
+            sex=Sex.MALE,
+            name="Otro",
+            last_name="Sujeto",
+            birth_date=date(1985, 3, 14),
+        )
+        session.add(subject)
+        await session.commit()
+        await session.refresh(subject)
+        return subject
+
+
 @pytest_asyncio.fixture
 async def admin_user(make_user_with_role):
     return await make_user_with_role(UserRole.ADMIN)
@@ -956,6 +976,80 @@ class TestListBySurvey:
         ids = [item["id"] for item in response.json()["items"]]
         assert ids == [newer["id"], older["id"]]
 
+    @pytest.mark.parametrize(
+        "sort_order,oldest_first",
+        [
+            ("event_at_asc", True),
+            ("event_at_desc", False),
+            ("created_at_asc", True),
+            ("created_at_desc", False),
+        ],
+    )
+    async def test_sort_order(
+        self, client, db_establishment, admin_user, sort_order, oldest_first
+    ):
+        """Responses are created oldest event_at first, so creation order and
+        event_at order agree — one expectation covers both sort columns."""
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        created = []
+        for event_at in ("2024-06-01T00:00:00Z", "2024-06-05T00:00:00Z"):
+            created.append(
+                (
+                    await client.post(
+                        _responses_url(survey["id"]),
+                        json=_response_body(
+                            survey["id"],
+                            _valid_answers(survey),
+                            id=str(uuid.uuid4()),
+                            event_at=event_at,
+                        ),
+                        headers=headers,
+                    )
+                ).json()
+            )
+
+        response = await client.get(
+            _responses_url(survey["id"]),
+            params={"sort_order": sort_order},
+            headers=headers,
+        )
+
+        ids = [item["id"] for item in response.json()["items"]]
+        expected = [row["id"] for row in created]
+        assert ids == (expected if oldest_first else expected[::-1])
+
+    async def test_rejects_unknown_sort_order(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+
+        response = await client.get(
+            _responses_url(survey["id"]),
+            params={"sort_order": "subject_name_asc"},
+            headers=headers,
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    async def test_rejects_inverted_event_at_range(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+
+        response = await client.get(
+            _responses_url(survey["id"]),
+            params={
+                "event_at_from": "2024-06-05T00:00:00Z",
+                "event_at_to": "2024-06-01T00:00:00Z",
+            },
+            headers=headers,
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
     async def test_paginates(self, client, db_establishment, admin_user):
         headers, _ = admin_user
         survey = await _create_survey(client, headers)
@@ -1342,6 +1436,49 @@ class TestListFilters:
         assert body["total"] == 1
         assert body["items"][0]["establishment"]["id"] == str(db_establishment.id)
 
+    async def test_filters_by_subject(self, client, admin_user, db_subject):
+        headers, _ = admin_user
+        other = await _make_subject()
+        survey = await _create_survey(client, headers, response_target="subject")
+        for subject_id in (db_subject.id, other.id):
+            created = await client.post(
+                _responses_url(survey["id"]),
+                json=_response_body(
+                    survey["id"],
+                    _valid_answers(survey),
+                    id=str(uuid.uuid4()),
+                    subject_id=str(subject_id),
+                ),
+                headers=headers,
+            )
+            assert created.status_code == status.HTTP_201_CREATED
+
+        response = await client.get(
+            _responses_url(survey["id"]),
+            params={"subject_id": str(db_subject.id)},
+            headers=headers,
+        )
+        body = response.json()
+        assert body["total"] == 1
+        assert body["items"][0]["subject"]["id"] == str(db_subject.id)
+
+    @pytest.mark.parametrize("target", ["establishment", "anonymous"])
+    async def test_subject_filter_on_non_subject_survey_returns_400(
+        self, client, admin_user, db_subject, target
+    ):
+        """Mirror of the establishment case: ``subject_id`` is null on every
+        response to a survey not targeted at subjects."""
+        headers, _ = admin_user
+        survey = await _create_survey(
+            client, headers, response_target=target, name=f"Encuesta sujeto {target}"
+        )
+        response = await client.get(
+            _responses_url(survey["id"]),
+            params={"subject_id": str(db_subject.id)},
+            headers=headers,
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
     @pytest.mark.parametrize("target", ["subject", "anonymous"])
     @pytest.mark.parametrize("field", ["city", "province"])
     async def test_location_filter_on_non_establishment_survey_returns_400(
@@ -1690,6 +1827,44 @@ class TestExport:
             headers=headers,
         )
         assert response.status_code == status.HTTP_200_OK
+
+    async def test_filters_by_subject(self, client, admin_user, db_subject):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers, response_target="subject")
+        await client.post(
+            _responses_url(survey["id"]),
+            json=_response_body(
+                survey["id"],
+                _valid_answers(survey),
+                subject_id=str(db_subject.id),
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            _responses_url(survey["id"], "export"),
+            params={"subject_id": str(db_subject.id)},
+            headers=headers,
+        )
+        assert response.status_code == status.HTTP_200_OK
+
+    @pytest.mark.parametrize("target", ["establishment", "anonymous"])
+    async def test_subject_filter_on_non_subject_survey_returns_400(
+        self, client, admin_user, db_subject, target
+    ):
+        """Nothing in this survey carries a subject, so the filter would export
+        an empty workbook that reads as "no responses"."""
+        headers, _ = admin_user
+        survey = await _create_survey(
+            client, headers, response_target=target, name=f"Encuesta sujeto {target}"
+        )
+
+        response = await client.get(
+            _responses_url(survey["id"], "export"),
+            params={"subject_id": str(db_subject.id)},
+            headers=headers,
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     @pytest.mark.parametrize("target", ["subject", "anonymous"])
     async def test_establishment_filter_on_non_establishment_survey_returns_400(
