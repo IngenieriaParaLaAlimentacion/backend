@@ -99,9 +99,7 @@ async def get_fies_template(
     response_model=PaginatedResponse[SurveyListItem],
     summary="List surveys available to the caller",
     description=(
-        "Paginated list of every active survey the caller may respond to. "
-        "Availability is not establishment-scoped: a field worker with no "
-        "establishments sees the same list as anyone else. Each item carries "
+        "Paginated list of every active survey. Each item carries "
         "`response_target`, so the client knows which entity to ask for before "
         "opening the form. Accessible to any authenticated role."
     ),
@@ -130,8 +128,8 @@ async def list_available_surveys(
     summary="Get a survey",
     description=(
         "Return a survey's full configuration with ordered questions and options. "
-        "Accessible by admins, analysts and superadmins for any survey. A field "
-        "worker may fetch any active survey; a deactivated one is forbidden."
+        "All surveys accessible by admins, superadmins and analysts. Only "
+        "available ones for field workers."
     ),
     responses={
         **AUTH_RESPONSES,
