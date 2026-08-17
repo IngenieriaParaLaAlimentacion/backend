@@ -6,6 +6,10 @@ wording before saving. Nothing here is persisted until the author submits a crea
 request, and FIES is intentionally *not* a distinct survey type (see ADR-0002) — once
 saved it is an ordinary survey.
 
+The draft defaults to ``response_target=ANONYMOUS`` (see ADR-0008): FIES measures food
+insecurity at the level of a household, which is neither a ``Subject`` nor an
+``Establishment``. The author can still change it before the first response is recorded.
+
 Variant: individual referent, 12-month reference period (FAO offers household and
 30-day variants; adjust the preamble and pronouns if the program standardizes on one
 of those). The "Sí"/"No" dichotomy matches FAO scoring (Sí = 1, No = 0). FAO field
@@ -21,7 +25,7 @@ Sources:
   - DANE (Colombia) FIES nota metodológica.
 """
 
-from app.domain.survey import ResponseType, SurveyScope
+from app.domain.survey import ResponseType, SurveyResponseTarget
 from app.schemas.surveys.survey_schema import (
     SurveyTemplateResponse,
     TemplateOption,
@@ -59,7 +63,7 @@ def build_fies_template() -> SurveyTemplateResponse:
     return SurveyTemplateResponse(
         name="",
         description=_FIES_PREAMBLE,
-        scope=SurveyScope.GENERIC,
+        response_target=SurveyResponseTarget.ANONYMOUS,
         questions=[
             TemplateQuestion(
                 text=text,

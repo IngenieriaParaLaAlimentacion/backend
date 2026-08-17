@@ -4,6 +4,7 @@ from enum import Enum, StrEnum
 from typing import Self
 from uuid import UUID
 
+from app.domain.common_domains import normalize_optional_str
 from app.domain.subject import Sex
 
 
@@ -201,8 +202,8 @@ class MeasurementListingParams:
     sort_order: MeasurementSortOrder = MeasurementSortOrder.DATE_DESC
 
     def __post_init__(self) -> None:
-        self.city = self.city.strip() or None if self.city else None
-        self.province = self.province.strip() or None if self.province else None
+        self.city = normalize_optional_str(self.city)
+        self.province = normalize_optional_str(self.province)
 
 
 @dataclass

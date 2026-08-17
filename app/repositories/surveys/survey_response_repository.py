@@ -2,19 +2,78 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import and_, cast, exists, func, literal, or_, select, union_all
+from sqlalchemy import (
+    and_,
+    asc,
+    cast,
+    desc,
+    exists,
+    func,
+    literal,
+    or_,
+    select,
+    union_all,
+)
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.domain.survey_response import (
     SurveyResponseListingParams,
+    SurveyResponseSortOrder,
     SurveyResponseSummaryParams,
 )
+from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.establishments.establishment import Establishment
 from app.models.surveys.survey import Survey
 from app.models.surveys.survey_response import SurveyResponse
-from app.utils.db import ilike_condition, insert_with_savepoint
+from app.utils.db import execute_paginated, ilike_condition
+
+_CONSTRAINT_FIELDS = {
+    "uq_survey_responses_survey_establishment": "establishment_id",
+    "uq_survey_responses_survey_subject": "subject_id",
+}
+
+# Maps each SurveyResponseSortOrder value to its SQLAlchemy order clause(s).
+# Each pairs the sort column with `id` as a tiebreaker, so responses sharing a
+# value still page consistently instead of shuffling between requests.
+# KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
+_SORT_CLAUSES = {
+    SurveyResponseSortOrder.EVENT_AT_DESC: (
+        desc(SurveyResponse.event_at),
+        desc(SurveyResponse.id),
+    ),
+    SurveyResponseSortOrder.EVENT_AT_ASC: (
+        asc(SurveyResponse.event_at),
+        asc(SurveyResponse.id),
+    ),
+    SurveyResponseSortOrder.CREATED_AT_DESC: (
+        desc(SurveyResponse.created_at),
+        desc(SurveyResponse.id),
+    ),
+    SurveyResponseSortOrder.CREATED_AT_ASC: (
+        asc(SurveyResponse.created_at),
+        asc(SurveyResponse.id),
+    ),
+}
+
+
+def _violated_constraint(error: IntegrityError) -> str | None:
+    """Return the name of the constraint Postgres rejected the write on.
+
+    asyncpg carries it on the ``UniqueViolationError`` at ``orig.__cause__``,
+    psycopg2 under ``orig.diag``.
+    """
+    for candidate in (error.orig, getattr(error.orig, "__cause__", None)):
+        if candidate is None:
+            continue
+        name = getattr(candidate, "constraint_name", None) or getattr(
+            getattr(candidate, "diag", None), "constraint_name", None
+        )
+        if name:
+            return name
+    return None
 
 
 class SurveyResponseRepository:
@@ -29,6 +88,7 @@ class SurveyResponseRepository:
         return (
             selectinload(SurveyResponse.survey).selectinload(Survey.questions),
             selectinload(SurveyResponse.establishment),
+            selectinload(SurveyResponse.subject),
             selectinload(SurveyResponse.submitted_by),
         )
 
@@ -40,10 +100,13 @@ class SurveyResponseRepository:
     ) -> Any:
         """Applies common filters and conditional joins to a SQLAlchemy query."""
         target_survey_id = survey_id or getattr(params, "survey_id", None)
+        subject_id = getattr(params, "subject_id", None)
         conditions = []
 
         if target_survey_id:
             conditions.append(SurveyResponse.survey_id == target_survey_id)
+        if subject_id:
+            conditions.append(SurveyResponse.subject_id == subject_id)
         if params.establishment_id:
             conditions.append(
                 SurveyResponse.establishment_id == params.establishment_id
@@ -79,15 +142,23 @@ class SurveyResponseRepository:
         *,
         id: UUID | None,
         survey_id: UUID,
-        establishment_id: UUID,
+        subject_id: UUID | None,
+        establishment_id: UUID | None,
         submitted_by_id: UUID,
         answers: dict,
         score_fies: int | None,
         event_at: datetime,
     ) -> SurveyResponse:
-        """Persist a new response inside a SAVEPOINT."""
+        """Persist a new response inside a SAVEPOINT.
+
+        Raises:
+            UniqueConstraintError: ``field`` names what collided — ``id`` for a
+                replayed primary key, ``subject_id`` / ``establishment_id`` when
+                the target already answered this survey.
+        """
         fields = dict(
             survey_id=survey_id,
+            subject_id=subject_id,
             establishment_id=establishment_id,
             submitted_by_id=submitted_by_id,
             answers=answers,
@@ -98,7 +169,42 @@ class SurveyResponseRepository:
             fields["id"] = id
 
         response = SurveyResponse(**fields)
-        return await insert_with_savepoint(self.db, response, "id", id)
+        try:
+            async with self.db.begin_nested():
+                self.db.add(response)
+                await self.db.flush()
+        except IntegrityError as error:
+            field = _CONSTRAINT_FIELDS.get(_violated_constraint(error), "id")
+            raise UniqueConstraintError(field, fields.get(field, id))
+
+        await self.db.refresh(response)
+        return response
+
+    async def get_by_target(
+        self,
+        survey_id: UUID,
+        *,
+        subject_id: UUID | None,
+        establishment_id: UUID | None,
+    ) -> SurveyResponse | None:
+        """Return the response already recorded for this survey's target, if any.
+
+        An anonymous response has no target, so None is returned without querying.
+        """
+        conditions = [SurveyResponse.survey_id == survey_id]
+        if subject_id is not None:
+            conditions.append(SurveyResponse.subject_id == subject_id)
+        elif establishment_id is not None:
+            conditions.append(SurveyResponse.establishment_id == establishment_id)
+        else:
+            return None
+
+        query = (
+            select(SurveyResponse)
+            .where(*conditions)
+            .options(selectinload(SurveyResponse.submitted_by))
+        )
+        return (await self.db.execute(query)).scalar_one_or_none()
 
     async def update_answers(
         self,
@@ -127,15 +233,20 @@ class SurveyResponseRepository:
         return result.scalar_one_or_none()
 
     async def list_all_for_export(
-        self, survey_id: UUID, establishment_id: UUID | None = None
+        self,
+        survey_id: UUID,
+        establishment_id: UUID | None = None,
+        subject_id: UUID | None = None,
     ) -> list[SurveyResponse]:
         """Return every response to a survey with relations.
 
-        Optionally filter by establishment.
+        Optionally filter by the response's target.
         """
         conditions = [SurveyResponse.survey_id == survey_id]
         if establishment_id is not None:
             conditions.append(SurveyResponse.establishment_id == establishment_id)
+        if subject_id is not None:
+            conditions.append(SurveyResponse.subject_id == subject_id)
 
         query = (
             select(SurveyResponse)
@@ -154,29 +265,29 @@ class SurveyResponseRepository:
         offset: int,
         params: SurveyResponseListingParams,
     ) -> tuple[list[SurveyResponse], int]:
-        """Return a paginated list of responses to a survey plus total count."""
+        """Return a paginated list of responses to a survey plus total count,
+        in ``params.sort_order``."""
         count_query = self._apply_filters(
             select(func.count(SurveyResponse.id.distinct())),
             params,
             survey_id=survey_id,
         )
-        total = (await self.db.execute(count_query)).scalar_one()
-
         rows_query = self._apply_filters(
             select(SurveyResponse), params, survey_id=survey_id
+        ).options(
+            selectinload(SurveyResponse.survey),
+            selectinload(SurveyResponse.establishment),
+            selectinload(SurveyResponse.subject),
+            selectinload(SurveyResponse.submitted_by),
         )
-        rows_query = (
-            rows_query.options(
-                selectinload(SurveyResponse.survey),
-                selectinload(SurveyResponse.establishment),
-                selectinload(SurveyResponse.submitted_by),
-            )
-            .order_by(SurveyResponse.event_at.desc())
-            .limit(limit)
-            .offset(offset)
+        rows, total = await execute_paginated(
+            self.db,
+            rows_query,
+            count_query,
+            _SORT_CLAUSES[params.sort_order],
+            limit,
+            offset,
         )
-        rows = (await self.db.execute(rows_query)).scalars().all()
-
         return list(rows), total
 
     async def get_survey_response_summary(

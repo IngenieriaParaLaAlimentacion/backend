@@ -1,10 +1,29 @@
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
+from enum import StrEnum
+from typing import TypeVar
 from uuid import UUID
 
-from app.domain.common_domains import IdentifierRefDomain
-from app.domain.measurement import EstablishmentRefDomain
+from app.domain.common_domains import IdentifierRefDomain, normalize_optional_str
+from app.domain.measurement import EstablishmentRefDomain, SubjectRefDomain
 from app.domain.survey import ResponseType
+
+RefT = TypeVar("RefT")
+
+
+class SurveyResponseSortOrder(StrEnum):
+    """Sort orders accepted by a survey's response listing."""
+
+    EVENT_AT_DESC = "event_at_desc"
+    EVENT_AT_ASC = "event_at_asc"
+    CREATED_AT_DESC = "created_at_desc"
+    CREATED_AT_ASC = "created_at_asc"
+
+
+def _optional_ref(obj: object, builder: Callable[[object], RefT]) -> RefT | None:
+    """Build a nested ref, or None when the relation is not set."""
+    return builder(obj) if obj is not None else None
 
 
 @dataclass
@@ -13,7 +32,8 @@ class SurveyResponseDomain:
 
     id: UUID
     survey_id: UUID
-    establishment_id: UUID
+    subject_id: UUID | None
+    establishment_id: UUID | None
     submitted_by_id: UUID
     answers: dict[str, object]
     score_fies: int | None
@@ -27,6 +47,7 @@ class SurveyResponseDomain:
         return cls(
             id=obj.id,
             survey_id=obj.survey_id,
+            subject_id=obj.subject_id,
             establishment_id=obj.establishment_id,
             submitted_by_id=obj.submitted_by_id,
             answers=obj.answers,
@@ -47,16 +68,21 @@ class SurveyResponseListItemDomain:
     id: UUID
     event_at: datetime
     survey: IdentifierRefDomain
-    establishment: EstablishmentRefDomain
+    establishment: EstablishmentRefDomain | None
+    subject: SubjectRefDomain | None
 
     @classmethod
     def from_db(cls, obj) -> "SurveyResponseListItemDomain":
-        """Build from an ORM SurveyResponse with ``survey``/``establishment`` loaded."""
+        """Build from an ORM SurveyResponse with ``survey``/``establishment``/
+        ``subject`` loaded."""
         return cls(
             id=obj.id,
             event_at=obj.event_at,
-            survey=IdentifierRefDomain(id=obj.survey.id, name=obj.survey.name),
-            establishment=EstablishmentRefDomain.from_db(obj.establishment),
+            survey=IdentifierRefDomain.from_db(obj.survey),
+            establishment=_optional_ref(
+                obj.establishment, EstablishmentRefDomain.from_db
+            ),
+            subject=_optional_ref(obj.subject, SubjectRefDomain.from_db),
         )
 
 
@@ -71,22 +97,24 @@ class SurveyResponseDashboardItemDomain:
     id: UUID
     event_at: datetime
     survey: IdentifierRefDomain
-    establishment: EstablishmentRefDomain
+    establishment: EstablishmentRefDomain | None
+    subject: SubjectRefDomain | None
     submitted_by: IdentifierRefDomain
     score_fies: int | None
 
     @classmethod
     def from_db(cls, obj) -> "SurveyResponseDashboardItemDomain":
-        """Build from an ORM SurveyResponse with survey/establishment/submitted_by
-        loaded."""
+        """Build from an ORM SurveyResponse with survey/establishment/subject/
+        submitted_by loaded."""
         return cls(
             id=obj.id,
             event_at=obj.event_at,
-            survey=IdentifierRefDomain(id=obj.survey.id, name=obj.survey.name),
-            establishment=EstablishmentRefDomain.from_db(obj.establishment),
-            submitted_by=IdentifierRefDomain(
-                id=obj.submitted_by.id, name=obj.submitted_by.name
+            survey=IdentifierRefDomain.from_db(obj.survey),
+            establishment=_optional_ref(
+                obj.establishment, EstablishmentRefDomain.from_db
             ),
+            subject=_optional_ref(obj.subject, SubjectRefDomain.from_db),
+            submitted_by=IdentifierRefDomain.from_db(obj.submitted_by),
             score_fies=obj.score_fies,
         )
 
@@ -112,7 +140,8 @@ class SurveyResponseDetailDomain:
     id: UUID
     event_at: datetime
     survey: IdentifierRefDomain
-    establishment: EstablishmentRefDomain
+    establishment: EstablishmentRefDomain | None
+    subject: SubjectRefDomain | None
     submitted_by: IdentifierRefDomain
     score_fies: int | None
     answers: list[QuestionAnswerDomain]
@@ -120,7 +149,7 @@ class SurveyResponseDetailDomain:
     @classmethod
     def from_db(cls, obj) -> "SurveyResponseDetailDomain":
         """Build from an ORM SurveyResponse with survey.questions(.options),
-        establishment and submitted_by eager-loaded."""
+        establishment, subject and submitted_by eager-loaded."""
         answers = [
             QuestionAnswerDomain(
                 question_id=question.id,
@@ -136,11 +165,12 @@ class SurveyResponseDetailDomain:
         return cls(
             id=obj.id,
             event_at=obj.event_at,
-            survey=IdentifierRefDomain(id=obj.survey.id, name=obj.survey.name),
-            establishment=EstablishmentRefDomain.from_db(obj.establishment),
-            submitted_by=IdentifierRefDomain(
-                id=obj.submitted_by.id, name=obj.submitted_by.name
+            survey=IdentifierRefDomain.from_db(obj.survey),
+            establishment=_optional_ref(
+                obj.establishment, EstablishmentRefDomain.from_db
             ),
+            subject=_optional_ref(obj.subject, SubjectRefDomain.from_db),
+            submitted_by=IdentifierRefDomain.from_db(obj.submitted_by),
             score_fies=obj.score_fies,
             answers=answers,
         )
@@ -161,18 +191,21 @@ class SurveyResponseDetailDomain:
 
 @dataclass
 class SurveyResponseListingParams:
-    """Filters for a survey's response listing: establishment, event
-    date range, and geographic zone (establishment's city/province)."""
+    """Filters and sort order for a survey's response listing: subject,
+    establishment, event date range, and geographic zone (establishment's
+    city/province)."""
 
+    subject_id: UUID | None = None
     establishment_id: UUID | None = None
     event_at_from: datetime | None = None
     event_at_to: datetime | None = None
     city: str | None = None
     province: str | None = None
+    sort_order: SurveyResponseSortOrder = SurveyResponseSortOrder.EVENT_AT_DESC
 
     def __post_init__(self) -> None:
-        self.city = self.city.strip() or None if self.city else None
-        self.province = self.province.strip() or None if self.province else None
+        self.city = normalize_optional_str(self.city)
+        self.province = normalize_optional_str(self.province)
 
 
 @dataclass
@@ -189,8 +222,8 @@ class SurveyResponseSummaryParams:
     province: str | None = None
 
     def __post_init__(self) -> None:
-        self.city = self.city.strip() or None if self.city else None
-        self.province = self.province.strip() or None if self.province else None
+        self.city = normalize_optional_str(self.city)
+        self.province = normalize_optional_str(self.province)
 
 
 @dataclass

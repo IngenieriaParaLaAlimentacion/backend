@@ -13,7 +13,7 @@ from app.domain.survey import (
     SurveyDomain,
     SurveyListingParams,
     SurveyListItemDomain,
-    SurveyScope,
+    SurveyResponseTarget,
 )
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
@@ -58,13 +58,19 @@ class SurveyService:
         raise ForbiddenError()
 
     async def _assert_editable(
-        self, survey: Survey, new_questions: list[QuestionInputData]
+        self,
+        survey: Survey,
+        new_questions: list[QuestionInputData],
+        response_target: SurveyResponseTarget,
     ) -> None:
-        """Raise if a structural edit would invalidate existing answers: a
-        deleted question, a changed response_type, optional turning required,
-        or removing a choice option some response already selected."""
+        """Raise if an edit would invalidate existing answers: a changed
+        response target, a deleted question, a changed response_type, optional
+        turning required, or removing a choice option some response already
+        selected."""
         if survey.response_count == 0:
             return
+        if response_target != survey.response_target:
+            raise SurveyLockedError()
         new_by_id = {q.id: q for q in new_questions if q.id is not None}
         removed_option_pairs: list[tuple[UUID, UUID]] = []
         for question in survey.questions:
@@ -88,12 +94,7 @@ class SurveyService:
         if referenced_ids:
             raise SurveyLockedError()
 
-    async def _validate_structure(
-        self,
-        questions: list[QuestionInput],
-        scope: SurveyScope,
-        establishment_ids: list[UUID],
-    ) -> None:
+    def _validate_structure(self, questions: list[QuestionInput]) -> None:
         if not MIN_QUESTIONS <= len(questions) <= MAX_QUESTIONS:
             raise InvalidSurveyStructureError(
                 f"A survey must have between {MIN_QUESTIONS} and {MAX_QUESTIONS} "
@@ -101,9 +102,6 @@ class SurveyService:
             )
         for index, question in enumerate(questions):
             self._validate_question(question, index)
-        self._validate_scope(scope, establishment_ids)
-        if scope == SurveyScope.TARGETED:
-            await self.uow.establishment_repo.get_all_by_ids(establishment_ids)
 
     def _validate_question(self, question: QuestionInput, index: int) -> None:
         is_choice = question.response_type in CHOICE_TYPES
@@ -131,17 +129,6 @@ class SurveyService:
                     f"Question {index + 1} has duplicate option '{option.text}'."
                 )
             seen.add(key)
-
-    @staticmethod
-    def _validate_scope(scope: SurveyScope, establishment_ids: list[UUID]) -> None:
-        if scope == SurveyScope.TARGETED and not establishment_ids:
-            raise InvalidSurveyStructureError(
-                "A targeted survey must reference at least one establishment."
-            )
-        if scope == SurveyScope.GENERIC and establishment_ids:
-            raise InvalidSurveyStructureError(
-                "A generic survey must not reference establishments."
-            )
 
     @staticmethod
     def _to_question_inputs(
@@ -190,22 +177,11 @@ class SurveyService:
             page_size=page_size,
         )
 
-    async def _assert_field_worker_can_view(
-        self, actor: UserActor, survey: Survey
-    ) -> None:
-        """Raise unless the survey is active and either generic or targeted at
-        one of the field worker's approved establishments."""
+    @staticmethod
+    def _assert_field_worker_can_view(survey: Survey) -> None:
+        """Raise unless the survey is active — the whole visibility rule for a
+        field worker."""
         if not survey.is_active:
-            raise ForbiddenError()
-        if survey.scope == SurveyScope.GENERIC:
-            return
-        approved_ids = (
-            await self.uow.user_establishment_repo.get_approved_establishment_ids(
-                actor.user_id
-            )
-        )
-        target_ids = {e.id for e in survey.establishments}
-        if not (approved_ids & target_ids):
             raise ForbiddenError()
 
     async def create(self, data: SurveyCreateRequest, actor: UserActor) -> SurveyDomain:
@@ -214,24 +190,20 @@ class SurveyService:
         Raises:
             ForbiddenError: actor role cannot author surveys.
             SurveyAlreadyExistsError: the name is already taken.
-            InvalidSurveyStructureError: questions/options/scope are inconsistent.
-            EstablishmentNotFoundError: a targeted establishment does not exist.
+            InvalidSurveyStructureError: questions/options are inconsistent.
         """
         self._assert_can_create(actor)
         if await self.uow.survey_repo.name_exists(data.name):
             raise SurveyAlreadyExistsError(data.name)
-        await self._validate_structure(
-            data.questions, data.scope, data.establishment_ids
-        )
+        self._validate_structure(data.questions)
         try:
             survey = await self.uow.survey_repo.create(
                 name=data.name,
                 description=data.description,
-                scope=data.scope,
+                response_target=data.response_target,
                 instrument_type=data.instrument_type,
                 created_by_id=actor.user_id,
                 questions=self._to_question_inputs(data.questions),
-                establishment_ids=data.establishment_ids,
             )
         except UniqueConstraintError:
             raise SurveyAlreadyExistsError(data.name)
@@ -243,12 +215,11 @@ class SurveyService:
 
         Raises:
             SurveyNotFoundError.
-            ForbiddenError: a field worker requesting a targeted survey they
-                have no approved establishment access to.
+            ForbiddenError: a field worker requesting a deactivated survey.
         """
         survey = await self._get_or_raise(survey_id)
         if actor.role == UserRole.FIELD_WORKER:
-            await self._assert_field_worker_can_view(actor, survey)
+            self._assert_field_worker_can_view(survey)
         return SurveyDomain.from_db(survey)
 
     async def list_surveys(
@@ -267,28 +238,13 @@ class SurveyService:
 
     async def list_available_surveys(
         self,
-        actor: UserActor,
         page: int,
         page_size: int,
     ) -> PaginatedResult[SurveyListItemDomain]:
-        """Return active surveys the caller may respond to.
-
-        A field worker sees generic surveys plus targeted surveys aimed at one
-        of their approved establishments; admins/superadmins see every active
-        survey unfiltered by establishment.
-        """
-        actor_establishment_ids = None
-        if actor.role == UserRole.FIELD_WORKER:
-            approved_ids = (
-                await self.uow.user_establishment_repo.get_approved_establishment_ids(
-                    actor.user_id
-                )
-            )
-            actor_establishment_ids = list(approved_ids)
+        """Return every active survey. Each role sees the same list."""
         page = max(1, page)
         offset = (page - 1) * page_size
         surveys, total = await self.uow.survey_repo.list_available(
-            actor_establishment_ids=actor_establishment_ids,
             limit=page_size,
             offset=offset,
         )
@@ -302,26 +258,23 @@ class SurveyService:
         Raises:
             SurveyNotFoundError, ForbiddenError, SurveyLockedError,
             SurveyAlreadyExistsError, InvalidSurveyStructureError,
-            InvalidSurveyPayloadError, EstablishmentNotFoundError.
+            InvalidSurveyPayloadError.
         """
         survey = await self._get_or_raise(survey_id)
         self._assert_can_edit(actor, survey)
         new_questions = self._to_question_inputs(data.questions)
-        await self._assert_editable(survey, new_questions)
+        await self._assert_editable(survey, new_questions, data.response_target)
         if await self.uow.survey_repo.name_exists(data.name, exclude_id=survey.id):
             raise SurveyAlreadyExistsError(data.name)
-        await self._validate_structure(
-            data.questions, data.scope, data.establishment_ids
-        )
+        self._validate_structure(data.questions)
         try:
             survey = await self.uow.survey_repo.reconcile(
                 survey,
                 name=data.name,
                 description=data.description,
-                scope=data.scope,
+                response_target=data.response_target,
                 instrument_type=data.instrument_type,
                 questions=new_questions,
-                establishment_ids=data.establishment_ids,
             )
         except UniqueConstraintError:
             raise SurveyAlreadyExistsError(data.name)

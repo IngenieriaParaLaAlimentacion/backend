@@ -10,11 +10,10 @@ from app.domain.survey import (
     ResponseType,
     SurveyDomain,
     SurveyListingParams,
-    SurveyScope,
+    SurveyResponseTarget,
 )
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
-    EstablishmentNotFoundError,
     ForbiddenError,
     InvalidSurveyStructureError,
     SurveyAlreadyExistsError,
@@ -74,9 +73,8 @@ def make_create(**overrides) -> SurveyCreateRequest:
     data = dict(
         name="Encuesta A",
         description=None,
-        scope=SurveyScope.GENERIC,
+        response_target=SurveyResponseTarget.ANONYMOUS,
         questions=[_text_question()],
-        establishment_ids=[],
     )
     data.update(overrides)
     return SurveyCreateRequest(**data)
@@ -86,9 +84,8 @@ def make_update(**overrides) -> SurveyUpdateRequest:
     data = dict(
         name="Encuesta A",
         description=None,
-        scope=SurveyScope.GENERIC,
+        response_target=SurveyResponseTarget.ANONYMOUS,
         questions=[_text_question()],
-        establishment_ids=[],
     )
     data.update(overrides)
     return SurveyUpdateRequest(**data)
@@ -104,20 +101,18 @@ def make_survey():
         response_count: int = 0,
         is_active: bool = True,
         name: str = "Encuesta A",
-        scope: SurveyScope = SurveyScope.GENERIC,
+        response_target: SurveyResponseTarget = SurveyResponseTarget.ANONYMOUS,
         questions: list | None = None,
-        establishments: list | None = None,
     ):
         s = MagicMock()
         s.id = uuid.uuid4()
         s.name = name
         s.description = None
-        s.scope = scope
+        s.response_target = response_target
         s.created_by_id = created_by_id or uuid.uuid4()
         s.is_active = is_active
         s.response_count = response_count
         s.questions = questions if questions is not None else []
-        s.establishments = establishments if establishments is not None else []
         s.created_at = datetime(2026, 1, 1, tzinfo=timezone.utc)
         s.updated_at = datetime(2026, 1, 1, tzinfo=timezone.utc)
         return s
@@ -252,37 +247,34 @@ class TestCreateStructureValidation:
         with pytest.raises(InvalidSurveyStructureError):
             await SurveyService(uow).create(data, admin_actor)
 
-    async def test_targeted_requires_establishment(self, make_uow, admin_actor):
-        uow = make_uow()
-        data = make_create(scope=SurveyScope.TARGETED, establishment_ids=[])
-        with pytest.raises(InvalidSurveyStructureError):
-            await SurveyService(uow).create(data, admin_actor)
 
-    async def test_generic_rejects_establishments(self, make_uow, admin_actor):
-        uow = make_uow()
-        data = make_create(scope=SurveyScope.GENERIC, establishment_ids=[uuid.uuid4()])
-        with pytest.raises(InvalidSurveyStructureError):
-            await SurveyService(uow).create(data, admin_actor)
+class TestCreateResponseTarget:
+    """Authoring no longer validates an audience — the target is a free choice
+    among three values, and creating a survey touches no establishment."""
 
-    async def test_targeted_unknown_establishment_raises(self, make_uow, admin_actor):
-        uow = make_uow()
-        uow.establishment_repo.get_all_by_ids = AsyncMock(
-            side_effect=EstablishmentNotFoundError(str(uuid.uuid4()))
-        )
-        data = make_create(scope=SurveyScope.TARGETED, establishment_ids=[uuid.uuid4()])
-        with pytest.raises(EstablishmentNotFoundError):
-            await SurveyService(uow).create(data, admin_actor)
-        uow.commit.assert_not_called()
+    pytestmark = pytest.mark.asyncio
 
-    async def test_targeted_with_valid_establishment_succeeds(
-        self, make_uow, admin_actor
-    ):
+    @pytest.mark.parametrize("target", list(SurveyResponseTarget))
+    async def test_every_target_is_accepted(self, make_uow, admin_actor, target):
         uow = make_uow()
-        est_id = uuid.uuid4()
-        data = make_create(scope=SurveyScope.TARGETED, establishment_ids=[est_id])
+        data = make_create(response_target=target)
         await SurveyService(uow).create(data, admin_actor)
-        uow.establishment_repo.get_all_by_ids.assert_awaited_once_with([est_id])
+        assert uow.survey_repo.create.await_args.kwargs["response_target"] == target
         uow.commit.assert_called_once()
+
+    async def test_create_never_resolves_establishments(self, make_uow, admin_actor):
+        uow = make_uow()
+        data = make_create(response_target=SurveyResponseTarget.ESTABLISHMENT)
+        await SurveyService(uow).create(data, admin_actor)
+        uow.establishment_repo.get_all_by_ids.assert_not_called()
+
+    async def test_missing_target_is_rejected_at_the_schema(self):
+        with pytest.raises(ValueError):
+            SurveyCreateRequest(
+                name="Encuesta A",
+                description=None,
+                questions=[_text_question()],
+            )
 
 
 class TestGet:
@@ -300,92 +292,35 @@ class TestGet:
         assert isinstance(result, SurveyDomain)
         assert result.id == survey.id
 
-    async def test_analyst_unrestricted_on_targeted_survey(
-        self, make_uow, make_survey, analyst_actor
-    ):
-        """Analysts (an author role) are not scoped by establishment access."""
-        survey = make_survey(
-            scope=SurveyScope.TARGETED, establishments=[MagicMock(id=uuid.uuid4())]
-        )
+    async def test_analyst_unrestricted(self, make_uow, make_survey, analyst_actor):
+        """Analysts (an author role) never hit the field-worker visibility check."""
+        survey = make_survey()
         uow = make_uow(survey=survey)
         result = await SurveyService(uow).get(survey.id, analyst_actor)
         assert result.id == survey.id
         uow.user_establishment_repo.get_approved_establishment_ids.assert_not_called()
 
-    async def test_field_worker_generic_survey_succeeds(
-        self, make_uow, make_survey, field_worker_actor
+    @pytest.mark.parametrize("target", list(SurveyResponseTarget))
+    async def test_field_worker_sees_any_active_survey(
+        self, make_uow, make_survey, field_worker_actor, target
     ):
-        survey = make_survey(scope=SurveyScope.GENERIC)
+        """No establishment gating survives: a field worker with no
+        establishments at all can open every active survey."""
+        survey = make_survey(response_target=target)
         uow = make_uow(survey=survey)
         result = await SurveyService(uow).get(survey.id, field_worker_actor)
         assert result.id == survey.id
         uow.user_establishment_repo.get_approved_establishment_ids.assert_not_called()
 
-    async def test_field_worker_targeted_survey_with_access_succeeds(
+    async def test_field_worker_inactive_survey_forbidden(
         self, make_uow, make_survey, field_worker_actor
     ):
-        establishment_id = uuid.uuid4()
-        survey = make_survey(
-            scope=SurveyScope.TARGETED,
-            establishments=[MagicMock(id=establishment_id)],
-        )
-        uow = make_uow(survey=survey)
-        uow.user_establishment_repo.get_approved_establishment_ids = AsyncMock(
-            return_value={establishment_id}
-        )
-        result = await SurveyService(uow).get(survey.id, field_worker_actor)
-        assert result.id == survey.id
-
-    async def test_field_worker_targeted_survey_without_access_forbidden(
-        self, make_uow, make_survey, field_worker_actor
-    ):
-        survey = make_survey(
-            scope=SurveyScope.TARGETED,
-            establishments=[MagicMock(id=uuid.uuid4())],
-        )
-        uow = make_uow(survey=survey)
-        with pytest.raises(ForbiddenError):
-            await SurveyService(uow).get(survey.id, field_worker_actor)
-
-    async def test_field_worker_targeted_survey_with_pending_access_forbidden(
-        self, make_uow, make_survey, field_worker_actor
-    ):
-        establishment_id = uuid.uuid4()
-        survey = make_survey(
-            scope=SurveyScope.TARGETED,
-            establishments=[MagicMock(id=establishment_id)],
-        )
-        uow = make_uow(survey=survey)
-        uow.user_establishment_repo.get_approved_establishment_ids = AsyncMock(
-            return_value=set()
-        )
-        with pytest.raises(ForbiddenError):
-            await SurveyService(uow).get(survey.id, field_worker_actor)
-
-    async def test_field_worker_inactive_generic_survey_forbidden(
-        self, make_uow, make_survey, field_worker_actor
-    ):
-        survey = make_survey(scope=SurveyScope.GENERIC, is_active=False)
+        """is_active is the one visibility rule left, and it still applies."""
+        survey = make_survey(is_active=False)
         uow = make_uow(survey=survey)
         with pytest.raises(ForbiddenError):
             await SurveyService(uow).get(survey.id, field_worker_actor)
         uow.user_establishment_repo.get_approved_establishment_ids.assert_not_called()
-
-    async def test_field_worker_inactive_targeted_survey_with_access_forbidden(
-        self, make_uow, make_survey, field_worker_actor
-    ):
-        establishment_id = uuid.uuid4()
-        survey = make_survey(
-            scope=SurveyScope.TARGETED,
-            establishments=[MagicMock(id=establishment_id)],
-            is_active=False,
-        )
-        uow = make_uow(survey=survey)
-        uow.user_establishment_repo.get_approved_establishment_ids = AsyncMock(
-            return_value={establishment_id}
-        )
-        with pytest.raises(ForbiddenError):
-            await SurveyService(uow).get(survey.id, field_worker_actor)
 
     async def test_admin_can_view_inactive_survey(
         self, make_uow, make_survey, admin_actor
@@ -413,8 +348,107 @@ class TestList:
         assert kwargs["offset"] == 20
 
 
+class TestListAvailable:
+    """Availability is no longer establishment-scoped, so the service must not
+    consult the caller's approved establishments at all."""
+
+    pytestmark = pytest.mark.asyncio
+
+    @pytest.fixture
+    def uow_with_available(self, make_uow, make_survey):
+        uow = make_uow()
+        uow.survey_repo.list_available = AsyncMock(
+            return_value=([(make_survey(), 2)], 1)
+        )
+        return uow
+
+    async def test_field_worker_never_queries_approved_establishments(
+        self, uow_with_available, field_worker_actor
+    ):
+        await SurveyService(uow_with_available).list_available_surveys(
+            page=1, page_size=10
+        )
+        approved = uow_with_available.user_establishment_repo
+        approved.get_approved_establishment_ids.assert_not_called()
+
+    async def test_paginates(self, uow_with_available):
+        result = await SurveyService(uow_with_available).list_available_surveys(
+            page=3, page_size=10
+        )
+        assert isinstance(result, PaginatedResult)
+        kwargs = uow_with_available.survey_repo.list_available.call_args.kwargs
+        assert kwargs["limit"] == 10
+        assert kwargs["offset"] == 20
+
+
 class TestUpdatePermissionsAndLock:
     pytestmark = pytest.mark.asyncio
+
+    async def test_response_target_change_locked_once_answered(
+        self, make_uow, make_survey, admin_actor
+    ):
+        """Changing what responses are *about* would orphan the entities the
+        existing responses already point at."""
+        existing = _existing_question()
+        survey = make_survey(
+            response_count=1,
+            response_target=SurveyResponseTarget.ANONYMOUS,
+            questions=[existing],
+        )
+        uow = make_uow(survey=survey)
+        data = make_update(
+            response_target=SurveyResponseTarget.SUBJECT,
+            questions=[
+                QuestionInput(
+                    id=existing.id,
+                    text="¿Cuál es su comida favorita?",
+                    response_type=existing.response_type,
+                    is_required=existing.is_required,
+                    options=[],
+                )
+            ],
+        )
+        with pytest.raises(SurveyLockedError):
+            await SurveyService(uow).update(survey.id, data, admin_actor)
+        uow.commit.assert_not_called()
+
+    async def test_response_target_change_allowed_before_first_response(
+        self, make_uow, make_survey, admin_actor
+    ):
+        survey = make_survey(
+            response_count=0, response_target=SurveyResponseTarget.ANONYMOUS
+        )
+        uow = make_uow(survey=survey)
+        data = make_update(response_target=SurveyResponseTarget.ESTABLISHMENT)
+        await SurveyService(uow).update(survey.id, data, admin_actor)
+        kwargs = uow.survey_repo.reconcile.call_args.kwargs
+        assert kwargs["response_target"] == SurveyResponseTarget.ESTABLISHMENT
+        uow.commit.assert_called_once()
+
+    async def test_same_response_target_stays_editable_when_answered(
+        self, make_uow, make_survey, admin_actor
+    ):
+        existing = _existing_question()
+        survey = make_survey(
+            response_count=5,
+            response_target=SurveyResponseTarget.SUBJECT,
+            questions=[existing],
+        )
+        uow = make_uow(survey=survey)
+        data = make_update(
+            response_target=SurveyResponseTarget.SUBJECT,
+            questions=[
+                QuestionInput(
+                    id=existing.id,
+                    text="¿Cuál es su comida favorita?",
+                    response_type=existing.response_type,
+                    is_required=existing.is_required,
+                    options=[],
+                )
+            ],
+        )
+        await SurveyService(uow).update(survey.id, data, admin_actor)
+        uow.commit.assert_called_once()
 
     async def test_missing_raises(self, make_uow):
         uow = make_uow(survey=None)

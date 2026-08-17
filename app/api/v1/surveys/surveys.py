@@ -30,13 +30,14 @@ router = APIRouter(prefix="/surveys")
     status_code=status.HTTP_201_CREATED,
     summary="Create a survey",
     description=(
-        "Create a FIES or custom survey with its ordered questions, options and "
-        "audience. Accessible by admins and analysts."
+        "Create a FIES or custom survey with its ordered questions and options. "
+        "`response_target` fixes what each response will be about — a subject, "
+        "an establishment, or nobody — and is locked once responses exist. "
+        "Accessible by admins and analysts."
     ),
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid survey structure"},
         **AUTH_RESPONSES,
-        status.HTTP_404_NOT_FOUND: {"description": "Targeted establishment not found"},
         status.HTTP_409_CONFLICT: {"description": "Survey name already exists"},
     },
 )
@@ -55,7 +56,7 @@ async def create_survey(
     summary="List surveys",
     description=(
         "Paginated, filterable and sortable list of surveys. Supports name search "
-        "and filtering by author, scope and active flag."
+        "and filtering by author, response target and active flag."
     ),
     responses=AUTH_RESPONSES,
 )
@@ -98,19 +99,19 @@ async def get_fies_template(
     response_model=PaginatedResponse[SurveyListItem],
     summary="List surveys available to the caller",
     description=(
-        "Paginated list of active surveys the caller may respond to: generic "
-        "surveys, plus targeted surveys aimed at one of the caller's approved "
-        "establishments. Accessible to any authenticated role."
+        "Paginated list of every active survey. Each item carries "
+        "`response_target`, so the client knows which entity to ask for before "
+        "opening the form. Accessible to any authenticated role."
     ),
     responses=AUTH_RESPONSES,
 )
 async def list_available_surveys(
     paginated: PaginatedQueryParams = Depends(),
-    actor: UserActor = Depends(require_any),
+    _: UserActor = Depends(require_any),
     service: SurveyService = Depends(get_survey_service),
 ) -> PaginatedResponse[SurveyListItem]:
     result = await service.list_available_surveys(
-        actor, page=paginated.page, page_size=paginated.page_size
+        page=paginated.page, page_size=paginated.page_size
     )
     return PaginatedResponse[SurveyListItem](
         items=[SurveyListItem.model_validate(item) for item in result.items],
@@ -127,9 +128,8 @@ async def list_available_surveys(
     summary="Get a survey",
     description=(
         "Return a survey's full configuration with ordered questions and options. "
-        "Accessible by admins, analysts and superadmins for any survey. A field "
-        "worker may fetch a generic survey, or a targeted survey aimed at one of "
-        "their approved establishments; otherwise forbidden."
+        "All surveys accessible by admins, superadmins and analysts. Only "
+        "available ones for field workers."
     ),
     responses={
         **AUTH_RESPONSES,
@@ -151,14 +151,14 @@ async def get_survey(
     summary="Update a survey",
     description=(
         "Declaratively replace a survey's configuration. Questions and options are "
-        "reconciled by id. Restricted to the author or an admin."
+        "reconciled by id. Once the survey has responses it is locked: structural "
+        "edits and any change to `response_target` are rejected. Restricted to the "
+        "author or an admin."
     ),
     responses={
         **AUTH_RESPONSES,
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid survey structure"},
-        status.HTTP_404_NOT_FOUND: {
-            "description": "Survey or targeted establishment not found"
-        },
+        status.HTTP_404_NOT_FOUND: {"description": "Survey not found"},
         status.HTTP_409_CONFLICT: {
             "description": "Survey name already exists or survey is locked"
         },
@@ -181,7 +181,7 @@ async def update_survey(
     summary="Duplicate a survey",
     description=(
         "Create a new survey from an existing one, deep-copying its questions, "
-        "options and audience under a unique '<name> (copy)' name."
+        "options and `response_target` under a unique '<name> (copy)' name."
     ),
     responses={
         **AUTH_RESPONSES,

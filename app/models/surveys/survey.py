@@ -16,7 +16,7 @@ from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from app.domain.survey import SurveyInstrumentType, SurveyScope
+from app.domain.survey import SurveyInstrumentType, SurveyResponseTarget
 
 from ..base import Base
 
@@ -35,8 +35,8 @@ class Survey(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
-    scope = Column(
-        SAEnum(SurveyScope, values_callable=lambda x: [e.value for e in x]),
+    response_target = Column(
+        SAEnum(SurveyResponseTarget, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
     )
     instrument_type = Column(
@@ -66,10 +66,5 @@ class Survey(Base):
         back_populates="survey",
         cascade="all, delete-orphan",
         order_by="SurveyQuestion.position",
-        lazy="selectin",
-    )
-    establishments = relationship(
-        "Establishment",
-        secondary="survey_establishments",
         lazy="selectin",
     )

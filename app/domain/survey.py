@@ -3,6 +3,8 @@ from datetime import datetime
 from enum import Enum, StrEnum
 from uuid import UUID
 
+from app.domain.common_domains import normalize_optional_str
+
 
 class ResponseType(str, Enum):
     """Response types a survey question can accept."""
@@ -21,11 +23,12 @@ class SurveyInstrumentType(str, Enum):
     FIES = "fies"
 
 
-class SurveyScope(str, Enum):
-    """Audience scope of a survey."""
+class SurveyResponseTarget(str, Enum):
+    """What entity a survey's responses are about."""
 
-    GENERIC = "generic"
-    TARGETED = "targeted"
+    SUBJECT = "subject"
+    ESTABLISHMENT = "establishment"
+    ANONYMOUS = "anonymous"
 
 
 class SurveySortOrder(StrEnum):
@@ -114,18 +117,17 @@ class QuestionDomain:
 
 @dataclass
 class SurveyDomain:
-    """A full survey configuration with its ordered questions and audience."""
+    """A full survey configuration with its ordered questions."""
 
     id: UUID
     name: str
     description: str | None
-    scope: SurveyScope
+    response_target: SurveyResponseTarget
     instrument_type: SurveyInstrumentType
     created_by_id: UUID
     is_active: bool
     response_count: int
     questions: list[QuestionDomain]
-    establishment_ids: list[UUID]
     created_at: datetime
     updated_at: datetime
 
@@ -136,13 +138,12 @@ class SurveyDomain:
             id=obj.id,
             name=obj.name,
             description=obj.description,
-            scope=obj.scope,
+            response_target=obj.response_target,
             instrument_type=obj.instrument_type,
             created_by_id=obj.created_by_id,
             is_active=obj.is_active,
             response_count=obj.response_count,
             questions=[QuestionDomain.from_db(q) for q in obj.questions],
-            establishment_ids=[e.id for e in obj.establishments],
             created_at=obj.created_at,
             updated_at=obj.updated_at,
         )
@@ -154,7 +155,7 @@ class SurveyListItemDomain:
 
     id: UUID
     name: str
-    scope: SurveyScope
+    response_target: SurveyResponseTarget
     is_active: bool
     created_by_id: UUID
     question_count: int
@@ -170,7 +171,7 @@ class SurveyListItemDomain:
         return cls(
             id=obj.id,
             name=obj.name,
-            scope=obj.scope,
+            response_target=obj.response_target,
             is_active=obj.is_active,
             created_by_id=obj.created_by_id,
             question_count=question_count,
@@ -184,9 +185,9 @@ class SurveyListingParams:
 
     search: str | None = None
     created_by: UUID | None = None
-    scope: SurveyScope | None = None
+    response_target: SurveyResponseTarget | None = None
     is_active: bool | None = None
     sort_order: SurveySortOrder = SurveySortOrder.NEWEST
 
     def __post_init__(self) -> None:
-        self.search = self.search.strip() or None if self.search else None
+        self.search = normalize_optional_str(self.search)

@@ -301,8 +301,8 @@ class SurveyAlreadyExistsError(AlreadyExistsError):
 class SurveyLockedError(ConflictError):
     """Exception raised when a survey can no longer be modified.
 
-    Stub-enforced today (surveys never accumulate responses), it will gate edits
-    once response collection lands.
+    Gates structural edits — and changes to ``response_target`` — once a survey
+    has recorded at least one response.
     """
 
     def __init__(
@@ -315,7 +315,7 @@ class SurveyLockedError(ConflictError):
 
 
 class InvalidSurveyStructureError(BadRequestError):
-    """Exception raised when a survey's questions/options/scope are inconsistent."""
+    """Exception raised when a survey's questions or options are inconsistent."""
 
     def __init__(self, detail: str):
         super().__init__("Invalid survey structure", detail)
@@ -343,8 +343,24 @@ class SurveyResponseNotFoundError(NotFoundError):
 
 
 class InvalidSurveyResponseError(BadRequestError):
-    """Exception raised when submitted answers fail validation, or the chosen
-    establishment is outside the survey's audience."""
+    """Exception raised when submitted answers fail validation, or the payload
+    names an entity that does not match the survey's response target."""
 
     def __init__(self, detail: str):
         super().__init__("Invalid survey response", detail)
+
+
+class SurveyResponseAlreadyExistsError(AlreadyExistsError):
+    """Exception raised when a survey's target has already been answered.
+
+    Args:
+        existing (dict): JSON-primitive description of the response already
+            recorded, attached as the ``existing_response`` extension.
+    """
+
+    def __init__(self, existing: dict):
+        super().__init__(
+            "Survey response already exists",
+            "This survey has already been answered for that target.",
+            extensions={"existing_response": existing},
+        )

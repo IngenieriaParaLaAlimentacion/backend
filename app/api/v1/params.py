@@ -23,11 +23,12 @@ from app.domain.subject import Sex, SubjectListingParams, SubjectSortOrder
 from app.domain.survey import (
     NAME_MAX,
     SurveyListingParams,
-    SurveyScope,
+    SurveyResponseTarget,
     SurveySortOrder,
 )
 from app.domain.survey_response import (
     SurveyResponseListingParams,
+    SurveyResponseSortOrder,
     SurveyResponseSummaryParams,
 )
 from app.exceptions.domain_exceptions import InvalidListingFilterError
@@ -162,7 +163,7 @@ class EstablishmentFieldWorkersQuery:
 class SurveyListingQuery:
     search: Annotated[str | None, Query(max_length=NAME_MAX)] = None
     created_by: Annotated[UUID | None, Query()] = None
-    scope: Annotated[SurveyScope | None, Query()] = None
+    response_target: Annotated[SurveyResponseTarget | None, Query()] = None
     is_active: Annotated[bool | None, Query()] = None
     sort_order: SurveySortOrder = SurveySortOrder.NEWEST
 
@@ -170,7 +171,7 @@ class SurveyListingQuery:
         return SurveyListingParams(
             search=self.search,
             created_by=self.created_by,
-            scope=self.scope,
+            response_target=self.response_target,
             is_active=self.is_active,
             sort_order=self.sort_order,
         )
@@ -178,20 +179,24 @@ class SurveyListingQuery:
 
 @dataclass
 class SurveyResponseListingQuery(LocationQuery):
+    subject_id: Annotated[UUID | None, Query()] = None
     establishment_id: Annotated[UUID | None, Query()] = None
     event_at_from: Annotated[datetime | None, Query()] = None
     event_at_to: Annotated[datetime | None, Query()] = None
+    sort_order: SurveyResponseSortOrder = SurveyResponseSortOrder.EVENT_AT_DESC
 
     def validate(self) -> None:
         _validate_date_range(self.event_at_from, self.event_at_to, "event_at")
 
     def to_domain(self) -> SurveyResponseListingParams:
         return SurveyResponseListingParams(
+            subject_id=self.subject_id,
             establishment_id=self.establishment_id,
             event_at_from=self.event_at_from,
             event_at_to=self.event_at_to,
             city=self.city,
             province=self.province,
+            sort_order=self.sort_order,
         )
 
 

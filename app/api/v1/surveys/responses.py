@@ -30,11 +30,14 @@ router = APIRouter(prefix="/surveys/{survey_id}/responses")
 
 @router.get(
     "/export",
-    summary="Export a survey's responses (optionally filtered by establishment)",
+    summary="Export a survey's responses (optionally filtered by target)",
     description=(
         "Export responses to a survey into a downloadable file including "
-        "both response data and a visual summary of indicators. Can optionally "
-        "be filtered by a specific establishment. Restricted to admins, analysts "
+        "both response data and a visual summary of indicators. A survey "
+        "targeted at subjects also exports each respondent's name, last name "
+        "and DNI. Can optionally be filtered by the response's target: "
+        "`establishment_id` when `response_target` is `establishment`, "
+        "`subject_id` when it is `subject`. Restricted to admins, analysts "
         "and superadmins."
     ),
     responses={
@@ -45,18 +48,24 @@ router = APIRouter(prefix="/surveys/{survey_id}/responses")
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
             },
         },
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Target filter on a survey that does not carry that target"
+        },
         status.HTTP_404_NOT_FOUND: {"description": "Survey not found"},
     },
 )
 async def export_survey_responses(
     survey_id: UUID,
     establishment_id: Optional[UUID] = Query(default=None),
+    subject_id: Optional[UUID] = Query(default=None),
     format: ExportFormat = ExportFormat.XLSX,
     actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> Response:
     exporter = get_exporter(format)
-    file_bytes = await service.export(survey_id, actor, exporter, establishment_id)
+    file_bytes = await service.export(
+        survey_id, actor, exporter, establishment_id, subject_id
+    )
     return Response(
         content=file_bytes,
         media_type=exporter.content_type,
@@ -73,15 +82,22 @@ async def export_survey_responses(
     response_model=PaginatedResponse[SurveyResponseDashboardItem],
     summary="List responses to a survey",
     description=(
-        "Paginated, filterable list of a survey's responses, newest event_at "
-        "first, each showing who submitted it, the establishment, and the "
-        "survey date. Filter by establishment, event date range, and/or the "
-        "establishment's city/province. Restricted to admins, analysts and "
+        "Paginated, filterable and sortable list of a survey's responses, "
+        "newest event_at first by default, each showing who submitted it, the "
+        "subject or establishment it is about, and the survey date. Filter by "
+        "event date range, and by whichever target the survey carries: "
+        "`subject_id` when `response_target` is `subject`, or "
+        "`establishment_id` and the establishment's city/province when it is "
+        "`establishment`. A filter that resolves through a target the survey "
+        "does not carry is rejected. Restricted to admins, analysts and "
         "superadmins."
     ),
     responses={
         **AUTH_RESPONSES,
-        status.HTTP_400_BAD_REQUEST: {"description": "Invalid filter range"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Invalid filter range, or a target filter on a survey "
+            "that does not carry that target"
+        },
         status.HTTP_404_NOT_FOUND: {"description": "Survey not found"},
     },
 )
@@ -92,6 +108,7 @@ async def list_survey_responses(
     actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> PaginatedResponse[SurveyResponseDashboardItem]:
+    query.validate()
     result = await service.list_by_survey(
         survey_id,
         actor,
@@ -114,10 +131,13 @@ async def list_survey_responses(
     status_code=status.HTTP_201_CREATED,
     summary="Submit a survey response",
     description=(
-        "Idempotent, offline-first submission of one anonymous individual's "
-        "answers to a survey at an establishment. Replaying the same id returns the "
-        "stored record unchanged. No draft mode: required questions must all "
-        "be answered or the submission is rejected outright."
+        "Idempotent, offline-first submission of answers to a survey. The body "
+        "must carry `subject_id` or `establishment_id` to match the survey's "
+        "`response_target`, and neither when it is anonymous. Replaying the same "
+        "id returns the stored record unchanged — the id is checked before the "
+        "one-response-per-target rule, so a retried sync never reports a "
+        "conflict against itself. No draft mode: required questions must all be "
+        "answered or the submission is rejected outright."
     ),
     responses={
         status.HTTP_200_OK: {
@@ -125,10 +145,17 @@ async def list_survey_responses(
         },
         **AUTH_RESPONSES,
         status.HTTP_400_BAD_REQUEST: {
-            "description": "Answers invalid, or establishment outside the "
-            "survey's audience"
+            "description": "Answers invalid, or the payload does not match the "
+            "survey's response target"
         },
-        status.HTTP_404_NOT_FOUND: {"description": "Survey or establishment not found"},
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Survey, establishment or subject not found"
+        },
+        status.HTTP_409_CONFLICT: {
+            "description": "This subject or establishment already answered this "
+            "survey; the response already recorded is returned in "
+            "`existing_response`."
+        },
     },
 )
 async def submit_survey_response(

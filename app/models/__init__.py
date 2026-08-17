@@ -12,7 +12,6 @@ from .measurements.measurement_alert import MeasurementAlert
 from .subjects.subject import Sex, Subject
 from .subjects.subject_event import SubjectEvent
 from .surveys.survey import Survey
-from .surveys.survey_establishment import SurveyEstablishment
 from .surveys.survey_question import SurveyQuestion
 from .surveys.survey_question_option import SurveyQuestionOption
 from .surveys.survey_response import SurveyResponse
@@ -35,7 +34,6 @@ __all__ = [
     "Survey",
     "SurveyQuestion",
     "SurveyQuestionOption",
-    "SurveyEstablishment",
     "SurveyResponse",
     "SurveyResponseEdit",
     "UserPassword",
