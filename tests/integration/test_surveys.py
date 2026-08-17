@@ -141,7 +141,7 @@ class TestCreateAndGet:
         body = _survey_body()
         del body["response_target"]
         response = await client.post(SURVEYS_URL, json=body, headers=headers)
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     async def test_scope_and_establishment_ids_are_gone(self, client, admin_author):
         headers, _ = admin_author

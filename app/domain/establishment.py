@@ -4,6 +4,8 @@ from enum import Enum, StrEnum
 from typing import NamedTuple
 from uuid import UUID
 
+from app.domain.common_domains import normalize_optional_str
+
 
 class UserEstablishmentStatus(str, Enum):
     APPROVED = "approved"
@@ -40,9 +42,9 @@ class EstablishmentListingParams:
     sort_order: EstablishmentSortOrder = EstablishmentSortOrder.NEWEST
 
     def __post_init__(self) -> None:
-        self.search = self.search.strip() or None if self.search else None
-        self.city = self.city.strip() or None if self.city else None
-        self.province = self.province.strip() or None if self.province else None
+        self.search = normalize_optional_str(self.search)
+        self.city = normalize_optional_str(self.city)
+        self.province = normalize_optional_str(self.province)
 
 
 @dataclass
@@ -116,9 +118,9 @@ class EstablishmentCreationRequestListingParams:
     )
 
     def __post_init__(self) -> None:
-        self.search = self.search.strip() or None if self.search else None
-        self.city = self.city.strip() or None if self.city else None
-        self.province = self.province.strip() or None if self.province else None
+        self.search = normalize_optional_str(self.search)
+        self.city = normalize_optional_str(self.city)
+        self.province = normalize_optional_str(self.province)
 
 
 @dataclass

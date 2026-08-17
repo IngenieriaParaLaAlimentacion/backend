@@ -3,6 +3,8 @@ from datetime import datetime
 from enum import Enum, StrEnum
 from uuid import UUID
 
+from app.domain.common_domains import normalize_optional_str
+
 
 class ResponseType(str, Enum):
     """Response types a survey question can accept."""
@@ -188,4 +190,4 @@ class SurveyListingParams:
     sort_order: SurveySortOrder = SurveySortOrder.NEWEST
 
     def __post_init__(self) -> None:
-        self.search = self.search.strip() or None if self.search else None
+        self.search = normalize_optional_str(self.search)

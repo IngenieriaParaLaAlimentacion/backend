@@ -1031,7 +1031,7 @@ class TestListBySurvey:
             headers=headers,
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     async def test_rejects_inverted_event_at_range(
         self, client, db_establishment, admin_user

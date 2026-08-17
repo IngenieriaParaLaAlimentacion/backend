@@ -4,6 +4,8 @@ from enum import Enum, StrEnum
 from typing import Self
 from uuid import UUID
 
+from app.domain.common_domains import normalize_optional_str
+
 
 class Sex(str, Enum):
     """Biological sex of a subject."""
@@ -62,4 +64,4 @@ class SubjectListingParams:
     sort_order: SubjectSortOrder = SubjectSortOrder.CREATED_AT_DESC
 
     def __post_init__(self) -> None:
-        self.search = self.search.strip() or None if self.search else None
+        self.search = normalize_optional_str(self.search)

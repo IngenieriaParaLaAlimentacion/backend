@@ -5,7 +5,7 @@ from enum import StrEnum
 from typing import TypeVar
 from uuid import UUID
 
-from app.domain.common_domains import IdentifierRefDomain
+from app.domain.common_domains import IdentifierRefDomain, normalize_optional_str
 from app.domain.measurement import EstablishmentRefDomain, SubjectRefDomain
 from app.domain.survey import ResponseType
 
@@ -78,7 +78,7 @@ class SurveyResponseListItemDomain:
         return cls(
             id=obj.id,
             event_at=obj.event_at,
-            survey=IdentifierRefDomain(id=obj.survey.id, name=obj.survey.name),
+            survey=IdentifierRefDomain.from_db(obj.survey),
             establishment=_optional_ref(
                 obj.establishment, EstablishmentRefDomain.from_db
             ),
@@ -109,14 +109,12 @@ class SurveyResponseDashboardItemDomain:
         return cls(
             id=obj.id,
             event_at=obj.event_at,
-            survey=IdentifierRefDomain(id=obj.survey.id, name=obj.survey.name),
+            survey=IdentifierRefDomain.from_db(obj.survey),
             establishment=_optional_ref(
                 obj.establishment, EstablishmentRefDomain.from_db
             ),
             subject=_optional_ref(obj.subject, SubjectRefDomain.from_db),
-            submitted_by=IdentifierRefDomain(
-                id=obj.submitted_by.id, name=obj.submitted_by.name
-            ),
+            submitted_by=IdentifierRefDomain.from_db(obj.submitted_by),
             score_fies=obj.score_fies,
         )
 
@@ -167,14 +165,12 @@ class SurveyResponseDetailDomain:
         return cls(
             id=obj.id,
             event_at=obj.event_at,
-            survey=IdentifierRefDomain(id=obj.survey.id, name=obj.survey.name),
+            survey=IdentifierRefDomain.from_db(obj.survey),
             establishment=_optional_ref(
                 obj.establishment, EstablishmentRefDomain.from_db
             ),
             subject=_optional_ref(obj.subject, SubjectRefDomain.from_db),
-            submitted_by=IdentifierRefDomain(
-                id=obj.submitted_by.id, name=obj.submitted_by.name
-            ),
+            submitted_by=IdentifierRefDomain.from_db(obj.submitted_by),
             score_fies=obj.score_fies,
             answers=answers,
         )
@@ -208,8 +204,8 @@ class SurveyResponseListingParams:
     sort_order: SurveyResponseSortOrder = SurveyResponseSortOrder.EVENT_AT_DESC
 
     def __post_init__(self) -> None:
-        self.city = self.city.strip() or None if self.city else None
-        self.province = self.province.strip() or None if self.province else None
+        self.city = normalize_optional_str(self.city)
+        self.province = normalize_optional_str(self.province)
 
 
 @dataclass
@@ -226,8 +222,8 @@ class SurveyResponseSummaryParams:
     province: str | None = None
 
     def __post_init__(self) -> None:
-        self.city = self.city.strip() or None if self.city else None
-        self.province = self.province.strip() or None if self.province else None
+        self.city = normalize_optional_str(self.city)
+        self.province = normalize_optional_str(self.province)
 
 
 @dataclass

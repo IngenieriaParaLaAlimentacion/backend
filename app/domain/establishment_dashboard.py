@@ -3,6 +3,7 @@ from datetime import date, datetime
 from enum import StrEnum
 from uuid import UUID
 
+from app.domain.common_domains import normalize_optional_str
 from app.domain.establishment import EstablishmentDomain, UserEstablishmentStatus
 from app.domain.measurement import (
     AlertSeverity,
@@ -36,7 +37,7 @@ class EstablishmentSubjectListingParams:
     )
 
     def __post_init__(self) -> None:
-        self.search = self.search.strip() or None if self.search else None
+        self.search = normalize_optional_str(self.search)
 
 
 @dataclass
@@ -47,7 +48,7 @@ class EstablishmentFieldWorkerListingParams:
     relation_status: UserEstablishmentStatus = UserEstablishmentStatus.APPROVED
 
     def __post_init__(self) -> None:
-        self.search = self.search.strip() or None if self.search else None
+        self.search = normalize_optional_str(self.search)
 
 
 @dataclass
