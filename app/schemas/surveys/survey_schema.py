@@ -147,6 +147,7 @@ class SurveyListItem(BaseModel):
     is_active: bool
     created_by_id: UUID
     question_count: int
+    response_count: int
     created_at: datetime
 
 
