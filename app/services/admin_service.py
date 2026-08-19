@@ -84,11 +84,6 @@ class AdminService:
         user = await self.uow.user_repo.get_by_id(user_id)
         if user is None:
             raise UserNotFoundError(str(user_id))
-        if settings.environment != "development" and not user.is_email_verified:
-            raise ForbiddenError(
-                "Email not verified",
-                "The user's email has not been verified yet.",
-            )
         return user
 
     async def _get_field_worker_relations(self, user_id: UUID) -> tuple[Any, list]:

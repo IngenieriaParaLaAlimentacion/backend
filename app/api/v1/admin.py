@@ -55,7 +55,8 @@ async def list_users(
     "/field-worker/{user_id}/establishments/approve",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Approve establishment access for a field worker",
-    description="Approves the given establishments for an active field worker.",
+    description="Approves the given establishments for an active field worker."
+    "Accessible by admins only.",
     responses={
         status.HTTP_400_BAD_REQUEST: {
             "description": "Target user's account is not active"
