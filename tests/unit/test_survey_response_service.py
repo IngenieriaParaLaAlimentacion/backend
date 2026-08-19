@@ -532,6 +532,7 @@ class TestTargetUniqueness:
         # `name` is a MagicMock constructor kwarg, so it must be assigned after.
         submitted_by = MagicMock(id=uuid.uuid4())
         submitted_by.name = "Ana"
+        submitted_by.last_name = "García"
         response.submitted_by = submitted_by
         return response
 
@@ -870,7 +871,8 @@ def _make_response_with_detail(
     questions: list,
     answers: dict,
     submitted_by_id: uuid.UUID | None = None,
-    submitted_by_name: str = "Juana Pérez",
+    submitted_by_name: str = "Juana",
+    submitted_by_last_name: str = "Pérez",
 ) -> MagicMock:
     survey = MagicMock()
     survey.id = uuid.uuid4()
@@ -883,6 +885,7 @@ def _make_response_with_detail(
     submitter = MagicMock()
     submitter.id = submitted_by_id or uuid.uuid4()
     submitter.name = submitted_by_name
+    submitter.last_name = submitted_by_last_name
 
     r = MagicMock()
     r.id = uuid.uuid4()
@@ -931,7 +934,8 @@ class TestGetDashboardDetail:
         assert text_answer.value == "Todo bien"
         assert text_answer.value_label is None
         assert choice_answer.value_label == "Sí"
-        assert result.submitted_by.name == "Juana Pérez"
+        assert result.submitted_by.name == "Juana"
+        assert result.submitted_by.last_name == "Pérez"
 
     async def test_multiple_choice_resolves_all_labels(self, make_uow, admin_actor):
         option_a = _make_option("Verduras")

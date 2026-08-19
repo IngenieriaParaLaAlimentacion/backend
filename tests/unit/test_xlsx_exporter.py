@@ -17,6 +17,7 @@ from app.domain.survey_response import (
     EstablishmentRefDomain,
     QuestionAnswerDomain,
     SubjectRefDomain,
+    SubmittedByRefDomain,
     SurveyResponseDetailDomain,
 )
 from app.services.exporters.xlsx_exporter import XlsxSurveyResponseExporter
@@ -84,7 +85,9 @@ def _detail_response(
         survey=IdentifierRefDomain(id=survey.id, name=survey.name),
         establishment=establishment,
         subject=subject,
-        submitted_by=IdentifierRefDomain(id=uuid.uuid4(), name="Juana Pérez"),
+        submitted_by=SubmittedByRefDomain(
+            id=uuid.uuid4(), name="Juana", last_name="Pérez"
+        ),
         score_fies=score_fies,
         answers=[
             QuestionAnswerDomain(

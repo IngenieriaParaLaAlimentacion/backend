@@ -27,6 +27,17 @@ def _optional_ref(obj: object, builder: Callable[[object], RefT]) -> RefT | None
 
 
 @dataclass
+class SubmittedByRefDomain(IdentifierRefDomain):
+    """Minimal user reference for who submitted a survey response."""
+
+    last_name: str
+
+    @classmethod
+    def from_db(cls, obj) -> "SubmittedByRefDomain":
+        return cls(id=obj.id, name=obj.name, last_name=obj.last_name)
+
+
+@dataclass
 class SurveyResponseDomain:
     """A registered survey response."""
 
@@ -99,7 +110,7 @@ class SurveyResponseDashboardItemDomain:
     survey: IdentifierRefDomain
     establishment: EstablishmentRefDomain | None
     subject: SubjectRefDomain | None
-    submitted_by: IdentifierRefDomain
+    submitted_by: SubmittedByRefDomain
     score_fies: int | None
 
     @classmethod
@@ -114,7 +125,7 @@ class SurveyResponseDashboardItemDomain:
                 obj.establishment, EstablishmentRefDomain.from_db
             ),
             subject=_optional_ref(obj.subject, SubjectRefDomain.from_db),
-            submitted_by=IdentifierRefDomain.from_db(obj.submitted_by),
+            submitted_by=SubmittedByRefDomain.from_db(obj.submitted_by),
             score_fies=obj.score_fies,
         )
 
@@ -142,7 +153,7 @@ class SurveyResponseDetailDomain:
     survey: IdentifierRefDomain
     establishment: EstablishmentRefDomain | None
     subject: SubjectRefDomain | None
-    submitted_by: IdentifierRefDomain
+    submitted_by: SubmittedByRefDomain
     score_fies: int | None
     answers: list[QuestionAnswerDomain]
 
@@ -170,7 +181,7 @@ class SurveyResponseDetailDomain:
                 obj.establishment, EstablishmentRefDomain.from_db
             ),
             subject=_optional_ref(obj.subject, SubjectRefDomain.from_db),
-            submitted_by=IdentifierRefDomain.from_db(obj.submitted_by),
+            submitted_by=SubmittedByRefDomain.from_db(obj.submitted_by),
             score_fies=obj.score_fies,
             answers=answers,
         )

@@ -193,7 +193,9 @@ class SurveyResponseService:
             ExistingResponseRef(
                 id=existing.id,
                 submitted_by=UserRefResponse(
-                    id=existing.submitted_by.id, name=existing.submitted_by.name
+                    id=existing.submitted_by.id,
+                    name=existing.submitted_by.name,
+                    last_name=existing.submitted_by.last_name,
                 ),
                 event_at=existing.event_at,
             ).model_dump(mode="json")

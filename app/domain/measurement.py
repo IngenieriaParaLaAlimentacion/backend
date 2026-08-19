@@ -4,7 +4,7 @@ from enum import Enum, StrEnum
 from typing import Self
 from uuid import UUID
 
-from app.domain.common_domains import normalize_optional_str
+from app.domain.common_domains import IdentifierRefDomain, normalize_optional_str
 from app.domain.subject import Sex
 
 
@@ -261,11 +261,9 @@ class MeasurementSummaryDomain(MeasurementBase):
 
 
 @dataclass
-class ResponsibleRefDomain:
+class ResponsibleRefDomain(IdentifierRefDomain):
     """Minimal user reference for the responsible of a measurement."""
 
-    id: UUID
-    name: str
     last_name: str
 
     @classmethod
