@@ -2,7 +2,6 @@ import secrets
 from typing import Any
 from uuid import UUID
 
-from app.config.settings import settings
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.core.security import hash_password
 from app.domain.establishment import EstablishmentDomain, UserEstablishmentStatus
@@ -17,7 +16,6 @@ from app.domain.user import (
 )
 from app.exceptions.domain_exceptions import (
     BadRequestError,
-    ForbiddenError,
     SubjectNotFoundError,
     UserAlreadyExistsError,
     UserEstablishmentNotFoundError,
@@ -78,9 +76,8 @@ class AdminService:
             ]
         return estab_data_by_user
 
-    async def _get_verified_user(self, user_id: UUID) -> Any:
-        """Return the user, raising if they do not exist or their email is
-        not yet verified."""
+    async def _get_user(self, user_id: UUID) -> Any:
+        """Return the user, raising if they do not exist."""
         user = await self.uow.user_repo.get_by_id(user_id)
         if user is None:
             raise UserNotFoundError(str(user_id))
@@ -88,8 +85,8 @@ class AdminService:
 
     async def _get_field_worker_relations(self, user_id: UUID) -> tuple[Any, list]:
         """Return (user, relations) for a field worker, raising if the user does
-        not exist or their email is not yet verified."""
-        user = await self._get_verified_user(user_id)
+        not exist."""
+        user = await self._get_user(user_id)
         relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
         return user, relations
 
@@ -181,7 +178,7 @@ class AdminService:
             UserNotFoundError: If the user does not exist.
             BadRequestError: If the user's account is not active yet.
         """
-        user = await self._get_verified_user(user_id)
+        user = await self._get_user(user_id)
         if user.status != UserStatus.ACTIVE:
             raise BadRequestError(
                 "User is not active",
@@ -225,7 +222,7 @@ class AdminService:
             UserEstablishmentNotFoundError: If an establishment was not
                 requested by this field worker.
         """
-        user = await self._get_verified_user(user_id)
+        user = await self._get_user(user_id)
         if user.role != UserRole.FIELD_WORKER:
             raise BadRequestError(
                 "User is not a field worker",

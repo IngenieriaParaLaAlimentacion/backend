@@ -4,6 +4,7 @@ from .admin_schema import (
     InviteAdminRequest,
     InviteUserResponse,
     PaginatedUsersResponse,
+    UserAccessRequest,
     UserAdminView,
 )
 from .auth_schema import (
@@ -31,7 +32,6 @@ from .user_schema import (
 
 __all__ = [
     "AdminSubjectDetailResponse",
-    "EstablishmentAccessRequest",
     "EstablishmentWithStatusResponse",
     "FullUserAdminView",
     "InviteAdminRequest",
@@ -49,6 +49,7 @@ __all__ = [
     "RegistrationResponse",
     "ResendVerificationRequest",
     "TokenResponse",
+    "UserAccessRequest",
     "UserAdminView",
     "UserEstablishmentAccessRequest",
     "UserInTokenResponse",

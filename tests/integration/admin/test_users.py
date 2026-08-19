@@ -10,7 +10,7 @@ from app.models.auth.user import User
 from tests.integration.admin.conftest import (
     ADMIN_USER_URL,
     ADMIN_USERS_URL,
-    APPROVE_URL,
+    APPROVE_FIELD_WORKER_URL,
     INVITE_ADMIN_URL,
     REGISTER_FIELD_WORKER_URL,
     _insert_user,
@@ -306,11 +306,12 @@ class TestListUsersPagination:
         self, client, admin_headers, registered_field_worker, db_establishment
     ):
         """A field worker already approved (active) should not appear as pending."""
-        await client.patch(
-            APPROVE_URL.format(user_id=registered_field_worker["id"]),
+        approve = await client.patch(
+            APPROVE_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"]),
             json={"establishment_ids": [str(db_establishment.id)]},
             headers=admin_headers,
         )
+        assert approve.status_code == status.HTTP_204_NO_CONTENT
 
         response = await client.get(
             f"{ADMIN_USERS_URL}?role={UserRole.FIELD_WORKER.value}"

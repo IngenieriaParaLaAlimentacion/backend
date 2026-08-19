@@ -1,4 +1,3 @@
-from typing import Annotated
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
@@ -19,11 +18,12 @@ from app.schemas.subjects.subject_schema import (
 
 
 class UserAccessRequest(BaseModel):
+    """Establishment ids an admin approves while accepting a field worker.
+
+    May be empty: the account is accepted and every request stays pending.
+    """
+
     establishment_ids: list[UUID]
-
-
-class EstablishmentAccessRequest(BaseModel):
-    establishment_ids: Annotated[list[UUID], Field(min_length=1)]
 
 
 class InviteAdminRequest(BaseModel):
