@@ -2,7 +2,6 @@ import secrets
 from typing import Any
 from uuid import UUID
 
-from app.config.settings import settings
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.core.security import hash_password
 from app.domain.establishment import EstablishmentDomain, UserEstablishmentStatus
@@ -17,7 +16,6 @@ from app.domain.user import (
 )
 from app.exceptions.domain_exceptions import (
     BadRequestError,
-    ForbiddenError,
     SubjectNotFoundError,
     UserAlreadyExistsError,
     UserEstablishmentNotFoundError,
@@ -78,17 +76,17 @@ class AdminService:
             ]
         return estab_data_by_user
 
-    async def _get_field_worker_relations(self, user_id: UUID) -> tuple[Any, list]:
-        """Return (user, relations) for a field worker, raising if the user does
-        not exist or their email is not yet verified."""
+    async def _get_user(self, user_id: UUID) -> Any:
+        """Return the user, raising if they do not exist."""
         user = await self.uow.user_repo.get_by_id(user_id)
         if user is None:
             raise UserNotFoundError(str(user_id))
-        if settings.environment != "development" and not user.is_email_verified:
-            raise ForbiddenError(
-                "Email not verified",
-                "The user's email has not been verified yet.",
-            )
+        return user
+
+    async def _get_field_worker_relations(self, user_id: UUID) -> tuple[Any, list]:
+        """Return (user, relations) for a field worker, raising if the user does
+        not exist."""
+        user = await self._get_user(user_id)
         relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
         return user, relations
 
@@ -174,14 +172,24 @@ class AdminService:
     async def approve_establishments(
         self, user_id: UUID, establishment_ids: list[UUID]
     ) -> None:
-        """Approve access to the given establishments and activate the field worker."""
+        """Approve access to the given establishments.
+
+        Raises:
+            UserNotFoundError: If the user does not exist.
+            BadRequestError: If the user's account is not active yet.
+        """
+        user = await self._get_user(user_id)
+        if user.status != UserStatus.ACTIVE:
+            raise BadRequestError(
+                "User is not active",
+                "Only active users can be granted access to establishments.",
+            )
+
         await self._set_user_establishment_relation_status(
             user_id, establishment_ids, UserEstablishmentStatus.APPROVED
         )
-        await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
         await self.uow.commit()
 
-        user = await self.uow.user_repo.get_by_id(user_id)
         establishments = await self.uow.establishment_repo.find_by_ids(
             establishment_ids
         )
@@ -198,6 +206,52 @@ class AdminService:
             user_id, establishment_ids, UserEstablishmentStatus.REJECTED
         )
         await self.uow.commit()
+
+    async def approve_field_worker(
+        self, user_id: UUID, establishment_ids: list[UUID]
+    ) -> None:
+        """Accept a field worker's request and approve the selected establishments.
+
+        ``establishment_ids`` may be empty: the account is activated and every
+        establishment request stays pending.
+
+        Raises:
+            UserNotFoundError: If the user does not exist.
+            BadRequestError: If the user is not a field worker, or is not in
+                pending status.
+            UserEstablishmentNotFoundError: If an establishment was not
+                requested by this field worker.
+        """
+        user = await self._get_user(user_id)
+        if user.role != UserRole.FIELD_WORKER:
+            raise BadRequestError(
+                "User is not a field worker",
+                "Only field workers go through establishment approval.",
+            )
+        if user.status != UserStatus.PENDING_VALIDATION:
+            raise BadRequestError(
+                "Field worker is not pending",
+                "Only field workers with pending status can be approved through "
+                "this endpoint.",
+            )
+
+        await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
+        if establishment_ids:
+            await self._set_user_establishment_relation_status(
+                user_id, establishment_ids, UserEstablishmentStatus.APPROVED
+            )
+        await self.uow.commit()
+
+        if not establishment_ids:
+            return
+
+        establishments = await self.uow.establishment_repo.find_by_ids(
+            establishment_ids
+        )
+        await send_access_granted_email(
+            user.email,
+            [e.name for e in establishments],
+        )
 
     async def reject_field_worker(self, user_id: UUID) -> None:
         """Reject all establishment access for the given field worker and

@@ -10,6 +10,7 @@ from app.core.security import create_access_token
 from app.domain.establishment import EstablishmentRequestStatus
 from app.domain.user import UserRole, UserStatus
 from app.models.auth.user import User
+from app.models.establishments.establishment import Establishment
 from app.models.establishments.establishment_request import EstablishmentRequest
 
 ADMIN_USERS_URL = "/api/v1/admin/users"
@@ -25,6 +26,7 @@ REJECT_ESTABLISHMENT_REQUEST_URL = (
 REGISTER_FIELD_WORKER_URL = "/api/v1/auth/register/field-worker"
 APPROVE_URL = "/api/v1/admin/field-worker/{user_id}/establishments/approve"
 REJECT_URL = "/api/v1/admin/field-worker/{user_id}/establishments/reject"
+APPROVE_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/approve"
 REJECT_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/reject"
 SUBJECTS_URL = "/api/v1/subjects"
 INVITE_ADMIN_URL = "/api/v1/admin/invite-admin"
@@ -78,6 +80,14 @@ async def _make_reject_request(client, *, headers=None):
     )
 
 
+async def _make_approve_field_worker_request(client, *, headers=None):
+    return await client.patch(
+        APPROVE_FIELD_WORKER_URL.format(user_id=uuid.uuid4()),
+        json={"establishment_ids": []},
+        headers=headers or {},
+    )
+
+
 async def _make_reject_field_worker_request(client, *, headers=None):
     return await client.patch(
         REJECT_FIELD_WORKER_URL.format(user_id=uuid.uuid4()),
@@ -95,6 +105,10 @@ async def _make_reject_field_worker_request(client, *, headers=None):
         pytest.param(
             _make_reject_request,
             id="PATCH /admin/field-worker/{id}/establishments/reject",
+        ),
+        pytest.param(
+            _make_approve_field_worker_request,
+            id="PATCH /admin/field-worker/{id}/approve",
         ),
         pytest.param(
             _make_reject_field_worker_request,
@@ -140,6 +154,38 @@ async def registered_field_worker(client, db_establishment):
         user.is_email_verified = True
         await session.commit()
     return user_data
+
+
+@pytest_asyncio.fixture
+async def accepted_field_worker(client, admin_headers, registered_field_worker):
+    """Register a field worker and accept their account without approving any
+    establishment, leaving every request pending."""
+    response = await client.patch(
+        APPROVE_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"]),
+        json={"establishment_ids": []},
+        headers=admin_headers,
+    )
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    return registered_field_worker
+
+
+@pytest_asyncio.fixture
+async def db_establishment_2(app):
+    """Insert a second Establishment row and return the ORM instance."""
+    async with db_module.AsyncSessionLocal() as session:
+        establishment = Establishment(
+            name="Centro B",
+            formatted_address="Calle B 456",
+            latitude=-34.6037,
+            longitude=-58.3816,
+            place_id="place-test-002",
+            city="Buenos Aires",
+            province="Buenos Aires",
+        )
+        session.add(establishment)
+        await session.commit()
+        await session.refresh(establishment)
+        return establishment
 
 
 @pytest_asyncio.fixture

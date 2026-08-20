@@ -14,6 +14,17 @@ from app.schemas.subjects.subject_schema import (
     SubjectResponse,
 )
 
+# -- Request --
+
+
+class UserAccessRequest(BaseModel):
+    """Establishment ids an admin approves while accepting a field worker.
+
+    May be empty: the account is accepted and every request stays pending.
+    """
+
+    establishment_ids: list[UUID]
+
 
 class InviteAdminRequest(BaseModel):
     email: EmailStr

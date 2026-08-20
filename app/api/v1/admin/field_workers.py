@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Response, status
 from app.api.v1.params import AUTH_RESPONSES
 from app.core.dependencies import get_admin_service, require_admin
 from app.domain.user import UserActor
+from app.schemas.auth.admin_schema import UserAccessRequest
 from app.schemas.auth.user_schema import EstablishmentAccessRequest
 from app.services.admin_service import AdminService
 
@@ -15,11 +16,11 @@ router = APIRouter()
     "/field-worker/{user_id}/establishments/approve",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Approve establishment access for a field worker",
-    description="Approves the given establishments for the field worker and "
-    "activates the field worker's account. Accessible by admins only.",
+    description="Approves the given establishments for an active field worker. "
+    "Accessible by admins only.",
     responses={
         status.HTTP_400_BAD_REQUEST: {
-            "description": "Target user is not a field worker"
+            "description": "Target user's account is not active"
         },
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {
@@ -60,6 +61,34 @@ async def reject_establishments(
     service: AdminService = Depends(get_admin_service),
 ) -> Response:
     await service.reject_establishments(user_id, data.establishment_ids)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.patch(
+    "/field-worker/{user_id}/approve",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Accept a field worker and the selected establishments",
+    description="Activates the field worker's account and approves the given "
+    "establishments. `establishment_ids` may be empty, in which case the "
+    "account is activated and every establishment request stays pending.",
+    responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Target user is not a field worker, or is not pending"
+        },
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Field worker not found, or an establishment was not "
+            "requested by this field worker"
+        },
+    },
+)
+async def approve_field_worker(
+    user_id: UUID,
+    data: UserAccessRequest,
+    _admin: UserActor = Depends(require_admin),
+    service: AdminService = Depends(get_admin_service),
+) -> Response:
+    await service.approve_field_worker(user_id, data.establishment_ids)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
