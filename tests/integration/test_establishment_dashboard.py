@@ -27,6 +27,7 @@ class Scenario:
     establishment_empty: UUID  # no measurements at all
     worker_approved: UUID  # Juan Gomez, 3 measurements at A
     worker_pending: UUID  # Rosa Pending, enrolled at A but not approved
+    worker_rejected: UUID  # Rita Rejected, rejected at A
     worker_other: UUID  # Ana Diaz, approved at B only
     subject_normal: UUID  # Bruno Normal, 2 measurements at A (latest is normal)
     subject_wasted: UUID  # Clara Wasted, 1 measurement at A
@@ -94,6 +95,7 @@ async def scenario(app) -> Scenario:
 
         w_approved = _worker("Juan", "Gomez")
         w_pending = _worker("Rosa", "Pending")
+        w_rejected = _worker("Rita", "Rejected")
         w_other = _worker("Ana", "Diaz")
 
         s_normal = _subject(20000001, "Bruno", "Normal", Sex.MALE)
@@ -108,6 +110,7 @@ async def scenario(app) -> Scenario:
                 est_empty,
                 w_approved,
                 w_pending,
+                w_rejected,
                 w_other,
                 s_normal,
                 s_wasted,
@@ -128,6 +131,11 @@ async def scenario(app) -> Scenario:
                     user_id=w_pending.id,
                     establishment_id=est_a.id,
                     status=UserEstablishmentStatus.PENDING,
+                ),
+                UserEstablishment(
+                    user_id=w_rejected.id,
+                    establishment_id=est_a.id,
+                    status=UserEstablishmentStatus.REJECTED,
                 ),
                 UserEstablishment(
                     user_id=w_other.id,
@@ -194,6 +202,7 @@ async def scenario(app) -> Scenario:
             establishment_empty=cast(UUID, est_empty.id),
             worker_approved=cast(UUID, w_approved.id),
             worker_pending=cast(UUID, w_pending.id),
+            worker_rejected=cast(UUID, w_rejected.id),
             worker_other=cast(UUID, w_other.id),
             subject_normal=cast(UUID, s_normal.id),
             subject_wasted=cast(UUID, s_wasted.id),
@@ -590,6 +599,32 @@ class TestFieldWorkerListing:
 
     async def test_workers_of_other_establishments_are_excluded(self, body):
         assert "Diaz" not in {item["last_name"] for item in body["items"]}
+
+    async def test_multiple_statuses_are_combined(
+        self, client, admin_headers, scenario
+    ):
+        response = await client.get(
+            FIELD_WORKERS_URL.format(establishment_id=scenario.establishment_a),
+            headers=admin_headers,
+            params={"relation_status": ["approved", "pending"]},
+        )
+        body = response.json()
+        assert body["total"] == 2
+        last_names = {item["last_name"] for item in body["items"]}
+        assert last_names == {"Gomez", "Pending"}
+
+    async def test_all_statuses_must_be_requested_explicitly(
+        self, client, admin_headers, scenario
+    ):
+        response = await client.get(
+            FIELD_WORKERS_URL.format(establishment_id=scenario.establishment_a),
+            headers=admin_headers,
+            params={"relation_status": ["approved", "pending", "rejected"]},
+        )
+        body = response.json()
+        assert body["total"] == 3
+        last_names = {item["last_name"] for item in body["items"]}
+        assert last_names == {"Gomez", "Pending", "Rejected"}
 
     async def test_search_filters_by_email(self, client, admin_headers, scenario):
         response = await client.get(

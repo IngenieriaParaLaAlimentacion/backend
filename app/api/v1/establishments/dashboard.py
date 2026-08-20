@@ -103,8 +103,10 @@ async def list_establishment_subjects(
     description=(
         "Returns a paginated list of the users enrolled in this establishment "
         "together with how many measurements each has taken here and when they "
-        "last did. Defaults to approved enrollments; use `relation_status` to see "
-        "pending or rejected ones. Accessible by admins and analysts."
+        "last did. Defaults to approved enrollments; pass one or more "
+        "`relation_status` values to see pending and/or rejected ones, or all "
+        "three explicitly to see every enrollment. Accessible by admins and "
+        "analysts."
     ),
     responses={
         **AUTH_RESPONSES,
