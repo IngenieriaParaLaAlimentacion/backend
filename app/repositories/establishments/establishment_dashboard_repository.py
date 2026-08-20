@@ -107,7 +107,7 @@ class EstablishmentDashboardRepository:
             UserEstablishment, UserEstablishment.user_id == User.id
         ).where(
             UserEstablishment.establishment_id == establishment_id,
-            UserEstablishment.status == params.relation_status,
+            UserEstablishment.status.in_(params.relation_status),
         )
         condition = cls._field_worker_search_condition(params.search)
         return query if condition is None else query.where(condition)
