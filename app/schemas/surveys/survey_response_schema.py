@@ -46,7 +46,7 @@ class SurveyRefResponse(IdentifierRefSchema):
 
 
 class UserRefResponse(IdentifierRefSchema):
-    pass
+    last_name: str
 
 
 class ExistingResponseRef(BaseModel):

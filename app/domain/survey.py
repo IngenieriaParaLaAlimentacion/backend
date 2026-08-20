@@ -159,6 +159,7 @@ class SurveyListItemDomain:
     is_active: bool
     created_by_id: UUID
     question_count: int
+    response_count: int
     created_at: datetime
 
     @classmethod
@@ -167,6 +168,8 @@ class SurveyListItemDomain:
 
         ``question_count`` comes from a subquery in the listing query, so the
         ``questions`` relationship is never loaded for the summary view.
+        ``response_count`` is read straight off the row, since it's a
+        denormalized column on ``Survey`` rather than a relationship.
         """
         return cls(
             id=obj.id,
@@ -175,6 +178,7 @@ class SurveyListItemDomain:
             is_active=obj.is_active,
             created_by_id=obj.created_by_id,
             question_count=question_count,
+            response_count=obj.response_count,
             created_at=obj.created_at,
         )
 
