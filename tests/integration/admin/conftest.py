@@ -28,6 +28,7 @@ APPROVE_URL = "/api/v1/admin/field-worker/{user_id}/establishments/approve"
 REJECT_URL = "/api/v1/admin/field-worker/{user_id}/establishments/reject"
 APPROVE_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/approve"
 REJECT_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/reject"
+PENDING_ESTABLISHMENTS_URL = "/api/v1/admin/field-worker/establishments/pending"
 SUBJECTS_URL = "/api/v1/subjects"
 INVITE_ADMIN_URL = "/api/v1/admin/invite-admin"
 
@@ -62,6 +63,10 @@ async def _make_reject_establishment_request_request(client, *, headers=None):
         json={},
         headers=headers or {},
     )
+
+
+async def _make_list_pending_establishments_request(client, *, headers=None):
+    return await client.get(PENDING_ESTABLISHMENTS_URL, headers=headers or {})
 
 
 async def _make_approve_request(client, *, headers=None):
@@ -113,6 +118,10 @@ async def _make_reject_field_worker_request(client, *, headers=None):
         pytest.param(
             _make_reject_field_worker_request,
             id="PATCH /admin/field-worker/{id}/reject",
+        ),
+        pytest.param(
+            _make_list_pending_establishments_request,
+            id="GET /admin/field-worker/establishments/pending",
         ),
         pytest.param(
             _make_list_establishment_requests_request,

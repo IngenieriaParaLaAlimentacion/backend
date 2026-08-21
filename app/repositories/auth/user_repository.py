@@ -1,12 +1,14 @@
 from uuid import UUID
 
-from sqlalchemy import func, or_, select, update
+from sqlalchemy import exists, func, or_, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import aliased, selectinload
 
+from app.domain.establishment import UserEstablishmentStatus
 from app.exceptions.domain_exceptions import UserAlreadyExistsError
 from app.models.auth.user import User, UserRole, UserStatus
+from app.models.auth.user_establishment import UserEstablishment
 from app.utils.db import execute_paginated, ilike_condition
 
 
@@ -15,6 +17,42 @@ class UserRepository:
 
     def __init__(self, db: AsyncSession):
         self.db = db
+
+    def _search_condition(self, search: str):
+        """Case-insensitive match against email, name, and last_name (OR)."""
+        return or_(
+            ilike_condition(User.email, search),
+            ilike_condition(User.name, search),
+            ilike_condition(User.last_name, search),
+        )
+
+    def _pending_access_conditions(
+        self, search: str | None, establishment_id: UUID | None
+    ) -> tuple:
+        """Conditions selecting active field workers awaiting establishment access.
+
+        ``establishment_id`` narrows the population to workers pending on that
+        establishment; ``search`` matches their identity. Both are conditions on
+        ``User``, so the listing and its count can share them.
+        """
+        # Aliased so the subquery stays independent when the caller already
+        # selects from user_establishments (see count_pending_establishments).
+        relation = aliased(UserEstablishment)
+        pending_relation = [
+            relation.user_id == User.id,
+            relation.status == UserEstablishmentStatus.PENDING,
+        ]
+        if establishment_id is not None:
+            pending_relation.append(relation.establishment_id == establishment_id)
+
+        conditions = [
+            User.role == UserRole.FIELD_WORKER,
+            User.status == UserStatus.ACTIVE,
+            exists(select(1).where(*pending_relation)),
+        ]
+        if search:
+            conditions.append(self._search_condition(search))
+        return tuple(conditions)
 
     async def create(
         self,
@@ -119,17 +157,60 @@ class UserRepository:
                 query = query.where(User.is_email_verified.is_(True))
                 count_query = count_query.where(User.is_email_verified.is_(True))
         if search:
-            condition = or_(
-                ilike_condition(User.email, search),
-                ilike_condition(User.name, search),
-                ilike_condition(User.last_name, search),
-            )
+            condition = self._search_condition(search)
             query = query.where(condition)
             count_query = count_query.where(condition)
 
         return await execute_paginated(
             self.db, query, count_query, User.created_at.desc(), limit, offset
         )
+
+    async def get_pending_establishments_page(
+        self,
+        *,
+        limit: int,
+        offset: int,
+        search: str | None = None,
+        establishment_id: UUID | None = None,
+    ) -> tuple[list[User], int]:
+        """Return a paginated list of active field workers that have at least
+        one pending establishment relation, and the total matching count.
+
+        ``search`` matches their email, name, or last_name; ``establishment_id``
+        keeps only those pending on that establishment.
+        """
+        return await execute_paginated(
+            self.db,
+            select(User),
+            select(func.count()).select_from(User),
+            User.created_at.desc(),
+            limit,
+            offset,
+            self._pending_access_conditions(search, establishment_id),
+        )
+
+    async def count_pending_establishments(
+        self,
+        *,
+        search: str | None = None,
+        establishment_id: UUID | None = None,
+    ) -> int:
+        """Return how many pending establishment relations belong to the field
+        workers matched by the same filters as get_pending_establishments_page.
+
+        Counts every pending relation of a matched worker, so the total always
+        equals the establishments listed across all pages.
+        """
+        result = await self.db.execute(
+            select(func.count())
+            .select_from(UserEstablishment)
+            .join(User, User.id == UserEstablishment.user_id)
+            .where(
+                UserEstablishment.status == UserEstablishmentStatus.PENDING,
+                *self._pending_access_conditions(search, establishment_id),
+            )
+        )
+        return result.scalar_one()
 
     async def update_status(self, user_id: UUID, status: UserStatus) -> None:
         """Update the status of a user."""

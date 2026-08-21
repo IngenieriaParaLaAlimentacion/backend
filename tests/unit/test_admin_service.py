@@ -647,3 +647,151 @@ class TestRejectFieldWorker:
             user.id, UserStatus.INACTIVE
         )
         uow.commit.assert_called_once()
+
+
+def _make_pending_uow(
+    users=None,
+    total=0,
+    establishment_ids_by_user=None,
+    establishments=None,
+    total_pending=0,
+):
+    uow = AsyncMock()
+    users = users or []
+    uow.user_repo.get_pending_establishments_page = AsyncMock(
+        return_value=(users, total)
+    )
+    uow.user_establishment_repo.get_by_user_ids = AsyncMock(
+        return_value=establishment_ids_by_user
+        if establishment_ids_by_user is not None
+        else {user.id: [] for user in users}
+    )
+    uow.establishment_repo.find_by_ids = AsyncMock(return_value=establishments or [])
+    uow.user_repo.count_pending_establishments = AsyncMock(return_value=total_pending)
+    return uow
+
+
+class TestGetPendingEstablishmentRequests:
+    @pytest.mark.asyncio
+    async def test_hydrates_only_pending_establishments(
+        self, mock_auth_service, make_establishment
+    ):
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        pending = make_establishment(name="Comedor Norte")
+        uow = _make_pending_uow(
+            users=[user],
+            total=1,
+            establishment_ids_by_user={user.id: [pending.id]},
+            establishments=[pending],
+            total_pending=4,
+        )
+        service = AdminService(uow, mock_auth_service)
+
+        result, total_pending = await service.get_pending_establishment_requests(
+            page=1, page_size=20
+        )
+
+        uow.user_establishment_repo.get_by_user_ids.assert_called_once_with(
+            [user.id], UserEstablishmentStatus.PENDING
+        )
+        assert [e.id for e in result.items[0].establishments] == [pending.id]
+        assert total_pending == 4
+
+    @pytest.mark.asyncio
+    async def test_counts_pending_relations_globally(self, mock_auth_service):
+        uow = _make_pending_uow(users=[_make_user()], total=1, total_pending=37)
+        service = AdminService(uow, mock_auth_service)
+
+        _, total_pending = await service.get_pending_establishment_requests(
+            page=2, page_size=20
+        )
+
+        uow.user_repo.count_pending_establishments.assert_called_once_with(
+            search=None, establishment_id=None
+        )
+        assert total_pending == 37
+
+    @pytest.mark.asyncio
+    async def test_calculates_offset_correctly(self, mock_auth_service):
+        uow = _make_pending_uow()
+        service = AdminService(uow, mock_auth_service)
+
+        await service.get_pending_establishment_requests(page=3, page_size=20)
+
+        uow.user_repo.get_pending_establishments_page.assert_called_once_with(
+            limit=20, offset=40, search=None, establishment_id=None
+        )
+
+    @pytest.mark.asyncio
+    async def test_returns_pagination_metadata(self, mock_auth_service):
+        users = [_make_user(role=UserRole.FIELD_WORKER) for _ in range(5)]
+        uow = _make_pending_uow(users=users, total=45, total_pending=90)
+        service = AdminService(uow, mock_auth_service)
+
+        result, _ = await service.get_pending_establishment_requests(
+            page=3, page_size=20
+        )
+
+        assert len(result.items) == 5
+        assert result.total == 45
+        assert result.page == 3
+        assert result.page_size == 20
+        assert result.total_pages == ceil(45 / 20)
+
+    @pytest.mark.asyncio
+    async def test_no_pending_requests_returns_empty_result(self, mock_auth_service):
+        uow = _make_pending_uow()
+        service = AdminService(uow, mock_auth_service)
+
+        result, total_pending = await service.get_pending_establishment_requests(
+            page=1, page_size=20
+        )
+
+        assert result.items == []
+        assert result.total == 0
+        assert result.total_pages == 0
+        assert total_pending == 0
+        uow.user_establishment_repo.get_by_user_ids.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_forwards_search_and_establishment_filters(self, mock_auth_service):
+        uow = _make_pending_uow()
+        service = AdminService(uow, mock_auth_service)
+        establishment_id = uuid.uuid4()
+
+        await service.get_pending_establishment_requests(
+            page=1, page_size=20, search="ana", establishment_id=establishment_id
+        )
+
+        uow.user_repo.get_pending_establishments_page.assert_called_once_with(
+            limit=20, offset=0, search="ana", establishment_id=establishment_id
+        )
+        uow.user_repo.count_pending_establishments.assert_called_once_with(
+            search="ana", establishment_id=establishment_id
+        )
+
+    @pytest.mark.asyncio
+    async def test_strips_whitespace_from_search(self, mock_auth_service):
+        uow = _make_pending_uow()
+        service = AdminService(uow, mock_auth_service)
+
+        await service.get_pending_establishment_requests(
+            page=1, page_size=20, search="  ana  "
+        )
+
+        uow.user_repo.get_pending_establishments_page.assert_called_once_with(
+            limit=20, offset=0, search="ana", establishment_id=None
+        )
+
+    @pytest.mark.asyncio
+    async def test_whitespace_only_search_passes_none(self, mock_auth_service):
+        uow = _make_pending_uow()
+        service = AdminService(uow, mock_auth_service)
+
+        await service.get_pending_establishment_requests(
+            page=1, page_size=20, search="   "
+        )
+
+        uow.user_repo.get_pending_establishments_page.assert_called_once_with(
+            limit=20, offset=0, search=None, establishment_id=None
+        )

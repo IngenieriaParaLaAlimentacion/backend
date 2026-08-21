@@ -1,11 +1,14 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, Query, Response, status
 
-from app.api.v1.params import AUTH_RESPONSES
+from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams
 from app.core.dependencies import get_admin_service, require_admin
 from app.domain.user import UserActor
-from app.schemas.auth.admin_schema import UserAccessRequest
+from app.schemas.auth.admin_schema import (
+    PendingEstablishmentsResponse,
+    UserAccessRequest,
+)
 from app.schemas.auth.user_schema import EstablishmentAccessRequest
 from app.services.admin_service import AdminService
 
@@ -113,3 +116,39 @@ async def reject_field_worker(
 ) -> Response:
     await service.reject_field_worker(user_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get(
+    "/field-worker/establishments/pending",
+    response_model=PendingEstablishmentsResponse,
+    status_code=status.HTTP_200_OK,
+    summary="List field workers with pending establishment access",
+    description="Returns a paginated list of active field workers that have at "
+    "least one establishment request awaiting review, optionally searched by "
+    "name, last name or email, or filtered to a single establishment. Each item "
+    "carries only that worker's pending establishments, alongside the total "
+    "number of pending requests matching the same filters. "
+    "Accessible by admins only.",
+    responses=AUTH_RESPONSES,
+)
+async def get_pending_establishment_requests(
+    paginated: PaginatedQueryParams = Depends(),
+    search: str | None = Query(
+        default=None,
+        max_length=100,
+        description="Search by field worker name, last name or email.",
+    ),
+    establishment_id: UUID | None = Query(
+        default=None,
+        description="Keep only field workers pending on this establishment.",
+    ),
+    _admin: UserActor = Depends(require_admin),
+    service: AdminService = Depends(get_admin_service),
+) -> PendingEstablishmentsResponse:
+    result, total_pending = await service.get_pending_establishment_requests(
+        page=paginated.page,
+        page_size=paginated.page_size,
+        search=search,
+        establishment_id=establishment_id,
+    )
+    return PendingEstablishmentsResponse.from_domain(result, total_pending)
