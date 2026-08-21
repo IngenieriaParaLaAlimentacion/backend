@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, Query, Response, status
 
 from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams
 from app.core.dependencies import get_admin_service, require_admin
@@ -124,17 +124,31 @@ async def reject_field_worker(
     status_code=status.HTTP_200_OK,
     summary="List field workers with pending establishment access",
     description="Returns a paginated list of active field workers that have at "
-    "least one establishment request awaiting review, each carrying only their "
-    "pending establishments, plus the total number of pending requests across "
-    "all of them. Accessible by admins only.",
+    "least one establishment request awaiting review, optionally searched by "
+    "name, last name or email, or filtered to a single establishment. Each item "
+    "carries only that worker's pending establishments, alongside the total "
+    "number of pending requests matching the same filters. "
+    "Accessible by admins only.",
     responses=AUTH_RESPONSES,
 )
 async def get_pending_establishment_requests(
     paginated: PaginatedQueryParams = Depends(),
+    search: str | None = Query(
+        default=None,
+        max_length=100,
+        description="Search by field worker name, last name or email.",
+    ),
+    establishment_id: UUID | None = Query(
+        default=None,
+        description="Keep only field workers pending on this establishment.",
+    ),
     _admin: UserActor = Depends(require_admin),
     service: AdminService = Depends(get_admin_service),
 ) -> PendingEstablishmentsResponse:
     result, total_pending = await service.get_pending_establishment_requests(
-        page=paginated.page, page_size=paginated.page_size
+        page=paginated.page,
+        page_size=paginated.page_size,
+        search=search,
+        establishment_id=establishment_id,
     )
     return PendingEstablishmentsResponse.from_domain(result, total_pending)

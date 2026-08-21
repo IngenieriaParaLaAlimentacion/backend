@@ -345,24 +345,36 @@ class AdminService:
         return await self._build_paginated_users_result(users, total, page, page_size)
 
     async def get_pending_establishment_requests(
-        self, page: int, page_size: int
+        self,
+        page: int,
+        page_size: int,
+        search: str | None = None,
+        establishment_id: UUID | None = None,
     ) -> tuple[PaginatedResult[UserWithEstablishmentsDomain], int]:
         """Return active field workers awaiting establishment access.
 
-        Each user carries only their pending establishments. The second tuple
-        element is the total number of pending establishment relations across
-        every active field worker, not just this page.
+        Each user carries only their pending establishments. ``search`` matches
+        case-insensitively against email, name, and last_name; whitespace-only
+        values are treated as no filter. ``establishment_id`` keeps only the
+        workers pending on that establishment.
+
+        The second tuple element is the total number of pending establishment
+        relations across every matching field worker, not just this page.
         """
         offset = (page - 1) * page_size
+        search = search.strip() or None if search else None
 
         users, total = await self.uow.user_repo.get_pending_establishments_page(
-            limit=page_size, offset=offset
+            limit=page_size,
+            offset=offset,
+            search=search,
+            establishment_id=establishment_id,
         )
         result = await self._build_paginated_users_result(
             users, total, page, page_size, UserEstablishmentStatus.PENDING
         )
-        total_pending = await self.uow.user_establishment_repo.count_by_status(
-            UserEstablishmentStatus.PENDING
+        total_pending = await self.uow.user_repo.count_pending_establishments(
+            search=search, establishment_id=establishment_id
         )
         return result, total_pending
 

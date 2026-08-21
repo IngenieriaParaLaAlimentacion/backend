@@ -77,8 +77,8 @@ class PendingEstablishmentsResponse(PaginatedUsersResponse):
     """
 
     total_pending_establishments: int = Field(
-        description="Pending establishment relations across every active field "
-        "worker, not just the ones on this page."
+        description="Pending establishment relations across every field worker "
+        "matching the current filters, not just the ones on this page."
     )
 
     @classmethod

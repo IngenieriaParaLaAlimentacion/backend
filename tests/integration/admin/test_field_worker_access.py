@@ -592,3 +592,118 @@ class TestListPendingEstablishments:
         assert body["total"] == 2
         assert body["total_pages"] == 2
         assert body["total_pending_establishments"] == 2
+
+
+class TestListPendingEstablishmentsFilters:
+    async def _add_pending(self, user_id, *establishment_ids):
+        async with db_module.AsyncSessionLocal() as session:
+            for establishment_id in establishment_ids:
+                session.add(
+                    UserEstablishment(
+                        user_id=user_id,
+                        establishment_id=establishment_id,
+                        status=UserEstablishmentStatus.PENDING,
+                    )
+                )
+            await session.commit()
+
+    async def test_search_matches_field_worker_name(
+        self, client, admin_headers, accepted_field_worker, db_establishment
+    ):
+        """Search keeps only the workers whose identity matches."""
+        ana_id = await _insert_user(
+            UserRole.FIELD_WORKER, UserStatus.ACTIVE, name="Ana", last_name="Gomez"
+        )
+        await self._add_pending(ana_id, db_establishment.id)
+
+        response = await client.get(
+            PENDING_ESTABLISHMENTS_URL, params={"search": "ana"}, headers=admin_headers
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert body["total"] == 1
+        assert body["total_pending_establishments"] == 1
+        assert body["items"][0]["id"] == str(ana_id)
+
+    async def test_search_without_matches_returns_empty(
+        self, client, admin_headers, accepted_field_worker
+    ):
+        """A search nobody matches empties both the list and the count."""
+        response = await client.get(
+            PENDING_ESTABLISHMENTS_URL,
+            params={"search": "nobody-here"},
+            headers=admin_headers,
+        )
+
+        body = response.json()
+        assert body["items"] == []
+        assert body["total"] == 0
+        assert body["total_pending_establishments"] == 0
+
+    async def test_establishment_filter_keeps_matching_workers_only(
+        self,
+        client,
+        admin_headers,
+        accepted_field_worker,
+        db_establishment,
+        db_establishment_2,
+    ):
+        """Filtering by establishment selects the workers pending on it, and
+        still shows every pending establishment each of them has."""
+        ana_id = await _insert_user(
+            UserRole.FIELD_WORKER, UserStatus.ACTIVE, name="Ana", last_name="Gomez"
+        )
+        await self._add_pending(ana_id, db_establishment.id, db_establishment_2.id)
+
+        response = await client.get(
+            PENDING_ESTABLISHMENTS_URL,
+            params={"establishment_id": str(db_establishment_2.id)},
+            headers=admin_headers,
+        )
+
+        body = response.json()
+        assert body["total"] == 1
+        assert body["items"][0]["id"] == str(ana_id)
+        listed = {e["id"] for e in body["items"][0]["establishments"]}
+        assert listed == {str(db_establishment.id), str(db_establishment_2.id)}
+        assert body["total_pending_establishments"] == 2
+
+    async def test_unknown_establishment_returns_empty(
+        self, client, admin_headers, accepted_field_worker
+    ):
+        """An establishment nobody is pending on yields an empty page."""
+        response = await client.get(
+            PENDING_ESTABLISHMENTS_URL,
+            params={"establishment_id": str(uuid.uuid4())},
+            headers=admin_headers,
+        )
+
+        body = response.json()
+        assert body["items"] == []
+        assert body["total"] == 0
+        assert body["total_pending_establishments"] == 0
+
+    async def test_filters_combine(
+        self,
+        client,
+        admin_headers,
+        accepted_field_worker,
+        db_establishment,
+        db_establishment_2,
+    ):
+        """Search and establishment filter are ANDed together."""
+        ana_id = await _insert_user(
+            UserRole.FIELD_WORKER, UserStatus.ACTIVE, name="Ana", last_name="Gomez"
+        )
+        await self._add_pending(ana_id, db_establishment.id)
+
+        response = await client.get(
+            PENDING_ESTABLISHMENTS_URL,
+            params={"search": "ana", "establishment_id": str(db_establishment_2.id)},
+            headers=admin_headers,
+        )
+
+        body = response.json()
+        assert body["items"] == []
+        assert body["total_pending_establishments"] == 0

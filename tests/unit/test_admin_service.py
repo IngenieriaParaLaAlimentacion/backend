@@ -667,7 +667,7 @@ def _make_pending_uow(
         else {user.id: [] for user in users}
     )
     uow.establishment_repo.find_by_ids = AsyncMock(return_value=establishments or [])
-    uow.user_establishment_repo.count_by_status = AsyncMock(return_value=total_pending)
+    uow.user_repo.count_pending_establishments = AsyncMock(return_value=total_pending)
     return uow
 
 
@@ -706,8 +706,8 @@ class TestGetPendingEstablishmentRequests:
             page=2, page_size=20
         )
 
-        uow.user_establishment_repo.count_by_status.assert_called_once_with(
-            UserEstablishmentStatus.PENDING
+        uow.user_repo.count_pending_establishments.assert_called_once_with(
+            search=None, establishment_id=None
         )
         assert total_pending == 37
 
@@ -719,7 +719,7 @@ class TestGetPendingEstablishmentRequests:
         await service.get_pending_establishment_requests(page=3, page_size=20)
 
         uow.user_repo.get_pending_establishments_page.assert_called_once_with(
-            limit=20, offset=40
+            limit=20, offset=40, search=None, establishment_id=None
         )
 
     @pytest.mark.asyncio
@@ -752,3 +752,46 @@ class TestGetPendingEstablishmentRequests:
         assert result.total_pages == 0
         assert total_pending == 0
         uow.user_establishment_repo.get_by_user_ids.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_forwards_search_and_establishment_filters(self, mock_auth_service):
+        uow = _make_pending_uow()
+        service = AdminService(uow, mock_auth_service)
+        establishment_id = uuid.uuid4()
+
+        await service.get_pending_establishment_requests(
+            page=1, page_size=20, search="ana", establishment_id=establishment_id
+        )
+
+        uow.user_repo.get_pending_establishments_page.assert_called_once_with(
+            limit=20, offset=0, search="ana", establishment_id=establishment_id
+        )
+        uow.user_repo.count_pending_establishments.assert_called_once_with(
+            search="ana", establishment_id=establishment_id
+        )
+
+    @pytest.mark.asyncio
+    async def test_strips_whitespace_from_search(self, mock_auth_service):
+        uow = _make_pending_uow()
+        service = AdminService(uow, mock_auth_service)
+
+        await service.get_pending_establishment_requests(
+            page=1, page_size=20, search="  ana  "
+        )
+
+        uow.user_repo.get_pending_establishments_page.assert_called_once_with(
+            limit=20, offset=0, search="ana", establishment_id=None
+        )
+
+    @pytest.mark.asyncio
+    async def test_whitespace_only_search_passes_none(self, mock_auth_service):
+        uow = _make_pending_uow()
+        service = AdminService(uow, mock_auth_service)
+
+        await service.get_pending_establishment_requests(
+            page=1, page_size=20, search="   "
+        )
+
+        uow.user_repo.get_pending_establishments_page.assert_called_once_with(
+            limit=20, offset=0, search=None, establishment_id=None
+        )
