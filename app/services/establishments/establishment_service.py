@@ -59,8 +59,8 @@ class EstablishmentService:
 
         Only checks for an existing relation when the establishment was
         reused (a fresh one can't have one yet): approved or pending
-        relations are left as-is, and a rejected one is reopened to
-        pending.
+        relations are left as-is, and a rejected or revoked one is reopened
+        to pending.
         """
         relation = None
         if reused:
@@ -72,7 +72,10 @@ class EstablishmentService:
             await self.uow.user_establishment_repo.preset_relation(
                 user_id, establishment_id
             )
-        elif relation.status == UserEstablishmentStatus.REJECTED:
+        elif relation.status in (
+            UserEstablishmentStatus.REJECTED,
+            UserEstablishmentStatus.REVOKED,
+        ):
             await self.uow.user_establishment_repo.update_status_for_ids(
                 user_id, [establishment_id], UserEstablishmentStatus.PENDING
             )

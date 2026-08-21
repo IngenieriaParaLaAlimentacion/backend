@@ -157,7 +157,7 @@ class UserService:
         self, actor: UserActor, establishment_ids: list[UUID]
     ) -> list[EstablishmentWithStatusDomain]:
         """Request (or re-request) access to establishments. Idempotent per item:
-        approved/pending stay as-is, rejected/new become pending.
+        approved/pending stay as-is, rejected/revoked/new become pending.
 
         Raises:
             EstablishmentNotFoundError: If any establishment id does not exist.
@@ -181,7 +181,10 @@ class UserService:
                 UserEstablishmentStatus.PENDING,
             ):
                 result_status[estab_id] = current
-            elif current == UserEstablishmentStatus.REJECTED:
+            elif current in (
+                UserEstablishmentStatus.REJECTED,
+                UserEstablishmentStatus.REVOKED,
+            ):
                 to_repend.append(estab_id)
                 result_status[estab_id] = UserEstablishmentStatus.PENDING
             else:
