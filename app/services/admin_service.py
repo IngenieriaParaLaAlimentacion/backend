@@ -219,6 +219,15 @@ class AdminService:
         )
         await self.uow.commit()
 
+    async def revoke_establishments(
+        self, user_id: UUID, establishment_ids: list[UUID]
+    ) -> None:
+        """Remove access to the given establishments. Does not change user status."""
+        await self._set_user_establishment_relation_status(
+            user_id, establishment_ids, UserEstablishmentStatus.REVOKED
+        )
+        await self.uow.commit()
+
     async def approve_field_worker(
         self, user_id: UUID, establishment_ids: list[UUID]
     ) -> None:

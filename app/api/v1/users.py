@@ -10,7 +10,7 @@ from app.domain.activity import ActivityListingParams, ActivityType
 from app.domain.user import UserActor
 from app.schemas.activity_schema import ActivityItemResponse
 from app.schemas.auth.user_schema import (
-    EstablishmentAccessRequest,
+    EstablishmentIdsRequest,
     EstablishmentWithStatusResponse,
     ProfileResponse,
     ProfileUpdateRequest,
@@ -106,7 +106,7 @@ async def list_my_establishments(
     },
 )
 async def request_establishment_access(
-    data: EstablishmentAccessRequest,
+    data: EstablishmentIdsRequest,
     actor: UserActor = Depends(require_any),
     service: UserService = Depends(get_user_service),
 ) -> list[EstablishmentWithStatusResponse]:
