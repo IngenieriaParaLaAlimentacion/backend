@@ -159,17 +159,20 @@ async def get_pending_establishment_requests(
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Revoke establishment access for a field worker",
     description="Revokes previously approved access to the given establishments "
-    "for the field worker. Only establishments currently approved for this "
-    "worker may be revoked; if any of them isn't, none are revoked. Does not "
-    "affect the field worker's account status. Accessible by admins only.",
+    "for the field worker. All of them must currently be approved for this "
+    "worker; if any isn't, the request is rejected and none are revoked. Does "
+    "not affect the field worker's account status. Accessible by admins only.",
     responses={
         status.HTTP_400_BAD_REQUEST: {
             "description": "Target user is not a field worker"
         },
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {
-            "description": "Field worker not found, or an establishment is not "
-            "currently approved for this field worker"
+            "description": "Field worker or establishment not found"
+        },
+        status.HTTP_409_CONFLICT: {
+            "description": "An establishment is not currently approved for "
+            "this field worker"
         },
     },
 )

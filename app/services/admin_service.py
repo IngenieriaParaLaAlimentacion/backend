@@ -18,6 +18,7 @@ from app.exceptions.domain_exceptions import (
     BadRequestError,
     SubjectNotFoundError,
     UserAlreadyExistsError,
+    UserEstablishmentNotApprovedError,
     UserEstablishmentNotFoundError,
     UserNotFoundError,
 )
@@ -105,6 +106,22 @@ class AdminService:
                 str(next(iter(invalid_ids))), str(user_id)
             )
 
+    async def _get_field_worker(self, user_id: UUID, error_detail: str) -> Any:
+        """Return the user, raising if they do not exist or are not a field worker."""
+        user = await self._get_user(user_id)
+        if user.role != UserRole.FIELD_WORKER:
+            raise BadRequestError("User is not a field worker", error_detail)
+        return user
+
+    @staticmethod
+    def _require_status(
+        user: Any, expected: UserStatus, title: str, detail: str
+    ) -> None:
+        """Raise BadRequestError(title, detail) unless the user is in ``expected``
+        status."""
+        if user.status != expected:
+            raise BadRequestError(title, detail)
+
     async def _set_user_establishment_relation_status(
         self,
         user_id: UUID,
@@ -191,11 +208,12 @@ class AdminService:
             BadRequestError: If the user's account is not active yet.
         """
         user = await self._get_user(user_id)
-        if user.status != UserStatus.ACTIVE:
-            raise BadRequestError(
-                "User is not active",
-                "Only active users can be granted access to establishments.",
-            )
+        self._require_status(
+            user,
+            UserStatus.ACTIVE,
+            "User is not active",
+            "Only active users can be granted access to establishments.",
+        )
 
         await self._set_user_establishment_relation_status(
             user_id, establishment_ids, UserEstablishmentStatus.APPROVED
@@ -222,8 +240,43 @@ class AdminService:
     async def revoke_establishments(
         self, user_id: UUID, establishment_ids: list[UUID]
     ) -> None:
-        """Remove access to the given establishments. Does not change user status."""
-        await self._set_user_establishment_relation_status(
+        """Revoke previously approved access to the given establishments.
+        Does not change the field worker's account status.
+
+        Raises:
+            UserNotFoundError: If the user does not exist.
+            BadRequestError: If the user is not a field worker.
+            UserEstablishmentNotFoundError: If an establishment has no relation
+                with this user.
+            UserEstablishmentNotApprovedError: If an establishment has a
+                relation with this user, but it isn't currently approved.
+        """
+        await self._get_field_worker(
+            user_id, "Only field workers can have establishment access revoked."
+        )
+
+        relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
+        existing_ids = {rel.establishment_id for rel in relations}
+        approved_ids = {
+            rel.establishment_id
+            for rel in relations
+            if rel.status == UserEstablishmentStatus.APPROVED
+        }
+
+        requested_ids = set(establishment_ids)
+        missing_ids = requested_ids - existing_ids
+        if missing_ids:
+            raise UserEstablishmentNotFoundError(
+                str(next(iter(missing_ids))), str(user_id)
+            )
+
+        not_approved_ids = requested_ids - approved_ids
+        if not_approved_ids:
+            raise UserEstablishmentNotApprovedError(
+                str(next(iter(not_approved_ids))), str(user_id)
+            )
+
+        await self.uow.user_establishment_repo.update_status_for_ids(
             user_id, establishment_ids, UserEstablishmentStatus.REVOKED
         )
         await self.uow.commit()
@@ -243,18 +296,16 @@ class AdminService:
             UserEstablishmentNotFoundError: If an establishment was not
                 requested by this field worker.
         """
-        user = await self._get_user(user_id)
-        if user.role != UserRole.FIELD_WORKER:
-            raise BadRequestError(
-                "User is not a field worker",
-                "Only field workers go through establishment approval.",
-            )
-        if user.status != UserStatus.PENDING_VALIDATION:
-            raise BadRequestError(
-                "Field worker is not pending",
-                "Only field workers with pending status can be approved through "
-                "this endpoint.",
-            )
+        user = await self._get_field_worker(
+            user_id, "Only field workers go through establishment approval."
+        )
+        self._require_status(
+            user,
+            UserStatus.PENDING_VALIDATION,
+            "Field worker is not pending",
+            "Only field workers with pending status can be approved through "
+            "this endpoint.",
+        )
 
         await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
         if establishment_ids:
@@ -283,12 +334,13 @@ class AdminService:
             BadRequestError: If the field worker is not in pending status.
         """
         user, relations = await self._get_field_worker_relations(user_id)
-        if user.status != UserStatus.PENDING_VALIDATION:
-            raise BadRequestError(
-                "Field worker is not pending",
-                "Only field workers with pending status can be rejected through "
-                "this endpoint.",
-            )
+        self._require_status(
+            user,
+            UserStatus.PENDING_VALIDATION,
+            "Field worker is not pending",
+            "Only field workers with pending status can be rejected through "
+            "this endpoint.",
+        )
         establishment_ids = [rel.establishment_id for rel in relations]
 
         if establishment_ids:
