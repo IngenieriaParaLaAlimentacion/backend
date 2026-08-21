@@ -1,12 +1,14 @@
 from uuid import UUID
 
-from sqlalchemy import func, or_, select, update
+from sqlalchemy import exists, func, or_, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.domain.establishment import UserEstablishmentStatus
 from app.exceptions.domain_exceptions import UserAlreadyExistsError
 from app.models.auth.user import User, UserRole, UserStatus
+from app.models.auth.user_establishment import UserEstablishment
 from app.utils.db import execute_paginated, ilike_condition
 
 
@@ -129,6 +131,33 @@ class UserRepository:
 
         return await execute_paginated(
             self.db, query, count_query, User.created_at.desc(), limit, offset
+        )
+
+    async def get_pending_establishments_page(
+        self, *, limit: int, offset: int
+    ) -> tuple[list[User], int]:
+        """Return a paginated list of active field workers that have at least
+        one pending establishment relation, and the total matching count."""
+        has_pending = exists(
+            select(1).where(
+                UserEstablishment.user_id == User.id,
+                UserEstablishment.status == UserEstablishmentStatus.PENDING,
+            )
+        )
+        conditions = (
+            User.role == UserRole.FIELD_WORKER,
+            User.status == UserStatus.ACTIVE,
+            has_pending,
+        )
+
+        return await execute_paginated(
+            self.db,
+            select(User),
+            select(func.count()).select_from(User),
+            User.created_at.desc(),
+            limit,
+            offset,
+            conditions,
         )
 
     async def update_status(self, user_id: UUID, status: UserStatus) -> None:

@@ -5,6 +5,7 @@ from fastapi import status
 from sqlalchemy import select
 
 import app.db.database as db_module
+from app.domain.establishment import UserEstablishmentStatus
 from app.domain.user import UserRole, UserStatus
 from app.models.auth.user import User
 from app.models.auth.user_establishment import UserEstablishment
@@ -12,6 +13,7 @@ from tests.integration.admin.conftest import (
     ADMIN_USERS_URL,
     APPROVE_FIELD_WORKER_URL,
     APPROVE_URL,
+    PENDING_ESTABLISHMENTS_URL,
     REGISTER_FIELD_WORKER_URL,
     REJECT_FIELD_WORKER_URL,
     REJECT_URL,
@@ -478,3 +480,115 @@ class TestRejectFieldWorker:
         url = REJECT_FIELD_WORKER_URL.format(user_id=uuid.uuid4())
         response = await client.patch(url, headers=admin_headers)
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+class TestListPendingEstablishments:
+    async def test_lists_active_field_worker_with_pending_access(
+        self, client, admin_headers, accepted_field_worker, db_establishment
+    ):
+        """An active field worker with a pending relation shows up with it."""
+        response = await client.get(PENDING_ESTABLISHMENTS_URL, headers=admin_headers)
+
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert body["total"] == 1
+        assert body["total_pending_establishments"] == 1
+        item = body["items"][0]
+        assert item["id"] == accepted_field_worker["id"]
+        assert item["status"] == UserStatus.ACTIVE.value
+        assert [e["id"] for e in item["establishments"]] == [str(db_establishment.id)]
+
+    async def test_excludes_accounts_still_awaiting_approval(
+        self, client, admin_headers, registered_field_worker
+    ):
+        """A field worker whose account is still pending is not listed."""
+        response = await client.get(PENDING_ESTABLISHMENTS_URL, headers=admin_headers)
+
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert body["items"] == []
+        assert body["total"] == 0
+        assert body["total_pending_establishments"] == 0
+
+    async def test_excludes_field_worker_once_access_is_approved(
+        self, client, admin_headers, accepted_field_worker, db_establishment
+    ):
+        """Approving the only pending relation drops the worker off the list."""
+        await client.patch(
+            APPROVE_URL.format(user_id=accepted_field_worker["id"]),
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        response = await client.get(PENDING_ESTABLISHMENTS_URL, headers=admin_headers)
+
+        body = response.json()
+        assert body["items"] == []
+        assert body["total"] == 0
+        assert body["total_pending_establishments"] == 0
+
+    async def test_returns_only_pending_establishments_of_a_worker(
+        self,
+        client,
+        admin_headers,
+        accepted_field_worker,
+        db_establishment,
+        db_establishment_2,
+    ):
+        """A worker with one approved and one pending relation only shows
+        the pending one."""
+        user_id = uuid.UUID(accepted_field_worker["id"])
+        async with db_module.AsyncSessionLocal() as session:
+            session.add(
+                UserEstablishment(
+                    user_id=user_id,
+                    establishment_id=db_establishment_2.id,
+                    status=UserEstablishmentStatus.PENDING,
+                )
+            )
+            await session.commit()
+        await client.patch(
+            APPROVE_URL.format(user_id=accepted_field_worker["id"]),
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        response = await client.get(PENDING_ESTABLISHMENTS_URL, headers=admin_headers)
+
+        body = response.json()
+        assert body["total"] == 1
+        assert body["total_pending_establishments"] == 1
+        item = body["items"][0]
+        assert [e["id"] for e in item["establishments"]] == [str(db_establishment_2.id)]
+
+    async def test_total_pending_is_global_not_per_page(
+        self,
+        client,
+        admin_headers,
+        accepted_field_worker,
+        db_establishment,
+        db_establishment_2,
+    ):
+        """The pending count spans every active field worker, not just the page."""
+        other_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        async with db_module.AsyncSessionLocal() as session:
+            session.add(
+                UserEstablishment(
+                    user_id=other_id,
+                    establishment_id=db_establishment_2.id,
+                    status=UserEstablishmentStatus.PENDING,
+                )
+            )
+            await session.commit()
+
+        response = await client.get(
+            PENDING_ESTABLISHMENTS_URL,
+            params={"page": 1, "page_size": 1},
+            headers=admin_headers,
+        )
+
+        body = response.json()
+        assert len(body["items"]) == 1
+        assert body["total"] == 2
+        assert body["total_pages"] == 2
+        assert body["total_pending_establishments"] == 2

@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from app.domain.pagination import PaginatedResult
 from app.domain.subject import SubjectDomain
 from app.domain.subject_event import SubjectEventRecord
+from app.domain.user import UserWithEstablishmentsDomain
 from app.schemas.common import ProfileFields
 from app.schemas.establishments.establishment_schema import EstablishmentResponse
 from app.schemas.pagination import PaginatedResponse
@@ -66,6 +67,29 @@ class PaginatedUsersResponse(BaseModel):
     page: int
     page_size: int
     total_pages: int
+
+
+class PendingEstablishmentsResponse(PaginatedUsersResponse):
+    """Active field workers awaiting establishment access.
+
+    Every item's ``establishments`` holds only that field worker's pending
+    establishments.
+    """
+
+    total_pending_establishments: int = Field(
+        description="Pending establishment relations across every active field "
+        "worker, not just the ones on this page."
+    )
+
+    @classmethod
+    def from_domain(
+        cls,
+        result: PaginatedResult[UserWithEstablishmentsDomain],
+        total_pending: int,
+    ) -> "PendingEstablishmentsResponse":
+        return cls.model_validate(
+            {**result.__dict__, "total_pending_establishments": total_pending}
+        )
 
 
 class AdminSubjectDetailResponse(SubjectResponse):

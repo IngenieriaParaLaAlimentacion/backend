@@ -51,12 +51,17 @@ class AdminService:
         }
 
     async def _get_establishments_per_user(
-        self, user_ids: list[UUID]
+        self,
+        user_ids: list[UUID],
+        status: UserEstablishmentStatus | None = None,
     ) -> dict[UUID, list[EstablishmentDomain]]:
-        """Return the full establishment details for each user."""
+        """Return the full establishment details for each user.
+
+        ``status`` optionally narrows the result to relations in that status.
+        """
         estab_ids_by_user: dict[
             UUID, list[UUID]
-        ] = await self.uow.user_establishment_repo.get_by_user_ids(user_ids)
+        ] = await self.uow.user_establishment_repo.get_by_user_ids(user_ids, status)
 
         unique_establishment_ids = list(
             {e_id for ids in estab_ids_by_user.values() for e_id in ids}
@@ -141,9 +146,18 @@ class AdminService:
         )
 
     async def _build_paginated_users_result(
-        self, users: list[User], total: int, page: int, page_size: int
+        self,
+        users: list[User],
+        total: int,
+        page: int,
+        page_size: int,
+        status: UserEstablishmentStatus | None = None,
     ) -> PaginatedResult[UserWithEstablishmentsDomain]:
-        """Hydrate establishments for `users` and wrap them in a PaginatedResult."""
+        """Hydrate establishments for `users` and wrap them in a PaginatedResult.
+
+        ``status`` optionally narrows the hydrated establishments to relations
+        in that status.
+        """
         if not users:
             return PaginatedResult(
                 items=[],
@@ -154,7 +168,7 @@ class AdminService:
             )
 
         establishments_per_user = await self._get_establishments_per_user(
-            [user.id for user in users]
+            [user.id for user in users], status
         )
 
         return PaginatedResult.build(
@@ -329,6 +343,28 @@ class AdminService:
         )
 
         return await self._build_paginated_users_result(users, total, page, page_size)
+
+    async def get_pending_establishment_requests(
+        self, page: int, page_size: int
+    ) -> tuple[PaginatedResult[UserWithEstablishmentsDomain], int]:
+        """Return active field workers awaiting establishment access.
+
+        Each user carries only their pending establishments. The second tuple
+        element is the total number of pending establishment relations across
+        every active field worker, not just this page.
+        """
+        offset = (page - 1) * page_size
+
+        users, total = await self.uow.user_repo.get_pending_establishments_page(
+            limit=page_size, offset=offset
+        )
+        result = await self._build_paginated_users_result(
+            users, total, page, page_size, UserEstablishmentStatus.PENDING
+        )
+        total_pending = await self.uow.user_establishment_repo.count_by_status(
+            UserEstablishmentStatus.PENDING
+        )
+        return result, total_pending
 
     async def invite_user(self, data: InviteAdminRequest, role: UserRole) -> UUID:
         """Create a new admin user and send a password setup link by email.
