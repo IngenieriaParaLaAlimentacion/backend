@@ -95,16 +95,18 @@ class AdminService:
 
     async def _validate_access_request(
         self, user_id: UUID, establishment_ids: list[UUID]
-    ) -> None:
-        """Validate that all establishment IDs belong to the field worker."""
+    ) -> dict[UUID, Any]:
+        """Validate that all establishment IDs belong to the field worker and
+        return their relations keyed by establishment id."""
         _, relations = await self._get_field_worker_relations(user_id)
-        user_establishment_ids = {rel.establishment_id for rel in relations}
+        relations_by_estab_id = {rel.establishment_id: rel for rel in relations}
 
-        invalid_ids = set(establishment_ids) - user_establishment_ids
+        invalid_ids = set(establishment_ids) - relations_by_estab_id.keys()
         if invalid_ids:
             raise UserEstablishmentNotFoundError(
                 str(next(iter(invalid_ids))), str(user_id)
             )
+        return relations_by_estab_id
 
     async def _get_field_worker(self, user_id: UUID, error_detail: str) -> Any:
         """Return the user, raising if they do not exist or are not a field worker."""
@@ -255,25 +257,18 @@ class AdminService:
             user_id, "Only field workers can have establishment access revoked."
         )
 
-        relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
-        existing_ids = {rel.establishment_id for rel in relations}
-        approved_ids = {
-            rel.establishment_id
-            for rel in relations
-            if rel.status == UserEstablishmentStatus.APPROVED
-        }
-
-        requested_ids = set(establishment_ids)
-        missing_ids = requested_ids - existing_ids
-        if missing_ids:
-            raise UserEstablishmentNotFoundError(
-                str(next(iter(missing_ids))), str(user_id)
-            )
-
-        not_approved_ids = requested_ids - approved_ids
+        relations_by_estab_id = await self._validate_access_request(
+            user_id, establishment_ids
+        )
+        not_approved_ids = [
+            estab_id
+            for estab_id in establishment_ids
+            if relations_by_estab_id[estab_id].status
+            != UserEstablishmentStatus.APPROVED
+        ]
         if not_approved_ids:
             raise UserEstablishmentNotApprovedError(
-                str(next(iter(not_approved_ids))), str(user_id)
+                str(not_approved_ids[0]), str(user_id)
             )
 
         await self.uow.user_establishment_repo.update_status_for_ids(

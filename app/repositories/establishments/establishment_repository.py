@@ -170,9 +170,9 @@ class EstablishmentRepository:
         """Return establishments the user can still request access to, paginated.
 
         Excludes establishments where the user already has an ``approved`` or
-        ``pending`` relation; ``rejected`` relations are treated as available
-        (re-requestable). Applies the same search/city/province/sort filters as
-        ``get_paginated``.
+        ``pending`` relation; ``rejected`` and ``revoked`` relations are treated
+        as available (re-requestable). Applies the same search/city/province/sort
+        filters as ``get_paginated``.
         """
         blocked = select(UserEstablishment.establishment_id).where(
             UserEstablishment.user_id == user_id,
