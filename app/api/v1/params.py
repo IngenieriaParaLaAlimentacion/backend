@@ -148,9 +148,12 @@ class EstablishmentFieldWorkersQuery:
         Query(max_length=100, description="Partial match on name, last name or email."),
     ] = None
     relation_status: Annotated[
-        UserEstablishmentStatus,
-        Query(description="Enrollment status of the user at this establishment."),
-    ] = UserEstablishmentStatus.APPROVED
+        list[UserEstablishmentStatus] | None,
+        Query(
+            description="Enrollment statuses to include. Defaults to approved "
+            "enrollments when omitted."
+        ),
+    ] = None
 
     def to_domain(self) -> EstablishmentFieldWorkerListingParams:
         return EstablishmentFieldWorkerListingParams(

@@ -45,10 +45,13 @@ class EstablishmentFieldWorkerListingParams:
     """Query parameters for the per-establishment field worker listing."""
 
     search: str | None = None
-    relation_status: UserEstablishmentStatus = UserEstablishmentStatus.APPROVED
+    relation_status: list[UserEstablishmentStatus] | None = None
 
     def __post_init__(self) -> None:
         self.search = normalize_optional_str(self.search)
+        self.relation_status = self.relation_status or [
+            UserEstablishmentStatus.APPROVED
+        ]
 
 
 @dataclass
