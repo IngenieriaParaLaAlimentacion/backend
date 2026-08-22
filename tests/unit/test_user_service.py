@@ -390,6 +390,27 @@ class TestRequestEstablishmentAccess:
         assert result[0].status == UserEstablishmentStatus.PENDING
 
     @pytest.mark.asyncio
+    async def test_revoked_id_is_re_requested(self):
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        estab = _make_establishment()
+        relations = [_make_relation(estab.id, UserEstablishmentStatus.REVOKED)]
+        uow = _make_uow(user=user, relations=relations, establishments_by_ids=[estab])
+        service = UserService(uow)
+
+        result = await service.request_establishment_access(
+            _actor_for(user), [estab.id]
+        )
+
+        uow.user_establishment_repo.update_status_for_ids.assert_awaited_once()
+        _, ids, new_status = (
+            uow.user_establishment_repo.update_status_for_ids.call_args.args
+        )
+        assert ids == [estab.id]
+        assert new_status == UserEstablishmentStatus.PENDING
+        uow.user_establishment_repo.preset_relation.assert_not_called()
+        assert result[0].status == UserEstablishmentStatus.PENDING
+
+    @pytest.mark.asyncio
     async def test_approved_id_is_untouched(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         estab = _make_establishment()
