@@ -108,8 +108,7 @@ class UserRepository:
         return result.first() is not None
 
     async def get_by_email(self, email: str) -> User | None:
-        """Return a user by email, ignoring case, or None if it does not exist.
-        """
+        """Return a user by email, ignoring case, or None if it does not exist."""
         result = await self.db.execute(
             select(User).where(func.lower(User.email) == email.strip().lower())
         )

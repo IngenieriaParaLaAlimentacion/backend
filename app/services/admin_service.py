@@ -55,8 +55,7 @@ class AdminService:
         user_ids: list[UUID],
         status: UserEstablishmentStatus,
     ) -> dict[UUID, list[EstablishmentDomain]]:
-        """Return the full establishment details for each user.
-        """
+        """Return the full establishment details for each user."""
         estab_ids_by_user: dict[
             UUID, list[UUID]
         ] = await self.uow.user_establishment_repo.get_by_user_ids(user_ids, status)
