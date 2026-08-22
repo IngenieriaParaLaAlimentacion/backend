@@ -166,6 +166,19 @@ class TestGetPaginatedUsers:
         )
 
     @pytest.mark.asyncio
+    async def test_hydrates_only_approved_establishments(self, make_uow, make_service):
+        """The listing means access, so it must ask for approved relations only."""
+        user = _make_user()
+        uow = make_uow(users=[user], total=1)
+        service = make_service(uow)
+
+        await service.get_users_paginated(page=1, page_size=20)
+
+        uow.user_establishment_repo.get_by_user_ids.assert_called_once_with(
+            [user.id], UserEstablishmentStatus.APPROVED
+        )
+
+    @pytest.mark.asyncio
     async def test_forwards_role_filter_to_repo(self, make_uow, make_service):
         uow = make_uow()
         service = make_service(uow)
@@ -449,6 +462,19 @@ class TestGetUserInfo:
         await service.get_user_info(user.id)
 
         uow.user_repo.get_by_id.assert_called_once_with(user.id)
+
+    @pytest.mark.asyncio
+    async def test_hydrates_only_approved_establishments(self, mock_auth_service):
+        """The detail view means access, so it must ask for approved only."""
+        user = _make_user()
+        uow = _make_user_info_uow(user=user)
+        service = AdminService(uow, mock_auth_service)
+
+        await service.get_user_info(user.id)
+
+        uow.user_establishment_repo.get_by_user_ids.assert_called_once_with(
+            [user.id], UserEstablishmentStatus.APPROVED
+        )
 
     @pytest.mark.asyncio
     async def test_returns_user_with_no_establishments(self, mock_auth_service):

@@ -11,8 +11,10 @@ from tests.integration.admin.conftest import (
     ADMIN_USER_URL,
     ADMIN_USERS_URL,
     APPROVE_FIELD_WORKER_URL,
+    APPROVE_URL,
     INVITE_ADMIN_URL,
     REGISTER_FIELD_WORKER_URL,
+    REJECT_URL,
     _insert_user,
 )
 
@@ -93,6 +95,38 @@ class TestListUsersPagination:
             assert "status" in item
             assert "is_email_verified" in item
             assert "establishments" in item
+
+    async def test_listing_hides_pending_establishments(
+        self, client, admin_headers, registered_field_worker
+    ):
+        """The listing shows access, not requests: a pending relation is absent."""
+        response = await client.get(ADMIN_USERS_URL, headers=admin_headers)
+
+        item = next(
+            i
+            for i in response.json()["items"]
+            if i["id"] == registered_field_worker["id"]
+        )
+        assert item["establishments"] == []
+
+    async def test_listing_shows_approved_establishments(
+        self, client, admin_headers, accepted_field_worker, db_establishment
+    ):
+        """An approved relation does show up in the listing."""
+        await client.patch(
+            APPROVE_URL.format(user_id=accepted_field_worker["id"]),
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        response = await client.get(ADMIN_USERS_URL, headers=admin_headers)
+
+        item = next(
+            i
+            for i in response.json()["items"]
+            if i["id"] == accepted_field_worker["id"]
+        )
+        assert [e["id"] for e in item["establishments"]] == [str(db_establishment.id)]
 
     async def test_filter_by_role_returns_only_matching_users(
         self, client, admin_headers, registered_field_worker
@@ -416,12 +450,30 @@ class TestGetUser:
         assert body["description"] is None
         assert body["contact_phone"] is None
 
-    async def test_returns_user_with_hydrated_establishments(
-        self, client, admin_headers, registered_field_worker, db_establishment
+    async def test_pending_establishments_are_not_returned(
+        self, client, admin_headers, registered_field_worker
     ):
-        """A field worker registered to an establishment returns it hydrated."""
+        """A registration only requests access. Until an admin approves it the
+        establishment is not part of the user's access and must not show up."""
         response = await client.get(
             ADMIN_USER_URL.format(user_id=registered_field_worker["id"]),
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["establishments"] == []
+
+    async def test_returns_user_with_hydrated_establishments(
+        self, client, admin_headers, accepted_field_worker, db_establishment
+    ):
+        """Once the access is approved the establishment comes back hydrated."""
+        await client.patch(
+            APPROVE_URL.format(user_id=accepted_field_worker["id"]),
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        response = await client.get(
+            ADMIN_USER_URL.format(user_id=accepted_field_worker["id"]),
             headers=admin_headers,
         )
         assert response.status_code == status.HTTP_200_OK
@@ -429,6 +481,22 @@ class TestGetUser:
         assert len(establishments) == 1
         assert establishments[0]["id"] == str(db_establishment.id)
         assert establishments[0]["name"] == db_establishment.name
+
+    async def test_rejected_establishments_are_not_returned(
+        self, client, admin_headers, accepted_field_worker, db_establishment
+    ):
+        """A rejected request is not access either."""
+        await client.patch(
+            REJECT_URL.format(user_id=accepted_field_worker["id"]),
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        response = await client.get(
+            ADMIN_USER_URL.format(user_id=accepted_field_worker["id"]),
+            headers=admin_headers,
+        )
+        assert response.json()["establishments"] == []
 
     async def test_optional_fields_returned_when_set(self, client, admin_headers, app):
         """locality, description and contact_phone are returned when stored in DB."""

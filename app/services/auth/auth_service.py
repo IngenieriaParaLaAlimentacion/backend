@@ -124,6 +124,12 @@ class AuthService:
         if user.status == UserStatus.PENDING_VALIDATION:
             raise PendingValidationError()
 
+        approved_establishment_ids = (
+            await self.uow.user_establishment_repo.get_approved_establishment_ids(
+                user.id
+            )
+        )
+
         access_token = create_access_token(user.id, user.role)
         refresh_token, refresh_hash = create_refresh_token()
 
@@ -141,7 +147,7 @@ class AuthService:
                 role=user.role,
                 status=user.status,
                 is_email_verified=user.is_email_verified,
-                establishments=[e.id for e in user.establishments],
+                establishments=list(approved_establishment_ids),
             ),
             access_token=access_token,
             refresh_token=refresh_token,

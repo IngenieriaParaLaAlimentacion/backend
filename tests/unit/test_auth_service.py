@@ -438,6 +438,31 @@ class TestLoginSuccess:
         assert result.user.role == user.role
         assert result.user.status == user.status
 
+    @pytest.mark.asyncio
+    async def test_establishments_come_from_approved_relations_only(
+        self,
+        make_uow,
+        make_login_user,
+        make_password_record,
+        valid_login_request,
+        mock_security,
+    ):
+        """Login reports access, not requests: the ids must be read through the
+        approved-only query rather than off the raw relationship."""
+        user = make_login_user()
+        uow = make_uow(login_user=user, password_record=make_password_record(user))
+        approved_id = uuid.uuid4()
+        uow.user_establishment_repo.get_approved_establishment_ids = AsyncMock(
+            return_value={approved_id}
+        )
+
+        result = await AuthService(uow).login(valid_login_request)
+
+        uow.user_establishment_repo.get_approved_establishment_ids.assert_awaited_once_with(
+            user.id
+        )
+        assert result.user.establishments == [approved_id]
+
 
 class TestLoginUnknownEmail:
     @pytest.mark.asyncio
