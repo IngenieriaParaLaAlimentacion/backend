@@ -9,7 +9,7 @@ from app.schemas.auth.admin_schema import (
     PendingEstablishmentsResponse,
     UserAccessRequest,
 )
-from app.schemas.auth.user_schema import EstablishmentAccessRequest
+from app.schemas.auth.user_schema import EstablishmentIdsRequest
 from app.services.admin_service import AdminService
 
 router = APIRouter()
@@ -33,7 +33,7 @@ router = APIRouter()
 )
 async def approve_establishments(
     user_id: UUID,
-    data: EstablishmentAccessRequest,
+    data: EstablishmentIdsRequest,
     _admin: UserActor = Depends(require_admin),
     service: AdminService = Depends(get_admin_service),
 ) -> Response:
@@ -59,7 +59,7 @@ async def approve_establishments(
 )
 async def reject_establishments(
     user_id: UUID,
-    data: EstablishmentAccessRequest,
+    data: EstablishmentIdsRequest,
     _admin: UserActor = Depends(require_admin),
     service: AdminService = Depends(get_admin_service),
 ) -> Response:
@@ -152,3 +152,35 @@ async def get_pending_establishment_requests(
         establishment_id=establishment_id,
     )
     return PendingEstablishmentsResponse.from_domain(result, total_pending)
+
+
+@router.patch(
+    "/field-worker/{user_id}/establishments/revoke",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Revoke establishment access for a field worker",
+    description="Revokes previously approved access to the given establishments "
+    "for the field worker. All of them must currently be approved for this "
+    "worker; if any isn't, the request is rejected and none are revoked. Does "
+    "not affect the field worker's account status. Accessible by admins only.",
+    responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Target user is not a field worker"
+        },
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Field worker or establishment not found"
+        },
+        status.HTTP_409_CONFLICT: {
+            "description": "An establishment is not currently approved for "
+            "this field worker"
+        },
+    },
+)
+async def revoke_establishments(
+    user_id: UUID,
+    data: EstablishmentIdsRequest,
+    _admin: UserActor = Depends(require_admin),
+    service: AdminService = Depends(get_admin_service),
+) -> Response:
+    await service.revoke_establishments(user_id, data.establishment_ids)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

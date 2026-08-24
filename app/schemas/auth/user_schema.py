@@ -19,8 +19,8 @@ class ProfileUpdateRequest(ProfileFields):
     last_name: ValidStr | None = None
 
 
-class EstablishmentAccessRequest(BaseModel):
-    """Establishment ids a field worker wants to request access to."""
+class EstablishmentIdsRequest(BaseModel):
+    """A non-empty list of establishment ids to act on."""
 
     establishment_ids: Annotated[list[UUID], Field(min_length=1)]
 

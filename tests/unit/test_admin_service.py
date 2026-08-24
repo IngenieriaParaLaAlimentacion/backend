@@ -8,6 +8,7 @@ from app.domain.establishment import UserEstablishmentStatus
 from app.domain.user import UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
     BadRequestError,
+    UserEstablishmentNotApprovedError,
     UserEstablishmentNotFoundError,
     UserNotFoundError,
 )
@@ -442,6 +443,116 @@ class TestRejectEstablishments:
 
         with pytest.raises(UserEstablishmentNotFoundError):
             await service.reject_establishments(user.id, [uuid.uuid4()])
+
+
+class TestRevokeEstablishments:
+    @pytest.mark.asyncio
+    async def test_revokes_approved_establishments_without_touching_user_status(
+        self, make_establishment, mock_auth_service
+    ):
+        user = _make_user(role=UserRole.FIELD_WORKER, status=UserStatus.ACTIVE)
+        estab = make_establishment()
+        uow = _make_approve_uow(
+            user=user,
+            relations=[_make_relation(estab.id, UserEstablishmentStatus.APPROVED)],
+        )
+        service = AdminService(uow, mock_auth_service)
+
+        await service.revoke_establishments(user.id, [estab.id])
+
+        uow.user_repo.update_status.assert_not_called()
+        uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
+            user.id, [estab.id], UserEstablishmentStatus.REVOKED
+        )
+        uow.commit.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_user_not_found_raises_error(self, mock_auth_service):
+        uow = _make_approve_uow(user=None)
+        service = AdminService(uow, mock_auth_service)
+
+        with pytest.raises(UserNotFoundError):
+            await service.revoke_establishments(uuid.uuid4(), [uuid.uuid4()])
+
+    @pytest.mark.asyncio
+    async def test_non_field_worker_raises_error(
+        self, make_establishment, mock_auth_service
+    ):
+        user = _make_user(role=UserRole.ADMIN)
+        estab = make_establishment()
+        uow = _make_approve_uow(
+            user=user,
+            relations=[_make_relation(estab.id, UserEstablishmentStatus.APPROVED)],
+        )
+        service = AdminService(uow, mock_auth_service)
+
+        with pytest.raises(BadRequestError):
+            await service.revoke_establishments(user.id, [estab.id])
+
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_invalid_establishment_id_raises_error(
+        self, make_establishment, mock_auth_service
+    ):
+        """An establishment with no relation at all to this worker is a 404."""
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        estab = make_establishment()
+        uow = _make_approve_uow(
+            user=user,
+            relations=[_make_relation(estab.id, UserEstablishmentStatus.APPROVED)],
+        )
+        service = AdminService(uow, mock_auth_service)
+
+        with pytest.raises(UserEstablishmentNotFoundError):
+            await service.revoke_establishments(user.id, [uuid.uuid4()])
+
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_not_approved_establishment_raises_error(
+        self, make_establishment, mock_auth_service
+    ):
+        """A relation that exists but isn't approved (e.g. still pending)
+        can't be revoked."""
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        estab = make_establishment()
+        uow = _make_approve_uow(
+            user=user,
+            relations=[_make_relation(estab.id, UserEstablishmentStatus.PENDING)],
+        )
+        service = AdminService(uow, mock_auth_service)
+
+        with pytest.raises(UserEstablishmentNotApprovedError):
+            await service.revoke_establishments(user.id, [estab.id])
+
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_all_or_nothing_when_one_establishment_is_not_approved(
+        self, make_establishment, mock_auth_service
+    ):
+        """If any requested establishment isn't approved, none are revoked."""
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        approved = make_establishment()
+        pending = make_establishment()
+        uow = _make_approve_uow(
+            user=user,
+            relations=[
+                _make_relation(approved.id, UserEstablishmentStatus.APPROVED),
+                _make_relation(pending.id, UserEstablishmentStatus.PENDING),
+            ],
+        )
+        service = AdminService(uow, mock_auth_service)
+
+        with pytest.raises(UserEstablishmentNotApprovedError):
+            await service.revoke_establishments(user.id, [approved.id, pending.id])
+
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.commit.assert_not_called()
 
 
 class TestGetUserInfo:

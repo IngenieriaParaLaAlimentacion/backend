@@ -399,6 +399,27 @@ class TestRequestEstablishmentAccess:
         assert len(relations) == 1
         assert relations[0].status == UserEstablishmentStatus.PENDING
 
+    async def test_revoked_relation_is_re_requested(self, client, field_worker_user):
+        """A revoked relation can be re-requested (back to pending), same as
+        a rejected one."""
+        estab = await _insert_establishment("Centro A", "Calle A")
+        await _insert_relation(
+            field_worker_user.id, estab.id, UserEstablishmentStatus.REVOKED
+        )
+
+        response = await client.post(
+            ME_ESTABLISHMENTS_URL,
+            json={"establishment_ids": [str(estab.id)]},
+            headers=_headers_for(field_worker_user),
+        )
+
+        assert response.status_code == 201
+        assert response.json()[0]["status"] == UserEstablishmentStatus.PENDING
+
+        relations = await _fetch_relations(field_worker_user.id)
+        assert len(relations) == 1
+        assert relations[0].status == UserEstablishmentStatus.PENDING
+
     async def test_approved_stays_and_new_becomes_pending(
         self, client, field_worker_user
     ):

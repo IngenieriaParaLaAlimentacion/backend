@@ -123,6 +123,18 @@ class UserEstablishmentNotFoundError(NotFoundError):
         )
 
 
+class UserEstablishmentNotApprovedError(ConflictError):
+    """Raised when revoking access to an establishment that isn't currently
+    approved for the given user."""
+
+    def __init__(self, establishment_id: str, user_id: str):
+        super().__init__(
+            "User establishment not approved",
+            f"The establishment with id {establishment_id} is not currently "
+            f"approved for the user with id {user_id}.",
+        )
+
+
 class EstablishmentRequestNotFoundError(NotFoundError):
     """Exception raised when an establishment request does not exist.
 

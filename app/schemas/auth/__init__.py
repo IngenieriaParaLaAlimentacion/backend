@@ -22,7 +22,7 @@ from .auth_schema import (
     VerifyEmailRequest,
 )
 from .user_schema import (
-    EstablishmentAccessRequest as UserEstablishmentAccessRequest,
+    EstablishmentIdsRequest as UserEstablishmentAccessRequest,
 )
 from .user_schema import (
     EstablishmentWithStatusResponse,

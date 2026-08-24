@@ -11,6 +11,7 @@ class UserEstablishmentStatus(str, Enum):
     APPROVED = "approved"
     PENDING = "pending"
     REJECTED = "rejected"
+    REVOKED = "revoked"
 
 
 # TODO:check if we can reuse user status for establishments,

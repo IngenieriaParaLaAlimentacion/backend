@@ -17,6 +17,7 @@ from tests.integration.admin.conftest import (
     REGISTER_FIELD_WORKER_URL,
     REJECT_FIELD_WORKER_URL,
     REJECT_URL,
+    REVOKE_URL,
     _insert_user,
 )
 
@@ -208,6 +209,175 @@ class TestRejectEstablishments:
             headers=admin_headers,
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+class TestRevokeEstablishments:
+    async def _approve(self, client, admin_headers, user_id, establishment_id):
+        response = await client.patch(
+            APPROVE_URL.format(user_id=user_id),
+            json={"establishment_ids": [str(establishment_id)]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    async def test_returns_no_content(
+        self, client, admin_headers, accepted_field_worker, db_establishment
+    ):
+        """Should return 204 when revoking a previously approved establishment."""
+        user_id = accepted_field_worker["id"]
+        await self._approve(client, admin_headers, user_id, db_establishment.id)
+
+        url = REVOKE_URL.format(user_id=user_id)
+        response = await client.patch(
+            url,
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    async def test_revoked_establishment_has_revoked_status(
+        self, client, admin_headers, accepted_field_worker, db_establishment
+    ):
+        """The user-establishment relation should be REVOKED in the database."""
+        user_id = accepted_field_worker["id"]
+        await self._approve(client, admin_headers, user_id, db_establishment.id)
+
+        await client.patch(
+            REVOKE_URL.format(user_id=user_id),
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(UserEstablishment).where(
+                    UserEstablishment.establishment_id == db_establishment.id
+                )
+            )
+            relation = result.scalar_one()
+        assert relation.status.value == "revoked"
+
+    async def test_user_status_unchanged_after_revoke(
+        self, client, admin_headers, accepted_field_worker, db_establishment
+    ):
+        """Revoking establishment access must not deactivate the field worker."""
+        user_id = accepted_field_worker["id"]
+        await self._approve(client, admin_headers, user_id, db_establishment.id)
+
+        await client.patch(
+            REVOKE_URL.format(user_id=user_id),
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        async with db_module.AsyncSessionLocal() as session:
+            user = await session.get(User, uuid.UUID(user_id))
+        assert user.status == UserStatus.ACTIVE
+
+    async def test_user_not_found(self, client, admin_headers):
+        """Should return 404 if the field worker does not exist."""
+        url = REVOKE_URL.format(user_id=uuid.uuid4())
+        response = await client.patch(
+            url,
+            json={"establishment_ids": [str(uuid.uuid4())]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_establishment_not_associated_with_field_worker(
+        self, client, admin_headers, accepted_field_worker
+    ):
+        """Should return 404 if an establishment ID has no relation at all
+        with this field worker."""
+        url = REVOKE_URL.format(user_id=accepted_field_worker["id"])
+        response = await client.patch(
+            url,
+            json={"establishment_ids": [str(uuid.uuid4())]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_not_approved_establishment_returns_409(
+        self, client, admin_headers, accepted_field_worker, db_establishment
+    ):
+        """A relation that exists but is still pending cannot be revoked."""
+        url = REVOKE_URL.format(user_id=accepted_field_worker["id"])
+        response = await client.patch(
+            url,
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_409_CONFLICT
+
+    async def test_all_or_nothing_when_one_establishment_is_not_approved(
+        self,
+        client,
+        admin_headers,
+        accepted_field_worker,
+        db_establishment,
+        db_establishment_2,
+    ):
+        """If any requested establishment isn't approved, none get revoked."""
+        user_id = accepted_field_worker["id"]
+        await self._approve(client, admin_headers, user_id, db_establishment.id)
+        async with db_module.AsyncSessionLocal() as session:
+            session.add(
+                UserEstablishment(
+                    user_id=uuid.UUID(user_id),
+                    establishment_id=db_establishment_2.id,
+                    status=UserEstablishmentStatus.PENDING,
+                )
+            )
+            await session.commit()
+
+        response = await client.patch(
+            REVOKE_URL.format(user_id=user_id),
+            json={
+                "establishment_ids": [
+                    str(db_establishment.id),
+                    str(db_establishment_2.id),
+                ]
+            },
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_409_CONFLICT
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(UserEstablishment).where(
+                    UserEstablishment.user_id == uuid.UUID(user_id)
+                )
+            )
+            by_establishment = {
+                r.establishment_id: r.status.value for r in result.scalars()
+            }
+        assert by_establishment[db_establishment.id] == "approved"
+        assert by_establishment[db_establishment_2.id] == "pending"
+
+    async def test_empty_ids_rejected(
+        self, client, admin_headers, accepted_field_worker
+    ):
+        """Should return 422 if establishment_ids is empty."""
+        url = REVOKE_URL.format(user_id=accepted_field_worker["id"])
+        response = await client.patch(
+            url,
+            json={"establishment_ids": []},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_user_is_not_a_field_worker(
+        self, client, admin_headers, non_field_worker_user_id
+    ):
+        """Unlike approve/reject, revoke explicitly checks the target is a
+        field worker before looking at establishments, so this is a 400."""
+        url = REVOKE_URL.format(user_id=non_field_worker_user_id)
+        response = await client.patch(
+            url,
+            json={"establishment_ids": [str(uuid.uuid4())]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 class TestApproveFieldWorker:

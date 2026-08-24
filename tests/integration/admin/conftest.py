@@ -26,6 +26,7 @@ REJECT_ESTABLISHMENT_REQUEST_URL = (
 REGISTER_FIELD_WORKER_URL = "/api/v1/auth/register/field-worker"
 APPROVE_URL = "/api/v1/admin/field-worker/{user_id}/establishments/approve"
 REJECT_URL = "/api/v1/admin/field-worker/{user_id}/establishments/reject"
+REVOKE_URL = "/api/v1/admin/field-worker/{user_id}/establishments/revoke"
 APPROVE_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/approve"
 REJECT_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/reject"
 PENDING_ESTABLISHMENTS_URL = "/api/v1/admin/field-worker/establishments/pending"
@@ -85,6 +86,14 @@ async def _make_reject_request(client, *, headers=None):
     )
 
 
+async def _make_revoke_request(client, *, headers=None):
+    return await client.patch(
+        REVOKE_URL.format(user_id=uuid.uuid4()),
+        json={"establishment_ids": [str(uuid.uuid4())]},
+        headers=headers or {},
+    )
+
+
 async def _make_approve_field_worker_request(client, *, headers=None):
     return await client.patch(
         APPROVE_FIELD_WORKER_URL.format(user_id=uuid.uuid4()),
@@ -110,6 +119,10 @@ async def _make_reject_field_worker_request(client, *, headers=None):
         pytest.param(
             _make_reject_request,
             id="PATCH /admin/field-worker/{id}/establishments/reject",
+        ),
+        pytest.param(
+            _make_revoke_request,
+            id="PATCH /admin/field-worker/{id}/establishments/revoke",
         ),
         pytest.param(
             _make_approve_field_worker_request,
