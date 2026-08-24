@@ -53,12 +53,9 @@ class AdminService:
     async def _get_establishments_per_user(
         self,
         user_ids: list[UUID],
-        status: UserEstablishmentStatus | None = None,
+        status: UserEstablishmentStatus,
     ) -> dict[UUID, list[EstablishmentDomain]]:
-        """Return the full establishment details for each user.
-
-        ``status`` optionally narrows the result to relations in that status.
-        """
+        """Return the full establishment details for each user."""
         estab_ids_by_user: dict[
             UUID, list[UUID]
         ] = await self.uow.user_establishment_repo.get_by_user_ids(user_ids, status)
@@ -151,12 +148,13 @@ class AdminService:
         total: int,
         page: int,
         page_size: int,
-        status: UserEstablishmentStatus | None = None,
+        status: UserEstablishmentStatus,
     ) -> PaginatedResult[UserWithEstablishmentsDomain]:
         """Hydrate establishments for `users` and wrap them in a PaginatedResult.
 
-        ``status`` optionally narrows the hydrated establishments to relations
-        in that status.
+        ``status`` narrows the hydrated establishments to relations in that
+        status, and is required for the reason given on
+        _get_establishments_per_user.
         """
         if not users:
             return PaginatedResult(
@@ -326,7 +324,10 @@ class AdminService:
         status: UserStatus | None = None,
         search: str | None = None,
     ) -> PaginatedResult[UserWithEstablishmentsDomain]:
-        """Return a paginated list of users with their establishments.
+        """Return a paginated list of users with their approved establishments.
+
+        Only approved relations are hydrated: a pending request is not access,
+        and is surfaced by get_pending_establishment_requests instead.
 
         ``search`` matches case-insensitively against email, name, and last_name.
         Whitespace-only values are treated as no filter.
@@ -342,7 +343,9 @@ class AdminService:
             search=search,
         )
 
-        return await self._build_paginated_users_result(users, total, page, page_size)
+        return await self._build_paginated_users_result(
+            users, total, page, page_size, UserEstablishmentStatus.APPROVED
+        )
 
     async def get_pending_establishment_requests(
         self,
@@ -434,7 +437,10 @@ class AdminService:
         await self._issue_and_send_invite(user)
 
     async def get_user_info(self, user_id: UUID) -> UserWithEstablishmentsDomain:
-        """Return a user with fully hydrated establishment objects.
+        """Return a user with their approved establishments fully hydrated.
+
+        Pending and rejected relations are excluded — they are requests, not
+        access.
 
         Raises:
             UserNotFoundError: If no user with user_id exists.
@@ -442,7 +448,9 @@ class AdminService:
         user = await self.uow.user_repo.get_by_id(user_id)
         if user is None:
             raise UserNotFoundError(str(user_id))
-        establishments_per_user = await self._get_establishments_per_user([user.id])
+        establishments_per_user = await self._get_establishments_per_user(
+            [user.id], UserEstablishmentStatus.APPROVED
+        )
         return UserWithEstablishmentsDomain.from_db(
             user, establishments_per_user.get(user.id, [])
         )

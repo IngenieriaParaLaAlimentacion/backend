@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy import exists, func, or_, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import aliased, selectinload
+from sqlalchemy.orm import aliased
 
 from app.domain.establishment import UserEstablishmentStatus
 from app.exceptions.domain_exceptions import UserAlreadyExistsError
@@ -110,9 +110,7 @@ class UserRepository:
     async def get_by_email(self, email: str) -> User | None:
         """Return a user by email, ignoring case, or None if it does not exist."""
         result = await self.db.execute(
-            select(User)
-            .where(func.lower(User.email) == email.strip().lower())
-            .options(selectinload(User.establishments))
+            select(User).where(func.lower(User.email) == email.strip().lower())
         )
         return result.scalar_one_or_none()
 
