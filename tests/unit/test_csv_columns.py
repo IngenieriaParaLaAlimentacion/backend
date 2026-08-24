@@ -1,0 +1,244 @@
+"""Pins the exported row for each of the five listing column specs.
+
+These are the tests that catch a column drifting out of sync with the UI
+table: header text, header order, and how a sparse row renders.
+"""
+
+import uuid
+from datetime import date, datetime, timezone
+
+from app.domain.establishment import EstablishmentDomain
+from app.domain.establishment_dashboard import EstablishmentSubjectItemDomain
+from app.domain.measurement import (
+    AlertDomain,
+    AlertSeverity,
+    AlertType,
+    EstablishmentRefDomain,
+    MeasurementListItemDomain,
+    MeasurementSummaryDomain,
+    NutritionalStatus,
+    ResponsibleRefDomain,
+    SubjectRefDomain,
+)
+from app.domain.subject import Sex
+from app.domain.subject_detail import SubjectDetailDomain
+from app.domain.survey import SurveyListItemDomain, SurveyResponseTarget
+from app.services.exporters.csv.columns import (
+    ESTABLISHMENT_LISTING_EXPORTER,
+    ESTABLISHMENT_SUBJECT_EXPORTER,
+    MEASUREMENT_LISTING_EXPORTER,
+    SUBJECT_LISTING_EXPORTER,
+    SURVEY_LISTING_EXPORTER,
+)
+
+# 10:30 UTC -> 07:30 in Buenos Aires.
+MEASURED_AT = datetime(2026, 3, 14, 10, 30, tzinfo=timezone.utc)
+
+
+def _rows(exporter, items) -> list[str]:
+    """Export and return the file's lines, header included."""
+    return exporter.export(items).decode("utf-8-sig").strip("\r\n").split("\r\n")
+
+
+def _establishment_ref() -> EstablishmentRefDomain:
+    return EstablishmentRefDomain(
+        id=uuid.uuid4(), name="Comedor La Unión", city="Rosario", province="Santa Fe"
+    )
+
+
+def _alert(alert_type: AlertType = AlertType.OBESE) -> AlertDomain:
+    return AlertDomain(
+        id=uuid.uuid4(),
+        measurement_id=uuid.uuid4(),
+        alert_type=alert_type,
+        severity=AlertSeverity.HIGH,
+        detail="IMC alto",
+        created_at=MEASURED_AT,
+    )
+
+
+def _summary(alerts=None) -> MeasurementSummaryDomain:
+    return MeasurementSummaryDomain(
+        id=uuid.uuid4(),
+        measured_at=MEASURED_AT,
+        weight_kg=18.5,
+        height_cm=105.25,
+        bmi=16.716,
+        alerts=alerts if alerts is not None else [],
+        establishment=_establishment_ref(),
+    )
+
+
+def _subject_detail(measured: bool = True) -> SubjectDetailDomain:
+    return SubjectDetailDomain(
+        id=uuid.uuid4(),
+        dni=30123456,
+        sex=Sex.FEMALE,
+        name="Ana",
+        last_name="Pérez",
+        birth_date=date(2015, 3, 14),
+        is_rural=False,
+        is_indigenous=False,
+        nutritional_status=NutritionalStatus.NORMAL if measured else None,
+        latest_measurement=_summary() if measured else None,
+    )
+
+
+class TestSubjectColumns:
+    def test_headers_match_the_ui_table(self):
+        assert SUBJECT_LISTING_EXPORTER.headers == (
+            "Nombre",
+            "Documento",
+            "Fecha de nacimiento",
+            "Último relevamiento",
+        )
+
+    def test_populated_subject(self):
+        header, row = _rows(SUBJECT_LISTING_EXPORTER, [_subject_detail()])
+        assert row == "Ana Pérez;30123456;14/03/2015;14/03/2026 07:30"
+
+    def test_never_measured_subject_is_exported_with_a_blank_cell(self):
+        # Dropping them from the file would silently lose rows the UI shows.
+        _, row = _rows(SUBJECT_LISTING_EXPORTER, [_subject_detail(measured=False)])
+        assert row == "Ana Pérez;30123456;14/03/2015;"
+
+
+class TestEstablishmentColumns:
+    def test_headers_match_the_ui_table(self):
+        assert ESTABLISHMENT_LISTING_EXPORTER.headers == (
+            "Nombre",
+            "Dirección",
+            "Ciudad",
+            "Provincia",
+        )
+
+    def test_row(self):
+        establishment = EstablishmentDomain(
+            id=uuid.uuid4(),
+            name="Comedor La Unión",
+            formatted_address="San Martín 123",
+            latitude=-32.9,
+            longitude=-60.6,
+            place_id="place-1",
+            city="Rosario",
+            province="Santa Fe",
+        )
+        _, row = _rows(ESTABLISHMENT_LISTING_EXPORTER, [establishment])
+        assert row == "Comedor La Unión;San Martín 123;Rosario;Santa Fe"
+
+
+class TestMeasurementColumns:
+    def _measurement(self, alerts=None) -> MeasurementListItemDomain:
+        return MeasurementListItemDomain(
+            id=uuid.uuid4(),
+            measured_at=MEASURED_AT,
+            weight_kg=18.5,
+            height_cm=105.25,
+            bmi=16.716,
+            alerts=alerts if alerts is not None else [],
+            subject=SubjectRefDomain(
+                id=uuid.uuid4(),
+                dni=30123456,
+                sex=Sex.FEMALE,
+                name="Ana",
+                last_name="Pérez",
+                birth_date=date(2015, 3, 14),
+            ),
+            establishment=_establishment_ref(),
+            responsible=ResponsibleRefDomain(
+                id=uuid.uuid4(), name="Juan", last_name="Gómez"
+            ),
+        )
+
+    def test_headers_match_the_ui_table(self):
+        assert MEASUREMENT_LISTING_EXPORTER.headers == (
+            "Peso (kg)",
+            "Talla (cm)",
+            "IMC",
+            "Fecha",
+            "Sujeto",
+            "Comedor",
+            "Responsable",
+            "Alertas",
+        )
+
+    def test_row_with_no_alerts(self):
+        _, row = _rows(MEASUREMENT_LISTING_EXPORTER, [self._measurement()])
+        assert row == (
+            "18,50;105,25;16,72;14/03/2026 07:30;Ana Pérez;Comedor La Unión;Juan Gómez;"
+        )
+
+    def test_alerts_are_joined_into_one_cell(self):
+        # The join uses ", " and needs no quoting: the delimiter is ";", so a
+        # comma inside a cell is unambiguous.
+        measurement = self._measurement(
+            alerts=[_alert(AlertType.OBESE), _alert(AlertType.UNDERWEIGHT)]
+        )
+        _, row = _rows(MEASUREMENT_LISTING_EXPORTER, [measurement])
+        assert row.endswith(";Obesidad, Bajo peso")
+        assert row.count(";") == 7  # 8 columns, no stray delimiter from the join
+
+
+class TestSurveyColumns:
+    def _survey(self, is_active: bool = True) -> SurveyListItemDomain:
+        return SurveyListItemDomain(
+            id=uuid.uuid4(),
+            name="FIES 2026",
+            response_target=SurveyResponseTarget.SUBJECT,
+            is_active=is_active,
+            created_by_id=uuid.uuid4(),
+            question_count=8,
+            response_count=42,
+            created_at=MEASURED_AT,
+        )
+
+    def test_headers_match_the_ui_table(self):
+        assert SURVEY_LISTING_EXPORTER.headers == (
+            "Nombre",
+            "Alcance",
+            "Estado",
+            "Cantidad de preguntas",
+            "Fecha de creación",
+        )
+
+    def test_active_survey(self):
+        _, row = _rows(SURVEY_LISTING_EXPORTER, [self._survey()])
+        assert row == "FIES 2026;Sujeto;Activa;8;14/03/2026 07:30"
+
+    def test_inactive_survey(self):
+        _, row = _rows(SURVEY_LISTING_EXPORTER, [self._survey(is_active=False)])
+        assert ";Inactiva;" in row
+
+
+class TestEstablishmentSubjectColumns:
+    def _item(self) -> EstablishmentSubjectItemDomain:
+        return EstablishmentSubjectItemDomain(
+            id=uuid.uuid4(),
+            dni=30123456,
+            name="Ana",
+            last_name="Pérez",
+            sex=Sex.FEMALE,
+            birth_date=date(2015, 3, 14),
+            age_months=63,
+            measurement_count=3,
+            nutritional_status=NutritionalStatus.OVERWEIGHT,
+            latest_measurement=_summary(),
+        )
+
+    def test_headers_match_the_ui_table(self):
+        assert ESTABLISHMENT_SUBJECT_EXPORTER.headers == (
+            "Nombre",
+            "Documento",
+            "Edad",
+            "Último relevamiento",
+            "Peso (kg)",
+            "Talla (cm)",
+            "IMC",
+            "Estado",
+        )
+
+    def test_row(self):
+        _, row = _rows(ESTABLISHMENT_SUBJECT_EXPORTER, [self._item()])
+        assert row == (
+            "Ana Pérez;30123456;5a 3m;14/03/2026 07:30;18,50;105,25;16,72;Sobrepeso"
+        )

@@ -1004,3 +1004,61 @@ class TestRejectCreationRequest:
         mock_email.assert_awaited_once_with(
             "worker@test.com", "Comedor Esperanza", None
         )
+
+
+class TestExportEstablishmentListing:
+    pytestmark = pytest.mark.asyncio
+
+    @pytest.fixture
+    def make_export_uow(self):
+        def _make(establishments):
+            uow = AsyncMock()
+            uow.establishment_repo.list_all_for_export = AsyncMock(
+                return_value=establishments
+            )
+            return uow
+
+        return _make
+
+    async def test_delegates_the_whole_filtered_set_to_the_exporter(
+        self, make_export_uow, make_establishment
+    ):
+        uow = make_export_uow([make_establishment(), make_establishment()])
+        exporter = MagicMock()
+        exporter.export.return_value = b"csv-bytes"
+        params = EstablishmentListingParams(city="Rosario")
+
+        result = await EstablishmentService(uow).export_establishment_listing(
+            params, exporter
+        )
+
+        assert result == b"csv-bytes"
+        uow.establishment_repo.list_all_for_export.assert_awaited_once_with(params)
+        # The export must never go through the paginated query.
+        uow.establishment_repo.get_paginated.assert_not_awaited()
+
+    async def test_rows_are_mapped_to_domain_objects(
+        self, make_export_uow, make_establishment
+    ):
+        uow = make_export_uow([make_establishment(name="Comedor Sur")])
+        exporter = MagicMock()
+
+        await EstablishmentService(uow).export_establishment_listing(
+            EstablishmentListingParams(), exporter
+        )
+
+        exported = list(exporter.export.call_args[0][0])
+        assert [e.name for e in exported] == ["Comedor Sur"]
+        assert all(isinstance(e, EstablishmentDomain) for e in exported)
+
+    async def test_empty_result_still_reaches_the_exporter(self, make_export_uow):
+        uow = make_export_uow([])
+        exporter = MagicMock()
+        exporter.export.return_value = b"headers-only"
+
+        result = await EstablishmentService(uow).export_establishment_listing(
+            EstablishmentListingParams(), exporter
+        )
+
+        assert result == b"headers-only"
+        assert list(exporter.export.call_args[0][0]) == []

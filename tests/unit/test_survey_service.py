@@ -10,6 +10,7 @@ from app.domain.survey import (
     ResponseType,
     SurveyDomain,
     SurveyListingParams,
+    SurveyListItemDomain,
     SurveyResponseTarget,
 )
 from app.domain.user import UserActor, UserRole
@@ -789,3 +790,51 @@ class TestSetActive:
         uow = make_uow(survey=survey)
         with pytest.raises(ForbiddenError):
             await SurveyService(uow).set_active(survey.id, False, analyst_actor)
+
+
+class TestExportSurveyListing:
+    pytestmark = pytest.mark.asyncio
+
+    async def test_delegates_the_whole_filtered_set_to_the_exporter(
+        self, make_uow, make_survey
+    ):
+        uow = make_uow()
+        uow.survey_repo.list_all_for_export = AsyncMock(
+            return_value=[(make_survey(), 8)]
+        )
+        exporter = MagicMock()
+        exporter.export.return_value = b"csv-bytes"
+        params = SurveyListingParams(is_active=True)
+
+        result = await SurveyService(uow).export_survey_listing(params, exporter)
+
+        assert result == b"csv-bytes"
+        uow.survey_repo.list_all_for_export.assert_awaited_once_with(params)
+        # The export must never go through the paginated query.
+        uow.survey_repo.list.assert_not_awaited()
+
+    async def test_question_count_comes_from_the_row(self, make_uow, make_survey):
+        uow = make_uow()
+        uow.survey_repo.list_all_for_export = AsyncMock(
+            return_value=[(make_survey(name="FIES 2026"), 8)]
+        )
+        exporter = MagicMock()
+
+        await SurveyService(uow).export_survey_listing(SurveyListingParams(), exporter)
+
+        exported = list(exporter.export.call_args[0][0])
+        assert [(s.name, s.question_count) for s in exported] == [("FIES 2026", 8)]
+        assert all(isinstance(s, SurveyListItemDomain) for s in exported)
+
+    async def test_empty_result_still_reaches_the_exporter(self, make_uow):
+        uow = make_uow()
+        uow.survey_repo.list_all_for_export = AsyncMock(return_value=[])
+        exporter = MagicMock()
+        exporter.export.return_value = b"headers-only"
+
+        result = await SurveyService(uow).export_survey_listing(
+            SurveyListingParams(), exporter
+        )
+
+        assert result == b"headers-only"
+        assert list(exporter.export.call_args[0][0]) == []

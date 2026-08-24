@@ -9,7 +9,7 @@ from app.domain.subject import Sex, SubjectListingParams, SubjectSortOrder
 from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.measurements.measurement import Measurement
 from app.models.subjects.subject import Subject
-from app.utils.db import execute_paginated, ilike_condition
+from app.utils.db import execute_all, execute_paginated, ilike_condition
 
 # Maps each SubjectSortOrder value to its SQLAlchemy order clause(s).
 # Each pairs the sort column with `id` as a tiebreaker, so subjects sharing a
@@ -168,5 +168,19 @@ class SubjectRepository:
             order_by,
             limit,
             offset,
+            conditions=self._listing_conditions(params),
+        )
+
+    async def list_all_for_export(self, params: SubjectListingParams) -> list[Subject]:
+        """Return every subject matching the listing filters, unpaginated.
+
+        Shares ``_listing_conditions`` and ``_SORT_CLAUSES`` with
+        ``get_subject_listing``, so an export always carries the same rows in
+        the same order as the listing it was launched from.
+        """
+        return await execute_all(
+            self.db,
+            select(Subject),
+            _SORT_CLAUSES[params.sort_order],
             conditions=self._listing_conditions(params),
         )

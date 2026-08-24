@@ -30,6 +30,7 @@ from app.schemas.surveys.survey_schema import (
     SurveyCreateRequest,
     SurveyUpdateRequest,
 )
+from app.services.exporters.csv.csv_exporter import CsvExporter
 
 # Roles allowed to author (create/duplicate) surveys.
 _AUTHOR_ROLES = {UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN}
@@ -235,6 +236,22 @@ class SurveyService:
             limit=page_size, offset=offset, params=params
         )
         return self._build_survey_list_result(surveys, total, page, page_size)
+
+    async def export_survey_listing(
+        self,
+        params: SurveyListingParams,
+        exporter: CsvExporter[SurveyListItemDomain],
+    ) -> bytes:
+        """Return the survey listing as an exported file's raw bytes.
+
+        Applies the same filters and order as ``list_surveys`` over the whole
+        result set rather than one page.
+        """
+        rows = await self.uow.survey_repo.list_all_for_export(params)
+        return exporter.export(
+            SurveyListItemDomain.from_db(survey, question_count)
+            for survey, question_count in rows
+        )
 
     async def list_available_surveys(
         self,

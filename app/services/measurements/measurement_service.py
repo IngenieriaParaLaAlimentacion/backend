@@ -20,6 +20,7 @@ from app.exceptions.domain_exceptions import (
 from app.models.subjects.subject import Subject
 from app.reference_data.anthropometry import evaluate_alerts
 from app.schemas.measurements.measurement_schema import MeasurementRequest
+from app.services.exporters.csv.csv_exporter import CsvExporter
 
 
 class MeasurementService:
@@ -121,6 +122,21 @@ class MeasurementService:
             total=total,
             page=page,
             page_size=page_size,
+        )
+
+    async def export_measurement_listing(
+        self,
+        params: MeasurementListingParams,
+        exporter: CsvExporter[MeasurementListItemDomain],
+    ) -> bytes:
+        """Return the measurement listing as an exported file's raw bytes.
+
+        Applies the same filters and order as ``list_measurements`` over the
+        whole result set rather than one page.
+        """
+        measurements = await self.uow.measurement_repo.list_all_for_export(params)
+        return exporter.export(
+            MeasurementListItemDomain.from_db(m) for m in measurements
         )
 
     async def get_subject_evolution(

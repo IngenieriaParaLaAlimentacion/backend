@@ -216,20 +216,24 @@ class EstablishmentDashboardRepository:
         )
         return list(result.all())
 
-    async def get_subject_listing(
-        self,
+    @classmethod
+    def _subject_listing_query(
+        cls,
         establishment_id: UUID,
-        limit: int,
-        offset: int,
         params: EstablishmentSubjectListingParams,
-    ) -> tuple[list[Row], int]:
-        """Return a paginated list of the subjects attending this establishment.
+    ):
+        """Build the filtered, ordered subject-listing query for this establishment.
 
-        One row per subject, carrying their most recent measurement here plus
-        how many measurements they have at this establishment. ``search``
-        behaves exactly as in the general subject listing.
+        Returns the ``(measurement, measurement_count)`` query already filtered
+        and ordered, plus the matching count query. Shared by the paginated
+        listing and the export so both always resolve the same rows in the same
+        order; only the limit/offset window differs.
+
+        This one cannot go through ``execute_paginated_rows``: the base query is
+        built on the DISTINCT ON subquery from ``_latest_per_subject``, so the
+        joins have to be assembled here.
         """
-        latest = self._latest_per_subject(establishment_id)
+        latest = cls._latest_per_subject(establishment_id)
         measurement_count = (
             select(func.count(Measurement.id))
             .where(
@@ -264,11 +268,40 @@ class EstablishmentDashboardRepository:
             count_query = count_query.where(condition)
 
         order_by = _SUBJECT_SORT_CLAUSES[params.sort_order]
+        return base_query.order_by(order_by, asc(Subject.id)), count_query
+
+    async def get_subject_listing(
+        self,
+        establishment_id: UUID,
+        limit: int,
+        offset: int,
+        params: EstablishmentSubjectListingParams,
+    ) -> tuple[list[Row], int]:
+        """Return a paginated list of the subjects attending this establishment.
+
+        One row per subject, carrying their most recent measurement here plus
+        how many measurements they have at this establishment. ``search``
+        behaves exactly as in the general subject listing.
+        """
+        base_query, count_query = self._subject_listing_query(establishment_id, params)
         total = (await self.db.execute(count_query)).scalar_one()
-        rows = await self.db.execute(
-            base_query.order_by(order_by, asc(Subject.id)).limit(limit).offset(offset)
-        )
+        rows = await self.db.execute(base_query.limit(limit).offset(offset))
         return list(rows.all()), total
+
+    async def list_all_for_export(
+        self,
+        establishment_id: UUID,
+        params: EstablishmentSubjectListingParams,
+    ) -> list[Row]:
+        """Return every subject attending this establishment, unpaginated.
+
+        Shares its query with ``get_subject_listing``, so an export always
+        carries the same rows in the same order as the listing it was launched
+        from.
+        """
+        base_query, _ = self._subject_listing_query(establishment_id, params)
+        rows = await self.db.execute(base_query)
+        return list(rows.all())
 
     async def get_field_worker_listing(
         self,

@@ -93,6 +93,58 @@ async def execute_paginated_rows(
     return result.all(), total
 
 
+async def _execute_full_query(
+    db: AsyncSession,
+    base_query,
+    order_by,
+    conditions: Sequence,
+):
+    """Apply conditions/order and run the query with no limit or offset.
+
+    The unpaginated counterpart of ``_execute_paginated_query``, used by the
+    export paths: they need the whole filtered set, and no total count since
+    there are no pages to build.
+    """
+    for condition in conditions:
+        base_query = base_query.where(condition)
+    order_by_clauses = order_by if isinstance(order_by, (list, tuple)) else (order_by,)
+    return await db.execute(base_query.order_by(*order_by_clauses))
+
+
+async def execute_all(
+    db: AsyncSession,
+    base_query,
+    order_by,
+    conditions: Sequence = (),
+) -> list:
+    """Execute an unpaginated single-entity query and return every row.
+
+    Same filtering and ordering semantics as ``execute_paginated``, without
+    limit/offset — an export must return the complete filtered set in the same
+    order the on-screen listing shows.
+
+    ``base_query`` must select a single entity/column — its rows are unwrapped
+    with ``.scalars()``.
+    """
+    result = await _execute_full_query(db, base_query, order_by, conditions)
+    return result.scalars().all()
+
+
+async def execute_all_rows(
+    db: AsyncSession,
+    base_query,
+    order_by,
+    conditions: Sequence = (),
+) -> list:
+    """Execute an unpaginated multi-column query and return every row.
+
+    The ``execute_paginated_rows`` counterpart for exports: each row comes back
+    as a raw ``Row`` tuple rather than unwrapped to a scalar.
+    """
+    result = await _execute_full_query(db, base_query, order_by, conditions)
+    return result.all()
+
+
 async def insert_with_savepoint(db: AsyncSession, entity, field: str, value) -> object:
     """Insert ``entity`` inside a SAVEPOINT, mapping unique violations.
 

@@ -20,15 +20,18 @@ from app.exceptions.domain_exceptions import (
 from app.models.surveys.survey import Survey
 from app.models.surveys.survey_question import SurveyQuestion
 from app.models.surveys.survey_question_option import SurveyQuestionOption
-from app.utils.db import execute_paginated_rows, ilike_condition
+from app.utils.db import execute_all_rows, execute_paginated_rows, ilike_condition
 
-# Maps each SurveySortOrder value to its SQLAlchemy order clause.
+# Maps each SurveySortOrder value to its SQLAlchemy order clause(s).
+# Each pairs the sort column with `id` as a tiebreaker, so surveys sharing a
+# value still page consistently instead of shuffling between requests, and an
+# export lands in a reproducible order.
 # KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
 _SORT_CLAUSES = {
-    SurveySortOrder.NAME_ASC: asc(func.lower(Survey.name)),
-    SurveySortOrder.NAME_DESC: desc(func.lower(Survey.name)),
-    SurveySortOrder.NEWEST: desc(Survey.created_at),
-    SurveySortOrder.OLDEST: asc(Survey.created_at),
+    SurveySortOrder.NAME_ASC: (asc(func.lower(Survey.name)), asc(Survey.id)),
+    SurveySortOrder.NAME_DESC: (desc(func.lower(Survey.name)), desc(Survey.id)),
+    SurveySortOrder.NEWEST: (desc(Survey.created_at), desc(Survey.id)),
+    SurveySortOrder.OLDEST: (asc(Survey.created_at), asc(Survey.id)),
 }
 
 
@@ -65,6 +68,20 @@ class SurveyRepository:
             .where(SurveyQuestion.survey_id == Survey.id)
             .correlate(Survey)
             .scalar_subquery()
+        )
+
+    @classmethod
+    def _listing_base_query(cls):
+        """Build the listing's ``(survey, question_count)`` query.
+
+        The summary view needs only a question count, so ``questions`` is
+        suppressed with ``noload`` and the count comes from a correlated
+        subquery — avoiding hydrating every question/option just to call
+        ``len()``.
+        """
+        question_count = cls._question_count_subquery()
+        return select(Survey, question_count.label("question_count")).options(
+            noload(Survey.questions)
         )
 
     @staticmethod
@@ -173,14 +190,10 @@ class SurveyRepository:
         subquery — avoiding hydrating every question/option just to call
         ``len()``.
         """
-        question_count = self._question_count_subquery()
-        base_query = select(Survey, question_count.label("question_count")).options(
-            noload(Survey.questions)
-        )
         count_query = select(func.count()).select_from(Survey)
         rows, total = await execute_paginated_rows(
             self.db,
-            base_query,
+            self._listing_base_query(),
             count_query,
             _SORT_CLAUSES[params.sort_order],
             limit,
@@ -188,6 +201,23 @@ class SurveyRepository:
             conditions=self._listing_conditions(params),
         )
         return list(rows), total
+
+    async def list_all_for_export(
+        self, params: SurveyListingParams
+    ) -> list[tuple[Survey, int]]:
+        """Return every ``(survey, question_count)`` row matching the filters.
+
+        Shares the base query, ``_listing_conditions`` and ``_SORT_CLAUSES``
+        with ``list``, so an export always carries the same rows in the same
+        order as the listing it was launched from.
+        """
+        rows = await execute_all_rows(
+            self.db,
+            self._listing_base_query(),
+            _SORT_CLAUSES[params.sort_order],
+            conditions=self._listing_conditions(params),
+        )
+        return list(rows)
 
     async def create(
         self,

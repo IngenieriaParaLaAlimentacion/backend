@@ -93,6 +93,28 @@ Response envelope:
 
 ---
 
+## File exports
+
+List endpoints that support a "Exportar CSV" action expose a sibling `/export` route
+(`GET /api/v1/subjects/export`, `GET /api/v1/measurements/export`, …).
+
+- The export accepts **exactly the same filter and sort query params as its listing**,
+  reusing the same query dataclass. It takes **no pagination params** and returns the
+  whole filtered set.
+- Declare the `/export` route **above** any `/{id}` route in the same router, or the
+  literal is matched as an id.
+- Response is `text/csv; charset=utf-8` with
+  `Content-Disposition: attachment; filename="<entidad>[_<scope>]_<YYYY-MM-DD>.csv"`.
+- A filter matching nothing returns **`200` with only the header line** — an export that
+  matched no rows is a successful export, not an error. Clients disable the button from
+  the listing's `total`.
+- CSV dialect is Argentine/Excel-first: `;` delimiter, decimal comma, `dd/mm/aaaa` dates
+  in `America/Argentina/Buenos_Aires`, CRLF, and a leading UTF-8 BOM.
+
+See ADR-0009 for the rationale and `app/services/exporters/csv/` for the implementation.
+
+---
+
 ## Request and response format
 
 - All request and response bodies are **JSON** (`Content-Type: application/json`).

@@ -29,6 +29,7 @@ from app.services.email_service import (
     send_creation_denied_email,
     send_establishment_created_email,
 )
+from app.services.exporters.csv.csv_exporter import CsvExporter
 
 
 class EstablishmentService:
@@ -206,6 +207,19 @@ class EstablishmentService:
         return self._build_page(
             establishments, total, page, page_size, EstablishmentDomain.from_db
         )
+
+    async def export_establishment_listing(
+        self,
+        params: EstablishmentListingParams,
+        exporter: CsvExporter[EstablishmentDomain],
+    ) -> bytes:
+        """Return the establishment listing as an exported file's raw bytes.
+
+        Applies the same filters and order as ``get_establishments_paginated``
+        over the whole result set rather than one page.
+        """
+        establishments = await self.uow.establishment_repo.list_all_for_export(params)
+        return exporter.export(EstablishmentDomain.from_db(e) for e in establishments)
 
     async def get_available_establishments(
         self,

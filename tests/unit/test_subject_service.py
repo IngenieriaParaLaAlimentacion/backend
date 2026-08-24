@@ -515,3 +515,58 @@ class TestUpdateSubject:
         assert kwargs["payload"].before == {"name": "Juan"}
         assert kwargs["payload"].after == {"name": "Carlos"}
         uow.commit.assert_called_once()
+
+
+class TestExportSubjectListing:
+    pytestmark = pytest.mark.asyncio
+
+    async def test_delegates_the_whole_filtered_set_to_the_exporter(
+        self, make_uow, make_subject
+    ):
+        subjects = [make_subject(), make_subject()]
+        uow = make_uow()
+        uow.subject_repo.list_all_for_export = AsyncMock(return_value=subjects)
+        exporter = MagicMock()
+        exporter.export.return_value = b"csv-bytes"
+        params = SubjectListingParams(sex=Sex.FEMALE)
+
+        result = await SubjectService(uow).export_subject_listing(params, exporter)
+
+        assert result == b"csv-bytes"
+        uow.subject_repo.list_all_for_export.assert_awaited_once_with(params)
+        # The export must never go through the paginated query.
+        uow.subject_repo.get_subject_listing.assert_not_awaited()
+
+    async def test_rows_are_enriched_with_the_latest_measurement(
+        self, make_uow, make_subject, make_measurement
+    ):
+        subject = make_subject()
+        measurement = make_measurement()
+        uow = make_uow(latest_by_subject={subject.id: measurement})
+        uow.subject_repo.list_all_for_export = AsyncMock(return_value=[subject])
+        exporter = MagicMock()
+
+        await SubjectService(uow).export_subject_listing(
+            SubjectListingParams(), exporter
+        )
+
+        uow.measurement_repo.get_latest_for_subjects.assert_awaited_once_with(
+            [subject.id]
+        )
+        exported = list(exporter.export.call_args[0][0])
+        assert len(exported) == 1
+        assert exported[0].latest_measurement is not None
+
+    async def test_empty_result_still_reaches_the_exporter(self, make_uow):
+        # A filter matching nothing must produce a header-only file, not an error.
+        uow = make_uow()
+        uow.subject_repo.list_all_for_export = AsyncMock(return_value=[])
+        exporter = MagicMock()
+        exporter.export.return_value = b"headers-only"
+
+        result = await SubjectService(uow).export_subject_listing(
+            SubjectListingParams(), exporter
+        )
+
+        assert result == b"headers-only"
+        assert list(exporter.export.call_args[0][0]) == []

@@ -12,6 +12,7 @@ from app.domain.measurement import (
     EvolutionOrder,
     MeasurementDomain,
     MeasurementListingParams,
+    MeasurementListItemDomain,
 )
 from app.domain.pagination import PaginatedResult
 from app.domain.subject import Sex
@@ -420,3 +421,59 @@ class TestRegisterReturnValue:
         assert isinstance(result, MeasurementDomain)
         assert result.id == measurement.id
         assert result.bmi == measurement.bmi
+
+
+class TestExportMeasurementListing:
+    pytestmark = pytest.mark.asyncio
+
+    @pytest.fixture
+    def make_export_uow(self):
+        def _make(measurements):
+            uow = AsyncMock()
+            uow.measurement_repo.list_all_for_export = AsyncMock(
+                return_value=measurements
+            )
+            return uow
+
+        return _make
+
+    async def test_delegates_the_whole_filtered_set_to_the_exporter(
+        self, make_export_uow, make_listing_measurement
+    ):
+        uow = make_export_uow([make_listing_measurement()])
+        exporter = MagicMock()
+        exporter.export.return_value = b"csv-bytes"
+        params = MeasurementListingParams(city="Rosario")
+
+        result = await MeasurementService(uow).export_measurement_listing(
+            params, exporter
+        )
+
+        assert result == b"csv-bytes"
+        uow.measurement_repo.list_all_for_export.assert_awaited_once_with(params)
+
+    async def test_rows_are_mapped_to_listing_domain_objects(
+        self, make_export_uow, make_listing_measurement
+    ):
+        uow = make_export_uow([make_listing_measurement(), make_listing_measurement()])
+        exporter = MagicMock()
+
+        await MeasurementService(uow).export_measurement_listing(
+            MeasurementListingParams(), exporter
+        )
+
+        exported = list(exporter.export.call_args[0][0])
+        assert len(exported) == 2
+        assert all(isinstance(m, MeasurementListItemDomain) for m in exported)
+
+    async def test_empty_result_still_reaches_the_exporter(self, make_export_uow):
+        uow = make_export_uow([])
+        exporter = MagicMock()
+        exporter.export.return_value = b"headers-only"
+
+        result = await MeasurementService(uow).export_measurement_listing(
+            MeasurementListingParams(), exporter
+        )
+
+        assert result == b"headers-only"
+        assert list(exporter.export.call_args[0][0]) == []

@@ -17,6 +17,7 @@ from app.schemas.subjects.subject_schema import (
     SubjectResponse,
     SubjectUpdateRequest,
 )
+from app.services.exporters.csv.csv_exporter import CsvExporter
 
 
 def _to_json_safe(v):
@@ -124,6 +125,26 @@ class SubjectService:
             total=total,
             page=page,
             page_size=page_size,
+        )
+
+    async def export_subject_listing(
+        self,
+        params: SubjectListingParams,
+        exporter: CsvExporter[SubjectDetailDomain],
+    ) -> bytes:
+        """Return the subject listing as an exported file's raw bytes.
+
+        Applies the same filters and order as ``get_subject_listing`` over the
+        whole result set rather than one page, and enriches each subject with
+        their latest measurement through the same bulk lookup.
+        """
+        subjects = await self.uow.subject_repo.list_all_for_export(params)
+        latest_by_subject = await self.uow.measurement_repo.get_latest_for_subjects(
+            [subject.id for subject in subjects]
+        )
+        return exporter.export(
+            SubjectDetailDomain.build(subject, latest_by_subject.get(subject.id))
+            for subject in subjects
         )
 
     async def update_subject(

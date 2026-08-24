@@ -318,3 +318,88 @@ class TestSubjectListing:
         _, kwargs = uow.establishment_dashboard_repo.get_subject_listing.call_args
         assert kwargs["offset"] == 0
         assert result.page == 1
+
+
+class TestExportEstablishmentSubjects:
+    pytestmark = pytest.mark.asyncio
+
+    @staticmethod
+    def _row(measurement_count: int = 2) -> SimpleNamespace:
+        """A repo row: the subject's latest measurement plus their count here."""
+        return SimpleNamespace(
+            Measurement=_measurement([]), measurement_count=measurement_count
+        )
+
+    async def test_raises_when_establishment_is_unknown(self, make_dashboard_uow):
+        uow = make_dashboard_uow(found=False)
+        exporter = MagicMock()
+
+        with pytest.raises(EstablishmentNotFoundError):
+            await EstablishmentDashboardService(uow).export_establishment_subjects(
+                establishment_id=uuid.uuid4(),
+                params=EstablishmentSubjectListingParams(),
+                exporter=exporter,
+            )
+        exporter.export.assert_not_called()
+
+    async def test_returns_the_establishment_name_with_the_bytes(
+        self, make_dashboard_uow, establishment
+    ):
+        # The name is what the router slugs into the download filename.
+        uow = make_dashboard_uow()
+        uow.establishment_dashboard_repo.list_all_for_export = AsyncMock(
+            return_value=[]
+        )
+        exporter = MagicMock()
+        exporter.export.return_value = b"headers-only"
+
+        name, file_bytes = await EstablishmentDashboardService(
+            uow
+        ).export_establishment_subjects(
+            establishment_id=establishment.id,
+            params=EstablishmentSubjectListingParams(),
+            exporter=exporter,
+        )
+
+        assert name == establishment.name
+        assert file_bytes == b"headers-only"
+
+    async def test_delegates_the_whole_filtered_set_to_the_exporter(
+        self, make_dashboard_uow, establishment
+    ):
+        uow = make_dashboard_uow()
+        uow.establishment_dashboard_repo.list_all_for_export = AsyncMock(
+            return_value=[self._row(), self._row()]
+        )
+        exporter = MagicMock()
+        params = EstablishmentSubjectListingParams(search="Bruno")
+
+        await EstablishmentDashboardService(uow).export_establishment_subjects(
+            establishment_id=establishment.id, params=params, exporter=exporter
+        )
+
+        uow.establishment_dashboard_repo.list_all_for_export.assert_awaited_once_with(
+            establishment_id=establishment.id, params=params
+        )
+        # The export must never go through the paginated query.
+        uow.establishment_dashboard_repo.get_subject_listing.assert_not_awaited()
+
+    async def test_rows_are_built_into_listing_items(
+        self, make_dashboard_uow, establishment
+    ):
+        uow = make_dashboard_uow()
+        uow.establishment_dashboard_repo.list_all_for_export = AsyncMock(
+            return_value=[self._row(measurement_count=3)]
+        )
+        exporter = MagicMock()
+
+        await EstablishmentDashboardService(uow).export_establishment_subjects(
+            establishment_id=establishment.id,
+            params=EstablishmentSubjectListingParams(),
+            exporter=exporter,
+        )
+
+        exported = list(exporter.export.call_args[0][0])
+        assert len(exported) == 1
+        assert exported[0].measurement_count == 3
+        assert exported[0].nutritional_status is not None

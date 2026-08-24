@@ -11,19 +11,45 @@ from app.domain.establishment import (
 from app.exceptions.domain_exceptions import EstablishmentNotFoundError
 from app.models.auth.user_establishment import UserEstablishment
 from app.models.establishments.establishment import Establishment
-from app.utils.db import execute_paginated, ilike_condition, insert_with_savepoint
+from app.utils.db import (
+    execute_all,
+    execute_paginated,
+    ilike_condition,
+    insert_with_savepoint,
+)
 
-# Maps each EstablishmentSortOrder value to its SQLAlchemy order clause.
+# Maps each EstablishmentSortOrder value to its SQLAlchemy order clause(s).
+# Each pairs the sort column with `id` as a tiebreaker, so establishments
+# sharing a value (a city, a province) still page consistently instead of
+# shuffling between requests, and an export lands in a reproducible order.
 # KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
 _SORT_CLAUSES = {
-    EstablishmentSortOrder.NEWEST: desc(Establishment.created_at),
-    EstablishmentSortOrder.OLDEST: asc(Establishment.created_at),
-    EstablishmentSortOrder.NAME_ASC: asc(Establishment.name),
-    EstablishmentSortOrder.NAME_DESC: desc(Establishment.name),
-    EstablishmentSortOrder.CITY_ASC: asc(Establishment.city),
-    EstablishmentSortOrder.CITY_DESC: desc(Establishment.city),
-    EstablishmentSortOrder.PROVINCE_ASC: asc(Establishment.province),
-    EstablishmentSortOrder.PROVINCE_DESC: desc(Establishment.province),
+    EstablishmentSortOrder.NEWEST: (
+        desc(Establishment.created_at),
+        desc(Establishment.id),
+    ),
+    EstablishmentSortOrder.OLDEST: (
+        asc(Establishment.created_at),
+        asc(Establishment.id),
+    ),
+    EstablishmentSortOrder.NAME_ASC: (asc(Establishment.name), asc(Establishment.id)),
+    EstablishmentSortOrder.NAME_DESC: (
+        desc(Establishment.name),
+        desc(Establishment.id),
+    ),
+    EstablishmentSortOrder.CITY_ASC: (asc(Establishment.city), asc(Establishment.id)),
+    EstablishmentSortOrder.CITY_DESC: (
+        desc(Establishment.city),
+        desc(Establishment.id),
+    ),
+    EstablishmentSortOrder.PROVINCE_ASC: (
+        asc(Establishment.province),
+        asc(Establishment.id),
+    ),
+    EstablishmentSortOrder.PROVINCE_DESC: (
+        desc(Establishment.province),
+        desc(Establishment.id),
+    ),
 }
 
 
@@ -157,6 +183,22 @@ class EstablishmentRepository:
             order_by,
             limit,
             offset,
+            conditions=self._listing_conditions(params),
+        )
+
+    async def list_all_for_export(
+        self, params: EstablishmentListingParams
+    ) -> list[Establishment]:
+        """Return every establishment matching the listing filters, unpaginated.
+
+        Shares ``_listing_conditions`` and ``_SORT_CLAUSES`` with
+        ``get_paginated``, so an export always carries the same rows in the
+        same order as the listing it was launched from.
+        """
+        return await execute_all(
+            self.db,
+            select(Establishment),
+            _SORT_CLAUSES[params.sort_order],
             conditions=self._listing_conditions(params),
         )
 

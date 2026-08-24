@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Response, status
 
+from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_file_response
 from app.api.v1.params import (
     AUTH_RESPONSES,
     MeasurementListingQuery,
@@ -17,6 +18,7 @@ from app.schemas.measurements.measurement_schema import (
     MeasurementResponse,
 )
 from app.schemas.pagination import PaginatedResponse
+from app.services.exporters.csv.columns import MEASUREMENT_LISTING_EXPORTER
 from app.services.measurements.measurement_service import MeasurementService
 
 router = APIRouter(prefix="/measurements")
@@ -91,3 +93,31 @@ async def list_measurements(
         page_size=result.page_size,
         total_pages=result.total_pages,
     )
+
+
+@router.get(
+    "/export",
+    summary="Export the measurement listing as CSV",
+    description=(
+        "Download the anthropometric measurement listing as a CSV file. "
+        "Accepts the same filters and sort order as the listing endpoint and "
+        "exports every matching measurement rather than one page, so the file "
+        "mirrors what the user has on screen. A filter matching nothing still "
+        "returns a valid file carrying only the column headers. Restricted to "
+        "admins, analysts and superadmins."
+    ),
+    responses={
+        **CSV_EXPORT_RESPONSES,
+        status.HTTP_400_BAD_REQUEST: {"description": "Invalid filter range"},
+    },
+)
+async def export_measurements(
+    query: MeasurementListingQuery = Depends(),
+    _: UserActor = Depends(require_admin_or_analyst),
+    service: MeasurementService = Depends(get_measurement_service),
+) -> Response:
+    query.validate()
+    file_bytes = await service.export_measurement_listing(
+        query.to_domain(), MEASUREMENT_LISTING_EXPORTER
+    )
+    return csv_file_response(file_bytes, MEASUREMENT_LISTING_EXPORTER.filename())

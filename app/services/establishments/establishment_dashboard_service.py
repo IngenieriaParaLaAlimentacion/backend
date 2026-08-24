@@ -22,6 +22,7 @@ from app.domain.measurement import (
 )
 from app.domain.pagination import PaginatedResult
 from app.reference_data.anthropometry import age_in_months
+from app.services.exporters.csv.csv_exporter import CsvExporter
 
 
 def _round(value: float | None, digits: int = 2) -> float | None:
@@ -187,6 +188,33 @@ class EstablishmentDashboardService:
         return PaginatedResult.build(
             items=items, total=total, page=page, page_size=page_size
         )
+
+    async def export_establishment_subjects(
+        self,
+        establishment_id: UUID,
+        params: EstablishmentSubjectListingParams,
+        exporter: CsvExporter[EstablishmentSubjectItemDomain],
+    ) -> tuple[str, bytes]:
+        """Return the establishment's name and its subject listing as file bytes.
+
+        Applies the same filters and order as ``list_establishment_subjects``
+        over the whole result set rather than one page. The name comes back so
+        the caller can identify the establishment in the download filename.
+
+        Raises:
+            EstablishmentNotFoundError: If the establishment does not exist.
+        """
+        establishment = await self.uow.establishment_repo.get_by_id_or_raise(
+            establishment_id
+        )
+        rows = await self.uow.establishment_dashboard_repo.list_all_for_export(
+            establishment_id=establishment_id, params=params
+        )
+        file_bytes = exporter.export(
+            self._build_subject_item(row.Measurement, row.measurement_count)
+            for row in rows
+        )
+        return establishment.name, file_bytes
 
     async def list_establishment_field_workers(
         self,
