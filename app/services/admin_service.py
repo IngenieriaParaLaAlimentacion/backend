@@ -39,6 +39,22 @@ class AdminService:
         self.uow = uow
         self.auth_service = auth_service
 
+    async def _get_user(self, user_id: UUID) -> Any:
+        """Return the user, raising if they do not exist."""
+        user = await self.uow.user_repo.get_by_id(user_id)
+        if user is None:
+            raise UserNotFoundError(str(user_id))
+        return user
+
+    @staticmethod
+    def _require_status(
+        user: Any, expected: UserStatus, title: str, detail: str
+    ) -> None:
+        """Raise BadRequestError(title, detail) unless the user is in ``expected``
+        status."""
+        if user.status != expected:
+            raise BadRequestError(title, detail)
+
     async def _build_establishments_data(
         self, establishment_ids: list[UUID]
     ) -> dict[UUID, EstablishmentDomain]:
@@ -79,12 +95,44 @@ class AdminService:
             ]
         return estab_data_by_user
 
-    async def _get_user(self, user_id: UUID) -> Any:
-        """Return the user, raising if they do not exist."""
-        user = await self.uow.user_repo.get_by_id(user_id)
-        if user is None:
-            raise UserNotFoundError(str(user_id))
-        return user
+    async def _build_paginated_users_result(
+        self,
+        users: list[User],
+        total: int,
+        page: int,
+        page_size: int,
+        status: UserEstablishmentStatus,
+    ) -> PaginatedResult[UserWithEstablishmentsDomain]:
+        """Hydrate establishments for `users` and wrap them in a PaginatedResult.
+
+        ``status`` narrows the hydrated establishments to relations in that
+        status, and is required for the reason given on
+        _get_establishments_per_user.
+        """
+        if not users:
+            return PaginatedResult(
+                items=[],
+                total=total,
+                page=page,
+                page_size=page_size,
+                total_pages=0,
+            )
+
+        establishments_per_user = await self._get_establishments_per_user(
+            [user.id for user in users], status
+        )
+
+        return PaginatedResult.build(
+            items=[
+                UserWithEstablishmentsDomain.from_db(
+                    user, establishments_per_user.get(user.id, [])
+                )
+                for user in users
+            ],
+            total=total,
+            page=page,
+            page_size=page_size,
+        )
 
     async def _get_field_worker_relations(self, user_id: UUID) -> tuple[Any, list]:
         """Return (user, relations) for a field worker, raising if the user does
@@ -93,12 +141,12 @@ class AdminService:
         relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
         return user, relations
 
-    async def _validate_access_request(
-        self, user_id: UUID, establishment_ids: list[UUID]
+    @staticmethod
+    def _match_relations(
+        user_id: UUID, establishment_ids: list[UUID], relations: list[Any]
     ) -> dict[UUID, Any]:
-        """Validate that all establishment IDs belong to the field worker and
-        return their relations keyed by establishment id."""
-        _, relations = await self._get_field_worker_relations(user_id)
+        """Map establishment_ids to their relation, raising if any id has no
+        relation with the user."""
         relations_by_estab_id = {rel.establishment_id: rel for rel in relations}
 
         invalid_ids = set(establishment_ids) - relations_by_estab_id.keys()
@@ -108,21 +156,25 @@ class AdminService:
             )
         return relations_by_estab_id
 
+    async def _validate_access_request(
+        self, user_id: UUID, establishment_ids: list[UUID]
+    ) -> dict[UUID, Any]:
+        """Validate that all establishment IDs belong to the field worker and
+        return their relations keyed by establishment id."""
+        _, relations = await self._get_field_worker_relations(user_id)
+        return self._match_relations(user_id, establishment_ids, relations)
+
+    @staticmethod
+    def _require_field_worker(user: Any, error_detail: str) -> None:
+        """Raise BadRequestError(...) unless the user is a field worker."""
+        if user.role != UserRole.FIELD_WORKER:
+            raise BadRequestError("User is not a field worker", error_detail)
+
     async def _get_field_worker(self, user_id: UUID, error_detail: str) -> Any:
         """Return the user, raising if they do not exist or are not a field worker."""
         user = await self._get_user(user_id)
-        if user.role != UserRole.FIELD_WORKER:
-            raise BadRequestError("User is not a field worker", error_detail)
+        self._require_field_worker(user, error_detail)
         return user
-
-    @staticmethod
-    def _require_status(
-        user: Any, expected: UserStatus, title: str, detail: str
-    ) -> None:
-        """Raise BadRequestError(title, detail) unless the user is in ``expected``
-        status."""
-        if user.status != expected:
-            raise BadRequestError(title, detail)
 
     async def _set_user_establishment_relation_status(
         self,
@@ -161,43 +213,86 @@ class AdminService:
             user.role,
         )
 
-    async def _build_paginated_users_result(
+    async def get_users_paginated(
         self,
-        users: list[User],
-        total: int,
         page: int,
         page_size: int,
-        status: UserEstablishmentStatus,
+        role: UserRole | None = None,
+        status: UserStatus | None = None,
+        search: str | None = None,
     ) -> PaginatedResult[UserWithEstablishmentsDomain]:
-        """Hydrate establishments for `users` and wrap them in a PaginatedResult.
+        """Return a paginated list of users with their approved establishments.
 
-        ``status`` narrows the hydrated establishments to relations in that
-        status, and is required for the reason given on
-        _get_establishments_per_user.
+        Only approved relations are hydrated: a pending request is not access,
+        and is surfaced by get_pending_establishment_requests instead.
+
+        ``search`` matches case-insensitively against email, name, and last_name.
+        Whitespace-only values are treated as no filter.
         """
-        if not users:
-            return PaginatedResult(
-                items=[],
-                total=total,
-                page=page,
-                page_size=page_size,
-                total_pages=0,
-            )
+        offset = (page - 1) * page_size
+        search = search.strip() or None if search else None
 
-        establishments_per_user = await self._get_establishments_per_user(
-            [user.id for user in users], status
+        users, total = await self.uow.user_repo.get_paginated(
+            role=role,
+            status=status,
+            limit=page_size,
+            offset=offset,
+            search=search,
         )
 
-        return PaginatedResult.build(
-            items=[
-                UserWithEstablishmentsDomain.from_db(
-                    user, establishments_per_user.get(user.id, [])
-                )
-                for user in users
-            ],
-            total=total,
-            page=page,
-            page_size=page_size,
+        return await self._build_paginated_users_result(
+            users, total, page, page_size, UserEstablishmentStatus.APPROVED
+        )
+
+    async def get_pending_establishment_requests(
+        self,
+        page: int,
+        page_size: int,
+        search: str | None = None,
+        establishment_id: UUID | None = None,
+    ) -> tuple[PaginatedResult[UserWithEstablishmentsDomain], int]:
+        """Return active field workers awaiting establishment access.
+
+        Each user carries only their pending establishments. ``search`` matches
+        case-insensitively against email, name, and last_name; whitespace-only
+        values are treated as no filter. ``establishment_id`` keeps only the
+        workers pending on that establishment.
+
+        The second tuple element is the total number of pending establishment
+        relations across every matching field worker, not just this page.
+        """
+        offset = (page - 1) * page_size
+        search = search.strip() or None if search else None
+
+        users, total = await self.uow.user_repo.get_pending_establishments_page(
+            limit=page_size,
+            offset=offset,
+            search=search,
+            establishment_id=establishment_id,
+        )
+        result = await self._build_paginated_users_result(
+            users, total, page, page_size, UserEstablishmentStatus.PENDING
+        )
+        total_pending = await self.uow.user_repo.count_pending_establishments(
+            search=search, establishment_id=establishment_id
+        )
+        return result, total_pending
+
+    async def get_user_info(self, user_id: UUID) -> UserWithEstablishmentsDomain:
+        """Return a user with their approved establishments fully hydrated.
+
+        Pending and rejected relations are excluded — they are requests, not
+        access.
+
+        Raises:
+            UserNotFoundError: If no user with user_id exists.
+        """
+        user = await self._get_user(user_id)
+        establishments_per_user = await self._get_establishments_per_user(
+            [user.id], UserEstablishmentStatus.APPROVED
+        )
+        return UserWithEstablishmentsDomain.from_db(
+            user, establishments_per_user.get(user.id, [])
         )
 
     async def approve_establishments(
@@ -253,12 +348,13 @@ class AdminService:
             UserEstablishmentNotApprovedError: If an establishment has a
                 relation with this user, but it isn't currently approved.
         """
-        await self._get_field_worker(
-            user_id, "Only field workers can have establishment access revoked."
+        user, relations = await self._get_field_worker_relations(user_id)
+        self._require_field_worker(
+            user, "Only field workers can have establishment access revoked."
         )
 
-        relations_by_estab_id = await self._validate_access_request(
-            user_id, establishment_ids
+        relations_by_estab_id = self._match_relations(
+            user_id, establishment_ids, relations
         )
         not_approved_ids = [
             estab_id
@@ -345,98 +441,6 @@ class AdminService:
         await self.uow.user_repo.update_status(user_id, UserStatus.INACTIVE)
         await self.uow.commit()
 
-    async def get_subject_detail(
-        self,
-        subject_id: UUID,
-        *,
-        history_page: int = 1,
-        history_page_size: int = 20,
-    ) -> tuple[SubjectDomain, PaginatedResult[SubjectEventRecord]]:
-        """Return a subject and its paginated event history.
-
-        Raises:
-            SubjectNotFoundError: If no subject with the given id exists.
-        """
-        subject = await self.uow.subject_repo.get_by_id(subject_id)
-        if subject is None:
-            raise SubjectNotFoundError(str(subject_id))
-
-        events, total = await self.uow.subject_event_repo.get_history(
-            subject_id, page=history_page, page_size=history_page_size
-        )
-        history = PaginatedResult.build(
-            items=[SubjectEventRecord.from_db(event) for event in events],
-            total=total,
-            page=history_page,
-            page_size=history_page_size,
-        )
-        return SubjectDomain.from_db(subject), history
-
-    async def get_users_paginated(
-        self,
-        page: int,
-        page_size: int,
-        role: UserRole | None = None,
-        status: UserStatus | None = None,
-        search: str | None = None,
-    ) -> PaginatedResult[UserWithEstablishmentsDomain]:
-        """Return a paginated list of users with their approved establishments.
-
-        Only approved relations are hydrated: a pending request is not access,
-        and is surfaced by get_pending_establishment_requests instead.
-
-        ``search`` matches case-insensitively against email, name, and last_name.
-        Whitespace-only values are treated as no filter.
-        """
-        offset = (page - 1) * page_size
-        search = search.strip() or None if search else None
-
-        users, total = await self.uow.user_repo.get_paginated(
-            role=role,
-            status=status,
-            limit=page_size,
-            offset=offset,
-            search=search,
-        )
-
-        return await self._build_paginated_users_result(
-            users, total, page, page_size, UserEstablishmentStatus.APPROVED
-        )
-
-    async def get_pending_establishment_requests(
-        self,
-        page: int,
-        page_size: int,
-        search: str | None = None,
-        establishment_id: UUID | None = None,
-    ) -> tuple[PaginatedResult[UserWithEstablishmentsDomain], int]:
-        """Return active field workers awaiting establishment access.
-
-        Each user carries only their pending establishments. ``search`` matches
-        case-insensitively against email, name, and last_name; whitespace-only
-        values are treated as no filter. ``establishment_id`` keeps only the
-        workers pending on that establishment.
-
-        The second tuple element is the total number of pending establishment
-        relations across every matching field worker, not just this page.
-        """
-        offset = (page - 1) * page_size
-        search = search.strip() or None if search else None
-
-        users, total = await self.uow.user_repo.get_pending_establishments_page(
-            limit=page_size,
-            offset=offset,
-            search=search,
-            establishment_id=establishment_id,
-        )
-        result = await self._build_paginated_users_result(
-            users, total, page, page_size, UserEstablishmentStatus.PENDING
-        )
-        total_pending = await self.uow.user_repo.count_pending_establishments(
-            search=search, establishment_id=establishment_id
-        )
-        return result, total_pending
-
     async def invite_user(self, data: InviteAdminRequest, role: UserRole) -> UUID:
         """Create a new admin user and send a password setup link by email.
 
@@ -480,33 +484,39 @@ class AdminService:
                 PENDING_VALIDATION but was never invited).
             EmailDeliveryError: If the invitation email could not be delivered.
         """
-        user = await self.uow.user_repo.get_by_id(user_id)
-        if user is None:
-            raise UserNotFoundError(str(user_id))
-
-        if user.status != UserStatus.PENDING_VALIDATION:
-            raise BadRequestError(
-                "User is not pending",
-                "Only users with a pending invitation can be re-invited.",
-            )
+        user = await self._get_user(user_id)
+        self._require_status(
+            user,
+            UserStatus.PENDING_VALIDATION,
+            "User is not pending",
+            "Only users with a pending invitation can be re-invited.",
+        )
 
         await self._issue_and_send_invite(user)
 
-    async def get_user_info(self, user_id: UUID) -> UserWithEstablishmentsDomain:
-        """Return a user with their approved establishments fully hydrated.
-
-        Pending and rejected relations are excluded — they are requests, not
-        access.
+    async def get_subject_detail(
+        self,
+        subject_id: UUID,
+        *,
+        history_page: int = 1,
+        history_page_size: int = 20,
+    ) -> tuple[SubjectDomain, PaginatedResult[SubjectEventRecord]]:
+        """Return a subject and its paginated event history.
 
         Raises:
-            UserNotFoundError: If no user with user_id exists.
+            SubjectNotFoundError: If no subject with the given id exists.
         """
-        user = await self.uow.user_repo.get_by_id(user_id)
-        if user is None:
-            raise UserNotFoundError(str(user_id))
-        establishments_per_user = await self._get_establishments_per_user(
-            [user.id], UserEstablishmentStatus.APPROVED
+        subject = await self.uow.subject_repo.get_by_id(subject_id)
+        if subject is None:
+            raise SubjectNotFoundError(str(subject_id))
+
+        events, total = await self.uow.subject_event_repo.get_history(
+            subject_id, page=history_page, page_size=history_page_size
         )
-        return UserWithEstablishmentsDomain.from_db(
-            user, establishments_per_user.get(user.id, [])
+        history = PaginatedResult.build(
+            items=[SubjectEventRecord.from_db(event) for event in events],
+            total=total,
+            page=history_page,
+            page_size=history_page_size,
         )
+        return SubjectDomain.from_db(subject), history
