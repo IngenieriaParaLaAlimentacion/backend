@@ -1,4 +1,4 @@
-# ADR-0001: Use of SARA 2 as the official source for the food catalog (Nutrir)
+# ADR-0009: Use of SARA 2 as the official source for the food catalog (Nutrir)
 
 - **Status**: Accepted
 - **Date**: 2026-08-28
