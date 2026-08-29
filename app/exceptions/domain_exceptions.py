@@ -217,6 +217,24 @@ class InvalidListingFilterError(BadRequestError):
         super().__init__("Invalid filter", detail)
 
 
+class UnmappedExportLabelError(BadRequestError):
+    """Exception raised when a CSV export hits an enum value with no label.
+
+    The export is aborted rather than completed with a blank cell: a silently
+    missing "Femenino" or "Obesidad" is a data defect nobody would notice in a
+    downloaded file. The offending map and value are named in the response and
+    logged, so the gap is identifiable without reproducing the request.
+    """
+
+    def __init__(self, label_map: str, value: object):
+        super().__init__(
+            "Unmapped export label",
+            f"No label defined in {label_map} for value {value!r}. "
+            "The export was aborted rather than emitting a blank cell.",
+            extensions={"label_map": label_map, "value": str(value)},
+        )
+
+
 class InvalidCredentialsError(UnauthorizedError):
     """Exception raised when credentials are invalid.
 

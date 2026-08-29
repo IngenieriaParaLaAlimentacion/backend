@@ -1,15 +1,21 @@
 from datetime import date, datetime, timezone
 
 import pytest
+from structlog.testing import capture_logs
 
 from app.domain.measurement import AlertType, NutritionalStatus
 from app.domain.subject import Sex
 from app.domain.survey import SurveyResponseTarget
+from app.exceptions.domain_exceptions import (
+    BadRequestError,
+    UnmappedExportLabelError,
+)
 from app.services.exporters.csv.formatters import (
     ALERT_TYPE_LABELS,
     NUTRITIONAL_STATUS_LABELS,
     SEX_LABELS,
     SURVEY_TARGET_LABELS,
+    _label,
     format_age,
     format_alerts,
     format_bool,
@@ -144,3 +150,47 @@ class TestMissingValues:
         # and healthy".
         assert format_nutritional_status(None) == ""
         assert format_nutritional_status(NutritionalStatus.NORMAL) == "Normal"
+
+
+class TestUnmappedLabel:
+    """An enum member with no label aborts the export instead of blanking a cell."""
+
+    def test_raises_rather_than_returning_an_empty_cell(self):
+        with pytest.raises(UnmappedExportLabelError):
+            _label({}, Sex.FEMALE, "SEX_LABELS")
+
+    def test_is_a_400_not_a_500(self):
+        # BadRequestError is what the registered handler maps to HTTP 400; an
+        # unhandled KeyError would surface as an opaque 500 instead.
+        with pytest.raises(BadRequestError):
+            _label({}, Sex.FEMALE, "SEX_LABELS")
+
+    def test_names_the_map_and_the_value(self):
+        with pytest.raises(UnmappedExportLabelError) as exc:
+            _label({}, Sex.FEMALE, "SEX_LABELS")
+        assert "SEX_LABELS" in exc.value.details
+        assert exc.value.extensions == {
+            "label_map": "SEX_LABELS",
+            "value": str(Sex.FEMALE),
+        }
+
+    def test_logs_the_gap(self):
+        # structlog does not route through caplog here, so capture it directly.
+        with capture_logs() as logs:
+            with pytest.raises(UnmappedExportLabelError):
+                _label({}, Sex.FEMALE, "SEX_LABELS")
+        assert logs == [
+            {
+                "event": "csv_export_unmapped_label",
+                "log_level": "error",
+                "label_map": "SEX_LABELS",
+                "value": str(Sex.FEMALE),
+            }
+        ]
+
+    def test_none_is_still_an_empty_cell(self):
+        # A missing value is not the same as an unmapped one.
+        assert _label({}, None, "SEX_LABELS") == ""
+
+    def test_a_mapped_value_is_unaffected(self):
+        assert _label({Sex.FEMALE: "Femenino"}, Sex.FEMALE, "SEX_LABELS") == "Femenino"

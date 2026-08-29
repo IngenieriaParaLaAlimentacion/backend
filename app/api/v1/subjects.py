@@ -73,7 +73,9 @@ async def create_subject(
     ),
     responses={
         **CSV_EXPORT_RESPONSES,
-        status.HTTP_400_BAD_REQUEST: {"description": "Invalid filter range"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Invalid filter range, or a value with no export label"
+        },
     },
 )
 async def export_subjects(

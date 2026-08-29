@@ -16,6 +16,9 @@ CSV_EXPORT_RESPONSES: dict[int | str, dict] = {
         "description": "Listing exported successfully as a CSV file",
         "content": {"text/csv": {}},
     },
+    status.HTTP_400_BAD_REQUEST: {
+        "description": "A value in the result set has no export label defined"
+    },
 }
 
 

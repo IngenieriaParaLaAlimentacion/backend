@@ -6,16 +6,23 @@ labels the UI shows. Because the CSV dialect uses ``;`` as its delimiter (see
 ``csv_exporter``), a decimal comma is unambiguous.
 
 All formatters are None-safe and render a missing value as an empty cell, so a
-column spec never has to guard before calling one.
+column spec never has to guard before calling one. The enum formatters are the
+one exception to "always produces a cell": an enum member with no entry in its
+label map aborts the export rather than emitting a blank one -- see ``_label``.
 """
 
 from collections.abc import Iterable
 from datetime import date, datetime, timezone
 
+import structlog
+
 from app.domain.measurement import AlertType, NutritionalStatus
 from app.domain.subject import Sex
 from app.domain.survey import SurveyResponseTarget
+from app.exceptions.domain_exceptions import UnmappedExportLabelError
 from app.utils.dates import ARGENTINA_TZ
+
+logger = structlog.get_logger()
 
 _DATE_FORMAT = "%d/%m/%Y"
 _DATETIME_FORMAT = "%d/%m/%Y %H:%M"
@@ -49,6 +56,27 @@ SURVEY_TARGET_LABELS: dict[SurveyResponseTarget, str] = {
     SurveyResponseTarget.ESTABLISHMENT: "Establecimiento",
     SurveyResponseTarget.ANONYMOUS: "Anónima",
 }
+
+
+def _label(labels: dict, value, label_map: str) -> str:
+    """Return the Spanish label for ``value``, or "" when it is absent.
+
+    A value the map does not cover aborts the export with a 400 naming the map
+    and the value, and logs the same. The alternative -- falling back to an
+    empty cell -- would hand the user a file where a column that should read
+    "Femenino" or "Obesidad" is silently blank, which is a data defect nobody
+    would catch by looking at the download.
+
+    Raises:
+        UnmappedExportLabelError: ``value`` has no label in ``labels``.
+    """
+    if value is None:
+        return ""
+    try:
+        return labels[value]
+    except KeyError:
+        logger.error("csv_export_unmapped_label", label_map=label_map, value=str(value))
+        raise UnmappedExportLabelError(label_map, value)
 
 
 def format_date(value: date | None) -> str:
@@ -116,7 +144,7 @@ def join_values(values: Iterable[str]) -> str:
 
 def format_sex(value: Sex | None) -> str:
     """Render a subject's sex in Spanish."""
-    return SEX_LABELS[value] if value is not None else ""
+    return _label(SEX_LABELS, value, "SEX_LABELS")
 
 
 def format_nutritional_status(value: NutritionalStatus | None) -> str:
@@ -125,14 +153,17 @@ def format_nutritional_status(value: NutritionalStatus | None) -> str:
     None means the subject has never been measured, which is deliberately not
     the same as NORMAL and renders as an empty cell.
     """
-    return NUTRITIONAL_STATUS_LABELS[value] if value is not None else ""
+    return _label(NUTRITIONAL_STATUS_LABELS, value, "NUTRITIONAL_STATUS_LABELS")
 
 
 def format_alerts(alerts) -> str:
     """Render a measurement's alerts as one comma-separated cell."""
-    return join_values(ALERT_TYPE_LABELS[alert.alert_type] for alert in alerts)
+    return join_values(
+        _label(ALERT_TYPE_LABELS, alert.alert_type, "ALERT_TYPE_LABELS")
+        for alert in alerts
+    )
 
 
 def format_survey_target(value: SurveyResponseTarget | None) -> str:
     """Render a survey's response target ("Alcance") in Spanish."""
-    return SURVEY_TARGET_LABELS[value] if value is not None else ""
+    return _label(SURVEY_TARGET_LABELS, value, "SURVEY_TARGET_LABELS")
