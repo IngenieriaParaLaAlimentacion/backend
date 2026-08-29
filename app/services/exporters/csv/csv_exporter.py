@@ -7,6 +7,7 @@ binds those columns once, so services stay unaware of headers and layout and
 the HTTP layer only needs ``content_type``/``file_extension``. See ADR-0009.
 """
 
+import codecs
 import csv
 import io
 import re
@@ -25,7 +26,6 @@ T = TypeVar("T")
 # wizard, which is the whole point of the export.
 _DELIMITER = ";"
 _LINE_TERMINATOR = "\r\n"
-_BOM = "﻿"
 
 _SLUG_STRIP = re.compile(r"[^a-z0-9]+")
 
@@ -86,7 +86,7 @@ class CsvExporter(Generic[T]):
         writer.writerow(self.headers)
         for row in rows:
             writer.writerow([column.value(row) for column in self._columns])
-        return (_BOM + buffer.getvalue()).encode("utf-8")
+        return codecs.BOM_UTF8 + buffer.getvalue().encode("utf-8")
 
     def filename(self, scope: str | None = None) -> str:
         """Build the download filename, e.g. ``mediciones_2026-08-24.csv``.
