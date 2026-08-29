@@ -1,13 +1,12 @@
 from uuid import UUID
 
-from sqlalchemy import Row, asc, desc, extract, func, or_, select
+from sqlalchemy import Row, asc, desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
 
 from app.domain.establishment_dashboard import (
     EstablishmentFieldWorkerListingParams,
     EstablishmentSubjectListingParams,
-    EstablishmentSubjectSortOrder,
 )
 from app.models.auth.user import User
 from app.models.auth.user_establishment import UserEstablishment
@@ -15,29 +14,12 @@ from app.models.establishments.establishment import Establishment
 from app.models.measurements.measurement import Measurement
 from app.models.measurements.measurement_alert import MeasurementAlert
 from app.models.subjects.subject import Subject
+from app.repositories.establishments.constants import (
+    AGE_MONTHS,
+    SUBJECT_SORT_CLAUSES,
+)
 from app.repositories.subjects.subject_repository import subject_search_condition
 from app.utils.db import ilike_condition
-
-# Completed months between a subject's birth date and the moment they were
-# measured. Postgres ``age()`` returns an interval of full years/months/days,
-# which is exactly the semantics of ``app.reference_data.anthropometry.age_in_months``.
-_AGE_MONTHS = extract(
-    "year", func.age(Measurement.measured_at, Subject.birth_date)
-) * 12 + extract("month", func.age(Measurement.measured_at, Subject.birth_date))
-
-# Maps each EstablishmentSubjectSortOrder value to its SQLAlchemy order clause.
-# KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
-# Older birth_date means older subject, hence the inversion on the AGE_* orders.
-_SUBJECT_SORT_CLAUSES = {
-    EstablishmentSubjectSortOrder.MEASURED_AT_DESC: desc(Measurement.measured_at),
-    EstablishmentSubjectSortOrder.MEASURED_AT_ASC: asc(Measurement.measured_at),
-    EstablishmentSubjectSortOrder.NAME_ASC: asc(Subject.last_name),
-    EstablishmentSubjectSortOrder.NAME_DESC: desc(Subject.last_name),
-    EstablishmentSubjectSortOrder.BMI_DESC: desc(Measurement.bmi),
-    EstablishmentSubjectSortOrder.BMI_ASC: asc(Measurement.bmi),
-    EstablishmentSubjectSortOrder.AGE_DESC: asc(Subject.birth_date),
-    EstablishmentSubjectSortOrder.AGE_ASC: desc(Subject.birth_date),
-}
 
 
 class EstablishmentDashboardRepository:
@@ -177,7 +159,7 @@ class EstablishmentDashboardRepository:
                 func.avg(Measurement.height_cm).label("avg_height_cm"),
                 func.avg(Measurement.weight_kg).label("avg_weight_kg"),
                 func.avg(Measurement.bmi).label("avg_bmi"),
-                func.avg(_AGE_MONTHS).label("avg_age_months"),
+                func.avg(AGE_MONTHS).label("avg_age_months"),
             )
             .select_from(latest)
             .join(Measurement, Measurement.id == latest.c.id)
@@ -267,7 +249,7 @@ class EstablishmentDashboardRepository:
             base_query = base_query.where(condition)
             count_query = count_query.where(condition)
 
-        order_by = _SUBJECT_SORT_CLAUSES[params.sort_order]
+        order_by = SUBJECT_SORT_CLAUSES[params.sort_order]
         return base_query.order_by(order_by, asc(Subject.id)), count_query
 
     async def get_subject_listing(

@@ -1,12 +1,11 @@
 from uuid import UUID
 
-from sqlalchemy import asc, desc, func, or_, select, update
+from sqlalchemy import func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
 
 from app.domain.establishment import (
     EstablishmentCreationRequestListingParams,
-    EstablishmentCreationRequestSortOrder,
     EstablishmentRequestStatus,
 )
 from app.exceptions.domain_exceptions import (
@@ -15,15 +14,10 @@ from app.exceptions.domain_exceptions import (
 )
 from app.models.auth.user import User
 from app.models.establishments.establishment_request import EstablishmentRequest
+from app.repositories.establishments.constants import (
+    CREATION_REQUEST_SORT_CLAUSES,
+)
 from app.utils.db import execute_paginated, ilike_condition
-
-# Maps each EstablishmentCreationRequestSortOrder value to its SQLAlchemy
-# order clause. KeyError on an unmapped value is intentional: it surfaces
-# missing cases immediately.
-_SORT_CLAUSES = {
-    EstablishmentCreationRequestSortOrder.NEWEST: desc(EstablishmentRequest.created_at),
-    EstablishmentCreationRequestSortOrder.OLDEST: asc(EstablishmentRequest.created_at),
-}
 
 
 class EstablishmentRequestRepository:
@@ -138,7 +132,7 @@ class EstablishmentRequestRepository:
             .join(User, EstablishmentRequest.user_id == User.id)
         )
 
-        order_by = _SORT_CLAUSES[params.sort_order]
+        order_by = CREATION_REQUEST_SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
             self.db,
             base_query,

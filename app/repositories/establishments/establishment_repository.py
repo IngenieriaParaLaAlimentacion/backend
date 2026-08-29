@@ -1,56 +1,22 @@
 from uuid import UUID
 
-from sqlalchemy import asc, desc, func, or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.establishment import (
     EstablishmentListingParams,
-    EstablishmentSortOrder,
     UserEstablishmentStatus,
 )
 from app.exceptions.domain_exceptions import EstablishmentNotFoundError
 from app.models.auth.user_establishment import UserEstablishment
 from app.models.establishments.establishment import Establishment
+from app.repositories.establishments.constants import ESTABLISHMENT_SORT_CLAUSES
 from app.utils.db import (
     execute_all,
     execute_paginated,
     ilike_condition,
     insert_with_savepoint,
 )
-
-# Maps each EstablishmentSortOrder value to its SQLAlchemy order clause(s).
-# Each pairs the sort column with `id` as a tiebreaker, so establishments
-# sharing a value (a city, a province) still page consistently instead of
-# shuffling between requests, and an export lands in a reproducible order.
-# KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
-_SORT_CLAUSES = {
-    EstablishmentSortOrder.NEWEST: (
-        desc(Establishment.created_at),
-        desc(Establishment.id),
-    ),
-    EstablishmentSortOrder.OLDEST: (
-        asc(Establishment.created_at),
-        asc(Establishment.id),
-    ),
-    EstablishmentSortOrder.NAME_ASC: (asc(Establishment.name), asc(Establishment.id)),
-    EstablishmentSortOrder.NAME_DESC: (
-        desc(Establishment.name),
-        desc(Establishment.id),
-    ),
-    EstablishmentSortOrder.CITY_ASC: (asc(Establishment.city), asc(Establishment.id)),
-    EstablishmentSortOrder.CITY_DESC: (
-        desc(Establishment.city),
-        desc(Establishment.id),
-    ),
-    EstablishmentSortOrder.PROVINCE_ASC: (
-        asc(Establishment.province),
-        asc(Establishment.id),
-    ),
-    EstablishmentSortOrder.PROVINCE_DESC: (
-        desc(Establishment.province),
-        desc(Establishment.id),
-    ),
-}
 
 
 class EstablishmentRepository:
@@ -175,7 +141,7 @@ class EstablishmentRepository:
         base_query = select(Establishment)
         count_query = select(func.count()).select_from(Establishment)
 
-        order_by = _SORT_CLAUSES[params.sort_order]
+        order_by = ESTABLISHMENT_SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
             self.db,
             base_query,
@@ -191,14 +157,14 @@ class EstablishmentRepository:
     ) -> list[Establishment]:
         """Return every establishment matching the listing filters, unpaginated.
 
-        Shares ``_listing_conditions`` and ``_SORT_CLAUSES`` with
+        Shares ``_listing_conditions`` and ``ESTABLISHMENT_SORT_CLAUSES`` with
         ``get_paginated``, so an export always carries the same rows in the
         same order as the listing it was launched from.
         """
         return await execute_all(
             self.db,
             select(Establishment),
-            _SORT_CLAUSES[params.sort_order],
+            ESTABLISHMENT_SORT_CLAUSES[params.sort_order],
             conditions=self._listing_conditions(params),
         )
 
@@ -229,7 +195,7 @@ class EstablishmentRepository:
             .where(Establishment.id.not_in(blocked))
         )
 
-        order_by = _SORT_CLAUSES[params.sort_order]
+        order_by = ESTABLISHMENT_SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
             self.db,
             base_query,
