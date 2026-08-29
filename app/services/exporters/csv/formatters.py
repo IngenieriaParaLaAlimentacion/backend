@@ -16,7 +16,7 @@ from datetime import date, datetime, timezone
 
 import structlog
 
-from app.domain.measurement import AlertType, NutritionalStatus
+from app.domain.measurement import AlertDomain, AlertType, NutritionalStatus
 from app.domain.subject import Sex
 from app.domain.survey import SurveyResponseTarget
 from app.exceptions.domain_exceptions import UnmappedExportLabelError
@@ -156,7 +156,7 @@ def format_nutritional_status(value: NutritionalStatus | None) -> str:
     return _label(NUTRITIONAL_STATUS_LABELS, value, "NUTRITIONAL_STATUS_LABELS")
 
 
-def format_alerts(alerts) -> str:
+def format_alerts(alerts: list[AlertDomain]) -> str:
     """Render a measurement's alerts as one comma-separated cell."""
     return join_values(
         _label(ALERT_TYPE_LABELS, alert.alert_type, "ALERT_TYPE_LABELS")

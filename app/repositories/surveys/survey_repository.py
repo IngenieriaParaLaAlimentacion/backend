@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from sqlalchemy import asc, desc, exists, func, select, update
+from sqlalchemy import desc, exists, func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import noload
@@ -11,7 +11,6 @@ from app.domain.survey import (
     QuestionInputData,
     SurveyListingParams,
     SurveyResponseTarget,
-    SurveySortOrder,
 )
 from app.exceptions.domain_exceptions import (
     InvalidSurveyPayloadError,
@@ -20,19 +19,8 @@ from app.exceptions.domain_exceptions import (
 from app.models.surveys.survey import Survey
 from app.models.surveys.survey_question import SurveyQuestion
 from app.models.surveys.survey_question_option import SurveyQuestionOption
+from app.repositories.surveys.constants import SURVEY_SORT_CLAUSES
 from app.utils.db import execute_all_rows, execute_paginated_rows, ilike_condition
-
-# Maps each SurveySortOrder value to its SQLAlchemy order clause(s).
-# Each pairs the sort column with `id` as a tiebreaker, so surveys sharing a
-# value still page consistently instead of shuffling between requests, and an
-# export lands in a reproducible order.
-# KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
-_SORT_CLAUSES = {
-    SurveySortOrder.NAME_ASC: (asc(func.lower(Survey.name)), asc(Survey.id)),
-    SurveySortOrder.NAME_DESC: (desc(func.lower(Survey.name)), desc(Survey.id)),
-    SurveySortOrder.NEWEST: (desc(Survey.created_at), desc(Survey.id)),
-    SurveySortOrder.OLDEST: (asc(Survey.created_at), asc(Survey.id)),
-}
 
 
 class SurveyRepository:
@@ -195,7 +183,7 @@ class SurveyRepository:
             self.db,
             self._listing_base_query(),
             count_query,
-            _SORT_CLAUSES[params.sort_order],
+            SURVEY_SORT_CLAUSES[params.sort_order],
             limit,
             offset,
             conditions=self._listing_conditions(params),
@@ -207,14 +195,14 @@ class SurveyRepository:
     ) -> list[tuple[Survey, int]]:
         """Return every ``(survey, question_count)`` row matching the filters.
 
-        Shares the base query, ``_listing_conditions`` and ``_SORT_CLAUSES``
+        Shares the base query, ``_listing_conditions`` and ``SURVEY_SORT_CLAUSES``
         with ``list``, so an export always carries the same rows in the same
         order as the listing it was launched from.
         """
         rows = await execute_all_rows(
             self.db,
             self._listing_base_query(),
-            _SORT_CLAUSES[params.sort_order],
+            SURVEY_SORT_CLAUSES[params.sort_order],
             conditions=self._listing_conditions(params),
         )
         return list(rows)

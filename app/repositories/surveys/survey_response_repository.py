@@ -4,9 +4,7 @@ from uuid import UUID
 
 from sqlalchemy import (
     and_,
-    asc,
     cast,
-    desc,
     exists,
     func,
     literal,
@@ -21,41 +19,18 @@ from sqlalchemy.orm import selectinload
 
 from app.domain.survey_response import (
     SurveyResponseListingParams,
-    SurveyResponseSortOrder,
     SurveyResponseSummaryParams,
 )
 from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.establishments.establishment import Establishment
 from app.models.surveys.survey import Survey
 from app.models.surveys.survey_response import SurveyResponse
+from app.repositories.surveys.constants import SURVEY_RESPONSE_SORT_CLAUSES
 from app.utils.db import execute_paginated, ilike_condition
 
 _CONSTRAINT_FIELDS = {
     "uq_survey_responses_survey_establishment": "establishment_id",
     "uq_survey_responses_survey_subject": "subject_id",
-}
-
-# Maps each SurveyResponseSortOrder value to its SQLAlchemy order clause(s).
-# Each pairs the sort column with `id` as a tiebreaker, so responses sharing a
-# value still page consistently instead of shuffling between requests.
-# KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
-_SORT_CLAUSES = {
-    SurveyResponseSortOrder.EVENT_AT_DESC: (
-        desc(SurveyResponse.event_at),
-        desc(SurveyResponse.id),
-    ),
-    SurveyResponseSortOrder.EVENT_AT_ASC: (
-        asc(SurveyResponse.event_at),
-        asc(SurveyResponse.id),
-    ),
-    SurveyResponseSortOrder.CREATED_AT_DESC: (
-        desc(SurveyResponse.created_at),
-        desc(SurveyResponse.id),
-    ),
-    SurveyResponseSortOrder.CREATED_AT_ASC: (
-        asc(SurveyResponse.created_at),
-        asc(SurveyResponse.id),
-    ),
 }
 
 
@@ -284,7 +259,7 @@ class SurveyResponseRepository:
             self.db,
             rows_query,
             count_query,
-            _SORT_CLAUSES[params.sort_order],
+            SURVEY_RESPONSE_SORT_CLAUSES[params.sort_order],
             limit,
             offset,
         )

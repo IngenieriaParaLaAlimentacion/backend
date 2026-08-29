@@ -9,36 +9,13 @@ from sqlalchemy.orm import selectinload
 from app.domain.measurement import (
     EvolutionOrder,
     MeasurementListingParams,
-    MeasurementSortOrder,
 )
 from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.establishments.establishment import Establishment
 from app.models.measurements.measurement import Measurement
 from app.models.subjects.subject import Subject
+from app.repositories.measurements.constants import MEASUREMENT_SORT_CLAUSES
 from app.utils.db import execute_all, execute_paginated, ilike_condition
-
-# Maps each MeasurementSortOrder value to its SQLAlchemy order clause(s).
-# Each pairs the sort column with `id` as a tiebreaker, so measurements sharing
-# a value (same weight, same day) still page consistently instead of shuffling
-# between requests, and an export lands in a reproducible order.
-# KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
-_SORT_CLAUSES = {
-    MeasurementSortOrder.DATE_DESC: (
-        desc(Measurement.measured_at),
-        desc(Measurement.id),
-    ),
-    MeasurementSortOrder.DATE_ASC: (asc(Measurement.measured_at), asc(Measurement.id)),
-    MeasurementSortOrder.WEIGHT_DESC: (
-        desc(Measurement.weight_kg),
-        desc(Measurement.id),
-    ),
-    MeasurementSortOrder.WEIGHT_ASC: (asc(Measurement.weight_kg), asc(Measurement.id)),
-    MeasurementSortOrder.HEIGHT_DESC: (
-        desc(Measurement.height_cm),
-        desc(Measurement.id),
-    ),
-    MeasurementSortOrder.HEIGHT_ASC: (asc(Measurement.height_cm), asc(Measurement.id)),
-}
 
 
 def _subtract_years(reference: date, years: int) -> date:
@@ -126,7 +103,7 @@ class MeasurementRepository:
             .join(Establishment, Measurement.establishment_id == Establishment.id)
         )
 
-        order_by = _SORT_CLAUSES[params.sort_order]
+        order_by = MEASUREMENT_SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
             self.db,
             self._listing_base_query(),
@@ -142,14 +119,14 @@ class MeasurementRepository:
     ) -> list[Measurement]:
         """Return every measurement matching the listing filters, unpaginated.
 
-        Shares the base query, ``_listing_conditions`` and ``_SORT_CLAUSES``
+        Shares the base query, ``_listing_conditions`` and ``MEASUREMENT_SORT_CLAUSES``
         with ``get_measurement_listing``, so an export always carries the same
         rows in the same order as the listing it was launched from.
         """
         return await execute_all(
             self.db,
             self._listing_base_query(),
-            _SORT_CLAUSES[params.sort_order],
+            MEASUREMENT_SORT_CLAUSES[params.sort_order],
             conditions=self._listing_conditions(params),
         )
 
