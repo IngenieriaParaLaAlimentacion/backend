@@ -44,10 +44,9 @@ and nutrient composition values.
 Scope of this decision:
 - The ~26 food groups from SARA 2 (organized following the logic of the Guías Alimentarias para la Población Argentina 
 — GAPA) are taken as the reference categorization.
-- From the food listing of each group, **only entries in raw / as-purchased state are included**, explicitly excluding 
-cooking-state variants (boiled, sautéed, fried, etc.) that SARA 2 includes for its original purpose of intake calculation
-— a purpose that does not apply to our domain, where the goal is recording what a community kitchen *receives*, not 
-what is *consumed* already prepared.
+- From the food listing of each group, **every preparation state SARA 2 lists for a food is included** — raw/as-purchased
+as well as cooking-state variants (boiled, sautéed, fried, etc.) — so the catalog can represent a supply a community
+kitchen receives in any of these states, not only as-purchased.
 
 This decision prioritizes domain fit over ease of ingestion: a technically superior but geographically foreign source
 would shift the population effort from "extracting structured data from a PDF" to "translating and validating, food by 
@@ -75,8 +74,9 @@ upfront ingestion cost than an API-based alternative like USDA FoodData Central.
 - No continuous update cycle is evident beyond the single 2022 publication, unlike actively maintained alternatives.
 
 *Neutral*
-- Cooking-state variants (raw/cooked), which are part of the original table, are deliberately excluded, simplifying the
-catalog to a single state per food — a scope decision specific to our domain, not a limitation of the source itself.
+- Every preparation state SARA 2 lists for a food (raw, boiled, fried, baked, etc.) is kept as its own catalog entry
+rather than collapsing to a single state per food — a scope decision specific to our domain, not a limitation of the
+source itself.
 
 ## Alternatives considered
 
