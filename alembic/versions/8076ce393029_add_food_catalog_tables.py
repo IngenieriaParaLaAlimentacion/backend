@@ -57,9 +57,7 @@ def upgrade() -> None:
         ),
         sa.Column(
             "base_unit",
-            sa.Enum(
-                "unidades", "kilogramos", "litros", "potes", name="measurementunit"
-            ),
+            sa.Enum("unidades", "kilogramos", "litros", name="measurementunit"),
             nullable=False,
         ),
         sa.Column(

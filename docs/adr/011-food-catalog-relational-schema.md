@@ -162,15 +162,17 @@ be solved — and sourced — at that time, scoped to only the foods it actually
 
 *Negatives*
 
-- `foods.base_unit`'s enum membership is not fully closed by this ADR — the candidate set is
-  `unidades` / `kilogramos` / `litros` / `potes`, but the final membership depends on the curated food
-  list. Extending it later is a migration, consistent with existing precedent in this codebase (see
+- `foods.base_unit`'s enum membership was closed during Stage 2 curation: `unidades` / `kilogramos` /
+  `litros`. A fourth candidate, `potes`, was dropped — it wasn't sourced from SARA 2 (which has no
+  unit-of-purchase column at all) and added variety without a real distinction, since anything sold by
+  weight — including packaged single-serve items — maps cleanly to `kilogramos`. Extending the enum
+  later, if a real gap turns up, is a migration, consistent with existing precedent in this codebase (see
   `3c300b242b41_add_revoked_to_userestablishmentstatus_`, which added a new enum member to an existing
   status type).
 - Computing a derived quantity (e.g. total protein delivered from a logged stock entry) requires future
   work to define and source a `base_unit`-to-grams conversion for any food not already measured by
   weight. This ADR deliberately does not solve that problem now.
-- Nutrient values on foods logged by volume or count (`litros`, `unidades`, `potes`) cannot be scaled to a
+- Nutrient values on foods logged by volume or count (`litros`, `unidades`) cannot be scaled to a
   received quantity without that same future conversion — this is a direct consequence of storing nutrient
   data exactly as the source states it (per 100 g) rather than pre-converting it to match each food's
   `base_unit`.
