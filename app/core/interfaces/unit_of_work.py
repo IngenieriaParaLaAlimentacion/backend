@@ -22,6 +22,14 @@ from app.repositories.establishments.establishment_repository import (
 from app.repositories.establishments.establishment_request_repository import (
     EstablishmentRequestRepository,
 )
+from app.repositories.food_catalog.food_category_repository import (
+    FoodCategoryRepository,
+)
+from app.repositories.food_catalog.food_nutrient_value_repository import (
+    FoodNutrientValueRepository,
+)
+from app.repositories.food_catalog.food_repository import FoodRepository
+from app.repositories.food_catalog.nutrient_repository import NutrientRepository
 from app.repositories.measurements.measurement_alert_repository import (
     MeasurementAlertRepository,
 )
@@ -53,6 +61,10 @@ class IUnitOfWork(ABC):
     survey_response_repo: SurveyResponseRepository
     survey_response_edit_repo: SurveyResponseEditRepository
     establishment_dashboard_repo: EstablishmentDashboardRepository
+    food_category_repo: FoodCategoryRepository
+    nutrient_repo: NutrientRepository
+    food_repo: FoodRepository
+    food_nutrient_value_repo: FoodNutrientValueRepository
 
     @abstractmethod
     async def commit(self) -> None: ...

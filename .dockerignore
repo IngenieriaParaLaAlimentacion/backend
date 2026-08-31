@@ -55,6 +55,11 @@ README*
 CHANGELOG*
 LICENSE
 
+# Dev-only data pipeline (source PDF, raw extraction CSVs, review captures) —
+# never needed at runtime; the final seed data it produces lives in
+# app/reference_data/ instead.
+scripts
+
 # CI
 .env.*
 !.env.example
