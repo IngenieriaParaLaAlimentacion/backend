@@ -30,6 +30,7 @@ from app.schemas.establishments.establishment_schema import (
     EstablishmentUpdateRequest,
 )
 from app.services.establishments.establishment_service import EstablishmentService
+from tests.unit.conftest import aiter_of, capturing_exporter, drain
 
 
 def _make_request(**overrides) -> EstablishmentRequest:
@@ -1029,3 +1030,56 @@ class TestRejectCreationRequest:
         mock_email.assert_awaited_once_with(
             "worker@test.com", "Comedor Esperanza", None
         )
+
+
+class TestExportEstablishmentListing:
+    pytestmark = pytest.mark.asyncio
+
+    async def test_streams_the_whole_filtered_set(self, make_establishment):
+        uow = AsyncMock()
+        uow.establishment_repo.stream_for_export = MagicMock(
+            return_value=aiter_of([make_establishment(), make_establishment()])
+        )
+        seen: list = []
+        params = EstablishmentListingParams(city="Rosario")
+
+        data = await drain(
+            EstablishmentService(uow).export_establishment_listing(
+                params, capturing_exporter(seen)
+            )
+        )
+
+        assert data == b"rowrow"
+        uow.establishment_repo.stream_for_export.assert_called_once_with(params)
+        # The export must never go through the paginated query.
+        uow.establishment_repo.get_paginated.assert_not_awaited()
+
+    async def test_rows_are_mapped_to_domain_objects(self, make_establishment):
+        uow = AsyncMock()
+        uow.establishment_repo.stream_for_export = MagicMock(
+            return_value=aiter_of([make_establishment(name="Comedor Sur")])
+        )
+        seen: list = []
+
+        await drain(
+            EstablishmentService(uow).export_establishment_listing(
+                EstablishmentListingParams(), capturing_exporter(seen)
+            )
+        )
+
+        assert [e.name for e in seen] == ["Comedor Sur"]
+        assert all(isinstance(e, EstablishmentDomain) for e in seen)
+
+    async def test_empty_result_still_reaches_the_exporter(self):
+        uow = AsyncMock()
+        uow.establishment_repo.stream_for_export = MagicMock(return_value=aiter_of([]))
+        seen: list = []
+
+        data = await drain(
+            EstablishmentService(uow).export_establishment_listing(
+                EstablishmentListingParams(), capturing_exporter(seen)
+            )
+        )
+
+        assert data == b""
+        assert seen == []

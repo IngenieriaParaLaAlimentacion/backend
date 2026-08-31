@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterator
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
@@ -30,6 +31,7 @@ from app.schemas.surveys.survey_schema import (
     SurveyCreateRequest,
     SurveyUpdateRequest,
 )
+from app.services.exporters.csv.csv_exporter import CsvExporter
 
 # Roles allowed to author (create/duplicate) surveys.
 _AUTHOR_ROLES = {UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN}
@@ -235,6 +237,29 @@ class SurveyService:
             limit=page_size, offset=offset, params=params
         )
         return self._build_survey_list_result(surveys, total, page, page_size)
+
+    def export_survey_listing(
+        self,
+        params: SurveyListingParams,
+        exporter: CsvExporter[SurveyListItemDomain],
+    ) -> AsyncIterator[bytes]:
+        """Stream the survey listing as an exported file's bytes.
+
+        Applies the same filters and order as ``list_surveys`` over the whole
+        result set rather than one page. The caller's UnitOfWork must outlive
+        the returned iterator.
+        """
+        rows = (
+            SurveyListItemDomain.from_db(survey, question_count)
+            async for survey, question_count in self.uow.survey_repo.stream_for_export(
+                params
+            )
+        )
+        return exporter.stream(rows)
+
+    async def count_survey_export(self, params: SurveyListingParams) -> int:
+        """How many rows the export will contain, for the row-count header."""
+        return await self.uow.survey_repo.count_for_export(params)
 
     async def list_available_surveys(
         self,

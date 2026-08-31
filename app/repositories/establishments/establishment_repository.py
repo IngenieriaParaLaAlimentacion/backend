@@ -1,30 +1,24 @@
+from collections.abc import AsyncIterator
 from uuid import UUID
 
-from sqlalchemy import asc, desc, func, or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.establishment import (
     EstablishmentListingParams,
-    EstablishmentSortOrder,
     UserEstablishmentStatus,
 )
 from app.exceptions.domain_exceptions import EstablishmentNotFoundError
 from app.models.auth.user_establishment import UserEstablishment
 from app.models.establishments.establishment import Establishment
-from app.utils.db import execute_paginated, ilike_condition, insert_with_savepoint
-
-# Maps each EstablishmentSortOrder value to its SQLAlchemy order clause.
-# KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
-_SORT_CLAUSES = {
-    EstablishmentSortOrder.NEWEST: desc(Establishment.created_at),
-    EstablishmentSortOrder.OLDEST: asc(Establishment.created_at),
-    EstablishmentSortOrder.NAME_ASC: asc(Establishment.name),
-    EstablishmentSortOrder.NAME_DESC: desc(Establishment.name),
-    EstablishmentSortOrder.CITY_ASC: asc(Establishment.city),
-    EstablishmentSortOrder.CITY_DESC: desc(Establishment.city),
-    EstablishmentSortOrder.PROVINCE_ASC: asc(Establishment.province),
-    EstablishmentSortOrder.PROVINCE_DESC: desc(Establishment.province),
-}
+from app.repositories.establishments.constants import ESTABLISHMENT_SORT_CLAUSES
+from app.utils.db import (
+    execute_count,
+    execute_paginated,
+    ilike_condition,
+    insert_with_savepoint,
+    stream_all,
+)
 
 
 class EstablishmentRepository:
@@ -149,7 +143,7 @@ class EstablishmentRepository:
         base_query = select(Establishment)
         count_query = select(func.count()).select_from(Establishment)
 
-        order_by = _SORT_CLAUSES[params.sort_order]
+        order_by = ESTABLISHMENT_SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
             self.db,
             base_query,
@@ -157,6 +151,28 @@ class EstablishmentRepository:
             order_by,
             limit,
             offset,
+            conditions=self._listing_conditions(params),
+        )
+
+    def stream_for_export(
+        self, params: EstablishmentListingParams
+    ) -> AsyncIterator[Establishment]:
+        """Stream every establishment matching the listing filters, unpaginated.
+
+        The caller's transaction must stay open for the whole iteration.
+        """
+        return stream_all(
+            self.db,
+            select(Establishment),
+            ESTABLISHMENT_SORT_CLAUSES[params.sort_order],
+            conditions=self._listing_conditions(params),
+        )
+
+    async def count_for_export(self, params: EstablishmentListingParams) -> int:
+        """Return how many establishments the listing filters match, fetching none."""
+        return await execute_count(
+            self.db,
+            select(func.count()).select_from(Establishment),
             conditions=self._listing_conditions(params),
         )
 
@@ -187,7 +203,7 @@ class EstablishmentRepository:
             .where(Establishment.id.not_in(blocked))
         )
 
-        order_by = _SORT_CLAUSES[params.sort_order]
+        order_by = ESTABLISHMENT_SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
             self.db,
             base_query,

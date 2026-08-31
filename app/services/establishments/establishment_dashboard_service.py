@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterator
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
@@ -22,6 +23,7 @@ from app.domain.measurement import (
 )
 from app.domain.pagination import PaginatedResult
 from app.reference_data.anthropometry import age_in_months
+from app.services.exporters.csv.csv_exporter import CsvExporter
 
 
 def _round(value: float | None, digits: int = 2) -> float | None:
@@ -187,6 +189,47 @@ class EstablishmentDashboardService:
         return PaginatedResult.build(
             items=items, total=total, page=page, page_size=page_size
         )
+
+    def export_establishment_subjects(
+        self,
+        establishment_id: UUID,
+        params: EstablishmentSubjectListingParams,
+        exporter: CsvExporter[EstablishmentSubjectItemDomain],
+    ) -> AsyncIterator[bytes]:
+        """Stream the establishment's subject listing as an exported file's bytes.
+
+        Applies the same filters and order as ``list_establishment_subjects``
+        over the whole result set rather than one page.
+        """
+        rows = (
+            self._build_subject_item(row.Measurement, row.measurement_count)
+            async for row in self.uow.establishment_dashboard_repo.stream_for_export(
+                establishment_id=establishment_id, params=params
+            )
+        )
+        return exporter.stream(rows)
+
+    async def prepare_establishment_export(
+        self,
+        establishment_id: UUID,
+        params: EstablishmentSubjectListingParams,
+    ) -> tuple[str, int]:
+        """Resolve the establishment and size the export before streaming.
+
+        Returns its name (for the download filename) and the row count (for the
+        row-count header). Runs as a pre-flight so an unknown establishment
+        answers a real 404 instead of a truncated file.
+
+        Raises:
+            EstablishmentNotFoundError: If the establishment does not exist.
+        """
+        establishment = await self.uow.establishment_repo.get_by_id_or_raise(
+            establishment_id
+        )
+        total = await self.uow.establishment_dashboard_repo.count_for_export(
+            establishment_id=establishment_id, params=params
+        )
+        return establishment.name, total
 
     async def list_establishment_field_workers(
         self,

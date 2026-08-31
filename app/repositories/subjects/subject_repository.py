@@ -1,28 +1,22 @@
 import datetime
+from collections.abc import AsyncIterator
 from uuid import UUID
 
-from sqlalchemy import asc, desc, func, or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.subject import Sex, SubjectListingParams, SubjectSortOrder
+from app.domain.subject import Sex, SubjectListingParams
 from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.measurements.measurement import Measurement
 from app.models.subjects.subject import Subject
-from app.utils.db import execute_paginated, ilike_condition
-
-# Maps each SubjectSortOrder value to its SQLAlchemy order clause(s).
-# Each pairs the sort column with `id` as a tiebreaker, so subjects sharing a
-# value still page consistently instead of shuffling between requests.
-# KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
-_SORT_CLAUSES = {
-    SubjectSortOrder.CREATED_AT_DESC: (desc(Subject.created_at), desc(Subject.id)),
-    SubjectSortOrder.CREATED_AT_ASC: (asc(Subject.created_at), asc(Subject.id)),
-    SubjectSortOrder.NAME_ASC: (asc(Subject.name), asc(Subject.id)),
-    SubjectSortOrder.NAME_DESC: (desc(Subject.name), desc(Subject.id)),
-    SubjectSortOrder.BIRTH_DATE_ASC: (asc(Subject.birth_date), asc(Subject.id)),
-    SubjectSortOrder.BIRTH_DATE_DESC: (desc(Subject.birth_date), desc(Subject.id)),
-}
+from app.repositories.subjects.constants import SUBJECT_SORT_CLAUSES
+from app.utils.db import (
+    execute_count,
+    execute_paginated,
+    ilike_condition,
+    stream_all,
+)
 
 
 def subject_search_condition(search: str | None):
@@ -160,7 +154,7 @@ class SubjectRepository:
         base_query = select(Subject)
         count_query = select(func.count()).select_from(Subject)
 
-        order_by = _SORT_CLAUSES[params.sort_order]
+        order_by = SUBJECT_SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
             self.db,
             base_query,
@@ -168,5 +162,25 @@ class SubjectRepository:
             order_by,
             limit,
             offset,
+            conditions=self._listing_conditions(params),
+        )
+
+    def stream_for_export(self, params: SubjectListingParams) -> AsyncIterator[Subject]:
+        """Stream every subject matching the listing filters, unpaginated.
+
+        The caller's transaction must stay open for the whole iteration.
+        """
+        return stream_all(
+            self.db,
+            select(Subject),
+            SUBJECT_SORT_CLAUSES[params.sort_order],
+            conditions=self._listing_conditions(params),
+        )
+
+    async def count_for_export(self, params: SubjectListingParams) -> int:
+        """Return how many subjects the listing filters match, fetching none."""
+        return await execute_count(
+            self.db,
+            select(func.count()).select_from(Subject),
             conditions=self._listing_conditions(params),
         )

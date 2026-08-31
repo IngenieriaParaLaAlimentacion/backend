@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, Response, status
+from fastapi.responses import StreamingResponse
 
+from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_stream_response
 from app.api.v1.params import (
     AUTH_RESPONSES,
     MeasurementListingQuery,
@@ -17,6 +19,7 @@ from app.schemas.measurements.measurement_schema import (
     MeasurementResponse,
 )
 from app.schemas.pagination import PaginatedResponse
+from app.services.exporters.csv.columns import MEASUREMENT_LISTING_EXPORTER
 from app.services.measurements.measurement_service import MeasurementService
 
 router = APIRouter(prefix="/measurements")
@@ -90,4 +93,39 @@ async def list_measurements(
         page=result.page,
         page_size=result.page_size,
         total_pages=result.total_pages,
+    )
+
+
+@router.get(
+    "/export",
+    summary="Export the measurement listing as CSV",
+    description=(
+        "Download the anthropometric measurement listing as a CSV file. "
+        "Accepts the same filters and sort order as the listing endpoint and "
+        "exports every matching measurement rather than one page, so the file "
+        "mirrors what the user has on screen. A filter matching nothing still "
+        "returns a valid file carrying only the column headers. Restricted to "
+        "admins, analysts and superadmins."
+    ),
+    responses={
+        **CSV_EXPORT_RESPONSES,
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Invalid filter range, or a value with no export label"
+        },
+    },
+)
+async def export_measurements(
+    query: MeasurementListingQuery = Depends(),
+    _: UserActor = Depends(require_admin_or_analyst),
+    service: MeasurementService = Depends(get_measurement_service),
+) -> StreamingResponse:
+    query.validate()
+    params = query.to_domain()
+    total = await service.count_measurement_export(params)
+    return csv_stream_response(
+        lambda uow: MeasurementService(uow).export_measurement_listing(
+            params, MEASUREMENT_LISTING_EXPORTER
+        ),
+        MEASUREMENT_LISTING_EXPORTER.filename(),
+        total,
     )

@@ -1,7 +1,9 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
+from fastapi.responses import StreamingResponse
 
+from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_stream_response
 from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams, SurveyListingQuery
 from app.core.dependencies import (
     get_survey_service,
@@ -19,6 +21,7 @@ from app.schemas.surveys.survey_schema import (
     SurveyTemplateResponse,
     SurveyUpdateRequest,
 )
+from app.services.exporters.csv.columns import SURVEY_LISTING_EXPORTER
 from app.services.surveys.survey_service import SurveyService
 
 router = APIRouter(prefix="/surveys")
@@ -119,6 +122,36 @@ async def list_available_surveys(
         page=result.page,
         page_size=result.page_size,
         total_pages=result.total_pages,
+    )
+
+
+# Declared above GET /{survey_id} so "export" is not matched as a survey id.
+@router.get(
+    "/export",
+    summary="Export the survey listing as CSV",
+    description=(
+        "Download the survey listing as a CSV file. Accepts the same filters "
+        "and sort order as the listing endpoint and exports every matching "
+        "survey rather than one page, so the file mirrors what the user has "
+        "on screen. A filter matching nothing still returns a valid file "
+        "carrying only the column headers. Restricted to admins, analysts and "
+        "superadmins."
+    ),
+    responses=CSV_EXPORT_RESPONSES,
+)
+async def export_surveys(
+    query: SurveyListingQuery = Depends(),
+    _: UserActor = Depends(require_admin_or_analyst),
+    service: SurveyService = Depends(get_survey_service),
+) -> StreamingResponse:
+    params = query.to_domain()
+    total = await service.count_survey_export(params)
+    return csv_stream_response(
+        lambda uow: SurveyService(uow).export_survey_listing(
+            params, SURVEY_LISTING_EXPORTER
+        ),
+        SURVEY_LISTING_EXPORTER.filename(),
+        total,
     )
 
 

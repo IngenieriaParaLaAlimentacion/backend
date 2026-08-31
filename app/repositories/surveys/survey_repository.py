@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from uuid import UUID
 
-from sqlalchemy import asc, desc, exists, func, select, update
+from sqlalchemy import desc, exists, func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import noload
@@ -11,7 +12,6 @@ from app.domain.survey import (
     QuestionInputData,
     SurveyListingParams,
     SurveyResponseTarget,
-    SurveySortOrder,
 )
 from app.exceptions.domain_exceptions import (
     InvalidSurveyPayloadError,
@@ -20,16 +20,13 @@ from app.exceptions.domain_exceptions import (
 from app.models.surveys.survey import Survey
 from app.models.surveys.survey_question import SurveyQuestion
 from app.models.surveys.survey_question_option import SurveyQuestionOption
-from app.utils.db import execute_paginated_rows, ilike_condition
-
-# Maps each SurveySortOrder value to its SQLAlchemy order clause.
-# KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
-_SORT_CLAUSES = {
-    SurveySortOrder.NAME_ASC: asc(func.lower(Survey.name)),
-    SurveySortOrder.NAME_DESC: desc(func.lower(Survey.name)),
-    SurveySortOrder.NEWEST: desc(Survey.created_at),
-    SurveySortOrder.OLDEST: asc(Survey.created_at),
-}
+from app.repositories.surveys.constants import SURVEY_SORT_CLAUSES
+from app.utils.db import (
+    execute_count,
+    execute_paginated_rows,
+    ilike_condition,
+    stream_all_rows,
+)
 
 
 class SurveyRepository:
@@ -65,6 +62,20 @@ class SurveyRepository:
             .where(SurveyQuestion.survey_id == Survey.id)
             .correlate(Survey)
             .scalar_subquery()
+        )
+
+    @classmethod
+    def _listing_base_query(cls):
+        """Build the listing's ``(survey, question_count)`` query.
+
+        The summary view needs only a question count, so ``questions`` is
+        suppressed with ``noload`` and the count comes from a correlated
+        subquery — avoiding hydrating every question/option just to call
+        ``len()``.
+        """
+        question_count = cls._question_count_subquery()
+        return select(Survey, question_count.label("question_count")).options(
+            noload(Survey.questions)
         )
 
     @staticmethod
@@ -173,21 +184,38 @@ class SurveyRepository:
         subquery — avoiding hydrating every question/option just to call
         ``len()``.
         """
-        question_count = self._question_count_subquery()
-        base_query = select(Survey, question_count.label("question_count")).options(
-            noload(Survey.questions)
-        )
         count_query = select(func.count()).select_from(Survey)
         rows, total = await execute_paginated_rows(
             self.db,
-            base_query,
+            self._listing_base_query(),
             count_query,
-            _SORT_CLAUSES[params.sort_order],
+            SURVEY_SORT_CLAUSES[params.sort_order],
             limit,
             offset,
             conditions=self._listing_conditions(params),
         )
         return list(rows), total
+
+    def stream_for_export(
+        self, params: SurveyListingParams
+    ) -> AsyncIterator[tuple[Survey, int]]:
+        """Stream every ``(survey, question_count)`` row matching the filters.
+        The caller's transaction must stay open for the whole iteration.
+        """
+        return stream_all_rows(
+            self.db,
+            self._listing_base_query(),
+            SURVEY_SORT_CLAUSES[params.sort_order],
+            conditions=self._listing_conditions(params),
+        )
+
+    async def count_for_export(self, params: SurveyListingParams) -> int:
+        """Return how many surveys the listing filters match, fetching none."""
+        return await execute_count(
+            self.db,
+            select(func.count()).select_from(Survey),
+            conditions=self._listing_conditions(params),
+        )
 
     async def create(
         self,

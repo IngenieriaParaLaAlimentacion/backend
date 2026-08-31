@@ -15,6 +15,7 @@ from app.exceptions.domain_exceptions import EstablishmentNotFoundError
 from app.services.establishments.establishment_dashboard_service import (
     EstablishmentDashboardService,
 )
+from tests.unit.conftest import aiter_of, capturing_exporter, drain
 
 
 def _row(alert_type: AlertType | None, count: int) -> SimpleNamespace:
@@ -318,3 +319,83 @@ class TestSubjectListing:
         _, kwargs = uow.establishment_dashboard_repo.get_subject_listing.call_args
         assert kwargs["offset"] == 0
         assert result.page == 1
+
+
+class TestExportEstablishmentSubjects:
+    pytestmark = pytest.mark.asyncio
+
+    @staticmethod
+    def _row(measurement_count: int = 2) -> SimpleNamespace:
+        """A repo row: the subject's latest measurement plus their count here."""
+        return SimpleNamespace(
+            Measurement=_measurement([]), measurement_count=measurement_count
+        )
+
+    async def test_preflight_raises_before_any_streaming(self, make_dashboard_uow):
+        """The 404 must land before the response starts; once bytes are on the
+        wire the status is already 200 and this could only truncate the file."""
+        uow = make_dashboard_uow(found=False)
+
+        with pytest.raises(EstablishmentNotFoundError):
+            await EstablishmentDashboardService(uow).prepare_establishment_export(
+                uuid.uuid4(), EstablishmentSubjectListingParams()
+            )
+
+    async def test_preflight_returns_the_name_and_the_count(
+        self, make_dashboard_uow, establishment
+    ):
+        uow = make_dashboard_uow()
+        uow.establishment_dashboard_repo.count_for_export = AsyncMock(return_value=7)
+
+        name, total = await EstablishmentDashboardService(
+            uow
+        ).prepare_establishment_export(
+            establishment.id, EstablishmentSubjectListingParams()
+        )
+
+        assert name == establishment.name
+        assert total == 7
+
+    async def test_streams_the_whole_filtered_set(
+        self, make_dashboard_uow, establishment
+    ):
+        uow = make_dashboard_uow()
+        uow.establishment_dashboard_repo.stream_for_export = MagicMock(
+            return_value=aiter_of([self._row(), self._row()])
+        )
+        seen: list = []
+        params = EstablishmentSubjectListingParams(search="Bruno")
+
+        data = await drain(
+            EstablishmentDashboardService(uow).export_establishment_subjects(
+                establishment.id, params, capturing_exporter(seen)
+            )
+        )
+
+        assert data == b"rowrow"
+        uow.establishment_dashboard_repo.stream_for_export.assert_called_once_with(
+            establishment_id=establishment.id, params=params
+        )
+        # The export must never go through the paginated query.
+        uow.establishment_dashboard_repo.get_subject_listing.assert_not_awaited()
+
+    async def test_rows_are_built_into_listing_items(
+        self, make_dashboard_uow, establishment
+    ):
+        uow = make_dashboard_uow()
+        uow.establishment_dashboard_repo.stream_for_export = MagicMock(
+            return_value=aiter_of([self._row(measurement_count=3)])
+        )
+        seen: list = []
+
+        await drain(
+            EstablishmentDashboardService(uow).export_establishment_subjects(
+                establishment.id,
+                EstablishmentSubjectListingParams(),
+                capturing_exporter(seen),
+            )
+        )
+
+        assert len(seen) == 1
+        assert seen[0].measurement_count == 3
+        assert seen[0].nutritional_status is not None

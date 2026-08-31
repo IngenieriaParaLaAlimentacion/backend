@@ -93,6 +93,38 @@ Response envelope:
 
 ---
 
+## File exports
+
+List endpoints that support a "Exportar CSV" action expose a sibling `/export` route
+(`GET /api/v1/subjects/export`, `GET /api/v1/measurements/export`, …).
+
+- The export accepts **exactly the same filter and sort query params as its listing**,
+  reusing the same query dataclass. It takes **no pagination params** and returns the
+  whole filtered set.
+- Declare the `/export` route **above** any `/{id}` route in the same router, or the
+  literal is matched as an id.
+- Response is `text/csv; charset=utf-8`, **streamed** (chunked, no `Content-Length`),
+  with `Content-Disposition: attachment; filename="<entidad>[_<scope>]_<YYYY-MM-DD>.csv"`
+  and `X-Export-Row-Count` stating how many data rows to expect.
+- Anything that can fail predictably — validation, a missing parent resource, the row
+  count — runs in a **pre-flight** before the response starts, so 4xx still carry a real
+  `problem+json` body. Once bytes are on the wire the status is already `200`, and a
+  failure aborts the connection instead of completing; clients detect that by reading the
+  body rather than linking to the URL.
+- The streaming generator owns its own `UnitOfWork`. A `Depends`-provided session is
+  closed when the *handler* returns, which is before a streamed body is produced.
+- A filter matching nothing returns **`200` with only the header line** — an export that
+  matched no rows is a successful export, not an error. Clients disable the button from
+  the listing's `total`.
+- No cell may contain a newline (`normalize_cell` in `formatters.py`), so a client can
+  compare parsed lines against `X-Export-Row-Count`.
+- CSV dialect is Argentine/Excel-first: `;` delimiter, decimal comma, `dd/mm/aaaa` dates
+  in `America/Argentina/Buenos_Aires`, CRLF, and a leading UTF-8 BOM.
+
+See ADR-0009 for the rationale and `app/services/exporters/csv/` for the implementation.
+
+---
+
 ## Request and response format
 
 - All request and response bodies are **JSON** (`Content-Type: application/json`).

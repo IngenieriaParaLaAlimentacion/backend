@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterator
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
@@ -29,6 +30,7 @@ from app.services.email_service import (
     send_creation_denied_email,
     send_establishment_created_email,
 )
+from app.services.exporters.csv.csv_exporter import CsvExporter
 
 
 class EstablishmentService:
@@ -209,6 +211,29 @@ class EstablishmentService:
         return self._build_page(
             establishments, total, page, page_size, EstablishmentDomain.from_db
         )
+
+    def export_establishment_listing(
+        self,
+        params: EstablishmentListingParams,
+        exporter: CsvExporter[EstablishmentDomain],
+    ) -> AsyncIterator[bytes]:
+        """Stream the establishment listing as an exported file's bytes.
+
+        Applies the same filters and order as ``get_establishments_paginated``
+        over the whole result set rather than one page. The caller's
+        UnitOfWork must outlive the returned iterator.
+        """
+        rows = (
+            EstablishmentDomain.from_db(e)
+            async for e in self.uow.establishment_repo.stream_for_export(params)
+        )
+        return exporter.stream(rows)
+
+    async def count_establishment_export(
+        self, params: EstablishmentListingParams
+    ) -> int:
+        """How many rows the export will contain, for the row-count header."""
+        return await self.uow.establishment_repo.count_for_export(params)
 
     async def get_available_establishments(
         self,

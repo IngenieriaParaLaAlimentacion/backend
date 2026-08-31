@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterator
 from datetime import date, datetime
 from uuid import UUID
 
@@ -9,24 +10,18 @@ from sqlalchemy.orm import selectinload
 from app.domain.measurement import (
     EvolutionOrder,
     MeasurementListingParams,
-    MeasurementSortOrder,
 )
 from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.establishments.establishment import Establishment
 from app.models.measurements.measurement import Measurement
 from app.models.subjects.subject import Subject
-from app.utils.db import execute_paginated, ilike_condition
-
-# Maps each MeasurementSortOrder value to its SQLAlchemy order clause.
-# KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
-_SORT_CLAUSES = {
-    MeasurementSortOrder.DATE_DESC: desc(Measurement.measured_at),
-    MeasurementSortOrder.DATE_ASC: asc(Measurement.measured_at),
-    MeasurementSortOrder.WEIGHT_DESC: desc(Measurement.weight_kg),
-    MeasurementSortOrder.WEIGHT_ASC: asc(Measurement.weight_kg),
-    MeasurementSortOrder.HEIGHT_DESC: desc(Measurement.height_cm),
-    MeasurementSortOrder.HEIGHT_ASC: asc(Measurement.height_cm),
-}
+from app.repositories.measurements.constants import MEASUREMENT_SORT_CLAUSES
+from app.utils.db import (
+    execute_count,
+    execute_paginated,
+    ilike_condition,
+    stream_all,
+)
 
 
 def _subtract_years(reference: date, years: int) -> date:
@@ -77,19 +72,15 @@ class MeasurementRepository:
             )
         return conditions
 
-    async def get_measurement_listing(
-        self,
-        limit: int,
-        offset: int,
-        params: MeasurementListingParams,
-    ) -> tuple[list[Measurement], int]:
-        """Return a paginated list of measurements and the total matching count.
+    @staticmethod
+    def _listing_base_query():
+        """Build the listing's entity query, joined and eager-loaded.
 
         Joins Subject and Establishment to support filtering by establishment
-        location and subject age. City and province are case-insensitive exact
-        matches.
+        location and subject age. The eager loads keep the listing and the
+        export off an N+1 when their rows are mapped to domain objects.
         """
-        base_query = (
+        return (
             select(Measurement)
             .join(Subject, Measurement.subject_id == Subject.id)
             .join(Establishment, Measurement.establishment_id == Establishment.id)
@@ -99,6 +90,18 @@ class MeasurementRepository:
                 selectinload(Measurement.responsible),
             )
         )
+
+    async def get_measurement_listing(
+        self,
+        limit: int,
+        offset: int,
+        params: MeasurementListingParams,
+    ) -> tuple[list[Measurement], int]:
+        """Return a paginated list of measurements and the total matching count.
+
+        City and province are case-insensitive partial matches on the joined
+        establishment.
+        """
         count_query = (
             select(func.count())
             .select_from(Measurement)
@@ -106,14 +109,50 @@ class MeasurementRepository:
             .join(Establishment, Measurement.establishment_id == Establishment.id)
         )
 
-        order_by = _SORT_CLAUSES[params.sort_order]
+        order_by = MEASUREMENT_SORT_CLAUSES[params.sort_order]
         return await execute_paginated(
             self.db,
-            base_query,
+            self._listing_base_query(),
             count_query,
             order_by,
             limit,
             offset,
+            conditions=self._listing_conditions(params),
+        )
+
+    @staticmethod
+    def _listing_count_query():
+        """Count over the same joins the listing query uses."""
+        return (
+            select(func.count())
+            .select_from(Measurement)
+            .join(Subject, Measurement.subject_id == Subject.id)
+            .join(Establishment, Measurement.establishment_id == Establishment.id)
+        )
+
+    def stream_for_export(
+        self, params: MeasurementListingParams
+    ) -> AsyncIterator[Measurement]:
+        """Stream every measurement matching the listing filters, unpaginated.
+
+        Shares the base query, ``_listing_conditions`` and
+        ``MEASUREMENT_SORT_CLAUSES`` with ``get_measurement_listing``, so an
+        export always carries the same rows in the same order as the listing.
+
+        The caller's transaction must stay open for the whole iteration.
+        """
+        return stream_all(
+            self.db,
+            self._listing_base_query(),
+            MEASUREMENT_SORT_CLAUSES[params.sort_order],
+            conditions=self._listing_conditions(params),
+        )
+
+    async def count_for_export(self, params: MeasurementListingParams) -> int:
+        """Return how many measurements the listing filters match, fetching none."""
+        return await execute_count(
+            self.db,
+            self._listing_count_query(),
             conditions=self._listing_conditions(params),
         )
 

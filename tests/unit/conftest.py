@@ -118,3 +118,34 @@ def make_password_record():
         return p
 
     return _make
+
+
+# --- Streaming export helpers ------------------------------------------------
+
+
+async def drain(chunks) -> bytes:
+    """Collect a streamed export into the bytes it would have sent."""
+    return b"".join([chunk async for chunk in chunks])
+
+
+async def aiter_of(items):
+    """Wrap a list as an async iterator, standing in for a streaming repo."""
+    for item in items:
+        yield item
+
+
+def capturing_exporter(rows_out: list):
+    """A CsvExporter-shaped double that records the domain rows it was fed.
+
+    Real enough to be driven like the production exporter (``stream`` returns
+    an async iterator of bytes) while letting a test assert on the rows the
+    service built, which is the part the service is responsible for.
+    """
+
+    class _Exporter:
+        async def stream(self, rows):
+            async for row in rows:
+                rows_out.append(row)
+                yield b"row"
+
+    return _Exporter()

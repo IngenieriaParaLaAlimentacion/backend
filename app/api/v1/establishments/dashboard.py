@@ -1,7 +1,9 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
+from fastapi.responses import StreamingResponse
 
+from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_stream_response
 from app.api.v1.params import (
     AUTH_RESPONSES,
     EstablishmentFieldWorkersQuery,
@@ -22,6 +24,7 @@ from app.schemas.pagination import PaginatedResponse
 from app.services.establishments.establishment_dashboard_service import (
     EstablishmentDashboardService,
 )
+from app.services.exporters.csv.columns import ESTABLISHMENT_SUBJECT_EXPORTER
 
 router = APIRouter(prefix="/establishments")
 
@@ -92,6 +95,43 @@ async def list_establishment_subjects(
         page=result.page,
         page_size=result.page_size,
         total_pages=result.total_pages,
+    )
+
+
+@router.get(
+    "/{establishment_id}/subjects/export",
+    summary="Export an establishment's subject listing as CSV",
+    description=(
+        "Download the subjects attending this establishment as a CSV file. "
+        "Accepts the same search and sort order as the listing endpoint and "
+        "exports every match rather than one page, so the file mirrors what "
+        "the user has on screen. The establishment's name is part of the "
+        "download filename. A search matching nothing still returns a valid "
+        "file carrying only the column headers. Restricted to admins, "
+        "analysts and superadmins."
+    ),
+    responses={
+        **CSV_EXPORT_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
+    },
+)
+async def export_establishment_subjects(
+    establishment_id: UUID,
+    query: EstablishmentSubjectsQuery = Depends(),
+    _: UserActor = Depends(require_admin_or_analyst),
+    service: EstablishmentDashboardService = Depends(
+        get_establishment_dashboard_service
+    ),
+) -> StreamingResponse:
+    params = query.to_domain()
+    # resolves the establishment and sizes the export for the row-count header.
+    name, total = await service.prepare_establishment_export(establishment_id, params)
+    return csv_stream_response(
+        lambda uow: EstablishmentDashboardService(uow).export_establishment_subjects(
+            establishment_id, params, ESTABLISHMENT_SUBJECT_EXPORTER
+        ),
+        ESTABLISHMENT_SUBJECT_EXPORTER.filename(scope=name),
+        total,
     )
 
 

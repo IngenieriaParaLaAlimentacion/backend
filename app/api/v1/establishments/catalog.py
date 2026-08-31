@@ -1,7 +1,9 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
+from fastapi.responses import StreamingResponse
 
+from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_stream_response
 from app.api.v1.params import (
     AUTH_RESPONSES,
     EstablishmentListingQuery,
@@ -11,6 +13,7 @@ from app.core.dependencies import (
     get_establishment_service,
     get_optional_actor,
     require_admin,
+    require_admin_or_analyst,
     require_any,
 )
 from app.domain import UserActor, UserRole
@@ -24,6 +27,7 @@ from app.schemas.establishments.establishment_schema import (
 )
 from app.schemas.pagination import PaginatedResponse
 from app.services.establishments.establishment_service import EstablishmentService
+from app.services.exporters.csv.columns import ESTABLISHMENT_LISTING_EXPORTER
 
 router = APIRouter(prefix="/establishments")
 
@@ -158,6 +162,37 @@ async def get_establishments(
         page=result.page,
         page_size=result.page_size,
         total_pages=result.total_pages,
+    )
+
+
+# Declared above GET /{establishment_id} so "export" is not matched as an id.
+@router.get(
+    "/export",
+    summary="Export the establishment listing as CSV",
+    description=(
+        "Download the establishment listing as a CSV file. Accepts the same "
+        "search, city, province and sort order as the listing endpoint and "
+        "exports every match rather than one page, so the file mirrors what "
+        "the user has on screen. A filter matching nothing still returns a "
+        "valid file carrying only the column headers. Unlike the listing, "
+        "which is public, exporting the whole catalogue is restricted to "
+        "admins, analysts and superadmins."
+    ),
+    responses=CSV_EXPORT_RESPONSES,
+)
+async def export_establishments(
+    query: EstablishmentListingQuery = Depends(),
+    _: UserActor = Depends(require_admin_or_analyst),
+    service: EstablishmentService = Depends(get_establishment_service),
+) -> StreamingResponse:
+    params = query.to_domain()
+    total = await service.count_establishment_export(params)
+    return csv_stream_response(
+        lambda uow: EstablishmentService(uow).export_establishment_listing(
+            params, ESTABLISHMENT_LISTING_EXPORTER
+        ),
+        ESTABLISHMENT_LISTING_EXPORTER.filename(),
+        total,
     )
 
 

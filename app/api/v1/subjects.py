@@ -1,7 +1,9 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Response, status
+from fastapi.responses import StreamingResponse
 
+from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_stream_response
 from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams, SubjectListingQuery
 from app.core.dependencies import (
     get_measurement_service,
@@ -20,6 +22,7 @@ from app.schemas.subjects.subject_schema import (
     SubjectResponse,
     SubjectUpdateRequest,
 )
+from app.services.exporters.csv.columns import SUBJECT_LISTING_EXPORTER
 from app.services.measurements.measurement_service import MeasurementService
 from app.services.subjects.subject_service import SubjectService
 
@@ -55,6 +58,42 @@ async def create_subject(
     if not created:
         response.status_code = status.HTTP_200_OK
     return SubjectResponse.model_validate(subject)
+
+
+# Declared above GET /{subject_id} so "export" is not matched as a subject id.
+@router.get(
+    "/export",
+    summary="Export the subject listing as CSV",
+    description=(
+        "Download the subject listing as a CSV file. Accepts the same filters "
+        "and sort order as the listing endpoint and exports every matching "
+        "subject rather than one page, so the file mirrors what the user has "
+        "on screen. A filter matching nothing still returns a valid file "
+        "carrying only the column headers. Restricted to admins, analysts and "
+        "superadmins."
+    ),
+    responses={
+        **CSV_EXPORT_RESPONSES,
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Invalid filter range, or a value with no export label"
+        },
+    },
+)
+async def export_subjects(
+    query: SubjectListingQuery = Depends(),
+    _: UserActor = Depends(require_admin_or_analyst),
+    service: SubjectService = Depends(get_subject_service),
+) -> StreamingResponse:
+    query.validate()
+    params = query.to_domain()
+    total = await service.count_subject_export(params)
+    return csv_stream_response(
+        lambda uow: SubjectService(uow).export_subject_listing(
+            params, SUBJECT_LISTING_EXPORTER
+        ),
+        SUBJECT_LISTING_EXPORTER.filename(),
+        total,
+    )
 
 
 @router.get(
