@@ -1,8 +1,9 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, status
+from fastapi.responses import StreamingResponse
 
-from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_file_response
+from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_stream_response
 from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams, SurveyListingQuery
 from app.core.dependencies import (
     get_survey_service,
@@ -142,11 +143,16 @@ async def export_surveys(
     query: SurveyListingQuery = Depends(),
     _: UserActor = Depends(require_admin_or_analyst),
     service: SurveyService = Depends(get_survey_service),
-) -> Response:
-    file_bytes = await service.export_survey_listing(
-        query.to_domain(), SURVEY_LISTING_EXPORTER
+) -> StreamingResponse:
+    params = query.to_domain()
+    total = await service.count_survey_export(params)
+    return csv_stream_response(
+        lambda uow: SurveyService(uow).export_survey_listing(
+            params, SURVEY_LISTING_EXPORTER
+        ),
+        SURVEY_LISTING_EXPORTER.filename(),
+        total,
     )
-    return csv_file_response(file_bytes, SURVEY_LISTING_EXPORTER.filename())
 
 
 @router.get(

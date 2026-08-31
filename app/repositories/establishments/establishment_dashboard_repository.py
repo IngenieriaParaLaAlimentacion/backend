@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterator
 from uuid import UUID
 
 from sqlalchemy import Row, asc, desc, func, or_, select
@@ -270,20 +271,30 @@ class EstablishmentDashboardRepository:
         rows = await self.db.execute(base_query.limit(limit).offset(offset))
         return list(rows.all()), total
 
-    async def list_all_for_export(
+    async def stream_for_export(
         self,
         establishment_id: UUID,
         params: EstablishmentSubjectListingParams,
-    ) -> list[Row]:
-        """Return every subject attending this establishment, unpaginated.
+    ) -> AsyncIterator[Row]:
+        """Stream every subject attending this establishment, unpaginated.
 
         Shares its query with ``get_subject_listing``, so an export always
         carries the same rows in the same order as the listing it was launched
-        from.
+        from. The caller's transaction must stay open for the whole iteration.
         """
         base_query, _ = self._subject_listing_query(establishment_id, params)
-        rows = await self.db.execute(base_query)
-        return list(rows.all())
+        result = await self.db.stream(base_query.execution_options(yield_per=1000))
+        async for row in result:
+            yield row
+
+    async def count_for_export(
+        self,
+        establishment_id: UUID,
+        params: EstablishmentSubjectListingParams,
+    ) -> int:
+        """Return how many subjects the listing matches here, fetching none."""
+        _, count_query = self._subject_listing_query(establishment_id, params)
+        return (await self.db.execute(count_query)).scalar_one()
 
     async def get_field_worker_listing(
         self,

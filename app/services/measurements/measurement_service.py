@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterator
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
@@ -124,20 +125,26 @@ class MeasurementService:
             page_size=page_size,
         )
 
-    async def export_measurement_listing(
+    def export_measurement_listing(
         self,
         params: MeasurementListingParams,
         exporter: CsvExporter[MeasurementListItemDomain],
-    ) -> bytes:
-        """Return the measurement listing as an exported file's raw bytes.
+    ) -> AsyncIterator[bytes]:
+        """Stream the measurement listing as an exported file's bytes.
 
         Applies the same filters and order as ``list_measurements`` over the
-        whole result set rather than one page.
+        whole result set rather than one page. The caller's UnitOfWork must
+        outlive the returned iterator.
         """
-        measurements = await self.uow.measurement_repo.list_all_for_export(params)
-        return exporter.export(
-            MeasurementListItemDomain.from_db(m) for m in measurements
+        rows = (
+            MeasurementListItemDomain.from_db(m)
+            async for m in self.uow.measurement_repo.stream_for_export(params)
         )
+        return exporter.stream(rows)
+
+    async def count_measurement_export(self, params: MeasurementListingParams) -> int:
+        """How many rows the export will contain, for the row-count header."""
+        return await self.uow.measurement_repo.count_for_export(params)
 
     async def get_subject_evolution(
         self,

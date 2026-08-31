@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterator
 from datetime import date, datetime
 from uuid import UUID
 
@@ -15,7 +16,12 @@ from app.models.establishments.establishment import Establishment
 from app.models.measurements.measurement import Measurement
 from app.models.subjects.subject import Subject
 from app.repositories.measurements.constants import MEASUREMENT_SORT_CLAUSES
-from app.utils.db import execute_all, execute_paginated, ilike_condition
+from app.utils.db import (
+    execute_count,
+    execute_paginated,
+    ilike_condition,
+    stream_all,
+)
 
 
 def _subtract_years(reference: date, years: int) -> date:
@@ -114,19 +120,39 @@ class MeasurementRepository:
             conditions=self._listing_conditions(params),
         )
 
-    async def list_all_for_export(
-        self, params: MeasurementListingParams
-    ) -> list[Measurement]:
-        """Return every measurement matching the listing filters, unpaginated.
+    @staticmethod
+    def _listing_count_query():
+        """Count over the same joins the listing query uses."""
+        return (
+            select(func.count())
+            .select_from(Measurement)
+            .join(Subject, Measurement.subject_id == Subject.id)
+            .join(Establishment, Measurement.establishment_id == Establishment.id)
+        )
 
-        Shares the base query, ``_listing_conditions`` and ``MEASUREMENT_SORT_CLAUSES``
-        with ``get_measurement_listing``, so an export always carries the same
-        rows in the same order as the listing it was launched from.
+    def stream_for_export(
+        self, params: MeasurementListingParams
+    ) -> AsyncIterator[Measurement]:
+        """Stream every measurement matching the listing filters, unpaginated.
+
+        Shares the base query, ``_listing_conditions`` and
+        ``MEASUREMENT_SORT_CLAUSES`` with ``get_measurement_listing``, so an
+        export always carries the same rows in the same order as the listing.
+
+        The caller's transaction must stay open for the whole iteration.
         """
-        return await execute_all(
+        return stream_all(
             self.db,
             self._listing_base_query(),
             MEASUREMENT_SORT_CLAUSES[params.sort_order],
+            conditions=self._listing_conditions(params),
+        )
+
+    async def count_for_export(self, params: MeasurementListingParams) -> int:
+        """Return how many measurements the listing filters match, fetching none."""
+        return await execute_count(
+            self.db,
+            self._listing_count_query(),
             conditions=self._listing_conditions(params),
         )
 

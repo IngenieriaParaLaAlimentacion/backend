@@ -26,6 +26,7 @@ from app.services.exporters.csv.formatters import (
     format_nutritional_status,
     format_person,
     format_survey_target,
+    normalize_cell,
 )
 
 
@@ -46,10 +47,10 @@ SUBJECT_COLUMNS: tuple[CsvColumn[SubjectDetailDomain], ...] = (
 )
 
 ESTABLISHMENT_COLUMNS: tuple[CsvColumn[EstablishmentDomain], ...] = (
-    CsvColumn("Nombre", lambda e: e.name),
-    CsvColumn("Dirección", lambda e: e.formatted_address),
-    CsvColumn("Ciudad", lambda e: e.city),
-    CsvColumn("Provincia", lambda e: e.province),
+    CsvColumn("Nombre", lambda e: normalize_cell(e.name)),
+    CsvColumn("Dirección", lambda e: normalize_cell(e.formatted_address)),
+    CsvColumn("Ciudad", lambda e: normalize_cell(e.city)),
+    CsvColumn("Provincia", lambda e: normalize_cell(e.province)),
 )
 
 MEASUREMENT_COLUMNS: tuple[CsvColumn[MeasurementListItemDomain], ...] = (
@@ -61,7 +62,7 @@ MEASUREMENT_COLUMNS: tuple[CsvColumn[MeasurementListItemDomain], ...] = (
         "Sujeto",
         lambda m: format_person(m.subject.name, m.subject.last_name),
     ),
-    CsvColumn("Comedor", lambda m: m.establishment.name),
+    CsvColumn("Comedor", lambda m: normalize_cell(m.establishment.name)),
     CsvColumn(
         "Responsable",
         lambda m: format_person(m.responsible.name, m.responsible.last_name),
@@ -70,7 +71,7 @@ MEASUREMENT_COLUMNS: tuple[CsvColumn[MeasurementListItemDomain], ...] = (
 )
 
 SURVEY_COLUMNS: tuple[CsvColumn[SurveyListItemDomain], ...] = (
-    CsvColumn("Nombre", lambda s: s.name),
+    CsvColumn("Nombre", lambda s: normalize_cell(s.name)),
     CsvColumn("Alcance", lambda s: format_survey_target(s.response_target)),
     CsvColumn("Estado", lambda s: format_bool(s.is_active, "Activa", "Inactiva")),
     CsvColumn("Cantidad de preguntas", lambda s: format_int(s.question_count)),

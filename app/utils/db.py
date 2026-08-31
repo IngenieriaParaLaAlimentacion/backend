@@ -1,9 +1,13 @@
-from collections.abc import Sequence
+from collections.abc import AsyncIterator, Sequence
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.exceptions.domain_exceptions import UniqueConstraintError
+
+# Rows pulled per round trip when streaming an export. Large enough that the
+# per-chunk selectin loads stay cheap, small enough that memory stays flat.
+_STREAM_CHUNK = 1000
 
 
 def escape_like(term: str) -> str:
@@ -143,6 +147,83 @@ async def execute_all_rows(
     """
     result = await _execute_full_query(db, base_query, order_by, conditions)
     return result.all()
+
+
+async def stream_all(
+    db: AsyncSession,
+    base_query,
+    order_by,
+    conditions: Sequence = (),
+    chunk: int = _STREAM_CHUNK,
+) -> AsyncIterator:
+    """Yield every row matching ``conditions``, a server-side chunk at a time.
+
+    ``selectin`` eager loaders stay safe here -- they are post-loaders issuing
+    their own query per chunk, which asyncpg tolerates alongside the open
+    cursor. ``subqueryload`` and ``joinedload`` against a collection are not
+    compatible with ``yield_per``; SQLAlchemy raises if one is used.
+
+    The caller's transaction must stay open for the whole iteration.
+    """
+    for condition in conditions:
+        base_query = base_query.where(condition)
+    order_by_clauses = order_by if isinstance(order_by, (list, tuple)) else (order_by,)
+    query = base_query.order_by(*order_by_clauses)
+    result = await db.stream(query.execution_options(yield_per=chunk))
+    async for row in result.scalars():
+        yield row
+
+
+async def stream_all_rows(
+    db: AsyncSession,
+    base_query,
+    order_by,
+    conditions: Sequence = (),
+    chunk: int = _STREAM_CHUNK,
+) -> AsyncIterator:
+    """Stream a multi-column query, yielding raw ``Row`` tuples.
+
+    The ``execute_all_rows`` counterpart, for queries selecting an entity plus
+    a computed value.
+    """
+    for condition in conditions:
+        base_query = base_query.where(condition)
+    order_by_clauses = order_by if isinstance(order_by, (list, tuple)) else (order_by,)
+    query = base_query.order_by(*order_by_clauses)
+    result = await db.stream(query.execution_options(yield_per=chunk))
+    async for row in result:
+        yield row
+
+
+async def achunked(source: AsyncIterator, size: int) -> AsyncIterator[list]:
+    """Group an async iterator into lists of at most ``size`` items.
+
+    Lets a caller keep a per-batch bulk lookup (one extra query per batch)
+    while still streaming, instead of collecting every id up front.
+    """
+    batch: list = []
+    async for item in source:
+        batch.append(item)
+        if len(batch) == size:
+            yield batch
+            batch = []
+    if batch:
+        yield batch
+
+
+async def execute_count(
+    db: AsyncSession,
+    count_query,
+    conditions: Sequence = (),
+) -> int:
+    """Return how many rows match ``conditions``, without fetching any.
+
+    Exports use this to declare their size up front (``X-Export-Row-Count``),
+    so a client can tell a complete download from a truncated one.
+    """
+    for condition in conditions:
+        count_query = count_query.where(condition)
+    return (await db.execute(count_query)).scalar_one()
 
 
 async def insert_with_savepoint(db: AsyncSession, entity, field: str, value) -> object:

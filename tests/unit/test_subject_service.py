@@ -17,7 +17,8 @@ from app.exceptions.domain_exceptions import (
     UniqueConstraintError,
 )
 from app.schemas.subjects.subject_schema import SubjectRequest, SubjectUpdateRequest
-from app.services.subjects.subject_service import SubjectService
+from app.services.subjects.subject_service import _EXPORT_BATCH, SubjectService
+from tests.unit.conftest import aiter_of, capturing_exporter, drain
 
 
 @pytest.fixture
@@ -520,20 +521,20 @@ class TestUpdateSubject:
 class TestExportSubjectListing:
     pytestmark = pytest.mark.asyncio
 
-    async def test_delegates_the_whole_filtered_set_to_the_exporter(
-        self, make_uow, make_subject
-    ):
+    async def test_streams_the_whole_filtered_set(self, make_uow, make_subject):
         subjects = [make_subject(), make_subject()]
         uow = make_uow()
-        uow.subject_repo.list_all_for_export = AsyncMock(return_value=subjects)
-        exporter = MagicMock()
-        exporter.export.return_value = b"csv-bytes"
+        uow.subject_repo.stream_for_export = MagicMock(return_value=aiter_of(subjects))
+        seen: list = []
         params = SubjectListingParams(sex=Sex.FEMALE)
 
-        result = await SubjectService(uow).export_subject_listing(params, exporter)
+        data = await drain(
+            SubjectService(uow).export_subject_listing(params, capturing_exporter(seen))
+        )
 
-        assert result == b"csv-bytes"
-        uow.subject_repo.list_all_for_export.assert_awaited_once_with(params)
+        assert data == b"rowrow"
+        assert len(seen) == 2
+        uow.subject_repo.stream_for_export.assert_called_once_with(params)
         # The export must never go through the paginated query.
         uow.subject_repo.get_subject_listing.assert_not_awaited()
 
@@ -541,32 +542,53 @@ class TestExportSubjectListing:
         self, make_uow, make_subject, make_measurement
     ):
         subject = make_subject()
-        measurement = make_measurement()
-        uow = make_uow(latest_by_subject={subject.id: measurement})
-        uow.subject_repo.list_all_for_export = AsyncMock(return_value=[subject])
-        exporter = MagicMock()
+        uow = make_uow(latest_by_subject={subject.id: make_measurement()})
+        uow.subject_repo.stream_for_export = MagicMock(return_value=aiter_of([subject]))
+        seen: list = []
 
-        await SubjectService(uow).export_subject_listing(
-            SubjectListingParams(), exporter
+        await drain(
+            SubjectService(uow).export_subject_listing(
+                SubjectListingParams(), capturing_exporter(seen)
+            )
         )
 
         uow.measurement_repo.get_latest_for_subjects.assert_awaited_once_with(
             [subject.id]
         )
-        exported = list(exporter.export.call_args[0][0])
-        assert len(exported) == 1
-        assert exported[0].latest_measurement is not None
+        assert len(seen) == 1
+        assert seen[0].latest_measurement is not None
+
+    async def test_latest_measurements_are_looked_up_per_batch(
+        self, make_uow, make_subject
+    ):
+        """The bulk lookup must not collect every id first -- that would defeat
+        the streaming it exists inside."""
+        subjects = [make_subject() for _ in range(_EXPORT_BATCH + 5)]
+        uow = make_uow()
+        uow.subject_repo.stream_for_export = MagicMock(return_value=aiter_of(subjects))
+
+        await drain(
+            SubjectService(uow).export_subject_listing(
+                SubjectListingParams(), capturing_exporter([])
+            )
+        )
+
+        # One full batch plus the remainder, not one call over every id.
+        assert uow.measurement_repo.get_latest_for_subjects.await_count == 2
+        first_batch = uow.measurement_repo.get_latest_for_subjects.await_args_list[0]
+        assert len(first_batch.args[0]) == _EXPORT_BATCH
 
     async def test_empty_result_still_reaches_the_exporter(self, make_uow):
         # A filter matching nothing must produce a header-only file, not an error.
         uow = make_uow()
-        uow.subject_repo.list_all_for_export = AsyncMock(return_value=[])
-        exporter = MagicMock()
-        exporter.export.return_value = b"headers-only"
+        uow.subject_repo.stream_for_export = MagicMock(return_value=aiter_of([]))
+        seen: list = []
 
-        result = await SubjectService(uow).export_subject_listing(
-            SubjectListingParams(), exporter
+        data = await drain(
+            SubjectService(uow).export_subject_listing(
+                SubjectListingParams(), capturing_exporter(seen)
+            )
         )
 
-        assert result == b"headers-only"
-        assert list(exporter.export.call_args[0][0]) == []
+        assert data == b""
+        assert seen == []

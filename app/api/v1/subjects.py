@@ -1,8 +1,9 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Response, status
+from fastapi.responses import StreamingResponse
 
-from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_file_response
+from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_stream_response
 from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams, SubjectListingQuery
 from app.core.dependencies import (
     get_measurement_service,
@@ -82,12 +83,17 @@ async def export_subjects(
     query: SubjectListingQuery = Depends(),
     _: UserActor = Depends(require_admin_or_analyst),
     service: SubjectService = Depends(get_subject_service),
-) -> Response:
+) -> StreamingResponse:
     query.validate()
-    file_bytes = await service.export_subject_listing(
-        query.to_domain(), SUBJECT_LISTING_EXPORTER
+    params = query.to_domain()
+    total = await service.count_subject_export(params)
+    return csv_stream_response(
+        lambda uow: SubjectService(uow).export_subject_listing(
+            params, SUBJECT_LISTING_EXPORTER
+        ),
+        SUBJECT_LISTING_EXPORTER.filename(),
+        total,
     )
-    return csv_file_response(file_bytes, SUBJECT_LISTING_EXPORTER.filename())
 
 
 @router.get(

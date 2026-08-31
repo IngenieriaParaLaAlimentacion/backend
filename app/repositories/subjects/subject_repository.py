@@ -1,4 +1,5 @@
 import datetime
+from collections.abc import AsyncIterator
 from uuid import UUID
 
 from sqlalchemy import func, or_, select
@@ -10,7 +11,12 @@ from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.measurements.measurement import Measurement
 from app.models.subjects.subject import Subject
 from app.repositories.subjects.constants import SUBJECT_SORT_CLAUSES
-from app.utils.db import execute_all, execute_paginated, ilike_condition
+from app.utils.db import (
+    execute_count,
+    execute_paginated,
+    ilike_condition,
+    stream_all,
+)
 
 
 def subject_search_condition(search: str | None):
@@ -159,16 +165,22 @@ class SubjectRepository:
             conditions=self._listing_conditions(params),
         )
 
-    async def list_all_for_export(self, params: SubjectListingParams) -> list[Subject]:
-        """Return every subject matching the listing filters, unpaginated.
+    def stream_for_export(self, params: SubjectListingParams) -> AsyncIterator[Subject]:
+        """Stream every subject matching the listing filters, unpaginated.
 
-        Shares ``_listing_conditions`` and ``SUBJECT_SORT_CLAUSES`` with
-        ``get_subject_listing``, so an export always carries the same rows in
-        the same order as the listing it was launched from.
+        The caller's transaction must stay open for the whole iteration.
         """
-        return await execute_all(
+        return stream_all(
             self.db,
             select(Subject),
             SUBJECT_SORT_CLAUSES[params.sort_order],
+            conditions=self._listing_conditions(params),
+        )
+
+    async def count_for_export(self, params: SubjectListingParams) -> int:
+        """Return how many subjects the listing filters match, fetching none."""
+        return await execute_count(
+            self.db,
+            select(func.count()).select_from(Subject),
             conditions=self._listing_conditions(params),
         )

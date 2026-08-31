@@ -1,8 +1,9 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, status
+from fastapi.responses import StreamingResponse
 
-from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_file_response
+from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_stream_response
 from app.api.v1.params import (
     AUTH_RESPONSES,
     EstablishmentFieldWorkersQuery,
@@ -121,14 +122,16 @@ async def export_establishment_subjects(
     service: EstablishmentDashboardService = Depends(
         get_establishment_dashboard_service
     ),
-) -> Response:
-    name, file_bytes = await service.export_establishment_subjects(
-        establishment_id=establishment_id,
-        params=query.to_domain(),
-        exporter=ESTABLISHMENT_SUBJECT_EXPORTER,
-    )
-    return csv_file_response(
-        file_bytes, ESTABLISHMENT_SUBJECT_EXPORTER.filename(scope=name)
+) -> StreamingResponse:
+    params = query.to_domain()
+    # resolves the establishment and sizes the export for the row-count header.
+    name, total = await service.prepare_establishment_export(establishment_id, params)
+    return csv_stream_response(
+        lambda uow: EstablishmentDashboardService(uow).export_establishment_subjects(
+            establishment_id, params, ESTABLISHMENT_SUBJECT_EXPORTER
+        ),
+        ESTABLISHMENT_SUBJECT_EXPORTER.filename(scope=name),
+        total,
     )
 
 

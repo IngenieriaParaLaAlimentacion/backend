@@ -104,15 +104,36 @@ reporting action rather than a lookup.
 - The es-AR dialect is hardcoded. A consumer wanting RFC-4180-plain CSV (a
   `pandas.read_csv` pipeline, say) cannot ask for one; that would need a dialect
   parameter threaded through `CsvExporter`.
-- Generation is synchronous and fully buffered, inherited from ADR-0005's
-  contract. With no row cap, an unfiltered `mediciones` export holds every
-  matching row and the whole rendered file in memory at once. `export` accepting
-  an `Iterable` keeps the door open for a streaming variant, but the current
-  `-> bytes` return type would have to change. This is the item to revisit first
-  once production volumes are known.
-- `columns.py` imports five domain modules, making it a wide dependency hub. It
-  is presentation-only and imported by routers rather than by domain code, so
-  the direction of the dependency stays correct.
+- Exports stream, so their memory is flat rather than proportional to the result
+  set. Measured on the measurement exporter, peak render memory:
+
+  | Rows | File | Buffered peak | Streamed peak |
+  |---|---|---|---|
+  | 50k | 4.0 MB | 49.5 MB | 0.54 MB |
+  | 200k | 15.8 MB | 197.2 MB | 0.53 MB |
+
+  Getting there cost more than a generator in the exporter: the repositories
+  stream via `yield_per` server-side cursors, the services became async
+  generators, and the routes had to stop taking their session from `Depends`,
+  because FastAPI closes a dependency generator when the *handler* returns —
+  before a streamed body is produced. The streaming generator owns its own
+  `UnitOfWork` instead; the shared providers are untouched, so no other endpoint
+  is affected.
+- Streaming commits to `200 OK` before the query is known to succeed. A failure
+  mid-body aborts the connection (uvicorn calls `transport.close()` once
+  `response_started`), so the client sees an incomplete read rather than a short
+  file — but only if it reads the body instead of pointing the browser at the
+  URL. `X-Export-Row-Count` gives clients a second check, and `normalize_cell`
+  keeps newlines out of cells so parsed lines can be compared against it.
+  Everything that can fail predictably runs in a pre-flight before the first
+  byte, so 4xx keep their `problem+json` bodies.
+- A streamed export holds a transaction open for the whole download, so a slow
+  client occupies a pool connection longer than a normal request would. Not
+  currently bounded; a statement/idle timeout or a separate export pool is the
+  next thing to consider if it bites.
+- `export(rows) -> bytes` is kept alongside `stream`, sharing the row rendering,
+  so column specs stay testable without an event loop and the two paths are
+  provably byte-identical.
 
 ## Alternatives considered
 

@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterator
 from datetime import date
 from uuid import UUID
 
@@ -18,6 +19,11 @@ from app.schemas.subjects.subject_schema import (
     SubjectUpdateRequest,
 )
 from app.services.exporters.csv.csv_exporter import CsvExporter
+from app.utils.db import achunked
+
+# Subjects pulled per round trip before their latest measurements are looked
+# up in one bulk query. Bounds memory while keeping the lookup off an N+1.
+_EXPORT_BATCH = 500
 
 
 def _to_json_safe(v):
@@ -127,25 +133,39 @@ class SubjectService:
             page_size=page_size,
         )
 
-    async def export_subject_listing(
+    async def _stream_subjects_with_latest(
+        self, params: SubjectListingParams
+    ) -> AsyncIterator[SubjectDetailDomain]:
+        """Stream subjects, enriched with their latest measurement.
+
+        The measurement lookup stays a bulk query, but per batch rather than
+        over every id at once -- collecting all ids first would defeat the
+        streaming, and one query per subject would be an N+1.
+        """
+        subjects = self.uow.subject_repo.stream_for_export(params)
+        async for batch in achunked(subjects, _EXPORT_BATCH):
+            latest = await self.uow.measurement_repo.get_latest_for_subjects(
+                [subject.id for subject in batch]
+            )
+            for subject in batch:
+                yield SubjectDetailDomain.build(subject, latest.get(subject.id))
+
+    def export_subject_listing(
         self,
         params: SubjectListingParams,
         exporter: CsvExporter[SubjectDetailDomain],
-    ) -> bytes:
-        """Return the subject listing as an exported file's raw bytes.
+    ) -> AsyncIterator[bytes]:
+        """Stream the subject listing as an exported file's bytes.
 
         Applies the same filters and order as ``get_subject_listing`` over the
-        whole result set rather than one page, and enriches each subject with
-        their latest measurement through the same bulk lookup.
+        whole result set rather than one page. The caller's UnitOfWork must
+        outlive the returned iterator.
         """
-        subjects = await self.uow.subject_repo.list_all_for_export(params)
-        latest_by_subject = await self.uow.measurement_repo.get_latest_for_subjects(
-            [subject.id for subject in subjects]
-        )
-        return exporter.export(
-            SubjectDetailDomain.build(subject, latest_by_subject.get(subject.id))
-            for subject in subjects
-        )
+        return exporter.stream(self._stream_subjects_with_latest(params))
+
+    async def count_subject_export(self, params: SubjectListingParams) -> int:
+        """How many rows the export will contain, for the row-count header."""
+        return await self.uow.subject_repo.count_for_export(params)
 
     async def update_subject(
         self, subject_id: UUID, data: SubjectUpdateRequest, actor_id: UUID

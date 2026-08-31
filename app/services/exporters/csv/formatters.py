@@ -11,6 +11,7 @@ one exception to "always produces a cell": an enum member with no entry in its
 label map aborts the export rather than emitting a blank one -- see ``_label``.
 """
 
+import re
 from collections.abc import Iterable
 from datetime import date, datetime, timezone
 
@@ -23,6 +24,17 @@ from app.exceptions.domain_exceptions import UnmappedExportLabelError
 from app.utils.dates import ARGENTINA_TZ
 
 logger = structlog.get_logger()
+
+# A newline inside a cell would make one row span several lines, so the
+# X-Export-Row-Count header a client checks against could no longer be compared
+# to the lines it parsed. Collapse them instead.
+_NEWLINES = re.compile(r"[\r\n]+")
+
+
+def normalize_cell(value: str) -> str:
+    """Collapse any newline inside a cell to a single space."""
+    return _NEWLINES.sub(" ", value) if value else value
+
 
 _DATE_FORMAT = "%d/%m/%Y"
 _DATETIME_FORMAT = "%d/%m/%Y %H:%M"
@@ -130,7 +142,7 @@ def format_bool(value: bool | None, true_label: str, false_label: str) -> str:
 
 def format_person(name: str | None, last_name: str | None) -> str:
     """Render a person's full name as a single cell."""
-    return " ".join(part for part in (name, last_name) if part)
+    return normalize_cell(" ".join(part for part in (name, last_name) if part))
 
 
 def join_values(values: Iterable[str]) -> str:

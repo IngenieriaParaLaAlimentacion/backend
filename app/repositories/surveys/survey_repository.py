@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from uuid import UUID
 
 from sqlalchemy import desc, exists, func, select, update
@@ -20,7 +21,12 @@ from app.models.surveys.survey import Survey
 from app.models.surveys.survey_question import SurveyQuestion
 from app.models.surveys.survey_question_option import SurveyQuestionOption
 from app.repositories.surveys.constants import SURVEY_SORT_CLAUSES
-from app.utils.db import execute_all_rows, execute_paginated_rows, ilike_condition
+from app.utils.db import (
+    execute_count,
+    execute_paginated_rows,
+    ilike_condition,
+    stream_all_rows,
+)
 
 
 class SurveyRepository:
@@ -190,22 +196,26 @@ class SurveyRepository:
         )
         return list(rows), total
 
-    async def list_all_for_export(
+    def stream_for_export(
         self, params: SurveyListingParams
-    ) -> list[tuple[Survey, int]]:
-        """Return every ``(survey, question_count)`` row matching the filters.
-
-        Shares the base query, ``_listing_conditions`` and ``SURVEY_SORT_CLAUSES``
-        with ``list``, so an export always carries the same rows in the same
-        order as the listing it was launched from.
+    ) -> AsyncIterator[tuple[Survey, int]]:
+        """Stream every ``(survey, question_count)`` row matching the filters.
+        The caller's transaction must stay open for the whole iteration.
         """
-        rows = await execute_all_rows(
+        return stream_all_rows(
             self.db,
             self._listing_base_query(),
             SURVEY_SORT_CLAUSES[params.sort_order],
             conditions=self._listing_conditions(params),
         )
-        return list(rows)
+
+    async def count_for_export(self, params: SurveyListingParams) -> int:
+        """Return how many surveys the listing filters match, fetching none."""
+        return await execute_count(
+            self.db,
+            select(func.count()).select_from(Survey),
+            conditions=self._listing_conditions(params),
+        )
 
     async def create(
         self,

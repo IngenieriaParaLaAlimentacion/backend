@@ -29,6 +29,7 @@ from app.schemas.surveys.survey_schema import (
     SurveyUpdateRequest,
 )
 from app.services.surveys.survey_service import SurveyService
+from tests.unit.conftest import aiter_of, capturing_exporter, drain
 
 # -- Builders --
 
@@ -795,46 +796,49 @@ class TestSetActive:
 class TestExportSurveyListing:
     pytestmark = pytest.mark.asyncio
 
-    async def test_delegates_the_whole_filtered_set_to_the_exporter(
-        self, make_uow, make_survey
-    ):
+    async def test_streams_the_whole_filtered_set(self, make_uow, make_survey):
         uow = make_uow()
-        uow.survey_repo.list_all_for_export = AsyncMock(
-            return_value=[(make_survey(), 8)]
+        uow.survey_repo.stream_for_export = MagicMock(
+            return_value=aiter_of([(make_survey(), 8)])
         )
-        exporter = MagicMock()
-        exporter.export.return_value = b"csv-bytes"
+        seen: list = []
         params = SurveyListingParams(is_active=True)
 
-        result = await SurveyService(uow).export_survey_listing(params, exporter)
+        data = await drain(
+            SurveyService(uow).export_survey_listing(params, capturing_exporter(seen))
+        )
 
-        assert result == b"csv-bytes"
-        uow.survey_repo.list_all_for_export.assert_awaited_once_with(params)
+        assert data == b"row"
+        uow.survey_repo.stream_for_export.assert_called_once_with(params)
         # The export must never go through the paginated query.
         uow.survey_repo.list.assert_not_awaited()
 
     async def test_question_count_comes_from_the_row(self, make_uow, make_survey):
         uow = make_uow()
-        uow.survey_repo.list_all_for_export = AsyncMock(
-            return_value=[(make_survey(name="FIES 2026"), 8)]
+        uow.survey_repo.stream_for_export = MagicMock(
+            return_value=aiter_of([(make_survey(name="FIES 2026"), 8)])
         )
-        exporter = MagicMock()
+        seen: list = []
 
-        await SurveyService(uow).export_survey_listing(SurveyListingParams(), exporter)
+        await drain(
+            SurveyService(uow).export_survey_listing(
+                SurveyListingParams(), capturing_exporter(seen)
+            )
+        )
 
-        exported = list(exporter.export.call_args[0][0])
-        assert [(s.name, s.question_count) for s in exported] == [("FIES 2026", 8)]
-        assert all(isinstance(s, SurveyListItemDomain) for s in exported)
+        assert [(s.name, s.question_count) for s in seen] == [("FIES 2026", 8)]
+        assert all(isinstance(s, SurveyListItemDomain) for s in seen)
 
     async def test_empty_result_still_reaches_the_exporter(self, make_uow):
         uow = make_uow()
-        uow.survey_repo.list_all_for_export = AsyncMock(return_value=[])
-        exporter = MagicMock()
-        exporter.export.return_value = b"headers-only"
+        uow.survey_repo.stream_for_export = MagicMock(return_value=aiter_of([]))
+        seen: list = []
 
-        result = await SurveyService(uow).export_survey_listing(
-            SurveyListingParams(), exporter
+        data = await drain(
+            SurveyService(uow).export_survey_listing(
+                SurveyListingParams(), capturing_exporter(seen)
+            )
         )
 
-        assert result == b"headers-only"
-        assert list(exporter.export.call_args[0][0]) == []
+        assert data == b""
+        assert seen == []

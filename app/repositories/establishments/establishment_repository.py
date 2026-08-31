@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterator
 from uuid import UUID
 
 from sqlalchemy import func, or_, select
@@ -12,10 +13,11 @@ from app.models.auth.user_establishment import UserEstablishment
 from app.models.establishments.establishment import Establishment
 from app.repositories.establishments.constants import ESTABLISHMENT_SORT_CLAUSES
 from app.utils.db import (
-    execute_all,
+    execute_count,
     execute_paginated,
     ilike_condition,
     insert_with_savepoint,
+    stream_all,
 )
 
 
@@ -152,19 +154,25 @@ class EstablishmentRepository:
             conditions=self._listing_conditions(params),
         )
 
-    async def list_all_for_export(
+    def stream_for_export(
         self, params: EstablishmentListingParams
-    ) -> list[Establishment]:
-        """Return every establishment matching the listing filters, unpaginated.
+    ) -> AsyncIterator[Establishment]:
+        """Stream every establishment matching the listing filters, unpaginated.
 
-        Shares ``_listing_conditions`` and ``ESTABLISHMENT_SORT_CLAUSES`` with
-        ``get_paginated``, so an export always carries the same rows in the
-        same order as the listing it was launched from.
+        The caller's transaction must stay open for the whole iteration.
         """
-        return await execute_all(
+        return stream_all(
             self.db,
             select(Establishment),
             ESTABLISHMENT_SORT_CLAUSES[params.sort_order],
+            conditions=self._listing_conditions(params),
+        )
+
+    async def count_for_export(self, params: EstablishmentListingParams) -> int:
+        """Return how many establishments the listing filters match, fetching none."""
+        return await execute_count(
+            self.db,
+            select(func.count()).select_from(Establishment),
             conditions=self._listing_conditions(params),
         )
 

@@ -1,8 +1,9 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, Response, status
+from fastapi import APIRouter, Depends, Query, status
+from fastapi.responses import StreamingResponse
 
-from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_file_response
+from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_stream_response
 from app.api.v1.params import (
     AUTH_RESPONSES,
     EstablishmentListingQuery,
@@ -183,11 +184,16 @@ async def export_establishments(
     query: EstablishmentListingQuery = Depends(),
     _: UserActor = Depends(require_admin_or_analyst),
     service: EstablishmentService = Depends(get_establishment_service),
-) -> Response:
-    file_bytes = await service.export_establishment_listing(
-        query.to_domain(), ESTABLISHMENT_LISTING_EXPORTER
+) -> StreamingResponse:
+    params = query.to_domain()
+    total = await service.count_establishment_export(params)
+    return csv_stream_response(
+        lambda uow: EstablishmentService(uow).export_establishment_listing(
+            params, ESTABLISHMENT_LISTING_EXPORTER
+        ),
+        ESTABLISHMENT_LISTING_EXPORTER.filename(),
+        total,
     )
-    return csv_file_response(file_bytes, ESTABLISHMENT_LISTING_EXPORTER.filename())
 
 
 @router.get(

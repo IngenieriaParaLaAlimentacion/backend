@@ -9,10 +9,9 @@ the HTTP layer only needs ``content_type``/``file_extension``. See ADR-0009.
 
 import codecs
 import csv
-import io
 import re
 import unicodedata
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import AsyncIterable, AsyncIterator, Callable, Iterable, Sequence
 from dataclasses import dataclass
 from typing import Generic, TypeVar
 
@@ -26,6 +25,23 @@ T = TypeVar("T")
 # wizard, which is the whole point of the export.
 _DELIMITER = ";"
 _LINE_TERMINATOR = "\r\n"
+
+# Rendered text is batched to roughly this many characters before a chunk goes
+# out, so streaming does not put one tiny write per row on the socket.
+_CHUNK_CHARS = 64 * 1024
+
+
+class _EchoWriter:
+    """A "file" whose write returns what it was given.
+
+    ``csv.writer`` needs a target with ``write``; handing it this makes
+    ``writerow`` return the rendered line instead of buffering it, which is
+    what lets the same formatting feed both the buffered and streamed paths.
+    """
+
+    def write(self, value: str) -> str:
+        return value
+
 
 _SLUG_STRIP = re.compile(r"[^a-z0-9]+")
 
@@ -69,24 +85,56 @@ class CsvExporter(Generic[T]):
         """The column headers, in export order."""
         return tuple(column.header for column in self._columns)
 
-    def export(self, rows: Iterable[T]) -> bytes:
-        """Return the CSV's raw bytes for these rows.
-
-        The header line is always written, so an empty result set still yields
-        a valid file the client can open — an export that matched nothing is a
-        successful export with no data rows, not an error.
-        """
-        buffer = io.StringIO()
-        writer = csv.writer(
-            buffer,
+    def _writer(self):
+        """A csv.writer whose writerow returns the rendered line."""
+        return csv.writer(
+            _EchoWriter(),
             delimiter=_DELIMITER,
             quoting=csv.QUOTE_MINIMAL,
             lineterminator=_LINE_TERMINATOR,
         )
-        writer.writerow(self.headers)
-        for row in rows:
-            writer.writerow([column.value(row) for column in self._columns])
-        return codecs.BOM_UTF8 + buffer.getvalue().encode("utf-8")
+
+    def _row_line(self, writer, row: T) -> str:
+        return writer.writerow([column.value(row) for column in self._columns])
+
+    def export(self, rows: Iterable[T]) -> bytes:
+        """Return the CSV's raw bytes for these rows, in one piece.
+
+        The header line is always written, so an empty result set still yields
+        a valid file the client can open — an export that matched nothing is a
+        successful export with no data rows, not an error.
+
+        Buffers the whole file, so it is for callers holding a bounded set
+        already in memory (and for tests). Endpoints use ``stream``.
+        """
+        writer = self._writer()
+        parts = [writer.writerow(self.headers)]
+        parts.extend(self._row_line(writer, row) for row in rows)
+        return codecs.BOM_UTF8 + "".join(parts).encode("utf-8")
+
+    async def stream(self, rows: AsyncIterable[T]) -> AsyncIterator[bytes]:
+        """Yield the CSV in chunks as ``rows`` arrive.
+
+        Byte-for-byte identical to ``export`` for the same rows -- the two
+        share the rendering and differ only in when they hand bytes back. The
+        BOM rides on the first chunk, and the header is emitted before the
+        first row is pulled, so an empty result set still streams a valid file.
+        """
+        writer = self._writer()
+        pending = [writer.writerow(self.headers)]
+        size = len(pending[0])
+        prefix = codecs.BOM_UTF8
+
+        async for row in rows:
+            line = self._row_line(writer, row)
+            pending.append(line)
+            size += len(line)
+            if size >= _CHUNK_CHARS:
+                yield prefix + "".join(pending).encode("utf-8")
+                prefix, pending, size = b"", [], 0
+
+        if pending or prefix:
+            yield prefix + "".join(pending).encode("utf-8")
 
     def filename(self, scope: str | None = None) -> str:
         """Build the download filename, e.g. ``mediciones_2026-08-24.csv``.

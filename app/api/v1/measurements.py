@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Response, status
+from fastapi.responses import StreamingResponse
 
-from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_file_response
+from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_stream_response
 from app.api.v1.params import (
     AUTH_RESPONSES,
     MeasurementListingQuery,
@@ -117,9 +118,14 @@ async def export_measurements(
     query: MeasurementListingQuery = Depends(),
     _: UserActor = Depends(require_admin_or_analyst),
     service: MeasurementService = Depends(get_measurement_service),
-) -> Response:
+) -> StreamingResponse:
     query.validate()
-    file_bytes = await service.export_measurement_listing(
-        query.to_domain(), MEASUREMENT_LISTING_EXPORTER
+    params = query.to_domain()
+    total = await service.count_measurement_export(params)
+    return csv_stream_response(
+        lambda uow: MeasurementService(uow).export_measurement_listing(
+            params, MEASUREMENT_LISTING_EXPORTER
+        ),
+        MEASUREMENT_LISTING_EXPORTER.filename(),
+        total,
     )
-    return csv_file_response(file_bytes, MEASUREMENT_LISTING_EXPORTER.filename())

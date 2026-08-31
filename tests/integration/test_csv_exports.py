@@ -504,3 +504,141 @@ class TestAuthorization:
             headers=field_worker_headers,
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+class TestStreamingContract:
+    """Properties that only exist because the export streams."""
+
+    async def test_declares_the_row_count(self, client, admin_headers, scenario):
+        response = await client.get(SUBJECTS_URL, headers=admin_headers)
+
+        assert response.headers["x-export-row-count"] == "3"
+        assert len(_data_rows(response)) == 3
+
+    async def test_row_count_tracks_the_filter(self, client, admin_headers, scenario):
+        response = await client.get(
+            SUBJECTS_URL, params={"sex": "female"}, headers=admin_headers
+        )
+
+        assert response.headers["x-export-row-count"] == "1"
+        assert len(_data_rows(response)) == 1
+
+    async def test_row_count_is_zero_for_an_empty_export(
+        self, client, admin_headers, scenario
+    ):
+        response = await client.get(
+            SUBJECTS_URL, params={"search": "nadie"}, headers=admin_headers
+        )
+
+        assert response.headers["x-export-row-count"] == "0"
+        assert _data_rows(response) == []
+
+    async def test_is_chunked_not_content_length(self, client, admin_headers, scenario):
+        response = await client.get(SUBJECTS_URL, headers=admin_headers)
+        # A streamed body has no up-front length; that is what lets an abrupt
+        # close be detectable as truncation.
+        assert "content-length" not in response.headers
+
+    async def test_session_survives_an_export_spanning_many_chunks(
+        self, client, admin_headers, app
+    ):
+        """The failure the UoW redesign exists to prevent: the request-scoped
+        session closing before the body is produced."""
+        from app.db.database import AsyncSessionLocal
+        from app.domain.subject import Sex
+        from app.models.subjects.subject import Subject
+
+        async with AsyncSessionLocal() as session:
+            session.add_all(
+                [
+                    Subject(
+                        dni=70000000 + i,
+                        sex=Sex.MALE,
+                        name=f"Largo{i:04d}",
+                        last_name="Stream",
+                        birth_date=date(2015, 1, 1),
+                        is_rural=False,
+                        is_indigenous=False,
+                    )
+                    for i in range(2500)
+                ]
+            )
+            await session.commit()
+
+        response = await client.get(SUBJECTS_URL, headers=admin_headers)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.headers["x-export-row-count"] == "2500"
+        assert len(_data_rows(response)) == 2500
+
+    async def test_row_count_matches_the_lines_for_every_endpoint(
+        self, client, admin_headers, scenario
+    ):
+        # The header is only useful if it can be compared to parsed lines, which
+        # requires that no cell ever carries a newline.
+        for url in (SUBJECTS_URL, ESTABLISHMENTS_URL, MEASUREMENTS_URL, SURVEYS_URL):
+            response = await client.get(url, headers=admin_headers)
+            declared = int(response.headers["x-export-row-count"])
+            assert len(_data_rows(response)) == declared, url
+
+
+class TestPreflightOrdering:
+    """Everything that can fail predictably must fail before the first byte."""
+
+    async def test_unknown_establishment_is_a_real_404(self, client, admin_headers):
+        response = await client.get(
+            ESTABLISHMENT_SUBJECTS_URL.format(id=uuid.uuid4()), headers=admin_headers
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.headers["content-type"].startswith("application/problem+json")
+        assert response.json()["title"] == "Establishment not found"
+
+    async def test_inverted_range_is_a_real_400(self, client, admin_headers, scenario):
+        response = await client.get(
+            MEASUREMENTS_URL,
+            params={"measured_from": "2026-06-01", "measured_to": "2026-01-01"},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.headers["content-type"].startswith("application/problem+json")
+
+    async def test_forbidden_is_a_real_403(
+        self, client, field_worker_headers, scenario
+    ):
+        response = await client.get(SUBJECTS_URL, headers=field_worker_headers)
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.headers["content-type"].startswith("application/problem+json")
+
+
+class TestMidStreamFailure:
+    async def test_a_failure_mid_body_never_completes_normally(
+        self, client, admin_headers, scenario, monkeypatch
+    ):
+        """A failure after headers must not resolve into a clean, short file.
+
+        Scope note: the in-process ASGI transport re-raises the app exception,
+        so this pins the server-side half only -- that the export genuinely
+        fails rather than quietly ending the stream. The client-visible half
+        (an aborted connection, so ``fetch``/``httpx`` errors on read) is a
+        property of the real server and is covered by
+        ``test_real_server_aborts_the_connection_on_mid_stream_failure``.
+        """
+        from app.services.exporters.csv.csv_exporter import CsvExporter
+
+        original = CsvExporter.stream
+
+        def exploding(self, rows):
+            async def gen():
+                async for chunk in original(self, rows):
+                    yield chunk
+                    raise RuntimeError("boom mid-stream")
+
+            return gen()
+
+        monkeypatch.setattr(CsvExporter, "stream", exploding)
+
+        with pytest.raises(RuntimeError, match="boom mid-stream"):
+            await client.get(SUBJECTS_URL, headers=admin_headers)

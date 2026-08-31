@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterator
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
@@ -189,17 +190,35 @@ class EstablishmentDashboardService:
             items=items, total=total, page=page, page_size=page_size
         )
 
-    async def export_establishment_subjects(
+    def export_establishment_subjects(
         self,
         establishment_id: UUID,
         params: EstablishmentSubjectListingParams,
         exporter: CsvExporter[EstablishmentSubjectItemDomain],
-    ) -> tuple[str, bytes]:
-        """Return the establishment's name and its subject listing as file bytes.
+    ) -> AsyncIterator[bytes]:
+        """Stream the establishment's subject listing as an exported file's bytes.
 
         Applies the same filters and order as ``list_establishment_subjects``
-        over the whole result set rather than one page. The name comes back so
-        the caller can identify the establishment in the download filename.
+        over the whole result set rather than one page.
+        """
+        rows = (
+            self._build_subject_item(row.Measurement, row.measurement_count)
+            async for row in self.uow.establishment_dashboard_repo.stream_for_export(
+                establishment_id=establishment_id, params=params
+            )
+        )
+        return exporter.stream(rows)
+
+    async def prepare_establishment_export(
+        self,
+        establishment_id: UUID,
+        params: EstablishmentSubjectListingParams,
+    ) -> tuple[str, int]:
+        """Resolve the establishment and size the export before streaming.
+
+        Returns its name (for the download filename) and the row count (for the
+        row-count header). Runs as a pre-flight so an unknown establishment
+        answers a real 404 instead of a truncated file.
 
         Raises:
             EstablishmentNotFoundError: If the establishment does not exist.
@@ -207,14 +226,10 @@ class EstablishmentDashboardService:
         establishment = await self.uow.establishment_repo.get_by_id_or_raise(
             establishment_id
         )
-        rows = await self.uow.establishment_dashboard_repo.list_all_for_export(
+        total = await self.uow.establishment_dashboard_repo.count_for_export(
             establishment_id=establishment_id, params=params
         )
-        file_bytes = exporter.export(
-            self._build_subject_item(row.Measurement, row.measurement_count)
-            for row in rows
-        )
-        return establishment.name, file_bytes
+        return establishment.name, total
 
     async def list_establishment_field_workers(
         self,

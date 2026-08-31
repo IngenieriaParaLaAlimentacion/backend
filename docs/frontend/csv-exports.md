@@ -43,31 +43,62 @@ exactly like their listings (`birth_date_from > birth_date_to`, `min_age > max_a
 HTTP/1.1 200 OK
 Content-Type: text/csv; charset=utf-8
 Content-Disposition: attachment; filename="sujetos_2026-08-24.csv"
+Transfer-Encoding: chunked
+X-Export-Row-Count: 2
 
 Nombre;Documento;Fecha de nacimiento;Último relevamiento
 Ana Alvarez;20000001;14/03/2015;14/03/2026 07:30
+Beto Benitez;20000002;01/07/2016;01/04/2026 07:00
 ```
 
-The body is a complete file, not a JSON envelope. Trigger the download from the blob:
+El body es un archivo completo, no un envelope JSON. **Se envía por streaming**: no hay
+`Content-Length`, el archivo se genera a medida que se manda.
+
+### ⚠️ Leé el body — no le pases la URL al browser
+
+Esto es lo único importante de esta página. Como el archivo se streamea, el `200 OK` y los
+headers salen **antes** de que el servidor sepa si la query va a terminar bien. Si falla a
+mitad de camino, el servidor **corta la conexión** (no manda el chunk final), y eso el
+cliente lo ve como un error de red *solo si está leyendo el body*.
 
 ```js
-const res = await fetch(`/api/v1/subjects/export?${params}`, { headers });
-const blob = await res.blob();
-const url = URL.createObjectURL(blob);
-const a = Object.assign(document.createElement("a"), { href: url, download: filename });
-a.click();
-URL.revokeObjectURL(url);
+try {
+  const res = await fetch(`/api/v1/subjects/export?${params}`, { headers });
+
+  // Los errores previsibles (400/403/404) llegan antes del primer byte,
+  // con problem+json completo.
+  if (!res.ok) throw new Error((await res.json()).detail);
+
+  const expected = Number(res.headers.get("X-Export-Row-Count"));
+  const blob = await res.blob();          // <- rechaza si el stream se cortó
+
+  // Chequeo extra: las filas que llegaron vs. las que el server declaró.
+  const text = await blob.text();
+  const rows = text.trim().split("\r\n").length - 1;   // -1 por el encabezado
+  if (rows !== expected) throw new Error(`Esperaba ${expected} filas, llegaron ${rows}`);
+
+  const url = URL.createObjectURL(blob);
+  Object.assign(document.createElement("a"), { href: url, download: filename }).click();
+  URL.revokeObjectURL(url);
+} catch (e) {
+  showError("La exportación se interrumpió. Volvé a intentar.");
+}
 ```
 
-Prefer the server's filename, parsed out of `Content-Disposition`. It already carries the
-entity and the export date (and the establishment slug on the detail export), so you do
-not need to build one client-side.
+**Un `<a href="/api/v1/subjects/export">` o un stream-a-disco directo se quedarían con el
+archivo parcial sin avisar.** Ese es el caso a evitar.
 
-> If the app is ever served from a different origin than the API, reading
-> `Content-Disposition` from JS requires the backend to send
-> `Access-Control-Expose-Headers: Content-Disposition`. Today the API ships no CORS
-> middleware at all, so clients are same-origin/proxied and this is a non-issue — flag it
-> to backend if that changes.
+`X-Export-Row-Count` dice cuántas filas de datos esperar. Ninguna celda puede contener un
+salto de línea (el backend los normaliza), así que contar líneas es válido. También sirve
+para mostrar progreso o un "exportando N registros…".
+
+Preferí el nombre de archivo del servidor, sacado de `Content-Disposition`: ya trae la
+entidad, la fecha y el slug del establecimiento en el export de detalle.
+
+> Si algún día la app se sirve desde otro origen que la API, leer `Content-Disposition` y
+> `X-Export-Row-Count` desde JS requiere que el backend mande
+> `Access-Control-Expose-Headers`. Hoy la API no tiene CORS middleware, así que los
+> clientes son same-origin/proxy y no aplica — avisá a backend si eso cambia.
 
 ---
 

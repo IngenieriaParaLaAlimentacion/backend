@@ -1,5 +1,8 @@
+import tracemalloc
 from dataclasses import dataclass
 from datetime import date
+
+import pytest
 
 from app.services.exporters.csv.csv_exporter import CsvColumn, CsvExporter, slugify
 
@@ -98,3 +101,60 @@ class TestSlugify:
 
     def test_collapses_punctuation_and_trims_edges(self):
         assert slugify("  ¡Merendero #3!  ") == "merendero-3"
+
+
+async def _aiter(rows):
+    for row in rows:
+        yield row
+
+
+async def _drain(chunks) -> bytes:
+    return b"".join([chunk async for chunk in chunks])
+
+
+class TestStream:
+    pytestmark = pytest.mark.asyncio
+
+    @pytest.mark.parametrize("n", [0, 1, 3, 5000])
+    async def test_streamed_bytes_equal_buffered_bytes(self, n):
+        """The guarantee the whole migration rests on: streaming changed when
+        bytes are handed back, not what they are."""
+        rows = [_Row(f"Ana Ñ{i}", f"{i},50") for i in range(n)]
+        exporter = _exporter()
+
+        assert await _drain(exporter.stream(_aiter(rows))) == exporter.export(rows)
+
+    async def test_empty_stream_still_emits_the_header(self):
+        data = await _drain(_exporter().stream(_aiter([])))
+        assert _text(data) == "Nombre;Monto\r\n"
+        assert data.startswith(BOM)
+
+    async def test_bom_appears_once_on_the_first_chunk_only(self):
+        # Enough text to cross the chunk threshold several times over.
+        rows = [_Row(f"Nombre largo numero {i}", f"{i},50") for i in range(20_000)]
+        chunks = [c async for c in _exporter().stream(_aiter(rows))]
+
+        assert len(chunks) > 1  # genuinely chunked, not one blob
+        assert chunks[0].startswith(BOM)
+        assert not any(c.startswith(BOM) for c in chunks[1:])
+        assert b"".join(chunks).count(BOM) == 1
+
+    async def test_memory_stays_flat_as_rows_grow(self):
+        """The point of the exercise: peak must not scale with row count."""
+
+        async def rows(n):
+            for i in range(n):
+                yield _Row(f"Ana Ñ{i}", f"{i},50")
+
+        peaks = {}
+        for n in (1_000, 200_000):
+            tracemalloc.start()
+            base = tracemalloc.get_traced_memory()[0]
+            async for _ in _exporter().stream(rows(n)):
+                pass
+            peaks[n] = tracemalloc.get_traced_memory()[1] - base
+            tracemalloc.stop()
+
+        # 200x the rows must not mean anything like 200x the memory.
+        assert peaks[200_000] < peaks[1_000] * 5
+        assert peaks[200_000] < 5_000_000  # and stays in single-digit MB
