@@ -7,7 +7,11 @@ from jose import JWTError, jwt
 from app.core.security import decode_token
 from app.db.unit_of_work import UnitOfWork
 from app.domain.user import UserActor, UserRole
-from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
+from app.exceptions.domain_exceptions import (
+    MissingTokenError,
+    RoleNotAllowedError,
+    UnauthorizedError,
+)
 from app.services.activity_service import ActivityService
 from app.services.admin_service import AdminService
 from app.services.analytics_service import AnalyticsService
@@ -22,10 +26,11 @@ from app.services.subjects.subject_service import SubjectService
 from app.services.surveys.survey_response_service import SurveyResponseService
 from app.services.surveys.survey_service import SurveyService
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
-oauth2_scheme_optional = OAuth2PasswordBearer(
-    tokenUrl="/api/v1/auth/login", auto_error=False
-)
+# auto_error=False so a missing or non-Bearer Authorization header reaches
+# _get_authenticated_actor as None and leaves as a MissingTokenError, in the same
+# problem+json envelope as every other 401 -- instead of FastAPI's bare
+# {"detail": "Not authenticated"}.
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
 
 
 async def get_admin_service() -> AsyncGenerator[AdminService, None]:
@@ -115,13 +120,18 @@ def _decode_verified_payload(token: str) -> dict:
 
 
 async def _get_authenticated_actor(
-    token: str,
+    token: str | None,
     required_roles: UserRole | set[UserRole],
 ) -> UserActor:
     """Validate a token and enforce one or more required roles.
 
-    Raises ForbiddenError if the token is valid but belongs to a different role.
+    Raises MissingTokenError when no bearer token was supplied, UnauthorizedError
+    when it is malformed or unverifiable, and RoleNotAllowedError when it is valid
+    but belongs to a different role.
     """
+    if not token:
+        raise MissingTokenError()
+
     payload = _decode_verified_payload(token)
 
     allowed = (
@@ -129,13 +139,13 @@ async def _get_authenticated_actor(
     )
 
     if payload.get("role") not in allowed:
-        raise ForbiddenError()
+        raise RoleNotAllowedError()
 
     return UserActor(user_id=payload["sub"], role=payload["role"])
 
 
 async def get_optional_actor(
-    token: str | None = Depends(oauth2_scheme_optional),
+    token: str | None = Depends(oauth2_scheme),
 ) -> UserActor | None:
     """Return the authenticated actor, or None when no token is supplied.
 
@@ -148,11 +158,11 @@ async def get_optional_actor(
     return await _get_authenticated_actor(token, set(UserRole))
 
 
-async def require_admin(token: str = Depends(oauth2_scheme)) -> UserActor:
+async def require_admin(token: str | None = Depends(oauth2_scheme)) -> UserActor:
     return await _get_authenticated_actor(token, {UserRole.ADMIN, UserRole.SUPERADMIN})
 
 
-async def require_any(token: str = Depends(oauth2_scheme)) -> UserActor:
+async def require_any(token: str | None = Depends(oauth2_scheme)) -> UserActor:
     """Dependency that accepts any authenticated role."""
     return await _get_authenticated_actor(
         token,
@@ -166,7 +176,7 @@ async def require_any(token: str = Depends(oauth2_scheme)) -> UserActor:
 
 
 async def require_admin_or_analyst(
-    token: str = Depends(oauth2_scheme),
+    token: str | None = Depends(oauth2_scheme),
 ) -> UserActor:
     """Dependency that accepts admin, analyst and superadmin roles."""
     return await _get_authenticated_actor(

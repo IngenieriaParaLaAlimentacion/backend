@@ -15,12 +15,17 @@ from app.domain.user import (
     UserWithEstablishmentsDomain,
 )
 from app.exceptions.domain_exceptions import (
-    BadRequestError,
+    FieldWorkerNotPendingError,
+    InvalidUserRoleError,
+    InvitePendingError,
     SubjectNotFoundError,
     UserAlreadyExistsError,
     UserEstablishmentNotApprovedError,
     UserEstablishmentNotFoundError,
+    UserNotActiveError,
+    UserNotFieldWorkerError,
     UserNotFoundError,
+    UserNotPendingError,
 )
 from app.models.auth.user import User
 from app.schemas.auth.admin_schema import InviteAdminRequest
@@ -45,15 +50,6 @@ class AdminService:
         if user is None:
             raise UserNotFoundError(str(user_id))
         return user
-
-    @staticmethod
-    def _require_status(
-        user: Any, expected: UserStatus, title: str, detail: str
-    ) -> None:
-        """Raise BadRequestError(title, detail) unless the user is in ``expected``
-        status."""
-        if user.status != expected:
-            raise BadRequestError(title, detail)
 
     async def _build_establishments_data(
         self, establishment_ids: list[UUID]
@@ -166,9 +162,9 @@ class AdminService:
 
     @staticmethod
     def _require_field_worker(user: Any, error_detail: str) -> None:
-        """Raise BadRequestError(...) unless the user is a field worker."""
+        """Raise UserNotFieldWorkerError unless the user is a field worker."""
         if user.role != UserRole.FIELD_WORKER:
-            raise BadRequestError("User is not a field worker", error_detail)
+            raise UserNotFieldWorkerError(error_detail)
 
     async def _get_field_worker(self, user_id: UUID, error_detail: str) -> Any:
         """Return the user, raising if they do not exist or are not a field worker."""
@@ -193,14 +189,11 @@ class AdminService:
         deeplink. Shared by invite_user and resend_invite.
 
         Raises:
-            BadRequestError: If the user's role is not a backoffice role.
+            InvalidUserRoleError: If the user's role is not a backoffice role.
             EmailDeliveryError: If the invitation email could not be delivered.
         """
         if user.role not in BACKOFFICE_ROLES:
-            raise BadRequestError(
-                "Invalid user role",
-                "Only backoffice users (admin, analyst) receive invitations.",
-            )
+            raise InvalidUserRoleError()
 
         created_token, plain_token = await self.auth_service.create_recovery_token(
             user.id
@@ -302,15 +295,13 @@ class AdminService:
 
         Raises:
             UserNotFoundError: If the user does not exist.
-            BadRequestError: If the user's account is not active yet.
+            UserNotActiveError: If the user's account is not active yet.
         """
         user = await self._get_user(user_id)
-        self._require_status(
-            user,
-            UserStatus.ACTIVE,
-            "User is not active",
-            "Only active users can be granted access to establishments.",
-        )
+        if user.status != UserStatus.ACTIVE:
+            raise UserNotActiveError(
+                "Only active users can be granted access to establishments."
+            )
 
         await self._set_user_establishment_relation_status(
             user_id, establishment_ids, UserEstablishmentStatus.APPROVED
@@ -342,7 +333,7 @@ class AdminService:
 
         Raises:
             UserNotFoundError: If the user does not exist.
-            BadRequestError: If the user is not a field worker.
+            UserNotFieldWorkerError: If the user is not a field worker.
             UserEstablishmentNotFoundError: If an establishment has no relation
                 with this user.
             UserEstablishmentNotApprovedError: If an establishment has a
@@ -364,7 +355,9 @@ class AdminService:
         ]
         if not_approved_ids:
             raise UserEstablishmentNotApprovedError(
-                str(not_approved_ids[0]), str(user_id)
+                str(not_approved_ids[0]),
+                str(user_id),
+                relations_by_estab_id[not_approved_ids[0]].status.value,
             )
 
         await self.uow.user_establishment_repo.update_status_for_ids(
@@ -382,7 +375,8 @@ class AdminService:
 
         Raises:
             UserNotFoundError: If the user does not exist.
-            BadRequestError: If the user is not a field worker, or is not in
+            UserNotFieldWorkerError: If the user is not a field worker.
+            FieldWorkerNotPendingError: If the field worker is not in
                 pending status.
             UserEstablishmentNotFoundError: If an establishment was not
                 requested by this field worker.
@@ -390,13 +384,11 @@ class AdminService:
         user = await self._get_field_worker(
             user_id, "Only field workers go through establishment approval."
         )
-        self._require_status(
-            user,
-            UserStatus.PENDING_VALIDATION,
-            "Field worker is not pending",
-            "Only field workers with pending status can be approved through "
-            "this endpoint.",
-        )
+        if user.status != UserStatus.PENDING_VALIDATION:
+            raise FieldWorkerNotPendingError(
+                "Only field workers with pending status can be approved through "
+                "this endpoint."
+            )
 
         await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
         if establishment_ids:
@@ -422,16 +414,15 @@ class AdminService:
 
         Raises:
             UserNotFoundError: If the user does not exist.
-            BadRequestError: If the field worker is not in pending status.
+            FieldWorkerNotPendingError: If the field worker is not in pending
+                status.
         """
         user, relations = await self._get_field_worker_relations(user_id)
-        self._require_status(
-            user,
-            UserStatus.PENDING_VALIDATION,
-            "Field worker is not pending",
-            "Only field workers with pending status can be rejected through "
-            "this endpoint.",
-        )
+        if user.status != UserStatus.PENDING_VALIDATION:
+            raise FieldWorkerNotPendingError(
+                "Only field workers with pending status can be rejected through "
+                "this endpoint."
+            )
         establishment_ids = [rel.establishment_id for rel in relations]
 
         if establishment_ids:
@@ -448,13 +439,20 @@ class AdminService:
             The id of the newly created user.
 
         Raises:
-            UserAlreadyExistsError: If the email already belongs to a user,
-                regardless of that user's status.
-                Use resend_invite to re-send a pending invitation.
+            InvitePendingError: If the email already has an unaccepted
+                backoffice invitation. Carries the ``user_id`` extension so the
+                caller can hand it to resend_invite.
+            UserAlreadyExistsError: If the email belongs to any other user.
             EmailDeliveryError: If the invitation email could not be delivered.
         """
         email = data.email.strip().lower()
-        if await self.uow.user_repo.exists_by_email(email):
+        existing = await self.uow.user_repo.get_by_email(email)
+        if existing is not None:
+            if (
+                existing.status == UserStatus.PENDING_VALIDATION
+                and existing.role in BACKOFFICE_ROLES
+            ):
+                raise InvitePendingError(str(existing.id))
             raise UserAlreadyExistsError(email)
 
         user = await self.uow.user_repo.create(
@@ -478,19 +476,18 @@ class AdminService:
 
         Raises:
             UserNotFoundError: If no user with the given id exists.
-            BadRequestError: If the user already completed onboarding
-                (status is not PENDING_VALIDATION), or is not a backoffice
-                user (e.g. a self-registered field worker, who is also
-                PENDING_VALIDATION but was never invited).
+            UserNotPendingError: If the user already completed onboarding
+                (status is not PENDING_VALIDATION).
+            InvalidUserRoleError: If the user is not a backoffice user (e.g. a
+                self-registered field worker, who is also PENDING_VALIDATION
+                but was never invited).
             EmailDeliveryError: If the invitation email could not be delivered.
         """
         user = await self._get_user(user_id)
-        self._require_status(
-            user,
-            UserStatus.PENDING_VALIDATION,
-            "User is not pending",
-            "Only users with a pending invitation can be re-invited.",
-        )
+        if user.status != UserStatus.PENDING_VALIDATION:
+            raise UserNotPendingError(
+                "Only users with a pending invitation can be re-invited."
+            )
 
         await self._issue_and_send_invite(user)
 

@@ -1,10 +1,17 @@
 import uuid
+from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
 from app.domain.user import UserStatus
-from app.exceptions.domain_exceptions import InvalidTokenError, UserNotFoundError
+from app.exceptions.domain_exceptions import (
+    InvalidTokenError,
+    InvalidVerificationTokenError,
+    UserNotFoundError,
+    VerificationTokenExpiredError,
+    VerificationTokenUsedError,
+)
 from app.schemas.auth.auth_schema import (
     RegisterFieldWorkerRequest,
     ResendVerificationRequest,
@@ -25,10 +32,11 @@ def valid_resend_request():
 
 @pytest.fixture
 def make_verification_token():
-    def _make():
+    def _make(used=False, expires_in=timedelta(hours=1)):
         t = MagicMock()
         t.user_id = uuid.uuid4()
-        t.expires_at = MagicMock()
+        t.used = used
+        t.expires_at = datetime.now(timezone.utc) + expires_in
         return t
 
     return _make
@@ -66,7 +74,7 @@ def make_uow_verification(make_uow, make_verification_token):
             active_token=active_token,
         )
         uow.email_verification_repo = AsyncMock()
-        uow.email_verification_repo.get_active_token = AsyncMock(
+        uow.email_verification_repo.get_by_hash = AsyncMock(
             return_value=active_verification_token
         )
         uow.email_verification_repo.create = AsyncMock(
@@ -171,7 +179,7 @@ class TestVerifyEmailSuccess:
     async def test_queries_with_encoded_token(self, valid_verify_request):
         await AuthService(self.uow).verify_email(valid_verify_request.token)
 
-        self.uow.email_verification_repo.get_active_token.assert_awaited_once_with(
+        self.uow.email_verification_repo.get_by_hash.assert_awaited_once_with(
             "hashed_verification_token"
         )
 
@@ -202,7 +210,7 @@ class TestVerifyEmailSuccess:
 class TestVerifyEmailInvalidToken:
     @pytest.fixture(autouse=True)
     def setup(self, make_uow_verification, mock_encode_verification_token):
-        # get_active_token returns None → token not found or already used
+        # No row with that hash at all -- deliberately the generic error.
         self.uow = make_uow_verification(active_verification_token=None)
 
     @pytest.mark.asyncio
@@ -212,7 +220,7 @@ class TestVerifyEmailInvalidToken:
 
     @pytest.mark.asyncio
     async def test_error_message_informs_user(self, valid_verify_request):
-        with pytest.raises(InvalidTokenError) as exc:
+        with pytest.raises(InvalidVerificationTokenError) as exc:
             await AuthService(self.uow).verify_email(valid_verify_request.token)
 
         assert "invalid" in str(exc.value) or "expired" in str(exc.value)
@@ -237,6 +245,46 @@ class TestVerifyEmailInvalidToken:
             await AuthService(self.uow).verify_email(valid_verify_request.token)
 
         self.uow.commit.assert_not_awaited()
+
+
+class TestVerifyEmailTokenState:
+    """A consumed link and an expired one must not report the same thing."""
+
+    @pytest.mark.asyncio
+    async def test_used_token_is_reported_as_used(
+        self,
+        make_uow_verification,
+        make_verification_token,
+        mock_encode_verification_token,
+        valid_verify_request,
+    ):
+        uow = make_uow_verification(
+            active_verification_token=make_verification_token(used=True)
+        )
+
+        with pytest.raises(VerificationTokenUsedError):
+            await AuthService(uow).verify_email(valid_verify_request.token)
+
+        uow.email_verification_repo.mark_used.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_expired_token_is_reported_as_expired(
+        self,
+        make_uow_verification,
+        make_verification_token,
+        mock_encode_verification_token,
+        valid_verify_request,
+    ):
+        uow = make_uow_verification(
+            active_verification_token=make_verification_token(
+                expires_in=timedelta(hours=-1)
+            )
+        )
+
+        with pytest.raises(VerificationTokenExpiredError):
+            await AuthService(uow).verify_email(valid_verify_request.token)
+
+        uow.commit.assert_not_awaited()
 
 
 class TestResendVerificationEmailSuccess:

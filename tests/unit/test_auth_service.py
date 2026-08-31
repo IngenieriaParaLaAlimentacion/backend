@@ -8,7 +8,7 @@ from app.domain.user import UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
     InvalidCredentialsError,
-    InvalidTokenError,
+    InvalidRefreshTokenError,
     UserAlreadyExistsError,
 )
 from app.schemas.auth.auth_schema import (
@@ -619,7 +619,7 @@ class TestLogoutInvalidToken:
     ):
         uow = make_uow(active_token=None)
 
-        with pytest.raises(InvalidTokenError):
+        with pytest.raises(InvalidRefreshTokenError):
             await AuthService(uow).logout(valid_logout_request)
 
     @pytest.mark.asyncio
@@ -628,7 +628,7 @@ class TestLogoutInvalidToken:
     ):
         uow = make_uow(active_token=None)
 
-        with pytest.raises(InvalidTokenError):
+        with pytest.raises(InvalidRefreshTokenError):
             await AuthService(uow).logout(valid_logout_request)
 
         uow.token_repo.revoke.assert_not_called()
@@ -639,7 +639,7 @@ class TestLogoutInvalidToken:
     ):
         uow = make_uow(active_token=None)
 
-        with pytest.raises(InvalidTokenError):
+        with pytest.raises(InvalidRefreshTokenError):
             await AuthService(uow).logout(valid_logout_request)
 
         uow.commit.assert_not_awaited()
@@ -765,7 +765,7 @@ class TestRefreshSuccess:
 
 class TestRefreshInvalidToken:
     @pytest.mark.asyncio
-    async def test_raises_invalid_credentials(
+    async def test_raises_invalid_refresh_token(
         self,
         make_uow,
         valid_refresh_request,
@@ -773,7 +773,7 @@ class TestRefreshInvalidToken:
     ):
         uow = make_uow(active_token=None)
 
-        with pytest.raises(InvalidCredentialsError):
+        with pytest.raises(InvalidRefreshTokenError):
             await AuthService(uow).refresh(valid_refresh_request)
 
     @pytest.mark.asyncio
@@ -785,7 +785,7 @@ class TestRefreshInvalidToken:
     ):
         uow = make_uow(active_token=None)
 
-        with pytest.raises(InvalidCredentialsError):
+        with pytest.raises(InvalidRefreshTokenError):
             await AuthService(uow).refresh(valid_refresh_request)
 
         uow.token_repo.revoke.assert_not_called()
@@ -799,7 +799,7 @@ class TestRefreshInvalidToken:
     ):
         uow = make_uow(active_token=None)
 
-        with pytest.raises(InvalidCredentialsError):
+        with pytest.raises(InvalidRefreshTokenError):
             await AuthService(uow).refresh(valid_refresh_request)
 
         uow.token_repo.create.assert_not_awaited()
@@ -813,7 +813,7 @@ class TestRefreshInvalidToken:
     ):
         uow = make_uow(active_token=None)
 
-        with pytest.raises(InvalidCredentialsError):
+        with pytest.raises(InvalidRefreshTokenError):
             await AuthService(uow).refresh(valid_refresh_request)
 
         uow.commit.assert_not_awaited()

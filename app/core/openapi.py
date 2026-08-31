@@ -21,18 +21,48 @@ def _build_openapi_schema(app: FastAPI) -> dict[str, Any]:
         "ProblemDetail",
         {
             "type": "object",
+            "description": (
+                "RFC 7807 problem details. `type` is the stable machine-readable "
+                "identifier clients should branch on; `title` and `detail` are "
+                "human-readable prose and may change without notice."
+            ),
             "properties": {
-                "type": {
-                    "type": "string",
-                    "default": "about:blank",
-                    "example": "about:blank",
-                },
+                "type": {"type": "string", "examples": ["/errors/survey-locked"]},
                 "title": {"type": "string"},
                 "status": {"type": "integer"},
                 "detail": {"type": "string"},
                 "instance": {"type": "string"},
+                "reason": {
+                    "type": "string",
+                    "description": (
+                        "Machine-readable sub-code distinguishing variants of one "
+                        "`type`. Present only where a `type` has variants."
+                    ),
+                    "examples": ["has_responses"],
+                },
+                "errors": {
+                    "type": "array",
+                    "description": (
+                        "Field-level failures. Present on validation errors."
+                    ),
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "pointer": {
+                                "type": "string",
+                                "examples": ["/body/email"],
+                            },
+                            "detail": {"type": "string"},
+                            "code": {"type": "string", "examples": ["missing"]},
+                        },
+                        "required": ["pointer", "detail", "code"],
+                    },
+                },
             },
             "required": ["type", "title", "status", "detail", "instance"],
+            # Extension members (e.g. canonical_subject, existing_response) are
+            # open-ended by RFC 7807 and are documented in docs/errors.md.
+            "additionalProperties": True,
         },
     )
 
@@ -48,32 +78,20 @@ def _build_openapi_schema(app: FastAPI) -> dict[str, Any]:
                 continue
 
             responses = operation.setdefault("responses", {})
-            had_422 = responses.pop("422", None) is not None
 
-            if had_422:
-                bad_request_response = responses.setdefault(
-                    "400", {"description": "Invalid request payload"}
-                )
-                if isinstance(bad_request_response, dict):
-                    bad_request_response.setdefault(
-                        "description", "Invalid request payload"
-                    )
-                    content = bad_request_response.setdefault("content", {})
-                    content.setdefault(
-                        "application/problem+json",
-                        problem_json_content["application/problem+json"],
-                    )
+            # No route declares a 500 today, so the canonical unhandled-error
+            # envelope would otherwise be undiscoverable from the schema.
+            responses.setdefault("500", {"description": "Unexpected internal error"})
 
-            for status_code, response in list(responses.items()):
+            for status_code, response in responses.items():
                 if not isinstance(response, dict):
                     continue
 
                 if status_code == "default" or status_code.startswith(("4", "5")):
-                    content = response.setdefault("content", {})
-                    content.setdefault(
-                        "application/problem+json",
-                        problem_json_content["application/problem+json"],
-                    )
+                    # Replace, not setdefault: FastAPI's auto-generated 422 carries
+                    # an application/json entry pointing at HTTPValidationError,
+                    # which is popped below. Leaving it would emit a dangling $ref.
+                    response["content"] = dict(problem_json_content)
 
     for leftover in ("HTTPValidationError", "ValidationError"):
         components_schemas.pop(leftover, None)

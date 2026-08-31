@@ -31,7 +31,10 @@ from app.domain.survey_response import (
     SurveyResponseSortOrder,
     SurveyResponseSummaryParams,
 )
-from app.exceptions.domain_exceptions import InvalidListingFilterError
+from app.exceptions.domain_exceptions import (
+    InvalidAgeRangeError,
+    InvalidDateRangeError,
+)
 
 AUTH_RESPONSES: dict[int | str, dict[str, str]] = {
     status.HTTP_401_UNAUTHORIZED: {
@@ -44,13 +47,13 @@ AUTH_RESPONSES: dict[int | str, dict[str, str]] = {
 def _validate_date_range(
     start: date | None, end: date | None, field_prefix: str
 ) -> None:
-    """Raise InvalidListingFilterError if ``start`` is after ``end``.
+    """Raise InvalidDateRangeError if ``start`` is after ``end``.
 
     Accepts plain dates or full timestamps (``datetime`` is a subclass of
     ``date``), so it covers both date-only and datetime-range filters.
     """
     if start is not None and end is not None and start > end:
-        raise InvalidListingFilterError(
+        raise InvalidDateRangeError(
             f"{field_prefix}_from cannot be after {field_prefix}_to"
         )
 
@@ -102,7 +105,7 @@ class MeasurementListingQuery(LocationQuery):
             and self.max_age is not None
             and self.min_age > self.max_age
         ):
-            raise InvalidListingFilterError("min_age cannot be greater than max_age")
+            raise InvalidAgeRangeError("min_age cannot be greater than max_age")
 
         _validate_date_range(self.measured_from, self.measured_to, "measured")
 

@@ -4,7 +4,7 @@ from app.domain.survey_response import (
     SurveyResponseSummaryParams,
 )
 from app.domain.user import UserActor, UserRole
-from app.exceptions.domain_exceptions import ForbiddenError
+from app.exceptions.domain_exceptions import RoleNotAllowedError
 
 _ANALYTICS_ROLES = {UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN}
 
@@ -23,10 +23,10 @@ class AnalyticsService:
         the most recent event_at.
 
         Raises:
-            ForbiddenError: actor role isn't allowed to view analytics.
+            RoleNotAllowedError: actor role isn't allowed to view analytics.
         """
         if actor.role not in _ANALYTICS_ROLES:
-            raise ForbiddenError()
+            raise RoleNotAllowedError("Your role cannot view analytics.")
         (
             response_count,
             establishments_count,

@@ -14,7 +14,7 @@ from app.core.dependencies import (
     require_any,
 )
 from app.domain import UserActor, UserRole
-from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
+from app.exceptions.domain_exceptions import MissingTokenError, RoleNotAllowedError
 from app.schemas.establishments.establishment_schema import (
     EstablishmentCreationRequestCreate,
     EstablishmentCreationRequestResponse,
@@ -138,9 +138,11 @@ async def get_establishments(
     params = query.to_domain()
     if available:
         if actor is None:
-            raise UnauthorizedError()
+            raise MissingTokenError()
         if actor.role not in _FIELD_WORKER_ROLES:
-            raise ForbiddenError()
+            raise RoleNotAllowedError(
+                "Only field workers can list establishments still available to them."
+            )
         result = await service.get_available_establishments(
             user_id=actor.user_id,
             page=paginated.page,

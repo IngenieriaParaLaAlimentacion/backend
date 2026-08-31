@@ -13,7 +13,7 @@ from app.domain.pagination import PaginatedResult
 from app.domain.subject_detail import EvolutionPointDomain, SubjectEvolutionDomain
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
-    ForbiddenError,
+    EstablishmentAccessDeniedError,
     SubjectNotFoundError,
     UniqueConstraintError,
 )
@@ -43,7 +43,7 @@ class MeasurementService:
             actor.user_id, establishment_id
         )
         if relation is None or relation.status != UserEstablishmentStatus.APPROVED:
-            raise ForbiddenError()
+            raise EstablishmentAccessDeniedError()
 
     async def register(
         self,
@@ -58,7 +58,8 @@ class MeasurementService:
         Raises:
             SubjectNotFoundError: subject_id does not exist.
             EstablishmentNotFoundError: establishment_id does not exist.
-            ForbiddenError: field worker lacks approved access to the establishment.
+            EstablishmentAccessDeniedError: field worker lacks approved access to
+                the establishment.
         """
         if data.id is not None:
             existing = await self.uow.measurement_repo.get_by_id(data.id)

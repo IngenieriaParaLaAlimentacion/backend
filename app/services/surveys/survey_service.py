@@ -17,10 +17,12 @@ from app.domain.survey import (
 )
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
-    ForbiddenError,
     InvalidSurveyStructureError,
+    NotResourceOwnerError,
+    RoleNotAllowedError,
     SurveyAlreadyExistsError,
     SurveyLockedError,
+    SurveyNotAvailableError,
     SurveyNotFoundError,
     UniqueConstraintError,
 )
@@ -46,7 +48,7 @@ class SurveyService:
     @staticmethod
     def _assert_can_create(actor: UserActor) -> None:
         if actor.role not in _AUTHOR_ROLES:
-            raise ForbiddenError()
+            raise RoleNotAllowedError("Your role cannot author surveys.")
 
     @staticmethod
     def _assert_can_edit(actor: UserActor, survey: Survey) -> None:
@@ -55,7 +57,9 @@ class SurveyService:
             return
         if str(survey.created_by_id) == str(actor.user_id):
             return
-        raise ForbiddenError()
+        raise NotResourceOwnerError(
+            "Only the analyst who authored this survey, or an admin, can modify it."
+        )
 
     async def _assert_editable(
         self,
@@ -70,17 +74,32 @@ class SurveyService:
         if survey.response_count == 0:
             return
         if response_target != survey.response_target:
-            raise SurveyLockedError()
+            raise SurveyLockedError(
+                "response_target_changed",
+                "A survey with recorded responses cannot change its response target.",
+            )
         new_by_id = {q.id: q for q in new_questions if q.id is not None}
         removed_option_pairs: list[tuple[UUID, UUID]] = []
         for question in survey.questions:
             new = new_by_id.get(question.id)
             if new is None:
-                raise SurveyLockedError()
+                raise SurveyLockedError(
+                    "question_removed",
+                    "A question cannot be removed from a survey that has "
+                    "recorded responses.",
+                )
             if new.response_type != question.response_type:
-                raise SurveyLockedError()
+                raise SurveyLockedError(
+                    "response_type_changed",
+                    "A question's response type cannot change once the survey "
+                    "has recorded responses.",
+                )
             if new.is_required and not question.is_required:
-                raise SurveyLockedError()
+                raise SurveyLockedError(
+                    "question_made_required",
+                    "An optional question cannot become required once the "
+                    "survey has recorded responses.",
+                )
             new_option_ids = {o.id for o in new.options if o.id is not None}
             removed_option_pairs.extend(
                 (question.id, option.id)
@@ -92,7 +111,10 @@ class SurveyService:
             survey.id, removed_option_pairs
         )
         if referenced_ids:
-            raise SurveyLockedError()
+            raise SurveyLockedError(
+                "option_in_use",
+                "An option already chosen by a recorded response cannot be removed.",
+            )
 
     def _validate_structure(self, questions: list[QuestionInput]) -> None:
         if not MIN_QUESTIONS <= len(questions) <= MAX_QUESTIONS:
@@ -182,13 +204,13 @@ class SurveyService:
         """Raise unless the survey is active — the whole visibility rule for a
         field worker."""
         if not survey.is_active:
-            raise ForbiddenError()
+            raise SurveyNotAvailableError()
 
     async def create(self, data: SurveyCreateRequest, actor: UserActor) -> SurveyDomain:
         """Create a survey.
 
         Raises:
-            ForbiddenError: actor role cannot author surveys.
+            RoleNotAllowedError: actor role cannot author surveys.
             SurveyAlreadyExistsError: the name is already taken.
             InvalidSurveyStructureError: questions/options are inconsistent.
         """
@@ -215,7 +237,8 @@ class SurveyService:
 
         Raises:
             SurveyNotFoundError.
-            ForbiddenError: a field worker requesting a deactivated survey.
+            SurveyNotAvailableError: a field worker requesting a deactivated
+                survey.
         """
         survey = await self._get_or_raise(survey_id)
         if actor.role == UserRole.FIELD_WORKER:
@@ -256,7 +279,7 @@ class SurveyService:
         """Reconcile a survey to match ``data``.
 
         Raises:
-            SurveyNotFoundError, ForbiddenError, SurveyLockedError,
+            SurveyNotFoundError, NotResourceOwnerError, SurveyLockedError,
             SurveyAlreadyExistsError, InvalidSurveyStructureError,
             InvalidSurveyPayloadError.
         """
@@ -305,7 +328,10 @@ class SurveyService:
         survey = await self._get_or_raise(survey_id)
         self._assert_can_edit(actor, survey)
         if survey.response_count > 0:
-            raise SurveyLockedError()
+            raise SurveyLockedError(
+                "has_responses",
+                "A survey with recorded responses cannot be deleted.",
+            )
         await self.uow.survey_repo.delete(survey)
         await self.uow.commit()
 
