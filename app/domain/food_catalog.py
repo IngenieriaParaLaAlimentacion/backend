@@ -7,7 +7,6 @@ class MeasurementUnit(str, Enum):
     UNIDADES = "unidades"
     KILOGRAMOS = "kilogramos"
     LITROS = "litros"
-    POTES = "potes"
 
 
 class NutrientGroup(str, Enum):
