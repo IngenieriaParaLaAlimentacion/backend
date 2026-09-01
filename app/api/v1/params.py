@@ -100,6 +100,9 @@ class MeasurementListingQuery(LocationQuery):
     sort_order: MeasurementSortOrder = MeasurementSortOrder.DATE_DESC
 
     def validate(self) -> None:
+        """Raise InvalidAgeRangeError if the age bounds are inverted, or
+        InvalidDateRangeError if the measurement-date bounds are.
+        """
         if (
             self.min_age is not None
             and self.max_age is not None

@@ -24,7 +24,10 @@ router = APIRouter(prefix="/analytics")
     ),
     responses={
         **AUTH_RESPONSES,
-        status.HTTP_400_BAD_REQUEST: {"description": "Invalid filter range"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "`/errors/invalid-date-range`: event_at_from is after "
+            "event_at_to"
+        },
     },
 )
 async def get_survey_response_summary(

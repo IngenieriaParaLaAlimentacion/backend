@@ -95,7 +95,10 @@ async def get_subject(
         "birth date in either direction. Accessible by all authenticated roles."
     ),
     responses={
-        status.HTTP_400_BAD_REQUEST: {"description": "Inconsistent filter parameters"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "`/errors/invalid-date-range`: birth_date_from is after "
+            "birth_date_to"
+        },
         **AUTH_RESPONSES,
     },
 )

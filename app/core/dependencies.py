@@ -26,10 +26,11 @@ from app.services.subjects.subject_service import SubjectService
 from app.services.surveys.survey_response_service import SurveyResponseService
 from app.services.surveys.survey_service import SurveyService
 
-# auto_error=False so a missing or non-Bearer Authorization header reaches
-# _get_authenticated_actor as None and leaves as a MissingTokenError, in the same
-# problem+json envelope as every other 401 -- instead of FastAPI's bare
-# {"detail": "Not authenticated"}.
+# auto_error=False so a missing or non-Bearer Authorization header arrives here as
+# None instead of FastAPI raising its own generic HTTPException(401) before our code
+# runs. That lets us answer with the specific MissingTokenError ("auth/missing-token")
+# rather than the catch-all "http-error" type, and lets one scheme serve both the
+# required and the optional dependencies.
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
 
 
@@ -150,8 +151,10 @@ async def get_optional_actor(
     """Return the authenticated actor, or None when no token is supplied.
 
     Used by endpoints that are public by default but expose an authenticated-only
-    mode (e.g. the establishments catalog with ``available=true``). A
-    present-but-invalid token still raises UnauthorizedError.
+    mode (e.g. the establishments catalog with ``available=true``). Absence of a
+    token short-circuits to None before _get_authenticated_actor is reached, so its
+    MissingTokenError never fires here; a present-but-invalid token still raises
+    UnauthorizedError.
     """
     if not token:
         return None

@@ -70,7 +70,10 @@ async def upload_measurement(
         "subject age, plus sorting. Accessible by admins and analysts."
     ),
     responses={
-        status.HTTP_400_BAD_REQUEST: {"description": "Inconsistent filter parameters"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "`/errors/invalid-date-range`: measured_from is after "
+            "measured_to. `/errors/invalid-age-range`: min_age is above max_age."
+        },
         **AUTH_RESPONSES,
     },
 )
