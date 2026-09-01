@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from uuid import UUID
+
 from sqlalchemy import asc, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.domain.food_catalog import FoodListingParams, FoodSortOrder
 from app.models.food_catalog.food import Food
+from app.models.food_catalog.food_nutrient_value import FoodNutrientValue
 from app.utils.db import execute_paginated, ilike_condition
 
 # Maps each FoodSortOrder value to its SQLAlchemy order clause.
@@ -67,6 +70,22 @@ class FoodRepository:
             conditions=self._listing_conditions(params),
         )
         return foods, total
+
+    async def get_by_id(self, food_id: UUID) -> Food | None:
+        """Return a food with ``category`` and its full nutrient composition
+        (``nutrient_values``, each with its ``nutrient``) loaded, or None.
+        """
+        result = await self.db.execute(
+            select(Food)
+            .where(Food.id == food_id)
+            .options(
+                selectinload(Food.category),
+                selectinload(Food.nutrient_values).selectinload(
+                    FoodNutrientValue.nutrient
+                ),
+            )
+        )
+        return result.scalar_one_or_none()
 
     async def get_all(self) -> list[Food]:
         """Return every food.

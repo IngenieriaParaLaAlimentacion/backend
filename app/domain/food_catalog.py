@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from decimal import Decimal
 from enum import Enum, StrEnum
 from uuid import UUID
 
@@ -63,4 +64,86 @@ class FoodListItemDomain:
             base_unit=food.base_unit,
             is_active=food.is_active,
             category=IdentifierRefDomain.from_db(food.category),
+        )
+
+
+@dataclass
+class NutrientRefDomain:
+    """A nutrient's own definition, as referenced from a food's composition."""
+
+    id: UUID
+    name: str
+    unit: str
+    group: NutrientGroup
+
+    @classmethod
+    def from_db(cls, nutrient) -> "NutrientRefDomain":
+        return cls(
+            id=nutrient.id,
+            name=nutrient.name,
+            unit=nutrient.unit,
+            group=nutrient.group,
+        )
+
+
+@dataclass
+class FoodNutrientValueDomain:
+    """A single (food, nutrient) reading, as returned in a food's detail view."""
+
+    nutrient: NutrientRefDomain
+    amount_per_100g: Decimal
+
+    @classmethod
+    def from_db(cls, value) -> "FoodNutrientValueDomain":
+        """Build from a FoodNutrientValue row with ``nutrient`` loaded."""
+        return cls(
+            nutrient=NutrientRefDomain.from_db(value.nutrient),
+            amount_per_100g=value.amount_per_100g,
+        )
+
+
+# SARA 2's own table split: macronutrients (fatty acids as their sub-list)
+# first, then vitamins/minerals — NutrientGroup's declaration order doesn't
+# match this, so the order is spelled out explicitly rather than relied upon.
+_NUTRIENT_GROUP_ORDER = {
+    NutrientGroup.MACRONUTRIENT: 0,
+    NutrientGroup.FATTY_ACID: 1,
+    NutrientGroup.VITAMIN: 2,
+    NutrientGroup.MINERAL: 3,
+}
+
+
+@dataclass
+class FoodDetailDomain:
+    """A food's full detail, including its nutrient composition."""
+
+    id: UUID
+    code: str
+    name: str
+    base_unit: MeasurementUnit
+    is_active: bool
+    category: IdentifierRefDomain
+    nutrients: list[FoodNutrientValueDomain]
+
+    @classmethod
+    def from_db(cls, food) -> "FoodDetailDomain":
+        """Build from a food row with ``category`` and ``nutrient_values``
+        (each with its ``nutrient``) loaded.
+
+        Nutrients are sorted by group then name — mirrors SARA 2's own split
+        into a macronutrient table and a vitamins/minerals table, as a flat,
+        client-groupable list rather than pre-nested by group.
+        """
+        nutrients = sorted(
+            (FoodNutrientValueDomain.from_db(v) for v in food.nutrient_values),
+            key=lambda v: (_NUTRIENT_GROUP_ORDER[v.nutrient.group], v.nutrient.name),
+        )
+        return cls(
+            id=food.id,
+            code=food.code,
+            name=food.name,
+            base_unit=food.base_unit,
+            is_active=food.is_active,
+            category=IdentifierRefDomain.from_db(food.category),
+            nutrients=nutrients,
         )
