@@ -8,6 +8,7 @@ from fastapi import status
 pytestmark = pytest.mark.asyncio
 
 FOODS_URL = "/api/v1/food-catalog/foods"
+CATEGORIES_URL = "/api/v1/food-catalog/categories"
 
 
 @dataclass
@@ -165,3 +166,23 @@ class TestSortAndPagination:
         assert body["page_size"] == 2
         assert body["total_pages"] == 2
         assert len(body["items"]) == 2
+
+
+class TestCategories:
+    async def test_unauthenticated_returns_401(self, client):
+        response = await client.get(CATEGORIES_URL)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_returns_categories_in_sara2_source_order(
+        self, client, admin_headers, catalog
+    ):
+        # Fixture seeds "Frutas" as group 2 and "Carnes" as group 7.
+        response = await client.get(CATEGORIES_URL, headers=admin_headers)
+        assert response.status_code == status.HTTP_200_OK
+        items = response.json()
+        assert [i["name"] for i in items] == ["Frutas", "Carnes"]
+        assert items[0] == {"id": str(catalog.category_fruits), "name": "Frutas"}
+
+    async def test_response_is_not_paginated(self, client, admin_headers, catalog):
+        response = await client.get(CATEGORIES_URL, headers=admin_headers)
+        assert isinstance(response.json(), list)
