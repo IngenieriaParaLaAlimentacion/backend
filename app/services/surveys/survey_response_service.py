@@ -71,21 +71,18 @@ class SurveyResponseService:
             if data.subject_id is None or data.establishment_id is not None:
                 raise InvalidSurveyResponseError(
                     "This survey requires a subject_id and no establishment_id.",
-                    "target_mismatch",
                 )
             return data.subject_id, None
         if target == SurveyResponseTarget.ESTABLISHMENT:
             if data.establishment_id is None or data.subject_id is not None:
                 raise InvalidSurveyResponseError(
                     "This survey requires an establishment_id and no subject_id.",
-                    "target_mismatch",
                 )
             return None, data.establishment_id
         if data.subject_id is not None or data.establishment_id is not None:
             raise InvalidSurveyResponseError(
                 "This survey is anonymous and accepts no subject_id or "
                 "establishment_id.",
-                "target_mismatch",
             )
         return None, None
 
@@ -141,14 +138,12 @@ class SurveyResponseService:
         question_by_id = {str(q.id): q for q in questions}
         for key in answers:
             if key not in question_by_id:
-                raise InvalidSurveyResponseError(
-                    f"Unknown question id '{key}'.", "unknown_question"
-                )
+                raise InvalidSurveyResponseError(f"Unknown question id '{key}'.")
         for question in questions:
             value = answers.get(str(question.id))
             if question.is_required and (value is None or value == ""):
                 raise InvalidSurveyResponseError(
-                    f"Question '{question.text}' is required.", "missing_required"
+                    f"Question '{question.text}' is required."
                 )
             if value is not None:
                 SurveyResponseService._validate_answer_shape(question, value)
@@ -164,19 +159,16 @@ class SurveyResponseService:
             if not isinstance(value, str) or value not in option_ids:
                 raise InvalidSurveyResponseError(
                     f"Invalid option for question '{question.text}'.",
-                    "invalid_answer_shape",
                 )
         elif question.response_type == ResponseType.MULTIPLE_CHOICE:
             if not isinstance(value, list) or not set(value) <= option_ids:
                 raise InvalidSurveyResponseError(
                     f"Invalid options for question '{question.text}'.",
-                    "invalid_answer_shape",
                 )
         elif question.response_type == ResponseType.NUMERIC:
             if not isinstance(value, (int, float)):
                 raise InvalidSurveyResponseError(
                     f"Question '{question.text}' expects a number.",
-                    "invalid_answer_shape",
                 )
 
     async def _get_survey_or_raise(self, survey_id: UUID) -> SurveyDomain:
@@ -239,7 +231,6 @@ class SurveyResponseService:
         if existing.survey_id != survey_id:
             raise InvalidSurveyResponseError(
                 "This response id already belongs to a different survey.",
-                "replayed_id_other_survey",
             )
         return SurveyResponseDomain.from_db(existing)
 

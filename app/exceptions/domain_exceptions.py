@@ -31,11 +31,6 @@ class BaseError(Exception):
             the ``problem+json`` body. Values must be JSON-primitive: the handler
             passes them straight to ``JSONResponse``, which cannot encode a raw
             ``UUID`` or ``datetime``.
-        reason (str | None): Optional machine-readable sub-code, rendered as a
-            top-level ``reason`` member. Use it when a family shares one identity
-            and one client recovery but the variant is still worth branching on
-            (e.g. why a survey is locked) -- minting a class per variant would be
-            boilerplate for no gain.
     """
 
     error_type: ClassVar[str]
@@ -75,12 +70,10 @@ class BaseError(Exception):
         title: str,
         details: str,
         extensions: dict | None = None,
-        reason: str | None = None,
     ):
         self.title = title
         self.details = details
         self.extensions = extensions or {}
-        self.reason = reason
         super().__init__(f"{title}: {details}")
 
 
@@ -689,19 +682,18 @@ class SurveyLockedError(ConflictError):
     """Exception raised when a survey can no longer be modified.
 
     Gates structural edits -- and changes to ``response_target`` -- once a survey
-    has recorded at least one response. One identity, one client recovery ("stop,
-    the survey is frozen"), so the specific trigger travels in ``reason`` rather
-    than in six near-identical classes.
+    has recorded at least one response. One identity and one client recovery
+    ("stop, the survey is frozen") for every trigger, so the specific trigger is
+    carried by ``detail`` rather than by six near-identical classes.
 
     Args:
-        reason (str): Machine-readable trigger, e.g. ``question_removed``.
         detail (str): Human-readable explanation of this occurrence.
     """
 
     error_type = "survey-locked"
 
-    def __init__(self, reason: str, detail: str):
-        super().__init__("Survey locked", detail, reason=reason)
+    def __init__(self, detail: str):
+        super().__init__("Survey locked", detail)
 
 
 class InvalidSurveyStructureError(BadRequestError):
@@ -744,13 +736,12 @@ class InvalidSurveyResponseError(BadRequestError):
 
     Args:
         detail (str): Human-readable explanation of this occurrence.
-        reason (str): Machine-readable trigger, e.g. ``missing_required``.
     """
 
     error_type = "invalid-survey-response"
 
-    def __init__(self, detail: str, reason: str):
-        super().__init__("Invalid survey response", detail, reason=reason)
+    def __init__(self, detail: str):
+        super().__init__("Invalid survey response", detail)
 
 
 class SurveyResponseAlreadyExistsError(AlreadyExistsError):

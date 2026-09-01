@@ -68,20 +68,12 @@ def test_forbidden_error():
     assert json.loads(response.body)["type"] == "/errors/role-not-allowed"
 
 
-def test_reason_is_rendered_as_a_top_level_member():
-    response = _handle(
-        "/surveys/1", SurveyLockedError("has_responses", "Cannot delete.")
-    )
+def test_the_envelope_carries_only_the_five_canonical_members():
+    response = _handle("/surveys/1", SurveyLockedError("Cannot delete."))
 
     body = json.loads(response.body)
     assert body["type"] == "/errors/survey-locked"
-    assert body["reason"] == "has_responses"
-
-
-def test_reason_is_absent_when_the_error_declares_none():
-    response = _handle("/subjects/123", SubjectNotFoundError("123"))
-
-    assert "reason" not in json.loads(response.body)
+    assert set(body) == {"type", "title", "status", "detail", "instance"}
 
 
 def test_extensions_are_merged_into_the_body():

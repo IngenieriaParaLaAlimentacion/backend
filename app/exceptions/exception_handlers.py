@@ -15,8 +15,6 @@ def _problem_response(
     title: str,
     detail: str,
     extensions: dict | None = None,
-    errors: list[dict] | None = None,
-    reason: str | None = None,
     headers: dict | None = None,
 ) -> JSONResponse:
     """Build the canonical RFC 7807 problem+json response.
@@ -34,10 +32,6 @@ def _problem_response(
             "instance": request.url.path,
         }
     )
-    if reason:
-        content["reason"] = reason
-    if errors:
-        content["errors"] = errors
     return JSONResponse(
         status_code=status_code,
         content=content,
@@ -66,30 +60,8 @@ async def domain_error_handler(request: Request, exc: BaseError) -> JSONResponse
         title=exc.title,
         detail=exc.details,
         extensions=exc.extensions,
-        reason=exc.reason,
         headers=headers,
     )
-
-
-def _field_errors(exc: RequestValidationError) -> list[dict]:
-    """Flatten Pydantic errors into RFC 9457 field-level members.
-
-    Only ``type``/``loc``/``msg`` are read. ``ctx`` is dropped because it holds a
-    live ``ValueError`` for every custom validator in this codebase and is not
-    JSON-serializable; ``input`` is dropped because it echoes the submitted value
-    back to the client (on ``POST /auth/login`` that is the password).
-    """
-    errors = []
-    for error in exc.errors():
-        pointer = "/" + "/".join(str(part) for part in error["loc"])
-        errors.append(
-            {
-                "pointer": pointer,
-                "detail": error["msg"],
-                "code": error["type"],
-            }
-        )
-    return errors
 
 
 async def validation_error_handler(
@@ -102,7 +74,6 @@ async def validation_error_handler(
         error_type="validation-failed",
         title="Validation failed",
         detail="The request contains invalid or missing fields.",
-        errors=_field_errors(exc),
     )
 
 

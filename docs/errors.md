@@ -10,9 +10,8 @@ human-readable prose and may be reworded at any time.
 The catalog is additive-only: new values may be added, existing values are not
 renamed or removed without notice.
 
-Some errors also carry a `reason` member -- a machine-readable sub-code for a
-variant within one `type` (e.g. why a survey is locked) -- and/or RFC 7807
-extension members such as `user_id` or `relation_status`.
+Some errors also carry RFC 7807 extension members alongside the canonical five,
+such as `user_id` or `relation_status`.
 
 Five `type` values are produced by the framework rather than by a domain
 exception and so are not in the registry: `/errors/validation-failed` (422),

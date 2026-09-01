@@ -32,32 +32,6 @@ def _build_openapi_schema(app: FastAPI) -> dict[str, Any]:
                 "status": {"type": "integer"},
                 "detail": {"type": "string"},
                 "instance": {"type": "string"},
-                "reason": {
-                    "type": "string",
-                    "description": (
-                        "Machine-readable sub-code distinguishing variants of one "
-                        "`type`. Present only where a `type` has variants."
-                    ),
-                    "examples": ["has_responses"],
-                },
-                "errors": {
-                    "type": "array",
-                    "description": (
-                        "Field-level failures. Present on validation errors."
-                    ),
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "pointer": {
-                                "type": "string",
-                                "examples": ["/body/email"],
-                            },
-                            "detail": {"type": "string"},
-                            "code": {"type": "string", "examples": ["missing"]},
-                        },
-                        "required": ["pointer", "detail", "code"],
-                    },
-                },
             },
             "required": ["type", "title", "status", "detail", "instance"],
             # Extension members (e.g. canonical_subject, existing_response) are
@@ -79,18 +53,20 @@ def _build_openapi_schema(app: FastAPI) -> dict[str, Any]:
 
             responses = operation.setdefault("responses", {})
 
+            # The exposed contract reports malformed client input as 400 even
+            # though FastAPI raises 422 -- see "422 vs 400" in docs/api.md.
+            if responses.pop("422", None) is not None:
+                responses.setdefault("400", {"description": "Invalid request payload"})
+
             # No route declares a 500 today, so the canonical unhandled-error
             # envelope would otherwise be undiscoverable from the schema.
             responses.setdefault("500", {"description": "Unexpected internal error"})
 
-            for status_code, response in responses.items():
+            for status_code, response in list(responses.items()):
                 if not isinstance(response, dict):
                     continue
 
                 if status_code == "default" or status_code.startswith(("4", "5")):
-                    # Replace, not setdefault: FastAPI's auto-generated 422 carries
-                    # an application/json entry pointing at HTTPValidationError,
-                    # which is popped below. Leaving it would emit a dangling $ref.
                     response["content"] = dict(problem_json_content)
 
     for leftover in ("HTTPValidationError", "ValidationError"):

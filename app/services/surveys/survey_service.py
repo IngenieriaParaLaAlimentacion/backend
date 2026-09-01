@@ -75,7 +75,6 @@ class SurveyService:
             return
         if response_target != survey.response_target:
             raise SurveyLockedError(
-                "response_target_changed",
                 "A survey with recorded responses cannot change its response target.",
             )
         new_by_id = {q.id: q for q in new_questions if q.id is not None}
@@ -84,19 +83,16 @@ class SurveyService:
             new = new_by_id.get(question.id)
             if new is None:
                 raise SurveyLockedError(
-                    "question_removed",
                     "A question cannot be removed from a survey that has "
                     "recorded responses.",
                 )
             if new.response_type != question.response_type:
                 raise SurveyLockedError(
-                    "response_type_changed",
                     "A question's response type cannot change once the survey "
                     "has recorded responses.",
                 )
             if new.is_required and not question.is_required:
                 raise SurveyLockedError(
-                    "question_made_required",
                     "An optional question cannot become required once the "
                     "survey has recorded responses.",
                 )
@@ -112,7 +108,6 @@ class SurveyService:
         )
         if referenced_ids:
             raise SurveyLockedError(
-                "option_in_use",
                 "An option already chosen by a recorded response cannot be removed.",
             )
 
@@ -329,7 +324,6 @@ class SurveyService:
         self._assert_can_edit(actor, survey)
         if survey.response_count > 0:
             raise SurveyLockedError(
-                "has_responses",
                 "A survey with recorded responses cannot be deleted.",
             )
         await self.uow.survey_repo.delete(survey)

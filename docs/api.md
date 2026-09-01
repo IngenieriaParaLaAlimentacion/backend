@@ -34,7 +34,7 @@ Endpoints that do not require authentication (e.g., login, registration) are exp
 Errors follow [RFC 7807 — Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc7807).
 **Every** error response — domain errors, validation failures, unrouted paths, wrong
 methods, and unhandled exceptions alike — is served as `application/problem+json`
-with the same members.
+with the same five members.
 
 ```json
 {
@@ -53,8 +53,6 @@ with the same members.
 | `status` | HTTP status code. |
 | `detail` | Human-readable explanation of this specific occurrence. Always a string. |
 | `instance` | The request path where the error occurred. |
-| `reason` | Optional machine-readable sub-code distinguishing variants of one `type`. |
-| `errors` | Present on validation failures only — see below. |
 
 ### Stability contract
 
@@ -62,43 +60,18 @@ with the same members.
 new values may be added, existing values are not renamed or removed without notice.
 
 `title` and `detail` are human-readable prose for developers and logs.
-**Do not display or parse them** — they may be reworded at any time. Per-field
-failures are in `errors[]`.
+**Do not display or parse them** — they may be reworded at any time.
 
 The full list of `type` values is generated from the exception registry into
 [`errors.md`](errors.md) and [`errors.json`](errors.json). Regenerate with
 `poetry run python docs/generate_error_catalog.py`.
 
-### Validation errors
+### 422 vs 400 for validation errors
 
-A request that fails schema validation returns `422 Unprocessable Entity` with a
-string `detail` and a per-field `errors[]` array. Submitted values are never echoed
-back.
+FastAPI returns `422 Unprocessable Entity` by default when Pydantic rejects a request body or query parameter. The OpenAPI contract exposed to clients maps these to `400 Bad Request` instead (see `app/core/openapi.py`), which is the semantically correct code for malformed client input.
 
-```json
-{
-  "type": "/errors/validation-failed",
-  "title": "Validation failed",
-  "status": 422,
-  "detail": "The request contains invalid or missing fields.",
-  "instance": "/api/v1/auth/login",
-  "errors": [
-    {"pointer": "/body/email", "detail": "Field required", "code": "missing"}
-  ]
-}
-```
-
-`pointer` names the offending field: `loc[0]` is the request part
-(`/body/...`, `/query/...`, `/path/...`) and list indices appear as segments
-(`/body/tags/1`).
-
-### Sub-codes
-
-Where one `type` covers several distinguishable triggers with the same client
-recovery, the specific trigger travels in an optional `reason` member — for
-example `/errors/survey-locked` with `"reason": "question_removed"` vs
-`"reason": "has_responses"`. Branch on `type` first; use `reason` only to refine
-the message you show.
+The response body is the same envelope as any other error, with a string `detail`.
+Individual field failures are not reported.
 
 ### Extension members
 

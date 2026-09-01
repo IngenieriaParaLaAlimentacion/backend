@@ -44,10 +44,7 @@ async def test_validation_error_is_problem_json_with_string_detail(client):
     response = await client.post(LOGIN_URL, json={})
 
     body = _assert_problem(response, status_code=422, error_type="validation-failed")
-    pointers = {error["pointer"] for error in body["errors"]}
-    assert "/body/email" in pointers
-    assert all(isinstance(error["detail"], str) for error in body["errors"])
-    assert all(isinstance(error["code"], str) for error in body["errors"])
+    assert set(body) == {"type", "title", "status", "detail", "instance"}
 
 
 async def test_validation_error_does_not_echo_submitted_values(client):
@@ -67,8 +64,7 @@ async def test_validation_error_does_not_echo_submitted_values(client):
 async def test_query_validation_error_is_problem_json(client, admin_headers):
     response = await client.get("/api/v1/subjects?page=0", headers=admin_headers)
 
-    body = _assert_problem(response, status_code=422, error_type="validation-failed")
-    assert body["errors"][0]["pointer"].startswith("/query/")
+    _assert_problem(response, status_code=422, error_type="validation-failed")
 
 
 async def test_unrouted_path_is_problem_json(client):
