@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import pytest
 import pytest_asyncio
@@ -15,25 +15,47 @@ CATEGORIES_URL = "/api/v1/food-catalog/categories"
 class Catalog:
     category_meats: UUID
     category_fruits: UUID
-    food_chicken: UUID  # "Pechuga de pollo", Carnes, active
-    food_beef: UUID  # "Bife de vaca", Carnes, active
+    food_chicken: UUID  # "Pechuga de pollo", Carnes, active, has nutrient values
+    food_beef: UUID  # "Bife de vaca", Carnes, active, no nutrient values
     food_apple: UUID  # "Manzana", Frutas, active
     food_retired: UUID  # "Alimento discontinuado", Carnes, inactive
+    nutrient_protein: UUID  # macronutrient, "Proteínas", g
+    nutrient_dha: UUID  # fatty_acid, "22:6 DHA", g
+    nutrient_vitamin_c: UUID  # vitamin, "Vitamina C", mg
 
 
 @pytest_asyncio.fixture
 async def catalog(app) -> Catalog:
-    """Seed food categories and foods directly — this module has no create
-    endpoint, the catalog is only ever populated via the seed script."""
+    """Seed food categories, foods, nutrients and nutrient values directly —
+    this module has no create endpoint, the catalog is only ever populated
+    via the seed script."""
+    from decimal import Decimal
+
     from app.db.database import AsyncSessionLocal
-    from app.domain.food_catalog import MeasurementUnit
+    from app.domain.food_catalog import MeasurementUnit, NutrientGroup
     from app.models.food_catalog.food import Food
     from app.models.food_catalog.food_category import FoodCategory
+    from app.models.food_catalog.food_nutrient_value import FoodNutrientValue
+    from app.models.food_catalog.nutrient import Nutrient
 
     async with AsyncSessionLocal() as session:
         meats = FoodCategory(code="carnes", name="Carnes", sara2_group_number=7)
         fruits = FoodCategory(code="frutas", name="Frutas", sara2_group_number=2)
         session.add_all([meats, fruits])
+
+        protein = Nutrient(
+            code="protein",
+            name="Proteínas",
+            unit="g",
+            group=NutrientGroup.MACRONUTRIENT,
+        )
+        dha = Nutrient(
+            code="dha", name="22:6 DHA", unit="g", group=NutrientGroup.FATTY_ACID
+        )
+        vitamin_c = Nutrient(
+            code="vitamin_c", name="Vitamina C", unit="mg", group=NutrientGroup.VITAMIN
+        )
+        session.add_all([protein, dha, vitamin_c])
         await session.flush()
 
         chicken = Food(
@@ -65,6 +87,29 @@ async def catalog(app) -> Catalog:
             is_active=False,
         )
         session.add_all([chicken, beef, apple, retired])
+        await session.flush()
+
+        # Only chicken has measured nutrients — mirrors SARA 2's real sparsity
+        # (a food not covered here simply has no row, never a `0`).
+        session.add_all(
+            [
+                FoodNutrientValue(
+                    food_id=chicken.id,
+                    nutrient_id=protein.id,
+                    amount_per_100g=Decimal("31.0200"),
+                ),
+                FoodNutrientValue(
+                    food_id=chicken.id,
+                    nutrient_id=dha.id,
+                    amount_per_100g=Decimal("0.0100"),
+                ),
+                FoodNutrientValue(
+                    food_id=chicken.id,
+                    nutrient_id=vitamin_c.id,
+                    amount_per_100g=Decimal("0.0000"),
+                ),
+            ]
+        )
         await session.commit()
 
         return Catalog(
@@ -74,6 +119,9 @@ async def catalog(app) -> Catalog:
             food_beef=beef.id,
             food_apple=apple.id,
             food_retired=retired.id,
+            nutrient_protein=protein.id,
+            nutrient_dha=dha.id,
+            nutrient_vitamin_c=vitamin_c.id,
         )
 
 
@@ -186,3 +234,66 @@ class TestCategories:
     async def test_response_is_not_paginated(self, client, admin_headers, catalog):
         response = await client.get(CATEGORIES_URL, headers=admin_headers)
         assert isinstance(response.json(), list)
+
+
+class TestFoodDetail:
+    async def test_unauthenticated_returns_401(self, client, catalog):
+        response = await client.get(f"{FOODS_URL}/{catalog.food_chicken}")
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_missing_food_returns_404(self, client, admin_headers):
+        response = await client.get(f"{FOODS_URL}/{uuid4()}", headers=admin_headers)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    async def test_returns_full_detail_with_nutrients(
+        self, client, admin_headers, catalog
+    ):
+        response = await client.get(
+            f"{FOODS_URL}/{catalog.food_chicken}", headers=admin_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert body["code"] == "pollo_pechuga"
+        assert body["name"] == "Pechuga de pollo"
+        assert body["category"] == {
+            "id": str(catalog.category_meats),
+            "name": "Carnes",
+        }
+
+        nutrients = body["nutrients"]
+        assert len(nutrients) == 3
+        # Sorted macronutrient -> fatty_acid -> vitamin (SARA 2's own split).
+        assert [n["nutrient"]["name"] for n in nutrients] == [
+            "Proteínas",
+            "22:6 DHA",
+            "Vitamina C",
+        ]
+        protein = nutrients[0]
+        assert protein["nutrient"] == {
+            "id": str(catalog.nutrient_protein),
+            "name": "Proteínas",
+            "unit": "g",
+            "group": "macronutrient",
+        }
+        assert protein["amount_per_100g"] == "31.0200"
+
+    async def test_food_with_no_measured_nutrients_returns_empty_list(
+        self, client, admin_headers, catalog
+    ):
+        """Blank source cells mean absent rows, never a synthetic `0` — a food
+        with none measured returns an empty ``nutrients`` list, not zeros."""
+        response = await client.get(
+            f"{FOODS_URL}/{catalog.food_beef}", headers=admin_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["nutrients"] == []
+
+    async def test_inactive_food_is_still_returned(
+        self, client, admin_headers, catalog
+    ):
+        """Unlike the listing, the detail view ignores `is_active`."""
+        response = await client.get(
+            f"{FOODS_URL}/{catalog.food_retired}", headers=admin_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["is_active"] is False

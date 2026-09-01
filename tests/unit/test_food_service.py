@@ -1,10 +1,12 @@
 import uuid
+from decimal import Decimal
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.domain.food_catalog import FoodListingParams, MeasurementUnit
+from app.domain.food_catalog import FoodListingParams, MeasurementUnit, NutrientGroup
 from app.domain.pagination import PaginatedResult
+from app.exceptions.domain_exceptions import FoodNotFoundError
 from app.services.food_catalog.food_service import FoodService
 
 pytestmark = pytest.mark.asyncio
@@ -24,7 +26,30 @@ def make_food():
         food.base_unit = MeasurementUnit.KILOGRAMOS
         food.is_active = True
         food.category = category
+        food.nutrient_values = []
         return food
+
+    return _make
+
+
+@pytest.fixture
+def make_nutrient_value():
+    def _make(
+        name: str = "Proteínas",
+        unit: str = "g",
+        group: NutrientGroup = NutrientGroup.MACRONUTRIENT,
+        amount: Decimal = Decimal("10.0"),
+    ):
+        nutrient = MagicMock()
+        nutrient.id = uuid.uuid4()
+        nutrient.name = name
+        nutrient.unit = unit
+        nutrient.group = group
+
+        value = MagicMock()
+        value.nutrient = nutrient
+        value.amount_per_100g = amount
+        return value
 
     return _make
 
@@ -68,3 +93,51 @@ class TestListFoods:
         item = result.items[0]
         assert item.name == "Pechuga de pollo"
         assert item.category.name == "Carnes"
+
+
+class TestGetFood:
+    async def test_nutrients_sorted_by_group_then_name(
+        self, make_food, make_nutrient_value
+    ):
+        food = make_food()
+        food.nutrient_values = [
+            make_nutrient_value(name="Zinc", group=NutrientGroup.MINERAL),
+            make_nutrient_value(name="Proteínas", group=NutrientGroup.MACRONUTRIENT),
+            make_nutrient_value(name="22:6 DHA", group=NutrientGroup.FATTY_ACID),
+            make_nutrient_value(name="Vitamina C", group=NutrientGroup.VITAMIN),
+            make_nutrient_value(
+                name="Grasas totales", group=NutrientGroup.MACRONUTRIENT
+            ),
+        ]
+        uow = AsyncMock()
+        uow.food_repo.get_by_id = AsyncMock(return_value=food)
+
+        result = await FoodService(uow).get_food(food.id)
+
+        names = [v.nutrient.name for v in result.nutrients]
+        assert names == [
+            "Grasas totales",
+            "Proteínas",
+            "22:6 DHA",
+            "Vitamina C",
+            "Zinc",
+        ]
+
+    async def test_blank_source_cells_are_simply_absent(self, make_food):
+        """A food with fewer than 39 measured nutrients returns exactly the
+        rows it has — never a synthetic zero for the missing ones."""
+        food = make_food()
+        food.nutrient_values = []
+        uow = AsyncMock()
+        uow.food_repo.get_by_id = AsyncMock(return_value=food)
+
+        result = await FoodService(uow).get_food(food.id)
+
+        assert result.nutrients == []
+
+    async def test_missing_food_raises_not_found(self):
+        uow = AsyncMock()
+        uow.food_repo.get_by_id = AsyncMock(return_value=None)
+
+        with pytest.raises(FoodNotFoundError):
+            await FoodService(uow).get_food(uuid.uuid4())
