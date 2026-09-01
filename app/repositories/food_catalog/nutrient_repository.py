@@ -21,6 +21,11 @@ class NutrientRepository:
         return nutrient
 
     async def get_all(self) -> list[Nutrient]:
-        """Return every nutrient."""
+        """Return every nutrient.
+
+        Seed-only: loads the full table into memory to build the upsert-by-code
+        diff at container boot. Do not call from request-time code — use a
+        paginated listing method instead.
+        """
         result = await self.db.execute(select(Nutrient))
         return list(result.scalars().all())
