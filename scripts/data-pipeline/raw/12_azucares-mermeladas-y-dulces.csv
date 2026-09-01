@@ -1,0 +1,586 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,Alcohol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,Alcohol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,Alcohol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,Alcohol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,Alcohol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,Alcohol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,Alcohol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,Alcohol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,Alcohol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,Alcohol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,Alcohol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,Alcohol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,Alcohol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,Alcohol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,Alcohol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,Fibra alimentaria,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,Fibra alimentaria,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,Fibra alimentaria,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,Fibra alimentaria,"2,5"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,Fibra alimentaria,"4,3"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,Fibra alimentaria,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,Fibra alimentaria,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,Fibra alimentaria,"4,1"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,Fibra alimentaria,"4,3"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,Fibra alimentaria,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,Fibra alimentaria,"1,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,Fibra alimentaria,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,Fibra alimentaria,"1,1"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,Fibra alimentaria,"1,5"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,Fibra alimentaria,"0,2"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,Azúcar agregado,"99,8"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,Azúcar agregado,"97,8"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,Azúcar agregado,"97,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,Azúcar agregado,"52,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,Azúcar agregado,"22,9"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,Azúcar agregado,"44,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,Azúcar agregado,"60,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,Azúcar agregado,"52,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,Azúcar agregado,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,Azúcar agregado,"40,2"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,Azúcar agregado,"51,2"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,Azúcar agregado,"74,7"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,Azúcar agregado,"43,7"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,Azúcar agregado,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,Azúcar agregado,"82,1"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,Azúcar total,"99,8"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,Azúcar total,"97,8"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,Azúcar total,"97,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,Azúcar total,"52,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,Azúcar total,"22,9"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,Azúcar total,"49,7"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,Azúcar total,"65,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,Azúcar total,"52,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,Azúcar total,"30,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,Azúcar total,"40,2"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,Azúcar total,"51,2"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,Azúcar total,"74,7"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,Azúcar total,"48,5"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,Azúcar total,"29,4"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,Azúcar total,"82,1"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,Carbohidratos totales,"100,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,Carbohidratos totales,"99,8"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,Carbohidratos totales,"98,1"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,Carbohidratos totales,"65,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,Carbohidratos totales,"44,3"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,Carbohidratos totales,"57,4"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,Carbohidratos totales,"65,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,Carbohidratos totales,"70,8"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,Carbohidratos totales,"44,3"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,Carbohidratos totales,"84,7"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,Carbohidratos totales,"70,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,Carbohidratos totales,"74,7"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,Carbohidratos totales,"68,9"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,Carbohidratos totales,"37,6"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,Carbohidratos totales,"82,4"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,Carbohidratos disponibles,"100,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,Carbohidratos disponibles,"99,8"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,Carbohidratos disponibles,"98,1"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,Carbohidratos disponibles,"62,5"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,Carbohidratos disponibles,"40,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,Carbohidratos disponibles,"57,4"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,Carbohidratos disponibles,"65,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,Carbohidratos disponibles,"66,7"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,Carbohidratos disponibles,"40,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,Carbohidratos disponibles,"84,7"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,Carbohidratos disponibles,"69,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,Carbohidratos disponibles,"74,7"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,Carbohidratos disponibles,"67,8"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,Carbohidratos disponibles,"36,1"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,Carbohidratos disponibles,"82,2"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,22:6 n-3 Docosahexaenoico (DHA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,22:6 n-3 Docosahexaenoico (DHA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,22:6 n-3 Docosahexaenoico (DHA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,22:6 n-3 Docosahexaenoico (DHA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,22:6 n-3 Docosahexaenoico (DHA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,22:6 n-3 Docosahexaenoico (DHA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,22:6 n-3 Docosahexaenoico (DHA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,22:6 n-3 Docosahexaenoico (DHA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,22:6 n-3 Docosahexaenoico (DHA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,22:6 n-3 Docosahexaenoico (DHA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,22:6 n-3 Docosahexaenoico (DHA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,22:6 n-3 Docosahexaenoico (DHA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,22:6 n-3 Docosahexaenoico (DHA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,22:6 n-3 Docosahexaenoico (DHA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,22:6 n-3 Docosahexaenoico (DHA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,20:5 n-3 Eicosapentaenoico (EPA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,20:5 n-3 Eicosapentaenoico (EPA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,20:5 n-3 Eicosapentaenoico (EPA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,20:5 n-3 Eicosapentaenoico (EPA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,20:5 n-3 Eicosapentaenoico (EPA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,20:5 n-3 Eicosapentaenoico (EPA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,20:5 n-3 Eicosapentaenoico (EPA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,20:5 n-3 Eicosapentaenoico (EPA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,20:5 n-3 Eicosapentaenoico (EPA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,20:5 n-3 Eicosapentaenoico (EPA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,20:5 n-3 Eicosapentaenoico (EPA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,20:5 n-3 Eicosapentaenoico (EPA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,20:5 n-3 Eicosapentaenoico (EPA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,20:5 n-3 Eicosapentaenoico (EPA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,20:5 n-3 Eicosapentaenoico (EPA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,20:4 Araquidónico,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,20:4 Araquidónico,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,20:4 Araquidónico,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,20:4 Araquidónico,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,20:4 Araquidónico,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,20:4 Araquidónico,"0,008"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,20:4 Araquidónico,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,20:4 Araquidónico,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,20:4 Araquidónico,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,20:4 Araquidónico,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,20:4 Araquidónico,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,20:4 Araquidónico,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,20:4 Araquidónico,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,20:4 Araquidónico,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,20:4 Araquidónico,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,18:3 cis Alfa linolénico (ALA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,18:3 cis Alfa linolénico (ALA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,18:3 cis Alfa linolénico (ALA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,18:3 cis Alfa linolénico (ALA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,18:3 cis Alfa linolénico (ALA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,18:3 cis Alfa linolénico (ALA),"0,045"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,18:3 cis Alfa linolénico (ALA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,18:3 cis Alfa linolénico (ALA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,18:3 cis Alfa linolénico (ALA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,18:3 cis Alfa linolénico (ALA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,18:3 cis Alfa linolénico (ALA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,18:3 cis Alfa linolénico (ALA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,18:3 cis Alfa linolénico (ALA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,18:3 cis Alfa linolénico (ALA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,18:3 cis Alfa linolénico (ALA),0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,18:2 cis Linoléico,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,18:2 cis Linoléico,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,18:2 cis Linoléico,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,18:2 cis Linoléico,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,18:2 cis Linoléico,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,18:2 cis Linoléico,"0,12"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,18:2 cis Linoléico,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,18:2 cis Linoléico,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,18:2 cis Linoléico,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,18:2 cis Linoléico,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,18:2 cis Linoléico,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,18:2 cis Linoléico,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,18:2 cis Linoléico,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,18:2 cis Linoléico,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,18:2 cis Linoléico,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,Trans,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,Trans,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,Trans,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,Trans,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,Trans,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,Trans,"0,33"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,Trans,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,Trans,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,Trans,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,Trans,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,Trans,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,Trans,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,Trans,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,Trans,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,Trans,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,Poliinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,Poliinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,Poliinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,Poliinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,Poliinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,Poliinsaturados,"0,34"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,Poliinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,Poliinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,Poliinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,Poliinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,Poliinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,Poliinsaturados,"0,05"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,Poliinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,Poliinsaturados,"0,05"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,Poliinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,Monoinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,Monoinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,Monoinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,Monoinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,Monoinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,Monoinsaturados,"1,92"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,Monoinsaturados,"0,15"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,Monoinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,Monoinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,Monoinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,Monoinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,Monoinsaturados,"0,03"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,Monoinsaturados,"0,04"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,Monoinsaturados,"0,01"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,Monoinsaturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,Saturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,Saturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,Saturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,Saturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,Saturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,Saturados,"4,07"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,Saturados,"0,30"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,Saturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,Saturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,Saturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,Saturados,"0,01"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,Saturados,"0,02"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,Saturados,"0,01"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,Saturados,"0,01"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,Saturados,"0,00"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,Colesterol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,Colesterol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,Colesterol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,Colesterol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,Colesterol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,Colesterol,29
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,Colesterol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,Colesterol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,Colesterol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,Colesterol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,Colesterol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,Colesterol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,Colesterol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,Colesterol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,Colesterol,0
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,Lípidos totales,"0,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,Lípidos totales,"0,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,Lípidos totales,"0,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,Lípidos totales,"0,1"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,Lípidos totales,"0,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,Lípidos totales,"6,6"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,Lípidos totales,"0,5"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,Lípidos totales,"0,1"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,Lípidos totales,"0,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,Lípidos totales,"0,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,Lípidos totales,"0,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,Lípidos totales,"0,1"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,Lípidos totales,"0,1"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,Lípidos totales,"0,1"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,Lípidos totales,"0,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,Proteínas,"0,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,Proteínas,"0,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,Proteínas,"0,1"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,Proteínas,"0,9"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,Proteínas,"0,9"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,Proteínas,"6,5"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,Proteínas,"5,5"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,Proteínas,"0,4"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,Proteínas,"0,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,Proteínas,"0,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,Proteínas,"0,2"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,Proteínas,"0,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,Proteínas,"0,4"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,Proteínas,"0,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,Proteínas,"0,3"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,Agua,"0,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,Agua,"0,2"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,Agua,"1,3"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,Agua,"31,7"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,Agua,"52,6"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,Agua,"28,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,Agua,"27,5"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,Agua,"28,5"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,Agua,"55,8"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,Agua,"20,4"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,Agua,"29,8"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,Agua,"21,9"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,Agua,"30,5"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,Agua,"62,0"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,Agua,"17,1"
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar blanca molida,Valor energético,400
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar impalpable,Valor energético,399
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Azúcar morena / azúcar mascabo,Valor energético,393
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata,Valor energético,255
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de batata light,Valor energético,164
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche,Valor energético,315
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de leche light,Valor energético,287
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo,Valor energético,269
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Dulce de membrillo light,Valor energético,160
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Glucosa,Valor energético,339
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Jalea tipo membrillo,Valor energético,277
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Kero o melaza,Valor energético,300
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas,Valor energético,273
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Mermelada de frutas light,Valor energético,145
+12,"Azúcares, mermeladas y dulces",macronutrientes,103,Miel,Valor energético,330
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Vitamina D,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Vitamina D,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Vitamina D,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Vitamina D,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Vitamina D,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Vitamina D,"0,24"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Vitamina D,"0,24"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Vitamina D,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Vitamina D,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Vitamina D,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Vitamina D,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Vitamina D,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Vitamina D,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Vitamina D,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Vitamina D,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Vitamina C,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Vitamina C,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Vitamina C,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Vitamina C,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Vitamina C,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Vitamina C,"2,6"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Vitamina C,"2,6"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Vitamina C,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Vitamina C,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Vitamina C,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Vitamina C,"0,9"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Vitamina C,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Vitamina C,"8,8"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Vitamina C,"15,0"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Vitamina C,"0,5"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Vitamina B-12,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Vitamina B-12,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Vitamina B-12,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Vitamina B-12,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Vitamina B-12,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Vitamina B-12,"0,31"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Vitamina B-12,"0,31"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Vitamina B-12,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Vitamina B-12,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Vitamina B-12,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Vitamina B-12,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Vitamina B-12,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Vitamina B-12,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Vitamina B-12,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Vitamina B-12,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Riboflavina,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Riboflavina,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Riboflavina,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Riboflavina,"0,047"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Riboflavina,"0,047"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Riboflavina,"0,405"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Riboflavina,"0,405"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Riboflavina,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Riboflavina,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Riboflavina,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Riboflavina,"0,026"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Riboflavina,"0,002"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Riboflavina,"0,076"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Riboflavina,"0,020"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Riboflavina,"0,038"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Tiamina,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Tiamina,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Tiamina,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Tiamina,"0,056"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Tiamina,"0,056"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Tiamina,"0,016"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Tiamina,"0,016"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Tiamina,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Tiamina,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Tiamina,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Tiamina,"0,001"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Tiamina,"0,041"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Tiamina,"0,016"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Tiamina,"0,010"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Tiamina,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Retinol,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Retinol,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Retinol,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Retinol,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Retinol,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Retinol,73
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Retinol,73
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Retinol,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Retinol,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Retinol,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Retinol,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Retinol,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Retinol,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Retinol,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Retinol,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,"Vitamina A, RAE",0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,"Vitamina A, RAE",0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,"Vitamina A, RAE",0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,"Vitamina A, RAE",0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,"Vitamina A, RAE",0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,"Vitamina A, RAE",74
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,"Vitamina A, RAE",74
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,"Vitamina A, RAE",0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,"Vitamina A, RAE",0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,"Vitamina A, RAE",0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,"Vitamina A, RAE",0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,"Vitamina A, RAE",0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,"Vitamina A, RAE",0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,"Vitamina A, RAE",0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,"Vitamina A, RAE",0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Ácido fólico,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Ácido fólico,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Ácido fólico,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Ácido fólico,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Ácido fólico,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Ácido fólico,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Ácido fólico,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Ácido fólico,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Ácido fólico,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Ácido fólico,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Ácido fólico,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Ácido fólico,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Ácido fólico,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Ácido fólico,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Ácido fólico,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Folato EFD,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Folato EFD,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Folato EFD,1
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Folato EFD,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Folato EFD,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Folato EFD,11
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Folato EFD,11
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Folato EFD,11
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Folato EFD,11
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Folato EFD,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Folato EFD,2
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Folato EFD,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Folato EFD,11
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Folato EFD,18
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Folato EFD,2
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Niacina,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Niacina,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Niacina,"0,11"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Niacina,"0,54"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Niacina,"0,54"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Niacina,"0,21"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Niacina,"0,21"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Niacina,
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Niacina,
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Niacina,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Niacina,"0,04"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Niacina,"0,93"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Niacina,"0,04"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Niacina,"0,08"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Niacina,"0,12"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Zinc,"0,01"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Zinc,"0,01"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Zinc,"0,03"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Zinc,"0,3"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Zinc,"0,3"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Zinc,"0,7"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Zinc,"0,7"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Zinc,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Zinc,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Zinc,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Zinc,"0,03"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Zinc,"0,29"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Zinc,"0,06"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Zinc,"0,05"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Zinc,"0,22"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Magnesio,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Magnesio,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Magnesio,9
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Magnesio,25
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Magnesio,25
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Magnesio,22
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Magnesio,22
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Magnesio,6
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Magnesio,6
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Magnesio,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Magnesio,6
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Magnesio,242
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Magnesio,4
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Magnesio,4
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Magnesio,2
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Hierro,"0,05"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Hierro,"0,05"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Hierro,"0,71"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Hierro,"0,65"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Hierro,"0,65"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Hierro,"0,37"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Hierro,"0,37"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Hierro,"0,73"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Hierro,"0,73"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Hierro,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Hierro,"0,19"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Hierro,"4,72"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Hierro,"0,49"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Hierro,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Hierro,"0,42"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Fósforo,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Fósforo,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Fósforo,4
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Fósforo,35
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Fósforo,35
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Fósforo,176
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Fósforo,176
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Fósforo,20
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Fósforo,20
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Fósforo,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Fósforo,6
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Fósforo,31
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Fósforo,19
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Fósforo,7
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Fósforo,4
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Cobre,"0,007"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Cobre,"0,007"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Cobre,"0,047"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Cobre,"0,11"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Cobre,"0,11"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Cobre,"0,004"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Cobre,"0,004"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Cobre,
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Cobre,
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Cobre,"0,0"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Cobre,"0,011"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Cobre,"0,487"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Cobre,"0,1"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Cobre,"0,038"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Cobre,"0,036"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Calcio,1
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Calcio,1
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Calcio,83
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Calcio,24
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Calcio,24
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Calcio,253
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Calcio,253
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Calcio,11
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Calcio,11
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Calcio,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Calcio,7
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Calcio,205
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Calcio,20
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Calcio,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Calcio,6
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Potasio,2
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Potasio,2
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Potasio,133
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Potasio,231
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Potasio,231
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Potasio,265
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Potasio,265
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Potasio,83
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Potasio,83
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Potasio,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Potasio,54
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Potasio,1464
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Potasio,77
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Potasio,59
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Potasio,52
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Sodio,1
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Sodio,1
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Sodio,28
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Sodio,19
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Sodio,19
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Sodio,138
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Sodio,138
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Sodio,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Sodio,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Sodio,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Sodio,30
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Sodio,37
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Sodio,32
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Sodio,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Sodio,4
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar blanca molida,Cenizas,"0,01"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar impalpable,Cenizas,"0,01"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Azúcar morena / azúcar mascabo,Cenizas,"0,45"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata,Cenizas,"2,3"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de batata light,Cenizas,"2,3"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche,Cenizas,"1,49"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de leche light,Cenizas,"1,49"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Cenizas,"0,2"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Cenizas,
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Glucosa,Cenizas,0
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Jalea tipo membrillo,Cenizas,"0,12"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Kero o melaza,Cenizas,"3,3"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas,Cenizas,"0,23"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Mermelada de frutas light,Cenizas,"0,3"
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Miel,Cenizas,"0,2"

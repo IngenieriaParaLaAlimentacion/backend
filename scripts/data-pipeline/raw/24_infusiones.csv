@@ -1,0 +1,196 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),Alcohol,0
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),Alcohol,0
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),Alcohol,0
+24,Infusiones,macronutrientes,130,Capucchino preparado,Alcohol,0
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,Alcohol,0
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),Fibra alimentaria,0
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),Fibra alimentaria,0
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),Fibra alimentaria,0
+24,Infusiones,macronutrientes,130,Capucchino preparado,Fibra alimentaria,0
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,Fibra alimentaria,"23,3"
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),Azúcar agregado,0
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),Azúcar agregado,0
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),Azúcar agregado,0
+24,Infusiones,macronutrientes,130,Capucchino preparado,Azúcar agregado,"1,3"
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,Azúcar agregado,"4,6"
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),Azúcar total,0
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),Azúcar total,0
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),Azúcar total,0
+24,Infusiones,macronutrientes,130,Capucchino preparado,Azúcar total,"2,6"
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,Azúcar total,"4,6"
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),Carbohidratos totales,"75,4"
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),Carbohidratos totales,"76,0"
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),Carbohidratos totales,0
+24,Infusiones,macronutrientes,130,Capucchino preparado,Carbohidratos totales,"2,7"
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,Carbohidratos totales,"78,4"
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),Carbohidratos disponibles,"75,4"
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),Carbohidratos disponibles,"76,0"
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),Carbohidratos disponibles,0
+24,Infusiones,macronutrientes,130,Capucchino preparado,Carbohidratos disponibles,"2,7"
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,Carbohidratos disponibles,"55,1"
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),22:6 n-3 Docosahexaenoico (DHA),0
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),22:6 n-3 Docosahexaenoico (DHA),0
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),22:6 n-3 Docosahexaenoico (DHA),0
+24,Infusiones,macronutrientes,130,Capucchino preparado,22:6 n-3 Docosahexaenoico (DHA),0
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,22:6 n-3 Docosahexaenoico (DHA),0
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),20:5 n-3 Eicosapentaenoico (EPA),0
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),20:5 n-3 Eicosapentaenoico (EPA),0
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),20:5 n-3 Eicosapentaenoico (EPA),0
+24,Infusiones,macronutrientes,130,Capucchino preparado,20:5 n-3 Eicosapentaenoico (EPA),0
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,20:5 n-3 Eicosapentaenoico (EPA),0
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),20:4 Araquidónico,0
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),20:4 Araquidónico,0
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),20:4 Araquidónico,0
+24,Infusiones,macronutrientes,130,Capucchino preparado,20:4 Araquidónico,0
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,20:4 Araquidónico,"0,003"
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),18:3 cis Alfa linolénico (ALA),0
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),18:3 cis Alfa linolénico (ALA),0
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),18:3 cis Alfa linolénico (ALA),0
+24,Infusiones,macronutrientes,130,Capucchino preparado,18:3 cis Alfa linolénico (ALA),"0,004"
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,18:3 cis Alfa linolénico (ALA),"0,083"
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),18:2 cis Linoléico,"0,00"
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),18:2 cis Linoléico,"0,00"
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),18:2 cis Linoléico,"0,00"
+24,Infusiones,macronutrientes,130,Capucchino preparado,18:2 cis Linoléico,"0,05"
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,18:2 cis Linoléico,"1,13"
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),Trans,0
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),Trans,0
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),Trans,0
+24,Infusiones,macronutrientes,130,Capucchino preparado,Trans,0
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,Trans,0
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),Poliinsaturados,"0,20"
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),Poliinsaturados,"0,10"
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),Poliinsaturados,"0,00"
+24,Infusiones,macronutrientes,130,Capucchino preparado,Poliinsaturados,"0,05"
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,Poliinsaturados,"1,23"
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),Monoinsaturados,"0,04"
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),Monoinsaturados,"0,02"
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),Monoinsaturados,"0,02"
+24,Infusiones,macronutrientes,130,Capucchino preparado,Monoinsaturados,"0,28"
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,Monoinsaturados,"0,36"
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),Saturados,"0,20"
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),Saturados,"0,10"
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),Saturados,"0,00"
+24,Infusiones,macronutrientes,130,Capucchino preparado,Saturados,"0,65"
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,Saturados,"0,60"
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),Colesterol,0
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),Colesterol,0
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),Colesterol,0
+24,Infusiones,macronutrientes,130,Capucchino preparado,Colesterol,"4,0"
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,Colesterol,0
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),Lípidos totales,"0,5"
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),Lípidos totales,"0,2"
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),Lípidos totales,"0,0"
+24,Infusiones,macronutrientes,130,Capucchino preparado,Lípidos totales,"1,0"
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,Lípidos totales,"2,5"
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),Proteínas,"12,2"
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),Proteínas,"21,6"
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),Proteínas,"0,1"
+24,Infusiones,macronutrientes,130,Capucchino preparado,Proteínas,"1,7"
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,Proteínas,"6,0"
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),Agua,"3,1"
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),Agua,"3,2"
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),Agua,"99,4"
+24,Infusiones,macronutrientes,130,Capucchino preparado,Agua,"94,2"
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,Agua,"8,0"
+24,Infusiones,macronutrientes,130,Café instantáneo (polvo o granulado para preparar),Valor energético,355
+24,Infusiones,macronutrientes,130,Café instantáneo descafeinado (polvo o granulado para preparar),Valor energético,392
+24,Infusiones,macronutrientes,130,Café preparado a partir de grano molido (tipo café de filtro),Valor energético,1
+24,Infusiones,macronutrientes,130,Capucchino preparado,Valor energético,27
+24,Infusiones,macronutrientes,130,Malta instantánea en polvo,Valor energético,267
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Vitamina D,0
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Vitamina D,0
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Vitamina D,0
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Vitamina D,"0,60"
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Vitamina D,0
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Vitamina C,0
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Vitamina C,0
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Vitamina C,0
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Vitamina C,"0,1"
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Vitamina C,0
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Vitamina B-12,0
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Vitamina B-12,0
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Vitamina B-12,0
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Vitamina B-12,"0,21"
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Vitamina B-12,0
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Riboflavina,"0,074"
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Riboflavina,"1,360"
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Riboflavina,"0,076"
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Riboflavina,"0,123"
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Riboflavina,"0,095"
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Tiamina,"0,008"
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Tiamina,0
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Tiamina,"0,014"
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Tiamina,"0,018"
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Tiamina,"0,413"
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Retinol,0
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Retinol,0
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Retinol,0
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Retinol,28
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Retinol,0
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),"Vitamina A, RAE",0
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),"Vitamina A, RAE",0
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),"Vitamina A, RAE",0
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,"Vitamina A, RAE",28
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,"Vitamina A, RAE",0
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Ácido fólico,0
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Ácido fólico,0
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Ácido fólico,0
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Ácido fólico,0
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Ácido fólico,0
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Folato EFD,0
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Folato EFD,0
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Folato EFD,2
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Folato EFD,2
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Folato EFD,52
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Niacina,"28,17"
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Niacina,"28,08"
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Niacina,"0,19"
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Niacina,"0,93"
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Niacina,"17,66"
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Zinc,"0,35"
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Zinc,"0,11"
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Zinc,"0,02"
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Zinc,"0,25"
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Zinc,"0,51"
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Magnesio,327
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Magnesio,311
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Magnesio,3
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Magnesio,20
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Magnesio,244
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Hierro,"4,41"
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Hierro,"3,80"
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Hierro,"0,01"
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Hierro,"0,03"
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Hierro,"4,60"
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Fósforo,303
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Fósforo,286
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Fósforo,3
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Fósforo,48
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Fósforo,580
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Cobre,"0,139"
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Cobre,"0,069"
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Cobre,"0,002"
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Cobre,"0,015"
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Cobre,"0,208"
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Calcio,141
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Calcio,140
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Calcio,2
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Calcio,62
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Calcio,58
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Potasio,3535
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Potasio,3501
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Potasio,49
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Potasio,90
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Potasio,2443
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Sodio,37
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Sodio,23
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Sodio,2
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Sodio,27
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Sodio,83
+24,Infusiones,vitaminas_minerales,131,Café instantáneo (polvo o granulado para preparar),Cenizas,"8,8"
+24,Infusiones,vitaminas_minerales,131,Café instantáneo descafeinado (polvo o granulado para preparar),Cenizas,9
+24,Infusiones,vitaminas_minerales,131,Café preparado a partir de grano molido (tipo café de filtro),Cenizas,"0,35"
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Cenizas,
+24,Infusiones,vitaminas_minerales,131,Malta instantánea en polvo,Cenizas,"5,06"

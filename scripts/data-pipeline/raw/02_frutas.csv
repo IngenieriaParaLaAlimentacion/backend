@@ -1,0 +1,1990 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+2,Frutas,macronutrientes,27,Aceituna negra,Alcohol,0
+2,Frutas,macronutrientes,27,Aceituna verde,Alcohol,0
+2,Frutas,macronutrientes,27,Acerola,Alcohol,0
+2,Frutas,macronutrientes,27,Ananá,Alcohol,0
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",Alcohol,0
+2,Frutas,macronutrientes,27,Arándanos,Alcohol,0
+2,Frutas,macronutrientes,27,Banana,Alcohol,0
+2,Frutas,macronutrientes,27,Cereza,Alcohol,0
+2,Frutas,macronutrientes,27,Ciruela,Alcohol,0
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,Alcohol,0
+2,Frutas,macronutrientes,27,Coco rallado,Alcohol,0
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",Alcohol,0
+2,Frutas,macronutrientes,27,Damasco,Alcohol,0
+2,Frutas,macronutrientes,27,Dátiles,Alcohol,0
+2,Frutas,macronutrientes,27,Durazno,Alcohol,0
+2,Frutas,macronutrientes,27,Durazno orejón,Alcohol,0
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",Alcohol,0
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",Alcohol,0
+2,Frutas,macronutrientes,27,Frambuesa,Alcohol,0
+2,Frutas,macronutrientes,27,Frutas abrillantadas,Alcohol,0
+2,Frutas,macronutrientes,27,Aceituna negra,Fibra alimentaria,"1,6"
+2,Frutas,macronutrientes,27,Aceituna verde,Fibra alimentaria,"3,3"
+2,Frutas,macronutrientes,27,Acerola,Fibra alimentaria,"1,1"
+2,Frutas,macronutrientes,27,Ananá,Fibra alimentaria,"1,4"
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",Fibra alimentaria,"0,8"
+2,Frutas,macronutrientes,27,Arándanos,Fibra alimentaria,"2,4"
+2,Frutas,macronutrientes,27,Banana,Fibra alimentaria,"2,6"
+2,Frutas,macronutrientes,27,Cereza,Fibra alimentaria,"2,1"
+2,Frutas,macronutrientes,27,Ciruela,Fibra alimentaria,"1,4"
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,Fibra alimentaria,"7,1"
+2,Frutas,macronutrientes,27,Coco rallado,Fibra alimentaria,"4,5"
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",Fibra alimentaria,"1,0"
+2,Frutas,macronutrientes,27,Damasco,Fibra alimentaria,"2,0"
+2,Frutas,macronutrientes,27,Dátiles,Fibra alimentaria,"7,4"
+2,Frutas,macronutrientes,27,Durazno,Fibra alimentaria,"1,5"
+2,Frutas,macronutrientes,27,Durazno orejón,Fibra alimentaria,"8,2"
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",Fibra alimentaria,"1,3"
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",Fibra alimentaria,"1,3"
+2,Frutas,macronutrientes,27,Frambuesa,Fibra alimentaria,"6,5"
+2,Frutas,macronutrientes,27,Frutas abrillantadas,Fibra alimentaria,"1,6"
+2,Frutas,macronutrientes,27,Aceituna negra,Azúcar agregado,0
+2,Frutas,macronutrientes,27,Aceituna verde,Azúcar agregado,0
+2,Frutas,macronutrientes,27,Acerola,Azúcar agregado,0
+2,Frutas,macronutrientes,27,Ananá,Azúcar agregado,0
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",Azúcar agregado,"8,5"
+2,Frutas,macronutrientes,27,Arándanos,Azúcar agregado,0
+2,Frutas,macronutrientes,27,Banana,Azúcar agregado,0
+2,Frutas,macronutrientes,27,Cereza,Azúcar agregado,0
+2,Frutas,macronutrientes,27,Ciruela,Azúcar agregado,0
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,Azúcar agregado,0
+2,Frutas,macronutrientes,27,Coco rallado,Azúcar agregado,"35,8"
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",Azúcar agregado,"8,9"
+2,Frutas,macronutrientes,27,Damasco,Azúcar agregado,0
+2,Frutas,macronutrientes,27,Dátiles,Azúcar agregado,0
+2,Frutas,macronutrientes,27,Durazno,Azúcar agregado,0
+2,Frutas,macronutrientes,27,Durazno orejón,Azúcar agregado,0
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",Azúcar agregado,"12,1"
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",Azúcar agregado,0
+2,Frutas,macronutrientes,27,Frambuesa,Azúcar agregado,0
+2,Frutas,macronutrientes,27,Frutas abrillantadas,Azúcar agregado,"40,3"
+2,Frutas,macronutrientes,27,Aceituna negra,Azúcar total,0
+2,Frutas,macronutrientes,27,Aceituna verde,Azúcar total,"0,5"
+2,Frutas,macronutrientes,27,Acerola,Azúcar total,"5,0"
+2,Frutas,macronutrientes,27,Ananá,Azúcar total,"9,9"
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",Azúcar total,"16,9"
+2,Frutas,macronutrientes,27,Arándanos,Azúcar total,"10,0"
+2,Frutas,macronutrientes,27,Banana,Azúcar total,"12,23"
+2,Frutas,macronutrientes,27,Cereza,Azúcar total,"12,8"
+2,Frutas,macronutrientes,27,Ciruela,Azúcar total,"9,9"
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,Azúcar total,"38,1"
+2,Frutas,macronutrientes,27,Coco rallado,Azúcar total,"43,2"
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",Azúcar total,"17,9"
+2,Frutas,macronutrientes,27,Damasco,Azúcar total,"9,2"
+2,Frutas,macronutrientes,27,Dátiles,Azúcar total,"64,9"
+2,Frutas,macronutrientes,27,Durazno,Azúcar total,"8,4"
+2,Frutas,macronutrientes,27,Durazno orejón,Azúcar total,"41,7"
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",Azúcar total,"16,9"
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",Azúcar total,"4,81"
+2,Frutas,macronutrientes,27,Frambuesa,Azúcar total,"4,4"
+2,Frutas,macronutrientes,27,Frutas abrillantadas,Azúcar total,"80,7"
+2,Frutas,macronutrientes,27,Aceituna negra,Carbohidratos totales,"6,0"
+2,Frutas,macronutrientes,27,Aceituna verde,Carbohidratos totales,"4,0"
+2,Frutas,macronutrientes,27,Acerola,Carbohidratos totales,"7,7"
+2,Frutas,macronutrientes,27,Ananá,Carbohidratos totales,"13,7"
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",Carbohidratos totales,"21,1"
+2,Frutas,macronutrientes,27,Arándanos,Carbohidratos totales,"14,5"
+2,Frutas,macronutrientes,27,Banana,Carbohidratos totales,"23,0"
+2,Frutas,macronutrientes,27,Cereza,Carbohidratos totales,"14,8"
+2,Frutas,macronutrientes,27,Ciruela,Carbohidratos totales,"12,9"
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,Carbohidratos totales,"61,6"
+2,Frutas,macronutrientes,27,Coco rallado,Carbohidratos totales,"47,7"
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",Carbohidratos totales,"18,9"
+2,Frutas,macronutrientes,27,Damasco,Carbohidratos totales,"12,9"
+2,Frutas,macronutrientes,27,Dátiles,Carbohidratos totales,"75,0"
+2,Frutas,macronutrientes,27,Durazno,Carbohidratos totales,"12,0"
+2,Frutas,macronutrientes,27,Durazno orejón,Carbohidratos totales,"61,3"
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",Carbohidratos totales,"18,2"
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",Carbohidratos totales,"6,11"
+2,Frutas,macronutrientes,27,Frambuesa,Carbohidratos totales,"11,9"
+2,Frutas,macronutrientes,27,Frutas abrillantadas,Carbohidratos totales,"82,7"
+2,Frutas,macronutrientes,27,Aceituna negra,Carbohidratos disponibles,"4,4"
+2,Frutas,macronutrientes,27,Aceituna verde,Carbohidratos disponibles,"0,5"
+2,Frutas,macronutrientes,27,Acerola,Carbohidratos disponibles,"6,6"
+2,Frutas,macronutrientes,27,Ananá,Carbohidratos disponibles,"11,7"
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",Carbohidratos disponibles,"20,3"
+2,Frutas,macronutrientes,27,Arándanos,Carbohidratos disponibles,"12,1"
+2,Frutas,macronutrientes,27,Banana,Carbohidratos disponibles,"20,4"
+2,Frutas,macronutrientes,27,Cereza,Carbohidratos disponibles,"13,9"
+2,Frutas,macronutrientes,27,Ciruela,Carbohidratos disponibles,"11,5"
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,Carbohidratos disponibles,"56,8"
+2,Frutas,macronutrientes,27,Coco rallado,Carbohidratos disponibles,"43,2"
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",Carbohidratos disponibles,"17,9"
+2,Frutas,macronutrientes,27,Damasco,Carbohidratos disponibles,"9,1"
+2,Frutas,macronutrientes,27,Dátiles,Carbohidratos disponibles,"67,7"
+2,Frutas,macronutrientes,27,Durazno,Carbohidratos disponibles,"10,5"
+2,Frutas,macronutrientes,27,Durazno orejón,Carbohidratos disponibles,"53,1"
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",Carbohidratos disponibles,"16,9"
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",Carbohidratos disponibles,"4,81"
+2,Frutas,macronutrientes,27,Frambuesa,Carbohidratos disponibles,"5,4"
+2,Frutas,macronutrientes,27,Frutas abrillantadas,Carbohidratos disponibles,"81,1"
+2,Frutas,macronutrientes,27,Aceituna negra,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,Aceituna verde,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,Acerola,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,Ananá,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,Arándanos,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,Banana,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,Cereza,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,Ciruela,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,Coco rallado,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,Damasco,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,Dátiles,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,Durazno,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,Durazno orejón,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,Frambuesa,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,Frutas abrillantadas,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,27,Aceituna negra,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,Aceituna verde,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,Acerola,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,Ananá,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,Arándanos,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,Banana,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,Cereza,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,Ciruela,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,Coco rallado,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,Damasco,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,Dátiles,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,Durazno,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,Durazno orejón,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,Frambuesa,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,Frutas abrillantadas,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,27,Aceituna negra,20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,Aceituna verde,20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,Acerola,20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,Ananá,20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,Arándanos,20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,Banana,20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,Cereza,20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,Ciruela,20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,Coco rallado,20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,Damasco,20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,Dátiles,20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,Durazno,20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,Durazno orejón,20:4 Araquidónico,"0,002"
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,Frambuesa,20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,Frutas abrillantadas,20:4 Araquidónico,0
+2,Frutas,macronutrientes,27,Aceituna negra,18:3 cis Alfa linolénico (ALA),0
+2,Frutas,macronutrientes,27,Aceituna verde,18:3 cis Alfa linolénico (ALA),"0,092"
+2,Frutas,macronutrientes,27,Acerola,18:3 cis Alfa linolénico (ALA),"0,044"
+2,Frutas,macronutrientes,27,Ananá,18:3 cis Alfa linolénico (ALA),"0,017"
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",18:3 cis Alfa linolénico (ALA),"0,017"
+2,Frutas,macronutrientes,27,Arándanos,18:3 cis Alfa linolénico (ALA),"0,058"
+2,Frutas,macronutrientes,27,Banana,18:3 cis Alfa linolénico (ALA),"0,027"
+2,Frutas,macronutrientes,27,Cereza,18:3 cis Alfa linolénico (ALA),"0,026"
+2,Frutas,macronutrientes,27,Ciruela,18:3 cis Alfa linolénico (ALA),0
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,18:3 cis Alfa linolénico (ALA),"0,017"
+2,Frutas,macronutrientes,27,Coco rallado,18:3 cis Alfa linolénico (ALA),0
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",18:3 cis Alfa linolénico (ALA),"0,004"
+2,Frutas,macronutrientes,27,Damasco,18:3 cis Alfa linolénico (ALA),0
+2,Frutas,macronutrientes,27,Dátiles,18:3 cis Alfa linolénico (ALA),"0,030"
+2,Frutas,macronutrientes,27,Durazno,18:3 cis Alfa linolénico (ALA),"0,002"
+2,Frutas,macronutrientes,27,Durazno orejón,18:3 cis Alfa linolénico (ALA),"0,009"
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",18:3 cis Alfa linolénico (ALA),"0,001"
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",18:3 cis Alfa linolénico (ALA),"0,001"
+2,Frutas,macronutrientes,27,Frambuesa,18:3 cis Alfa linolénico (ALA),"0,126"
+2,Frutas,macronutrientes,27,Frutas abrillantadas,18:3 cis Alfa linolénico (ALA),0
+2,Frutas,macronutrientes,27,Aceituna negra,18:2 cis Linoléico,"0,63"
+2,Frutas,macronutrientes,27,Aceituna verde,18:2 cis Linoléico,"1,22"
+2,Frutas,macronutrientes,27,Acerola,18:2 cis Linoléico,"0,05"
+2,Frutas,macronutrientes,27,Ananá,18:2 cis Linoléico,"0,02"
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",18:2 cis Linoléico,"0,02"
+2,Frutas,macronutrientes,27,Arándanos,18:2 cis Linoléico,"0,09"
+2,Frutas,macronutrientes,27,Banana,18:2 cis Linoléico,"0,046"
+2,Frutas,macronutrientes,27,Cereza,18:2 cis Linoléico,"0,03"
+2,Frutas,macronutrientes,27,Ciruela,18:2 cis Linoléico,"0,04"
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,18:2 cis Linoléico,"0,04"
+2,Frutas,macronutrientes,27,Coco rallado,18:2 cis Linoléico,"0,39"
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",18:2 cis Linoléico,"0,03"
+2,Frutas,macronutrientes,27,Damasco,18:2 cis Linoléico,"0,08"
+2,Frutas,macronutrientes,27,Dátiles,18:2 cis Linoléico,"0,02"
+2,Frutas,macronutrientes,27,Durazno,18:2 cis Linoléico,"0,08"
+2,Frutas,macronutrientes,27,Durazno orejón,18:2 cis Linoléico,"0,36"
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",18:2 cis Linoléico,"0,05"
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",18:2 cis Linoléico,"0,027"
+2,Frutas,macronutrientes,27,Frambuesa,18:2 cis Linoléico,"0,25"
+2,Frutas,macronutrientes,27,Frutas abrillantadas,18:2 cis Linoléico,"0,02"
+2,Frutas,macronutrientes,27,Aceituna negra,Trans,0
+2,Frutas,macronutrientes,27,Aceituna verde,Trans,0
+2,Frutas,macronutrientes,27,Acerola,Trans,0
+2,Frutas,macronutrientes,27,Ananá,Trans,0
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",Trans,0
+2,Frutas,macronutrientes,27,Arándanos,Trans,0
+2,Frutas,macronutrientes,27,Banana,Trans,0
+2,Frutas,macronutrientes,27,Cereza,Trans,0
+2,Frutas,macronutrientes,27,Ciruela,Trans,0
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,Trans,0
+2,Frutas,macronutrientes,27,Coco rallado,Trans,0
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",Trans,0
+2,Frutas,macronutrientes,27,Damasco,Trans,0
+2,Frutas,macronutrientes,27,Dátiles,Trans,0
+2,Frutas,macronutrientes,27,Durazno,Trans,0
+2,Frutas,macronutrientes,27,Durazno orejón,Trans,0
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",Trans,0
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",Trans,0
+2,Frutas,macronutrientes,27,Frambuesa,Trans,0
+2,Frutas,macronutrientes,27,Frutas abrillantadas,Trans,0
+2,Frutas,macronutrientes,27,Aceituna negra,Poliinsaturados,"0,63"
+2,Frutas,macronutrientes,27,Aceituna verde,Poliinsaturados,"1,31"
+2,Frutas,macronutrientes,27,Acerola,Poliinsaturados,"0,09"
+2,Frutas,macronutrientes,27,Ananá,Poliinsaturados,"0,04"
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",Poliinsaturados,"0,04"
+2,Frutas,macronutrientes,27,Arándanos,Poliinsaturados,"0,15"
+2,Frutas,macronutrientes,27,Banana,Poliinsaturados,"0,073"
+2,Frutas,macronutrientes,27,Cereza,Poliinsaturados,"0,05"
+2,Frutas,macronutrientes,27,Ciruela,Poliinsaturados,"0,04"
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,Poliinsaturados,"0,06"
+2,Frutas,macronutrientes,27,Coco rallado,Poliinsaturados,"0,39"
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",Poliinsaturados,"0,03"
+2,Frutas,macronutrientes,27,Damasco,Poliinsaturados,"0,08"
+2,Frutas,macronutrientes,27,Dátiles,Poliinsaturados,"0,02"
+2,Frutas,macronutrientes,27,Durazno,Poliinsaturados,"0,09"
+2,Frutas,macronutrientes,27,Durazno orejón,Poliinsaturados,"0,37"
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",Poliinsaturados,"0,05"
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",Poliinsaturados,"0,028"
+2,Frutas,macronutrientes,27,Frambuesa,Poliinsaturados,"0,38"
+2,Frutas,macronutrientes,27,Frutas abrillantadas,Poliinsaturados,"0,02"
+2,Frutas,macronutrientes,27,Aceituna negra,Monoinsaturados,"7,65"
+2,Frutas,macronutrientes,27,Aceituna verde,Monoinsaturados,"11,31"
+2,Frutas,macronutrientes,27,Acerola,Monoinsaturados,"0,08"
+2,Frutas,macronutrientes,27,Ananá,Monoinsaturados,"0,01"
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",Monoinsaturados,"0,01"
+2,Frutas,macronutrientes,27,Arándanos,Monoinsaturados,"0,05"
+2,Frutas,macronutrientes,27,Banana,Monoinsaturados,"0,032"
+2,Frutas,macronutrientes,27,Cereza,Monoinsaturados,"0,05"
+2,Frutas,macronutrientes,27,Ciruela,Monoinsaturados,"0,13"
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,Monoinsaturados,"0,05"
+2,Frutas,macronutrientes,27,Coco rallado,Monoinsaturados,"1,51"
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",Monoinsaturados,"0,01"
+2,Frutas,macronutrientes,27,Damasco,Monoinsaturados,"0,17"
+2,Frutas,macronutrientes,27,Dátiles,Monoinsaturados,"0,04"
+2,Frutas,macronutrientes,27,Durazno,Monoinsaturados,"0,07"
+2,Frutas,macronutrientes,27,Durazno orejón,Monoinsaturados,"0,28"
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",Monoinsaturados,"0,04"
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",Monoinsaturados,"0,021"
+2,Frutas,macronutrientes,27,Frambuesa,Monoinsaturados,"0,06"
+2,Frutas,macronutrientes,27,Frutas abrillantadas,Monoinsaturados,"0,01"
+2,Frutas,macronutrientes,27,Aceituna negra,Saturados,"2,28"
+2,Frutas,macronutrientes,27,Aceituna verde,Saturados,"2,03"
+2,Frutas,macronutrientes,27,Acerola,Saturados,"0,07"
+2,Frutas,macronutrientes,27,Ananá,Saturados,"0,01"
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",Saturados,"0,01"
+2,Frutas,macronutrientes,27,Arándanos,Saturados,"0,03"
+2,Frutas,macronutrientes,27,Banana,Saturados,"0,112"
+2,Frutas,macronutrientes,27,Cereza,Saturados,"0,04"
+2,Frutas,macronutrientes,27,Ciruela,Saturados,"0,02"
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,Saturados,"0,09"
+2,Frutas,macronutrientes,27,Coco rallado,Saturados,"31,47"
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",Saturados,"0,01"
+2,Frutas,macronutrientes,27,Damasco,Saturados,"0,03"
+2,Frutas,macronutrientes,27,Dátiles,Saturados,"0,03"
+2,Frutas,macronutrientes,27,Durazno,Saturados,"0,02"
+2,Frutas,macronutrientes,27,Durazno orejón,Saturados,"0,08"
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",Saturados,"0,01"
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",Saturados,"0,006"
+2,Frutas,macronutrientes,27,Frambuesa,Saturados,"0,02"
+2,Frutas,macronutrientes,27,Frutas abrillantadas,Saturados,"0,01"
+2,Frutas,macronutrientes,27,Aceituna negra,Colesterol,0
+2,Frutas,macronutrientes,27,Aceituna verde,Colesterol,0
+2,Frutas,macronutrientes,27,Acerola,Colesterol,0
+2,Frutas,macronutrientes,27,Ananá,Colesterol,0
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",Colesterol,0
+2,Frutas,macronutrientes,27,Arándanos,Colesterol,0
+2,Frutas,macronutrientes,27,Banana,Colesterol,0
+2,Frutas,macronutrientes,27,Cereza,Colesterol,0
+2,Frutas,macronutrientes,27,Ciruela,Colesterol,0
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,Colesterol,0
+2,Frutas,macronutrientes,27,Coco rallado,Colesterol,0
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",Colesterol,0
+2,Frutas,macronutrientes,27,Damasco,Colesterol,0
+2,Frutas,macronutrientes,27,Dátiles,Colesterol,0
+2,Frutas,macronutrientes,27,Durazno,Colesterol,0
+2,Frutas,macronutrientes,27,Durazno orejón,Colesterol,0
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",Colesterol,0
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",Colesterol,0
+2,Frutas,macronutrientes,27,Frambuesa,Colesterol,0
+2,Frutas,macronutrientes,27,Frutas abrillantadas,Colesterol,0
+2,Frutas,macronutrientes,27,Aceituna negra,Lípidos totales,"10,9"
+2,Frutas,macronutrientes,27,Aceituna verde,Lípidos totales,"13,5"
+2,Frutas,macronutrientes,27,Acerola,Lípidos totales,"0,3"
+2,Frutas,macronutrientes,27,Ananá,Lípidos totales,"0,2"
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",Lípidos totales,"0,1"
+2,Frutas,macronutrientes,27,Arándanos,Lípidos totales,"0,3"
+2,Frutas,macronutrientes,27,Banana,Lípidos totales,"0,2"
+2,Frutas,macronutrientes,27,Cereza,Lípidos totales,"0,5"
+2,Frutas,macronutrientes,27,Ciruela,Lípidos totales,"0,2"
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,Lípidos totales,"0,1"
+2,Frutas,macronutrientes,27,Coco rallado,Lípidos totales,"35,5"
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",Lípidos totales,"0,1"
+2,Frutas,macronutrientes,27,Damasco,Lípidos totales,"0,1"
+2,Frutas,macronutrientes,27,Dátiles,Lípidos totales,"0,3"
+2,Frutas,macronutrientes,27,Durazno,Lípidos totales,"0,1"
+2,Frutas,macronutrientes,27,Durazno orejón,Lípidos totales,"0,8"
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",Lípidos totales,"0,1"
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",Lípidos totales,"0,06"
+2,Frutas,macronutrientes,27,Frambuesa,Lípidos totales,"0,7"
+2,Frutas,macronutrientes,27,Frutas abrillantadas,Lípidos totales,"0,1"
+2,Frutas,macronutrientes,27,Aceituna negra,Proteínas,"0,8"
+2,Frutas,macronutrientes,27,Aceituna verde,Proteínas,"1,5"
+2,Frutas,macronutrientes,27,Acerola,Proteínas,"0,4"
+2,Frutas,macronutrientes,27,Ananá,Proteínas,"0,4"
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",Proteínas,"0,4"
+2,Frutas,macronutrientes,27,Arándanos,Proteínas,"0,7"
+2,Frutas,macronutrientes,27,Banana,Proteínas,"1,2"
+2,Frutas,macronutrientes,27,Cereza,Proteínas,"1,1"
+2,Frutas,macronutrientes,27,Ciruela,Proteínas,"0,7"
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,Proteínas,"1,9"
+2,Frutas,macronutrientes,27,Coco rallado,Proteínas,"2,9"
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",Proteínas,"0,4"
+2,Frutas,macronutrientes,27,Damasco,Proteínas,"1,0"
+2,Frutas,macronutrientes,27,Dátiles,Proteínas,"2,1"
+2,Frutas,macronutrientes,27,Durazno,Proteínas,"0,5"
+2,Frutas,macronutrientes,27,Durazno orejón,Proteínas,"3,6"
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",Proteínas,"0,4"
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",Proteínas,"0,44"
+2,Frutas,macronutrientes,27,Frambuesa,Proteínas,"1,2"
+2,Frutas,macronutrientes,27,Frutas abrillantadas,Proteínas,"0,3"
+2,Frutas,macronutrientes,27,Aceituna negra,Agua,"80,0"
+2,Frutas,macronutrientes,27,Aceituna verde,Agua,"75,2"
+2,Frutas,macronutrientes,27,Acerola,Agua,"91,4"
+2,Frutas,macronutrientes,27,Ananá,Agua,"85,3"
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",Agua,"78,0"
+2,Frutas,macronutrientes,27,Arándanos,Agua,"84,2"
+2,Frutas,macronutrientes,27,Banana,Agua,"74,8"
+2,Frutas,macronutrientes,27,Cereza,Agua,"83,0"
+2,Frutas,macronutrientes,27,Ciruela,Agua,"85,7"
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,Agua,"32,9"
+2,Frutas,macronutrientes,27,Coco rallado,Agua,"12,6"
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",Agua,"80,4"
+2,Frutas,macronutrientes,27,Damasco,Agua,"85,4"
+2,Frutas,macronutrientes,27,Dátiles,Agua,"20,9"
+2,Frutas,macronutrientes,27,Durazno,Agua,"86,9"
+2,Frutas,macronutrientes,27,Durazno orejón,Agua,"31,8"
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",Agua,"80,9"
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",Agua,"93,13"
+2,Frutas,macronutrientes,27,Frambuesa,Agua,"85,8"
+2,Frutas,macronutrientes,27,Frutas abrillantadas,Agua,"16,7"
+2,Frutas,macronutrientes,27,Aceituna negra,Valor energético,119
+2,Frutas,macronutrientes,27,Aceituna verde,Valor energético,130
+2,Frutas,macronutrientes,27,Acerola,Valor energético,31
+2,Frutas,macronutrientes,27,Ananá,Valor energético,50
+2,Frutas,macronutrientes,27,"Ananá, enlatado (fruta y almíbar)",Valor energético,84
+2,Frutas,macronutrientes,27,Arándanos,Valor energético,54
+2,Frutas,macronutrientes,27,Banana,Valor energético,92
+2,Frutas,macronutrientes,27,Cereza,Valor energético,65
+2,Frutas,macronutrientes,27,Ciruela,Valor energético,51
+2,Frutas,macronutrientes,27,Ciruela pasa / ciruela seca,Valor energético,236
+2,Frutas,macronutrientes,27,Coco rallado,Valor energético,504
+2,Frutas,macronutrientes,27,"Coctail de frutas, enlatado (fruta y almíbar)",Valor energético,74
+2,Frutas,macronutrientes,27,Damasco,Valor energético,41
+2,Frutas,macronutrientes,27,Dátiles,Valor energético,282
+2,Frutas,macronutrientes,27,Durazno,Valor energético,45
+2,Frutas,macronutrientes,27,Durazno orejón,Valor energético,234
+2,Frutas,macronutrientes,27,"Durazno, enlatado (fruta y almíbar)",Valor energético,70
+2,Frutas,macronutrientes,27,"Durazno, enlatado light (fruta y almíbar)",Valor energético,43
+2,Frutas,macronutrientes,27,Frambuesa,Valor energético,32
+2,Frutas,macronutrientes,27,Frutas abrillantadas,Valor energético,327
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Vitamina D,0
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Vitamina D,0
+2,Frutas,vitaminas_minerales,28,Acerola,Vitamina D,0
+2,Frutas,vitaminas_minerales,28,Ananá,Vitamina D,0
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Vitamina D,0
+2,Frutas,vitaminas_minerales,28,Arándanos,Vitamina D,0
+2,Frutas,vitaminas_minerales,28,Banana,Vitamina D,0
+2,Frutas,vitaminas_minerales,28,Cereza,Vitamina D,0
+2,Frutas,vitaminas_minerales,28,Ciruela,Vitamina D,0
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Vitamina D,0
+2,Frutas,vitaminas_minerales,28,Coco rallado,Vitamina D,0
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Vitamina D,0
+2,Frutas,vitaminas_minerales,28,Damasco,Vitamina D,0
+2,Frutas,vitaminas_minerales,28,Dátiles,Vitamina D,0
+2,Frutas,vitaminas_minerales,28,Durazno,Vitamina D,0
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Vitamina D,0
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Vitamina D,0
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Vitamina D,0
+2,Frutas,vitaminas_minerales,28,Frambuesa,Vitamina D,0
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Vitamina D,0
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Vitamina C,"0,9"
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Vitamina C,0
+2,Frutas,vitaminas_minerales,28,Acerola,Vitamina C,"1677,6"
+2,Frutas,vitaminas_minerales,28,Ananá,Vitamina C,"40,3"
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Vitamina C,"12,8"
+2,Frutas,vitaminas_minerales,28,Arándanos,Vitamina C,"9,7"
+2,Frutas,vitaminas_minerales,28,Banana,Vitamina C,"6,1"
+2,Frutas,vitaminas_minerales,28,Cereza,Vitamina C,"5,6"
+2,Frutas,vitaminas_minerales,28,Ciruela,Vitamina C,"4,2"
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Vitamina C,"4,0"
+2,Frutas,vitaminas_minerales,28,Coco rallado,Vitamina C,"0,7"
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Vitamina C,"1,9"
+2,Frutas,vitaminas_minerales,28,Damasco,Vitamina C,"6,0"
+2,Frutas,vitaminas_minerales,28,Dátiles,Vitamina C,"0,2"
+2,Frutas,vitaminas_minerales,28,Durazno,Vitamina C,"6,3"
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Vitamina C,"4,8"
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Vitamina C,"3,6"
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Vitamina C,"2,9"
+2,Frutas,vitaminas_minerales,28,Frambuesa,Vitamina C,"26,2"
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Vitamina C,0
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,Acerola,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,Ananá,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,Arándanos,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,Banana,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,Cereza,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,Ciruela,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,Coco rallado,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,Damasco,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,Dátiles,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,Durazno,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,Frambuesa,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Riboflavina,0
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Riboflavina,"0,007"
+2,Frutas,vitaminas_minerales,28,Acerola,Riboflavina,"0,060"
+2,Frutas,vitaminas_minerales,28,Ananá,Riboflavina,"0,032"
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Riboflavina,"0,025"
+2,Frutas,vitaminas_minerales,28,Arándanos,Riboflavina,"0,041"
+2,Frutas,vitaminas_minerales,28,Banana,Riboflavina,"0,087"
+2,Frutas,vitaminas_minerales,28,Cereza,Riboflavina,"0,035"
+2,Frutas,vitaminas_minerales,28,Ciruela,Riboflavina,"0,059"
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Riboflavina,"0,186"
+2,Frutas,vitaminas_minerales,28,Coco rallado,Riboflavina,"0,020"
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Riboflavina,"0,019"
+2,Frutas,vitaminas_minerales,28,Damasco,Riboflavina,"0,066"
+2,Frutas,vitaminas_minerales,28,Dátiles,Riboflavina,"0,063"
+2,Frutas,vitaminas_minerales,28,Durazno,Riboflavina,"0,040"
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Riboflavina,"0,212"
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Riboflavina,"0,024"
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Riboflavina,"0,019"
+2,Frutas,vitaminas_minerales,28,Frambuesa,Riboflavina,"0,038"
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Riboflavina,0
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Tiamina,"0,003"
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Tiamina,"0,025"
+2,Frutas,vitaminas_minerales,28,Acerola,Tiamina,"0,020"
+2,Frutas,vitaminas_minerales,28,Ananá,Tiamina,"0,066"
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Tiamina,"0,080"
+2,Frutas,vitaminas_minerales,28,Arándanos,Tiamina,"0,037"
+2,Frutas,vitaminas_minerales,28,Banana,Tiamina,"0,061"
+2,Frutas,vitaminas_minerales,28,Cereza,Tiamina,"0,002"
+2,Frutas,vitaminas_minerales,28,Ciruela,Tiamina,"0,026"
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Tiamina,"0,150"
+2,Frutas,vitaminas_minerales,28,Coco rallado,Tiamina,"0,031"
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Tiamina,"0,018"
+2,Frutas,vitaminas_minerales,28,Damasco,Tiamina,"0,030"
+2,Frutas,vitaminas_minerales,28,Dátiles,Tiamina,"0,051"
+2,Frutas,vitaminas_minerales,28,Durazno,Tiamina,"0,020"
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Tiamina,"0,002"
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Tiamina,"0,011"
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Tiamina,"0,009"
+2,Frutas,vitaminas_minerales,28,Frambuesa,Tiamina,"0,032"
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Tiamina,0
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Retinol,0
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Retinol,0
+2,Frutas,vitaminas_minerales,28,Acerola,Retinol,0
+2,Frutas,vitaminas_minerales,28,Ananá,Retinol,0
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Retinol,0
+2,Frutas,vitaminas_minerales,28,Arándanos,Retinol,0
+2,Frutas,vitaminas_minerales,28,Banana,Retinol,0
+2,Frutas,vitaminas_minerales,28,Cereza,Retinol,0
+2,Frutas,vitaminas_minerales,28,Ciruela,Retinol,0
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Retinol,0
+2,Frutas,vitaminas_minerales,28,Coco rallado,Retinol,0
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Retinol,0
+2,Frutas,vitaminas_minerales,28,Damasco,Retinol,0
+2,Frutas,vitaminas_minerales,28,Dátiles,Retinol,0
+2,Frutas,vitaminas_minerales,28,Durazno,Retinol,0
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Retinol,0
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Retinol,0
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Retinol,0
+2,Frutas,vitaminas_minerales,28,Frambuesa,Retinol,0
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Retinol,0
+2,Frutas,vitaminas_minerales,28,Aceituna negra,"Vitamina A, RAE",17
+2,Frutas,vitaminas_minerales,28,Aceituna verde,"Vitamina A, RAE",20
+2,Frutas,vitaminas_minerales,28,Acerola,"Vitamina A, RAE",38
+2,Frutas,vitaminas_minerales,28,Ananá,"Vitamina A, RAE",3
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)","Vitamina A, RAE",1
+2,Frutas,vitaminas_minerales,28,Arándanos,"Vitamina A, RAE",3
+2,Frutas,vitaminas_minerales,28,Banana,"Vitamina A, RAE",3
+2,Frutas,vitaminas_minerales,28,Cereza,"Vitamina A, RAE",3
+2,Frutas,vitaminas_minerales,28,Ciruela,"Vitamina A, RAE",17
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,"Vitamina A, RAE",39
+2,Frutas,vitaminas_minerales,28,Coco rallado,"Vitamina A, RAE",0
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)","Vitamina A, RAE",10
+2,Frutas,vitaminas_minerales,28,Damasco,"Vitamina A, RAE",96
+2,Frutas,vitaminas_minerales,28,Dátiles,"Vitamina A, RAE",4
+2,Frutas,vitaminas_minerales,28,Durazno,"Vitamina A, RAE",16
+2,Frutas,vitaminas_minerales,28,Durazno orejón,"Vitamina A, RAE",108
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)","Vitamina A, RAE",17
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)","Vitamina A, RAE",27
+2,Frutas,vitaminas_minerales,28,Frambuesa,"Vitamina A, RAE",2
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,"Vitamina A, RAE",1
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,Acerola,Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,Ananá,Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,Arándanos,Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,Banana,Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,Cereza,Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,Ciruela,Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,Coco rallado,Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,Damasco,Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,Dátiles,Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,Durazno,Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,Frambuesa,Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Ácido fólico,0
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Folato EFD,0
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Folato EFD,3
+2,Frutas,vitaminas_minerales,28,Acerola,Folato EFD,14
+2,Frutas,vitaminas_minerales,28,Ananá,Folato EFD,18
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Folato EFD,5
+2,Frutas,vitaminas_minerales,28,Arándanos,Folato EFD,6
+2,Frutas,vitaminas_minerales,28,Banana,Folato EFD,20
+2,Frutas,vitaminas_minerales,28,Cereza,Folato EFD,4
+2,Frutas,vitaminas_minerales,28,Ciruela,Folato EFD,5
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Folato EFD,4
+2,Frutas,vitaminas_minerales,28,Coco rallado,Folato EFD,8
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Folato EFD,3
+2,Frutas,vitaminas_minerales,28,Damasco,Folato EFD,9
+2,Frutas,vitaminas_minerales,28,Dátiles,Folato EFD,17
+2,Frutas,vitaminas_minerales,28,Durazno,Folato EFD,4
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Folato EFD,0
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Folato EFD,3
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Folato EFD,3
+2,Frutas,vitaminas_minerales,28,Frambuesa,Folato EFD,21
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Folato EFD,0
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Niacina,"0,04"
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Niacina,"0,24"
+2,Frutas,vitaminas_minerales,28,Acerola,Niacina,"0,40"
+2,Frutas,vitaminas_minerales,28,Ananá,Niacina,"1,00"
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Niacina,"0,29"
+2,Frutas,vitaminas_minerales,28,Arándanos,Niacina,"0,42"
+2,Frutas,vitaminas_minerales,28,Banana,Niacina,"1,20"
+2,Frutas,vitaminas_minerales,28,Cereza,Niacina,"0,15"
+2,Frutas,vitaminas_minerales,28,Ciruela,Niacina,"0,60"
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Niacina,"1,88"
+2,Frutas,vitaminas_minerales,28,Coco rallado,Niacina,"0,47"
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Niacina,"0,37"
+2,Frutas,vitaminas_minerales,28,Damasco,Niacina,"0,77"
+2,Frutas,vitaminas_minerales,28,Dátiles,Niacina,"1,44"
+2,Frutas,vitaminas_minerales,28,Durazno,Niacina,"0,80"
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Niacina,"4,38"
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Niacina,"0,61"
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Niacina,"0,521"
+2,Frutas,vitaminas_minerales,28,Frambuesa,Niacina,"0,60"
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Niacina,0
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Zinc,"0,22"
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Zinc,"0,04"
+2,Frutas,vitaminas_minerales,28,Acerola,Zinc,"0,1"
+2,Frutas,vitaminas_minerales,28,Ananá,Zinc,"0,12"
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Zinc,"0,12"
+2,Frutas,vitaminas_minerales,28,Arándanos,Zinc,"0,16"
+2,Frutas,vitaminas_minerales,28,Banana,Zinc,"0,15"
+2,Frutas,vitaminas_minerales,28,Cereza,Zinc,"0,07"
+2,Frutas,vitaminas_minerales,28,Ciruela,Zinc,"0,1"
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Zinc,"0,44"
+2,Frutas,vitaminas_minerales,28,Coco rallado,Zinc,"1,82"
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Zinc,"0,08"
+2,Frutas,vitaminas_minerales,28,Damasco,Zinc,"0,2"
+2,Frutas,vitaminas_minerales,28,Dátiles,Zinc,"0,37"
+2,Frutas,vitaminas_minerales,28,Durazno,Zinc,"0,17"
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Zinc,"0,57"
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Zinc,"0,09"
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Zinc,"0,09"
+2,Frutas,vitaminas_minerales,28,Frambuesa,Zinc,"0,42"
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Zinc,"0,05"
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Magnesio,4
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Magnesio,11
+2,Frutas,vitaminas_minerales,28,Acerola,Magnesio,18
+2,Frutas,vitaminas_minerales,28,Ananá,Magnesio,2
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Magnesio,16
+2,Frutas,vitaminas_minerales,28,Arándanos,Magnesio,6
+2,Frutas,vitaminas_minerales,28,Banana,Magnesio,27
+2,Frutas,vitaminas_minerales,28,Cereza,Magnesio,11
+2,Frutas,vitaminas_minerales,28,Ciruela,Magnesio,7
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Magnesio,41
+2,Frutas,vitaminas_minerales,28,Coco rallado,Magnesio,50
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Magnesio,5
+2,Frutas,vitaminas_minerales,28,Damasco,Magnesio,10
+2,Frutas,vitaminas_minerales,28,Dátiles,Magnesio,49
+2,Frutas,vitaminas_minerales,28,Durazno,Magnesio,9
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Magnesio,42
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Magnesio,5
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Magnesio,5
+2,Frutas,vitaminas_minerales,28,Frambuesa,Magnesio,22
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Magnesio,4
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Hierro,"6,28"
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Hierro,"1,03"
+2,Frutas,vitaminas_minerales,28,Acerola,Hierro,"0,20"
+2,Frutas,vitaminas_minerales,28,Ananá,Hierro,"0,42"
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Hierro,"0,38"
+2,Frutas,vitaminas_minerales,28,Arándanos,Hierro,"0,28"
+2,Frutas,vitaminas_minerales,28,Banana,Hierro,"0,41"
+2,Frutas,vitaminas_minerales,28,Cereza,Hierro,"0,38"
+2,Frutas,vitaminas_minerales,28,Ciruela,Hierro,"0,41"
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Hierro,"1,81"
+2,Frutas,vitaminas_minerales,28,Coco rallado,Hierro,"1,92"
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Hierro,"0,29"
+2,Frutas,vitaminas_minerales,28,Damasco,Hierro,"0,37"
+2,Frutas,vitaminas_minerales,28,Dátiles,Hierro,"0,96"
+2,Frutas,vitaminas_minerales,28,Durazno,Hierro,"0,38"
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Hierro,"4,06"
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Hierro,"0,27"
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Hierro,"0,32"
+2,Frutas,vitaminas_minerales,28,Frambuesa,Hierro,"0,69"
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Hierro,"0,17"
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Fósforo,3
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Fósforo,17
+2,Frutas,vitaminas_minerales,28,Acerola,Fósforo,11
+2,Frutas,vitaminas_minerales,28,Ananá,Fósforo,8
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Fósforo,5
+2,Frutas,vitaminas_minerales,28,Arándanos,Fósforo,12
+2,Frutas,vitaminas_minerales,28,Banana,Fósforo,28
+2,Frutas,vitaminas_minerales,28,Cereza,Fósforo,17
+2,Frutas,vitaminas_minerales,28,Ciruela,Fósforo,16
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Fósforo,92
+2,Frutas,vitaminas_minerales,28,Coco rallado,Fósforo,107
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Fósforo,11
+2,Frutas,vitaminas_minerales,28,Damasco,Fósforo,21
+2,Frutas,vitaminas_minerales,28,Dátiles,Fósforo,62
+2,Frutas,vitaminas_minerales,28,Durazno,Fósforo,19
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Fósforo,119
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Fósforo,10
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Fósforo,10
+2,Frutas,vitaminas_minerales,28,Frambuesa,Fósforo,29
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Fósforo,5
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Cobre,"0,251"
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Cobre,"0,12"
+2,Frutas,vitaminas_minerales,28,Acerola,Cobre,"0,086"
+2,Frutas,vitaminas_minerales,28,Ananá,Cobre,"0,11"
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Cobre,"0,101"
+2,Frutas,vitaminas_minerales,28,Arándanos,Cobre,"0,057"
+2,Frutas,vitaminas_minerales,28,Banana,Cobre,"0,078"
+2,Frutas,vitaminas_minerales,28,Cereza,Cobre,"0,06"
+2,Frutas,vitaminas_minerales,28,Ciruela,Cobre,"0,057"
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Cobre,"0,281"
+2,Frutas,vitaminas_minerales,28,Coco rallado,Cobre,"0,313"
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Cobre,"0,069"
+2,Frutas,vitaminas_minerales,28,Damasco,Cobre,"0,078"
+2,Frutas,vitaminas_minerales,28,Dátiles,Cobre,"0,284"
+2,Frutas,vitaminas_minerales,28,Durazno,Cobre,"0,068"
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Cobre,"0,364"
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Cobre,"0,051"
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Cobre,"0,054"
+2,Frutas,vitaminas_minerales,28,Frambuesa,Cobre,"0,09"
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Cobre,"0,029"
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Calcio,88
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Calcio,52
+2,Frutas,vitaminas_minerales,28,Acerola,Calcio,12
+2,Frutas,vitaminas_minerales,28,Ananá,Calcio,12
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Calcio,13
+2,Frutas,vitaminas_minerales,28,Arándanos,Calcio,6
+2,Frutas,vitaminas_minerales,28,Banana,Calcio,7
+2,Frutas,vitaminas_minerales,28,Cereza,Calcio,16
+2,Frutas,vitaminas_minerales,28,Ciruela,Calcio,24
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Calcio,46
+2,Frutas,vitaminas_minerales,28,Coco rallado,Calcio,15
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Calcio,6
+2,Frutas,vitaminas_minerales,28,Damasco,Calcio,17
+2,Frutas,vitaminas_minerales,28,Dátiles,Calcio,52
+2,Frutas,vitaminas_minerales,28,Durazno,Calcio,5
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Calcio,28
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Calcio,4
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Calcio,2
+2,Frutas,vitaminas_minerales,28,Frambuesa,Calcio,25
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Calcio,18
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Potasio,8
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Potasio,42
+2,Frutas,vitaminas_minerales,28,Acerola,Potasio,146
+2,Frutas,vitaminas_minerales,28,Ananá,Potasio,160
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Potasio,57
+2,Frutas,vitaminas_minerales,28,Arándanos,Potasio,77
+2,Frutas,vitaminas_minerales,28,Banana,Potasio,348
+2,Frutas,vitaminas_minerales,28,Cereza,Potasio,222
+2,Frutas,vitaminas_minerales,28,Ciruela,Potasio,190
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Potasio,846
+2,Frutas,vitaminas_minerales,28,Coco rallado,Potasio,337
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Potasio,88
+2,Frutas,vitaminas_minerales,28,Damasco,Potasio,320
+2,Frutas,vitaminas_minerales,28,Dátiles,Potasio,676
+2,Frutas,vitaminas_minerales,28,Durazno,Potasio,259
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Potasio,996
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Potasio,151
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Potasio,99
+2,Frutas,vitaminas_minerales,28,Frambuesa,Potasio,151
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Potasio,56
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Sodio,735
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Sodio,1556
+2,Frutas,vitaminas_minerales,28,Acerola,Sodio,7
+2,Frutas,vitaminas_minerales,28,Ananá,Sodio,2
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Sodio,1
+2,Frutas,vitaminas_minerales,28,Arándanos,Sodio,1
+2,Frutas,vitaminas_minerales,28,Banana,Sodio,1
+2,Frutas,vitaminas_minerales,28,Cereza,Sodio,3
+2,Frutas,vitaminas_minerales,28,Ciruela,Sodio,2
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Sodio,21
+2,Frutas,vitaminas_minerales,28,Coco rallado,Sodio,262
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Sodio,6
+2,Frutas,vitaminas_minerales,28,Damasco,Sodio,1
+2,Frutas,vitaminas_minerales,28,Dátiles,Sodio,2
+2,Frutas,vitaminas_minerales,28,Durazno,Sodio,3
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Sodio,7
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Sodio,1
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Sodio,3
+2,Frutas,vitaminas_minerales,28,Frambuesa,Sodio,1
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Sodio,98
+2,Frutas,vitaminas_minerales,28,Aceituna negra,Cenizas,"2,23"
+2,Frutas,vitaminas_minerales,28,Aceituna verde,Cenizas,"4,53"
+2,Frutas,vitaminas_minerales,28,Acerola,Cenizas,"0,2"
+2,Frutas,vitaminas_minerales,28,Ananá,Cenizas,"0,40"
+2,Frutas,vitaminas_minerales,28,"Ananá, enlatado (fruta y almíbar)",Cenizas,"0,40"
+2,Frutas,vitaminas_minerales,28,Arándanos,Cenizas,"0,24"
+2,Frutas,vitaminas_minerales,28,Banana,Cenizas,"0,8"
+2,Frutas,vitaminas_minerales,28,Cereza,Cenizas,"0,60"
+2,Frutas,vitaminas_minerales,28,Ciruela,Cenizas,"0,50"
+2,Frutas,vitaminas_minerales,28,Ciruela pasa / ciruela seca,Cenizas,"3,50"
+2,Frutas,vitaminas_minerales,28,Coco rallado,Cenizas,"1,42"
+2,Frutas,vitaminas_minerales,28,"Coctail de frutas, enlatado (fruta y almíbar)",Cenizas,"0,23"
+2,Frutas,vitaminas_minerales,28,Damasco,Cenizas,"0,60"
+2,Frutas,vitaminas_minerales,28,Dátiles,Cenizas,"1,67"
+2,Frutas,vitaminas_minerales,28,Durazno,Cenizas,"0,50"
+2,Frutas,vitaminas_minerales,28,Durazno orejón,Cenizas,"2,5"
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado (fruta y almíbar)",Cenizas,"0,40"
+2,Frutas,vitaminas_minerales,28,"Durazno, enlatado light (fruta y almíbar)",Cenizas,"0,27"
+2,Frutas,vitaminas_minerales,28,Frambuesa,Cenizas,"0,46"
+2,Frutas,vitaminas_minerales,28,Frutas abrillantadas,Cenizas,"0,14"
+2,Frutas,macronutrientes,29,Frutilla,Alcohol,0
+2,Frutas,macronutrientes,29,Granada,Alcohol,0
+2,Frutas,macronutrientes,29,Guayaba,Alcohol,0
+2,Frutas,macronutrientes,29,Higo,Alcohol,0
+2,Frutas,macronutrientes,29,Higo desecado,Alcohol,0
+2,Frutas,macronutrientes,29,Kaki,Alcohol,0
+2,Frutas,macronutrientes,29,Kinoto,Alcohol,0
+2,Frutas,macronutrientes,29,Kiwi,Alcohol,0
+2,Frutas,macronutrientes,29,Limón,Alcohol,0
+2,Frutas,macronutrientes,29,Mamón,Alcohol,0
+2,Frutas,macronutrientes,29,Mandarina,Alcohol,0
+2,Frutas,macronutrientes,29,Mango,Alcohol,0
+2,Frutas,macronutrientes,29,Manzana con piel,Alcohol,0
+2,Frutas,macronutrientes,29,Manzana sin piel,Alcohol,0
+2,Frutas,macronutrientes,29,Maracuyá,Alcohol,0
+2,Frutas,macronutrientes,29,Melón,Alcohol,0
+2,Frutas,macronutrientes,29,Membrillo,Alcohol,0
+2,Frutas,macronutrientes,29,Mora,Alcohol,0
+2,Frutas,macronutrientes,29,Naranja,Alcohol,0
+2,Frutas,macronutrientes,29,Níspero,Alcohol,0
+2,Frutas,macronutrientes,29,Frutilla,Fibra alimentaria,"2,0"
+2,Frutas,macronutrientes,29,Granada,Fibra alimentaria,"4,0"
+2,Frutas,macronutrientes,29,Guayaba,Fibra alimentaria,"5,4"
+2,Frutas,macronutrientes,29,Higo,Fibra alimentaria,"2,9"
+2,Frutas,macronutrientes,29,Higo desecado,Fibra alimentaria,"9,8"
+2,Frutas,macronutrientes,29,Kaki,Fibra alimentaria,"3,6"
+2,Frutas,macronutrientes,29,Kinoto,Fibra alimentaria,"6,5"
+2,Frutas,macronutrientes,29,Kiwi,Fibra alimentaria,"3,0"
+2,Frutas,macronutrientes,29,Limón,Fibra alimentaria,"2,8"
+2,Frutas,macronutrientes,29,Mamón,Fibra alimentaria,"1,7"
+2,Frutas,macronutrientes,29,Mandarina,Fibra alimentaria,"1,8"
+2,Frutas,macronutrientes,29,Mango,Fibra alimentaria,"1,6"
+2,Frutas,macronutrientes,29,Manzana con piel,Fibra alimentaria,"2,4"
+2,Frutas,macronutrientes,29,Manzana sin piel,Fibra alimentaria,"1,3"
+2,Frutas,macronutrientes,29,Maracuyá,Fibra alimentaria,"10,4"
+2,Frutas,macronutrientes,29,Melón,Fibra alimentaria,"0,8"
+2,Frutas,macronutrientes,29,Membrillo,Fibra alimentaria,"1,9"
+2,Frutas,macronutrientes,29,Mora,Fibra alimentaria,"5,3"
+2,Frutas,macronutrientes,29,Naranja,Fibra alimentaria,"2,4"
+2,Frutas,macronutrientes,29,Níspero,Fibra alimentaria,"2,1"
+2,Frutas,macronutrientes,29,Frutilla,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Granada,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Guayaba,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Higo,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Higo desecado,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Kaki,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Kinoto,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Kiwi,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Limón,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Mamón,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Mandarina,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Mango,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Manzana con piel,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Manzana sin piel,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Maracuyá,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Melón,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Membrillo,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Mora,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Naranja,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Níspero,Azúcar agregado,0
+2,Frutas,macronutrientes,29,Frutilla,Azúcar total,"4,9"
+2,Frutas,macronutrientes,29,Granada,Azúcar total,"13,7"
+2,Frutas,macronutrientes,29,Guayaba,Azúcar total,"8,9"
+2,Frutas,macronutrientes,29,Higo,Azúcar total,"16,3"
+2,Frutas,macronutrientes,29,Higo desecado,Azúcar total,"47,9"
+2,Frutas,macronutrientes,29,Kaki,Azúcar total,"12,5"
+2,Frutas,macronutrientes,29,Kinoto,Azúcar total,"9,4"
+2,Frutas,macronutrientes,29,Kiwi,Azúcar total,"9,0"
+2,Frutas,macronutrientes,29,Limón,Azúcar total,"2,5"
+2,Frutas,macronutrientes,29,Mamón,Azúcar total,"8,8"
+2,Frutas,macronutrientes,29,Mandarina,Azúcar total,"10,6"
+2,Frutas,macronutrientes,29,Mango,Azúcar total,"13,7"
+2,Frutas,macronutrientes,29,Manzana con piel,Azúcar total,"10,4"
+2,Frutas,macronutrientes,29,Manzana sin piel,Azúcar total,"10,1"
+2,Frutas,macronutrientes,29,Maracuyá,Azúcar total,"11,2"
+2,Frutas,macronutrientes,29,Melón,Azúcar total,"8,1"
+2,Frutas,macronutrientes,29,Membrillo,Azúcar total,"6,3"
+2,Frutas,macronutrientes,29,Mora,Azúcar total,"4,9"
+2,Frutas,macronutrientes,29,Naranja,Azúcar total,"9,35"
+2,Frutas,macronutrientes,29,Níspero,Azúcar total,"8,6"
+2,Frutas,macronutrientes,29,Frutilla,Carbohidratos totales,"7,7"
+2,Frutas,macronutrientes,29,Granada,Carbohidratos totales,"17,7"
+2,Frutas,macronutrientes,29,Guayaba,Carbohidratos totales,"14,3"
+2,Frutas,macronutrientes,29,Higo,Carbohidratos totales,"19,6"
+2,Frutas,macronutrientes,29,Higo desecado,Carbohidratos totales,"63,9"
+2,Frutas,macronutrientes,29,Kaki,Carbohidratos totales,"20,0"
+2,Frutas,macronutrientes,29,Kinoto,Carbohidratos totales,"17,1"
+2,Frutas,macronutrientes,29,Kiwi,Carbohidratos totales,"14,7"
+2,Frutas,macronutrientes,29,Limón,Carbohidratos totales,"8,7"
+2,Frutas,macronutrientes,29,Mamón,Carbohidratos totales,"10,8"
+2,Frutas,macronutrientes,29,Mandarina,Carbohidratos totales,"13,3"
+2,Frutas,macronutrientes,29,Mango,Carbohidratos totales,"15,0"
+2,Frutas,macronutrientes,29,Manzana con piel,Carbohidratos totales,"13,8"
+2,Frutas,macronutrientes,29,Manzana sin piel,Carbohidratos totales,"14,9"
+2,Frutas,macronutrientes,29,Maracuyá,Carbohidratos totales,"23,4"
+2,Frutas,macronutrientes,29,Melón,Carbohidratos totales,"9,1"
+2,Frutas,macronutrientes,29,Membrillo,Carbohidratos totales,"13,9"
+2,Frutas,macronutrientes,29,Mora,Carbohidratos totales,"9,6"
+2,Frutas,macronutrientes,29,Naranja,Carbohidratos totales,"11,7"
+2,Frutas,macronutrientes,29,Níspero,Carbohidratos totales,"10,7"
+2,Frutas,macronutrientes,29,Frutilla,Carbohidratos disponibles,"5,7"
+2,Frutas,macronutrientes,29,Granada,Carbohidratos disponibles,"14,7"
+2,Frutas,macronutrientes,29,Guayaba,Carbohidratos disponibles,"8,9"
+2,Frutas,macronutrientes,29,Higo,Carbohidratos disponibles,"16,3"
+2,Frutas,macronutrientes,29,Higo desecado,Carbohidratos disponibles,"54,1"
+2,Frutas,macronutrientes,29,Kaki,Carbohidratos disponibles,"15,0"
+2,Frutas,macronutrientes,29,Kinoto,Carbohidratos disponibles,"10,6"
+2,Frutas,macronutrientes,29,Kiwi,Carbohidratos disponibles,"11,7"
+2,Frutas,macronutrientes,29,Limón,Carbohidratos disponibles,"6,5"
+2,Frutas,macronutrientes,29,Mamón,Carbohidratos disponibles,"8,8"
+2,Frutas,macronutrientes,29,Mandarina,Carbohidratos disponibles,"11,5"
+2,Frutas,macronutrientes,29,Mango,Carbohidratos disponibles,"13,4"
+2,Frutas,macronutrientes,29,Manzana con piel,Carbohidratos disponibles,"11,4"
+2,Frutas,macronutrientes,29,Manzana sin piel,Carbohidratos disponibles,"13,6"
+2,Frutas,macronutrientes,29,Maracuyá,Carbohidratos disponibles,"13,0"
+2,Frutas,macronutrientes,29,Melón,Carbohidratos disponibles,"8,3"
+2,Frutas,macronutrientes,29,Membrillo,Carbohidratos disponibles,"13,4"
+2,Frutas,macronutrientes,29,Mora,Carbohidratos disponibles,"4,3"
+2,Frutas,macronutrientes,29,Naranja,Carbohidratos disponibles,"9,35"
+2,Frutas,macronutrientes,29,Níspero,Carbohidratos disponibles,"8,6"
+2,Frutas,macronutrientes,29,Frutilla,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Granada,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Guayaba,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Higo,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Higo desecado,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Kaki,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Kinoto,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Kiwi,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Limón,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Mamón,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Mandarina,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Mango,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Manzana con piel,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Manzana sin piel,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Maracuyá,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Melón,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Membrillo,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Mora,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Naranja,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Níspero,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,29,Frutilla,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Granada,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Guayaba,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Higo,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Higo desecado,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Kaki,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Kinoto,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Kiwi,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Limón,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Mamón,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Mandarina,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Mango,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Manzana con piel,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Manzana sin piel,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Maracuyá,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Melón,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Membrillo,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Mora,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Naranja,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Níspero,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,29,Frutilla,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Granada,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Guayaba,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Higo,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Higo desecado,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Kaki,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Kinoto,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Kiwi,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Limón,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Mamón,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Mandarina,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Mango,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Manzana con piel,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Manzana sin piel,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Maracuyá,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Melón,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Membrillo,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Mora,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Naranja,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Níspero,20:4 Araquidónico,0
+2,Frutas,macronutrientes,29,Frutilla,18:3 cis Alfa linolénico (ALA),"0,065"
+2,Frutas,macronutrientes,29,Granada,18:3 cis Alfa linolénico (ALA),0
+2,Frutas,macronutrientes,29,Guayaba,18:3 cis Alfa linolénico (ALA),"0,112"
+2,Frutas,macronutrientes,29,Higo,18:3 cis Alfa linolénico (ALA),0
+2,Frutas,macronutrientes,29,Higo desecado,18:3 cis Alfa linolénico (ALA),0
+2,Frutas,macronutrientes,29,Kaki,18:3 cis Alfa linolénico (ALA),"0,004"
+2,Frutas,macronutrientes,29,Kinoto,18:3 cis Alfa linolénico (ALA),"0,047"
+2,Frutas,macronutrientes,29,Kiwi,18:3 cis Alfa linolénico (ALA),"0,042"
+2,Frutas,macronutrientes,29,Limón,18:3 cis Alfa linolénico (ALA),"0,026"
+2,Frutas,macronutrientes,29,Mamón,18:3 cis Alfa linolénico (ALA),"0,047"
+2,Frutas,macronutrientes,29,Mandarina,18:3 cis Alfa linolénico (ALA),"0,018"
+2,Frutas,macronutrientes,29,Mango,18:3 cis Alfa linolénico (ALA),"0,051"
+2,Frutas,macronutrientes,29,Manzana con piel,18:3 cis Alfa linolénico (ALA),"0,009"
+2,Frutas,macronutrientes,29,Manzana sin piel,18:3 cis Alfa linolénico (ALA),"0,007"
+2,Frutas,macronutrientes,29,Maracuyá,18:3 cis Alfa linolénico (ALA),"0,001"
+2,Frutas,macronutrientes,29,Melón,18:3 cis Alfa linolénico (ALA),"0,033"
+2,Frutas,macronutrientes,29,Membrillo,18:3 cis Alfa linolénico (ALA),0
+2,Frutas,macronutrientes,29,Mora,18:3 cis Alfa linolénico (ALA),"0,094"
+2,Frutas,macronutrientes,29,Naranja,18:3 cis Alfa linolénico (ALA),"0,007"
+2,Frutas,macronutrientes,29,Níspero,18:3 cis Alfa linolénico (ALA),"0,015"
+2,Frutas,macronutrientes,29,Frutilla,18:2 cis Linoléico,"0,09"
+2,Frutas,macronutrientes,29,Granada,18:2 cis Linoléico,"0,08"
+2,Frutas,macronutrientes,29,Guayaba,18:2 cis Linoléico,"0,29"
+2,Frutas,macronutrientes,29,Higo,18:2 cis Linoléico,"0,14"
+2,Frutas,macronutrientes,29,Higo desecado,18:2 cis Linoléico,"0,35"
+2,Frutas,macronutrientes,29,Kaki,18:2 cis Linoléico,"0,04"
+2,Frutas,macronutrientes,29,Kinoto,18:2 cis Linoléico,"0,12"
+2,Frutas,macronutrientes,29,Kiwi,18:2 cis Linoléico,"0,25"
+2,Frutas,macronutrientes,29,Limón,18:2 cis Linoléico,"0,06"
+2,Frutas,macronutrientes,29,Mamón,18:2 cis Linoléico,"0,01"
+2,Frutas,macronutrientes,29,Mandarina,18:2 cis Linoléico,"0,05"
+2,Frutas,macronutrientes,29,Mango,18:2 cis Linoléico,"0,02"
+2,Frutas,macronutrientes,29,Manzana con piel,18:2 cis Linoléico,"0,04"
+2,Frutas,macronutrientes,29,Manzana sin piel,18:2 cis Linoléico,"0,03"
+2,Frutas,macronutrientes,29,Maracuyá,18:2 cis Linoléico,"0,41"
+2,Frutas,macronutrientes,29,Melón,18:2 cis Linoléico,"0,03"
+2,Frutas,macronutrientes,29,Membrillo,18:2 cis Linoléico,"0,05"
+2,Frutas,macronutrientes,29,Mora,18:2 cis Linoléico,"0,19"
+2,Frutas,macronutrientes,29,Naranja,18:2 cis Linoléico,"0,018"
+2,Frutas,macronutrientes,29,Níspero,18:2 cis Linoléico,"0,09"
+2,Frutas,macronutrientes,29,Frutilla,Trans,0
+2,Frutas,macronutrientes,29,Granada,Trans,0
+2,Frutas,macronutrientes,29,Guayaba,Trans,0
+2,Frutas,macronutrientes,29,Higo,Trans,0
+2,Frutas,macronutrientes,29,Higo desecado,Trans,0
+2,Frutas,macronutrientes,29,Kaki,Trans,0
+2,Frutas,macronutrientes,29,Kinoto,Trans,0
+2,Frutas,macronutrientes,29,Kiwi,Trans,0
+2,Frutas,macronutrientes,29,Limón,Trans,0
+2,Frutas,macronutrientes,29,Mamón,Trans,0
+2,Frutas,macronutrientes,29,Mandarina,Trans,0
+2,Frutas,macronutrientes,29,Mango,Trans,0
+2,Frutas,macronutrientes,29,Manzana con piel,Trans,0
+2,Frutas,macronutrientes,29,Manzana sin piel,Trans,0
+2,Frutas,macronutrientes,29,Maracuyá,Trans,0
+2,Frutas,macronutrientes,29,Melón,Trans,0
+2,Frutas,macronutrientes,29,Membrillo,Trans,0
+2,Frutas,macronutrientes,29,Mora,Trans,0
+2,Frutas,macronutrientes,29,Naranja,Trans,0
+2,Frutas,macronutrientes,29,Níspero,Trans,0
+2,Frutas,macronutrientes,29,Frutilla,Poliinsaturados,"0,16"
+2,Frutas,macronutrientes,29,Granada,Poliinsaturados,"0,08"
+2,Frutas,macronutrientes,29,Guayaba,Poliinsaturados,"0,40"
+2,Frutas,macronutrientes,29,Higo,Poliinsaturados,"0,14"
+2,Frutas,macronutrientes,29,Higo desecado,Poliinsaturados,"0,35"
+2,Frutas,macronutrientes,29,Kaki,Poliinsaturados,"0,04"
+2,Frutas,macronutrientes,29,Kinoto,Poliinsaturados,"0,17"
+2,Frutas,macronutrientes,29,Kiwi,Poliinsaturados,"0,29"
+2,Frutas,macronutrientes,29,Limón,Poliinsaturados,"0,09"
+2,Frutas,macronutrientes,29,Mamón,Poliinsaturados,"0,06"
+2,Frutas,macronutrientes,29,Mandarina,Poliinsaturados,"0,07"
+2,Frutas,macronutrientes,29,Mango,Poliinsaturados,"0,07"
+2,Frutas,macronutrientes,29,Manzana con piel,Poliinsaturados,"0,05"
+2,Frutas,macronutrientes,29,Manzana sin piel,Poliinsaturados,"0,04"
+2,Frutas,macronutrientes,29,Maracuyá,Poliinsaturados,"0,41"
+2,Frutas,macronutrientes,29,Melón,Poliinsaturados,"0,06"
+2,Frutas,macronutrientes,29,Membrillo,Poliinsaturados,"0,05"
+2,Frutas,macronutrientes,29,Mora,Poliinsaturados,"0,28"
+2,Frutas,macronutrientes,29,Naranja,Poliinsaturados,"0,025"
+2,Frutas,macronutrientes,29,Níspero,Poliinsaturados,"0,09"
+2,Frutas,macronutrientes,29,Frutilla,Monoinsaturados,"0,04"
+2,Frutas,macronutrientes,29,Granada,Monoinsaturados,"0,09"
+2,Frutas,macronutrientes,29,Guayaba,Monoinsaturados,"0,09"
+2,Frutas,macronutrientes,29,Higo,Monoinsaturados,"0,07"
+2,Frutas,macronutrientes,29,Higo desecado,Monoinsaturados,"0,16"
+2,Frutas,macronutrientes,29,Kaki,Monoinsaturados,"0,04"
+2,Frutas,macronutrientes,29,Kinoto,Monoinsaturados,"0,15"
+2,Frutas,macronutrientes,29,Kiwi,Monoinsaturados,"0,05"
+2,Frutas,macronutrientes,29,Limón,Monoinsaturados,"0,01"
+2,Frutas,macronutrientes,29,Mamón,Monoinsaturados,"0,07"
+2,Frutas,macronutrientes,29,Mandarina,Monoinsaturados,"0,06"
+2,Frutas,macronutrientes,29,Mango,Monoinsaturados,"0,14"
+2,Frutas,macronutrientes,29,Manzana con piel,Monoinsaturados,"0,01"
+2,Frutas,macronutrientes,29,Manzana sin piel,Monoinsaturados,"0,01"
+2,Frutas,macronutrientes,29,Maracuyá,Monoinsaturados,"0,09"
+2,Frutas,macronutrientes,29,Melón,Monoinsaturados,"0,00"
+2,Frutas,macronutrientes,29,Membrillo,Monoinsaturados,"0,04"
+2,Frutas,macronutrientes,29,Mora,Monoinsaturados,"0,05"
+2,Frutas,macronutrientes,29,Naranja,Monoinsaturados,"0,023"
+2,Frutas,macronutrientes,29,Níspero,Monoinsaturados,"0,01"
+2,Frutas,macronutrientes,29,Frutilla,Saturados,"0,02"
+2,Frutas,macronutrientes,29,Granada,Saturados,"0,12"
+2,Frutas,macronutrientes,29,Guayaba,Saturados,"0,27"
+2,Frutas,macronutrientes,29,Higo,Saturados,"0,06"
+2,Frutas,macronutrientes,29,Higo desecado,Saturados,"0,14"
+2,Frutas,macronutrientes,29,Kaki,Saturados,"0,02"
+2,Frutas,macronutrientes,29,Kinoto,Saturados,"0,10"
+2,Frutas,macronutrientes,29,Kiwi,Saturados,"0,03"
+2,Frutas,macronutrientes,29,Limón,Saturados,"0,04"
+2,Frutas,macronutrientes,29,Mamón,Saturados,"0,08"
+2,Frutas,macronutrientes,29,Mandarina,Saturados,"0,04"
+2,Frutas,macronutrientes,29,Mango,Saturados,"0,09"
+2,Frutas,macronutrientes,29,Manzana con piel,Saturados,"0,03"
+2,Frutas,macronutrientes,29,Manzana sin piel,Saturados,"0,02"
+2,Frutas,macronutrientes,29,Maracuyá,Saturados,"0,06"
+2,Frutas,macronutrientes,29,Melón,Saturados,"0,04"
+2,Frutas,macronutrientes,29,Membrillo,Saturados,"0,01"
+2,Frutas,macronutrientes,29,Mora,Saturados,"0,01"
+2,Frutas,macronutrientes,29,Naranja,Saturados,"0,015"
+2,Frutas,macronutrientes,29,Níspero,Saturados,"0,04"
+2,Frutas,macronutrientes,29,Frutilla,Colesterol,0
+2,Frutas,macronutrientes,29,Granada,Colesterol,0
+2,Frutas,macronutrientes,29,Guayaba,Colesterol,0
+2,Frutas,macronutrientes,29,Higo,Colesterol,0
+2,Frutas,macronutrientes,29,Higo desecado,Colesterol,0
+2,Frutas,macronutrientes,29,Kaki,Colesterol,0
+2,Frutas,macronutrientes,29,Kinoto,Colesterol,0
+2,Frutas,macronutrientes,29,Kiwi,Colesterol,0
+2,Frutas,macronutrientes,29,Limón,Colesterol,0
+2,Frutas,macronutrientes,29,Mamón,Colesterol,0
+2,Frutas,macronutrientes,29,Mandarina,Colesterol,0
+2,Frutas,macronutrientes,29,Mango,Colesterol,0
+2,Frutas,macronutrientes,29,Manzana con piel,Colesterol,0
+2,Frutas,macronutrientes,29,Manzana sin piel,Colesterol,0
+2,Frutas,macronutrientes,29,Maracuyá,Colesterol,0
+2,Frutas,macronutrientes,29,Melón,Colesterol,0
+2,Frutas,macronutrientes,29,Membrillo,Colesterol,0
+2,Frutas,macronutrientes,29,Mora,Colesterol,0
+2,Frutas,macronutrientes,29,Naranja,Colesterol,0
+2,Frutas,macronutrientes,29,Níspero,Colesterol,0
+2,Frutas,macronutrientes,29,Frutilla,Lípidos totales,"0,6"
+2,Frutas,macronutrientes,29,Granada,Lípidos totales,"0,2"
+2,Frutas,macronutrientes,29,Guayaba,Lípidos totales,"1,0"
+2,Frutas,macronutrientes,29,Higo,Lípidos totales,"0,4"
+2,Frutas,macronutrientes,29,Higo desecado,Lípidos totales,"0,9"
+2,Frutas,macronutrientes,29,Kaki,Lípidos totales,"0,4"
+2,Frutas,macronutrientes,29,Kinoto,Lípidos totales,"0,1"
+2,Frutas,macronutrientes,29,Kiwi,Lípidos totales,"0,5"
+2,Frutas,macronutrientes,29,Limón,Lípidos totales,"0,6"
+2,Frutas,macronutrientes,29,Mamón,Lípidos totales,"0,1"
+2,Frutas,macronutrientes,29,Mandarina,Lípidos totales,"0,3"
+2,Frutas,macronutrientes,29,Mango,Lípidos totales,"0,4"
+2,Frutas,macronutrientes,29,Manzana con piel,Lípidos totales,"0,2"
+2,Frutas,macronutrientes,29,Manzana sin piel,Lípidos totales,"0,4"
+2,Frutas,macronutrientes,29,Maracuyá,Lípidos totales,"0,7"
+2,Frutas,macronutrientes,29,Melón,Lípidos totales,"0,1"
+2,Frutas,macronutrientes,29,Membrillo,Lípidos totales,"0,1"
+2,Frutas,macronutrientes,29,Mora,Lípidos totales,"0,5"
+2,Frutas,macronutrientes,29,Naranja,Lípidos totales,"0,12"
+2,Frutas,macronutrientes,29,Níspero,Lípidos totales,"0,2"
+2,Frutas,macronutrientes,29,Frutilla,Proteínas,"0,8"
+2,Frutas,macronutrientes,29,Granada,Proteínas,"0,6"
+2,Frutas,macronutrientes,29,Guayaba,Proteínas,"0,8"
+2,Frutas,macronutrientes,29,Higo,Proteínas,"1,4"
+2,Frutas,macronutrientes,29,Higo desecado,Proteínas,"3,3"
+2,Frutas,macronutrientes,29,Kaki,Proteínas,"0,8"
+2,Frutas,macronutrientes,29,Kinoto,Proteínas,"0,9"
+2,Frutas,macronutrientes,29,Kiwi,Proteínas,"1,1"
+2,Frutas,macronutrientes,29,Limón,Proteínas,"0,9"
+2,Frutas,macronutrientes,29,Mamón,Proteínas,"0,5"
+2,Frutas,macronutrientes,29,Mandarina,Proteínas,"0,8"
+2,Frutas,macronutrientes,29,Mango,Proteínas,"0,8"
+2,Frutas,macronutrientes,29,Manzana con piel,Proteínas,"0,3"
+2,Frutas,macronutrientes,29,Manzana sin piel,Proteínas,"0,3"
+2,Frutas,macronutrientes,29,Maracuyá,Proteínas,"2,2"
+2,Frutas,macronutrientes,29,Melón,Proteínas,"0,5"
+2,Frutas,macronutrientes,29,Membrillo,Proteínas,"0,3"
+2,Frutas,macronutrientes,29,Mora,Proteínas,"1,4"
+2,Frutas,macronutrientes,29,Naranja,Proteínas,"0,94"
+2,Frutas,macronutrientes,29,Níspero,Proteínas,"0,6"
+2,Frutas,macronutrientes,29,Frutilla,Agua,"90,0"
+2,Frutas,macronutrientes,29,Granada,Agua,"81,0"
+2,Frutas,macronutrientes,29,Guayaba,Agua,"80,8"
+2,Frutas,macronutrientes,29,Higo,Agua,"78,0"
+2,Frutas,macronutrientes,29,Higo desecado,Agua,"30,1"
+2,Frutas,macronutrientes,29,Kaki,Agua,"78,2"
+2,Frutas,macronutrientes,29,Kinoto,Agua,"81,3"
+2,Frutas,macronutrientes,29,Kiwi,Agua,"83,1"
+2,Frutas,macronutrientes,29,Limón,Agua,"89,3"
+2,Frutas,macronutrientes,29,Mamón,Agua,"88,5"
+2,Frutas,macronutrientes,29,Mandarina,Agua,"85,2"
+2,Frutas,macronutrientes,29,Mango,Agua,"83,5"
+2,Frutas,macronutrientes,29,Manzana con piel,Agua,"85,6"
+2,Frutas,macronutrientes,29,Manzana sin piel,Agua,"84,1"
+2,Frutas,macronutrientes,29,Maracuyá,Agua,"72,9"
+2,Frutas,macronutrientes,29,Melón,Agua,"89,8"
+2,Frutas,macronutrientes,29,Membrillo,Agua,"85,3"
+2,Frutas,macronutrientes,29,Mora,Agua,"88,2"
+2,Frutas,macronutrientes,29,Naranja,Agua,"86,8"
+2,Frutas,macronutrientes,29,Níspero,Agua,"87,0"
+2,Frutas,macronutrientes,29,Frutilla,Valor energético,31
+2,Frutas,macronutrientes,29,Granada,Valor energético,63
+2,Frutas,macronutrientes,29,Guayaba,Valor energético,47
+2,Frutas,macronutrientes,29,Higo,Valor energético,74
+2,Frutas,macronutrientes,29,Higo desecado,Valor energético,238
+2,Frutas,macronutrientes,29,Kaki,Valor energético,67
+2,Frutas,macronutrientes,29,Kinoto,Valor energético,47
+2,Frutas,macronutrientes,29,Kiwi,Valor energético,56
+2,Frutas,macronutrientes,29,Limón,Valor energético,35
+2,Frutas,macronutrientes,29,Mamón,Valor energético,38
+2,Frutas,macronutrientes,29,Mandarina,Valor energético,52
+2,Frutas,macronutrientes,29,Mango,Valor energético,60
+2,Frutas,macronutrientes,29,Manzana con piel,Valor energético,48
+2,Frutas,macronutrientes,29,Manzana sin piel,Valor energético,59
+2,Frutas,macronutrientes,29,Maracuyá,Valor energético,67
+2,Frutas,macronutrientes,29,Melón,Valor energético,37
+2,Frutas,macronutrientes,29,Membrillo,Valor energético,56
+2,Frutas,macronutrientes,29,Mora,Valor energético,27
+2,Frutas,macronutrientes,29,Naranja,Valor energético,43
+2,Frutas,macronutrientes,29,Níspero,Valor energético,38
+2,Frutas,vitaminas_minerales,30,Frutilla,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Granada,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Guayaba,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Higo,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Higo desecado,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Kaki,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Kinoto,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Kiwi,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Limón,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Mamón,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Mandarina,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Mango,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Maracuyá,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Melón,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Membrillo,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Mora,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Naranja,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Níspero,Vitamina D,0
+2,Frutas,vitaminas_minerales,30,Frutilla,Vitamina C,"58,8"
+2,Frutas,vitaminas_minerales,30,Granada,Vitamina C,"10,2"
+2,Frutas,vitaminas_minerales,30,Guayaba,Vitamina C,"228,3"
+2,Frutas,vitaminas_minerales,30,Higo,Vitamina C,"2,0"
+2,Frutas,vitaminas_minerales,30,Higo desecado,Vitamina C,"1,2"
+2,Frutas,vitaminas_minerales,30,Kaki,Vitamina C,"13,1"
+2,Frutas,vitaminas_minerales,30,Kinoto,Vitamina C,"57,6"
+2,Frutas,vitaminas_minerales,30,Kiwi,Vitamina C,"92,7"
+2,Frutas,vitaminas_minerales,30,Limón,Vitamina C,"62,6"
+2,Frutas,vitaminas_minerales,30,Mamón,Vitamina C,"60,0"
+2,Frutas,vitaminas_minerales,30,Mandarina,Vitamina C,"26,7"
+2,Frutas,vitaminas_minerales,30,Mango,Vitamina C,"36,4"
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Vitamina C,"4,6"
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Vitamina C,"2,8"
+2,Frutas,vitaminas_minerales,30,Maracuyá,Vitamina C,"30,0"
+2,Frutas,vitaminas_minerales,30,Melón,Vitamina C,"18,0"
+2,Frutas,vitaminas_minerales,30,Membrillo,Vitamina C,"13,0"
+2,Frutas,vitaminas_minerales,30,Mora,Vitamina C,"21,0"
+2,Frutas,vitaminas_minerales,30,Naranja,Vitamina C,"53,2"
+2,Frutas,vitaminas_minerales,30,Níspero,Vitamina C,"2,0"
+2,Frutas,vitaminas_minerales,30,Frutilla,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Granada,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Guayaba,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Higo,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Higo desecado,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Kaki,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Kinoto,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Kiwi,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Limón,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Mamón,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Mandarina,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Mango,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Maracuyá,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Melón,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Membrillo,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Mora,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Naranja,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Níspero,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,30,Frutilla,Riboflavina,"0,051"
+2,Frutas,vitaminas_minerales,30,Granada,Riboflavina,"0,030"
+2,Frutas,vitaminas_minerales,30,Guayaba,Riboflavina,"0,040"
+2,Frutas,vitaminas_minerales,30,Higo,Riboflavina,"0,045"
+2,Frutas,vitaminas_minerales,30,Higo desecado,Riboflavina,"0,082"
+2,Frutas,vitaminas_minerales,30,Kaki,Riboflavina,"0,001"
+2,Frutas,vitaminas_minerales,30,Kinoto,Riboflavina,"0,096"
+2,Frutas,vitaminas_minerales,30,Kiwi,Riboflavina,"0,025"
+2,Frutas,vitaminas_minerales,30,Limón,Riboflavina,"0,012"
+2,Frutas,vitaminas_minerales,30,Mamón,Riboflavina,"0,040"
+2,Frutas,vitaminas_minerales,30,Mandarina,Riboflavina,"0,036"
+2,Frutas,vitaminas_minerales,30,Mango,Riboflavina,"0,038"
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Riboflavina,"0,026"
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Riboflavina,"0,028"
+2,Frutas,vitaminas_minerales,30,Maracuyá,Riboflavina,"0,130"
+2,Frutas,vitaminas_minerales,30,Melón,Riboflavina,"0,012"
+2,Frutas,vitaminas_minerales,30,Membrillo,Riboflavina,"0,030"
+2,Frutas,vitaminas_minerales,30,Mora,Riboflavina,"0,026"
+2,Frutas,vitaminas_minerales,30,Naranja,Riboflavina,"0,04"
+2,Frutas,vitaminas_minerales,30,Níspero,Riboflavina,"0,030"
+2,Frutas,vitaminas_minerales,30,Frutilla,Tiamina,"0,041"
+2,Frutas,vitaminas_minerales,30,Granada,Tiamina,"0,067"
+2,Frutas,vitaminas_minerales,30,Guayaba,Tiamina,"0,067"
+2,Frutas,vitaminas_minerales,30,Higo,Tiamina,"0,06"
+2,Frutas,vitaminas_minerales,30,Higo desecado,Tiamina,"0,085"
+2,Frutas,vitaminas_minerales,30,Kaki,Tiamina,"0,016"
+2,Frutas,vitaminas_minerales,30,Kinoto,Tiamina,"0,083"
+2,Frutas,vitaminas_minerales,30,Kiwi,Tiamina,"0,027"
+2,Frutas,vitaminas_minerales,30,Limón,Tiamina,"0,051"
+2,Frutas,vitaminas_minerales,30,Mamón,Tiamina,"0,030"
+2,Frutas,vitaminas_minerales,30,Mandarina,Tiamina,"0,058"
+2,Frutas,vitaminas_minerales,30,Mango,Tiamina,"0,028"
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Tiamina,"0,017"
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Tiamina,"0,019"
+2,Frutas,vitaminas_minerales,30,Maracuyá,Tiamina,0
+2,Frutas,vitaminas_minerales,30,Melón,Tiamina,"0,038"
+2,Frutas,vitaminas_minerales,30,Membrillo,Tiamina,"0,032"
+2,Frutas,vitaminas_minerales,30,Mora,Tiamina,"0,020"
+2,Frutas,vitaminas_minerales,30,Naranja,Tiamina,"0,087"
+2,Frutas,vitaminas_minerales,30,Níspero,Tiamina,"0,020"
+2,Frutas,vitaminas_minerales,30,Frutilla,Retinol,0
+2,Frutas,vitaminas_minerales,30,Granada,Retinol,0
+2,Frutas,vitaminas_minerales,30,Guayaba,Retinol,0
+2,Frutas,vitaminas_minerales,30,Higo,Retinol,0
+2,Frutas,vitaminas_minerales,30,Higo desecado,Retinol,0
+2,Frutas,vitaminas_minerales,30,Kaki,Retinol,0
+2,Frutas,vitaminas_minerales,30,Kinoto,Retinol,0
+2,Frutas,vitaminas_minerales,30,Kiwi,Retinol,0
+2,Frutas,vitaminas_minerales,30,Limón,Retinol,0
+2,Frutas,vitaminas_minerales,30,Mamón,Retinol,0
+2,Frutas,vitaminas_minerales,30,Mandarina,Retinol,0
+2,Frutas,vitaminas_minerales,30,Mango,Retinol,0
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Retinol,0
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Retinol,0
+2,Frutas,vitaminas_minerales,30,Maracuyá,Retinol,0
+2,Frutas,vitaminas_minerales,30,Melón,Retinol,0
+2,Frutas,vitaminas_minerales,30,Membrillo,Retinol,0
+2,Frutas,vitaminas_minerales,30,Mora,Retinol,0
+2,Frutas,vitaminas_minerales,30,Naranja,Retinol,0
+2,Frutas,vitaminas_minerales,30,Níspero,Retinol,0
+2,Frutas,vitaminas_minerales,30,Frutilla,"Vitamina A, RAE",1
+2,Frutas,vitaminas_minerales,30,Granada,"Vitamina A, RAE",3
+2,Frutas,vitaminas_minerales,30,Guayaba,"Vitamina A, RAE",31
+2,Frutas,vitaminas_minerales,30,Higo,"Vitamina A, RAE",7
+2,Frutas,vitaminas_minerales,30,Higo desecado,"Vitamina A, RAE",0
+2,Frutas,vitaminas_minerales,30,Kaki,"Vitamina A, RAE",81
+2,Frutas,vitaminas_minerales,30,Kinoto,"Vitamina A, RAE",15
+2,Frutas,vitaminas_minerales,30,Kiwi,"Vitamina A, RAE",4
+2,Frutas,vitaminas_minerales,30,Limón,"Vitamina A, RAE",1
+2,Frutas,vitaminas_minerales,30,Mamón,"Vitamina A, RAE",68
+2,Frutas,vitaminas_minerales,30,Mandarina,"Vitamina A, RAE",34
+2,Frutas,vitaminas_minerales,30,Mango,"Vitamina A, RAE",54
+2,Frutas,vitaminas_minerales,30,Manzana con piel,"Vitamina A, RAE",3
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,"Vitamina A, RAE",2
+2,Frutas,vitaminas_minerales,30,Maracuyá,"Vitamina A, RAE",64
+2,Frutas,vitaminas_minerales,30,Melón,"Vitamina A, RAE",3
+2,Frutas,vitaminas_minerales,30,Membrillo,"Vitamina A, RAE",2
+2,Frutas,vitaminas_minerales,30,Mora,"Vitamina A, RAE",11
+2,Frutas,vitaminas_minerales,30,Naranja,"Vitamina A, RAE",11
+2,Frutas,vitaminas_minerales,30,Níspero,"Vitamina A, RAE",76
+2,Frutas,vitaminas_minerales,30,Frutilla,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Granada,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Guayaba,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Higo,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Higo desecado,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Kaki,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Kinoto,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Kiwi,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Limón,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Mamón,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Mandarina,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Mango,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Maracuyá,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Melón,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Membrillo,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Mora,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Naranja,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Níspero,Ácido fólico,0
+2,Frutas,vitaminas_minerales,30,Frutilla,Folato EFD,43
+2,Frutas,vitaminas_minerales,30,Granada,Folato EFD,38
+2,Frutas,vitaminas_minerales,30,Guayaba,Folato EFD,49
+2,Frutas,vitaminas_minerales,30,Higo,Folato EFD,6
+2,Frutas,vitaminas_minerales,30,Higo desecado,Folato EFD,9
+2,Frutas,vitaminas_minerales,30,Kaki,Folato EFD,8
+2,Frutas,vitaminas_minerales,30,Kinoto,Folato EFD,17
+2,Frutas,vitaminas_minerales,30,Kiwi,Folato EFD,25
+2,Frutas,vitaminas_minerales,30,Limón,Folato EFD,11
+2,Frutas,vitaminas_minerales,30,Mamón,Folato EFD,37
+2,Frutas,vitaminas_minerales,30,Mandarina,Folato EFD,16
+2,Frutas,vitaminas_minerales,30,Mango,Folato EFD,43
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Folato EFD,3
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Folato EFD,0
+2,Frutas,vitaminas_minerales,30,Maracuyá,Folato EFD,14
+2,Frutas,vitaminas_minerales,30,Melón,Folato EFD,19
+2,Frutas,vitaminas_minerales,30,Membrillo,Folato EFD,3
+2,Frutas,vitaminas_minerales,30,Mora,Folato EFD,25
+2,Frutas,vitaminas_minerales,30,Naranja,Folato EFD,30
+2,Frutas,vitaminas_minerales,30,Níspero,Folato EFD,14
+2,Frutas,vitaminas_minerales,30,Frutilla,Niacina,"0,40"
+2,Frutas,vitaminas_minerales,30,Granada,Niacina,"0,29"
+2,Frutas,vitaminas_minerales,30,Guayaba,Niacina,"1,08"
+2,Frutas,vitaminas_minerales,30,Higo,Niacina,"0,40"
+2,Frutas,vitaminas_minerales,30,Higo desecado,Niacina,"0,62"
+2,Frutas,vitaminas_minerales,30,Kaki,Niacina,"0,10"
+2,Frutas,vitaminas_minerales,30,Kinoto,Niacina,"0,43"
+2,Frutas,vitaminas_minerales,30,Kiwi,Niacina,"0,34"
+2,Frutas,vitaminas_minerales,30,Limón,Niacina,"0,10"
+2,Frutas,vitaminas_minerales,30,Mamón,Niacina,"0,30"
+2,Frutas,vitaminas_minerales,30,Mandarina,Niacina,"0,38"
+2,Frutas,vitaminas_minerales,30,Mango,Niacina,"0,67"
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Niacina,"0,09"
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Niacina,"0,20"
+2,Frutas,vitaminas_minerales,30,Maracuyá,Niacina,"1,50"
+2,Frutas,vitaminas_minerales,30,Melón,Niacina,"0,42"
+2,Frutas,vitaminas_minerales,30,Membrillo,Niacina,"0,20"
+2,Frutas,vitaminas_minerales,30,Mora,Niacina,"0,65"
+2,Frutas,vitaminas_minerales,30,Naranja,Niacina,"0,282"
+2,Frutas,vitaminas_minerales,30,Níspero,Niacina,"0,18"
+2,Frutas,vitaminas_minerales,30,Frutilla,Zinc,"0,14"
+2,Frutas,vitaminas_minerales,30,Granada,Zinc,"0,35"
+2,Frutas,vitaminas_minerales,30,Guayaba,Zinc,"0,23"
+2,Frutas,vitaminas_minerales,30,Higo,Zinc,"0,15"
+2,Frutas,vitaminas_minerales,30,Higo desecado,Zinc,"0,55"
+2,Frutas,vitaminas_minerales,30,Kaki,Zinc,"0,11"
+2,Frutas,vitaminas_minerales,30,Kinoto,Zinc,"0,17"
+2,Frutas,vitaminas_minerales,30,Kiwi,Zinc,"0,14"
+2,Frutas,vitaminas_minerales,30,Limón,Zinc,"0,06"
+2,Frutas,vitaminas_minerales,30,Mamón,Zinc,"0,2"
+2,Frutas,vitaminas_minerales,30,Mandarina,Zinc,"0,07"
+2,Frutas,vitaminas_minerales,30,Mango,Zinc,"0,09"
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Zinc,"0,04"
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Zinc,"0,05"
+2,Frutas,vitaminas_minerales,30,Maracuyá,Zinc,"0,1"
+2,Frutas,vitaminas_minerales,30,Melón,Zinc,"0,09"
+2,Frutas,vitaminas_minerales,30,Membrillo,Zinc,"0,04"
+2,Frutas,vitaminas_minerales,30,Mora,Zinc,"0,53"
+2,Frutas,vitaminas_minerales,30,Naranja,Zinc,"0,07"
+2,Frutas,vitaminas_minerales,30,Níspero,Zinc,"0,05"
+2,Frutas,vitaminas_minerales,30,Frutilla,Magnesio,13
+2,Frutas,vitaminas_minerales,30,Granada,Magnesio,12
+2,Frutas,vitaminas_minerales,30,Guayaba,Magnesio,22
+2,Frutas,vitaminas_minerales,30,Higo,Magnesio,17
+2,Frutas,vitaminas_minerales,30,Higo desecado,Magnesio,68
+2,Frutas,vitaminas_minerales,30,Kaki,Magnesio,9
+2,Frutas,vitaminas_minerales,30,Kinoto,Magnesio,20
+2,Frutas,vitaminas_minerales,30,Kiwi,Magnesio,17
+2,Frutas,vitaminas_minerales,30,Limón,Magnesio,8
+2,Frutas,vitaminas_minerales,30,Mamón,Magnesio,21
+2,Frutas,vitaminas_minerales,30,Mandarina,Magnesio,12
+2,Frutas,vitaminas_minerales,30,Mango,Magnesio,10
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Magnesio,5
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Magnesio,4
+2,Frutas,vitaminas_minerales,30,Maracuyá,Magnesio,29
+2,Frutas,vitaminas_minerales,30,Melón,Magnesio,10
+2,Frutas,vitaminas_minerales,30,Membrillo,Magnesio,8
+2,Frutas,vitaminas_minerales,30,Mora,Magnesio,20
+2,Frutas,vitaminas_minerales,30,Naranja,Magnesio,10
+2,Frutas,vitaminas_minerales,30,Níspero,Magnesio,10
+2,Frutas,vitaminas_minerales,30,Frutilla,Hierro,"0,71"
+2,Frutas,vitaminas_minerales,30,Granada,Hierro,"0,78"
+2,Frutas,vitaminas_minerales,30,Guayaba,Hierro,"0,26"
+2,Frutas,vitaminas_minerales,30,Higo,Hierro,"0,42"
+2,Frutas,vitaminas_minerales,30,Higo desecado,Hierro,"2,03"
+2,Frutas,vitaminas_minerales,30,Kaki,Hierro,"0,15"
+2,Frutas,vitaminas_minerales,30,Kinoto,Hierro,"0,86"
+2,Frutas,vitaminas_minerales,30,Kiwi,Hierro,"0,31"
+2,Frutas,vitaminas_minerales,30,Limón,Hierro,"0,35"
+2,Frutas,vitaminas_minerales,30,Mamón,Hierro,"0,50"
+2,Frutas,vitaminas_minerales,30,Mandarina,Hierro,"0,15"
+2,Frutas,vitaminas_minerales,30,Mango,Hierro,"0,16"
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Hierro,"0,12"
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Hierro,"0,07"
+2,Frutas,vitaminas_minerales,30,Maracuyá,Hierro,"1,60"
+2,Frutas,vitaminas_minerales,30,Melón,Hierro,"0,17"
+2,Frutas,vitaminas_minerales,30,Membrillo,Hierro,"0,32"
+2,Frutas,vitaminas_minerales,30,Mora,Hierro,"0,62"
+2,Frutas,vitaminas_minerales,30,Naranja,Hierro,"0,1"
+2,Frutas,vitaminas_minerales,30,Níspero,Hierro,"0,30"
+2,Frutas,vitaminas_minerales,30,Frutilla,Fósforo,23
+2,Frutas,vitaminas_minerales,30,Granada,Fósforo,36
+2,Frutas,vitaminas_minerales,30,Guayaba,Fósforo,40
+2,Frutas,vitaminas_minerales,30,Higo,Fósforo,32
+2,Frutas,vitaminas_minerales,30,Higo desecado,Fósforo,67
+2,Frutas,vitaminas_minerales,30,Kaki,Fósforo,17
+2,Frutas,vitaminas_minerales,30,Kinoto,Fósforo,19
+2,Frutas,vitaminas_minerales,30,Kiwi,Fósforo,34
+2,Frutas,vitaminas_minerales,30,Limón,Fósforo,21
+2,Frutas,vitaminas_minerales,30,Mamón,Fósforo,13
+2,Frutas,vitaminas_minerales,30,Mandarina,Fósforo,20
+2,Frutas,vitaminas_minerales,30,Mango,Fósforo,14
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Fósforo,11
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Fósforo,9
+2,Frutas,vitaminas_minerales,30,Maracuyá,Fósforo,68
+2,Frutas,vitaminas_minerales,30,Melón,Fósforo,11
+2,Frutas,vitaminas_minerales,30,Membrillo,Fósforo,19
+2,Frutas,vitaminas_minerales,30,Mora,Fósforo,22
+2,Frutas,vitaminas_minerales,30,Naranja,Fósforo,14
+2,Frutas,vitaminas_minerales,30,Níspero,Fósforo,23
+2,Frutas,vitaminas_minerales,30,Frutilla,Cobre,"0,05"
+2,Frutas,vitaminas_minerales,30,Granada,Cobre,"0,158"
+2,Frutas,vitaminas_minerales,30,Guayaba,Cobre,"0,23"
+2,Frutas,vitaminas_minerales,30,Higo,Cobre,"0,07"
+2,Frutas,vitaminas_minerales,30,Higo desecado,Cobre,"0,287"
+2,Frutas,vitaminas_minerales,30,Kaki,Cobre,"0,113"
+2,Frutas,vitaminas_minerales,30,Kinoto,Cobre,"0,095"
+2,Frutas,vitaminas_minerales,30,Kiwi,Cobre,"0,13"
+2,Frutas,vitaminas_minerales,30,Limón,Cobre,"0,037"
+2,Frutas,vitaminas_minerales,30,Mamón,Cobre,"0,08"
+2,Frutas,vitaminas_minerales,30,Mandarina,Cobre,"0,042"
+2,Frutas,vitaminas_minerales,30,Mango,Cobre,"0,111"
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Cobre,"0,027"
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Cobre,"0,031"
+2,Frutas,vitaminas_minerales,30,Maracuyá,Cobre,"0,086"
+2,Frutas,vitaminas_minerales,30,Melón,Cobre,"0,024"
+2,Frutas,vitaminas_minerales,30,Membrillo,Cobre,"0,13"
+2,Frutas,vitaminas_minerales,30,Mora,Cobre,"0,165"
+2,Frutas,vitaminas_minerales,30,Naranja,Cobre,"0,045"
+2,Frutas,vitaminas_minerales,30,Níspero,Cobre,"0,17"
+2,Frutas,vitaminas_minerales,30,Frutilla,Calcio,22
+2,Frutas,vitaminas_minerales,30,Granada,Calcio,11
+2,Frutas,vitaminas_minerales,30,Guayaba,Calcio,18
+2,Frutas,vitaminas_minerales,30,Higo,Calcio,34
+2,Frutas,vitaminas_minerales,30,Higo desecado,Calcio,162
+2,Frutas,vitaminas_minerales,30,Kaki,Calcio,8
+2,Frutas,vitaminas_minerales,30,Kinoto,Calcio,62
+2,Frutas,vitaminas_minerales,30,Kiwi,Calcio,34
+2,Frutas,vitaminas_minerales,30,Limón,Calcio,26
+2,Frutas,vitaminas_minerales,30,Mamón,Calcio,23
+2,Frutas,vitaminas_minerales,30,Mandarina,Calcio,37
+2,Frutas,vitaminas_minerales,30,Mango,Calcio,11
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Calcio,6
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Calcio,4
+2,Frutas,vitaminas_minerales,30,Maracuyá,Calcio,12
+2,Frutas,vitaminas_minerales,30,Melón,Calcio,6
+2,Frutas,vitaminas_minerales,30,Membrillo,Calcio,14
+2,Frutas,vitaminas_minerales,30,Mora,Calcio,29
+2,Frutas,vitaminas_minerales,30,Naranja,Calcio,40
+2,Frutas,vitaminas_minerales,30,Níspero,Calcio,19
+2,Frutas,vitaminas_minerales,30,Frutilla,Potasio,161
+2,Frutas,vitaminas_minerales,30,Granada,Potasio,236
+2,Frutas,vitaminas_minerales,30,Guayaba,Potasio,290
+2,Frutas,vitaminas_minerales,30,Higo,Potasio,268
+2,Frutas,vitaminas_minerales,30,Higo desecado,Potasio,680
+2,Frutas,vitaminas_minerales,30,Kaki,Potasio,161
+2,Frutas,vitaminas_minerales,30,Kinoto,Potasio,186
+2,Frutas,vitaminas_minerales,30,Kiwi,Potasio,312
+2,Frutas,vitaminas_minerales,30,Limón,Potasio,163
+2,Frutas,vitaminas_minerales,30,Mamón,Potasio,200
+2,Frutas,vitaminas_minerales,30,Mandarina,Potasio,166
+2,Frutas,vitaminas_minerales,30,Mango,Potasio,168
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Potasio,107
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Potasio,122
+2,Frutas,vitaminas_minerales,30,Maracuyá,Potasio,348
+2,Frutas,vitaminas_minerales,30,Melón,Potasio,228
+2,Frutas,vitaminas_minerales,30,Membrillo,Potasio,203
+2,Frutas,vitaminas_minerales,30,Mora,Potasio,162
+2,Frutas,vitaminas_minerales,30,Naranja,Potasio,181
+2,Frutas,vitaminas_minerales,30,Níspero,Potasio,263
+2,Frutas,vitaminas_minerales,30,Frutilla,Sodio,2
+2,Frutas,vitaminas_minerales,30,Granada,Sodio,3
+2,Frutas,vitaminas_minerales,30,Guayaba,Sodio,2
+2,Frutas,vitaminas_minerales,30,Higo,Sodio,2
+2,Frutas,vitaminas_minerales,30,Higo desecado,Sodio,10
+2,Frutas,vitaminas_minerales,30,Kaki,Sodio,1
+2,Frutas,vitaminas_minerales,30,Kinoto,Sodio,10
+2,Frutas,vitaminas_minerales,30,Kiwi,Sodio,3
+2,Frutas,vitaminas_minerales,30,Limón,Sodio,6
+2,Frutas,vitaminas_minerales,30,Mamón,Sodio,5
+2,Frutas,vitaminas_minerales,30,Mandarina,Sodio,2
+2,Frutas,vitaminas_minerales,30,Mango,Sodio,1
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Sodio,1
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Sodio,5
+2,Frutas,vitaminas_minerales,30,Maracuyá,Sodio,28
+2,Frutas,vitaminas_minerales,30,Melón,Sodio,18
+2,Frutas,vitaminas_minerales,30,Membrillo,Sodio,3
+2,Frutas,vitaminas_minerales,30,Mora,Sodio,1
+2,Frutas,vitaminas_minerales,30,Naranja,Sodio,0
+2,Frutas,vitaminas_minerales,30,Níspero,Sodio,4
+2,Frutas,vitaminas_minerales,30,Frutilla,Cenizas,"0,50"
+2,Frutas,vitaminas_minerales,30,Granada,Cenizas,"0,50"
+2,Frutas,vitaminas_minerales,30,Guayaba,Cenizas,"1,39"
+2,Frutas,vitaminas_minerales,30,Higo,Cenizas,"0,60"
+2,Frutas,vitaminas_minerales,30,Higo desecado,Cenizas,"1,86"
+2,Frutas,vitaminas_minerales,30,Kaki,Cenizas,"0,60"
+2,Frutas,vitaminas_minerales,30,Kinoto,Cenizas,"0,6"
+2,Frutas,vitaminas_minerales,30,Kiwi,Cenizas,"0,61"
+2,Frutas,vitaminas_minerales,30,Limón,Cenizas,"0,50"
+2,Frutas,vitaminas_minerales,30,Mamón,Cenizas,"0,39"
+2,Frutas,vitaminas_minerales,30,Mandarina,Cenizas,"0,38"
+2,Frutas,vitaminas_minerales,30,Mango,Cenizas,"0,36"
+2,Frutas,vitaminas_minerales,30,Manzana con piel,Cenizas,"0,19"
+2,Frutas,vitaminas_minerales,30,Manzana sin piel,Cenizas,"0,30"
+2,Frutas,vitaminas_minerales,30,Maracuyá,Cenizas,"0,8"
+2,Frutas,vitaminas_minerales,30,Melón,Cenizas,"0,41"
+2,Frutas,vitaminas_minerales,30,Membrillo,Cenizas,"0,40"
+2,Frutas,vitaminas_minerales,30,Mora,Cenizas,"0,37"
+2,Frutas,vitaminas_minerales,30,Naranja,Cenizas,"0,44"
+2,Frutas,vitaminas_minerales,30,Níspero,Cenizas,"0,54"
+2,Frutas,macronutrientes,31,Palta,Alcohol,0
+2,Frutas,macronutrientes,31,Papaya,Alcohol,0
+2,Frutas,macronutrientes,31,Pera,Alcohol,0
+2,Frutas,macronutrientes,31,Pera orejón,Alcohol,0
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",Alcohol,0
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",Alcohol,0
+2,Frutas,macronutrientes,31,Pomelo,Alcohol,0
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),Alcohol,0
+2,Frutas,macronutrientes,31,Sandía,Alcohol,0
+2,Frutas,macronutrientes,31,Uva,Alcohol,0
+2,Frutas,macronutrientes,31,Uva pasa,Alcohol,0
+2,Frutas,macronutrientes,31,Palta,Fibra alimentaria,"6,7"
+2,Frutas,macronutrientes,31,Papaya,Fibra alimentaria,"1,7"
+2,Frutas,macronutrientes,31,Pera,Fibra alimentaria,"3,1"
+2,Frutas,macronutrientes,31,Pera orejón,Fibra alimentaria,"7,5"
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",Fibra alimentaria,"1,6"
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",Fibra alimentaria,"1,6"
+2,Frutas,macronutrientes,31,Pomelo,Fibra alimentaria,"1,1"
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),Fibra alimentaria,"1,7"
+2,Frutas,macronutrientes,31,Sandía,Fibra alimentaria,"0,4"
+2,Frutas,macronutrientes,31,Uva,Fibra alimentaria,"0,9"
+2,Frutas,macronutrientes,31,Uva pasa,Fibra alimentaria,"4,5"
+2,Frutas,macronutrientes,31,Palta,Azúcar agregado,0
+2,Frutas,macronutrientes,31,Papaya,Azúcar agregado,0
+2,Frutas,macronutrientes,31,Pera,Azúcar agregado,0
+2,Frutas,macronutrientes,31,Pera orejón,Azúcar agregado,0
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",Azúcar agregado,"9,1"
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",Azúcar agregado,0
+2,Frutas,macronutrientes,31,Pomelo,Azúcar agregado,0
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),Azúcar agregado,0
+2,Frutas,macronutrientes,31,Sandía,Azúcar agregado,0
+2,Frutas,macronutrientes,31,Uva,Azúcar agregado,0
+2,Frutas,macronutrientes,31,Uva pasa,Azúcar agregado,0
+2,Frutas,macronutrientes,31,Palta,Azúcar total,"0,7"
+2,Frutas,macronutrientes,31,Papaya,Azúcar total,"8,8"
+2,Frutas,macronutrientes,31,Pera,Azúcar total,"9,8"
+2,Frutas,macronutrientes,31,Pera orejón,Azúcar total,"62,2"
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",Azúcar total,"15,2"
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",Azúcar total,"6,1"
+2,Frutas,macronutrientes,31,Pomelo,Azúcar total,"4,8"
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),Azúcar total,"9,9"
+2,Frutas,macronutrientes,31,Sandía,Azúcar total,"6,2"
+2,Frutas,macronutrientes,31,Uva,Azúcar total,"15,5"
+2,Frutas,macronutrientes,31,Uva pasa,Azúcar total,"65,2"
+2,Frutas,macronutrientes,31,Palta,Carbohidratos totales,"8,5"
+2,Frutas,macronutrientes,31,Papaya,Carbohidratos totales,"10,8"
+2,Frutas,macronutrientes,31,Pera,Carbohidratos totales,"15,2"
+2,Frutas,macronutrientes,31,Pera orejón,Carbohidratos totales,"71,6"
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",Carbohidratos totales,"19,2"
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",Carbohidratos totales,"7,8"
+2,Frutas,macronutrientes,31,Pomelo,Carbohidratos totales,"5,9"
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),Carbohidratos totales,"10,8"
+2,Frutas,macronutrientes,31,Sandía,Carbohidratos totales,"6,9"
+2,Frutas,macronutrientes,31,Uva,Carbohidratos totales,"18,1"
+2,Frutas,macronutrientes,31,Uva pasa,Carbohidratos totales,"79,3"
+2,Frutas,macronutrientes,31,Palta,Carbohidratos disponibles,"1,8"
+2,Frutas,macronutrientes,31,Papaya,Carbohidratos disponibles,"8,8"
+2,Frutas,macronutrientes,31,Pera,Carbohidratos disponibles,"12,1"
+2,Frutas,macronutrientes,31,Pera orejón,Carbohidratos disponibles,"62,2"
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",Carbohidratos disponibles,"17,6"
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",Carbohidratos disponibles,"6,2"
+2,Frutas,macronutrientes,31,Pomelo,Carbohidratos disponibles,"4,8"
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),Carbohidratos disponibles,"9,1"
+2,Frutas,macronutrientes,31,Sandía,Carbohidratos disponibles,"7,2"
+2,Frutas,macronutrientes,31,Uva,Carbohidratos disponibles,"17,2"
+2,Frutas,macronutrientes,31,Uva pasa,Carbohidratos disponibles,"74,8"
+2,Frutas,macronutrientes,31,Palta,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,31,Papaya,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,31,Pera,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,31,Pera orejón,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,31,Pomelo,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,31,Sandía,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,31,Uva,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,31,Uva pasa,22:6 n-3 Docosahexaenoico (DHA),0
+2,Frutas,macronutrientes,31,Palta,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,31,Papaya,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,31,Pera,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,31,Pera orejón,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,31,Pomelo,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,31,Sandía,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,31,Uva,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,31,Uva pasa,20:5 n-3 Eicosapentaenoico (EPA),0
+2,Frutas,macronutrientes,31,Palta,20:4 Araquidónico,0
+2,Frutas,macronutrientes,31,Papaya,20:4 Araquidónico,0
+2,Frutas,macronutrientes,31,Pera,20:4 Araquidónico,0
+2,Frutas,macronutrientes,31,Pera orejón,20:4 Araquidónico,0
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",20:4 Araquidónico,0
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",20:4 Araquidónico,0
+2,Frutas,macronutrientes,31,Pomelo,20:4 Araquidónico,0
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),20:4 Araquidónico,0
+2,Frutas,macronutrientes,31,Sandía,20:4 Araquidónico,0
+2,Frutas,macronutrientes,31,Uva,20:4 Araquidónico,0
+2,Frutas,macronutrientes,31,Uva pasa,20:4 Araquidónico,0
+2,Frutas,macronutrientes,31,Palta,18:3 cis Alfa linolénico (ALA),"0,125"
+2,Frutas,macronutrientes,31,Papaya,18:3 cis Alfa linolénico (ALA),"0,047"
+2,Frutas,macronutrientes,31,Pera,18:3 cis Alfa linolénico (ALA),"0,001"
+2,Frutas,macronutrientes,31,Pera orejón,18:3 cis Alfa linolénico (ALA),0
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",18:3 cis Alfa linolénico (ALA),0
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",18:3 cis Alfa linolénico (ALA),0
+2,Frutas,macronutrientes,31,Pomelo,18:3 cis Alfa linolénico (ALA),"0,019"
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),18:3 cis Alfa linolénico (ALA),"0,012"
+2,Frutas,macronutrientes,31,Sandía,18:3 cis Alfa linolénico (ALA),0
+2,Frutas,macronutrientes,31,Uva,18:3 cis Alfa linolénico (ALA),"0,007"
+2,Frutas,macronutrientes,31,Uva pasa,18:3 cis Alfa linolénico (ALA),"0,014"
+2,Frutas,macronutrientes,31,Palta,18:2 cis Linoléico,"1,67"
+2,Frutas,macronutrientes,31,Papaya,18:2 cis Linoléico,"0,01"
+2,Frutas,macronutrientes,31,Pera,18:2 cis Linoléico,"0,09"
+2,Frutas,macronutrientes,31,Pera orejón,18:2 cis Linoléico,"0,15"
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",18:2 cis Linoléico,"0,03"
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",18:2 cis Linoléico,"0,01"
+2,Frutas,macronutrientes,31,Pomelo,18:2 cis Linoléico,"0,02"
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),18:2 cis Linoléico,"0,05"
+2,Frutas,macronutrientes,31,Sandía,18:2 cis Linoléico,"0,05"
+2,Frutas,macronutrientes,31,Uva,18:2 cis Linoléico,"0,04"
+2,Frutas,macronutrientes,31,Uva pasa,18:2 cis Linoléico,"0,04"
+2,Frutas,macronutrientes,31,Palta,Trans,0
+2,Frutas,macronutrientes,31,Papaya,Trans,0
+2,Frutas,macronutrientes,31,Pera,Trans,0
+2,Frutas,macronutrientes,31,Pera orejón,Trans,0
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",Trans,0
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",Trans,0
+2,Frutas,macronutrientes,31,Pomelo,Trans,0
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),Trans,0
+2,Frutas,macronutrientes,31,Sandía,Trans,0
+2,Frutas,macronutrientes,31,Uva,Trans,0
+2,Frutas,macronutrientes,31,Uva pasa,Trans,0
+2,Frutas,macronutrientes,31,Palta,Poliinsaturados,"1,82"
+2,Frutas,macronutrientes,31,Papaya,Poliinsaturados,"0,06"
+2,Frutas,macronutrientes,31,Pera,Poliinsaturados,"0,09"
+2,Frutas,macronutrientes,31,Pera orejón,Poliinsaturados,"0,15"
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",Poliinsaturados,"0,03"
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",Poliinsaturados,"0,01"
+2,Frutas,macronutrientes,31,Pomelo,Poliinsaturados,"0,02"
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),Poliinsaturados,"0,06"
+2,Frutas,macronutrientes,31,Sandía,Poliinsaturados,"0,05"
+2,Frutas,macronutrientes,31,Uva,Poliinsaturados,"0,05"
+2,Frutas,macronutrientes,31,Uva pasa,Poliinsaturados,"0,05"
+2,Frutas,macronutrientes,31,Palta,Monoinsaturados,"13,04"
+2,Frutas,macronutrientes,31,Papaya,Monoinsaturados,"0,07"
+2,Frutas,macronutrientes,31,Pera,Monoinsaturados,"0,08"
+2,Frutas,macronutrientes,31,Pera orejón,Monoinsaturados,"0,13"
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",Monoinsaturados,"0,03"
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",Monoinsaturados,"0,01"
+2,Frutas,macronutrientes,31,Pomelo,Monoinsaturados,"0,01"
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),Monoinsaturados,"0,01"
+2,Frutas,macronutrientes,31,Sandía,Monoinsaturados,"0,04"
+2,Frutas,macronutrientes,31,Uva,Monoinsaturados,"0,01"
+2,Frutas,macronutrientes,31,Uva pasa,Monoinsaturados,"0,02"
+2,Frutas,macronutrientes,31,Palta,Saturados,"4,10"
+2,Frutas,macronutrientes,31,Papaya,Saturados,"0,08"
+2,Frutas,macronutrientes,31,Pera,Saturados,"0,02"
+2,Frutas,macronutrientes,31,Pera orejón,Saturados,"0,04"
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",Saturados,"0,01"
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",Saturados,"0,00"
+2,Frutas,macronutrientes,31,Pomelo,Saturados,"0,01"
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),Saturados,"0,03"
+2,Frutas,macronutrientes,31,Sandía,Saturados,"0,02"
+2,Frutas,macronutrientes,31,Uva,Saturados,"0,05"
+2,Frutas,macronutrientes,31,Uva pasa,Saturados,"0,09"
+2,Frutas,macronutrientes,31,Palta,Colesterol,0
+2,Frutas,macronutrientes,31,Papaya,Colesterol,0
+2,Frutas,macronutrientes,31,Pera,Colesterol,0
+2,Frutas,macronutrientes,31,Pera orejón,Colesterol,0
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",Colesterol,0
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",Colesterol,0
+2,Frutas,macronutrientes,31,Pomelo,Colesterol,0
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),Colesterol,0
+2,Frutas,macronutrientes,31,Sandía,Colesterol,0
+2,Frutas,macronutrientes,31,Uva,Colesterol,0
+2,Frutas,macronutrientes,31,Uva pasa,Colesterol,0
+2,Frutas,macronutrientes,31,Palta,Lípidos totales,"19,5"
+2,Frutas,macronutrientes,31,Papaya,Lípidos totales,"0,1"
+2,Frutas,macronutrientes,31,Pera,Lípidos totales,"0,4"
+2,Frutas,macronutrientes,31,Pera orejón,Lípidos totales,"0,4"
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",Lípidos totales,"0,1"
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",Lípidos totales,"0,0"
+2,Frutas,macronutrientes,31,Pomelo,Lípidos totales,"0,1"
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),Lípidos totales,"0,2"
+2,Frutas,macronutrientes,31,Sandía,Lípidos totales,"0,2"
+2,Frutas,macronutrientes,31,Uva,Lípidos totales,"0,2"
+2,Frutas,macronutrientes,31,Uva pasa,Lípidos totales,"0,3"
+2,Frutas,macronutrientes,31,Palta,Proteínas,"1,9"
+2,Frutas,macronutrientes,31,Papaya,Proteínas,"0,5"
+2,Frutas,macronutrientes,31,Pera,Proteínas,"0,7"
+2,Frutas,macronutrientes,31,Pera orejón,Proteínas,"2,3"
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",Proteínas,"0,2"
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",Proteínas,"0,2"
+2,Frutas,macronutrientes,31,Pomelo,Proteínas,"0,5"
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),Proteínas,"0,2"
+2,Frutas,macronutrientes,31,Sandía,Proteínas,"0,5"
+2,Frutas,macronutrientes,31,Uva,Proteínas,"0,7"
+2,Frutas,macronutrientes,31,Uva pasa,Proteínas,"3,3"
+2,Frutas,macronutrientes,31,Palta,Agua,"72,5"
+2,Frutas,macronutrientes,31,Papaya,Agua,"88,5"
+2,Frutas,macronutrientes,31,Pera,Agua,"82,7"
+2,Frutas,macronutrientes,31,Pera orejón,Agua,"24,0"
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",Agua,"80,4"
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",Agua,"91,8"
+2,Frutas,macronutrientes,31,Pomelo,Agua,"92,9"
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),Agua,"88,6"
+2,Frutas,macronutrientes,31,Sandía,Agua,"92,1"
+2,Frutas,macronutrientes,31,Uva,Agua,"80,5"
+2,Frutas,macronutrientes,31,Uva pasa,Agua,"15,5"
+2,Frutas,macronutrientes,31,Palta,Valor energético,190
+2,Frutas,macronutrientes,31,Papaya,Valor energético,38
+2,Frutas,macronutrientes,31,Pera,Valor energético,55
+2,Frutas,macronutrientes,31,Pera orejón,Valor energético,262
+2,Frutas,macronutrientes,31,"Pera, enlatada (fruta y almíbar)",Valor energético,72
+2,Frutas,macronutrientes,31,"Pera, enlatada light (fruta y almíbar)",Valor energético,26
+2,Frutas,macronutrientes,31,Pomelo,Valor energético,22
+2,Frutas,macronutrientes,31,Puré de frutas envasado (alimento infantil),Valor energético,39
+2,Frutas,macronutrientes,31,Sandía,Valor energético,32
+2,Frutas,macronutrientes,31,Uva,Valor energético,73
+2,Frutas,macronutrientes,31,Uva pasa,Valor energético,315
+2,Frutas,vitaminas_minerales,32,Palta,Vitamina D,0
+2,Frutas,vitaminas_minerales,32,Papaya,Vitamina D,0
+2,Frutas,vitaminas_minerales,32,Pera,Vitamina D,0
+2,Frutas,vitaminas_minerales,32,Pera orejón,Vitamina D,0
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Vitamina D,0
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Vitamina D,0
+2,Frutas,vitaminas_minerales,32,Pomelo,Vitamina D,0
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Vitamina D,0
+2,Frutas,vitaminas_minerales,32,Sandía,Vitamina D,0
+2,Frutas,vitaminas_minerales,32,Uva,Vitamina D,0
+2,Frutas,vitaminas_minerales,32,Uva pasa,Vitamina D,0
+2,Frutas,vitaminas_minerales,32,Palta,Vitamina C,"10,0"
+2,Frutas,vitaminas_minerales,32,Papaya,Vitamina C,"60,0"
+2,Frutas,vitaminas_minerales,32,Pera,Vitamina C,"3,0"
+2,Frutas,vitaminas_minerales,32,Pera orejón,Vitamina C,"9,2"
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Vitamina C,"1,1"
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Vitamina C,"1,0"
+2,Frutas,vitaminas_minerales,32,Pomelo,Vitamina C,"47,8"
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Vitamina C,"15,5"
+2,Frutas,vitaminas_minerales,32,Sandía,Vitamina C,"9,1"
+2,Frutas,vitaminas_minerales,32,Uva,Vitamina C,"3,2"
+2,Frutas,vitaminas_minerales,32,Uva pasa,Vitamina C,"2,3"
+2,Frutas,vitaminas_minerales,32,Palta,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,32,Papaya,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,32,Pera,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,32,Pera orejón,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Vitamina B-12,0
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Vitamina B-12,0
+2,Frutas,vitaminas_minerales,32,Pomelo,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Vitamina B-12,0
+2,Frutas,vitaminas_minerales,32,Sandía,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,32,Uva,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,32,Uva pasa,Vitamina B-12,0
+2,Frutas,vitaminas_minerales,32,Palta,Riboflavina,"0,130"
+2,Frutas,vitaminas_minerales,32,Papaya,Riboflavina,"0,040"
+2,Frutas,vitaminas_minerales,32,Pera,Riboflavina,"0,040"
+2,Frutas,vitaminas_minerales,32,Pera orejón,Riboflavina,"0,106"
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Riboflavina,"0,022"
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Riboflavina,"0,010"
+2,Frutas,vitaminas_minerales,32,Pomelo,Riboflavina,"0,078"
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Riboflavina,"0,028"
+2,Frutas,vitaminas_minerales,32,Sandía,Riboflavina,"0,022"
+2,Frutas,vitaminas_minerales,32,Uva,Riboflavina,"0,070"
+2,Frutas,vitaminas_minerales,32,Uva pasa,Riboflavina,"0,125"
+2,Frutas,vitaminas_minerales,32,Palta,Tiamina,"0,067"
+2,Frutas,vitaminas_minerales,32,Papaya,Tiamina,"0,030"
+2,Frutas,vitaminas_minerales,32,Pera,Tiamina,"0,030"
+2,Frutas,vitaminas_minerales,32,Pera orejón,Tiamina,"0,061"
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Tiamina,"0,010"
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Tiamina,"0,008"
+2,Frutas,vitaminas_minerales,32,Pomelo,Tiamina,"0,104"
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Tiamina,"0,012"
+2,Frutas,vitaminas_minerales,32,Sandía,Tiamina,"0,033"
+2,Frutas,vitaminas_minerales,32,Uva,Tiamina,"0,069"
+2,Frutas,vitaminas_minerales,32,Uva pasa,Tiamina,"0,106"
+2,Frutas,vitaminas_minerales,32,Palta,Retinol,0
+2,Frutas,vitaminas_minerales,32,Papaya,Retinol,0
+2,Frutas,vitaminas_minerales,32,Pera,Retinol,0
+2,Frutas,vitaminas_minerales,32,Pera orejón,Retinol,0
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Retinol,0
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Retinol,0
+2,Frutas,vitaminas_minerales,32,Pomelo,Retinol,0
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Retinol,0
+2,Frutas,vitaminas_minerales,32,Sandía,Retinol,0
+2,Frutas,vitaminas_minerales,32,Uva,Retinol,0
+2,Frutas,vitaminas_minerales,32,Uva pasa,Retinol,0
+2,Frutas,vitaminas_minerales,32,Palta,"Vitamina A, RAE",7
+2,Frutas,vitaminas_minerales,32,Papaya,"Vitamina A, RAE",68
+2,Frutas,vitaminas_minerales,32,Pera,"Vitamina A, RAE",1
+2,Frutas,vitaminas_minerales,32,Pera orejón,"Vitamina A, RAE",0
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)","Vitamina A, RAE",0
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)","Vitamina A, RAE",0
+2,Frutas,vitaminas_minerales,32,Pomelo,"Vitamina A, RAE",46
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),"Vitamina A, RAE",1
+2,Frutas,vitaminas_minerales,32,Sandía,"Vitamina A, RAE",28
+2,Frutas,vitaminas_minerales,32,Uva,"Vitamina A, RAE",3
+2,Frutas,vitaminas_minerales,32,Uva pasa,"Vitamina A, RAE",0
+2,Frutas,vitaminas_minerales,32,Palta,Ácido fólico,0
+2,Frutas,vitaminas_minerales,32,Papaya,Ácido fólico,0
+2,Frutas,vitaminas_minerales,32,Pera,Ácido fólico,0
+2,Frutas,vitaminas_minerales,32,Pera orejón,Ácido fólico,0
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Ácido fólico,0
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Ácido fólico,0
+2,Frutas,vitaminas_minerales,32,Pomelo,Ácido fólico,0
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Ácido fólico,0
+2,Frutas,vitaminas_minerales,32,Sandía,Ácido fólico,0
+2,Frutas,vitaminas_minerales,32,Uva,Ácido fólico,0
+2,Frutas,vitaminas_minerales,32,Uva pasa,Ácido fólico,0
+2,Frutas,vitaminas_minerales,32,Palta,Folato EFD,87
+2,Frutas,vitaminas_minerales,32,Papaya,Folato EFD,37
+2,Frutas,vitaminas_minerales,32,Pera,Folato EFD,7
+2,Frutas,vitaminas_minerales,32,Pera orejón,Folato EFD,0
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Folato EFD,1
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Folato EFD,1
+2,Frutas,vitaminas_minerales,32,Pomelo,Folato EFD,10
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Folato EFD,2
+2,Frutas,vitaminas_minerales,32,Sandía,Folato EFD,3
+2,Frutas,vitaminas_minerales,32,Uva,Folato EFD,2
+2,Frutas,vitaminas_minerales,32,Uva pasa,Folato EFD,5
+2,Frutas,vitaminas_minerales,32,Palta,Niacina,"1,10"
+2,Frutas,vitaminas_minerales,32,Papaya,Niacina,"0,30"
+2,Frutas,vitaminas_minerales,32,Pera,Niacina,"0,16"
+2,Frutas,vitaminas_minerales,32,Pera orejón,Niacina,"1,30"
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Niacina,"0,24"
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Niacina,"0,05"
+2,Frutas,vitaminas_minerales,32,Pomelo,Niacina,"0,25"
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Niacina,"0,06"
+2,Frutas,vitaminas_minerales,32,Sandía,Niacina,"0,18"
+2,Frutas,vitaminas_minerales,32,Uva,Niacina,"0,19"
+2,Frutas,vitaminas_minerales,32,Uva pasa,Niacina,"0,77"
+2,Frutas,vitaminas_minerales,32,Palta,Zinc,"0,64"
+2,Frutas,vitaminas_minerales,32,Papaya,Zinc,"0,2"
+2,Frutas,vitaminas_minerales,32,Pera,Zinc,"0,1"
+2,Frutas,vitaminas_minerales,32,Pera orejón,Zinc,"0,39"
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Zinc,"0,08"
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Zinc,"0,09"
+2,Frutas,vitaminas_minerales,32,Pomelo,Zinc,"0,07"
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Zinc,"0,02"
+2,Frutas,vitaminas_minerales,32,Sandía,Zinc,"0,1"
+2,Frutas,vitaminas_minerales,32,Uva,Zinc,"0,07"
+2,Frutas,vitaminas_minerales,32,Uva pasa,Zinc,"0,36"
+2,Frutas,vitaminas_minerales,32,Palta,Magnesio,29
+2,Frutas,vitaminas_minerales,32,Papaya,Magnesio,21
+2,Frutas,vitaminas_minerales,32,Pera,Magnesio,7
+2,Frutas,vitaminas_minerales,32,Pera orejón,Magnesio,33
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Magnesio,4
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Magnesio,4
+2,Frutas,vitaminas_minerales,32,Pomelo,Magnesio,8
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Magnesio,3
+2,Frutas,vitaminas_minerales,32,Sandía,Magnesio,10
+2,Frutas,vitaminas_minerales,32,Uva,Magnesio,7
+2,Frutas,vitaminas_minerales,32,Uva pasa,Magnesio,36
+2,Frutas,vitaminas_minerales,32,Palta,Hierro,"0,55"
+2,Frutas,vitaminas_minerales,32,Papaya,Hierro,"0,50"
+2,Frutas,vitaminas_minerales,32,Pera,Hierro,"0,19"
+2,Frutas,vitaminas_minerales,32,Pera orejón,Hierro,"2,10"
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Hierro,"0,22"
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Hierro,"0,21"
+2,Frutas,vitaminas_minerales,32,Pomelo,Hierro,"0,21"
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Hierro,"0,22"
+2,Frutas,vitaminas_minerales,32,Sandía,Hierro,"0,23"
+2,Frutas,vitaminas_minerales,32,Uva,Hierro,"0,36"
+2,Frutas,vitaminas_minerales,32,Uva pasa,Hierro,"1,79"
+2,Frutas,vitaminas_minerales,32,Palta,Fósforo,52
+2,Frutas,vitaminas_minerales,32,Papaya,Fósforo,13
+2,Frutas,vitaminas_minerales,32,Pera,Fósforo,10
+2,Frutas,vitaminas_minerales,32,Pera orejón,Fósforo,59
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Fósforo,7
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Fósforo,7
+2,Frutas,vitaminas_minerales,32,Pomelo,Fósforo,10
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Fósforo,7
+2,Frutas,vitaminas_minerales,32,Sandía,Fósforo,3
+2,Frutas,vitaminas_minerales,32,Uva,Fósforo,20
+2,Frutas,vitaminas_minerales,32,Uva pasa,Fósforo,98
+2,Frutas,vitaminas_minerales,32,Palta,Cobre,"0,19"
+2,Frutas,vitaminas_minerales,32,Papaya,Cobre,"0,08"
+2,Frutas,vitaminas_minerales,32,Pera,Cobre,"0,082"
+2,Frutas,vitaminas_minerales,32,Pera orejón,Cobre,"0,371"
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Cobre,"0,049"
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Cobre,"0,051"
+2,Frutas,vitaminas_minerales,32,Pomelo,Cobre,"0,047"
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Cobre,"0,038"
+2,Frutas,vitaminas_minerales,32,Sandía,Cobre,"0,042"
+2,Frutas,vitaminas_minerales,32,Uva,Cobre,"0,127"
+2,Frutas,vitaminas_minerales,32,Uva pasa,Cobre,"0,272"
+2,Frutas,vitaminas_minerales,32,Palta,Calcio,12
+2,Frutas,vitaminas_minerales,32,Papaya,Calcio,23
+2,Frutas,vitaminas_minerales,32,Pera,Calcio,8
+2,Frutas,vitaminas_minerales,32,Pera orejón,Calcio,34
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Calcio,5
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Calcio,4
+2,Frutas,vitaminas_minerales,32,Pomelo,Calcio,13
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Calcio,4
+2,Frutas,vitaminas_minerales,32,Sandía,Calcio,11
+2,Frutas,vitaminas_minerales,32,Uva,Calcio,10
+2,Frutas,vitaminas_minerales,32,Uva pasa,Calcio,62
+2,Frutas,vitaminas_minerales,32,Palta,Potasio,485
+2,Frutas,vitaminas_minerales,32,Papaya,Potasio,200
+2,Frutas,vitaminas_minerales,32,Pera,Potasio,129
+2,Frutas,vitaminas_minerales,32,Pera orejón,Potasio,533
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Potasio,65
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Potasio,53
+2,Frutas,vitaminas_minerales,32,Pomelo,Potasio,147
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Potasio,71
+2,Frutas,vitaminas_minerales,32,Sandía,Potasio,100
+2,Frutas,vitaminas_minerales,32,Uva,Potasio,191
+2,Frutas,vitaminas_minerales,32,Uva pasa,Potasio,744
+2,Frutas,vitaminas_minerales,32,Palta,Sodio,7
+2,Frutas,vitaminas_minerales,32,Papaya,Sodio,5
+2,Frutas,vitaminas_minerales,32,Pera,Sodio,2
+2,Frutas,vitaminas_minerales,32,Pera orejón,Sodio,6
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Sodio,5
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Sodio,2
+2,Frutas,vitaminas_minerales,32,Pomelo,Sodio,1
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Sodio,0
+2,Frutas,vitaminas_minerales,32,Sandía,Sodio,8
+2,Frutas,vitaminas_minerales,32,Uva,Sodio,2
+2,Frutas,vitaminas_minerales,32,Uva pasa,Sodio,26
+2,Frutas,vitaminas_minerales,32,Palta,Cenizas,"1,58"
+2,Frutas,vitaminas_minerales,32,Papaya,Cenizas,"0,39"
+2,Frutas,vitaminas_minerales,32,Pera,Cenizas,"0,40"
+2,Frutas,vitaminas_minerales,32,Pera orejón,Cenizas,"1,7"
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada (fruta y almíbar)",Cenizas,"0,15"
+2,Frutas,vitaminas_minerales,32,"Pera, enlatada light (fruta y almíbar)",Cenizas,"0,16"
+2,Frutas,vitaminas_minerales,32,Pomelo,Cenizas,"0,70"
+2,Frutas,vitaminas_minerales,32,Puré de frutas envasado (alimento infantil),Cenizas,"0,2"
+2,Frutas,vitaminas_minerales,32,Sandía,Cenizas,"0,30"
+2,Frutas,vitaminas_minerales,32,Uva,Cenizas,"0,48"
+2,Frutas,vitaminas_minerales,32,Uva pasa,Cenizas,"1,68"

@@ -1,0 +1,235 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+19,Sales,macronutrientes,121,Sal,Alcohol,0
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",Alcohol,0
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",Alcohol,0
+19,Sales,macronutrientes,121,Sal Marina,Alcohol,0
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",Alcohol,0
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",Alcohol,0
+19,Sales,macronutrientes,121,Sal,Fibra alimentaria,0
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",Fibra alimentaria,0
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",Fibra alimentaria,0
+19,Sales,macronutrientes,121,Sal Marina,Fibra alimentaria,0
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",Fibra alimentaria,0
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",Fibra alimentaria,0
+19,Sales,macronutrientes,121,Sal,Azúcar agregado,0
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",Azúcar agregado,0
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",Azúcar agregado,0
+19,Sales,macronutrientes,121,Sal Marina,Azúcar agregado,0
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",Azúcar agregado,0
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",Azúcar agregado,0
+19,Sales,macronutrientes,121,Sal,Azúcar total,0
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",Azúcar total,0
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",Azúcar total,0
+19,Sales,macronutrientes,121,Sal Marina,Azúcar total,0
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",Azúcar total,0
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",Azúcar total,0
+19,Sales,macronutrientes,121,Sal,Carbohidratos totales,0
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",Carbohidratos totales,0
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",Carbohidratos totales,0
+19,Sales,macronutrientes,121,Sal Marina,Carbohidratos totales,0
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",Carbohidratos totales,0
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",Carbohidratos totales,0
+19,Sales,macronutrientes,121,Sal,Carbohidratos disponibles,0
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",Carbohidratos disponibles,0
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",Carbohidratos disponibles,0
+19,Sales,macronutrientes,121,Sal Marina,Carbohidratos disponibles,0
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",Carbohidratos disponibles,0
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",Carbohidratos disponibles,0
+19,Sales,macronutrientes,121,Sal,22:6 n-3 Docosahexaenoico (DHA),0
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",22:6 n-3 Docosahexaenoico (DHA),0
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",22:6 n-3 Docosahexaenoico (DHA),0
+19,Sales,macronutrientes,121,Sal Marina,22:6 n-3 Docosahexaenoico (DHA),0
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",22:6 n-3 Docosahexaenoico (DHA),0
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",22:6 n-3 Docosahexaenoico (DHA),0
+19,Sales,macronutrientes,121,Sal,20:5 n-3 Eicosapentaenoico (EPA),0
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",20:5 n-3 Eicosapentaenoico (EPA),0
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",20:5 n-3 Eicosapentaenoico (EPA),0
+19,Sales,macronutrientes,121,Sal Marina,20:5 n-3 Eicosapentaenoico (EPA),0
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",20:5 n-3 Eicosapentaenoico (EPA),0
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",20:5 n-3 Eicosapentaenoico (EPA),0
+19,Sales,macronutrientes,121,Sal,20:4 Araquidónico,0
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",20:4 Araquidónico,0
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",20:4 Araquidónico,0
+19,Sales,macronutrientes,121,Sal Marina,20:4 Araquidónico,0
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",20:4 Araquidónico,0
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",20:4 Araquidónico,0
+19,Sales,macronutrientes,121,Sal,18:3 cis Alfa linolénico (ALA),0
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",18:3 cis Alfa linolénico (ALA),0
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",18:3 cis Alfa linolénico (ALA),0
+19,Sales,macronutrientes,121,Sal Marina,18:3 cis Alfa linolénico (ALA),0
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",18:3 cis Alfa linolénico (ALA),0
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",18:3 cis Alfa linolénico (ALA),0
+19,Sales,macronutrientes,121,Sal,18:2 cis Linoléico,"0,00"
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",18:2 cis Linoléico,"0,00"
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",18:2 cis Linoléico,"0,00"
+19,Sales,macronutrientes,121,Sal Marina,18:2 cis Linoléico,"0,00"
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",18:2 cis Linoléico,"0,00"
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",18:2 cis Linoléico,"0,00"
+19,Sales,macronutrientes,121,Sal,Trans,0
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",Trans,0
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",Trans,0
+19,Sales,macronutrientes,121,Sal Marina,Trans,0
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",Trans,0
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",Trans,0
+19,Sales,macronutrientes,121,Sal,Poliinsaturados,"0,00"
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",Poliinsaturados,"0,00"
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",Poliinsaturados,"0,00"
+19,Sales,macronutrientes,121,Sal Marina,Poliinsaturados,"0,00"
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",Poliinsaturados,"0,00"
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",Poliinsaturados,"0,00"
+19,Sales,macronutrientes,121,Sal,Monoinsaturados,"0,00"
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",Monoinsaturados,"0,00"
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",Monoinsaturados,"0,00"
+19,Sales,macronutrientes,121,Sal Marina,Monoinsaturados,"0,00"
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",Monoinsaturados,"0,00"
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",Monoinsaturados,"0,00"
+19,Sales,macronutrientes,121,Sal,Saturados,"0,00"
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",Saturados,"0,00"
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",Saturados,"0,00"
+19,Sales,macronutrientes,121,Sal Marina,Saturados,"0,00"
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",Saturados,"0,00"
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",Saturados,"0,00"
+19,Sales,macronutrientes,121,Sal,Colesterol,0
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",Colesterol,0
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",Colesterol,0
+19,Sales,macronutrientes,121,Sal Marina,Colesterol,0
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",Colesterol,0
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",Colesterol,0
+19,Sales,macronutrientes,121,Sal,Lípidos totales,"0,0"
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",Lípidos totales,"0,0"
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",Lípidos totales,"0,0"
+19,Sales,macronutrientes,121,Sal Marina,Lípidos totales,"0,0"
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",Lípidos totales,"0,0"
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",Lípidos totales,"0,0"
+19,Sales,macronutrientes,121,Sal,Proteínas,"0,0"
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",Proteínas,"0,0"
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",Proteínas,"0,0"
+19,Sales,macronutrientes,121,Sal Marina,Proteínas,"0,0"
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",Proteínas,"0,0"
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",Proteínas,"0,0"
+19,Sales,macronutrientes,121,Sal,Agua,"0,0"
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",Agua,"0,0"
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",Agua,"0,0"
+19,Sales,macronutrientes,121,Sal Marina,Agua,"0,0"
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",Agua,"0,0"
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",Agua,"0,0"
+19,Sales,macronutrientes,121,Sal,Valor energético,0
+19,Sales,macronutrientes,121,"Sal, dietética o modificada, PROMEDIO",Valor energético,0
+19,Sales,macronutrientes,121,"Sal dietética, sin sodio",Valor energético,0
+19,Sales,macronutrientes,121,Sal Marina,Valor energético,0
+19,Sales,macronutrientes,121,"Sal modificada, 33% cloruro de sodio",Valor energético,0
+19,Sales,macronutrientes,121,"Sal modificada, 66% cloruro de sodio",Valor energético,0
+19,Sales,vitaminas_minerales,121,Sal,Vitamina D,0
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Vitamina D,0
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Vitamina D,0
+19,Sales,vitaminas_minerales,121,Sal Marina,Vitamina D,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Vitamina D,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Vitamina D,0
+19,Sales,vitaminas_minerales,121,Sal,Vitamina C,0
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Vitamina C,0
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Vitamina C,0
+19,Sales,vitaminas_minerales,121,Sal Marina,Vitamina C,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Vitamina C,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Vitamina C,0
+19,Sales,vitaminas_minerales,121,Sal,Vitamina B-12,0
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Vitamina B-12,0
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Vitamina B-12,0
+19,Sales,vitaminas_minerales,121,Sal Marina,Vitamina B-12,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Vitamina B-12,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Vitamina B-12,0
+19,Sales,vitaminas_minerales,121,Sal,Riboflavina,0
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Riboflavina,0
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Riboflavina,0
+19,Sales,vitaminas_minerales,121,Sal Marina,Riboflavina,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Riboflavina,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Riboflavina,0
+19,Sales,vitaminas_minerales,121,Sal,Tiamina,0
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Tiamina,0
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Tiamina,0
+19,Sales,vitaminas_minerales,121,Sal Marina,Tiamina,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Tiamina,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Tiamina,0
+19,Sales,vitaminas_minerales,121,Sal,Retinol,0
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Retinol,0
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Retinol,0
+19,Sales,vitaminas_minerales,121,Sal Marina,Retinol,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Retinol,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Retinol,0
+19,Sales,vitaminas_minerales,121,Sal,"Vitamina A, RAE",0
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO","Vitamina A, RAE",0
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio","Vitamina A, RAE",0
+19,Sales,vitaminas_minerales,121,Sal Marina,"Vitamina A, RAE",0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio","Vitamina A, RAE",0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio","Vitamina A, RAE",0
+19,Sales,vitaminas_minerales,121,Sal,Ácido fólico,0
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Ácido fólico,0
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Ácido fólico,0
+19,Sales,vitaminas_minerales,121,Sal Marina,Ácido fólico,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Ácido fólico,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Ácido fólico,0
+19,Sales,vitaminas_minerales,121,Sal,Folato EFD,0
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Folato EFD,0
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Folato EFD,0
+19,Sales,vitaminas_minerales,121,Sal Marina,Folato EFD,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Folato EFD,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Folato EFD,0
+19,Sales,vitaminas_minerales,121,Sal,Niacina,0
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Niacina,0
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Niacina,0
+19,Sales,vitaminas_minerales,121,Sal Marina,Niacina,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Niacina,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Niacina,0
+19,Sales,vitaminas_minerales,121,Sal,Zinc,0
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Zinc,0
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Zinc,0
+19,Sales,vitaminas_minerales,121,Sal Marina,Zinc,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Zinc,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Zinc,0
+19,Sales,vitaminas_minerales,121,Sal,Magnesio,0
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Magnesio,0
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Magnesio,0
+19,Sales,vitaminas_minerales,121,Sal Marina,Magnesio,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Magnesio,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Magnesio,0
+19,Sales,vitaminas_minerales,121,Sal,Hierro,0
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Hierro,0
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Hierro,0
+19,Sales,vitaminas_minerales,121,Sal Marina,Hierro,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Hierro,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Hierro,0
+19,Sales,vitaminas_minerales,121,Sal,Fósforo,0
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Fósforo,0
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Fósforo,0
+19,Sales,vitaminas_minerales,121,Sal Marina,Fósforo,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Fósforo,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Fósforo,0
+19,Sales,vitaminas_minerales,121,Sal,Cobre,"0,0"
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Cobre,"0,0"
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Cobre,"0,0"
+19,Sales,vitaminas_minerales,121,Sal Marina,Cobre,"0,0"
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Cobre,"0,0"
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Cobre,"0,0"
+19,Sales,vitaminas_minerales,121,Sal,Calcio,0
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Calcio,0
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Calcio,0
+19,Sales,vitaminas_minerales,121,Sal Marina,Calcio,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Calcio,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Calcio,0
+19,Sales,vitaminas_minerales,121,Sal,Potasio,0
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Potasio,26150
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Potasio,52300
+19,Sales,vitaminas_minerales,121,Sal Marina,Potasio,0
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Potasio,34500
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Potasio,17260
+19,Sales,vitaminas_minerales,121,Sal,Sodio,40000
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Sodio,20000
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Sodio,0
+19,Sales,vitaminas_minerales,121,Sal Marina,Sodio,34400
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Sodio,13200
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Sodio,26400
+19,Sales,vitaminas_minerales,121,Sal,Cenizas,100
+19,Sales,vitaminas_minerales,121,"Sal, dietética o modificada, PROMEDIO",Cenizas,100
+19,Sales,vitaminas_minerales,121,"Sal dietética, sin sodio",Cenizas,100
+19,Sales,vitaminas_minerales,121,Sal Marina,Cenizas,100
+19,Sales,vitaminas_minerales,121,"Sal modificada, 33% cloruro de sodio",Cenizas,"100,0"
+19,Sales,vitaminas_minerales,121,"Sal modificada, 66% cloruro de sodio",Cenizas,"100,0"

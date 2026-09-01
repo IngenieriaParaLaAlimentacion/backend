@@ -1,0 +1,391 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Alcohol,0
+14,Grasas,macronutrientes,111,Crema de leche,Alcohol,0
+14,Grasas,macronutrientes,111,Crema light,Alcohol,0
+14,Grasas,macronutrientes,111,Grasa de cerdo,Alcohol,0
+14,Grasas,macronutrientes,111,Grasa de pollo,Alcohol,0
+14,Grasas,macronutrientes,111,Grasa vacuna,Alcohol,0
+14,Grasas,macronutrientes,111,Manteca,Alcohol,0
+14,Grasas,macronutrientes,111,Manteca light,Alcohol,0
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),Alcohol,0
+14,Grasas,macronutrientes,111,Margarina untable light,Alcohol,0
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Fibra alimentaria,0
+14,Grasas,macronutrientes,111,Crema de leche,Fibra alimentaria,0
+14,Grasas,macronutrientes,111,Crema light,Fibra alimentaria,0
+14,Grasas,macronutrientes,111,Grasa de cerdo,Fibra alimentaria,0
+14,Grasas,macronutrientes,111,Grasa de pollo,Fibra alimentaria,0
+14,Grasas,macronutrientes,111,Grasa vacuna,Fibra alimentaria,0
+14,Grasas,macronutrientes,111,Manteca,Fibra alimentaria,0
+14,Grasas,macronutrientes,111,Manteca light,Fibra alimentaria,0
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),Fibra alimentaria,0
+14,Grasas,macronutrientes,111,Margarina untable light,Fibra alimentaria,0
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Azúcar agregado,"5,7"
+14,Grasas,macronutrientes,111,Crema de leche,Azúcar agregado,0
+14,Grasas,macronutrientes,111,Crema light,Azúcar agregado,0
+14,Grasas,macronutrientes,111,Grasa de cerdo,Azúcar agregado,0
+14,Grasas,macronutrientes,111,Grasa de pollo,Azúcar agregado,0
+14,Grasas,macronutrientes,111,Grasa vacuna,Azúcar agregado,0
+14,Grasas,macronutrientes,111,Manteca,Azúcar agregado,0
+14,Grasas,macronutrientes,111,Manteca light,Azúcar agregado,0
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),Azúcar agregado,0
+14,Grasas,macronutrientes,111,Margarina untable light,Azúcar agregado,0
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Azúcar total,"8,0"
+14,Grasas,macronutrientes,111,Crema de leche,Azúcar total,"2,9"
+14,Grasas,macronutrientes,111,Crema light,Azúcar total,"3,0"
+14,Grasas,macronutrientes,111,Grasa de cerdo,Azúcar total,0
+14,Grasas,macronutrientes,111,Grasa de pollo,Azúcar total,0
+14,Grasas,macronutrientes,111,Grasa vacuna,Azúcar total,0
+14,Grasas,macronutrientes,111,Manteca,Azúcar total,"0,1"
+14,Grasas,macronutrientes,111,Manteca light,Azúcar total,0
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),Azúcar total,0
+14,Grasas,macronutrientes,111,Margarina untable light,Azúcar total,0
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Carbohidratos totales,"12,5"
+14,Grasas,macronutrientes,111,Crema de leche,Carbohidratos totales,"2,8"
+14,Grasas,macronutrientes,111,Crema light,Carbohidratos totales,"3,0"
+14,Grasas,macronutrientes,111,Grasa de cerdo,Carbohidratos totales,0
+14,Grasas,macronutrientes,111,Grasa de pollo,Carbohidratos totales,0
+14,Grasas,macronutrientes,111,Grasa vacuna,Carbohidratos totales,0
+14,Grasas,macronutrientes,111,Manteca,Carbohidratos totales,"0,1"
+14,Grasas,macronutrientes,111,Manteca light,Carbohidratos totales,0
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),Carbohidratos totales,"0,7"
+14,Grasas,macronutrientes,111,Margarina untable light,Carbohidratos totales,"0,9"
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Carbohidratos disponibles,"12,5"
+14,Grasas,macronutrientes,111,Crema de leche,Carbohidratos disponibles,"2,8"
+14,Grasas,macronutrientes,111,Crema light,Carbohidratos disponibles,"3,0"
+14,Grasas,macronutrientes,111,Grasa de cerdo,Carbohidratos disponibles,0
+14,Grasas,macronutrientes,111,Grasa de pollo,Carbohidratos disponibles,0
+14,Grasas,macronutrientes,111,Grasa vacuna,Carbohidratos disponibles,0
+14,Grasas,macronutrientes,111,Manteca,Carbohidratos disponibles,"0,1"
+14,Grasas,macronutrientes,111,Manteca light,Carbohidratos disponibles,0
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),Carbohidratos disponibles,"0,7"
+14,Grasas,macronutrientes,111,Margarina untable light,Carbohidratos disponibles,"0,9"
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",22:6 n-3 Docosahexaenoico (DHA),0
+14,Grasas,macronutrientes,111,Crema de leche,22:6 n-3 Docosahexaenoico (DHA),0
+14,Grasas,macronutrientes,111,Crema light,22:6 n-3 Docosahexaenoico (DHA),0
+14,Grasas,macronutrientes,111,Grasa de cerdo,22:6 n-3 Docosahexaenoico (DHA),0
+14,Grasas,macronutrientes,111,Grasa de pollo,22:6 n-3 Docosahexaenoico (DHA),0
+14,Grasas,macronutrientes,111,Grasa vacuna,22:6 n-3 Docosahexaenoico (DHA),0
+14,Grasas,macronutrientes,111,Manteca,22:6 n-3 Docosahexaenoico (DHA),0
+14,Grasas,macronutrientes,111,Manteca light,22:6 n-3 Docosahexaenoico (DHA),0
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),22:6 n-3 Docosahexaenoico (DHA),0
+14,Grasas,macronutrientes,111,Margarina untable light,22:6 n-3 Docosahexaenoico (DHA),0
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",20:5 n-3 Eicosapentaenoico (EPA),0
+14,Grasas,macronutrientes,111,Crema de leche,20:5 n-3 Eicosapentaenoico (EPA),0
+14,Grasas,macronutrientes,111,Crema light,20:5 n-3 Eicosapentaenoico (EPA),0
+14,Grasas,macronutrientes,111,Grasa de cerdo,20:5 n-3 Eicosapentaenoico (EPA),0
+14,Grasas,macronutrientes,111,Grasa de pollo,20:5 n-3 Eicosapentaenoico (EPA),0
+14,Grasas,macronutrientes,111,Grasa vacuna,20:5 n-3 Eicosapentaenoico (EPA),0
+14,Grasas,macronutrientes,111,Manteca,20:5 n-3 Eicosapentaenoico (EPA),0
+14,Grasas,macronutrientes,111,Manteca light,20:5 n-3 Eicosapentaenoico (EPA),0
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),20:5 n-3 Eicosapentaenoico (EPA),0
+14,Grasas,macronutrientes,111,Margarina untable light,20:5 n-3 Eicosapentaenoico (EPA),0
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",20:4 Araquidónico,0
+14,Grasas,macronutrientes,111,Crema de leche,20:4 Araquidónico,"0,058"
+14,Grasas,macronutrientes,111,Crema light,20:4 Araquidónico,0
+14,Grasas,macronutrientes,111,Grasa de cerdo,20:4 Araquidónico,0
+14,Grasas,macronutrientes,111,Grasa de pollo,20:4 Araquidónico,"0,040"
+14,Grasas,macronutrientes,111,Grasa vacuna,20:4 Araquidónico,0
+14,Grasas,macronutrientes,111,Manteca,20:4 Araquidónico,0
+14,Grasas,macronutrientes,111,Manteca light,20:4 Araquidónico,0
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),20:4 Araquidónico,0
+14,Grasas,macronutrientes,111,Margarina untable light,20:4 Araquidónico,0
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",18:3 cis Alfa linolénico (ALA),"0,323"
+14,Grasas,macronutrientes,111,Crema de leche,18:3 cis Alfa linolénico (ALA),"0,122"
+14,Grasas,macronutrientes,111,Crema light,18:3 cis Alfa linolénico (ALA),"0,266"
+14,Grasas,macronutrientes,111,Grasa de cerdo,18:3 cis Alfa linolénico (ALA),"1,000"
+14,Grasas,macronutrientes,111,Grasa de pollo,18:3 cis Alfa linolénico (ALA),"0,700"
+14,Grasas,macronutrientes,111,Grasa vacuna,18:3 cis Alfa linolénico (ALA),"0,600"
+14,Grasas,macronutrientes,111,Manteca,18:3 cis Alfa linolénico (ALA),"0,315"
+14,Grasas,macronutrientes,111,Manteca light,18:3 cis Alfa linolénico (ALA),"0,802"
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),18:3 cis Alfa linolénico (ALA),"0,486"
+14,Grasas,macronutrientes,111,Margarina untable light,18:3 cis Alfa linolénico (ALA),"0,410"
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",18:2 cis Linoléico,"0,50"
+14,Grasas,macronutrientes,111,Crema de leche,18:2 cis Linoléico,"0,87"
+14,Grasas,macronutrientes,111,Crema light,18:2 cis Linoléico,"0,62"
+14,Grasas,macronutrientes,111,Grasa de cerdo,18:2 cis Linoléico,"10,20"
+14,Grasas,macronutrientes,111,Grasa de pollo,18:2 cis Linoléico,"13,26"
+14,Grasas,macronutrientes,111,Grasa vacuna,18:2 cis Linoléico,"3,10"
+14,Grasas,macronutrientes,111,Manteca,18:2 cis Linoléico,"2,17"
+14,Grasas,macronutrientes,111,Manteca light,18:2 cis Linoléico,"1,24"
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),18:2 cis Linoléico,"23,00"
+14,Grasas,macronutrientes,111,Margarina untable light,18:2 cis Linoléico,"21,00"
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Trans,"0,74"
+14,Grasas,macronutrientes,111,Crema de leche,Trans,"1,24"
+14,Grasas,macronutrientes,111,Crema light,Trans,"1,03"
+14,Grasas,macronutrientes,111,Grasa de cerdo,Trans,0
+14,Grasas,macronutrientes,111,Grasa de pollo,Trans,"0,75"
+14,Grasas,macronutrientes,111,Grasa vacuna,Trans,"3,70"
+14,Grasas,macronutrientes,111,Manteca,Trans,"3,28"
+14,Grasas,macronutrientes,111,Manteca light,Trans,"1,01"
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),Trans,"0,88"
+14,Grasas,macronutrientes,111,Margarina untable light,Trans,"0,57"
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Poliinsaturados,"0,83"
+14,Grasas,macronutrientes,111,Crema de leche,Poliinsaturados,"1,57"
+14,Grasas,macronutrientes,111,Crema light,Poliinsaturados,"0,88"
+14,Grasas,macronutrientes,111,Grasa de cerdo,Poliinsaturados,"11,20"
+14,Grasas,macronutrientes,111,Grasa de pollo,Poliinsaturados,"14,20"
+14,Grasas,macronutrientes,111,Grasa vacuna,Poliinsaturados,"4,00"
+14,Grasas,macronutrientes,111,Manteca,Poliinsaturados,"3,22"
+14,Grasas,macronutrientes,111,Manteca light,Poliinsaturados,"2,05"
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),Poliinsaturados,"24,30"
+14,Grasas,macronutrientes,111,Margarina untable light,Poliinsaturados,"20,50"
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Monoinsaturados,"6,42"
+14,Grasas,macronutrientes,111,Crema de leche,Monoinsaturados,"9,10"
+14,Grasas,macronutrientes,111,Crema light,Monoinsaturados,"9,09"
+14,Grasas,macronutrientes,111,Grasa de cerdo,Monoinsaturados,"45,10"
+14,Grasas,macronutrientes,111,Grasa de pollo,Monoinsaturados,"30,30"
+14,Grasas,macronutrientes,111,Grasa vacuna,Monoinsaturados,"41,80"
+14,Grasas,macronutrientes,111,Manteca,Monoinsaturados,"22,23"
+14,Grasas,macronutrientes,111,Manteca light,Monoinsaturados,"15,93"
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),Monoinsaturados,"10,43"
+14,Grasas,macronutrientes,111,Margarina untable light,Monoinsaturados,"8,79"
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Saturados,"13,83"
+14,Grasas,macronutrientes,111,Crema de leche,Saturados,"23,03"
+14,Grasas,macronutrientes,111,Crema light,Saturados,"19,34"
+14,Grasas,macronutrientes,111,Grasa de cerdo,Saturados,"39,20"
+14,Grasas,macronutrientes,111,Grasa de pollo,Saturados,"20,25"
+14,Grasas,macronutrientes,111,Grasa vacuna,Saturados,"49,80"
+14,Grasas,macronutrientes,111,Manteca,Saturados,"50,93"
+14,Grasas,macronutrientes,111,Manteca light,Saturados,"34,32"
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),Saturados,"27,60"
+14,Grasas,macronutrientes,111,Margarina untable light,Saturados,"23,20"
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Colesterol,76
+14,Grasas,macronutrientes,111,Crema de leche,Colesterol,113
+14,Grasas,macronutrientes,111,Crema light,Colesterol,111
+14,Grasas,macronutrientes,111,Grasa de cerdo,Colesterol,95
+14,Grasas,macronutrientes,111,Grasa de pollo,Colesterol,58
+14,Grasas,macronutrientes,111,Grasa vacuna,Colesterol,109
+14,Grasas,macronutrientes,111,Manteca,Colesterol,215
+14,Grasas,macronutrientes,111,Manteca light,Colesterol,106
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),Colesterol,0
+14,Grasas,macronutrientes,111,Margarina untable light,Colesterol,0
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Lípidos totales,"22,2"
+14,Grasas,macronutrientes,111,Crema de leche,Lípidos totales,"36,1"
+14,Grasas,macronutrientes,111,Crema light,Lípidos totales,"30,9"
+14,Grasas,macronutrientes,111,Grasa de cerdo,Lípidos totales,"99,8"
+14,Grasas,macronutrientes,111,Grasa de pollo,Lípidos totales,"68,0"
+14,Grasas,macronutrientes,111,Grasa vacuna,Lípidos totales,"99,9"
+14,Grasas,macronutrientes,111,Manteca,Lípidos totales,"84,0"
+14,Grasas,macronutrientes,111,Manteca light,Lípidos totales,"55,1"
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),Lípidos totales,"61,7"
+14,Grasas,macronutrientes,111,Margarina untable light,Lípidos totales,"52,0"
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Proteínas,"3,2"
+14,Grasas,macronutrientes,111,Crema de leche,Proteínas,"2,8"
+14,Grasas,macronutrientes,111,Crema light,Proteínas,"2,2"
+14,Grasas,macronutrientes,111,Grasa de cerdo,Proteínas,"0,0"
+14,Grasas,macronutrientes,111,Grasa de pollo,Proteínas,"3,7"
+14,Grasas,macronutrientes,111,Grasa vacuna,Proteínas,"0,0"
+14,Grasas,macronutrientes,111,Manteca,Proteínas,"0,5"
+14,Grasas,macronutrientes,111,Manteca light,Proteínas,"3,3"
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),Proteínas,"0,2"
+14,Grasas,macronutrientes,111,Margarina untable light,Proteínas,"0,2"
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Agua,"61,3"
+14,Grasas,macronutrientes,111,Crema de leche,Agua,"57,7"
+14,Grasas,macronutrientes,111,Crema light,Agua,"63,5"
+14,Grasas,macronutrientes,111,Grasa de cerdo,Agua,"0,1"
+14,Grasas,macronutrientes,111,Grasa de pollo,Agua,"28,9"
+14,Grasas,macronutrientes,111,Grasa vacuna,Agua,"0,1"
+14,Grasas,macronutrientes,111,Manteca,Agua,"15,3"
+14,Grasas,macronutrientes,111,Manteca light,Agua,"43,2"
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),Agua,"16,0"
+14,Grasas,macronutrientes,111,Margarina untable light,Agua,"42,0"
+14,Grasas,macronutrientes,111,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Valor energético,263
+14,Grasas,macronutrientes,111,Crema de leche,Valor energético,347
+14,Grasas,macronutrientes,111,Crema light,Valor energético,299
+14,Grasas,macronutrientes,111,Grasa de cerdo,Valor energético,898
+14,Grasas,macronutrientes,111,Grasa de pollo,Valor energético,626
+14,Grasas,macronutrientes,111,Grasa vacuna,Valor energético,899
+14,Grasas,macronutrientes,111,Manteca,Valor energético,758
+14,Grasas,macronutrientes,111,Manteca light,Valor energético,509
+14,Grasas,macronutrientes,111,Margarina (en pote y en pan),Valor energético,559
+14,Grasas,macronutrientes,111,Margarina untable light,Valor energético,472
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Vitamina D,"0,64"
+14,Grasas,vitaminas_minerales,112,Crema de leche,Vitamina D,"1,60"
+14,Grasas,vitaminas_minerales,112,Crema light,Vitamina D,"0,92"
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Vitamina D,"2,50"
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Vitamina D,"3,30"
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Vitamina D,"1,12"
+14,Grasas,vitaminas_minerales,112,Manteca,Vitamina D,0
+14,Grasas,vitaminas_minerales,112,Manteca light,Vitamina D,"0,40"
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Vitamina D,"3,75"
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Vitamina D,0
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Vitamina C,0
+14,Grasas,vitaminas_minerales,112,Crema de leche,Vitamina C,"0,6"
+14,Grasas,vitaminas_minerales,112,Crema light,Vitamina C,"0,6"
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Vitamina C,0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Vitamina C,0
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Vitamina C,0
+14,Grasas,vitaminas_minerales,112,Manteca,Vitamina C,0
+14,Grasas,vitaminas_minerales,112,Manteca light,Vitamina C,0
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Vitamina C,"0,2"
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Vitamina C,"0,1"
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Vitamina B-12,"0,29"
+14,Grasas,vitaminas_minerales,112,Crema de leche,Vitamina B-12,"0,16"
+14,Grasas,vitaminas_minerales,112,Crema light,Vitamina B-12,"0,20"
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Vitamina B-12,0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Vitamina B-12,"0,07"
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Vitamina B-12,0
+14,Grasas,vitaminas_minerales,112,Manteca,Vitamina B-12,"0,17"
+14,Grasas,vitaminas_minerales,112,Manteca light,Vitamina B-12,"0,13"
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Vitamina B-12,"0,10"
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Vitamina B-12,0
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Riboflavina,"0,065"
+14,Grasas,vitaminas_minerales,112,Crema de leche,Riboflavina,"0,188"
+14,Grasas,vitaminas_minerales,112,Crema light,Riboflavina,"0,125"
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Riboflavina,0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Riboflavina,"0,059"
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Riboflavina,0
+14,Grasas,vitaminas_minerales,112,Manteca,Riboflavina,"0,034"
+14,Grasas,vitaminas_minerales,112,Manteca light,Riboflavina,"0,070"
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Riboflavina,"0,037"
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Riboflavina,"0,026"
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Tiamina,"0,037"
+14,Grasas,vitaminas_minerales,112,Crema de leche,Tiamina,"0,020"
+14,Grasas,vitaminas_minerales,112,Crema light,Tiamina,"0,024"
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Tiamina,0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Tiamina,"0,021"
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Tiamina,0
+14,Grasas,vitaminas_minerales,112,Manteca,Tiamina,"0,005"
+14,Grasas,vitaminas_minerales,112,Manteca light,Tiamina,"0,010"
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Tiamina,"0,010"
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Tiamina,"0,007"
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Retinol,184
+14,Grasas,vitaminas_minerales,112,Crema de leche,Retinol,405
+14,Grasas,vitaminas_minerales,112,Crema light,Retinol,274
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Retinol,0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Retinol,125
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Retinol,0
+14,Grasas,vitaminas_minerales,112,Manteca,Retinol,671
+14,Grasas,vitaminas_minerales,112,Manteca light,Retinol,456
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Retinol,450
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Retinol,900
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)","Vitamina A, RAE",188
+14,Grasas,vitaminas_minerales,112,Crema de leche,"Vitamina A, RAE",411
+14,Grasas,vitaminas_minerales,112,Crema light,"Vitamina A, RAE",279
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,"Vitamina A, RAE",0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,"Vitamina A, RAE",125
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,"Vitamina A, RAE",0
+14,Grasas,vitaminas_minerales,112,Manteca,"Vitamina A, RAE",684
+14,Grasas,vitaminas_minerales,112,Manteca light,"Vitamina A, RAE",465
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),"Vitamina A, RAE",450
+14,Grasas,vitaminas_minerales,112,Margarina untable light,"Vitamina A, RAE",900
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Ácido fólico,0
+14,Grasas,vitaminas_minerales,112,Crema de leche,Ácido fólico,0
+14,Grasas,vitaminas_minerales,112,Crema light,Ácido fólico,0
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Ácido fólico,0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Ácido fólico,0
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Ácido fólico,0
+14,Grasas,vitaminas_minerales,112,Manteca,Ácido fólico,0
+14,Grasas,vitaminas_minerales,112,Manteca light,Ácido fólico,0
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Ácido fólico,0
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Ácido fólico,0
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Folato EFD,3
+14,Grasas,vitaminas_minerales,112,Crema de leche,Folato EFD,4
+14,Grasas,vitaminas_minerales,112,Crema light,Folato EFD,4
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Folato EFD,0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Folato EFD,1
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Folato EFD,0
+14,Grasas,vitaminas_minerales,112,Manteca,Folato EFD,3
+14,Grasas,vitaminas_minerales,112,Manteca light,Folato EFD,1
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Folato EFD,1
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Folato EFD,1
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Niacina,"0,07"
+14,Grasas,vitaminas_minerales,112,Crema de leche,Niacina,"0,06"
+14,Grasas,vitaminas_minerales,112,Crema light,Niacina,"0,04"
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Niacina,0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Niacina,"2,04"
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Niacina,0
+14,Grasas,vitaminas_minerales,112,Manteca,Niacina,"0,04"
+14,Grasas,vitaminas_minerales,112,Manteca light,Niacina,"0,02"
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Niacina,"0,02"
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Niacina,"0,02"
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Zinc,"0,37"
+14,Grasas,vitaminas_minerales,112,Crema de leche,Zinc,"0,24"
+14,Grasas,vitaminas_minerales,112,Crema light,Zinc,"0,25"
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Zinc,"0,11"
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Zinc,"0,45"
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Zinc,0
+14,Grasas,vitaminas_minerales,112,Manteca,Zinc,"0,09"
+14,Grasas,vitaminas_minerales,112,Manteca light,Zinc,"0,26"
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Zinc,0
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Zinc,0
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Magnesio,11
+14,Grasas,vitaminas_minerales,112,Crema de leche,Magnesio,7
+14,Grasas,vitaminas_minerales,112,Crema light,Magnesio,7
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Magnesio,0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Magnesio,6
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Magnesio,0
+14,Grasas,vitaminas_minerales,112,Manteca,Magnesio,2
+14,Grasas,vitaminas_minerales,112,Manteca light,Magnesio,5
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Magnesio,3
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Magnesio,2
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Hierro,"0,05"
+14,Grasas,vitaminas_minerales,112,Crema de leche,Hierro,"0,10"
+14,Grasas,vitaminas_minerales,112,Crema light,Hierro,"0,03"
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Hierro,0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Hierro,"0,70"
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Hierro,0
+14,Grasas,vitaminas_minerales,112,Manteca,Hierro,"0,16"
+14,Grasas,vitaminas_minerales,112,Manteca light,Hierro,"1,09"
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Hierro,"0,06"
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Hierro,0
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Fósforo,89
+14,Grasas,vitaminas_minerales,112,Crema de leche,Fósforo,58
+14,Grasas,vitaminas_minerales,112,Crema light,Fósforo,61
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Fósforo,0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Fósforo,54
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Fósforo,0
+14,Grasas,vitaminas_minerales,112,Manteca,Fósforo,24
+14,Grasas,vitaminas_minerales,112,Manteca light,Fósforo,34
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Fósforo,5
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Fósforo,16
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Cobre,"0,01"
+14,Grasas,vitaminas_minerales,112,Crema de leche,Cobre,"0,011"
+14,Grasas,vitaminas_minerales,112,Crema light,Cobre,"0,007"
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Cobre,0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Cobre,"0,029"
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Cobre,0
+14,Grasas,vitaminas_minerales,112,Manteca,Cobre,"0,016"
+14,Grasas,vitaminas_minerales,112,Manteca light,Cobre,0
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Cobre,0
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Cobre,0
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Calcio,101
+14,Grasas,vitaminas_minerales,112,Crema de leche,Calcio,66
+14,Grasas,vitaminas_minerales,112,Crema light,Calcio,69
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Calcio,0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Calcio,7
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Calcio,0
+14,Grasas,vitaminas_minerales,112,Manteca,Calcio,15
+14,Grasas,vitaminas_minerales,112,Manteca light,Calcio,48
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Calcio,3
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Calcio,21
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Potasio,147
+14,Grasas,vitaminas_minerales,112,Crema de leche,Potasio,95
+14,Grasas,vitaminas_minerales,112,Crema light,Potasio,97
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Potasio,0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Potasio,64
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Potasio,0
+14,Grasas,vitaminas_minerales,112,Manteca,Potasio,15
+14,Grasas,vitaminas_minerales,112,Manteca light,Potasio,71
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Potasio,18
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Potasio,30
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Sodio,8
+14,Grasas,vitaminas_minerales,112,Crema de leche,Sodio,27
+14,Grasas,vitaminas_minerales,112,Crema light,Sodio,34
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Sodio,0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Sodio,32
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Sodio,0
+14,Grasas,vitaminas_minerales,112,Manteca,Sodio,223
+14,Grasas,vitaminas_minerales,112,Manteca light,Sodio,218
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Sodio,295
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Sodio,610
+14,Grasas,vitaminas_minerales,112,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",Cenizas,"0,76"
+14,Grasas,vitaminas_minerales,112,Crema de leche,Cenizas,"0,53"
+14,Grasas,vitaminas_minerales,112,Crema light,Cenizas,"0,46"
+14,Grasas,vitaminas_minerales,112,Grasa de cerdo,Cenizas,0
+14,Grasas,vitaminas_minerales,112,Grasa de pollo,Cenizas,"0,28"
+14,Grasas,vitaminas_minerales,112,Grasa vacuna,Cenizas,0
+14,Grasas,vitaminas_minerales,112,Manteca,Cenizas,"0,2"
+14,Grasas,vitaminas_minerales,112,Manteca light,Cenizas,"0,5"
+14,Grasas,vitaminas_minerales,112,Margarina (en pote y en pan),Cenizas,"1,92"
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Cenizas,

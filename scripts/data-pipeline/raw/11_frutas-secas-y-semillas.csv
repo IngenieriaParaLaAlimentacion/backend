@@ -1,0 +1,625 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),Alcohol,0
+11,Frutas secas y semillas,macronutrientes,101,Almendra,Alcohol,0
+11,Frutas secas y semillas,macronutrientes,101,Avellana,Alcohol,0
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,Alcohol,0
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,Alcohol,0
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,Alcohol,0
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",Alcohol,0
+11,Frutas secas y semillas,macronutrientes,101,Nuez,Alcohol,0
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,Alcohol,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,Alcohol,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,Alcohol,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,Alcohol,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,Alcohol,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,Alcohol,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,Alcohol,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,Alcohol,0
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),Fibra alimentaria,"0,4"
+11,Frutas secas y semillas,macronutrientes,101,Almendra,Fibra alimentaria,"12,5"
+11,Frutas secas y semillas,macronutrientes,101,Avellana,Fibra alimentaria,"9,7"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,Fibra alimentaria,"8,4"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,Fibra alimentaria,"8,4"
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,Fibra alimentaria,"5,7"
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",Fibra alimentaria,"6,7"
+11,Frutas secas y semillas,macronutrientes,101,Nuez,Fibra alimentaria,"6,7"
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,Fibra alimentaria,"10,3"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,Fibra alimentaria,"19,5"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,Fibra alimentaria,"34,4"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,Fibra alimentaria,"8,6"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,Fibra alimentaria,"9,0"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,Fibra alimentaria,"27,3"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,Fibra alimentaria,"11,8"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,Fibra alimentaria,"6,0"
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),Azúcar agregado,"6,3"
+11,Frutas secas y semillas,macronutrientes,101,Almendra,Azúcar agregado,0
+11,Frutas secas y semillas,macronutrientes,101,Avellana,Azúcar agregado,0
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,Azúcar agregado,0
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,Azúcar agregado,0
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,Azúcar agregado,0
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",Azúcar agregado,0
+11,Frutas secas y semillas,macronutrientes,101,Nuez,Azúcar agregado,0
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,Azúcar agregado,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,Azúcar agregado,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,Azúcar agregado,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,Azúcar agregado,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,Azúcar agregado,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,Azúcar agregado,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,Azúcar agregado,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,Azúcar agregado,0
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),Azúcar total,"6,3"
+11,Frutas secas y semillas,macronutrientes,101,Almendra,Azúcar total,"4,4"
+11,Frutas secas y semillas,macronutrientes,101,Avellana,Azúcar total,"4,3"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,Azúcar total,"4,9"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,Azúcar total,"4,9"
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,Azúcar total,"6,5"
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",Azúcar total,"25,6"
+11,Frutas secas y semillas,macronutrientes,101,Nuez,Azúcar total,"2,6"
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,Azúcar total,"7,7"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,Azúcar total,"3,0"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,Azúcar total,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,Azúcar total,"2,6"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,Azúcar total,"2,7"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,Azúcar total,"1,6"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,Azúcar total,"0,3"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,Azúcar total,"1,4"
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),Carbohidratos totales,"6,6"
+11,Frutas secas y semillas,macronutrientes,101,Almendra,Carbohidratos totales,"21,6"
+11,Frutas secas y semillas,macronutrientes,101,Avellana,Carbohidratos totales,"17,7"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,Carbohidratos totales,"21,3"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,Carbohidratos totales,"21,3"
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,Carbohidratos totales,"24,0"
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",Carbohidratos totales,"40,2"
+11,Frutas secas y semillas,macronutrientes,101,Nuez,Carbohidratos totales,"13,7"
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,Carbohidratos totales,"27,6"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,Carbohidratos totales,"28,1"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,Carbohidratos totales,"42,1"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,Carbohidratos totales,"20,0"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,Carbohidratos totales,"24,1"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,Carbohidratos totales,"28,9"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,Carbohidratos totales,"23,5"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,Carbohidratos totales,"10,7"
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),Carbohidratos disponibles,"6,2"
+11,Frutas secas y semillas,macronutrientes,101,Almendra,Carbohidratos disponibles,"9,1"
+11,Frutas secas y semillas,macronutrientes,101,Avellana,Carbohidratos disponibles,"8,0"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,Carbohidratos disponibles,"12,9"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,Carbohidratos disponibles,"12,9"
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,Carbohidratos disponibles,"18,3"
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",Carbohidratos disponibles,"33,5"
+11,Frutas secas y semillas,macronutrientes,101,Nuez,Carbohidratos disponibles,"7,0"
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,Carbohidratos disponibles,"17,3"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,Carbohidratos disponibles,"8,6"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,Carbohidratos disponibles,"7,7"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,Carbohidratos disponibles,"11,4"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,Carbohidratos disponibles,"15,1"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,Carbohidratos disponibles,"1,6"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,Carbohidratos disponibles,"11,7"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,Carbohidratos disponibles,"4,7"
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),22:6 n-3 Docosahexaenoico (DHA),0
+11,Frutas secas y semillas,macronutrientes,101,Almendra,22:6 n-3 Docosahexaenoico (DHA),0
+11,Frutas secas y semillas,macronutrientes,101,Avellana,22:6 n-3 Docosahexaenoico (DHA),0
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,22:6 n-3 Docosahexaenoico (DHA),0
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,22:6 n-3 Docosahexaenoico (DHA),0
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,22:6 n-3 Docosahexaenoico (DHA),0
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",22:6 n-3 Docosahexaenoico (DHA),0
+11,Frutas secas y semillas,macronutrientes,101,Nuez,22:6 n-3 Docosahexaenoico (DHA),0
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,22:6 n-3 Docosahexaenoico (DHA),0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,22:6 n-3 Docosahexaenoico (DHA),0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,22:6 n-3 Docosahexaenoico (DHA),0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,22:6 n-3 Docosahexaenoico (DHA),0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,22:6 n-3 Docosahexaenoico (DHA),0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,22:6 n-3 Docosahexaenoico (DHA),0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,22:6 n-3 Docosahexaenoico (DHA),0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,22:6 n-3 Docosahexaenoico (DHA),0
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),20:5 n-3 Eicosapentaenoico (EPA),0
+11,Frutas secas y semillas,macronutrientes,101,Almendra,20:5 n-3 Eicosapentaenoico (EPA),0
+11,Frutas secas y semillas,macronutrientes,101,Avellana,20:5 n-3 Eicosapentaenoico (EPA),0
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,20:5 n-3 Eicosapentaenoico (EPA),0
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,20:5 n-3 Eicosapentaenoico (EPA),0
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,20:5 n-3 Eicosapentaenoico (EPA),0
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",20:5 n-3 Eicosapentaenoico (EPA),0
+11,Frutas secas y semillas,macronutrientes,101,Nuez,20:5 n-3 Eicosapentaenoico (EPA),0
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,20:5 n-3 Eicosapentaenoico (EPA),0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,20:5 n-3 Eicosapentaenoico (EPA),0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,20:5 n-3 Eicosapentaenoico (EPA),0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,20:5 n-3 Eicosapentaenoico (EPA),"0,014"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,20:5 n-3 Eicosapentaenoico (EPA),0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,20:5 n-3 Eicosapentaenoico (EPA),0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,20:5 n-3 Eicosapentaenoico (EPA),0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,20:5 n-3 Eicosapentaenoico (EPA),0
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),20:4 Araquidónico,0
+11,Frutas secas y semillas,macronutrientes,101,Almendra,20:4 Araquidónico,0
+11,Frutas secas y semillas,macronutrientes,101,Avellana,20:4 Araquidónico,0
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,20:4 Araquidónico,"0,016"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,20:4 Araquidónico,"0,016"
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,20:4 Araquidónico,0
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",20:4 Araquidónico,0
+11,Frutas secas y semillas,macronutrientes,101,Nuez,20:4 Araquidónico,0
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,20:4 Araquidónico,"0,005"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,20:4 Araquidónico,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,20:4 Araquidónico,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,20:4 Araquidónico,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,20:4 Araquidónico,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,20:4 Araquidónico,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,20:4 Araquidónico,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,20:4 Araquidónico,"0,131"
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),18:3 cis Alfa linolénico (ALA),0
+11,Frutas secas y semillas,macronutrientes,101,Almendra,18:3 cis Alfa linolénico (ALA),"0,003"
+11,Frutas secas y semillas,macronutrientes,101,Avellana,18:3 cis Alfa linolénico (ALA),"0,087"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,18:3 cis Alfa linolénico (ALA),"0,025"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,18:3 cis Alfa linolénico (ALA),"0,025"
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,18:3 cis Alfa linolénico (ALA),"0,039"
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",18:3 cis Alfa linolénico (ALA),"1,966"
+11,Frutas secas y semillas,macronutrientes,101,Nuez,18:3 cis Alfa linolénico (ALA),"9,080"
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,18:3 cis Alfa linolénico (ALA),"0,212"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,18:3 cis Alfa linolénico (ALA),"0,273"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,18:3 cis Alfa linolénico (ALA),"17,830"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,18:3 cis Alfa linolénico (ALA),"0,060"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,18:3 cis Alfa linolénico (ALA),"0,069"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,18:3 cis Alfa linolénico (ALA),"22,813"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,18:3 cis Alfa linolénico (ALA),"0,376"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,18:3 cis Alfa linolénico (ALA),"0,120"
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),18:2 cis Linoléico,"0,21"
+11,Frutas secas y semillas,macronutrientes,101,Almendra,18:2 cis Linoléico,"12,32"
+11,Frutas secas y semillas,macronutrientes,101,Avellana,18:2 cis Linoléico,"7,83"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,18:2 cis Linoléico,"9,69"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,18:2 cis Linoléico,"9,69"
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,18:2 cis Linoléico,"11,28"
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",18:2 cis Linoléico,"14,24"
+11,Frutas secas y semillas,macronutrientes,101,Nuez,18:2 cis Linoléico,"38,09"
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,18:2 cis Linoléico,"13,13"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,18:2 cis Linoléico,"28,30"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,18:2 cis Linoléico,"5,84"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,18:2 cis Linoléico,"23,05"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,18:2 cis Linoléico,"32,78"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,18:2 cis Linoléico,"5,90"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,18:2 cis Linoléico,"21,38"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,18:2 cis Linoléico,"20,67"
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),Trans,0
+11,Frutas secas y semillas,macronutrientes,101,Almendra,Trans,"0,02"
+11,Frutas secas y semillas,macronutrientes,101,Avellana,Trans,0
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,Trans,0
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,Trans,"0,03"
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,Trans,0
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",Trans,"0,01"
+11,Frutas secas y semillas,macronutrientes,101,Nuez,Trans,0
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,Trans,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,Trans,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,Trans,"0,14"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,Trans,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,Trans,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,Trans,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,Trans,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,Trans,"0,06"
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),Poliinsaturados,"0,21"
+11,Frutas secas y semillas,macronutrientes,101,Almendra,Poliinsaturados,"12,33"
+11,Frutas secas y semillas,macronutrientes,101,Avellana,Poliinsaturados,"7,92"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,Poliinsaturados,"9,77"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,Poliinsaturados,"9,77"
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,Poliinsaturados,"11,33"
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",Poliinsaturados,"16,23"
+11,Frutas secas y semillas,macronutrientes,101,Nuez,Poliinsaturados,"47,17"
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,Poliinsaturados,"13,35"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,Poliinsaturados,"28,57"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,Poliinsaturados,"23,67"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,Poliinsaturados,"23,14"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,Poliinsaturados,"32,88"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,Poliinsaturados,"28,73"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,Poliinsaturados,"21,77"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,Poliinsaturados,"20,98"
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),Monoinsaturados,"0,63"
+11,Frutas secas y semillas,macronutrientes,101,Almendra,Monoinsaturados,"31,55"
+11,Frutas secas y semillas,macronutrientes,101,Avellana,Monoinsaturados,"45,65"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,Monoinsaturados,"26,18"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,Monoinsaturados,"26,18"
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,Monoinsaturados,"20,73"
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",Monoinsaturados,"12,05"
+11,Frutas secas y semillas,macronutrientes,101,Nuez,Monoinsaturados,"8,93"
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,Monoinsaturados,"24,53"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,Monoinsaturados,"5,98"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,Monoinsaturados,"2,31"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,Monoinsaturados,"18,53"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,Monoinsaturados,"9,51"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,Monoinsaturados,"7,53"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,Monoinsaturados,"18,76"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,Monoinsaturados,"16,24"
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),Saturados,"0,00"
+11,Frutas secas y semillas,macronutrientes,101,Almendra,Saturados,"3,80"
+11,Frutas secas y semillas,macronutrientes,101,Avellana,Saturados,"4,46"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,Saturados,"7,72"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,Saturados,"7,72"
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,Saturados,"9,52"
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",Saturados,"4,19"
+11,Frutas secas y semillas,macronutrientes,101,Nuez,Saturados,"6,13"
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,Saturados,"5,65"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,Saturados,"4,52"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,Saturados,"3,33"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,Saturados,"4,46"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,Saturados,"5,22"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,Saturados,"3,66"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,Saturados,"6,96"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,Saturados,"8,66"
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),Colesterol,0
+11,Frutas secas y semillas,macronutrientes,101,Almendra,Colesterol,0
+11,Frutas secas y semillas,macronutrientes,101,Avellana,Colesterol,0
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,Colesterol,0
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,Colesterol,0
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,Colesterol,0
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",Colesterol,0
+11,Frutas secas y semillas,macronutrientes,101,Nuez,Colesterol,0
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,Colesterol,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,Colesterol,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,Colesterol,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,Colesterol,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,Colesterol,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,Colesterol,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,Colesterol,0
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,Colesterol,0
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),Lípidos totales,"1,0"
+11,Frutas secas y semillas,macronutrientes,101,Almendra,Lípidos totales,"49,9"
+11,Frutas secas y semillas,macronutrientes,101,Avellana,Lípidos totales,"60,9"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,Lípidos totales,"49,7"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,Lípidos totales,"49,7"
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,Lípidos totales,"49,5"
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",Lípidos totales,"36,1"
+11,Frutas secas y semillas,macronutrientes,101,Nuez,Lípidos totales,"67,4"
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,Lípidos totales,"45,8"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,Lípidos totales,"41,6"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,Lípidos totales,"30,7"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,Lípidos totales,"51,5"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,Lípidos totales,"49,8"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,Lípidos totales,"42,2"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,Lípidos totales,"49,7"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,Lípidos totales,"49,1"
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),Proteínas,"0,4"
+11,Frutas secas y semillas,macronutrientes,101,Almendra,Proteínas,"21,2"
+11,Frutas secas y semillas,macronutrientes,101,Avellana,Proteínas,"12,7"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,Proteínas,"24,4"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,Proteínas,"24,4"
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,Proteínas,"21,9"
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",Proteínas,"14,1"
+11,Frutas secas y semillas,macronutrientes,101,Nuez,Proteínas,"13,9"
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,Proteínas,"21,1"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,Proteínas,"18,0"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,Proteínas,"16,5"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,Proteínas,"20,8"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,Proteínas,"19,3"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,Proteínas,"18,3"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,Proteínas,"17,7"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,Proteínas,"30,2"
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),Agua,"91,6"
+11,Frutas secas y semillas,macronutrientes,101,Almendra,Agua,"4,4"
+11,Frutas secas y semillas,macronutrientes,101,Avellana,Agua,"5,3"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,Agua,"1,8"
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,Agua,"1,8"
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,Agua,"1,6"
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",Agua,"7,4"
+11,Frutas secas y semillas,macronutrientes,101,Nuez,Agua,"4,07"
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,Agua,"1,8"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,Agua,"6,0"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,Agua,"5,8"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,Agua,"4,7"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,Agua,"1,2"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,Agua,"7,0"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,Agua,"4,7"
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,Agua,"5,2"
+11,Frutas secas y semillas,macronutrientes,101,Alimento a base de almendras (leche de almendras),Valor energético,36
+11,Frutas secas y semillas,macronutrientes,101,Almendra,Valor energético,570
+11,Frutas secas y semillas,macronutrientes,101,Avellana,Valor energético,631
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado salado,Valor energético,596
+11,Frutas secas y semillas,macronutrientes,101,Maní tostado sin sal,Valor energético,596
+11,Frutas secas y semillas,macronutrientes,101,Mantequilla de maní,Valor energético,607
+11,Frutas secas y semillas,macronutrientes,101,"Mix de frutos secos, semillas y pasas de uva",Valor energético,515
+11,Frutas secas y semillas,macronutrientes,101,Nuez,Valor energético,690
+11,Frutas secas y semillas,macronutrientes,101,Pistacho salado,Valor energético,566
+11,Frutas secas y semillas,macronutrientes,101,Semilla de amapola,Valor energético,481
+11,Frutas secas y semillas,macronutrientes,101,Semilla de chía,Valor energético,374
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol,Valor energético,592
+11,Frutas secas y semillas,macronutrientes,101,Semilla de girasol con sal y con cáscara,Valor energético,586
+11,Frutas secas y semillas,macronutrientes,101,Semilla de lino,Valor energético,459
+11,Frutas secas y semillas,macronutrientes,101,Semilla de sésamo,Valor energético,565
+11,Frutas secas y semillas,macronutrientes,101,Semilla de zapallo,Valor energético,581
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Vitamina D,"1,00"
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Vitamina D,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Vitamina D,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Vitamina D,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Vitamina D,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Vitamina D,0
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Vitamina D,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Vitamina D,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Vitamina D,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Vitamina D,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Vitamina D,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Vitamina D,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Vitamina D,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Vitamina D,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Vitamina D,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Vitamina D,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Vitamina C,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Vitamina C,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Vitamina C,"6,3"
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Vitamina C,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Vitamina C,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Vitamina C,0
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Vitamina C,"1,3"
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Vitamina C,"1,3"
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Vitamina C,"3,0"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Vitamina C,"1,0"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Vitamina C,"1,6"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Vitamina C,"1,4"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Vitamina C,"1,4"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Vitamina C,"0,6"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Vitamina C,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Vitamina C,"1,9"
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Vitamina B-12,"0,74"
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Vitamina B-12,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Vitamina B-12,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Vitamina B-12,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Vitamina B-12,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Vitamina B-12,0
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Vitamina B-12,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Vitamina B-12,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Vitamina B-12,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Vitamina B-12,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Vitamina B-12,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Vitamina B-12,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Vitamina B-12,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Vitamina B-12,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Vitamina B-12,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Vitamina B-12,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Riboflavina,"0,010"
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Riboflavina,"1,138"
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Riboflavina,"0,113"
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Riboflavina,"0,197"
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Riboflavina,"0,197"
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Riboflavina,"0,105"
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Riboflavina,"0,184"
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Riboflavina,"0,150"
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Riboflavina,"0,234"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Riboflavina,"0,100"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Riboflavina,"0,170"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Riboflavina,"0,355"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Riboflavina,"0,246"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Riboflavina,"0,161"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Riboflavina,"0,247"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Riboflavina,"0,153"
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Tiamina,"0,015"
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Tiamina,"0,205"
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Tiamina,"0,520"
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Tiamina,"0,152"
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Tiamina,"0,152"
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Tiamina,"0,107"
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Tiamina,"0,366"
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Tiamina,"0,341"
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Tiamina,"0,695"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Tiamina,"0,854"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Tiamina,"0,620"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Tiamina,"1,480"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Tiamina,"0,106"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Tiamina,"1,644"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Tiamina,"0,791"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Tiamina,"0,273"
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Retinol,60
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Retinol,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Retinol,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Retinol,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Retinol,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Retinol,0
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Retinol,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Retinol,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Retinol,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Retinol,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Retinol,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Retinol,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Retinol,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Retinol,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Retinol,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Retinol,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),"Vitamina A, RAE",60
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,"Vitamina A, RAE",0
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,"Vitamina A, RAE",1
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,"Vitamina A, RAE",0
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,"Vitamina A, RAE",0
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,"Vitamina A, RAE",0
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva","Vitamina A, RAE",1
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,"Vitamina A, RAE",1
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,"Vitamina A, RAE",13
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,"Vitamina A, RAE",0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,"Vitamina A, RAE",0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,"Vitamina A, RAE",3
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,"Vitamina A, RAE",0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,"Vitamina A, RAE",0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,"Vitamina A, RAE",0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,"Vitamina A, RAE",1
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Ácido fólico,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Ácido fólico,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Ácido fólico,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Ácido fólico,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Ácido fólico,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Ácido fólico,0
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Ácido fólico,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Ácido fólico,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Ácido fólico,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Ácido fólico,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Ácido fólico,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Ácido fólico,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Ácido fólico,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Ácido fólico,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Ácido fólico,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Ácido fólico,0
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Folato EFD,1
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Folato EFD,44
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Folato EFD,113
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Folato EFD,97
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Folato EFD,97
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Folato EFD,35
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Folato EFD,83
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Folato EFD,98
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Folato EFD,51
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Folato EFD,82
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Folato EFD,49
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Folato EFD,227
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Folato EFD,237
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Folato EFD,87
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Folato EFD,97
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Folato EFD,58
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Niacina,"0,08"
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Niacina,"3,62"
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Niacina,"1,80"
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Niacina,"14,36"
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Niacina,"14,36"
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Niacina,"13,16"
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Niacina,"5,81"
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Niacina,"1,13"
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Niacina,"1,37"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Niacina,"0,90"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Niacina,"8,83"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Niacina,"8,34"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Niacina,"7,04"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Niacina,"3,08"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Niacina,"4,52"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Niacina,"4,99"
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Zinc,"0,06"
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Zinc,"3,12"
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Zinc,"2,45"
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Zinc,"2,77"
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Zinc,"2,77"
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Zinc,"2,67"
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Zinc,"2,30"
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Zinc,"3,09"
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Zinc,"2,34"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Zinc,"7,9"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Zinc,"4,58"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Zinc,5
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Zinc,"5,29"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Zinc,"4,3"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Zinc,"7,75"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Zinc,"7,81"
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Magnesio,7
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Magnesio,270
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Magnesio,163
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Magnesio,178
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Magnesio,178
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Magnesio,179
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Magnesio,144
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Magnesio,158
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Magnesio,109
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Magnesio,347
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Magnesio,335
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Magnesio,325
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Magnesio,129
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Magnesio,392
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Magnesio,351
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Magnesio,592
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Hierro,"0,30"
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Hierro,"3,71"
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Hierro,"4,10"
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Hierro,"1,58"
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Hierro,"1,58"
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Hierro,"2,16"
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Hierro,"2,34"
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Hierro,"2,35"
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Hierro,"4,03"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Hierro,"9,76"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Hierro,"7,72"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Hierro,"5,25"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Hierro,"3,80"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Hierro,"5,73"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Hierro,"14,55"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Hierro,"8,82"
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Fósforo,8
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Fósforo,481
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Fósforo,354
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Fósforo,363
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Fósforo,363
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Fósforo,335
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Fósforo,314
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Fósforo,380
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Fósforo,469
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Fósforo,870
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Fósforo,860
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Fósforo,660
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Fósforo,1155
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Fósforo,642
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Fósforo,629
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Fósforo,1233
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Cobre,"0,017"
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Cobre,"1,031"
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Cobre,"1,725"
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Cobre,"0,428"
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Cobre,"0,428"
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Cobre,"0,571"
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Cobre,"0,82"
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Cobre,"1,586"
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Cobre,"1,293"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Cobre,2
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Cobre,"0,924"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Cobre,"1,8"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Cobre,"1,83"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Cobre,"1,22"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Cobre,"4,082"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Cobre,"1,343"
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Calcio,128
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Calcio,269
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Calcio,140
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Calcio,58
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Calcio,58
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Calcio,54
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Calcio,71
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Calcio,98
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Calcio,107
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Calcio,1438
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Calcio,631
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Calcio,78
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Calcio,70
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Calcio,255
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Calcio,975
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Calcio,46
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Potasio,50
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Potasio,733
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Potasio,680
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Potasio,634
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Potasio,634
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Potasio,592
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Potasio,634
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Potasio,441
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Potasio,1007
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Potasio,719
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Potasio,407
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Potasio,645
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Potasio,850
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Potasio,813
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Potasio,468
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Potasio,809
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Sodio,63
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Sodio,1
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Sodio,6
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Sodio,701
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Sodio,6
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Sodio,476
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Sodio,13
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Sodio,3
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Sodio,428
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Sodio,26
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Sodio,16
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Sodio,9
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Sodio,655
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Sodio,30
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Sodio,11
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Sodio,7
+11,Frutas secas y semillas,vitaminas_minerales,102,Alimento a base de almendras (leche de almendras),Cenizas,"0,32"
+11,Frutas secas y semillas,vitaminas_minerales,102,Almendra,Cenizas,"2,97"
+11,Frutas secas y semillas,vitaminas_minerales,102,Avellana,Cenizas,"2,29"
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado salado,Cenizas,"2,92"
+11,Frutas secas y semillas,vitaminas_minerales,102,Maní tostado sin sal,Cenizas,"2,92"
+11,Frutas secas y semillas,vitaminas_minerales,102,Mantequilla de maní,Cenizas,3
+11,Frutas secas y semillas,vitaminas_minerales,102,"Mix de frutos secos, semillas y pasas de uva",Cenizas,"2,29"
+11,Frutas secas y semillas,vitaminas_minerales,102,Nuez,Cenizas,"2,00"
+11,Frutas secas y semillas,vitaminas_minerales,102,Pistacho salado,Cenizas,"3,79"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de amapola,Cenizas,"6,37"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de chía,Cenizas,"4,8"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol,Cenizas,"3,02"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de girasol con sal y con cáscara,Cenizas,"5,6"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de lino,Cenizas,"3,72"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de sésamo,Cenizas,"4,45"
+11,Frutas secas y semillas,vitaminas_minerales,102,Semilla de zapallo,Cenizas,"4,78"
