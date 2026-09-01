@@ -21,6 +21,11 @@ class FoodNutrientValueRepository:
         return value
 
     async def get_all(self) -> list[FoodNutrientValue]:
-        """Return every stored food-nutrient reading."""
+        """Return every stored food-nutrient reading.
+
+        Seed-only: loads the full table into memory to build the upsert-by-
+        (food_id, nutrient_id) diff at container boot. Do not call from
+        request-time code — use a paginated listing method instead.
+        """
         result = await self.db.execute(select(FoodNutrientValue))
         return list(result.scalars().all())

@@ -21,6 +21,11 @@ class FoodCategoryRepository:
         return category
 
     async def get_all(self) -> list[FoodCategory]:
-        """Return every food category."""
+        """Return every food category.
+
+        Seed-only: loads the full table into memory to build the upsert-by-code
+        diff at container boot. Do not call from request-time code — use a
+        paginated listing method instead.
+        """
         result = await self.db.execute(select(FoodCategory))
         return list(result.scalars().all())
