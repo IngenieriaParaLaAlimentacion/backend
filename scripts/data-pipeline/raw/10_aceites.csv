@@ -1,0 +1,508 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,Alcohol,0
+10,Aceites,macronutrientes,99,Aceite de canola,Alcohol,0
+10,Aceites,macronutrientes,99,Aceite de chía,Alcohol,0
+10,Aceites,macronutrientes,99,Aceite de coco,Alcohol,0
+10,Aceites,macronutrientes,99,Aceite de girasol,Alcohol,0
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,Alcohol,0
+10,Aceites,macronutrientes,99,Aceite de maíz,Alcohol,0
+10,Aceites,macronutrientes,99,Aceite de oliva,Alcohol,0
+10,Aceites,macronutrientes,99,Aceite de sésamo,Alcohol,0
+10,Aceites,macronutrientes,99,Aceite de soja,Alcohol,0
+10,Aceites,macronutrientes,99,Aceite de uva,Alcohol,0
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,Alcohol,0
+10,Aceites,macronutrientes,99,Rocío vegetal,Alcohol,0
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,Fibra alimentaria,0
+10,Aceites,macronutrientes,99,Aceite de canola,Fibra alimentaria,0
+10,Aceites,macronutrientes,99,Aceite de chía,Fibra alimentaria,0
+10,Aceites,macronutrientes,99,Aceite de coco,Fibra alimentaria,0
+10,Aceites,macronutrientes,99,Aceite de girasol,Fibra alimentaria,0
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,Fibra alimentaria,0
+10,Aceites,macronutrientes,99,Aceite de maíz,Fibra alimentaria,0
+10,Aceites,macronutrientes,99,Aceite de oliva,Fibra alimentaria,0
+10,Aceites,macronutrientes,99,Aceite de sésamo,Fibra alimentaria,0
+10,Aceites,macronutrientes,99,Aceite de soja,Fibra alimentaria,0
+10,Aceites,macronutrientes,99,Aceite de uva,Fibra alimentaria,0
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,Fibra alimentaria,0
+10,Aceites,macronutrientes,99,Rocío vegetal,Fibra alimentaria,0
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,Azúcar agregado,0
+10,Aceites,macronutrientes,99,Aceite de canola,Azúcar agregado,0
+10,Aceites,macronutrientes,99,Aceite de chía,Azúcar agregado,0
+10,Aceites,macronutrientes,99,Aceite de coco,Azúcar agregado,0
+10,Aceites,macronutrientes,99,Aceite de girasol,Azúcar agregado,0
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,Azúcar agregado,0
+10,Aceites,macronutrientes,99,Aceite de maíz,Azúcar agregado,0
+10,Aceites,macronutrientes,99,Aceite de oliva,Azúcar agregado,0
+10,Aceites,macronutrientes,99,Aceite de sésamo,Azúcar agregado,0
+10,Aceites,macronutrientes,99,Aceite de soja,Azúcar agregado,0
+10,Aceites,macronutrientes,99,Aceite de uva,Azúcar agregado,0
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,Azúcar agregado,0
+10,Aceites,macronutrientes,99,Rocío vegetal,Azúcar agregado,0
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,Azúcar total,0
+10,Aceites,macronutrientes,99,Aceite de canola,Azúcar total,0
+10,Aceites,macronutrientes,99,Aceite de chía,Azúcar total,0
+10,Aceites,macronutrientes,99,Aceite de coco,Azúcar total,0
+10,Aceites,macronutrientes,99,Aceite de girasol,Azúcar total,0
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,Azúcar total,0
+10,Aceites,macronutrientes,99,Aceite de maíz,Azúcar total,0
+10,Aceites,macronutrientes,99,Aceite de oliva,Azúcar total,0
+10,Aceites,macronutrientes,99,Aceite de sésamo,Azúcar total,0
+10,Aceites,macronutrientes,99,Aceite de soja,Azúcar total,0
+10,Aceites,macronutrientes,99,Aceite de uva,Azúcar total,0
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,Azúcar total,0
+10,Aceites,macronutrientes,99,Rocío vegetal,Azúcar total,0
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,Carbohidratos totales,0
+10,Aceites,macronutrientes,99,Aceite de canola,Carbohidratos totales,0
+10,Aceites,macronutrientes,99,Aceite de chía,Carbohidratos totales,0
+10,Aceites,macronutrientes,99,Aceite de coco,Carbohidratos totales,0
+10,Aceites,macronutrientes,99,Aceite de girasol,Carbohidratos totales,0
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,Carbohidratos totales,0
+10,Aceites,macronutrientes,99,Aceite de maíz,Carbohidratos totales,0
+10,Aceites,macronutrientes,99,Aceite de oliva,Carbohidratos totales,0
+10,Aceites,macronutrientes,99,Aceite de sésamo,Carbohidratos totales,0
+10,Aceites,macronutrientes,99,Aceite de soja,Carbohidratos totales,0
+10,Aceites,macronutrientes,99,Aceite de uva,Carbohidratos totales,0
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,Carbohidratos totales,0
+10,Aceites,macronutrientes,99,Rocío vegetal,Carbohidratos totales,0
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,Carbohidratos disponibles,0
+10,Aceites,macronutrientes,99,Aceite de canola,Carbohidratos disponibles,0
+10,Aceites,macronutrientes,99,Aceite de chía,Carbohidratos disponibles,0
+10,Aceites,macronutrientes,99,Aceite de coco,Carbohidratos disponibles,0
+10,Aceites,macronutrientes,99,Aceite de girasol,Carbohidratos disponibles,0
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,Carbohidratos disponibles,0
+10,Aceites,macronutrientes,99,Aceite de maíz,Carbohidratos disponibles,0
+10,Aceites,macronutrientes,99,Aceite de oliva,Carbohidratos disponibles,0
+10,Aceites,macronutrientes,99,Aceite de sésamo,Carbohidratos disponibles,0
+10,Aceites,macronutrientes,99,Aceite de soja,Carbohidratos disponibles,0
+10,Aceites,macronutrientes,99,Aceite de uva,Carbohidratos disponibles,0
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,Carbohidratos disponibles,0
+10,Aceites,macronutrientes,99,Rocío vegetal,Carbohidratos disponibles,0
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,22:6 n-3 Docosahexaenoico (DHA),0
+10,Aceites,macronutrientes,99,Aceite de canola,22:6 n-3 Docosahexaenoico (DHA),0
+10,Aceites,macronutrientes,99,Aceite de chía,22:6 n-3 Docosahexaenoico (DHA),0
+10,Aceites,macronutrientes,99,Aceite de coco,22:6 n-3 Docosahexaenoico (DHA),0
+10,Aceites,macronutrientes,99,Aceite de girasol,22:6 n-3 Docosahexaenoico (DHA),0
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,22:6 n-3 Docosahexaenoico (DHA),0
+10,Aceites,macronutrientes,99,Aceite de maíz,22:6 n-3 Docosahexaenoico (DHA),0
+10,Aceites,macronutrientes,99,Aceite de oliva,22:6 n-3 Docosahexaenoico (DHA),0
+10,Aceites,macronutrientes,99,Aceite de sésamo,22:6 n-3 Docosahexaenoico (DHA),0
+10,Aceites,macronutrientes,99,Aceite de soja,22:6 n-3 Docosahexaenoico (DHA),0
+10,Aceites,macronutrientes,99,Aceite de uva,22:6 n-3 Docosahexaenoico (DHA),0
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,22:6 n-3 Docosahexaenoico (DHA),0
+10,Aceites,macronutrientes,99,Rocío vegetal,22:6 n-3 Docosahexaenoico (DHA),0
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,20:5 n-3 Eicosapentaenoico (EPA),0
+10,Aceites,macronutrientes,99,Aceite de canola,20:5 n-3 Eicosapentaenoico (EPA),0
+10,Aceites,macronutrientes,99,Aceite de chía,20:5 n-3 Eicosapentaenoico (EPA),0
+10,Aceites,macronutrientes,99,Aceite de coco,20:5 n-3 Eicosapentaenoico (EPA),0
+10,Aceites,macronutrientes,99,Aceite de girasol,20:5 n-3 Eicosapentaenoico (EPA),0
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,20:5 n-3 Eicosapentaenoico (EPA),0
+10,Aceites,macronutrientes,99,Aceite de maíz,20:5 n-3 Eicosapentaenoico (EPA),0
+10,Aceites,macronutrientes,99,Aceite de oliva,20:5 n-3 Eicosapentaenoico (EPA),0
+10,Aceites,macronutrientes,99,Aceite de sésamo,20:5 n-3 Eicosapentaenoico (EPA),0
+10,Aceites,macronutrientes,99,Aceite de soja,20:5 n-3 Eicosapentaenoico (EPA),0
+10,Aceites,macronutrientes,99,Aceite de uva,20:5 n-3 Eicosapentaenoico (EPA),0
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,20:5 n-3 Eicosapentaenoico (EPA),0
+10,Aceites,macronutrientes,99,Rocío vegetal,20:5 n-3 Eicosapentaenoico (EPA),0
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,20:4 Araquidónico,0
+10,Aceites,macronutrientes,99,Aceite de canola,20:4 Araquidónico,0
+10,Aceites,macronutrientes,99,Aceite de chía,20:4 Araquidónico,0
+10,Aceites,macronutrientes,99,Aceite de coco,20:4 Araquidónico,0
+10,Aceites,macronutrientes,99,Aceite de girasol,20:4 Araquidónico,0
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,20:4 Araquidónico,0
+10,Aceites,macronutrientes,99,Aceite de maíz,20:4 Araquidónico,0
+10,Aceites,macronutrientes,99,Aceite de oliva,20:4 Araquidónico,0
+10,Aceites,macronutrientes,99,Aceite de sésamo,20:4 Araquidónico,0
+10,Aceites,macronutrientes,99,Aceite de soja,20:4 Araquidónico,0
+10,Aceites,macronutrientes,99,Aceite de uva,20:4 Araquidónico,0
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,20:4 Araquidónico,0
+10,Aceites,macronutrientes,99,Rocío vegetal,20:4 Araquidónico,0
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,18:3 cis Alfa linolénico (ALA),"9,137"
+10,Aceites,macronutrientes,99,Aceite de canola,18:3 cis Alfa linolénico (ALA),"58,003"
+10,Aceites,macronutrientes,99,Aceite de chía,18:3 cis Alfa linolénico (ALA),"0,019"
+10,Aceites,macronutrientes,99,Aceite de coco,18:3 cis Alfa linolénico (ALA),"0,500"
+10,Aceites,macronutrientes,99,Aceite de girasol,18:3 cis Alfa linolénico (ALA),"0,192"
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,18:3 cis Alfa linolénico (ALA),"1,012"
+10,Aceites,macronutrientes,99,Aceite de maíz,18:3 cis Alfa linolénico (ALA),"0,761"
+10,Aceites,macronutrientes,99,Aceite de oliva,18:3 cis Alfa linolénico (ALA),"0,300"
+10,Aceites,macronutrientes,99,Aceite de sésamo,18:3 cis Alfa linolénico (ALA),"6,789"
+10,Aceites,macronutrientes,99,Aceite de soja,18:3 cis Alfa linolénico (ALA),"0,100"
+10,Aceites,macronutrientes,99,Aceite de uva,18:3 cis Alfa linolénico (ALA),"0,800"
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,18:3 cis Alfa linolénico (ALA),"0,500"
+10,Aceites,macronutrientes,99,Rocío vegetal,18:3 cis Alfa linolénico (ALA),"9,137"
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,18:2 cis Linoléico,"18,64"
+10,Aceites,macronutrientes,99,Aceite de canola,18:2 cis Linoléico,"18,98"
+10,Aceites,macronutrientes,99,Aceite de chía,18:2 cis Linoléico,"1,68"
+10,Aceites,macronutrientes,99,Aceite de coco,18:2 cis Linoléico,"61,03"
+10,Aceites,macronutrientes,99,Aceite de girasol,18:2 cis Linoléico,"3,61"
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,18:2 cis Linoléico,"46,41"
+10,Aceites,macronutrientes,99,Aceite de maíz,18:2 cis Linoléico,"9,76"
+10,Aceites,macronutrientes,99,Aceite de oliva,18:2 cis Linoléico,"41,30"
+10,Aceites,macronutrientes,99,Aceite de sésamo,18:2 cis Linoléico,"50,42"
+10,Aceites,macronutrientes,99,Aceite de soja,18:2 cis Linoléico,"69,60"
+10,Aceites,macronutrientes,99,Aceite de uva,18:2 cis Linoléico,"45,00"
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,18:2 cis Linoléico,"61,03"
+10,Aceites,macronutrientes,99,Rocío vegetal,18:2 cis Linoléico,"18,64"
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,Trans,"0,40"
+10,Aceites,macronutrientes,99,Aceite de canola,Trans,"0,46"
+10,Aceites,macronutrientes,99,Aceite de chía,Trans,"0,03"
+10,Aceites,macronutrientes,99,Aceite de coco,Trans,0
+10,Aceites,macronutrientes,99,Aceite de girasol,Trans,0
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,Trans,0
+10,Aceites,macronutrientes,99,Aceite de maíz,Trans,0
+10,Aceites,macronutrientes,99,Aceite de oliva,Trans,0
+10,Aceites,macronutrientes,99,Aceite de sésamo,Trans,"0,533"
+10,Aceites,macronutrientes,99,Aceite de soja,Trans,0
+10,Aceites,macronutrientes,99,Aceite de uva,Trans,0
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,Trans,0
+10,Aceites,macronutrientes,99,Rocío vegetal,Trans,"0,40"
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,Poliinsaturados,"28,14"
+10,Aceites,macronutrientes,99,Aceite de canola,Poliinsaturados,"76,98"
+10,Aceites,macronutrientes,99,Aceite de chía,Poliinsaturados,"1,70"
+10,Aceites,macronutrientes,99,Aceite de coco,Poliinsaturados,"61,53"
+10,Aceites,macronutrientes,99,Aceite de girasol,Poliinsaturados,"3,80"
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,Poliinsaturados,"47,67"
+10,Aceites,macronutrientes,99,Aceite de maíz,Poliinsaturados,"12,40"
+10,Aceites,macronutrientes,99,Aceite de oliva,Poliinsaturados,"41,70"
+10,Aceites,macronutrientes,99,Aceite de sésamo,Poliinsaturados,"57,74"
+10,Aceites,macronutrientes,99,Aceite de soja,Poliinsaturados,"69,90"
+10,Aceites,macronutrientes,99,Aceite de uva,Poliinsaturados,"45,80"
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,Poliinsaturados,"61,53"
+10,Aceites,macronutrientes,99,Rocío vegetal,Poliinsaturados,"28,14"
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,Monoinsaturados,"63,28"
+10,Aceites,macronutrientes,99,Aceite de canola,Monoinsaturados,"7,51"
+10,Aceites,macronutrientes,99,Aceite de chía,Monoinsaturados,"6,33"
+10,Aceites,macronutrientes,99,Aceite de coco,Monoinsaturados,"24,93"
+10,Aceites,macronutrientes,99,Aceite de girasol,Monoinsaturados,"83,69"
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,Monoinsaturados,"34,40"
+10,Aceites,macronutrientes,99,Aceite de maíz,Monoinsaturados,"71,10"
+10,Aceites,macronutrientes,99,Aceite de oliva,Monoinsaturados,"39,70"
+10,Aceites,macronutrientes,99,Aceite de sésamo,Monoinsaturados,"22,783"
+10,Aceites,macronutrientes,99,Aceite de soja,Monoinsaturados,"16,10"
+10,Aceites,macronutrientes,99,Aceite de uva,Monoinsaturados,"41,70"
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,Monoinsaturados,"24,93"
+10,Aceites,macronutrientes,99,Rocío vegetal,Monoinsaturados,"63,28"
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,Saturados,"7,37"
+10,Aceites,macronutrientes,99,Aceite de canola,Saturados,"10,83"
+10,Aceites,macronutrientes,99,Aceite de chía,Saturados,"82,48"
+10,Aceites,macronutrientes,99,Aceite de coco,Saturados,"10,60"
+10,Aceites,macronutrientes,99,Aceite de girasol,Saturados,"9,86"
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,Saturados,"15,20"
+10,Aceites,macronutrientes,99,Aceite de maíz,Saturados,"17,00"
+10,Aceites,macronutrientes,99,Aceite de oliva,Saturados,"14,20"
+10,Aceites,macronutrientes,99,Aceite de sésamo,Saturados,"15,65"
+10,Aceites,macronutrientes,99,Aceite de soja,Saturados,"9,60"
+10,Aceites,macronutrientes,99,Aceite de uva,Saturados,"11,25"
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,Saturados,"10,60"
+10,Aceites,macronutrientes,99,Rocío vegetal,Saturados,"7,37"
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,Colesterol,0
+10,Aceites,macronutrientes,99,Aceite de canola,Colesterol,0
+10,Aceites,macronutrientes,99,Aceite de chía,Colesterol,0
+10,Aceites,macronutrientes,99,Aceite de coco,Colesterol,0
+10,Aceites,macronutrientes,99,Aceite de girasol,Colesterol,0
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,Colesterol,0
+10,Aceites,macronutrientes,99,Aceite de maíz,Colesterol,0
+10,Aceites,macronutrientes,99,Aceite de oliva,Colesterol,0
+10,Aceites,macronutrientes,99,Aceite de sésamo,Colesterol,0
+10,Aceites,macronutrientes,99,Aceite de soja,Colesterol,0
+10,Aceites,macronutrientes,99,Aceite de uva,Colesterol,0
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,Colesterol,0
+10,Aceites,macronutrientes,99,Rocío vegetal,Colesterol,0
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,Lípidos totales,"100,0"
+10,Aceites,macronutrientes,99,Aceite de canola,Lípidos totales,"100,0"
+10,Aceites,macronutrientes,99,Aceite de chía,Lípidos totales,"99,1"
+10,Aceites,macronutrientes,99,Aceite de coco,Lípidos totales,"100,0"
+10,Aceites,macronutrientes,99,Aceite de girasol,Lípidos totales,"100,0"
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,Lípidos totales,"100,0"
+10,Aceites,macronutrientes,99,Aceite de maíz,Lípidos totales,"100,0"
+10,Aceites,macronutrientes,99,Aceite de oliva,Lípidos totales,"100,0"
+10,Aceites,macronutrientes,99,Aceite de sésamo,Lípidos totales,"100,0"
+10,Aceites,macronutrientes,99,Aceite de soja,Lípidos totales,"100,0"
+10,Aceites,macronutrientes,99,Aceite de uva,Lípidos totales,"100,0"
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,Lípidos totales,"100,0"
+10,Aceites,macronutrientes,99,Rocío vegetal,Lípidos totales,"100,0"
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,Proteínas,"0,0"
+10,Aceites,macronutrientes,99,Aceite de canola,Proteínas,"0,0"
+10,Aceites,macronutrientes,99,Aceite de chía,Proteínas,"0,0"
+10,Aceites,macronutrientes,99,Aceite de coco,Proteínas,"0,0"
+10,Aceites,macronutrientes,99,Aceite de girasol,Proteínas,"0,0"
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,Proteínas,"0,0"
+10,Aceites,macronutrientes,99,Aceite de maíz,Proteínas,"0,0"
+10,Aceites,macronutrientes,99,Aceite de oliva,Proteínas,"0,0"
+10,Aceites,macronutrientes,99,Aceite de sésamo,Proteínas,"0,0"
+10,Aceites,macronutrientes,99,Aceite de soja,Proteínas,"0,0"
+10,Aceites,macronutrientes,99,Aceite de uva,Proteínas,"0,0"
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,Proteínas,"0,0"
+10,Aceites,macronutrientes,99,Rocío vegetal,Proteínas,"0,0"
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,Agua,"0,0"
+10,Aceites,macronutrientes,99,Aceite de canola,Agua,0
+10,Aceites,macronutrientes,99,Aceite de chía,Agua,0
+10,Aceites,macronutrientes,99,Aceite de coco,Agua,"0,0"
+10,Aceites,macronutrientes,99,Aceite de girasol,Agua,0
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,Agua,"0,0"
+10,Aceites,macronutrientes,99,Aceite de maíz,Agua,"0,0"
+10,Aceites,macronutrientes,99,Aceite de oliva,Agua,"0,0"
+10,Aceites,macronutrientes,99,Aceite de sésamo,Agua,"0,0"
+10,Aceites,macronutrientes,99,Aceite de soja,Agua,"0,0"
+10,Aceites,macronutrientes,99,Aceite de uva,Agua,0
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,Agua,0
+10,Aceites,macronutrientes,99,Rocío vegetal,Agua,"0,0"
+10,Aceites,macronutrientes,99,Aceite comestible mezcla,Valor energético,900
+10,Aceites,macronutrientes,99,Aceite de canola,Valor energético,900
+10,Aceites,macronutrientes,99,Aceite de chía,Valor energético,892
+10,Aceites,macronutrientes,99,Aceite de coco,Valor energético,900
+10,Aceites,macronutrientes,99,Aceite de girasol,Valor energético,900
+10,Aceites,macronutrientes,99,Aceite de girasol alto oleico,Valor energético,900
+10,Aceites,macronutrientes,99,Aceite de maíz,Valor energético,900
+10,Aceites,macronutrientes,99,Aceite de oliva,Valor energético,900
+10,Aceites,macronutrientes,99,Aceite de sésamo,Valor energético,900
+10,Aceites,macronutrientes,99,Aceite de soja,Valor energético,900
+10,Aceites,macronutrientes,99,Aceite de uva,Valor energético,900
+10,Aceites,macronutrientes,99,Aceite mezcla con oliva,Valor energético,900
+10,Aceites,macronutrientes,99,Rocío vegetal,Valor energético,900
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Vitamina D,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Vitamina D,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Vitamina D,0
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Vitamina D,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Vitamina D,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Vitamina D,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Vitamina D,0
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Vitamina D,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Vitamina D,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Vitamina D,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Vitamina D,0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Vitamina D,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Vitamina D,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Vitamina C,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Vitamina C,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Vitamina C,0
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Vitamina C,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Vitamina C,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Vitamina C,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Vitamina C,0
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Vitamina C,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Vitamina C,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Vitamina C,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Vitamina C,0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Vitamina C,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Vitamina C,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Vitamina B-12,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Vitamina B-12,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Vitamina B-12,0
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Vitamina B-12,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Vitamina B-12,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Vitamina B-12,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Vitamina B-12,0
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Vitamina B-12,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Vitamina B-12,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Vitamina B-12,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Vitamina B-12,0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Vitamina B-12,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Vitamina B-12,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Riboflavina,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Riboflavina,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Riboflavina,0
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Riboflavina,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Riboflavina,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Riboflavina,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Riboflavina,0
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Riboflavina,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Riboflavina,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Riboflavina,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Riboflavina,0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Riboflavina,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Riboflavina,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Tiamina,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Tiamina,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Tiamina,0
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Tiamina,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Tiamina,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Tiamina,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Tiamina,0
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Tiamina,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Tiamina,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Tiamina,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Tiamina,0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Tiamina,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Tiamina,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Retinol,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Retinol,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Retinol,0
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Retinol,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Retinol,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Retinol,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Retinol,0
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Retinol,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Retinol,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Retinol,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Retinol,0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Retinol,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Retinol,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,"Vitamina A, RAE",0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,"Vitamina A, RAE",0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,"Vitamina A, RAE",0
+10,Aceites,vitaminas_minerales,100,Aceite de coco,"Vitamina A, RAE",0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,"Vitamina A, RAE",0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,"Vitamina A, RAE",0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,"Vitamina A, RAE",0
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,"Vitamina A, RAE",0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,"Vitamina A, RAE",0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,"Vitamina A, RAE",0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,"Vitamina A, RAE",0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,"Vitamina A, RAE",0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,"Vitamina A, RAE",0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Ácido fólico,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Ácido fólico,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Ácido fólico,0
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Ácido fólico,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Ácido fólico,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Ácido fólico,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Ácido fólico,0
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Ácido fólico,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Ácido fólico,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Ácido fólico,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Ácido fólico,0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Ácido fólico,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Ácido fólico,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Folato EFD,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Folato EFD,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Folato EFD,0
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Folato EFD,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Folato EFD,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Folato EFD,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Folato EFD,0
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Folato EFD,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Folato EFD,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Folato EFD,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Folato EFD,0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Folato EFD,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Folato EFD,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Niacina,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Niacina,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Niacina,0
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Niacina,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Niacina,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Niacina,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Niacina,0
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Niacina,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Niacina,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Niacina,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Niacina,0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Niacina,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Niacina,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Zinc,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Zinc,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Zinc,"0,02"
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Zinc,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Zinc,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Zinc,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Zinc,0
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Zinc,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Zinc,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Zinc,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Zinc,0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Zinc,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Zinc,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Magnesio,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Magnesio,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Magnesio,0
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Magnesio,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Magnesio,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Magnesio,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Magnesio,0
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Magnesio,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Magnesio,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Magnesio,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Magnesio,0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Magnesio,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Magnesio,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Hierro,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Hierro,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Hierro,"0,05"
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Hierro,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Hierro,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Hierro,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Hierro,"0,56"
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Hierro,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Hierro,"0,05"
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Hierro,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Hierro,"0,10"
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Hierro,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Hierro,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Fósforo,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Fósforo,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Fósforo,0
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Fósforo,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Fósforo,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Fósforo,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Fósforo,0
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Fósforo,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Fósforo,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Fósforo,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Fósforo,0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Fósforo,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Fósforo,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Cobre,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Cobre,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Cobre,0
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Cobre,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Cobre,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Cobre,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Cobre,0
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Cobre,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Cobre,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Cobre,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Cobre,"0,01"
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Cobre,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Cobre,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Calcio,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Calcio,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Calcio,1
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Calcio,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Calcio,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Calcio,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Calcio,1
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Calcio,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Calcio,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Calcio,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Calcio,0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Calcio,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Calcio,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Potasio,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Potasio,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Potasio,0
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Potasio,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Potasio,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Potasio,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Potasio,1
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Potasio,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Potasio,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Potasio,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Potasio,0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Potasio,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Potasio,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Sodio,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Sodio,0
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Sodio,0
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Sodio,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Sodio,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Sodio,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Sodio,2
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Sodio,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Sodio,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Sodio,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Sodio,0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Sodio,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Sodio,0
+10,Aceites,vitaminas_minerales,100,Aceite comestible mezcla,Cenizas,0
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Cenizas,
+10,Aceites,vitaminas_minerales,100,Aceite de chía,Cenizas,"0,03"
+10,Aceites,vitaminas_minerales,100,Aceite de coco,Cenizas,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol,Cenizas,0
+10,Aceites,vitaminas_minerales,100,Aceite de girasol alto oleico,Cenizas,0
+10,Aceites,vitaminas_minerales,100,Aceite de maíz,Cenizas,0
+10,Aceites,vitaminas_minerales,100,Aceite de oliva,Cenizas,0
+10,Aceites,vitaminas_minerales,100,Aceite de sésamo,Cenizas,0
+10,Aceites,vitaminas_minerales,100,Aceite de soja,Cenizas,0
+10,Aceites,vitaminas_minerales,100,Aceite de uva,Cenizas,0
+10,Aceites,vitaminas_minerales,100,Aceite mezcla con oliva,Cenizas,0
+10,Aceites,vitaminas_minerales,100,Rocío vegetal,Cenizas,0

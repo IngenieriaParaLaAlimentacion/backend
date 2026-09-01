@@ -1,0 +1,313 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+15,Snacks salados,macronutrientes,113,Chicharrón,Alcohol,0
+15,Snacks salados,macronutrientes,113,Maní japonés,Alcohol,0
+15,Snacks salados,macronutrientes,113,Nachos,Alcohol,0
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,Alcohol,0
+15,Snacks salados,macronutrientes,113,Palitos salados,Alcohol,0
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,Alcohol,0
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,Alcohol,0
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Alcohol,0
+15,Snacks salados,macronutrientes,113,Chicharrón,Fibra alimentaria,0
+15,Snacks salados,macronutrientes,113,Maní japonés,Fibra alimentaria,"4,0"
+15,Snacks salados,macronutrientes,113,Nachos,Fibra alimentaria,"5,1"
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,Fibra alimentaria,"2,2"
+15,Snacks salados,macronutrientes,113,Palitos salados,Fibra alimentaria,"3,6"
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,Fibra alimentaria,"3,1"
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,Fibra alimentaria,"5,4"
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Fibra alimentaria,"1,0"
+15,Snacks salados,macronutrientes,113,Chicharrón,Azúcar agregado,0
+15,Snacks salados,macronutrientes,113,Maní japonés,Azúcar agregado,0
+15,Snacks salados,macronutrientes,113,Nachos,Azúcar agregado,"2,6"
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,Azúcar agregado,"2,8"
+15,Snacks salados,macronutrientes,113,Palitos salados,Azúcar agregado,0
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,Azúcar agregado,0
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,Azúcar agregado,0
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Azúcar agregado,0
+15,Snacks salados,macronutrientes,113,Chicharrón,Azúcar total,0
+15,Snacks salados,macronutrientes,113,Maní japonés,Azúcar total,0
+15,Snacks salados,macronutrientes,113,Nachos,Azúcar total,"2,6"
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,Azúcar total,"2,8"
+15,Snacks salados,macronutrientes,113,Palitos salados,Azúcar total,0
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,Azúcar total,"0,3"
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,Azúcar total,"0,8"
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Azúcar total,0
+15,Snacks salados,macronutrientes,113,Chicharrón,Carbohidratos totales,"1,7"
+15,Snacks salados,macronutrientes,113,Maní japonés,Carbohidratos totales,"48,5"
+15,Snacks salados,macronutrientes,113,Nachos,Carbohidratos totales,"60,8"
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,Carbohidratos totales,"54,1"
+15,Snacks salados,macronutrientes,113,Palitos salados,Carbohidratos totales,"55,6"
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,Carbohidratos totales,"53,8"
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,Carbohidratos totales,"67,8"
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Carbohidratos totales,"57,0"
+15,Snacks salados,macronutrientes,113,Chicharrón,Carbohidratos disponibles,"1,7"
+15,Snacks salados,macronutrientes,113,Maní japonés,Carbohidratos disponibles,"44,5"
+15,Snacks salados,macronutrientes,113,Nachos,Carbohidratos disponibles,"55,7"
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,Carbohidratos disponibles,"51,9"
+15,Snacks salados,macronutrientes,113,Palitos salados,Carbohidratos disponibles,"52,0"
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,Carbohidratos disponibles,"50,7"
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,Carbohidratos disponibles,"62,4"
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Carbohidratos disponibles,"56,0"
+15,Snacks salados,macronutrientes,113,Chicharrón,22:6 n-3 Docosahexaenoico (DHA),"0,008"
+15,Snacks salados,macronutrientes,113,Maní japonés,22:6 n-3 Docosahexaenoico (DHA),0
+15,Snacks salados,macronutrientes,113,Nachos,22:6 n-3 Docosahexaenoico (DHA),0
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,22:6 n-3 Docosahexaenoico (DHA),0
+15,Snacks salados,macronutrientes,113,Palitos salados,22:6 n-3 Docosahexaenoico (DHA),0
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,22:6 n-3 Docosahexaenoico (DHA),0
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,22:6 n-3 Docosahexaenoico (DHA),0
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",22:6 n-3 Docosahexaenoico (DHA),0
+15,Snacks salados,macronutrientes,113,Chicharrón,20:5 n-3 Eicosapentaenoico (EPA),"0,004"
+15,Snacks salados,macronutrientes,113,Maní japonés,20:5 n-3 Eicosapentaenoico (EPA),0
+15,Snacks salados,macronutrientes,113,Nachos,20:5 n-3 Eicosapentaenoico (EPA),0
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,20:5 n-3 Eicosapentaenoico (EPA),0
+15,Snacks salados,macronutrientes,113,Palitos salados,20:5 n-3 Eicosapentaenoico (EPA),0
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,20:5 n-3 Eicosapentaenoico (EPA),"0,001"
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,20:5 n-3 Eicosapentaenoico (EPA),0
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",20:5 n-3 Eicosapentaenoico (EPA),0
+15,Snacks salados,macronutrientes,113,Chicharrón,20:4 Araquidónico,"0,168"
+15,Snacks salados,macronutrientes,113,Maní japonés,20:4 Araquidónico,0
+15,Snacks salados,macronutrientes,113,Nachos,20:4 Araquidónico,"0,006"
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,20:4 Araquidónico,0
+15,Snacks salados,macronutrientes,113,Palitos salados,20:4 Araquidónico,0
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,20:4 Araquidónico,"0,009"
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,20:4 Araquidónico,0
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",20:4 Araquidónico,0
+15,Snacks salados,macronutrientes,113,Chicharrón,18:3 cis Alfa linolénico (ALA),"0,229"
+15,Snacks salados,macronutrientes,113,Maní japonés,18:3 cis Alfa linolénico (ALA),"0,015"
+15,Snacks salados,macronutrientes,113,Nachos,18:3 cis Alfa linolénico (ALA),"0,262"
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,18:3 cis Alfa linolénico (ALA),"0,300"
+15,Snacks salados,macronutrientes,113,Palitos salados,18:3 cis Alfa linolénico (ALA),"0,080"
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,18:3 cis Alfa linolénico (ALA),"0,340"
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,18:3 cis Alfa linolénico (ALA),"0,050"
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",18:3 cis Alfa linolénico (ALA),"0,114"
+15,Snacks salados,macronutrientes,113,Chicharrón,18:2 cis Linoléico,"5,33"
+15,Snacks salados,macronutrientes,113,Maní japonés,18:2 cis Linoléico,"5,86"
+15,Snacks salados,macronutrientes,113,Nachos,18:2 cis Linoléico,"11,80"
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,18:2 cis Linoléico,"18,35"
+15,Snacks salados,macronutrientes,113,Palitos salados,18:2 cis Linoléico,"3,92"
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,18:2 cis Linoléico,"7,82"
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,18:2 cis Linoléico,"2,45"
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",18:2 cis Linoléico,"13,91"
+15,Snacks salados,macronutrientes,113,Chicharrón,Trans,0
+15,Snacks salados,macronutrientes,113,Maní japonés,Trans,0
+15,Snacks salados,macronutrientes,113,Nachos,Trans,"0,19"
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,Trans,0
+15,Snacks salados,macronutrientes,113,Palitos salados,Trans,0
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,Trans,0
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,Trans,0
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Trans,0
+15,Snacks salados,macronutrientes,113,Chicharrón,Poliinsaturados,"6,11"
+15,Snacks salados,macronutrientes,113,Maní japonés,Poliinsaturados,"5,87"
+15,Snacks salados,macronutrientes,113,Nachos,Poliinsaturados,"12,26"
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,Poliinsaturados,"18,65"
+15,Snacks salados,macronutrientes,113,Palitos salados,Poliinsaturados,"4,00"
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,Poliinsaturados,"8,28"
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,Poliinsaturados,"2,50"
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Poliinsaturados,"14,03"
+15,Snacks salados,macronutrientes,113,Chicharrón,Monoinsaturados,"15,50"
+15,Snacks salados,macronutrientes,113,Maní japonés,Monoinsaturados,"15,82"
+15,Snacks salados,macronutrientes,113,Nachos,Monoinsaturados,"9,09"
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,Monoinsaturados,"10,44"
+15,Snacks salados,macronutrientes,113,Palitos salados,Monoinsaturados,"23,50"
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,Monoinsaturados,"18,96"
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,Monoinsaturados,"24,50"
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Monoinsaturados,"5,68"
+15,Snacks salados,macronutrientes,113,Chicharrón,Saturados,"11,96"
+15,Snacks salados,macronutrientes,113,Maní japonés,Saturados,"4,67"
+15,Snacks salados,macronutrientes,113,Nachos,Saturados,"3,88"
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,Saturados,"5,51"
+15,Snacks salados,macronutrientes,113,Palitos salados,Saturados,"3,60"
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,Saturados,"3,40"
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,Saturados,"2,50"
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Saturados,"2,42"
+15,Snacks salados,macronutrientes,113,Chicharrón,Colesterol,99
+15,Snacks salados,macronutrientes,113,Maní japonés,Colesterol,0
+15,Snacks salados,macronutrientes,113,Nachos,Colesterol,0
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,Colesterol,"4,0"
+15,Snacks salados,macronutrientes,113,Palitos salados,Colesterol,0
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,Colesterol,0
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,Colesterol,0
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Colesterol,0
+15,Snacks salados,macronutrientes,113,Chicharrón,Lípidos totales,"35,1"
+15,Snacks salados,macronutrientes,113,Maní japonés,Lípidos totales,"30,0"
+15,Snacks salados,macronutrientes,113,Nachos,Lípidos totales,"27,4"
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,Lípidos totales,"35,8"
+15,Snacks salados,macronutrientes,113,Palitos salados,Lípidos totales,"32,4"
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,Lípidos totales,"34,0"
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,Lípidos totales,"30,0"
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Lípidos totales,"22,8"
+15,Snacks salados,macronutrientes,113,Chicharrón,Proteínas,"33,9"
+15,Snacks salados,macronutrientes,113,Maní japonés,Proteínas,"18,8"
+15,Snacks salados,macronutrientes,113,Nachos,Proteínas,"7,4"
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,Proteínas,"5,8"
+15,Snacks salados,macronutrientes,113,Palitos salados,Proteínas,"7,2"
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,Proteínas,"6,4"
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,Proteínas,"7,1"
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Proteínas,"8,0"
+15,Snacks salados,macronutrientes,113,Chicharrón,Agua,"23,7"
+15,Snacks salados,macronutrientes,113,Maní japonés,Agua,"2,7"
+15,Snacks salados,macronutrientes,113,Nachos,Agua,"1,7"
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,Agua,"1,5"
+15,Snacks salados,macronutrientes,113,Palitos salados,Agua,"4,8"
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,Agua,"1,9"
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,Agua,"2,6"
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Agua,"12,2"
+15,Snacks salados,macronutrientes,113,Chicharrón,Valor energético,458
+15,Snacks salados,macronutrientes,113,Maní japonés,Valor energético,523
+15,Snacks salados,macronutrientes,113,Nachos,Valor energético,499
+15,Snacks salados,macronutrientes,113,Palitos aireados de harina de maíz o de colores,Valor energético,552
+15,Snacks salados,macronutrientes,113,Palitos salados,Valor energético,528
+15,Snacks salados,macronutrientes,113,Papas fritas de copetín,Valor energético,534
+15,Snacks salados,macronutrientes,113,Snacks saborizados salados a base de maíz,Valor energético,548
+15,Snacks salados,macronutrientes,113,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Valor energético,461
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Vitamina D,0
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Vitamina D,0
+15,Snacks salados,vitaminas_minerales,114,Nachos,Vitamina D,0
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Vitamina D,0
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Vitamina D,0
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Vitamina D,0
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Vitamina D,0
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Vitamina D,0
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Vitamina C,0
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Vitamina C,0
+15,Snacks salados,vitaminas_minerales,114,Nachos,Vitamina C,"0,4"
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Vitamina C,0
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Vitamina C,0
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Vitamina C,"21,6"
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Vitamina C,0
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Vitamina C,0
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Vitamina B-12,"1,09"
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Vitamina B-12,0
+15,Snacks salados,vitaminas_minerales,114,Nachos,Vitamina B-12,0
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Vitamina B-12,"0,48"
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Vitamina B-12,0
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Vitamina B-12,0
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Vitamina B-12,0
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Vitamina B-12,0
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Riboflavina,"0,232"
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Riboflavina,"0,079"
+15,Snacks salados,vitaminas_minerales,114,Nachos,Riboflavina,"0,136"
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Riboflavina,"0,200"
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Riboflavina,"0,120"
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Riboflavina,"0,088"
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Riboflavina,"0,070"
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Riboflavina,"0,056"
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Tiamina,"0,560"
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Tiamina,"0,061"
+15,Snacks salados,vitaminas_minerales,114,Nachos,Tiamina,"0,153"
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Tiamina,"0,155"
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Tiamina,"0,493"
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Tiamina,"0,213"
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Tiamina,"0,140"
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Tiamina,"0,020"
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Retinol,11
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Retinol,0
+15,Snacks salados,vitaminas_minerales,114,Nachos,Retinol,0
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Retinol,0
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Retinol,0
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Retinol,0
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Retinol,0
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Retinol,0
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,"Vitamina A, RAE",11
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,"Vitamina A, RAE",0
+15,Snacks salados,vitaminas_minerales,114,Nachos,"Vitamina A, RAE",6
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,"Vitamina A, RAE",0
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,"Vitamina A, RAE",0
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,"Vitamina A, RAE",0
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,"Vitamina A, RAE",0
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla","Vitamina A, RAE",0
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Ácido fólico,0
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Ácido fólico,0
+15,Snacks salados,vitaminas_minerales,114,Nachos,Ácido fólico,0
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Ácido fólico,86
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Ácido fólico,132
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Ácido fólico,0
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Ácido fólico,0
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Ácido fólico,0
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Folato EFD,0
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Folato EFD,39
+15,Snacks salados,vitaminas_minerales,114,Nachos,Folato EFD,13
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Folato EFD,180
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Folato EFD,244
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Folato EFD,29
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Folato EFD,12
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Folato EFD,4
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Niacina,"10,46"
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Niacina,"5,74"
+15,Snacks salados,vitaminas_minerales,114,Nachos,Niacina,"1,29"
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Niacina,"5,74"
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Niacina,"1,62"
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Niacina,"4,76"
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Niacina,"0,84"
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Niacina,"1,06"
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Zinc,"3,06"
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Zinc,"2,27"
+15,Snacks salados,vitaminas_minerales,114,Nachos,Zinc,"1,38"
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Zinc,"0,6"
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Zinc,"1,32"
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Zinc,"1,09"
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Zinc,"1,38"
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Zinc,"0,77"
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Magnesio,31
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Magnesio,98
+15,Snacks salados,vitaminas_minerales,114,Nachos,Magnesio,75
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Magnesio,20
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Magnesio,13
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Magnesio,63
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Magnesio,84
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Magnesio,23
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Hierro,"2,80"
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Hierro,"6,53"
+15,Snacks salados,vitaminas_minerales,114,Nachos,Hierro,"1,16"
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Hierro,"1,10"
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Hierro,"2,49"
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Hierro,"1,28"
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Hierro,"1,52"
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Hierro,"0,44"
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Fósforo,388
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Fósforo,221
+15,Snacks salados,vitaminas_minerales,114,Nachos,Fósforo,252
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Fósforo,108
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Fósforo,79
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Fósforo,153
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Fósforo,225
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Fósforo,59
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Cobre,"0,105"
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Cobre,"0,171"
+15,Snacks salados,vitaminas_minerales,114,Nachos,Cobre,"0,102"
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Cobre,"0,063"
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Cobre,"0,0864"
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Cobre,"0,234"
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Cobre,"0,097"
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Cobre,"0,077"
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Calcio,11
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Calcio,40
+15,Snacks salados,vitaminas_minerales,114,Nachos,Calcio,137
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Calcio,58
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Calcio,7
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Calcio,21
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Calcio,106
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Calcio,6
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Potasio,499
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Potasio,392
+15,Snacks salados,vitaminas_minerales,114,Nachos,Potasio,223
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Potasio,197
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Potasio,96
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Potasio,1196
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Potasio,182
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Potasio,46
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Sodio,1684
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Sodio,390
+15,Snacks salados,vitaminas_minerales,114,Nachos,Sodio,691
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Sodio,896
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Sodio,904
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Sodio,527
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Sodio,780
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Sodio,800
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Cenizas,
+15,Snacks salados,vitaminas_minerales,114,Maní japonés,Cenizas,"2,7"
+15,Snacks salados,vitaminas_minerales,114,Nachos,Cenizas,"2,75"
+15,Snacks salados,vitaminas_minerales,114,Palitos aireados de harina de maíz o de colores,Cenizas,"2,89"
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Cenizas,
+15,Snacks salados,vitaminas_minerales,114,Papas fritas de copetín,Cenizas,"3,94"
+15,Snacks salados,vitaminas_minerales,114,Snacks saborizados salados a base de maíz,Cenizas,
+15,Snacks salados,vitaminas_minerales,114,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",Cenizas,

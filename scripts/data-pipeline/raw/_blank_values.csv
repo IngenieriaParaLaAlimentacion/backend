@@ -1,0 +1,321 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente
+1,Verduras,vitaminas_minerales,22,Medallones de industrializados verdura congelados,Cenizas
+1,Verduras,vitaminas_minerales,24,"Prefritos (espinaca) congelados, patitas de vegetales",Cenizas
+1,Verduras,vitaminas_minerales,26,"Zapallo, crudo",Cobre
+1,Verduras,vitaminas_minerales,26,"Zapallo, hervido",Cobre
+1,Verduras,vitaminas_minerales,26,"Tomates cherry, crudos",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,34,"Avena, almohaditas",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,36,"Avena, arrollada, hervida",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,36,Barra de cereal fortiifcada,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,36,Barra de cereal light,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,36,"Barra de cereales, PROMEDIO",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,36,(tipo Bizcochitos galletita) de arroz envasados,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,36,Bizcochitos de grasa envasados light,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,36,Bizcochos tipo Bay Biscuit,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,36,Brownie (panadería),Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,38,Cereal infantil para papilla,Ribolfavina
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,38,Cereal infantil para papilla,Magnesio
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,38,Cereal infantil para papilla,Cobre
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,38,"Budín navideño industrializado con nueces, tipo",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,38,"Capelettis / envasados, crudos capelettinis deshidratados,",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,38,"Capelettis / envasados, capelettinis hervidos deshidratados,",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,38,"Capelettis frescos, artesanal, crudo",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,38,"Capelettis frescos, artesanal, hervido",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,38,"Cereal desayuno, aritos sabor miel",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,38,"Cereal fortiifcados desayuno, copos azucarados,",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,38,"sin Cereal fortiifcar desayuno, copos azucarados,",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,38,"Cereal azúcar, sin desayuno, fortiifcar copos de maíz sin",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,38,"Cereal bastoncitos desayuno, salvado de trigo tipo",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,38,Cereal infantil para papilla,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,40,Churros,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,40,Empanaditas chinas (restaurant),Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,44,y lino Galletitas de agua sin sal con chía,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,44,Galletitas dulces hojaldradas,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,44,en Galletitas chocolate dulces rellenas bañadas,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,44,Galletitas dulces tipo Frutigran,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,44,"Galletitas dulces, SIN TACC",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,46,Galletitas integrales sin sal,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,46,Grisines,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,46,Grisines sin sal,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,48,Madalenas,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,48,Madalenas fortiifcadas,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,48,Madalenas rellenas,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,"Masa de tarta, SIN TACC",Ribolfavina
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,"Masa de tarta, SIN TACC",Tiamina
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,"Masa de tarta, SIN TACC",Folato EFD
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,"Masa de tarta, SIN TACC",Niacina
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,"Masa de tarta, SIN TACC",Zinc
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,"Masa de tarta, SIN TACC",Magnesio
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,"Masa de tarta, SIN TACC",Hierro
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,"Masa de tarta, SIN TACC",Fosforo
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,"Masa de tarta, SIN TACC",Cobre
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,"Masa de tarta, SIN TACC",Calcio
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,"Masa de tarta, SIN TACC",Potasio
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,"Masa de tarta o empanada, integral",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,"Masa de tarta, SIN TACC",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,Masas coniftería) ifnas surtidas (panadería /,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,"Milanesa de arroz, prefrita",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,"Milanesa de soja, prefrita",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,Ñoquis premezcla preparados a partir de polvo,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,50,"Ñoquis premezcla, SIN preparados TACC a partir de polvo",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,52,"Pan blanco, tipo molde, lacteado",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,52,Pan de molde con salvado,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,52,Pan de molde con salvado sin sal,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,52,Pan de salvado con semillas,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,54,"Pan rallado, SIN TACC",Ribolfavina
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,54,"Pan rallado, SIN TACC",Tiamina
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,54,"Pan rallado, SIN TACC",Folato EFD
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,54,"Pan rallado, SIN TACC",Niacina
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,54,"Pan rallado, SIN TACC",Zinc
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,54,"Pan rallado, SIN TACC",Magnesio
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,54,"Pan rallado, SIN TACC",Hierro
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,54,"Pan rallado, SIN TACC",Fosforo
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,54,"Pan rallado, SIN TACC",Cobre
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,54,"Pan rallado, SIN TACC",Calcio
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,54,"Pan rallado, SIN TACC",Potasio
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,54,"Pan rallado, SIN TACC",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,54,Panko (pan rallado japonés),Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",macronutrientes,55,Pochoclo salado,18:2 cis Linoléico
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Ravioles frescos, envasados, crudos",Vitamina B-12
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Premezcla SIN para TACC paniifcados, pastas y postres,",Ribolfavina
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Premezcla SIN para TACC paniifcados, pastas y postres,",Tiamina
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Premezcla SIN para TACC paniifcados, pastas y postres,",Folato EFD
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Premezcla SIN para TACC paniifcados, pastas y postres,",Niacina
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Premezcla SIN para TACC paniifcados, pastas y postres,",Zinc
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Premezcla SIN para TACC paniifcados, pastas y postres,",Magnesio
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Premezcla SIN para TACC paniifcados, pastas y postres,",Hierro
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Premezcla SIN para TACC paniifcados, pastas y postres,",Fosforo
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Premezcla SIN para TACC paniifcados, pastas y postres,",Cobre
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Premezcla SIN para TACC paniifcados, pastas y postres,",Calcio
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Premezcla SIN para TACC paniifcados, pastas y postres,",Potasio
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,Polvo para preparar brownie,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Porotos, enlatados",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"TACC Premezcla para bizcochuelo, SIN",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Premezcla SIN para TACC paniifcados, pastas y postres,",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,Puflito,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,Quinoa inflada,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Ravioles deshidratados, envasados, crudos",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Ravioles frescos, artesanal, crudos",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Ravioles frescos, artesanal, hervidos",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,56,"Ravioles frescos, envasados, crudos",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,58,Soja texturizada,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,58,"Sushi, PROMEDIO",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",macronutrientes,59,Turrón tipo navideño,Carbohidratos totales
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,60,Turrón tipo navideño,Niacina
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,60,"ducto tipo Tostaditas copetín saladas, saborizadas, pro-",Cobre
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,60,Turrón tipo navideño,Cobre
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,60,Turrón tipo navideño,Potasio
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,60,Torta de manzana (panadería),Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,60,Tostadas de gluten,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,60,Tostadas de mesa,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,60,Tostadas integrales,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,60,Tostadas light,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,60,Tostadas sin sal,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,60,"ducto tipo Tostaditas copetín saladas, saborizadas, pro-",Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,60,Trigo inflado azucarado,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,60,Turrón de maní con oblea tipo golosina,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,60,Turrón tipo navideño,Cenizas
+3,"Legumbres, cereales, papa, choclo, batata, pan y pastas",vitaminas_minerales,60,Tutuca,Cenizas
+4,Leche y postres de leche,vitaminas_minerales,62,"café, sabores, Alimento a listo fortiifcado base para con de leche calcio, consumir entera varios y",Cobre
+4,Leche y postres de leche,vitaminas_minerales,62,"Zinc ifcada mada Bebida con fluida, láctea baja vitaminas en A, D, parcialmente lactosa, B2, B9 y forti- descre-",Cobre
+4,Leche y postres de leche,vitaminas_minerales,62,"café, sabores, Alimento a listo fortiifcado base para con de leche calcio, consumir entera varios y",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,62,"Zinc ifcada mada Bebida con fluida, láctea baja vitaminas en A, D, parcialmente lactosa, B2, B9 y forti- descre-",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,62,Flan envasado listo para consumir,Cenizas
+4,Leche y postres de leche,vitaminas_minerales,62,Flan envasado listo para consumir light,Cenizas
+4,Leche y postres de leche,vitaminas_minerales,62,"y Nido Leche calcio Buen Día, descremada en fortiifcada polvo, con tipo hierro",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,62,"Leche de proteínas descremada fluida, con 50% más",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,64,"sas minas Leche A, en D, C, saturadas, polvo, calcio 25% y fortiifcada zinc menos con de vita- gra-",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,64,Leche Fortigrow entera en polvo tipo Nido,Cenizas
+4,Leche y postres de leche,vitaminas_minerales,66,"Leche con entera vitaminas fluida, A y con D CLA, fortiifcada",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,66,"HA, en Leche polvo poalergénica, fórmula tipo 0-12 Nutrilón meses, HA, hi- NAN",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,66,"Leche en polvo fórmula 0-12 meses, sin lactosa,",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,66,"Leche fórmula antireflujo, en polvo",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,66,"Leche fórmula etapa 3, en polvo",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,66,"en Leche polvo fórmula etapa 3, sin lactosa,",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,66,"Leche fórmula etapa 4, en polvo",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,68,"Leche fórmula etapa 4, fluida",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,68,"Leche fórmula inicio, en polvo",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,68,"Leche fórmula inicio, fluida",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,68,"pa 1, Leche fluida fórmula para prematuros eta-",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,68,"Leche fórmula seguimiento, en polvo",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,68,"Leche fórmula seguimiento, fluida",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,68,"Leche fórmula, tipo Alfaré, en polvo**",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,68,"Leche en polvo fórmula, tipo Enfabebe Confort,",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,68,"Infant, Leche en polvo fórmula, tipo GA1 Anamix",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,68,"Leche HE, en fórmula, polvo tipo Nutrilon Pepti junior",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,70,"minas fluida, Leche Omega A, 3, D con y E fortiifcada parcialmente con Fitoesteroles y Ác. calcio y descremada Grasos vita-",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,70,"bor ifcada Leche consumir con chocolate o parcialmente vitaminas dulce A y de D, leche, lista descremada, para forti- sa-",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,70,"Leche vainilla seguimiento etapa 3, sabor",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,72,"Leche deslactosada semidescremada en polvo,",Cenizas
+4,Leche y postres de leche,vitaminas_minerales,72,Postre de leche bebible infantil,Cenizas
+4,Leche y postres de leche,vitaminas_minerales,72,Postre de leche listo para consumir light,Cenizas
+4,Leche y postres de leche,vitaminas_minerales,72,Postre de Danonino leche listo para consumir tipo,Cenizas
+4,Leche y postres de leche,vitaminas_minerales,72,Postre de Serenito leche listo para consumir tipo,Cenizas
+4,Leche y postres de leche,vitaminas_minerales,72,Probióticos descremados,Cenizas
+4,Leche y postres de leche,vitaminas_minerales,72,Probióticos enteros,Cenizas
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Cenizas
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Cenizas
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Cenizas
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Cenizas
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Cenizas
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Cenizas
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Cenizas
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Folato EFD
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Cenizas
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Cenizas
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Cenizas
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Folato EFD
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Cenizas
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Cenizas
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Cenizas
+7,Carnes,macronutrientes,81,Bondiola (ifambre),20:4 Araquidónico
+7,Carnes,macronutrientes,81,Chorizo seco,20:4 Araquidónico
+7,Carnes,macronutrientes,83,"Hamburguesa de carne vacuna, industrializada",Carbohidratos totales
+7,Carnes,macronutrientes,83,Jamón cocido,Carbohidratos totales
+7,Carnes,vitaminas_minerales,84,"Hamburguesa de rebozada carne vacuna, industrializada,",Cenizas
+7,Carnes,vitaminas_minerales,84,Jamón cocido,Cenizas
+7,Carnes,vitaminas_minerales,84,Jamón crudo,Cenizas
+7,Carnes,macronutrientes,85,Longaniza,20:4 Araquidónico
+7,Carnes,vitaminas_minerales,86,Lomito ahumado,Cenizas
+7,Carnes,vitaminas_minerales,86,Paleta (ifambre),Cenizas
+7,Carnes,macronutrientes,89,Salchichón,20:4 Araquidónico
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Cenizas
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Cenizas
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Cenizas
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Cenizas
+10,Aceites,vitaminas_minerales,100,Aceite de canola,Cenizas
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Niacina
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Niacina
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo,Cobre
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Cobre
+12,"Azúcares, mermeladas y dulces",vitaminas_minerales,104,Dulce de membrillo light,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Ribolfavina
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Tiamina
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Folato EFD
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Niacina
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Zinc
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Magnesio
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Hierro
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Fosforo
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Cobre
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Calcio
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Potasio
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor mousse de chocolate con relleno tipo,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,106,Cabsha Bocadito con dulce de leche tipo,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortiifcar*,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Cenizas
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Cenizas
+14,Grasas,vitaminas_minerales,112,Margarina untable light,Cenizas
+15,Snacks salados,vitaminas_minerales,114,Chicharrón,Cenizas
+15,Snacks salados,vitaminas_minerales,114,Palitos salados,Cenizas
+15,Snacks salados,vitaminas_minerales,114,de maíz Snacks saborizados salados a base,Cenizas
+15,Snacks salados,vitaminas_minerales,114,"de Palitos Snacks de sémola de arroz / arroz, saborizados aros de salados horneados, a cebolla tipo base",Cenizas
+16,Aderezos,macronutrientes,115,Aceto balsámico,20:4 Araquidónico
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Cenizas
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Cenizas
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Cenizas
+16,Aderezos,vitaminas_minerales,116,"o deo, Salsa a etc.) sachet, pomarola, base lista de para napolitana, tomate con en o consumir sin tetra (ej: ver- brick",Cenizas
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Cenizas
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Cenizas
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Cenizas
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Cenizas
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Cenizas
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla sin preparada sal a light partir de polvo,Cenizas
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Cenizas
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Cenizas
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Cenizas
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Cenizas
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Cenizas
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Cenizas
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Cenizas
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Cenizas
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Cenizas
+20,Bebidas con azúcar,vitaminas_minerales,123,"MEDIO saborizada con azúcar, PROAgua",Cenizas
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Cenizas
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua Padres, Manaos, saborizada tipo otros Sierra de los",Cenizas
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Cenizas
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Cenizas
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida sabores a base de soja y jugo, varios",Cenizas
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida sabores a light base de soja y jugo, varios",Cenizas
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Cenizas
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Cenizas
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Cenizas
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Cenizas
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Cenizas
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Cenizas
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Cenizas
+21,Bebidas sin azúcar,vitaminas_minerales,125,Agua saborizada Flip light,Cenizas
+21,Bebidas sin azúcar,vitaminas_minerales,125,"Agua saborizada H2O, varios sabores",Cenizas
+21,Bebidas sin azúcar,vitaminas_minerales,125,"Agua sabores light saborizada Levité Cero, varios",Cenizas
+21,Bebidas sin azúcar,vitaminas_minerales,125,"Agua saborizada light, PROMEDIO",Cenizas
+21,Bebidas sin azúcar,vitaminas_minerales,125,Agua saborizada We o Ser ligth,Cenizas
+21,Bebidas sin azúcar,vitaminas_minerales,125,Amargo serrano light,Cenizas
+21,Bebidas sin azúcar,vitaminas_minerales,125,"Gaseosa light, PROMEDIO",Cenizas
+21,Bebidas sin azúcar,vitaminas_minerales,125,"Gatorade Zero, varios sabores (sin azúcar)",Cenizas
+21,Bebidas sin azúcar,vitaminas_minerales,125,Jugo en polvo BC,Cenizas
+21,Bebidas sin azúcar,vitaminas_minerales,125,Jugo en polvo light,Cenizas
+21,Bebidas sin azúcar,vitaminas_minerales,125,"y to Jugo pulpa) líquido tipo BC, dietético varios con 50% sabores de jugo (alimen-",Cenizas
+21,Bebidas sin azúcar,vitaminas_minerales,125,"Powerade Zero, varios sabores (sin azúcar)",Cenizas
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida fermentación del maíz tradicional obtenida por",Ribolfavina
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida fermentación del maíz tradicional obtenida por",Tiamina
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida fermentación del maíz tradicional obtenida por",Folato EFD
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida fermentación del maíz tradicional obtenida por",Niacina
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida fermentación del maíz tradicional obtenida por",Zinc
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida fermentación del maíz tradicional obtenida por",Magnesio
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida fermentación del maíz tradicional obtenida por",Cobre
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida fermentación del maíz tradicional obtenida por",Potasio
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida fermentación del maíz tradicional obtenida por",Sodio
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Cenizas
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Cenizas
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Cenizas
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Cenizas
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida fermentación del maíz tradicional obtenida por",Cenizas
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Cenizas
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Cenizas
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Cenizas
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Cenizas
+24,Infusiones,vitaminas_minerales,131,Capucchino preparado,Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"guesa con McDonald's, queso Cajita Grill Feliz, Hambur-",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"X4 McDonald's, Cajita Feliz, McNuggets",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"50g McDonald's, Cajita Feliz, Tomate cherry",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"crispy mole/ Cryspi McDonald's, Onion BBQ Clubhouse/ con Guaca- pollo",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"Cryspi McDonald's, Onion BBQ Clubhouse/ con pollo grill Guacamole/",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"con queso McDonald's, Doble Cuarto de Libra",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mcníifca",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Cenizas
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Cenizas

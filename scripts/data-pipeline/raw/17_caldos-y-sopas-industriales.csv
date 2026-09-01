@@ -1,0 +1,508 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,Alcohol,0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,Alcohol,0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,Alcohol,0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,Alcohol,0
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,Alcohol,0
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,Alcohol,0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,Alcohol,0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",Alcohol,0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Alcohol,0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,Alcohol,0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,Alcohol,0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",Alcohol,0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,Fibra alimentaria,0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,Fibra alimentaria,"0,9"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,Fibra alimentaria,"5,9"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,Fibra alimentaria,"3,8"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,Fibra alimentaria,"1,5"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,Fibra alimentaria,0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,Fibra alimentaria,"0,3"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",Fibra alimentaria,"3,8"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Fibra alimentaria,"6,8"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,Fibra alimentaria,"0,5"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,Fibra alimentaria,"3,1"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",Fibra alimentaria,"5,5"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,Azúcar agregado,"13,0"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,Azúcar agregado,"6,4"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,Azúcar agregado,"7,0"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,Azúcar agregado,"5,3"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,Azúcar agregado,"14,0"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,Azúcar agregado,"13,3"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,Azúcar agregado,"0,6"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",Azúcar agregado,"18,7"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Azúcar agregado,"10,1"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,Azúcar agregado,"0,4"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,Azúcar agregado,"4,7"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",Azúcar agregado,"14,3"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,Azúcar total,"13,0"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,Azúcar total,"6,4"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,Azúcar total,"7,0"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,Azúcar total,"5,3"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,Azúcar total,"14,0"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,Azúcar total,"13,3"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,Azúcar total,"1,1"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",Azúcar total,"18,7"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Azúcar total,"10,1"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,Azúcar total,"0,8"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,Azúcar total,"4,7"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",Azúcar total,"14,3"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,Carbohidratos totales,"16,5"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,Carbohidratos totales,"20,3"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,Carbohidratos totales,"23,9"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,Carbohidratos totales,"77,8"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,Carbohidratos totales,"28,5"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,Carbohidratos totales,"40,0"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,Carbohidratos totales,"4,2"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",Carbohidratos totales,"73,5"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Carbohidratos totales,"67,7"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,Carbohidratos totales,"5,1"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,Carbohidratos totales,"60,9"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",Carbohidratos totales,"74,5"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,Carbohidratos disponibles,"16,5"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,Carbohidratos disponibles,"19,4"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,Carbohidratos disponibles,"18,0"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,Carbohidratos disponibles,"74,0"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,Carbohidratos disponibles,"27,0"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,Carbohidratos disponibles,"40,0"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,Carbohidratos disponibles,"3,9"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",Carbohidratos disponibles,"69,7"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Carbohidratos disponibles,"60,9"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,Carbohidratos disponibles,"4,6"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,Carbohidratos disponibles,"59,4"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",Carbohidratos disponibles,"69,0"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,22:6 n-3 Docosahexaenoico (DHA),0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,22:6 n-3 Docosahexaenoico (DHA),0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,22:6 n-3 Docosahexaenoico (DHA),0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,22:6 n-3 Docosahexaenoico (DHA),0
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,22:6 n-3 Docosahexaenoico (DHA),0
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,22:6 n-3 Docosahexaenoico (DHA),0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,22:6 n-3 Docosahexaenoico (DHA),0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",22:6 n-3 Docosahexaenoico (DHA),0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",22:6 n-3 Docosahexaenoico (DHA),0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,22:6 n-3 Docosahexaenoico (DHA),0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,22:6 n-3 Docosahexaenoico (DHA),0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",22:6 n-3 Docosahexaenoico (DHA),0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,20:5 n-3 Eicosapentaenoico (EPA),0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,20:5 n-3 Eicosapentaenoico (EPA),0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,20:5 n-3 Eicosapentaenoico (EPA),0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,20:5 n-3 Eicosapentaenoico (EPA),0
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,20:5 n-3 Eicosapentaenoico (EPA),0
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,20:5 n-3 Eicosapentaenoico (EPA),0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,20:5 n-3 Eicosapentaenoico (EPA),0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",20:5 n-3 Eicosapentaenoico (EPA),0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",20:5 n-3 Eicosapentaenoico (EPA),0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,20:5 n-3 Eicosapentaenoico (EPA),0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,20:5 n-3 Eicosapentaenoico (EPA),0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",20:5 n-3 Eicosapentaenoico (EPA),0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,20:4 Araquidónico,0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,20:4 Araquidónico,0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,20:4 Araquidónico,0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,20:4 Araquidónico,0
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,20:4 Araquidónico,0
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,20:4 Araquidónico,0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,20:4 Araquidónico,0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",20:4 Araquidónico,0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",20:4 Araquidónico,0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,20:4 Araquidónico,0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,20:4 Araquidónico,0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",20:4 Araquidónico,0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,18:3 cis Alfa linolénico (ALA),0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,18:3 cis Alfa linolénico (ALA),"0,020"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,18:3 cis Alfa linolénico (ALA),0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,18:3 cis Alfa linolénico (ALA),0
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,18:3 cis Alfa linolénico (ALA),"0,030"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,18:3 cis Alfa linolénico (ALA),0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,18:3 cis Alfa linolénico (ALA),0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",18:3 cis Alfa linolénico (ALA),"0,030"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",18:3 cis Alfa linolénico (ALA),"0,030"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,18:3 cis Alfa linolénico (ALA),0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,18:3 cis Alfa linolénico (ALA),"0,050"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",18:3 cis Alfa linolénico (ALA),"0,030"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,18:2 cis Linoléico,"0,00"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,18:2 cis Linoléico,"0,18"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,18:2 cis Linoléico,"0,95"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,18:2 cis Linoléico,"0,57"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,18:2 cis Linoléico,"0,57"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,18:2 cis Linoléico,"0,00"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,18:2 cis Linoléico,"0,00"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",18:2 cis Linoléico,"0,57"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",18:2 cis Linoléico,"0,57"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,18:2 cis Linoléico,"0,00"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,18:2 cis Linoléico,"0,95"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",18:2 cis Linoléico,"0,57"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,Trans,0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,Trans,0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,Trans,0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,Trans,0
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,Trans,"1,50"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,Trans,0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,Trans,0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",Trans,"0,13"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Trans,"0,01"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,Trans,0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,Trans,0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",Trans,"0,10"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,Poliinsaturados,"0,30"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,Poliinsaturados,"0,20"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,Poliinsaturados,"1,00"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,Poliinsaturados,"0,60"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,Poliinsaturados,"0,60"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,Poliinsaturados,"0,00"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,Poliinsaturados,"0,02"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",Poliinsaturados,"0,60"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Poliinsaturados,"0,60"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,Poliinsaturados,"0,05"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,Poliinsaturados,"1,00"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",Poliinsaturados,"0,60"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,Monoinsaturados,"8,00"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,Monoinsaturados,"0,97"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,Monoinsaturados,"1,40"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,Monoinsaturados,"0,50"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,Monoinsaturados,"5,70"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,Monoinsaturados,"0,00"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,Monoinsaturados,"0,10"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",Monoinsaturados,"2,16"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Monoinsaturados,"2,00"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,Monoinsaturados,"0,13"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,Monoinsaturados,"8,00"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",Monoinsaturados,"2,00"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,Saturados,"12,30"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,Saturados,"0,23"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,Saturados,"0,40"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,Saturados,"0,20"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,Saturados,"15,50"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,Saturados,"0,00"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,Saturados,"0,15"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",Saturados,"2,80"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Saturados,"1,60"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,Saturados,"0,04"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,Saturados,"9,38"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",Saturados,"0,20"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,Colesterol,30
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,Colesterol,"0,3"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,Colesterol,0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,Colesterol,0
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,Colesterol,33
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,Colesterol,0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,Colesterol,0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",Colesterol,"7,0"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Colesterol,"2,6"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,Colesterol,"0,1"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,Colesterol,0
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",Colesterol,0
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,Lípidos totales,"20,6"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,Lípidos totales,"1,4"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,Lípidos totales,"3,0"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,Lípidos totales,"1,4"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,Lípidos totales,"26,0"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,Lípidos totales,"0,0"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,Lípidos totales,"0,3"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",Lípidos totales,"5,9"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Lípidos totales,"4,3"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,Lípidos totales,"0,2"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,Lípidos totales,"18,7"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",Lípidos totales,"6,7"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,Proteínas,"4,4"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,Proteínas,"4,1"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,Proteínas,"18,0"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,Proteínas,"9,0"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,Proteínas,"6,0"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,Proteínas,"0,0"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,Proteínas,"0,2"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",Proteínas,"4,4"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Proteínas,"6,1"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,Proteínas,"0,7"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,Proteínas,"10,9"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",Proteínas,"3,6"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,Agua,"9,1"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,Agua,"3,4"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,Agua,"2,1"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,Agua,"7,2"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,Agua,"6,5"
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,Agua,"5,8"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,Agua,"95,3"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",Agua,"6,7"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Agua,"8,2"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,Agua,"94,0"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,Agua,"4,3"
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",Agua,"6,3"
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en cubo,Valor energético,269
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo,Valor energético,107
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo light,Valor energético,171
+17,Caldos y sopas industriales,macronutrientes,117,Caldos en polvo sin sal light,Valor energético,345
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en cubos,Valor energético,366
+17,Caldos y sopas industriales,macronutrientes,117,Saborizador en polvo,Valor energético,160
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema instantánea preparada,Valor energético,19
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar (sabores varios)",Valor energético,350
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Valor energético,307
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema premezcla light preparada a partir de polvo,Valor energético,23
+17,Caldos y sopas industriales,macronutrientes,117,Sopa de fideos deshidratada envasada para preparar,Valor energético,450
+17,Caldos y sopas industriales,macronutrientes,117,"Sopa de vegetales instantánea, polvo para preparar",Valor energético,351
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Vitamina D,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Vitamina D,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Vitamina D,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Vitamina D,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Vitamina D,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Vitamina D,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Vitamina D,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Vitamina D,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Vitamina D,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Vitamina D,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Vitamina D,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Vitamina D,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Vitamina C,"0,5"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Vitamina C,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Vitamina C,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Vitamina C,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Vitamina C,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Vitamina C,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Vitamina C,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Vitamina C,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Vitamina C,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Vitamina C,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Vitamina C,"0,3"
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Vitamina C,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Vitamina B-12,"0,65"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Vitamina B-12,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Vitamina B-12,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Vitamina B-12,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Vitamina B-12,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Vitamina B-12,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Vitamina B-12,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Vitamina B-12,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Vitamina B-12,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Vitamina B-12,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Vitamina B-12,"0,25"
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Vitamina B-12,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Riboflavina,"0,310"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Riboflavina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Riboflavina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Riboflavina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Riboflavina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Riboflavina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Riboflavina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Riboflavina,"0,020"
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Riboflavina,"0,020"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Riboflavina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Riboflavina,"0,255"
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Riboflavina,"0,020"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Tiamina,"0,195"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Tiamina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Tiamina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Tiamina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Tiamina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Tiamina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Tiamina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Tiamina,"0,050"
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Tiamina,"0,050"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Tiamina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Tiamina,"0,448"
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Tiamina,"0,050"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Retinol,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Retinol,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Retinol,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Retinol,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Retinol,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Retinol,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Retinol,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Retinol,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Retinol,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Retinol,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Retinol,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Retinol,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,"Vitamina A, RAE",0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,"Vitamina A, RAE",0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,"Vitamina A, RAE",0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,"Vitamina A, RAE",0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,"Vitamina A, RAE",0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,"Vitamina A, RAE",0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,"Vitamina A, RAE",0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)","Vitamina A, RAE",59
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)","Vitamina A, RAE",59
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,"Vitamina A, RAE",0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,"Vitamina A, RAE",1
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar","Vitamina A, RAE",59
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Ácido fólico,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Ácido fólico,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Ácido fólico,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Ácido fólico,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Ácido fólico,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Ácido fólico,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Ácido fólico,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Ácido fólico,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Ácido fólico,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Ácido fólico,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Ácido fólico,70
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Ácido fólico,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Folato EFD,32
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Folato EFD,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Folato EFD,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Folato EFD,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Folato EFD,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Folato EFD,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Folato EFD,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Folato EFD,6
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Folato EFD,6
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Folato EFD,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Folato EFD,165
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Folato EFD,6
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Niacina,"3,60"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Niacina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Niacina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Niacina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Niacina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Niacina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Niacina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Niacina,"0,40"
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Niacina,"0,40"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Niacina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Niacina,"5,40"
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Niacina,"0,40"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Zinc,"0,21"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Zinc,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Zinc,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Zinc,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Zinc,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Zinc,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Zinc,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Zinc,"0,7"
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Zinc,"0,7"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Zinc,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Zinc,"0,6"
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Zinc,"0,7"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Magnesio,53
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Magnesio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Magnesio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Magnesio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Magnesio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Magnesio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Magnesio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Magnesio,28
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Magnesio,28
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Magnesio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Magnesio,25
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Magnesio,28
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Hierro,"2,05"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Hierro,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Hierro,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Hierro,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Hierro,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Hierro,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Hierro,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Hierro,"1,26"
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Hierro,"1,26"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Hierro,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Hierro,"4,11"
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Hierro,"1,26"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Fósforo,208
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Fósforo,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Fósforo,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Fósforo,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Fósforo,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Fósforo,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Fósforo,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Fósforo,211
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Fósforo,211
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Fósforo,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Fósforo,115
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Fósforo,211
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Cobre,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Cobre,"0,0"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Cobre,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Cobre,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Cobre,"0,0"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Cobre,"0,0"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Cobre,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Cobre,"0,12"
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Cobre,"0,12"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Cobre,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Cobre,"0,126"
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Cobre,"0,12"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Calcio,125
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Calcio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Calcio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Calcio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Calcio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Calcio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Calcio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Calcio,99
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Calcio,99
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Calcio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Calcio,21
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Calcio,99
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Potasio,389
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Potasio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Potasio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Potasio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Potasio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Potasio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Potasio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Potasio,782
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Potasio,782
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Potasio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Potasio,181
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Potasio,782
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Sodio,19760
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Sodio,28317
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Sodio,22300
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Sodio,1846
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Sodio,13200
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Sodio,21700
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Sodio,216
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Sodio,3794
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Sodio,5469
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Sodio,354
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Sodio,2094
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Sodio,3565
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en cubo,Cenizas,"49,4"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo,Cenizas,"70,8"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo light,Cenizas,53
+17,Caldos y sopas industriales,vitaminas_minerales,118,Caldos en polvo sin sal light,Cenizas,"4,61"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en cubos,Cenizas,33
+17,Caldos y sopas industriales,vitaminas_minerales,118,Saborizador en polvo,Cenizas,"54,2"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema instantánea preparada,Cenizas,
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar (sabores varios)",Cenizas,"9,48"
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa crema instantánea, polvo para preparar light (sabores varios)",Cenizas,"13,67"
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema premezcla light preparada a partir de polvo,Cenizas,
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa de fideos deshidratada envasada para preparar,Cenizas,"5,23"
+17,Caldos y sopas industriales,vitaminas_minerales,118,"Sopa de vegetales instantánea, polvo para preparar",Cenizas,"8,9"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,Alcohol,0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,Fibra alimentaria,"0,5"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,Azúcar agregado,"0,4"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,Azúcar total,"0,8"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,Carbohidratos totales,"5,1"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,Carbohidratos disponibles,"4,6"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,22:6 n-3 Docosahexaenoico (DHA),0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,20:5 n-3 Eicosapentaenoico (EPA),0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,20:4 Araquidónico,0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,18:3 cis Alfa linolénico (ALA),0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,18:2 cis Linoléico,"0,00"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,Trans,0
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,Poliinsaturados,"0,05"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,Monoinsaturados,"0,13"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,Saturados,"0,04"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,Colesterol,"0,1"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,Lípidos totales,"0,2"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,Proteínas,"0,7"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,Agua,"94,0"
+17,Caldos y sopas industriales,macronutrientes,117,Sopa crema preparada a partir de polvo premezcla sin sal light,Valor energético,23
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Vitamina D,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Vitamina C,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Vitamina B-12,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Riboflavina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Tiamina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Retinol,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,"Vitamina A, RAE",0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Ácido fólico,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Folato EFD,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Niacina,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Zinc,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Magnesio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Hierro,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Fósforo,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Cobre,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Calcio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Potasio,0
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Sodio,20
+17,Caldos y sopas industriales,vitaminas_minerales,118,Sopa crema preparada a partir de polvo premezcla sin sal light,Cenizas,

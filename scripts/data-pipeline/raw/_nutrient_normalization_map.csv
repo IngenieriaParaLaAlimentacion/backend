@@ -1,0 +1,8 @@
+variante_raw,forma_canonica,tipo_de_problema,nota
+Fosforo,Fósforo,tilde faltante,
+Vitamin D,Vitamina D,letra faltante,
+Polininsaturados,Poliinsaturados,letra duplicada/typo,falta la segunda "i" (poli+insaturados); mismo tipo de error que Ribolfavina/Riboflavina pero sin variante limpia de referencia en el dataset - confirmado por vocabulario nutricional estándar
+"18:3 cis Alfa linoléni- co (ALA)",18:3 cis Alfa linolénico (ALA),corte de guion por wrap,
+"20:5 n-3 Eicosapen- taenoico (EPA)",20:5 n-3 Eicosapentaenoico (EPA),corte de guion por wrap,
+"20:5 n-3 Eicosapentae- noico (EPA)",20:5 n-3 Eicosapentaenoico (EPA),corte de guion por wrap,dos puntos de corte distintos observados en el dataset; ambos reconstruyen la misma forma canónica
+"22:6 n-3 Docosahexae- noico (DHA)",22:6 n-3 Docosahexaenoico (DHA),corte de guion por wrap,única variante observada (siempre con guion) - se reconstruye igual quitando el guion y uniendo, sin necesitar una variante limpia de referencia; forma verificada contra terminología nutricional estándar (acido docosahexaenoico)

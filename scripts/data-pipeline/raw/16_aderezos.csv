@@ -1,0 +1,703 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+16,Aderezos,macronutrientes,115,Aceto balsámico,Alcohol,0
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,Alcohol,0
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,Alcohol,0
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",Alcohol,0
+16,Aderezos,macronutrientes,115,Ketchup,Alcohol,0
+16,Aderezos,macronutrientes,115,Mayonesa,Alcohol,0
+16,Aderezos,macronutrientes,115,Mayonesa de soja,Alcohol,0
+16,Aderezos,macronutrientes,115,Mayonesa light,Alcohol,0
+16,Aderezos,macronutrientes,115,Mostaza,Alcohol,0
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Alcohol,0
+16,Aderezos,macronutrientes,115,Salsa agridulce,Alcohol,0
+16,Aderezos,macronutrientes,115,Salsa barbacoa,Alcohol,0
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,Alcohol,0
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,Alcohol,0
+16,Aderezos,macronutrientes,115,Salsa de soja,Alcohol,0
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",Alcohol,0
+16,Aderezos,macronutrientes,115,Salsa Golf,Alcohol,0
+16,Aderezos,macronutrientes,115,Vinagre,Alcohol,0
+16,Aderezos,macronutrientes,115,Aceto balsámico,Fibra alimentaria,0
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,Fibra alimentaria,"0,5"
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,Fibra alimentaria,0
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",Fibra alimentaria,"0,7"
+16,Aderezos,macronutrientes,115,Ketchup,Fibra alimentaria,"0,3"
+16,Aderezos,macronutrientes,115,Mayonesa,Fibra alimentaria,0
+16,Aderezos,macronutrientes,115,Mayonesa de soja,Fibra alimentaria,"0,3"
+16,Aderezos,macronutrientes,115,Mayonesa light,Fibra alimentaria,0
+16,Aderezos,macronutrientes,115,Mostaza,Fibra alimentaria,"4,0"
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Fibra alimentaria,"1,0"
+16,Aderezos,macronutrientes,115,Salsa agridulce,Fibra alimentaria,"0,1"
+16,Aderezos,macronutrientes,115,Salsa barbacoa,Fibra alimentaria,"0,9"
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,Fibra alimentaria,"1,5"
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,Fibra alimentaria,0
+16,Aderezos,macronutrientes,115,Salsa de soja,Fibra alimentaria,"0,5"
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",Fibra alimentaria,"3,5"
+16,Aderezos,macronutrientes,115,Salsa Golf,Fibra alimentaria,0
+16,Aderezos,macronutrientes,115,Vinagre,Fibra alimentaria,0
+16,Aderezos,macronutrientes,115,Aceto balsámico,Azúcar agregado,"15,0"
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,Azúcar agregado,"2,8"
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,Azúcar agregado,0
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",Azúcar agregado,0
+16,Aderezos,macronutrientes,115,Ketchup,Azúcar agregado,"10,6"
+16,Aderezos,macronutrientes,115,Mayonesa,Azúcar agregado,"3,5"
+16,Aderezos,macronutrientes,115,Mayonesa de soja,Azúcar agregado,"4,2"
+16,Aderezos,macronutrientes,115,Mayonesa light,Azúcar agregado,"4,3"
+16,Aderezos,macronutrientes,115,Mostaza,Azúcar agregado,0
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Azúcar agregado,"1,2"
+16,Aderezos,macronutrientes,115,Salsa agridulce,Azúcar agregado,"18,8"
+16,Aderezos,macronutrientes,115,Salsa barbacoa,Azúcar agregado,"11,8"
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,Azúcar agregado,"1,0"
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,Azúcar agregado,0
+16,Aderezos,macronutrientes,115,Salsa de soja,Azúcar agregado,"1,3"
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",Azúcar agregado,"4,3"
+16,Aderezos,macronutrientes,115,Salsa Golf,Azúcar agregado,"4,2"
+16,Aderezos,macronutrientes,115,Vinagre,Azúcar agregado,0
+16,Aderezos,macronutrientes,115,Aceto balsámico,Azúcar total,"15,0"
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,Azúcar total,"2,8"
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,Azúcar total,0
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",Azúcar total,"1,5"
+16,Aderezos,macronutrientes,115,Ketchup,Azúcar total,"21,3"
+16,Aderezos,macronutrientes,115,Mayonesa,Azúcar total,"3,5"
+16,Aderezos,macronutrientes,115,Mayonesa de soja,Azúcar total,"4,2"
+16,Aderezos,macronutrientes,115,Mayonesa light,Azúcar total,"4,3"
+16,Aderezos,macronutrientes,115,Mostaza,Azúcar total,"0,9"
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Azúcar total,"2,4"
+16,Aderezos,macronutrientes,115,Salsa agridulce,Azúcar total,"18,8"
+16,Aderezos,macronutrientes,115,Salsa barbacoa,Azúcar total,"33,2"
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,Azúcar total,"1,0"
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,Azúcar total,0
+16,Aderezos,macronutrientes,115,Salsa de soja,Azúcar total,"1,3"
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",Azúcar total,"4,3"
+16,Aderezos,macronutrientes,115,Salsa Golf,Azúcar total,"8,3"
+16,Aderezos,macronutrientes,115,Vinagre,Azúcar total,0
+16,Aderezos,macronutrientes,115,Aceto balsámico,Carbohidratos totales,"17,0"
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,Carbohidratos totales,"3,3"
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,Carbohidratos totales,"4,6"
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",Carbohidratos totales,"5,6"
+16,Aderezos,macronutrientes,115,Ketchup,Carbohidratos totales,"27,4"
+16,Aderezos,macronutrientes,115,Mayonesa,Carbohidratos totales,"7,1"
+16,Aderezos,macronutrientes,115,Mayonesa de soja,Carbohidratos totales,"9,2"
+16,Aderezos,macronutrientes,115,Mayonesa light,Carbohidratos totales,"10,0"
+16,Aderezos,macronutrientes,115,Mostaza,Carbohidratos totales,"5,8"
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Carbohidratos totales,"7,6"
+16,Aderezos,macronutrientes,115,Salsa agridulce,Carbohidratos totales,"38,2"
+16,Aderezos,macronutrientes,115,Salsa barbacoa,Carbohidratos totales,"40,8"
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,Carbohidratos totales,"60,5"
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,Carbohidratos totales,"5,8"
+16,Aderezos,macronutrientes,115,Salsa de soja,Carbohidratos totales,"7,8"
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",Carbohidratos totales,"54,5"
+16,Aderezos,macronutrientes,115,Salsa Golf,Carbohidratos totales,"12,8"
+16,Aderezos,macronutrientes,115,Vinagre,Carbohidratos totales,"0,3"
+16,Aderezos,macronutrientes,115,Aceto balsámico,Carbohidratos disponibles,"17,0"
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,Carbohidratos disponibles,"2,8"
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,Carbohidratos disponibles,"4,6"
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",Carbohidratos disponibles,"4,9"
+16,Aderezos,macronutrientes,115,Ketchup,Carbohidratos disponibles,"27,1"
+16,Aderezos,macronutrientes,115,Mayonesa,Carbohidratos disponibles,"7,1"
+16,Aderezos,macronutrientes,115,Mayonesa de soja,Carbohidratos disponibles,"9,2"
+16,Aderezos,macronutrientes,115,Mayonesa light,Carbohidratos disponibles,"10,0"
+16,Aderezos,macronutrientes,115,Mostaza,Carbohidratos disponibles,"1,8"
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Carbohidratos disponibles,"6,6"
+16,Aderezos,macronutrientes,115,Salsa agridulce,Carbohidratos disponibles,"38,1"
+16,Aderezos,macronutrientes,115,Salsa barbacoa,Carbohidratos disponibles,"39,9"
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,Carbohidratos disponibles,"59,0"
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,Carbohidratos disponibles,"5,8"
+16,Aderezos,macronutrientes,115,Salsa de soja,Carbohidratos disponibles,"7,3"
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",Carbohidratos disponibles,"51,0"
+16,Aderezos,macronutrientes,115,Salsa Golf,Carbohidratos disponibles,"12,8"
+16,Aderezos,macronutrientes,115,Vinagre,Carbohidratos disponibles,"0,3"
+16,Aderezos,macronutrientes,115,Aceto balsámico,22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,Ketchup,22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,Mayonesa,22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,Mayonesa de soja,22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,Mayonesa light,22:6 n-3 Docosahexaenoico (DHA),"0,005"
+16,Aderezos,macronutrientes,115,Mostaza,22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,Salsa agridulce,22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,Salsa barbacoa,22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,Salsa de soja,22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,Salsa Golf,22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,Vinagre,22:6 n-3 Docosahexaenoico (DHA),0
+16,Aderezos,macronutrientes,115,Aceto balsámico,20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,Ketchup,20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,Mayonesa,20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,Mayonesa de soja,20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,Mayonesa light,20:5 n-3 Eicosapentaenoico (EPA),"0,001"
+16,Aderezos,macronutrientes,115,Mostaza,20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,Salsa agridulce,20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,Salsa barbacoa,20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,Salsa de soja,20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,Salsa Golf,20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,Vinagre,20:5 n-3 Eicosapentaenoico (EPA),0
+16,Aderezos,macronutrientes,115,Aceto balsámico,20:4 Araquidónico,
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,20:4 Araquidónico,0
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,20:4 Araquidónico,0
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",20:4 Araquidónico,0
+16,Aderezos,macronutrientes,115,Ketchup,20:4 Araquidónico,0
+16,Aderezos,macronutrientes,115,Mayonesa,20:4 Araquidónico,0
+16,Aderezos,macronutrientes,115,Mayonesa de soja,20:4 Araquidónico,0
+16,Aderezos,macronutrientes,115,Mayonesa light,20:4 Araquidónico,"0,019"
+16,Aderezos,macronutrientes,115,Mostaza,20:4 Araquidónico,0
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",20:4 Araquidónico,0
+16,Aderezos,macronutrientes,115,Salsa agridulce,20:4 Araquidónico,0
+16,Aderezos,macronutrientes,115,Salsa barbacoa,20:4 Araquidónico,0
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,20:4 Araquidónico,0
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,20:4 Araquidónico,0
+16,Aderezos,macronutrientes,115,Salsa de soja,20:4 Araquidónico,0
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",20:4 Araquidónico,0
+16,Aderezos,macronutrientes,115,Salsa Golf,20:4 Araquidónico,0
+16,Aderezos,macronutrientes,115,Vinagre,20:4 Araquidónico,0
+16,Aderezos,macronutrientes,115,Aceto balsámico,18:3 cis Alfa linolénico (ALA),0
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,18:3 cis Alfa linolénico (ALA),"0,480"
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,18:3 cis Alfa linolénico (ALA),0
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",18:3 cis Alfa linolénico (ALA),0
+16,Aderezos,macronutrientes,115,Ketchup,18:3 cis Alfa linolénico (ALA),"0,001"
+16,Aderezos,macronutrientes,115,Mayonesa,18:3 cis Alfa linolénico (ALA),"0,200"
+16,Aderezos,macronutrientes,115,Mayonesa de soja,18:3 cis Alfa linolénico (ALA),0
+16,Aderezos,macronutrientes,115,Mayonesa light,18:3 cis Alfa linolénico (ALA),"0,095"
+16,Aderezos,macronutrientes,115,Mostaza,18:3 cis Alfa linolénico (ALA),"0,373"
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",18:3 cis Alfa linolénico (ALA),"0,030"
+16,Aderezos,macronutrientes,115,Salsa agridulce,18:3 cis Alfa linolénico (ALA),0
+16,Aderezos,macronutrientes,115,Salsa barbacoa,18:3 cis Alfa linolénico (ALA),"0,021"
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,18:3 cis Alfa linolénico (ALA),0
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,18:3 cis Alfa linolénico (ALA),0
+16,Aderezos,macronutrientes,115,Salsa de soja,18:3 cis Alfa linolénico (ALA),"0,015"
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",18:3 cis Alfa linolénico (ALA),"0,070"
+16,Aderezos,macronutrientes,115,Salsa Golf,18:3 cis Alfa linolénico (ALA),"0,362"
+16,Aderezos,macronutrientes,115,Vinagre,18:3 cis Alfa linolénico (ALA),0
+16,Aderezos,macronutrientes,115,Aceto balsámico,18:2 cis Linoléico,"0,00"
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,18:2 cis Linoléico,"23,52"
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,18:2 cis Linoléico,"0,00"
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",18:2 cis Linoléico,"0,01"
+16,Aderezos,macronutrientes,115,Ketchup,18:2 cis Linoléico,"0,04"
+16,Aderezos,macronutrientes,115,Mayonesa,18:2 cis Linoléico,"24,41"
+16,Aderezos,macronutrientes,115,Mayonesa de soja,18:2 cis Linoléico,"0,76"
+16,Aderezos,macronutrientes,115,Mayonesa light,18:2 cis Linoléico,"11,59"
+16,Aderezos,macronutrientes,115,Mostaza,18:2 cis Linoléico,"0,36"
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",18:2 cis Linoléico,"0,57"
+16,Aderezos,macronutrientes,115,Salsa agridulce,18:2 cis Linoléico,"0,00"
+16,Aderezos,macronutrientes,115,Salsa barbacoa,18:2 cis Linoléico,"0,08"
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,18:2 cis Linoléico,"0,86"
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,18:2 cis Linoléico,"0,00"
+16,Aderezos,macronutrientes,115,Salsa de soja,18:2 cis Linoléico,"0,13"
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",18:2 cis Linoléico,"1,33"
+16,Aderezos,macronutrientes,115,Salsa Golf,18:2 cis Linoléico,"17,73"
+16,Aderezos,macronutrientes,115,Vinagre,18:2 cis Linoléico,"0,00"
+16,Aderezos,macronutrientes,115,Aceto balsámico,Trans,0
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,Trans,0
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,Trans,0
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",Trans,0
+16,Aderezos,macronutrientes,115,Ketchup,Trans,0
+16,Aderezos,macronutrientes,115,Mayonesa,Trans,0
+16,Aderezos,macronutrientes,115,Mayonesa de soja,Trans,0
+16,Aderezos,macronutrientes,115,Mayonesa light,Trans,0
+16,Aderezos,macronutrientes,115,Mostaza,Trans,"0,01"
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Trans,0
+16,Aderezos,macronutrientes,115,Salsa agridulce,Trans,0
+16,Aderezos,macronutrientes,115,Salsa barbacoa,Trans,0
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,Trans,"0,20"
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,Trans,0
+16,Aderezos,macronutrientes,115,Salsa de soja,Trans,0
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",Trans,"0,40"
+16,Aderezos,macronutrientes,115,Salsa Golf,Trans,0
+16,Aderezos,macronutrientes,115,Vinagre,Trans,0
+16,Aderezos,macronutrientes,115,Aceto balsámico,Poliinsaturados,"0,00"
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,Poliinsaturados,"24,00"
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,Poliinsaturados,"0,00"
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",Poliinsaturados,"0,02"
+16,Aderezos,macronutrientes,115,Ketchup,Poliinsaturados,"0,04"
+16,Aderezos,macronutrientes,115,Mayonesa,Poliinsaturados,"24,61"
+16,Aderezos,macronutrientes,115,Mayonesa de soja,Poliinsaturados,"1,25"
+16,Aderezos,macronutrientes,115,Mayonesa light,Poliinsaturados,"11,69"
+16,Aderezos,macronutrientes,115,Mostaza,Poliinsaturados,"0,77"
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Poliinsaturados,"0,60"
+16,Aderezos,macronutrientes,115,Salsa agridulce,Poliinsaturados,"0,00"
+16,Aderezos,macronutrientes,115,Salsa barbacoa,Poliinsaturados,"0,10"
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,Poliinsaturados,"0,90"
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,Poliinsaturados,"0,00"
+16,Aderezos,macronutrientes,115,Salsa de soja,Poliinsaturados,"0,15"
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",Poliinsaturados,"1,40"
+16,Aderezos,macronutrientes,115,Salsa Golf,Poliinsaturados,"18,09"
+16,Aderezos,macronutrientes,115,Vinagre,Poliinsaturados,"0,00"
+16,Aderezos,macronutrientes,115,Aceto balsámico,Monoinsaturados,"0,00"
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,Monoinsaturados,"10,00"
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,Monoinsaturados,"0,00"
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",Monoinsaturados,"0,01"
+16,Aderezos,macronutrientes,115,Ketchup,Monoinsaturados,"0,02"
+16,Aderezos,macronutrientes,115,Mayonesa,Monoinsaturados,"9,97"
+16,Aderezos,macronutrientes,115,Mayonesa de soja,Monoinsaturados,"0,00"
+16,Aderezos,macronutrientes,115,Mayonesa light,Monoinsaturados,"4,74"
+16,Aderezos,macronutrientes,115,Mostaza,Monoinsaturados,"2,18"
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Monoinsaturados,"0,30"
+16,Aderezos,macronutrientes,115,Salsa agridulce,Monoinsaturados,"0,00"
+16,Aderezos,macronutrientes,115,Salsa barbacoa,Monoinsaturados,"0,08"
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,Monoinsaturados,"2,60"
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,Monoinsaturados,"0,00"
+16,Aderezos,macronutrientes,115,Salsa de soja,Monoinsaturados,"0,06"
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",Monoinsaturados,"4,40"
+16,Aderezos,macronutrientes,115,Salsa Golf,Monoinsaturados,"7,33"
+16,Aderezos,macronutrientes,115,Vinagre,Monoinsaturados,"0,00"
+16,Aderezos,macronutrientes,115,Aceto balsámico,Saturados,"0,00"
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,Saturados,"5,00"
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,Saturados,"0,00"
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",Saturados,"0,03"
+16,Aderezos,macronutrientes,115,Ketchup,Saturados,"0,01"
+16,Aderezos,macronutrientes,115,Mayonesa,Saturados,"4,24"
+16,Aderezos,macronutrientes,115,Mayonesa de soja,Saturados,"2,04"
+16,Aderezos,macronutrientes,115,Mayonesa light,Saturados,"2,01"
+16,Aderezos,macronutrientes,115,Mostaza,Saturados,"0,21"
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Saturados,"0,30"
+16,Aderezos,macronutrientes,115,Salsa agridulce,Saturados,"0,00"
+16,Aderezos,macronutrientes,115,Salsa barbacoa,Saturados,"0,05"
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,Saturados,"4,60"
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,Saturados,"0,00"
+16,Aderezos,macronutrientes,115,Salsa de soja,Saturados,"0,04"
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",Saturados,"6,00"
+16,Aderezos,macronutrientes,115,Salsa Golf,Saturados,"3,20"
+16,Aderezos,macronutrientes,115,Vinagre,Saturados,"0,00"
+16,Aderezos,macronutrientes,115,Aceto balsámico,Colesterol,0
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,Colesterol,39
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,Colesterol,0
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",Colesterol,0
+16,Aderezos,macronutrientes,115,Ketchup,Colesterol,0
+16,Aderezos,macronutrientes,115,Mayonesa,Colesterol,33
+16,Aderezos,macronutrientes,115,Mayonesa de soja,Colesterol,0
+16,Aderezos,macronutrientes,115,Mayonesa light,Colesterol,26
+16,Aderezos,macronutrientes,115,Mostaza,Colesterol,0
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Colesterol,0
+16,Aderezos,macronutrientes,115,Salsa agridulce,Colesterol,0
+16,Aderezos,macronutrientes,115,Salsa barbacoa,Colesterol,0
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,Colesterol,17
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,Colesterol,0
+16,Aderezos,macronutrientes,115,Salsa de soja,Colesterol,0
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",Colesterol,34
+16,Aderezos,macronutrientes,115,Salsa Golf,Colesterol,13
+16,Aderezos,macronutrientes,115,Vinagre,Colesterol,0
+16,Aderezos,macronutrientes,115,Aceto balsámico,Lípidos totales,"0,0"
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,Lípidos totales,"40,0"
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,Lípidos totales,"0,0"
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",Lípidos totales,"0,1"
+16,Aderezos,macronutrientes,115,Ketchup,Lípidos totales,"0,1"
+16,Aderezos,macronutrientes,115,Mayonesa,Lípidos totales,"40,0"
+16,Aderezos,macronutrientes,115,Mayonesa de soja,Lípidos totales,"19,2"
+16,Aderezos,macronutrientes,115,Mayonesa light,Lípidos totales,"19,0"
+16,Aderezos,macronutrientes,115,Mostaza,Lípidos totales,"3,3"
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Lípidos totales,"1,3"
+16,Aderezos,macronutrientes,115,Salsa agridulce,Lípidos totales,"0,0"
+16,Aderezos,macronutrientes,115,Salsa barbacoa,Lípidos totales,"0,6"
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,Lípidos totales,"8,7"
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,Lípidos totales,"0,0"
+16,Aderezos,macronutrientes,115,Salsa de soja,Lípidos totales,"0,5"
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",Lípidos totales,"11,9"
+16,Aderezos,macronutrientes,115,Salsa Golf,Lípidos totales,"29,4"
+16,Aderezos,macronutrientes,115,Vinagre,Lípidos totales,"0,0"
+16,Aderezos,macronutrientes,115,Aceto balsámico,Proteínas,"0,5"
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,Proteínas,"2,2"
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,Proteínas,"0,0"
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",Proteínas,"0,5"
+16,Aderezos,macronutrientes,115,Ketchup,Proteínas,"1,0"
+16,Aderezos,macronutrientes,115,Mayonesa,Proteínas,"0,6"
+16,Aderezos,macronutrientes,115,Mayonesa de soja,Proteínas,"0,6"
+16,Aderezos,macronutrientes,115,Mayonesa light,Proteínas,"0,9"
+16,Aderezos,macronutrientes,115,Mostaza,Proteínas,"3,7"
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Proteínas,"1,0"
+16,Aderezos,macronutrientes,115,Salsa agridulce,Proteínas,"0,3"
+16,Aderezos,macronutrientes,115,Salsa barbacoa,Proteínas,"0,8"
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,Proteínas,"8,2"
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,Proteínas,"0,0"
+16,Aderezos,macronutrientes,115,Salsa de soja,Proteínas,"7,0"
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",Proteínas,"9,5"
+16,Aderezos,macronutrientes,115,Salsa Golf,Proteínas,"0,9"
+16,Aderezos,macronutrientes,115,Vinagre,Proteínas,"0,0"
+16,Aderezos,macronutrientes,115,Aceto balsámico,Agua,"76,5"
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,Agua,"52,1"
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,Agua,"95,4"
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",Agua,"93,6"
+16,Aderezos,macronutrientes,115,Ketchup,Agua,"68,5"
+16,Aderezos,macronutrientes,115,Mayonesa,Agua,"52,3"
+16,Aderezos,macronutrientes,115,Mayonesa de soja,Agua,"71,0"
+16,Aderezos,macronutrientes,115,Mayonesa light,Agua,"54,3"
+16,Aderezos,macronutrientes,115,Mostaza,Agua,"83,7"
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Agua,"90,1"
+16,Aderezos,macronutrientes,115,Salsa agridulce,Agua,"60,3"
+16,Aderezos,macronutrientes,115,Salsa barbacoa,Agua,"54,7"
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,Agua,"8,5"
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,Agua,"94,2"
+16,Aderezos,macronutrientes,115,Salsa de soja,Agua,"68,0"
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",Agua,"24,1"
+16,Aderezos,macronutrientes,115,Salsa Golf,Agua,"56,9"
+16,Aderezos,macronutrientes,115,Vinagre,Agua,"94,5"
+16,Aderezos,macronutrientes,115,Aceto balsámico,Valor energético,70
+16,Aderezos,macronutrientes,115,Aderezo Caesar o Ranch,Valor energético,380
+16,Aderezos,macronutrientes,115,Aderezo para ensaladas light,Valor energético,18
+16,Aderezos,macronutrientes,115,"Jugo de limón, envasado",Valor energético,22
+16,Aderezos,macronutrientes,115,Ketchup,Valor energético,113
+16,Aderezos,macronutrientes,115,Mayonesa,Valor energético,391
+16,Aderezos,macronutrientes,115,Mayonesa de soja,Valor energético,212
+16,Aderezos,macronutrientes,115,Mayonesa light,Valor energético,270
+16,Aderezos,macronutrientes,115,Mostaza,Valor energético,52
+16,Aderezos,macronutrientes,115,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Valor energético,42
+16,Aderezos,macronutrientes,115,Salsa agridulce,Valor energético,154
+16,Aderezos,macronutrientes,115,Salsa barbacoa,Valor energético,168
+16,Aderezos,macronutrientes,115,Salsa blanca en polvo envasada,Valor energético,347
+16,Aderezos,macronutrientes,115,Salsa chimichurri envasada,Valor energético,23
+16,Aderezos,macronutrientes,115,Salsa de soja,Valor energético,62
+16,Aderezos,macronutrientes,115,"Salsa deshidratada varios sabores, polvo",Valor energético,349
+16,Aderezos,macronutrientes,115,Salsa Golf,Valor energético,320
+16,Aderezos,macronutrientes,115,Vinagre,Valor energético,1
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Vitamina D,0
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Vitamina D,"0,20"
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Vitamina D,0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Vitamina D,0
+16,Aderezos,vitaminas_minerales,116,Ketchup,Vitamina D,0
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Vitamina D,"0,2"
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Vitamina D,0
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Vitamina D,0
+16,Aderezos,vitaminas_minerales,116,Mostaza,Vitamina D,0
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Vitamina D,0
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Vitamina D,0
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Vitamina D,0
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Vitamina D,0
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Vitamina D,0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Vitamina D,0
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Vitamina D,0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Vitamina D,0
+16,Aderezos,vitaminas_minerales,116,Vinagre,Vitamina D,0
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Vitamina C,0
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Vitamina C,"0,3"
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Vitamina C,0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Vitamina C,"14,3"
+16,Aderezos,vitaminas_minerales,116,Ketchup,Vitamina C,"4,1"
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Vitamina C,0
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Vitamina C,0
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Vitamina C,0
+16,Aderezos,vitaminas_minerales,116,Mostaza,Vitamina C,"0,3"
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Vitamina C,"10,6"
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Vitamina C,"8,7"
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Vitamina C,"0,6"
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Vitamina C,0
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Vitamina C,0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Vitamina C,0
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Vitamina C,0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Vitamina C,"0,8"
+16,Aderezos,vitaminas_minerales,116,Vinagre,Vitamina C,"0,5"
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Vitamina B-12,0
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Vitamina B-12,"0,03"
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Vitamina B-12,0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Vitamina B-12,0
+16,Aderezos,vitaminas_minerales,116,Ketchup,Vitamina B-12,0
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Vitamina B-12,"0,12"
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Vitamina B-12,0
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Vitamina B-12,"0,21"
+16,Aderezos,vitaminas_minerales,116,Mostaza,Vitamina B-12,0
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Vitamina B-12,0
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Vitamina B-12,0
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Vitamina B-12,0
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Vitamina B-12,0
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Vitamina B-12,0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Vitamina B-12,0
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Vitamina B-12,0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Vitamina B-12,"0,17"
+16,Aderezos,vitaminas_minerales,116,Vinagre,Vitamina B-12,0
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Riboflavina,0
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Riboflavina,"0,010"
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Riboflavina,0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Riboflavina,"0,017"
+16,Aderezos,vitaminas_minerales,116,Ketchup,Riboflavina,"0,166"
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Riboflavina,"0,019"
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Riboflavina,"0,020"
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Riboflavina,"0,020"
+16,Aderezos,vitaminas_minerales,116,Mostaza,Riboflavina,"0,070"
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Riboflavina,"0,080"
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Riboflavina,"0,019"
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Riboflavina,"0,056"
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Riboflavina,"0,140"
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Riboflavina,0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Riboflavina,"0,109"
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Riboflavina,0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Riboflavina,"0,049"
+16,Aderezos,vitaminas_minerales,116,Vinagre,Riboflavina,0
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Tiamina,0
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Tiamina,"0,010"
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Tiamina,0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Tiamina,"0,021"
+16,Aderezos,vitaminas_minerales,116,Ketchup,Tiamina,"0,011"
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Tiamina,"0,010"
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Tiamina,"0,010"
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Tiamina,"0,010"
+16,Aderezos,vitaminas_minerales,116,Mostaza,Tiamina,"0,177"
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Tiamina,"0,025"
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Tiamina,"0,048"
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Tiamina,"0,023"
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Tiamina,"0,575"
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Tiamina,0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Tiamina,"0,042"
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Tiamina,0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Tiamina,"0,010"
+16,Aderezos,vitaminas_minerales,116,Vinagre,Tiamina,0
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Retinol,0
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Retinol,9
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Retinol,0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Retinol,0
+16,Aderezos,vitaminas_minerales,116,Ketchup,Retinol,0
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Retinol,15
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Retinol,12
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Retinol,12
+16,Aderezos,vitaminas_minerales,116,Mostaza,Retinol,0
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Retinol,0
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Retinol,0
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Retinol,0
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Retinol,0
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Retinol,0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Retinol,0
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Retinol,0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Retinol,10
+16,Aderezos,vitaminas_minerales,116,Vinagre,Retinol,0
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,"Vitamina A, RAE",0
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,"Vitamina A, RAE",9
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,"Vitamina A, RAE",0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado","Vitamina A, RAE",2
+16,Aderezos,vitaminas_minerales,116,Ketchup,"Vitamina A, RAE",26
+16,Aderezos,vitaminas_minerales,116,Mayonesa,"Vitamina A, RAE",16
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,"Vitamina A, RAE",21
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,"Vitamina A, RAE",21
+16,Aderezos,vitaminas_minerales,116,Mostaza,"Vitamina A, RAE",5
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)","Vitamina A, RAE",26
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,"Vitamina A, RAE",1
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,"Vitamina A, RAE",11
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,"Vitamina A, RAE",0
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,"Vitamina A, RAE",0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,"Vitamina A, RAE",0
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo","Vitamina A, RAE",0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,"Vitamina A, RAE",22
+16,Aderezos,vitaminas_minerales,116,Vinagre,"Vitamina A, RAE",0
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,Ketchup,Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,Mostaza,Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Ácido fólico,154
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,Vinagre,Ácido fólico,0
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Folato EFD,0
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Folato EFD,2
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Folato EFD,0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Folato EFD,9
+16,Aderezos,vitaminas_minerales,116,Ketchup,Folato EFD,9
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Folato EFD,5
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Folato EFD,6
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Folato EFD,6
+16,Aderezos,vitaminas_minerales,116,Mostaza,Folato EFD,7
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Folato EFD,11
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Folato EFD,8
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Folato EFD,2
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Folato EFD,285
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Folato EFD,0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Folato EFD,13
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Folato EFD,0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Folato EFD,7
+16,Aderezos,vitaminas_minerales,116,Vinagre,Folato EFD,0
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Niacina,0
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Niacina,"0,04"
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Niacina,0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Niacina,"0,18"
+16,Aderezos,vitaminas_minerales,116,Ketchup,Niacina,"1,43"
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Niacina,0
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Niacina,0
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Niacina,0
+16,Aderezos,vitaminas_minerales,116,Mostaza,Niacina,"0,57"
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Niacina,"1,47"
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Niacina,"0,19"
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Niacina,"0,60"
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Niacina,"1,89"
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Niacina,0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Niacina,"2,83"
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Niacina,0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Niacina,"0,29"
+16,Aderezos,vitaminas_minerales,116,Vinagre,Niacina,0
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Zinc,"0,08"
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Zinc,"0,11"
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Zinc,0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Zinc,"0,19"
+16,Aderezos,vitaminas_minerales,116,Ketchup,Zinc,"0,17"
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Zinc,"0,15"
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Zinc,"0,18"
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Zinc,"0,18"
+16,Aderezos,vitaminas_minerales,116,Mostaza,Zinc,"0,64"
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Zinc,"0,36"
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Zinc,"0,09"
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Zinc,"0,17"
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Zinc,"0,49"
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Zinc,0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Zinc,"0,23"
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Zinc,0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Zinc,"0,18"
+16,Aderezos,vitaminas_minerales,116,Vinagre,Zinc,"0,03"
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Magnesio,12
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Magnesio,2
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Magnesio,0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Magnesio,7
+16,Aderezos,vitaminas_minerales,116,Ketchup,Magnesio,13
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Magnesio,1
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Magnesio,2
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Magnesio,2
+16,Aderezos,vitaminas_minerales,116,Mostaza,Magnesio,48
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Magnesio,23
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Magnesio,8
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Magnesio,13
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Magnesio,15
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Magnesio,0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Magnesio,29
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Magnesio,0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Magnesio,4
+16,Aderezos,vitaminas_minerales,116,Vinagre,Magnesio,4
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Hierro,"0,72"
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Hierro,"1,08"
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Hierro,0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Hierro,"0,06"
+16,Aderezos,vitaminas_minerales,116,Ketchup,Hierro,"0,35"
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Hierro,"0,21"
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Hierro,"0,26"
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Hierro,"0,26"
+16,Aderezos,vitaminas_minerales,116,Mostaza,Hierro,"1,61"
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Hierro,"1,78"
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Hierro,"0,21"
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Hierro,"0,64"
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Hierro,"2,91"
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Hierro,0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Hierro,"0,33"
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Hierro,0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Hierro,"0,28"
+16,Aderezos,vitaminas_minerales,116,Vinagre,Hierro,"0,45"
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Fósforo,19
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Fósforo,19
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Fósforo,0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Fósforo,9
+16,Aderezos,vitaminas_minerales,116,Ketchup,Fósforo,26
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Fósforo,21
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Fósforo,30
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Fósforo,30
+16,Aderezos,vitaminas_minerales,116,Mostaza,Fósforo,108
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Fósforo,40
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Fósforo,7
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Fósforo,20
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Fósforo,92
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Fósforo,0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Fósforo,94
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Fósforo,0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Fósforo,29
+16,Aderezos,vitaminas_minerales,116,Vinagre,Fósforo,8
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Cobre,"0,026"
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Cobre,"0,01"
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Cobre,0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Cobre,"0,018"
+16,Aderezos,vitaminas_minerales,116,Ketchup,Cobre,"0,085"
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Cobre,"0,019"
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Cobre,"0,001"
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Cobre,"0,001"
+16,Aderezos,vitaminas_minerales,116,Mostaza,Cobre,"0,074"
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Cobre,"0,287"
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Cobre,"0,079"
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Cobre,"0,072"
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Cobre,"0,100"
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Cobre,0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Cobre,"0,041"
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Cobre,0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Cobre,"0,018"
+16,Aderezos,vitaminas_minerales,116,Vinagre,Cobre,"0,01"
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Calcio,27
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Calcio,48
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Calcio,0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Calcio,10
+16,Aderezos,vitaminas_minerales,116,Ketchup,Calcio,15
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Calcio,8
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Calcio,14
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Calcio,14
+16,Aderezos,vitaminas_minerales,116,Mostaza,Calcio,63
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Calcio,18
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Calcio,10
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Calcio,33
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Calcio,8
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Calcio,0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Calcio,17
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Calcio,0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Calcio,14
+16,Aderezos,vitaminas_minerales,116,Vinagre,Calcio,6
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Potasio,112
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Potasio,29
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Potasio,0
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Potasio,109
+16,Aderezos,vitaminas_minerales,116,Ketchup,Potasio,281
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Potasio,20
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Potasio,24
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Potasio,24
+16,Aderezos,vitaminas_minerales,116,Mostaza,Potasio,152
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Potasio,439
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Potasio,99
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Potasio,232
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Potasio,112
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Potasio,0
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Potasio,447
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Potasio,0
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Potasio,75
+16,Aderezos,vitaminas_minerales,116,Vinagre,Potasio,39
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Sodio,23
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Sodio,1209
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Sodio,715
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Sodio,24
+16,Aderezos,vitaminas_minerales,116,Ketchup,Sodio,907
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Sodio,833
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Sodio,741
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Sodio,837
+16,Aderezos,vitaminas_minerales,116,Mostaza,Sodio,1104
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Sodio,361
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Sodio,539
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Sodio,1027
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Sodio,5624
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Sodio,2200
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Sodio,6820
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Sodio,5914
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Sodio,916
+16,Aderezos,vitaminas_minerales,116,Vinagre,Sodio,8
+16,Aderezos,vitaminas_minerales,116,Aceto balsámico,Cenizas,"0,37"
+16,Aderezos,vitaminas_minerales,116,Aderezo Caesar o Ranch,Cenizas,"2,4"
+16,Aderezos,vitaminas_minerales,116,Aderezo para ensaladas light,Cenizas,
+16,Aderezos,vitaminas_minerales,116,"Jugo de limón, envasado",Cenizas,"0,22"
+16,Aderezos,vitaminas_minerales,116,Ketchup,Cenizas,"2,94"
+16,Aderezos,vitaminas_minerales,116,Mayonesa,Cenizas,
+16,Aderezos,vitaminas_minerales,116,Mayonesa de soja,Cenizas,
+16,Aderezos,vitaminas_minerales,116,Mayonesa light,Cenizas,2
+16,Aderezos,vitaminas_minerales,116,Mostaza,Cenizas,"3,37"
+16,Aderezos,vitaminas_minerales,116,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",Cenizas,
+16,Aderezos,vitaminas_minerales,116,Salsa agridulce,Cenizas,"1,22"
+16,Aderezos,vitaminas_minerales,116,Salsa barbacoa,Cenizas,"3,07"
+16,Aderezos,vitaminas_minerales,116,Salsa blanca en polvo envasada,Cenizas,"14,06"
+16,Aderezos,vitaminas_minerales,116,Salsa chimichurri envasada,Cenizas,
+16,Aderezos,vitaminas_minerales,116,Salsa de soja,Cenizas,"16,63"
+16,Aderezos,vitaminas_minerales,116,"Salsa deshidratada varios sabores, polvo",Cenizas,
+16,Aderezos,vitaminas_minerales,116,Salsa Golf,Cenizas,
+16,Aderezos,vitaminas_minerales,116,Vinagre,Cenizas,"0,17"
