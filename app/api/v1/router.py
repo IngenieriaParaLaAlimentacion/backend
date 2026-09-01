@@ -9,6 +9,7 @@ from app.api.v1 import (
     subjects,
     users,
 )
+from app.api.v1.food_catalog import categories as food_catalog_categories
 from app.api.v1.food_catalog import foods as food_catalog_foods
 from app.api.v1.surveys import responses as survey_responses
 from app.api.v1.surveys import surveys
@@ -18,6 +19,7 @@ v1_router = APIRouter(prefix="/api/v1")
 v1_router.include_router(admin.router, tags=["Admin V1"])
 v1_router.include_router(auth.router, tags=["Auth V1"])
 v1_router.include_router(establishments.router, tags=["Establishments V1"])
+v1_router.include_router(food_catalog_categories.router, tags=["Food Catalog V1"])
 v1_router.include_router(food_catalog_foods.router, tags=["Food Catalog V1"])
 v1_router.include_router(measurements.router, tags=["Measurements V1"])
 v1_router.include_router(subjects.router, tags=["Subjects V1"])

@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import asc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.food_catalog.food_category import FoodCategory
@@ -21,11 +21,14 @@ class FoodCategoryRepository:
         return category
 
     async def get_all(self) -> list[FoodCategory]:
-        """Return every food category.
+        """Return every food category, ordered by its SARA 2 group number.
 
-        Seed-only: loads the full table into memory to build the upsert-by-code
-        diff at container boot. Do not call from request-time code — use a
-        paginated listing method instead.
+        Unlike ``foods``/``food_nutrient_values``, this table is structurally
+        bounded to the ~26 SARA 2 food groups, so loading it whole is safe
+        both for the seed script's upsert diff and for request-time listing —
+        no separate paginated/listing method is needed here.
         """
-        result = await self.db.execute(select(FoodCategory))
+        result = await self.db.execute(
+            select(FoodCategory).order_by(asc(FoodCategory.sara2_group_number))
+        )
         return list(result.scalars().all())
