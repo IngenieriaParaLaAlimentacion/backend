@@ -157,6 +157,56 @@ class TestInviteAdminConflict:
 
         assert response.status_code == status.HTTP_409_CONFLICT
 
+    async def test_pending_invitee_is_distinguishable_and_carries_user_id(
+        self, client, admin_headers
+    ):
+        """Re-inviting a still-pending address must not look like an
+        already-registered one, and must return the id resend-invite needs."""
+        user_id, email = await _create_pending_admin(client, admin_headers)
+
+        with patch("app.services.admin_service.send_invite_email"):
+            response = await client.post(
+                INVITE_ADMIN_URL, json={"email": email}, headers=admin_headers
+            )
+
+        assert response.status_code == status.HTTP_409_CONFLICT
+        body = response.json()
+        assert body["type"] == "/errors/admin/invite-already-pending"
+        assert body["user_id"] == user_id
+
+    async def test_returned_user_id_works_against_resend_invite(
+        self, client, admin_headers
+    ):
+        _, email = await _create_pending_admin(client, admin_headers)
+
+        with patch("app.services.admin_service.send_invite_email"):
+            conflict = await client.post(
+                INVITE_ADMIN_URL, json={"email": email}, headers=admin_headers
+            )
+            response = await client.patch(
+                RESEND_INVITE_URL.format(user_id=conflict.json()["user_id"]),
+                headers=admin_headers,
+            )
+
+        assert response.status_code == status.HTTP_202_ACCEPTED
+
+    async def test_registered_user_reports_already_exists_without_user_id(
+        self, client, admin_headers, db_active_user
+    ):
+        """An onboarded account is a different condition: resend-invite would
+        not help, so no user_id is offered."""
+        with patch("app.services.admin_service.send_invite_email"):
+            response = await client.post(
+                INVITE_ADMIN_URL,
+                json={"email": db_active_user.email},
+                headers=admin_headers,
+            )
+
+        assert response.status_code == status.HTTP_409_CONFLICT
+        body = response.json()
+        assert body["type"] == "/errors/user-already-exists"
+        assert "user_id" not in body
+
     async def test_does_not_create_duplicate_user(self, client, admin_headers):
         """Second invite for the same email should not create a second user."""
         email = f"admin_{uuid.uuid4().hex[:6]}@test.com"

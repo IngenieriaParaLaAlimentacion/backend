@@ -17,9 +17,10 @@ from app.domain.survey_response import (
 )
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
-    ForbiddenError,
-    InvalidListingFilterError,
+    FilterNotApplicableError,
     InvalidSurveyResponseError,
+    NotResourceOwnerError,
+    RoleNotAllowedError,
     SubjectNotFoundError,
     SurveyNotFoundError,
     SurveyResponseAlreadyExistsError,
@@ -53,7 +54,12 @@ class SurveyResponseService:
     @staticmethod
     def _assert_can_submit(actor: UserActor) -> None:
         if actor.role not in _SUBMITTER_ROLES:
-            raise ForbiddenError()
+            raise RoleNotAllowedError("Your role cannot submit survey responses.")
+
+    @staticmethod
+    def _assert_dashboard_reader(actor: UserActor) -> None:
+        if actor.role not in _DASHBOARD_ROLES:
+            raise RoleNotAllowedError("Your role cannot read the survey dashboard.")
 
     @staticmethod
     def _resolve_target(
@@ -64,19 +70,19 @@ class SurveyResponseService:
         if target == SurveyResponseTarget.SUBJECT:
             if data.subject_id is None or data.establishment_id is not None:
                 raise InvalidSurveyResponseError(
-                    "This survey requires a subject_id and no establishment_id."
+                    "This survey requires a subject_id and no establishment_id.",
                 )
             return data.subject_id, None
         if target == SurveyResponseTarget.ESTABLISHMENT:
             if data.establishment_id is None or data.subject_id is not None:
                 raise InvalidSurveyResponseError(
-                    "This survey requires an establishment_id and no subject_id."
+                    "This survey requires an establishment_id and no subject_id.",
                 )
             return None, data.establishment_id
         if data.subject_id is not None or data.establishment_id is not None:
             raise InvalidSurveyResponseError(
                 "This survey is anonymous and accepts no subject_id or "
-                "establishment_id."
+                "establishment_id.",
             )
         return None, None
 
@@ -97,16 +103,16 @@ class SurveyResponseService:
         )
 
         if subject_id is not None and not targets_subject:
-            raise InvalidListingFilterError(
+            raise FilterNotApplicableError(
                 "The subject filter only applies to surveys targeted at subjects."
             )
         if establishment_id is not None and not targets_establishment:
-            raise InvalidListingFilterError(
+            raise FilterNotApplicableError(
                 "The establishment filter only applies to surveys targeted at "
                 "establishments."
             )
         if (city or province) and not targets_establishment:
-            raise InvalidListingFilterError(
+            raise FilterNotApplicableError(
                 "City and province filters only apply to surveys targeted at "
                 "establishments."
             )
@@ -118,7 +124,10 @@ class SurveyResponseService:
             return
         if str(response.submitted_by_id) == str(actor.user_id):
             return
-        raise ForbiddenError()
+        raise NotResourceOwnerError(
+            "Only the field worker who submitted this response, or an admin, "
+            "can modify it."
+        )
 
     @staticmethod
     def _validate_answers(
@@ -149,17 +158,17 @@ class SurveyResponseService:
         if question.response_type == ResponseType.SINGLE_CHOICE:
             if not isinstance(value, str) or value not in option_ids:
                 raise InvalidSurveyResponseError(
-                    f"Invalid option for question '{question.text}'."
+                    f"Invalid option for question '{question.text}'.",
                 )
         elif question.response_type == ResponseType.MULTIPLE_CHOICE:
             if not isinstance(value, list) or not set(value) <= option_ids:
                 raise InvalidSurveyResponseError(
-                    f"Invalid options for question '{question.text}'."
+                    f"Invalid options for question '{question.text}'.",
                 )
         elif question.response_type == ResponseType.NUMERIC:
             if not isinstance(value, (int, float)):
                 raise InvalidSurveyResponseError(
-                    f"Question '{question.text}' expects a number."
+                    f"Question '{question.text}' expects a number.",
                 )
 
     async def _get_survey_or_raise(self, survey_id: UUID) -> SurveyDomain:
@@ -221,7 +230,7 @@ class SurveyResponseService:
         """Return a replayed response, rejecting an id reused across surveys."""
         if existing.survey_id != survey_id:
             raise InvalidSurveyResponseError(
-                "This response id already belongs to a different survey."
+                "This response id already belongs to a different survey.",
             )
         return SurveyResponseDomain.from_db(existing)
 
@@ -233,7 +242,7 @@ class SurveyResponseService:
 
         Raises:
             SurveyResponseNotFoundError.
-            ForbiddenError: not the submitter and not admin/superadmin.
+            NotResourceOwnerError: not the submitter and not admin/superadmin.
         """
         response = await self._get_response_or_raise(response_id)
         self._assert_owner_or_admin(actor, response)
@@ -250,7 +259,7 @@ class SurveyResponseService:
         itself.
 
         Raises:
-            ForbiddenError: role can't submit.
+            RoleNotAllowedError: role can't submit.
             SurveyNotFoundError / EstablishmentNotFoundError / SubjectNotFoundError.
             InvalidSurveyResponseError: payload names an entity that does not
                 match the survey's response target, answers fail validation, or
@@ -293,9 +302,10 @@ class SurveyResponseService:
                 await self._raise_if_target_answered(
                     survey_id, subject_id, establishment_id
                 )
-                raise InvalidSurveyResponseError(
-                    "This survey has already been answered for that target."
-                )
+                # The conflicting row lost the read race, so it cannot be named
+                # here -- but the condition is the same one the pre-check above
+                # reports, and must not leave with a different contract.
+                raise SurveyResponseAlreadyExistsError()
             if data.id is not None:
                 raced = await self.uow.survey_response_repo.get_by_id(data.id)
                 if raced is not None:
@@ -317,7 +327,8 @@ class SurveyResponseService:
         recalculated from the new answers whenever the edit is applied.
 
         Raises:
-            SurveyResponseNotFoundError, ForbiddenError (not the submitter/admin),
+            SurveyResponseNotFoundError, NotResourceOwnerError (not the
+            submitter/admin),
             InvalidSurveyResponseError (answers fail validation).
         """
         response = await self._get_response_or_raise(response_id)
@@ -365,15 +376,14 @@ class SurveyResponseService:
         """Return a paginated list of a survey's responses in ``params.sort_order``.
 
         Raises:
-            ForbiddenError: actor role isn't a dashboard reader.
+            RoleNotAllowedError: actor role isn't a dashboard reader.
             SurveyNotFoundError.
-            InvalidListingFilterError: a filter was applied to a survey whose
+            FilterNotApplicableError: a filter was applied to a survey whose
                 responses carry no such target — a subject filter on a survey
                 not targeted at subjects, or an establishment/city/province one
                 on a survey not targeted at establishments.
         """
-        if actor.role not in _DASHBOARD_ROLES:
-            raise ForbiddenError()
+        self._assert_dashboard_reader(actor)
         survey = await self._get_survey_or_raise(survey_id)
         self._assert_target_filters_applicable(
             survey,
@@ -400,11 +410,10 @@ class SurveyResponseService:
         question in the survey and the value that user registered for it.
 
         Raises:
-            ForbiddenError: actor role isn't a dashboard reader.
+            RoleNotAllowedError: actor role isn't a dashboard reader.
             SurveyResponseNotFoundError.
         """
-        if actor.role not in _DASHBOARD_ROLES:
-            raise ForbiddenError()
+        self._assert_dashboard_reader(actor)
         response = await self.uow.survey_response_repo.get_with_relations(response_id)
         if response is None:
             raise SurveyResponseNotFoundError(str(response_id))
@@ -449,13 +458,12 @@ class SurveyResponseService:
         Optionally filter by the response's target.
 
         Raises:
-            ForbiddenError: actor role isn't a dashboard reader.
+            RoleNotAllowedError: actor role isn't a dashboard reader.
             SurveyNotFoundError.
-            InvalidListingFilterError: a target filter was applied to a survey
+            FilterNotApplicableError: a target filter was applied to a survey
                 whose responses do not carry that target.
         """
-        if actor.role not in _DASHBOARD_ROLES:
-            raise ForbiddenError()
+        self._assert_dashboard_reader(actor)
         survey = await self._get_survey_or_raise(survey_id)
         self._assert_target_filters_applicable(
             survey, subject_id=subject_id, establishment_id=establishment_id

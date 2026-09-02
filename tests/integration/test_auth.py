@@ -7,6 +7,7 @@ from sqlalchemy import select
 
 import app.db.database as db_module
 from app.domain.user import UserRole
+from app.models.auth.user import User
 from app.models.auth.user_establishment import UserEstablishment
 
 pytestmark = pytest.mark.asyncio
@@ -211,6 +212,22 @@ class TestLogin:
             LOGIN_URL, json=self._payload("ana@test.com", "wrong_password")
         )
         assert r_unknown.json()["detail"] == r_wrong.json()["detail"]
+
+    async def test_user_without_password_row_returns_401_not_404(
+        self, client, make_user_with_role
+    ):
+        """A user row with no password row must not leak a 404 naming their id
+        out of the login endpoint."""
+        _, user_id = await make_user_with_role(UserRole.ANALYST)
+        async with db_module.AsyncSessionLocal() as session:
+            user = await session.get(User, user_id)
+            email = user.email
+
+        response = await client.post(LOGIN_URL, json=self._payload(email, "whatever"))
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json()["type"] == "/errors/invalid-credentials"
+        assert str(user_id) not in response.text
 
     async def test_missing_email_returns_422(self, client):
         response = await client.post(

@@ -21,6 +21,21 @@ def _extract_token(deeplink: str | None) -> str:
     return token
 
 
+async def _expire_recovery_tokens() -> None:
+    """Backdate every recovery token so the expiry branch is reachable."""
+    from sqlalchemy import text
+
+    from app.db.database import engine
+
+    async with engine.begin() as conn:
+        await conn.execute(
+            text(
+                "UPDATE password_recovery_tokens "
+                "SET expires_at = now() - interval '1 hour'"
+            )
+        )
+
+
 def _login_payload(email: str, password: str) -> dict:
     return {"email": email, "password": password, "device_id": str(uuid.uuid4())}
 
@@ -112,6 +127,61 @@ class TestPasswordRecoveryConfirm:
             json={"token": "not-a-valid-token", "new_password": "newpassword123"},
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_unknown_token_is_reported_generically(self, client):
+        """A token that never existed must not be distinguishable from one that
+        did -- that would confirm an address was issued a link."""
+        response = await client.post(
+            CONFIRM_URL,
+            json={"token": "not-a-valid-token", "new_password": "newpassword123"},
+        )
+
+        assert response.json()["type"] == "/errors/auth/invalid-recovery-token"
+
+    async def test_reused_token_is_reported_as_used(
+        self, client, db_active_user, capture_deeplink
+    ):
+        await client.post(REQUEST_URL, json={"email": "ana@test.com"})
+        token = _extract_token(capture_deeplink["deeplink"])
+        await client.post(
+            CONFIRM_URL, json={"token": token, "new_password": "newpassword123"}
+        )
+
+        response = await client.post(
+            CONFIRM_URL, json={"token": token, "new_password": "otherpassword123"}
+        )
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json()["type"] == "/errors/auth/recovery-token-used"
+
+    async def test_superseded_token_is_reported_as_used(
+        self, client, db_active_user, capture_deeplink
+    ):
+        """Requesting a second link marks the first used; the client needs to be
+        told that, not just 'invalid'."""
+        await client.post(REQUEST_URL, json={"email": "ana@test.com"})
+        first_token = _extract_token(capture_deeplink["deeplink"])
+        await client.post(REQUEST_URL, json={"email": "ana@test.com"})
+
+        response = await client.post(
+            CONFIRM_URL, json={"token": first_token, "new_password": "newpassword123"}
+        )
+
+        assert response.json()["type"] == "/errors/auth/recovery-token-used"
+
+    async def test_expired_token_is_reported_as_expired(
+        self, client, db_active_user, capture_deeplink
+    ):
+        await client.post(REQUEST_URL, json={"email": "ana@test.com"})
+        token = _extract_token(capture_deeplink["deeplink"])
+        await _expire_recovery_tokens()
+
+        response = await client.post(
+            CONFIRM_URL, json={"token": token, "new_password": "newpassword123"}
+        )
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json()["type"] == "/errors/auth/recovery-token-expired"
 
     async def test_valid_token_returns_204(
         self, client, db_active_user, capture_deeplink

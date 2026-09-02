@@ -363,12 +363,19 @@ class TestAvailableEstablishments:
         response = await client.get(AVAILABLE_URL)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_analyst_returns_403(self, client, app):
+    async def test_analyst_can_list_available(self, client, app):
+        """Any authenticated role can request establishment access, so any role
+        can list the ones still available to it."""
+        establishment = await _insert_establishment("Centro A", "Calle A")
         token = create_access_token(uuid.uuid4(), role=UserRole.ANALYST)
+
         response = await client.get(
             AVAILABLE_URL, headers={"Authorization": f"Bearer {token}"}
         )
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+        assert response.status_code == status.HTTP_200_OK
+        ids = {item["id"] for item in response.json()["items"]}
+        assert ids == {str(establishment.id)}
 
     async def test_public_catalog_unchanged_without_token(self, client, app):
         """Regression: the plain catalog stays public (no token required)."""

@@ -28,13 +28,15 @@ class EmailVerificationTokenRepository:
         await self.db.refresh(token)
         return token
 
-    async def get_active_token(self, token_hash: str) -> EmailVerificationToken | None:
-        """Return an active, unused, non-expired token by hash, or None."""
+    async def get_by_hash(self, token_hash: str) -> EmailVerificationToken | None:
+        """Return a verification token by hash regardless of used/expired state.
+
+        The caller branches on ``used`` and ``expires_at`` itself, so it can tell
+        a replayed link from an expired one and report each distinctly.
+        """
         result = await self.db.execute(
             select(EmailVerificationToken).where(
-                EmailVerificationToken.token_hash == token_hash,
-                EmailVerificationToken.used.is_(False),
-                EmailVerificationToken.expires_at > func.now(),
+                EmailVerificationToken.token_hash == token_hash
             )
         )
         return result.scalar_one_or_none()

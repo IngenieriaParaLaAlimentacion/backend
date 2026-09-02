@@ -309,6 +309,22 @@ class TestRevokeEstablishments:
         )
         assert response.status_code == status.HTTP_409_CONFLICT
 
+    async def test_not_approved_conflict_reports_the_actual_relation_status(
+        self, client, admin_headers, accepted_field_worker, db_establishment
+    ):
+        """pending, rejected and revoked all land on the same error; the client
+        cannot act on it without knowing which one it is."""
+        url = REVOKE_URL.format(user_id=accepted_field_worker["id"])
+        response = await client.patch(
+            url,
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        body = response.json()
+        assert body["type"] == "/errors/user-establishment-not-approved"
+        assert body["relation_status"] == "pending"
+
     async def test_all_or_nothing_when_one_establishment_is_not_approved(
         self,
         client,

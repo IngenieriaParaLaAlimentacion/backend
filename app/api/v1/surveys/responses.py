@@ -49,7 +49,8 @@ router = APIRouter(prefix="/surveys/{survey_id}/responses")
             },
         },
         status.HTTP_400_BAD_REQUEST: {
-            "description": "Target filter on a survey that does not carry that target"
+            "description": "`/errors/filter-not-applicable`: a target filter was "
+            "applied to a survey that does not carry that target"
         },
         status.HTTP_404_NOT_FOUND: {"description": "Survey not found"},
     },
@@ -95,8 +96,9 @@ async def export_survey_responses(
     responses={
         **AUTH_RESPONSES,
         status.HTTP_400_BAD_REQUEST: {
-            "description": "Invalid filter range, or a target filter on a survey "
-            "that does not carry that target"
+            "description": "`/errors/invalid-date-range`: event_at_from is after "
+            "event_at_to. `/errors/filter-not-applicable`: a target filter was "
+            "applied to a survey that does not carry that target."
         },
         status.HTTP_404_NOT_FOUND: {"description": "Survey not found"},
     },

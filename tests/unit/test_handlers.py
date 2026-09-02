@@ -1,18 +1,15 @@
 import asyncio
+import json
 
 from app.exceptions.domain_exceptions import (
-    ForbiddenError,
+    RoleNotAllowedError,
+    SubjectAlreadyExistsError,
     SubjectNotFoundError,
+    SurveyLockedError,
     UnauthorizedError,
     UserAlreadyExistsError,
 )
-from app.exceptions.exception_handlers import (
-    _build_error_response,
-    already_exists_handler,
-    forbidden_handler,
-    not_found_handler,
-    unauthorized_handler,
-)
+from app.exceptions.exception_handlers import domain_error_handler
 
 
 class DummyRequest:
@@ -20,44 +17,79 @@ class DummyRequest:
         self.url = type("url", (), {"path": path})
 
 
-def test_build_error_response():
-    error = UserAlreadyExistsError("foo@bar.com")
-    request = DummyRequest("/foo")
-    response = _build_error_response(error, request, 409)
+def _handle(path, exc):
+    return asyncio.run(domain_error_handler(DummyRequest(path), exc))
+
+
+def test_domain_error_handler_builds_canonical_envelope():
+    response = _handle("/foo", UserAlreadyExistsError("foo@bar.com"))
+
     assert response.status_code == 409
     assert response.media_type == "application/problem+json"
-    assert b"foo@bar.com" in response.body
-    assert b"User already exists" in response.body
-    assert b"/foo" in response.body
+    body = json.loads(response.body)
+    assert body == {
+        "type": "/errors/user-already-exists",
+        "title": "User already exists",
+        "status": 409,
+        "detail": "A user with email foo@bar.com already exists.",
+        "instance": "/foo",
+    }
 
 
-def test_not_found_handler():
-    request = DummyRequest("/subjects/123")
-    response = asyncio.run(not_found_handler(request, SubjectNotFoundError("123")))
+def test_not_found_error():
+    response = _handle("/subjects/123", SubjectNotFoundError("123"))
+
     assert response.status_code == 404
-    assert b"123" in response.body
-    assert b"Subject not found" in response.body
+    body = json.loads(response.body)
+    assert body["type"] == "/errors/subject-not-found"
+    assert body["title"] == "Subject not found"
+    assert "123" in body["detail"]
 
 
-def test_already_exists_handler():
-    request = DummyRequest("/register")
-    response = asyncio.run(
-        already_exists_handler(request, UserAlreadyExistsError("taken@email.com"))
-    )
+def test_already_exists_error():
+    response = _handle("/register", UserAlreadyExistsError("taken@email.com"))
+
     assert response.status_code == 409
     assert b"taken@email.com" in response.body
     assert b"User already exists" in response.body
 
 
-def test_unauthorized_handler():
-    request = DummyRequest("/me")
-    response = asyncio.run(unauthorized_handler(request, UnauthorizedError()))
+def test_unauthorized_error():
+    response = _handle("/me", UnauthorizedError())
+
     assert response.status_code == 401
-    assert b"Unauthorized" in response.body
+    assert json.loads(response.body)["type"] == "/errors/unauthorized"
 
 
-def test_forbidden_handler():
-    request = DummyRequest("/admin/users")
-    response = asyncio.run(forbidden_handler(request, ForbiddenError()))
+def test_forbidden_error():
+    response = _handle("/admin/users", RoleNotAllowedError())
+
     assert response.status_code == 403
-    assert b"Forbidden" in response.body
+    assert json.loads(response.body)["type"] == "/errors/role-not-allowed"
+
+
+def test_the_envelope_carries_only_the_five_canonical_members():
+    response = _handle("/surveys/1", SurveyLockedError("Cannot delete."))
+
+    body = json.loads(response.body)
+    assert body["type"] == "/errors/survey-locked"
+    assert set(body) == {"type", "title", "status", "detail", "instance"}
+
+
+def test_extensions_are_merged_into_the_body():
+    response = _handle("/subjects", SubjectAlreadyExistsError(123, {"id": "x"}))
+
+    assert json.loads(response.body)["canonical_subject"] == {"id": "x"}
+
+
+def test_extensions_cannot_overwrite_canonical_members():
+    exc = SubjectAlreadyExistsError(123, canonical={"id": "x"})
+    exc.extensions["type"] = "/errors/HIJACKED"
+    exc.extensions["status"] = 999
+
+    response = _handle("/p", exc)
+    body = json.loads(response.body)
+
+    assert body["type"] == "/errors/subject-already-exists"
+    assert body["status"] == 409
+    assert body["canonical_subject"] == {"id": "x"}

@@ -140,6 +140,20 @@ async def client(app):
         yield async_client
 
 
+@pytest_asyncio.fixture()
+async def raw_client(app):
+    """Client that returns 5xx responses instead of re-raising.
+
+    Needed to assert the canonical 500 envelope; the default `client` fixture
+    re-raises because ASGITransport defaults to raise_app_exceptions=True.
+    """
+    async with AsyncClient(
+        transport=ASGITransport(app=app, raise_app_exceptions=False),
+        base_url="http://test",
+    ) as async_client:
+        yield async_client
+
+
 @pytest_asyncio.fixture(autouse=True)
 async def clean_db(app):
     """Truncate all tables before each test to guarantee isolation."""

@@ -31,7 +31,10 @@ from app.domain.survey_response import (
     SurveyResponseSortOrder,
     SurveyResponseSummaryParams,
 )
-from app.exceptions.domain_exceptions import InvalidListingFilterError
+from app.exceptions.domain_exceptions import (
+    InvalidAgeRangeError,
+    InvalidDateRangeError,
+)
 
 AUTH_RESPONSES: dict[int | str, dict[str, str]] = {
     status.HTTP_401_UNAUTHORIZED: {
@@ -44,13 +47,13 @@ AUTH_RESPONSES: dict[int | str, dict[str, str]] = {
 def _validate_date_range(
     start: date | None, end: date | None, field_prefix: str
 ) -> None:
-    """Raise InvalidListingFilterError if ``start`` is after ``end``.
+    """Raise InvalidDateRangeError if ``start`` is after ``end``.
 
     Accepts plain dates or full timestamps (``datetime`` is a subclass of
     ``date``), so it covers both date-only and datetime-range filters.
     """
     if start is not None and end is not None and start > end:
-        raise InvalidListingFilterError(
+        raise InvalidDateRangeError(
             f"{field_prefix}_from cannot be after {field_prefix}_to"
         )
 
@@ -97,12 +100,15 @@ class MeasurementListingQuery(LocationQuery):
     sort_order: MeasurementSortOrder = MeasurementSortOrder.DATE_DESC
 
     def validate(self) -> None:
+        """Raise InvalidAgeRangeError if the age bounds are inverted, or
+        InvalidDateRangeError if the measurement-date bounds are.
+        """
         if (
             self.min_age is not None
             and self.max_age is not None
             and self.min_age > self.max_age
         ):
-            raise InvalidListingFilterError("min_age cannot be greater than max_age")
+            raise InvalidAgeRangeError("min_age cannot be greater than max_age")
 
         _validate_date_range(self.measured_from, self.measured_to, "measured")
 
@@ -189,6 +195,7 @@ class SurveyResponseListingQuery(LocationQuery):
     sort_order: SurveyResponseSortOrder = SurveyResponseSortOrder.EVENT_AT_DESC
 
     def validate(self) -> None:
+        """Raise InvalidDateRangeError if the date bounds are inverted."""
         _validate_date_range(self.event_at_from, self.event_at_to, "event_at")
 
     def to_domain(self) -> SurveyResponseListingParams:
@@ -211,6 +218,7 @@ class SurveyResponseSummaryQuery(LocationQuery):
     event_at_to: Annotated[datetime | None, Query()] = None
 
     def validate(self) -> None:
+        """Raise InvalidDateRangeError if the date bounds are inverted."""
         _validate_date_range(self.event_at_from, self.event_at_to, "event_at")
 
     def to_domain(self) -> SurveyResponseSummaryParams:
@@ -236,6 +244,7 @@ class SubjectListingQuery:
     sort_order: SubjectSortOrder = SubjectSortOrder.CREATED_AT_DESC
 
     def validate(self) -> None:
+        """Raise InvalidDateRangeError if the date bounds are inverted."""
         _validate_date_range(self.birth_date_from, self.birth_date_to, "birth_date")
 
     def to_domain(self) -> SubjectListingParams:

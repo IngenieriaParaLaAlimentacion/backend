@@ -98,15 +98,6 @@ class UserRepository:
         """Return a user by id, or None if it does not exist."""
         return await self.db.get(User, user_id)
 
-    async def exists_by_email(self, email: str) -> bool:
-        """Return whether any user already owns this email, ignoring case."""
-        result = await self.db.execute(
-            select(User.id)
-            .where(func.lower(User.email) == email.strip().lower())
-            .limit(1)
-        )
-        return result.first() is not None
-
     async def get_by_email(self, email: str) -> User | None:
         """Return a user by email, ignoring case, or None if it does not exist."""
         result = await self.db.execute(

@@ -105,7 +105,9 @@ class EstablishmentRequestRepository:
         existing = await self.get_by_id(request_id)
         if existing is None:
             raise EstablishmentRequestNotFoundError(str(request_id))
-        raise EstablishmentRequestAlreadyReviewedError(str(request_id))
+        raise EstablishmentRequestAlreadyReviewedError(
+            str(request_id), existing.status.value
+        )
 
     async def get_paginated(
         self,
