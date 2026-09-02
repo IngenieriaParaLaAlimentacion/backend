@@ -97,6 +97,12 @@
       "description": "Exception raised when an establishment request does not exist."
     },
     {
+      "type": "/errors/export/unmapped-label",
+      "status": 400,
+      "exception": "UnmappedExportLabelError",
+      "description": "Exception raised when a CSV export hits an enum value with no label."
+    },
+    {
       "type": "/errors/field-worker-is-not-pending",
       "status": 400,
       "exception": "FieldWorkerNotPendingError",

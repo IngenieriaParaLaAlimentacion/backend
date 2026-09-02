@@ -37,6 +37,7 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/establishment-not-found` | 404 | `EstablishmentNotFoundError` | Exception raised when an establishment is not found. |
 | `/errors/establishment-request-already-reviewed` | 409 | `EstablishmentRequestAlreadyReviewedError` | Raised when approving/rejecting a request that is no longer pending. |
 | `/errors/establishment-request-not-found` | 404 | `EstablishmentRequestNotFoundError` | Exception raised when an establishment request does not exist. |
+| `/errors/export/unmapped-label` | 400 | `UnmappedExportLabelError` | Exception raised when a CSV export hits an enum value with no label. |
 | `/errors/field-worker-is-not-pending` | 400 | `FieldWorkerNotPendingError` | Raised when a field worker is not awaiting validation. |
 | `/errors/filter-not-applicable` | 400 | `FilterNotApplicableError` | Raised when a filter resolves through a target the resource does not carry. |
 | `/errors/invalid-age-range` | 400 | `InvalidAgeRangeError` | Raised when an age-range filter has a minimum above its maximum. |
