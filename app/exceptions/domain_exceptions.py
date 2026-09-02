@@ -3,6 +3,8 @@
 import re
 from typing import ClassVar
 
+from fastapi import status
+
 # Every concrete domain exception registers its slug here at import time. The
 # registry is what makes `error_type` a contract rather than a convention: a
 # duplicate or malformed slug fails at class-definition time, which means at app
@@ -80,19 +82,19 @@ class BaseError(Exception):
 class NotFoundError(BaseError, abstract=True):
     """Base exception for resources that cannot be found."""
 
-    status = 404
+    status = status.HTTP_404_NOT_FOUND
 
 
 class AlreadyExistsError(BaseError, abstract=True):
     """Base exception for resources that already exist."""
 
-    status = 409
+    status = status.HTTP_409_CONFLICT
 
 
 class BadRequestError(BaseError, abstract=True):
     """Base exception for invalid client requests (HTTP 400)."""
 
-    status = 400
+    status = status.HTTP_400_BAD_REQUEST
 
 
 class ConflictError(BaseError, abstract=True):
@@ -102,7 +104,7 @@ class ConflictError(BaseError, abstract=True):
     can convey a stateful conflict (e.g. a locked resource) rather than a duplicate.
     """
 
-    status = 409
+    status = status.HTTP_409_CONFLICT
 
 
 class UserNotFoundError(NotFoundError):
@@ -153,7 +155,7 @@ class UnauthorizedError(BaseError):
     """Exception raised when authorization fails."""
 
     error_type = "unauthorized"
-    status = 401
+    status = status.HTTP_401_UNAUTHORIZED
 
     def __init__(
         self,
@@ -172,7 +174,7 @@ class ForbiddenError(BaseError, abstract=True):
     Raise one of the concrete subclasses.
     """
 
-    status = 403
+    status = status.HTTP_403_FORBIDDEN
 
 
 class RoleNotAllowedError(ForbiddenError):
@@ -344,7 +346,7 @@ class EmailDeliveryError(BaseError):
     """
 
     error_type = "email-delivery-failed"
-    status = 502
+    status = status.HTTP_502_BAD_GATEWAY
 
     def __init__(
         self,

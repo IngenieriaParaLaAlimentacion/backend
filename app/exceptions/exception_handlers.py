@@ -70,7 +70,7 @@ async def validation_error_handler(
     """Render Pydantic validation failures in the canonical envelope."""
     return _problem_response(
         request,
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
         error_type="validation-failed",
         title="Validation failed",
         detail="The request contains invalid or missing fields.",

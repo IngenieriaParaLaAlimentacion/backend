@@ -195,6 +195,7 @@ class SurveyResponseListingQuery(LocationQuery):
     sort_order: SurveyResponseSortOrder = SurveyResponseSortOrder.EVENT_AT_DESC
 
     def validate(self) -> None:
+        """Raise InvalidDateRangeError if the date bounds are inverted."""
         _validate_date_range(self.event_at_from, self.event_at_to, "event_at")
 
     def to_domain(self) -> SurveyResponseListingParams:
@@ -217,6 +218,7 @@ class SurveyResponseSummaryQuery(LocationQuery):
     event_at_to: Annotated[datetime | None, Query()] = None
 
     def validate(self) -> None:
+        """Raise InvalidDateRangeError if the date bounds are inverted."""
         _validate_date_range(self.event_at_from, self.event_at_to, "event_at")
 
     def to_domain(self) -> SurveyResponseSummaryParams:
@@ -242,6 +244,7 @@ class SubjectListingQuery:
     sort_order: SubjectSortOrder = SubjectSortOrder.CREATED_AT_DESC
 
     def validate(self) -> None:
+        """Raise InvalidDateRangeError if the date bounds are inverted."""
         _validate_date_range(self.birth_date_from, self.birth_date_to, "birth_date")
 
     def to_domain(self) -> SubjectListingParams:
