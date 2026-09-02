@@ -483,6 +483,8 @@ class UnmappedExportLabelError(BadRequestError):
     logged, so the gap is identifiable without reproducing the request.
     """
 
+    error_type = "export/unmapped-label"
+
     def __init__(self, label_map: str, value: object):
         super().__init__(
             "Unmapped export label",

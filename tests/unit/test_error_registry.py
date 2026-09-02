@@ -20,6 +20,7 @@ EXPECTED: dict[str, int] = {
     "establishment-not-found": 404,
     "establishment-request-already-reviewed": 409,
     "establishment-request-not-found": 404,
+    "export/unmapped-label": 400,
     "field-worker-is-not-pending": 400,
     "filter-not-applicable": 400,
     "invalid-age-range": 400,
