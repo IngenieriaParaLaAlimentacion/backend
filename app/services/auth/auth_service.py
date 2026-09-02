@@ -199,8 +199,6 @@ class AuthService:
             refresh_token_hash, data.device_id
         )
         if not token:
-            # Same condition POST /auth/logout reports; it must carry the same
-            # identity rather than a second contract for one failure.
             raise InvalidRefreshTokenError()
 
         await self.uow.token_repo.revoke(token)
@@ -262,8 +260,6 @@ class AuthService:
             hash_token(data.token)
         )
         if recovery_token is None:
-            # Deliberately generic: distinguishing "never existed" from the two
-            # states below would confirm to an attacker that a token was issued.
             raise InvalidRecoveryTokenError()
         if recovery_token.used:
             raise RecoveryTokenUsedError()
@@ -274,8 +270,6 @@ class AuthService:
             recovery_token.user_id
         )
         if user_password is None:
-            # Legitimate 404 here: the caller already proved possession of a
-            # valid recovery token, so nothing is leaked by being specific.
             raise PasswordNotFoundError(str(recovery_token.user_id))
         user_password.password_hashed = hash_password(data.new_password)
         user = await self.uow.user_repo.get_by_id(recovery_token.user_id)
@@ -304,7 +298,6 @@ class AuthService:
             hash_token(token)
         )
         if verification_token is None:
-            # Deliberately generic, for the same reason as the recovery path.
             raise InvalidVerificationTokenError()
         if verification_token.used:
             raise VerificationTokenUsedError()
