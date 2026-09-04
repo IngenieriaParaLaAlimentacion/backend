@@ -3,7 +3,6 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.exceptions.domain_exceptions import PasswordNotFoundError
 from app.models import UserPassword
 
 
@@ -19,11 +18,13 @@ class UserPasswordRepository:
         self.db.add(password)
         return password
 
-    async def get_by_user_id(self, user_id: UUID) -> UserPassword:
-        """Return password row for a user or raise PasswordNotFoundError."""
+    async def get_by_user_id(self, user_id: UUID) -> UserPassword | None:
+        """Return the password row for a user, or None.
+
+        Returns None rather than raising: on the login path a missing row must
+        surface as a 401, not as a 404 naming the user's id, which would let the
+        endpoint be used to enumerate registered addresses.
+        """
         query = select(UserPassword).where(UserPassword.user_id == user_id)
         result = await self.db.execute(query)
-        password = result.scalar_one_or_none()
-        if not password:
-            raise PasswordNotFoundError(str(user_id))
-        return password
+        return result.scalar_one_or_none()

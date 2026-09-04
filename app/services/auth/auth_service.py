@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 from app.config.settings import settings
@@ -16,10 +16,17 @@ from app.domain.auth import LoginDomain, RefreshDomain
 from app.domain.user import UserDomain, UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
     InvalidCredentialsError,
-    InvalidTokenError,
+    InvalidRecoveryTokenError,
+    InvalidRefreshTokenError,
+    InvalidVerificationTokenError,
+    PasswordNotFoundError,
     PendingValidationError,
+    RecoveryTokenExpiredError,
+    RecoveryTokenUsedError,
     UserAlreadyExistsError,
     UserNotFoundError,
+    VerificationTokenExpiredError,
+    VerificationTokenUsedError,
 )
 from app.models import PasswordRecoveryToken
 from app.schemas.auth.auth_schema import (
@@ -36,6 +43,11 @@ from app.services.email_service import (
     send_recovery_email,
     send_verification_email,
 )
+
+
+def _now() -> datetime:
+    """Current UTC time, comparable with the timezone-aware ``expires_at``."""
+    return datetime.now(timezone.utc)
 
 
 class AuthService:
@@ -103,9 +115,11 @@ class AuthService:
             LoginDomain
 
         Raises:
-            UserNotFoundError: If email does not belong to any user.
-            PasswordNotFoundError: If stored password row is missing.
-            ValueError: If password verification fails.
+            InvalidCredentialsError: If the email is unknown, has no stored
+                password row, or the password does not match. Deliberately one
+                error for all three so the endpoint cannot be used to enumerate
+                registered addresses.
+            PendingValidationError: If the account still awaits approval.
 
         Side effects:
             Persists a new refresh token hash for the given device and commits.
@@ -157,7 +171,8 @@ class AuthService:
         """Revoke the refresh token associated with a device.
 
         Raises:
-            InvalidTokenError: If refresh token is invalid, expired, or revoked.
+            InvalidRefreshTokenError: If refresh token is invalid, expired,
+                or revoked.
 
         Side effects:
             Revokes the persisted refresh token and commits the transaction.
@@ -171,7 +186,7 @@ class AuthService:
             refresh_token_hash, data.device_id
         )
         if not token:
-            raise InvalidTokenError("Refresh token is invalid or expired")
+            raise InvalidRefreshTokenError()
 
         await self.uow.token_repo.revoke(token)
 
@@ -184,7 +199,7 @@ class AuthService:
             refresh_token_hash, data.device_id
         )
         if not token:
-            raise InvalidCredentialsError("Refresh token is invalid or expired.")
+            raise InvalidRefreshTokenError()
 
         await self.uow.token_repo.revoke(token)
 
@@ -232,17 +247,30 @@ class AuthService:
     async def confirm_password_recovery(
         self, data: PasswordRecoveryConfirmRequest
     ) -> None:
-        """Validate a recovery token and update the user's password."""
-        recovery_token_hash = hash_token(data.token)
-        recovery_token = await self.uow.password_recovery_repo.get_active_token(
-            recovery_token_hash
+        """Validate a recovery token and update the user's password.
+
+        Raises:
+            InvalidRecoveryTokenError: If no token with that hash exists.
+            RecoveryTokenUsedError: If the link was already used, or superseded
+                by a newer one.
+            RecoveryTokenExpiredError: If the link is past its expiry.
+            PasswordNotFoundError: If the user has no stored password row.
+        """
+        recovery_token = await self.uow.password_recovery_repo.get_by_hash(
+            hash_token(data.token)
         )
-        if not recovery_token:
-            raise InvalidTokenError("Password recovery token is invalid or expired")
+        if recovery_token is None:
+            raise InvalidRecoveryTokenError()
+        if recovery_token.used:
+            raise RecoveryTokenUsedError()
+        if recovery_token.expires_at <= _now():
+            raise RecoveryTokenExpiredError()
 
         user_password = await self.uow.password_repo.get_by_user_id(
             recovery_token.user_id
         )
+        if user_password is None:
+            raise PasswordNotFoundError(str(recovery_token.user_id))
         user_password.password_hashed = hash_password(data.new_password)
         user = await self.uow.user_repo.get_by_id(recovery_token.user_id)
 
@@ -261,16 +289,20 @@ class AuthService:
         as verified.
 
         Raises:
-            InvalidTokenError: If the token is invalid, expired, or already used.
+            InvalidVerificationTokenError: If no token with that hash exists.
+            VerificationTokenUsedError: If the link was already used, or
+                superseded by a newer one.
+            VerificationTokenExpiredError: If the link is past its expiry.
         """
-        token_hash = hash_token(token)
-        verification_token = await self.uow.email_verification_repo.get_active_token(
-            token_hash
+        verification_token = await self.uow.email_verification_repo.get_by_hash(
+            hash_token(token)
         )
-        if not verification_token:
-            raise InvalidTokenError(
-                "Verification link is invalid or has already expired."
-            )
+        if verification_token is None:
+            raise InvalidVerificationTokenError()
+        if verification_token.used:
+            raise VerificationTokenUsedError()
+        if verification_token.expires_at <= _now():
+            raise VerificationTokenExpiredError()
 
         await self.uow.email_verification_repo.mark_used(verification_token)
         await self.uow.user_repo.update_email_verification(verification_token.user_id)

@@ -430,6 +430,26 @@ class TestApproveEstablishmentRequest:
 
         assert response.status_code == status.HTTP_409_CONFLICT
 
+    async def test_already_reviewed_reports_the_terminal_status(
+        self, client, admin_headers, app
+    ):
+        """ "Already resolved" is not actionable unless the client is told which
+        terminal state the request landed in."""
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        request_id = await _insert_establishment_request(
+            user_id, request_status=EstablishmentRequestStatus.REJECTED
+        )
+
+        response = await client.patch(
+            APPROVE_ESTABLISHMENT_REQUEST_URL.format(request_id=request_id),
+            json=_approve_body(),
+            headers=admin_headers,
+        )
+
+        body = response.json()
+        assert body["type"] == "/errors/establishment-request-already-reviewed"
+        assert body["current_status"] == "rejected"
+
 
 class TestRejectEstablishmentRequest:
     async def test_returns_204_no_content(self, client, make_user_with_role, app):

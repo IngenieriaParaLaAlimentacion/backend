@@ -16,8 +16,8 @@ from app.core.dependencies import (
     require_admin_or_analyst,
     require_any,
 )
-from app.domain import UserActor, UserRole
-from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
+from app.domain import UserActor
+from app.exceptions.domain_exceptions import MissingTokenError
 from app.schemas.establishments.establishment_schema import (
     EstablishmentCreationRequestCreate,
     EstablishmentCreationRequestResponse,
@@ -30,11 +30,6 @@ from app.services.establishments.establishment_service import EstablishmentServi
 from app.services.exporters.csv.columns import ESTABLISHMENT_LISTING_EXPORTER
 
 router = APIRouter(prefix="/establishments")
-
-_FIELD_WORKER_ROLES = {
-    UserRole.FIELD_WORKER,
-    UserRole.SUPERADMIN,
-}  # TODO: review, not sure if its necessary
 
 
 @router.post(
@@ -113,15 +108,12 @@ async def update_establishment(
     summary="List all establishments",
     description="Public catalog of establishments. Supports optional search "
     "filtering by establishment name or address. When 'available' is set, requires "
-    "a field worker token and returns only establishments that field worker "
-    "can still request (excludes approved/pending relations).",
+    "any authenticated token and returns only establishments that caller can "
+    "still request (excludes approved/pending relations).",
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid query parameters"},
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Missing or invalid token (only when 'available' is set)"
-        },
-        status.HTTP_403_FORBIDDEN: {
-            "description": "Caller is not a field worker (only when 'available' is set)"
         },
     },
 )
@@ -131,20 +123,16 @@ async def get_establishments(
     available: bool = Query(
         default=False,
         description="If true, return only establishments the authenticated "
-        "field worker can still request (excludes approved/pending). "
-        "Field worker only.",
+        "caller can still request (excludes approved/pending). "
+        "Requires a token.",
     ),
-    actor: UserActor | None = Depends(
-        get_optional_actor
-    ),  # TODO: re-check since now we do not need to add an establishment to register
+    actor: UserActor | None = Depends(get_optional_actor),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> PaginatedResponse[EstablishmentResponse]:
     params = query.to_domain()
     if available:
         if actor is None:
-            raise UnauthorizedError()
-        if actor.role not in _FIELD_WORKER_ROLES:
-            raise ForbiddenError()
+            raise MissingTokenError()
         result = await service.get_available_establishments(
             user_id=actor.user_id,
             page=paginated.page,

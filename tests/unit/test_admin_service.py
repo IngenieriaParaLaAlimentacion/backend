@@ -7,9 +7,11 @@ import pytest
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.user import UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
-    BadRequestError,
+    FieldWorkerNotPendingError,
     UserEstablishmentNotApprovedError,
     UserEstablishmentNotFoundError,
+    UserNotActiveError,
+    UserNotFieldWorkerError,
     UserNotFoundError,
 )
 from app.services.admin_service import AdminService
@@ -319,7 +321,7 @@ class TestApproveEstablishments:
         uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
         service = AdminService(uow, mock_auth_service)
 
-        with pytest.raises(BadRequestError):
+        with pytest.raises(UserNotActiveError):
             await service.approve_establishments(user.id, [estab.id])
 
         uow.user_establishment_repo.update_status_for_ids.assert_not_called()
@@ -486,7 +488,7 @@ class TestRevokeEstablishments:
         )
         service = AdminService(uow, mock_auth_service)
 
-        with pytest.raises(BadRequestError):
+        with pytest.raises(UserNotFieldWorkerError):
             await service.revoke_establishments(user.id, [estab.id])
 
         uow.user_establishment_repo.update_status_for_ids.assert_not_called()
@@ -718,7 +720,7 @@ class TestApproveFieldWorker:
         uow = _make_approve_uow(user=user, relations=[])
         service = AdminService(uow, mock_auth_service)
 
-        with pytest.raises(BadRequestError):
+        with pytest.raises(UserNotFieldWorkerError):
             await service.approve_field_worker(user.id, [])
 
         uow.user_repo.update_status.assert_not_called()
@@ -731,7 +733,7 @@ class TestApproveFieldWorker:
         uow = _make_approve_uow(user=user, relations=[])
         service = AdminService(uow, mock_auth_service)
 
-        with pytest.raises(BadRequestError):
+        with pytest.raises(FieldWorkerNotPendingError):
             await service.approve_field_worker(user.id, [])
 
         uow.user_repo.update_status.assert_not_called()

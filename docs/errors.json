@@ -1,0 +1,280 @@
+{
+  "errors": [
+    {
+      "type": "/errors/account-pending-validation",
+      "status": 403,
+      "exception": "PendingValidationError",
+      "description": "Exception raised when a user attempts to log in with a pending account."
+    },
+    {
+      "type": "/errors/admin/invite-already-pending",
+      "status": 409,
+      "exception": "InvitePendingError",
+      "description": "Raised when inviting an address that already has a pending invitation."
+    },
+    {
+      "type": "/errors/auth/invalid-recovery-token",
+      "status": 401,
+      "exception": "InvalidRecoveryTokenError",
+      "description": "Raised when a password recovery token is unusable."
+    },
+    {
+      "type": "/errors/auth/invalid-refresh-token",
+      "status": 401,
+      "exception": "InvalidRefreshTokenError",
+      "description": "Raised when a refresh token is unknown, expired or already revoked."
+    },
+    {
+      "type": "/errors/auth/invalid-verification-token",
+      "status": 401,
+      "exception": "InvalidVerificationTokenError",
+      "description": "Raised when an email verification token is unusable."
+    },
+    {
+      "type": "/errors/auth/missing-token",
+      "status": 401,
+      "exception": "MissingTokenError",
+      "description": "Raised when a protected endpoint receives no bearer token at all."
+    },
+    {
+      "type": "/errors/auth/recovery-token-expired",
+      "status": 401,
+      "exception": "RecoveryTokenExpiredError",
+      "description": "Raised when a password recovery token is past its expiry."
+    },
+    {
+      "type": "/errors/auth/recovery-token-used",
+      "status": 401,
+      "exception": "RecoveryTokenUsedError",
+      "description": "Raised when a password recovery token has already been consumed."
+    },
+    {
+      "type": "/errors/auth/verification-token-expired",
+      "status": 401,
+      "exception": "VerificationTokenExpiredError",
+      "description": "Raised when an email verification token is past its expiry."
+    },
+    {
+      "type": "/errors/auth/verification-token-used",
+      "status": 401,
+      "exception": "VerificationTokenUsedError",
+      "description": "Raised when an email verification token has already been consumed."
+    },
+    {
+      "type": "/errors/email-delivery-failed",
+      "status": 502,
+      "exception": "EmailDeliveryError",
+      "description": "Raised when an outbound email cannot be delivered to the SMTP server."
+    },
+    {
+      "type": "/errors/establishment-access-denied",
+      "status": 403,
+      "exception": "EstablishmentAccessDeniedError",
+      "description": "Raised when a field worker acts on an establishment they have no approved relation with."
+    },
+    {
+      "type": "/errors/establishment-already-exists",
+      "status": 409,
+      "exception": "EstablishmentAlreadyExistsError",
+      "description": "Raised when an establishment with the given place_id already exists."
+    },
+    {
+      "type": "/errors/establishment-not-found",
+      "status": 404,
+      "exception": "EstablishmentNotFoundError",
+      "description": "Exception raised when an establishment is not found."
+    },
+    {
+      "type": "/errors/establishment-request-already-reviewed",
+      "status": 409,
+      "exception": "EstablishmentRequestAlreadyReviewedError",
+      "description": "Raised when approving/rejecting a request that is no longer pending."
+    },
+    {
+      "type": "/errors/establishment-request-not-found",
+      "status": 404,
+      "exception": "EstablishmentRequestNotFoundError",
+      "description": "Exception raised when an establishment request does not exist."
+    },
+    {
+      "type": "/errors/export/unmapped-label",
+      "status": 400,
+      "exception": "UnmappedExportLabelError",
+      "description": "Exception raised when a CSV export hits an enum value with no label."
+    },
+    {
+      "type": "/errors/field-worker-is-not-pending",
+      "status": 400,
+      "exception": "FieldWorkerNotPendingError",
+      "description": "Raised when a field worker is not awaiting validation."
+    },
+    {
+      "type": "/errors/filter-not-applicable",
+      "status": 400,
+      "exception": "FilterNotApplicableError",
+      "description": "Raised when a filter resolves through a target the resource does not carry."
+    },
+    {
+      "type": "/errors/invalid-age-range",
+      "status": 400,
+      "exception": "InvalidAgeRangeError",
+      "description": "Raised when an age-range filter has a minimum above its maximum."
+    },
+    {
+      "type": "/errors/invalid-credentials",
+      "status": 401,
+      "exception": "InvalidCredentialsError",
+      "description": "Exception raised when credentials are invalid."
+    },
+    {
+      "type": "/errors/invalid-date-range",
+      "status": 400,
+      "exception": "InvalidDateRangeError",
+      "description": "Raised when a date-range filter starts after it ends."
+    },
+    {
+      "type": "/errors/invalid-survey-payload",
+      "status": 400,
+      "exception": "InvalidSurveyPayloadError",
+      "description": "Exception raised when a reconcile payload references ids outside the survey."
+    },
+    {
+      "type": "/errors/invalid-survey-response",
+      "status": 400,
+      "exception": "InvalidSurveyResponseError",
+      "description": "Exception raised when submitted answers fail validation, or the payload names an entity that does not match the survey's response target."
+    },
+    {
+      "type": "/errors/invalid-survey-structure",
+      "status": 400,
+      "exception": "InvalidSurveyStructureError",
+      "description": "Exception raised when a survey's questions or options are inconsistent."
+    },
+    {
+      "type": "/errors/invalid-user-role",
+      "status": 400,
+      "exception": "InvalidUserRoleError",
+      "description": "Raised when the target user's role is not valid for the operation."
+    },
+    {
+      "type": "/errors/no-fields-to-update",
+      "status": 400,
+      "exception": "EmptyUpdateRequestError",
+      "description": "Exception raised when an update has no attributes to be updated."
+    },
+    {
+      "type": "/errors/not-resource-owner",
+      "status": 403,
+      "exception": "NotResourceOwnerError",
+      "description": "Raised when a non-admin acts on a resource somebody else created."
+    },
+    {
+      "type": "/errors/password-not-found",
+      "status": 404,
+      "exception": "PasswordNotFoundError",
+      "description": "Exception raised when a user's password record is not found."
+    },
+    {
+      "type": "/errors/role-not-allowed",
+      "status": 403,
+      "exception": "RoleNotAllowedError",
+      "description": "Raised when the actor's role is not permitted to perform the operation."
+    },
+    {
+      "type": "/errors/subject-already-exists",
+      "status": 409,
+      "exception": "SubjectAlreadyExistsError",
+      "description": "Exception raised when trying to register a subject with an existing DNI."
+    },
+    {
+      "type": "/errors/subject-not-found",
+      "status": 404,
+      "exception": "SubjectNotFoundError",
+      "description": "Exception raised when a subject cannot be found."
+    },
+    {
+      "type": "/errors/survey-already-exists",
+      "status": 409,
+      "exception": "SurveyAlreadyExistsError",
+      "description": "Exception raised when a survey name collides with an existing one."
+    },
+    {
+      "type": "/errors/survey-locked",
+      "status": 409,
+      "exception": "SurveyLockedError",
+      "description": "Exception raised when a survey can no longer be modified."
+    },
+    {
+      "type": "/errors/survey-not-available",
+      "status": 403,
+      "exception": "SurveyNotAvailableError",
+      "description": "Raised when a field worker reaches a survey that is not currently active."
+    },
+    {
+      "type": "/errors/survey-not-found",
+      "status": 404,
+      "exception": "SurveyNotFoundError",
+      "description": "Exception raised when a survey cannot be found."
+    },
+    {
+      "type": "/errors/survey-response-already-exists",
+      "status": 409,
+      "exception": "SurveyResponseAlreadyExistsError",
+      "description": "Exception raised when a survey's target has already been answered."
+    },
+    {
+      "type": "/errors/survey-response-not-found",
+      "status": 404,
+      "exception": "SurveyResponseNotFoundError",
+      "description": "Exception raised when a survey response cannot be found."
+    },
+    {
+      "type": "/errors/unauthorized",
+      "status": 401,
+      "exception": "UnauthorizedError",
+      "description": "Exception raised when authorization fails."
+    },
+    {
+      "type": "/errors/user-already-exists",
+      "status": 409,
+      "exception": "UserAlreadyExistsError",
+      "description": "Exception raised when trying to register with an existing email."
+    },
+    {
+      "type": "/errors/user-establishment-not-approved",
+      "status": 409,
+      "exception": "UserEstablishmentNotApprovedError",
+      "description": "Raised when revoking access to an establishment that isn't currently approved for the given user."
+    },
+    {
+      "type": "/errors/user-establishment-not-found",
+      "status": 404,
+      "exception": "UserEstablishmentNotFoundError",
+      "description": "Exception raised when a user-establishment relation does not exist."
+    },
+    {
+      "type": "/errors/user-is-not-a-field-worker",
+      "status": 400,
+      "exception": "UserNotFieldWorkerError",
+      "description": "Raised when an operation requires the target user to be a field worker."
+    },
+    {
+      "type": "/errors/user-is-not-active",
+      "status": 400,
+      "exception": "UserNotActiveError",
+      "description": "Raised when an operation requires the target user to be active."
+    },
+    {
+      "type": "/errors/user-is-not-pending",
+      "status": 400,
+      "exception": "UserNotPendingError",
+      "description": "Raised when a user has no pending invitation."
+    },
+    {
+      "type": "/errors/user-not-found",
+      "status": 404,
+      "exception": "UserNotFoundError",
+      "description": "Exception raised when a user is not found."
+    }
+  ]
+}
