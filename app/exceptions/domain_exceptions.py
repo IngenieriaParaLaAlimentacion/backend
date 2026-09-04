@@ -792,6 +792,8 @@ class FoodNotFoundError(NotFoundError):
         food_id (str): The ID that was looked up.
     """
 
+    error_type = "food-not-found"
+
     def __init__(self, food_id: str):
         super().__init__(
             "Food not found",
