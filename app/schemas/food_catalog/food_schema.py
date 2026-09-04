@@ -44,15 +44,7 @@ class FoodNutrientValueItem(BaseModel):
     amount_per_100g: Decimal
 
 
-class FoodDetailResponse(BaseModel):
+class FoodDetailResponse(FoodListItem):
     """A food's full detail, including its nutrient composition."""
 
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID
-    code: str
-    name: str
-    base_unit: MeasurementUnit
-    is_active: bool
-    category: FoodCategoryRefResponse
     nutrients: list[FoodNutrientValueItem]
