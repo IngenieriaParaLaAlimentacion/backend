@@ -250,9 +250,7 @@ class TestConstraints:
                 )
             )
 
-    async def test_unknown_food_is_rejected(
-        self, db_establishment, responsible, foods
-    ):
+    async def test_unknown_food_is_rejected(self, db_establishment, responsible, foods):
         """A bad item must surface as itself, not as a duplicate intake id."""
         with pytest.raises(IntegrityError):
             await _persist(
