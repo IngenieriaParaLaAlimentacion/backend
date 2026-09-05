@@ -31,6 +31,10 @@ from app.repositories.food_catalog.food_nutrient_value_repository import (
 from app.repositories.food_catalog.food_repository import FoodRepository
 from app.repositories.food_catalog.nutrient_repository import NutrientRepository
 from app.repositories.food_intakes.food_intake_repository import FoodIntakeRepository
+from app.repositories.food_outflows.food_outflow_repository import (
+    FoodOutflowRepository,
+)
+from app.repositories.food_stock.food_stock_repository import FoodStockRepository
 from app.repositories.measurements.measurement_alert_repository import (
     MeasurementAlertRepository,
 )
@@ -80,6 +84,8 @@ class UnitOfWork(IUnitOfWork):
         self.food_repo = FoodRepository(self.session)
         self.food_nutrient_value_repo = FoodNutrientValueRepository(self.session)
         self.food_intake_repo = FoodIntakeRepository(self.session)
+        self.food_outflow_repo = FoodOutflowRepository(self.session)
+        self.food_stock_repo = FoodStockRepository(self.session)
         return self
 
     async def commit(self) -> None:

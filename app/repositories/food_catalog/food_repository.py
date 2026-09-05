@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from uuid import UUID
 
 from sqlalchemy import asc, desc, func, select
@@ -104,6 +105,18 @@ class FoodRepository:
             )
         )
         return result.scalar_one_or_none()
+
+    async def get_by_ids(self, food_ids: Iterable[UUID]) -> list[Food]:
+        """Return the foods among ``food_ids`` that exist.
+
+        Light on purpose — no nutrient composition — because callers use it to
+        validate the food references of a movement, not to render a food.
+        """
+        ids = list(food_ids)
+        if not ids:
+            return []
+        result = await self.db.execute(select(Food).where(Food.id.in_(ids)))
+        return list(result.scalars().all())
 
     async def get_all(self) -> list[Food]:
         """Return every food.
