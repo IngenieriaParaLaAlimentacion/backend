@@ -814,3 +814,30 @@ class FoodNotFoundError(NotFoundError):
             "Food not found",
             f"No food with id {food_id} exists.",
         )
+
+
+class InsufficientStockError(ConflictError):
+    """Exception raised when an outflow exceeds an establishment's stock.
+
+    Carries the food and the two quantities so a client can tell the user what
+    is actually available rather than only that the request failed.
+
+    Args:
+        food_id (str): The food whose balance is short.
+        requested (str): The quantity the outflow asked for.
+        available (str): The quantity actually held.
+    """
+
+    error_type = "insufficient-stock"
+
+    def __init__(self, food_id: str, requested: str, available: str):
+        super().__init__(
+            "Insufficient stock",
+            f"The establishment holds {available} of food {food_id}, "
+            f"which does not cover the requested {requested}.",
+            extensions={
+                "food_id": food_id,
+                "requested": requested,
+                "available": available,
+            },
+        )

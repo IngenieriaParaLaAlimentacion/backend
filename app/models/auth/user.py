@@ -68,6 +68,11 @@ class User(Base):
         back_populates="responsible",
         foreign_keys="[FoodIntake.responsible_id]",
     )
+    food_outflows = relationship(
+        "FoodOutflow",
+        back_populates="responsible",
+        foreign_keys="[FoodOutflow.responsible_id]",
+    )
     recovery_tokens = relationship(
         "PasswordRecoveryToken",
         back_populates="user",
