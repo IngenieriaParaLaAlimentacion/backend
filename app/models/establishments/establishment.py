@@ -39,3 +39,7 @@ class Establishment(Base):
         "Measurement",
         back_populates="establishment",
     )
+    food_intakes = relationship(
+        "FoodIntake",
+        back_populates="establishment",
+    )

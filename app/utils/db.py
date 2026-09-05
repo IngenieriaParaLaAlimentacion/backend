@@ -226,21 +226,50 @@ async def execute_count(
     return (await db.execute(count_query)).scalar_one()
 
 
-async def insert_with_savepoint(db: AsyncSession, entity, field: str, value) -> object:
+def violated_constraint(error: IntegrityError) -> str | None:
+    """Return the name of the constraint Postgres rejected the write on.
+
+    asyncpg carries it on the driver error at ``orig.__cause__``, psycopg2
+    under ``orig.diag``.
+    """
+    for candidate in (error.orig, getattr(error.orig, "__cause__", None)):
+        if candidate is None:
+            continue
+        name = getattr(candidate, "constraint_name", None) or getattr(
+            getattr(candidate, "diag", None), "constraint_name", None
+        )
+        if name:
+            return name
+    return None
+
+
+async def insert_with_savepoint(
+    db: AsyncSession, entity, field: str, value, constraint: str | None = None
+) -> object:
     """Insert ``entity`` inside a SAVEPOINT, mapping unique violations.
 
     The SAVEPOINT rolls back only the failed row, leaving the session usable
     for the caller to re-query.
 
+    Args:
+        constraint: name of the constraint whose violation means ``field`` is
+            taken. Pass it whenever the insert can fail on something else too
+            — cascaded child rows, a check constraint, an FK — so those surface
+            as themselves instead of as a false duplicate. Left as None, any
+            integrity error is read as a duplicate.
+
     Raises:
         UniqueConstraintError: if ``field`` is already in use. The caller is
             responsible for re-querying to decide the outcome.
+        IntegrityError: for any other constraint the write violated.
     """
     try:
         async with db.begin_nested():
             db.add(entity)
             await db.flush()
-    except IntegrityError:
+    except IntegrityError as error:
+        if constraint is not None and violated_constraint(error) != constraint:
+            raise
         raise UniqueConstraintError(field, value)
     await db.refresh(entity)
     return entity
