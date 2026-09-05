@@ -30,7 +30,11 @@ class FoodIntakeRepository:
                 re-queries to decide whether this is an offline replay.
         """
         return await insert_with_savepoint(
-            self.db, intake, "id", intake.id, constraint="food_intakes_pkey"
+            self.db,
+            intake,
+            field="id",
+            value=intake.id,
+            constraint="food_intakes_pkey",
         )
 
     async def get_by_id(self, intake_id: UUID) -> FoodIntake | None:
