@@ -26,29 +26,12 @@ from app.models.establishments.establishment import Establishment
 from app.models.surveys.survey import Survey
 from app.models.surveys.survey_response import SurveyResponse
 from app.repositories.surveys.constants import SURVEY_RESPONSE_SORT_CLAUSES
-from app.utils.db import execute_paginated, ilike_condition
+from app.utils.db import execute_paginated, ilike_condition, violated_constraint
 
 _CONSTRAINT_FIELDS = {
     "uq_survey_responses_survey_establishment": "establishment_id",
     "uq_survey_responses_survey_subject": "subject_id",
 }
-
-
-def _violated_constraint(error: IntegrityError) -> str | None:
-    """Return the name of the constraint Postgres rejected the write on.
-
-    asyncpg carries it on the ``UniqueViolationError`` at ``orig.__cause__``,
-    psycopg2 under ``orig.diag``.
-    """
-    for candidate in (error.orig, getattr(error.orig, "__cause__", None)):
-        if candidate is None:
-            continue
-        name = getattr(candidate, "constraint_name", None) or getattr(
-            getattr(candidate, "diag", None), "constraint_name", None
-        )
-        if name:
-            return name
-    return None
 
 
 class SurveyResponseRepository:
@@ -149,7 +132,7 @@ class SurveyResponseRepository:
                 self.db.add(response)
                 await self.db.flush()
         except IntegrityError as error:
-            field = _CONSTRAINT_FIELDS.get(_violated_constraint(error), "id")
+            field = _CONSTRAINT_FIELDS.get(violated_constraint(error), "id")
             raise UniqueConstraintError(field, fields.get(field, id))
 
         await self.db.refresh(response)

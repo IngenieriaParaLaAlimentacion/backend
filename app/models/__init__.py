@@ -11,6 +11,8 @@ from .food_catalog.food import Food
 from .food_catalog.food_category import FoodCategory
 from .food_catalog.food_nutrient_value import FoodNutrientValue
 from .food_catalog.nutrient import Nutrient
+from .food_intakes.food_intake import FoodIntake
+from .food_intakes.food_intake_item import FoodIntakeItem
 from .measurements.measurement import Measurement
 from .measurements.measurement_alert import MeasurementAlert
 from .subjects.subject import Sex, Subject
@@ -47,4 +49,6 @@ __all__ = [
     "Food",
     "Nutrient",
     "FoodNutrientValue",
+    "FoodIntake",
+    "FoodIntakeItem",
 ]
