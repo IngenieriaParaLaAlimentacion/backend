@@ -1,0 +1,58 @@
+"""Subject detail enriched with the subject's latest anthropometric reading.
+
+Lives apart from ``app.domain.subject`` because ``app.domain.measurement``
+already imports ``Sex`` from there; importing measurement types back into
+subject.py would be circular.
+"""
+
+from dataclasses import dataclass
+
+from app.domain.measurement import (
+    MeasurementBase,
+    MeasurementSummaryDomain,
+    NutritionalStatus,
+    SubjectRefDomain,
+    status_from_alerts,
+)
+from app.domain.subject import SubjectDomain
+
+
+@dataclass
+class SubjectDetailDomain(SubjectDomain):
+    """Full subject data plus the clinical reading of their latest measurement.
+
+    ``latest_measurement`` is the subject's most recent reading across every
+    establishment they've been measured at, not the latest at any one in
+    particular.
+    Both extra fields are None for a subject that has never been
+    measured -- deliberately distinct from NORMAL, which means "measured and
+    healthy".
+    """
+
+    nutritional_status: NutritionalStatus | None
+    latest_measurement: MeasurementSummaryDomain | None
+
+    @classmethod
+    def build(cls, subject, measurement) -> "SubjectDetailDomain":
+        """Combine an ORM Subject with its latest ORM Measurement, if any."""
+        base = vars(SubjectDomain.from_db(subject))
+        if measurement is None:
+            return cls(**base, nutritional_status=None, latest_measurement=None)
+        return cls(
+            **base,
+            nutritional_status=status_from_alerts(measurement.alerts),
+            latest_measurement=MeasurementSummaryDomain.from_db(measurement),
+        )
+
+
+@dataclass
+class EvolutionPointDomain(MeasurementBase):
+    """A single point in a subject's anthropometric evolution series."""
+
+
+@dataclass
+class SubjectEvolutionDomain:
+    """A subject's full chronological anthropometric evolution."""
+
+    subject: SubjectRefDomain
+    points: list[EvolutionPointDomain]

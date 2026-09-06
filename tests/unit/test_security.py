@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 from jose import jwt
 
-from app.core.config import settings
+from app.config.settings import settings
 from app.core.security import (
     create_access_token,
     create_password_recovery_token,

@@ -6,9 +6,11 @@ import pytest
 
 from app.domain.user import UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
-    BadRequestError,
+    InvalidUserRoleError,
+    InvitePendingError,
     UserAlreadyExistsError,
     UserNotFoundError,
+    UserNotPendingError,
 )
 from app.services.admin_service import AdminService
 
@@ -91,6 +93,58 @@ class TestInviteAdmin:
         uow.user_repo.create.assert_not_called()
 
     @pytest.mark.asyncio
+    async def test_raises_invite_pending_for_a_still_pending_invitee(
+        self, make_uow, make_service
+    ):
+        """A re-invite must be distinguishable from an already-registered user,
+        and must hand back the id the resend-invite endpoint needs."""
+        pending = _make_pending_user()
+        uow = make_uow(existing_user=pending)
+        service = make_service(uow)
+
+        with pytest.raises(InvitePendingError) as exc:
+            await service.invite_user(MagicMock(email=pending.email), UserRole.ADMIN)
+
+        assert exc.value.extensions == {"user_id": str(pending.id)}
+        uow.user_repo.create.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_raises_already_exists_for_a_pending_field_worker(
+        self, make_uow, make_service
+    ):
+        """A self-registered field worker is PENDING_VALIDATION too, but was
+        never invited -- resend-invite would not help."""
+        field_worker = _make_pending_user()
+        field_worker.role = UserRole.FIELD_WORKER
+        uow = make_uow(existing_user=field_worker)
+        service = make_service(uow)
+
+        with pytest.raises(UserAlreadyExistsError):
+            await service.invite_user(
+                MagicMock(email=field_worker.email), UserRole.ADMIN
+            )
+
+    @pytest.mark.asyncio
+    async def test_checks_existing_email_in_lowercase(self, make_uow, make_service):
+        """Should look the email up normalized, so casing cannot bypass the check."""
+        uow = make_uow()
+        service = make_service(uow)
+
+        await service.invite_user(MagicMock(email="  New@Test.com "), UserRole.ADMIN)
+
+        uow.user_repo.get_by_email.assert_called_once_with("new@test.com")
+
+    @pytest.mark.asyncio
+    async def test_stores_email_in_lowercase(self, make_uow, make_service):
+        """Should persist the normalized email, not the raw input."""
+        uow = make_uow()
+        service = make_service(uow)
+
+        await service.invite_user(MagicMock(email="New@Test.com"), UserRole.ADMIN)
+
+        assert uow.user_repo.create.call_args.kwargs["email"] == "new@test.com"
+
+    @pytest.mark.asyncio
     async def test_creates_user_with_admin_role_and_active_status(
         self, make_uow, make_service
     ):
@@ -117,7 +171,7 @@ class TestInviteAdmin:
 
         with (
             patch("app.services.admin_service.send_invite_email"),
-            patch("app.services.admin_service.build_recovery_deeplink"),
+            patch("app.services.admin_service.build_invite_deeplink"),
         ):
             result = await service.invite_user(
                 MagicMock(email="new@test.com"), UserRole.ADMIN
@@ -169,7 +223,7 @@ class TestInviteAdmin:
         with (
             patch("app.services.admin_service.send_invite_email") as mock_send,
             patch(
-                "app.services.admin_service.build_recovery_deeplink",
+                "app.services.admin_service.build_invite_deeplink",
                 return_value="https://deeplink/xyz",
             ),
         ):
@@ -188,7 +242,7 @@ class TestInviteAdmin:
     async def test_builds_deeplink_with_plain_token_and_role(
         self, make_uow, make_service, mock_auth_service
     ):
-        """Should call build_recovery_deeplink with the plain token and admin role."""
+        """Should call build_invite_deeplink with the plain token and admin role."""
         created_user = _make_user()
         mock_auth_service.create_recovery_token = AsyncMock(
             return_value=(_make_token(), "plain-xyz")
@@ -197,9 +251,7 @@ class TestInviteAdmin:
         service = make_service(uow)
 
         with (
-            patch(
-                "app.services.admin_service.build_recovery_deeplink"
-            ) as mock_deeplink,
+            patch("app.services.admin_service.build_invite_deeplink") as mock_deeplink,
             patch("app.services.admin_service.send_invite_email"),
         ):
             await service.invite_user(MagicMock(email="new@test.com"), UserRole.ADMIN)
@@ -244,13 +296,13 @@ class TestResendInvite:
 
     @pytest.mark.asyncio
     async def test_raises_if_user_already_active(self, make_uow, make_service):
-        """Should raise BadRequestError if the user already completed onboarding."""
+        """Should raise UserNotPendingError if the user completed onboarding."""
         active_user = _make_user()  # status=ACTIVE by default
         uow = make_uow()
         uow.user_repo.get_by_id = AsyncMock(return_value=active_user)
         service = make_service(uow)
 
-        with pytest.raises(BadRequestError):
+        with pytest.raises(UserNotPendingError):
             await service.resend_invite(active_user.id)
 
     @pytest.mark.asyncio
@@ -261,8 +313,26 @@ class TestResendInvite:
         uow.user_repo.get_by_id = AsyncMock(return_value=active_user)
         service = make_service(uow)
 
-        with pytest.raises(BadRequestError):
+        with pytest.raises(UserNotPendingError):
             await service.resend_invite(active_user.id)
+
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_raises_if_user_is_a_field_worker(self, make_uow, make_service):
+        """Should raise InvalidUserRoleError for a pending self-registered worker.
+
+        Field workers are also PENDING_VALIDATION after self-registration, but
+        they are never invited and have no backoffice invite deeplink.
+        """
+        field_worker = _make_pending_user()
+        field_worker.role = UserRole.FIELD_WORKER
+        uow = make_uow()
+        uow.user_repo.get_by_id = AsyncMock(return_value=field_worker)
+        service = make_service(uow)
+
+        with pytest.raises(InvalidUserRoleError):
+            await service.resend_invite(field_worker.id)
 
         uow.commit.assert_not_called()
 
@@ -277,7 +347,7 @@ class TestResendInvite:
         with (
             patch("app.services.admin_service.send_invite_email"),
             patch(
-                "app.services.admin_service.build_recovery_deeplink",
+                "app.services.admin_service.build_invite_deeplink",
                 return_value="https://deeplink/xyz",
             ),
         ):
@@ -300,7 +370,7 @@ class TestResendInvite:
         with (
             patch("app.services.admin_service.send_invite_email"),
             patch(
-                "app.services.admin_service.build_recovery_deeplink",
+                "app.services.admin_service.build_invite_deeplink",
                 return_value="https://deeplink/xyz",
             ),
         ):
@@ -347,7 +417,7 @@ class TestResendInvite:
         with (
             patch("app.services.admin_service.send_invite_email") as mock_send,
             patch(
-                "app.services.admin_service.build_recovery_deeplink",
+                "app.services.admin_service.build_invite_deeplink",
                 return_value="https://deeplink/resend",
             ),
         ):
@@ -364,7 +434,7 @@ class TestResendInvite:
     async def test_builds_deeplink_with_plain_token_and_user_role(
         self, make_uow, make_service, mock_auth_service
     ):
-        """Should call build_recovery_deeplink with
+        """Should call build_invite_deeplink with
         the new plain token and the user's role."""
         pending_user = _make_pending_user()
         mock_auth_service.create_recovery_token = AsyncMock(
@@ -375,9 +445,7 @@ class TestResendInvite:
         service = make_service(uow)
 
         with (
-            patch(
-                "app.services.admin_service.build_recovery_deeplink"
-            ) as mock_deeplink,
+            patch("app.services.admin_service.build_invite_deeplink") as mock_deeplink,
             patch("app.services.admin_service.send_invite_email"),
         ):
             await service.resend_invite(pending_user.id)

@@ -1,11 +1,16 @@
 import uuid
+from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.exceptions.domain_exceptions import InvalidTokenError
-from app.schemas.auth_schema import PasswordRecoveryConfirmRequest
-from app.services.auth_service import AuthService
+from app.exceptions.domain_exceptions import (
+    InvalidTokenError,
+    RecoveryTokenExpiredError,
+    RecoveryTokenUsedError,
+)
+from app.schemas.auth.auth_schema import PasswordRecoveryConfirmRequest
+from app.services.auth.auth_service import AuthService
 
 
 @pytest.fixture
@@ -18,9 +23,11 @@ def valid_confirm_request():
 
 @pytest.fixture
 def make_recovery_token():
-    def _make():
+    def _make(used=False, expires_in=timedelta(hours=1)):
         t = MagicMock()
         t.user_id = uuid.uuid4()
+        t.used = used
+        t.expires_at = datetime.now(timezone.utc) + expires_in
         return t
 
     return _make
@@ -30,7 +37,7 @@ def make_recovery_token():
 def make_uow_recovery(make_uow, make_recovery_token):
     def _make(active_recovery_token=None, password_record=None):
         uow = make_uow(password_record=password_record)
-        uow.password_recovery_repo.get_active_token = AsyncMock(
+        uow.password_recovery_repo.get_by_hash = AsyncMock(
             return_value=active_recovery_token
         )
         uow.password_recovery_repo.mark_used = AsyncMock()
@@ -43,7 +50,7 @@ def make_uow_recovery(make_uow, make_recovery_token):
 @pytest.fixture
 def mock_encode_recovery_token(monkeypatch):
     monkeypatch.setattr(
-        "app.services.auth_service.hash_token",
+        "app.services.auth.auth_service.hash_token",
         lambda token: "hashed_recovery_token",
     )
 
@@ -51,7 +58,7 @@ def mock_encode_recovery_token(monkeypatch):
 @pytest.fixture
 def mock_hash_password_recovery(monkeypatch):
     monkeypatch.setattr(
-        "app.services.auth_service.hash_password",
+        "app.services.auth.auth_service.hash_password",
         lambda p: f"hashed_{p}",
     )
 
@@ -77,7 +84,7 @@ class TestConfirmPasswordRecoverySuccess:
 
         await AuthService(uow).confirm_password_recovery(valid_confirm_request)
 
-        uow.password_recovery_repo.get_active_token.assert_awaited_once_with(
+        uow.password_recovery_repo.get_by_hash.assert_awaited_once_with(
             "hashed_recovery_token"
         )
 
@@ -222,6 +229,42 @@ class TestConfirmPasswordRecoveryInvalidToken:
         uow = make_uow_recovery(active_recovery_token=None)
 
         with pytest.raises(InvalidTokenError):
+            await AuthService(uow).confirm_password_recovery(valid_confirm_request)
+
+        uow.commit.assert_not_awaited()
+
+
+class TestConfirmPasswordRecoveryTokenState:
+    """A consumed link and an expired one must not report the same thing."""
+
+    @pytest.mark.asyncio
+    async def test_used_token_is_reported_as_used(
+        self,
+        make_uow_recovery,
+        make_recovery_token,
+        valid_confirm_request,
+        mock_encode_recovery_token,
+    ):
+        uow = make_uow_recovery(active_recovery_token=make_recovery_token(used=True))
+
+        with pytest.raises(RecoveryTokenUsedError):
+            await AuthService(uow).confirm_password_recovery(valid_confirm_request)
+
+        uow.password_recovery_repo.mark_used.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_expired_token_is_reported_as_expired(
+        self,
+        make_uow_recovery,
+        make_recovery_token,
+        valid_confirm_request,
+        mock_encode_recovery_token,
+    ):
+        uow = make_uow_recovery(
+            active_recovery_token=make_recovery_token(expires_in=timedelta(hours=-1))
+        )
+
+        with pytest.raises(RecoveryTokenExpiredError):
             await AuthService(uow).confirm_password_recovery(valid_confirm_request)
 
         uow.commit.assert_not_awaited()

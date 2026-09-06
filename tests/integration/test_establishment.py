@@ -30,7 +30,7 @@ def _make_payload(**overrides) -> dict:
 
 async def _insert_field_worker() -> uuid.UUID:
     from app.db.database import AsyncSessionLocal
-    from app.models.user import User
+    from app.models.auth.user import User
 
     user_id = uuid.uuid4()
     async with AsyncSessionLocal() as session:
@@ -56,7 +56,7 @@ async def _insert_establishment(
     province: str = "Buenos Aires",
 ) -> SimpleNamespace:
     from app.db.database import AsyncSessionLocal
-    from app.models.establishment import Establishment
+    from app.models.establishments.establishment import Establishment
 
     async with AsyncSessionLocal() as session:
         establishment = Establishment(
@@ -82,7 +82,7 @@ async def _insert_relation(
     status_value: UserEstablishmentStatus,
 ) -> None:
     from app.db.database import AsyncSessionLocal
-    from app.models.user_establishment import UserEstablishment
+    from app.models.auth.user_establishment import UserEstablishment
 
     async with AsyncSessionLocal() as session:
         session.add(
@@ -103,7 +103,7 @@ def _field_worker_headers(user_id: uuid.UUID) -> dict:
 async def _seed_establishment(name: str, formatted_address: str) -> None:
     """Insert a single establishment with the given name and formatted_address."""
     from app.db.database import AsyncSessionLocal
-    from app.models.establishment import Establishment
+    from app.models.establishments.establishment import Establishment
 
     async with AsyncSessionLocal() as session:
         session.add(
@@ -123,7 +123,7 @@ async def _seed_establishment(name: str, formatted_address: str) -> None:
 async def _seed_establishments(n: int, app) -> list:
     """Insert n establishments and return their ORM instances."""
     from app.db.database import AsyncSessionLocal
-    from app.models.establishment import Establishment
+    from app.models.establishments.establishment import Establishment
 
     async with AsyncSessionLocal() as session:
         for i in range(n):
@@ -363,12 +363,19 @@ class TestAvailableEstablishments:
         response = await client.get(AVAILABLE_URL)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_analyst_returns_403(self, client, app):
+    async def test_analyst_can_list_available(self, client, app):
+        """Any authenticated role can request establishment access, so any role
+        can list the ones still available to it."""
+        establishment = await _insert_establishment("Centro A", "Calle A")
         token = create_access_token(uuid.uuid4(), role=UserRole.ANALYST)
+
         response = await client.get(
             AVAILABLE_URL, headers={"Authorization": f"Bearer {token}"}
         )
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+        assert response.status_code == status.HTTP_200_OK
+        ids = {item["id"] for item in response.json()["items"]}
+        assert ids == {str(establishment.id)}
 
     async def test_public_catalog_unchanged_without_token(self, client, app):
         """Regression: the plain catalog stays public (no token required)."""
@@ -653,3 +660,83 @@ class TestUpdateEstablishment:
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+REQUESTS_URL = f"{ESTABLISHMENT_URL}/requests"
+
+
+class TestCreateEstablishmentRequest:
+    async def test_creates_request_with_full_body(self, client, make_user_with_role):
+        """Provided fields are echoed back with status pending."""
+        headers, user_id = await make_user_with_role(UserRole.FIELD_WORKER)
+        response = await client.post(
+            REQUESTS_URL,
+            headers=headers,
+            json={
+                "name": "Comedor Esperanza",
+                "formatted_address": "Av. Siempre Viva 742",
+                "city": "Cordoba",
+                "province": "Cordoba",
+            },
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        data = response.json()
+        assert data["user_id"] == str(user_id)
+        assert data["status"] == "pending"
+        assert data["name"] == "Comedor Esperanza"
+        assert data["formatted_address"] == "Av. Siempre Viva 742"
+        assert data["city"] == "Cordoba"
+        assert data["province"] == "Cordoba"
+
+    async def test_request_is_persisted(self, client, make_user_with_role):
+        """The notification row is stored with pending status and the creator."""
+        headers, user_id = await make_user_with_role(UserRole.FIELD_WORKER)
+        await client.post(
+            REQUESTS_URL,
+            headers=headers,
+            json={
+                "name": "Comedor Esperanza",
+                "formatted_address": "Av. Siempre Viva 742",
+            },
+        )
+
+        from sqlalchemy import select
+
+        from app.db.database import AsyncSessionLocal
+        from app.models.establishments.establishment_request import (
+            EstablishmentRequest,
+        )
+
+        async with AsyncSessionLocal() as session:
+            result = await session.execute(select(EstablishmentRequest))
+            row = result.scalar_one()
+
+        assert row.name == "Comedor Esperanza"
+        assert row.user_id == user_id
+        assert row.status == "pending"
+        assert row.created_at is not None
+
+    async def test_field_over_100_chars_returns_422(self, client, make_user_with_role):
+        """Fields longer than 100 characters are rejected, like establishments."""
+        headers, _ = await make_user_with_role(UserRole.FIELD_WORKER)
+        response = await client.post(
+            REQUESTS_URL, headers=headers, json={"name": "x" * 101}
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_blank_field_returns_422(self, client, make_user_with_role):
+        """Whitespace-only fields are rejected with 422."""
+        headers, _ = await make_user_with_role(UserRole.FIELD_WORKER)
+        response = await client.post(
+            REQUESTS_URL, headers=headers, json={"name": "   "}
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_missing_token_returns_401(self, client):
+        """Requests without a token are rejected with 401."""
+        response = await client.post(REQUESTS_URL, json={})
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED

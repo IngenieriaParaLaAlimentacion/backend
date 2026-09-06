@@ -10,10 +10,10 @@ from app.domain.measurement import MeasurementListItemDomain
 from app.domain.subject import SubjectBase
 from app.domain.subject_event import SubjectEventType
 from app.domain.survey_response import SurveyResponseListItemDomain
-from app.models.measurement import Measurement
-from app.models.subject import Subject
-from app.models.subject_event import SubjectEvent
-from app.models.survey_response import SurveyResponse
+from app.models.measurements.measurement import Measurement
+from app.models.subjects.subject import Subject
+from app.models.subjects.subject_event import SubjectEvent
+from app.models.surveys.survey_response import SurveyResponse
 
 
 class ActivityRepository:
@@ -143,6 +143,7 @@ class ActivityRepository:
             .options(
                 selectinload(SurveyResponse.survey),
                 selectinload(SurveyResponse.establishment),
+                selectinload(SurveyResponse.subject),
             )
             .where(SurveyResponse.id.in_(response_ids))
         )

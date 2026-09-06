@@ -1,12 +1,14 @@
 import uuid
-from datetime import date
+from datetime import date, datetime, timezone
 from math import ceil
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from app.domain.measurement import AlertSeverity, AlertType, NutritionalStatus
 from app.domain.pagination import PaginatedResult
-from app.domain.subject import Sex, SubjectBase, SubjectDomain
+from app.domain.subject import Sex, SubjectBase, SubjectDomain, SubjectListingParams
 from app.domain.subject_event import SubjectEventType
 from app.exceptions.domain_exceptions import (
     EmptyUpdateRequestError,
@@ -14,8 +16,9 @@ from app.exceptions.domain_exceptions import (
     SubjectNotFoundError,
     UniqueConstraintError,
 )
-from app.schemas.subject_schema import SubjectRequest, SubjectUpdateRequest
-from app.services.subject_service import SubjectService
+from app.schemas.subjects.subject_schema import SubjectRequest, SubjectUpdateRequest
+from app.services.subjects.subject_service import _EXPORT_BATCH, SubjectService
+from tests.unit.conftest import aiter_of, capturing_exporter, drain
 
 
 @pytest.fixture
@@ -49,15 +52,49 @@ def make_subject():
 def make_uow(make_subject):
     """Return a factory that builds a mock UnitOfWork for SubjectService."""
 
-    def _make(listing=None, total=0):
+    def _make(listing=None, total=0, latest_measurement=None, latest_by_subject=None):
         uow = AsyncMock()
         uow.subject_repo.create = AsyncMock(return_value=make_subject())
         uow.subject_repo.get_subject_listing = AsyncMock(
             return_value=(listing or [], total)
         )
+        # Defaults to "never measured". Without an explicit None an AsyncMock
+        # would hand back a truthy mock and the detail builder would try to read
+        # alerts off it.
+        uow.measurement_repo.get_latest_for_subject = AsyncMock(
+            return_value=latest_measurement
+        )
+        # Defaults to "nobody in the page has a measurement" for the same reason.
+        uow.measurement_repo.get_latest_for_subjects = AsyncMock(
+            return_value=latest_by_subject or {}
+        )
         uow.subject_event_repo.append = AsyncMock()
         uow.commit = AsyncMock()
         return uow
+
+    return _make
+
+
+@pytest.fixture
+def make_measurement():
+    """Return a factory for an ORM-like Measurement with establishment and alerts."""
+
+    def _make(alerts=None):
+        establishment = MagicMock()
+        establishment.id = uuid.uuid4()
+        establishment.name = "Comedor Norte"
+        establishment.city = "La Plata"
+        establishment.province = "Buenos Aires"
+
+        m = MagicMock()
+        m.id = uuid.uuid4()
+        m.measured_at = datetime(2026, 7, 20, tzinfo=timezone.utc)
+        m.weight_kg = 21.0
+        m.height_cm = 118.0
+        m.bmi = 15.08
+        m.establishment = establishment
+        m.alerts = alerts or []
+        return m
 
     return _make
 
@@ -230,6 +267,67 @@ class TestGetSubject:
         with pytest.raises(SubjectNotFoundError):
             await service.get_subject(uuid.uuid4())
 
+    @pytest.mark.asyncio
+    async def test_never_measured_subject_has_no_status(self, make_subject, make_uow):
+        subject = make_subject()
+        uow = make_uow(latest_measurement=None)
+        uow.subject_repo.get_by_id = AsyncMock(return_value=subject)
+
+        result = await SubjectService(uow).get_subject(subject.id)
+
+        # None, not NORMAL: "never measured" is not a clinical reading.
+        assert result.nutritional_status is None
+        assert result.latest_measurement is None
+
+    @pytest.mark.asyncio
+    async def test_measured_subject_without_alerts_is_normal(
+        self, make_subject, make_uow, make_measurement
+    ):
+        subject = make_subject()
+        uow = make_uow(latest_measurement=make_measurement(alerts=[]))
+        uow.subject_repo.get_by_id = AsyncMock(return_value=subject)
+
+        result = await SubjectService(uow).get_subject(subject.id)
+
+        assert result.nutritional_status == NutritionalStatus.NORMAL
+        assert result.latest_measurement is not None
+
+    @pytest.mark.asyncio
+    async def test_status_is_derived_from_the_latest_alert(
+        self, make_subject, make_uow, make_measurement
+    ):
+        alert = SimpleNamespace(
+            id=uuid.uuid4(),
+            measurement_id=uuid.uuid4(),
+            alert_type=AlertType.WASTED,
+            severity=AlertSeverity.HIGH,
+            detail="...",
+            created_at=datetime(2026, 7, 20, tzinfo=timezone.utc),
+        )
+        subject = make_subject()
+        uow = make_uow(latest_measurement=make_measurement(alerts=[alert]))
+        uow.subject_repo.get_by_id = AsyncMock(return_value=subject)
+
+        result = await SubjectService(uow).get_subject(subject.id)
+
+        assert result.nutritional_status == NutritionalStatus.WASTED
+        assert result.latest_measurement.alerts[0].alert_type == AlertType.WASTED
+
+    @pytest.mark.asyncio
+    async def test_latest_measurement_carries_its_establishment(
+        self, make_subject, make_uow, make_measurement
+    ):
+        # The badge is the subject's global latest reading, so clients need to
+        # know which establishment it came from to label it.
+        subject = make_subject()
+        uow = make_uow(latest_measurement=make_measurement())
+        uow.subject_repo.get_by_id = AsyncMock(return_value=subject)
+
+        result = await SubjectService(uow).get_subject(subject.id)
+
+        assert result.latest_measurement.establishment.name == "Comedor Norte"
+        assert result.latest_measurement.bmi == 15.08
+
 
 class TestGetSubjectsPaginated:
     @pytest.mark.asyncio
@@ -237,7 +335,9 @@ class TestGetSubjectsPaginated:
         subjects = [make_subject(), make_subject()]
         service = SubjectService(uow=make_uow(listing=subjects, total=2))
 
-        result = await service.get_subject_listing(page=1, page_size=20, search=None)
+        result = await service.get_subject_listing(
+            page=1, page_size=20, params=SubjectListingParams()
+        )
 
         assert isinstance(result, PaginatedResult)
         assert len(result.items) == 2
@@ -250,7 +350,9 @@ class TestGetSubjectsPaginated:
         subjects = [make_subject() for _ in range(5)]
         service = SubjectService(uow=make_uow(listing=subjects, total=23))
 
-        result = await service.get_subject_listing(page=1, page_size=5, search=None)
+        result = await service.get_subject_listing(
+            page=1, page_size=5, params=SubjectListingParams()
+        )
 
         assert result.total_pages == ceil(23 / 5)
 
@@ -258,7 +360,9 @@ class TestGetSubjectsPaginated:
     async def test_empty(self, make_uow):
         service = SubjectService(uow=make_uow([], total=0))
 
-        result = await service.get_subject_listing(page=1, page_size=20, search=None)
+        result = await service.get_subject_listing(
+            page=1, page_size=20, params=SubjectListingParams()
+        )
 
         assert result.items == []
         assert result.total == 0
@@ -269,10 +373,12 @@ class TestGetSubjectsPaginated:
         uow = make_uow([], total=0)
         service = SubjectService(uow=uow)
 
-        await service.get_subject_listing(page=3, page_size=10, search=None)
+        await service.get_subject_listing(
+            page=3, page_size=10, params=SubjectListingParams()
+        )
 
         uow.subject_repo.get_subject_listing.assert_called_once_with(
-            limit=10, offset=20, search=None
+            limit=10, offset=20, params=SubjectListingParams()
         )
 
     @pytest.mark.asyncio
@@ -280,49 +386,63 @@ class TestGetSubjectsPaginated:
         subjects = [make_subject()]
         service = SubjectService(uow=make_uow(listing=subjects, total=1))
 
-        result = await service.get_subject_listing(page=1, page_size=20, search=None)
+        result = await service.get_subject_listing(
+            page=1, page_size=20, params=SubjectListingParams()
+        )
 
         assert all(isinstance(item, SubjectBase) for item in result.items)
 
     @pytest.mark.asyncio
-    async def test_forwards_search_to_repo(self, make_uow):
-        uow = make_uow([], total=0)
+    async def test_maps_latest_measurement_by_subject_id(
+        self, make_subject, make_measurement, make_uow
+    ):
+        """Each item gets its own measurement, not the first one found for the page."""
+        subject_a = make_subject()
+        subject_b = make_subject()
+        measurement_b = make_measurement()
+        uow = make_uow(
+            listing=[subject_a, subject_b],
+            total=2,
+            latest_by_subject={subject_b.id: measurement_b},
+        )
         service = SubjectService(uow=uow)
 
-        await service.get_subject_listing(page=1, page_size=20, search="Subject search")
-
-        uow.subject_repo.get_subject_listing.assert_called_once_with(
-            limit=20,
-            offset=0,
-            search="Subject search",
+        result = await service.get_subject_listing(
+            page=1, page_size=20, params=SubjectListingParams()
         )
 
+        by_id = {item.id: item for item in result.items}
+        assert by_id[subject_a.id].latest_measurement is None
+        assert by_id[subject_b.id].latest_measurement.id == measurement_b.id
+
     @pytest.mark.asyncio
-    async def test_strips_whitespace_from_search(self, make_uow):
-        uow = make_uow([], total=0)
+    async def test_requests_latest_measurements_for_all_page_subject_ids(
+        self, make_subject, make_uow
+    ):
+        """The batched lookup is called once with every subject id of the page."""
+        subjects = [make_subject(), make_subject()]
+        uow = make_uow(listing=subjects, total=2)
         service = SubjectService(uow=uow)
 
         await service.get_subject_listing(
-            page=1, page_size=20, search="    Subject search     "
+            page=1, page_size=20, params=SubjectListingParams()
         )
 
-        uow.subject_repo.get_subject_listing.assert_called_once_with(
-            limit=20,
-            offset=0,
-            search="Subject search",
+        uow.measurement_repo.get_latest_for_subjects.assert_called_once_with(
+            [subject.id for subject in subjects]
         )
 
     @pytest.mark.asyncio
-    async def test_whitespace_only_search_passes_none(self, make_uow):
+    async def test_forwards_params_to_repo(self, make_uow):
+        """The service passes the params object through to the repo untouched."""
         uow = make_uow([], total=0)
         service = SubjectService(uow=uow)
+        params = SubjectListingParams(search="Subject search")
 
-        await service.get_subject_listing(page=1, page_size=20, search="       ")
+        await service.get_subject_listing(page=1, page_size=20, params=params)
 
         uow.subject_repo.get_subject_listing.assert_called_once_with(
-            limit=20,
-            offset=0,
-            search=None,
+            limit=20, offset=0, params=params
         )
 
 
@@ -396,3 +516,79 @@ class TestUpdateSubject:
         assert kwargs["payload"].before == {"name": "Juan"}
         assert kwargs["payload"].after == {"name": "Carlos"}
         uow.commit.assert_called_once()
+
+
+class TestExportSubjectListing:
+    pytestmark = pytest.mark.asyncio
+
+    async def test_streams_the_whole_filtered_set(self, make_uow, make_subject):
+        subjects = [make_subject(), make_subject()]
+        uow = make_uow()
+        uow.subject_repo.stream_for_export = MagicMock(return_value=aiter_of(subjects))
+        seen: list = []
+        params = SubjectListingParams(sex=Sex.FEMALE)
+
+        data = await drain(
+            SubjectService(uow).export_subject_listing(params, capturing_exporter(seen))
+        )
+
+        assert data == b"rowrow"
+        assert len(seen) == 2
+        uow.subject_repo.stream_for_export.assert_called_once_with(params)
+        # The export must never go through the paginated query.
+        uow.subject_repo.get_subject_listing.assert_not_awaited()
+
+    async def test_rows_are_enriched_with_the_latest_measurement(
+        self, make_uow, make_subject, make_measurement
+    ):
+        subject = make_subject()
+        uow = make_uow(latest_by_subject={subject.id: make_measurement()})
+        uow.subject_repo.stream_for_export = MagicMock(return_value=aiter_of([subject]))
+        seen: list = []
+
+        await drain(
+            SubjectService(uow).export_subject_listing(
+                SubjectListingParams(), capturing_exporter(seen)
+            )
+        )
+
+        uow.measurement_repo.get_latest_for_subjects.assert_awaited_once_with(
+            [subject.id]
+        )
+        assert len(seen) == 1
+        assert seen[0].latest_measurement is not None
+
+    async def test_latest_measurements_are_looked_up_per_batch(
+        self, make_uow, make_subject
+    ):
+        """The bulk lookup must not collect every id first -- that would defeat
+        the streaming it exists inside."""
+        subjects = [make_subject() for _ in range(_EXPORT_BATCH + 5)]
+        uow = make_uow()
+        uow.subject_repo.stream_for_export = MagicMock(return_value=aiter_of(subjects))
+
+        await drain(
+            SubjectService(uow).export_subject_listing(
+                SubjectListingParams(), capturing_exporter([])
+            )
+        )
+
+        # One full batch plus the remainder, not one call over every id.
+        assert uow.measurement_repo.get_latest_for_subjects.await_count == 2
+        first_batch = uow.measurement_repo.get_latest_for_subjects.await_args_list[0]
+        assert len(first_batch.args[0]) == _EXPORT_BATCH
+
+    async def test_empty_result_still_reaches_the_exporter(self, make_uow):
+        # A filter matching nothing must produce a header-only file, not an error.
+        uow = make_uow()
+        uow.subject_repo.stream_for_export = MagicMock(return_value=aiter_of([]))
+        seen: list = []
+
+        data = await drain(
+            SubjectService(uow).export_subject_listing(
+                SubjectListingParams(), capturing_exporter(seen)
+            )
+        )
+
+        assert data == b""
+        assert seen == []

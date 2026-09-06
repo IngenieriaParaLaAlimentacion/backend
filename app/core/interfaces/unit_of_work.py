@@ -1,26 +1,38 @@
 from abc import ABC, abstractmethod
 
 from app.repositories.activity_repository import ActivityRepository
-from app.repositories.email_verification_repository import (
+from app.repositories.auth.email_verification_repository import (
     EmailVerificationTokenRepository,
 )
-from app.repositories.establishment_repository import EstablishmentRepository
-from app.repositories.measurement_alert_repository import MeasurementAlertRepository
-from app.repositories.measurement_repository import MeasurementRepository
-from app.repositories.password_recovery_repository import (
+from app.repositories.auth.password_recovery_repository import (
     PasswordRecoveryTokenRepository,
 )
-from app.repositories.subject_event_repository import SubjectEventRepository
-from app.repositories.subject_repository import SubjectRepository
-from app.repositories.survey_repository import SurveyRepository
-from app.repositories.survey_response_edit_repository import (
+from app.repositories.auth.user_establishment_repository import (
+    UserEstablishmentRepository,
+)
+from app.repositories.auth.user_password_repository import UserPasswordRepository
+from app.repositories.auth.user_repository import UserRepository
+from app.repositories.auth.user_token_repository import TokenRepository
+from app.repositories.establishments.establishment_dashboard_repository import (
+    EstablishmentDashboardRepository,
+)
+from app.repositories.establishments.establishment_repository import (
+    EstablishmentRepository,
+)
+from app.repositories.establishments.establishment_request_repository import (
+    EstablishmentRequestRepository,
+)
+from app.repositories.measurements.measurement_alert_repository import (
+    MeasurementAlertRepository,
+)
+from app.repositories.measurements.measurement_repository import MeasurementRepository
+from app.repositories.subjects.subject_event_repository import SubjectEventRepository
+from app.repositories.subjects.subject_repository import SubjectRepository
+from app.repositories.surveys.survey_repository import SurveyRepository
+from app.repositories.surveys.survey_response_edit_repository import (
     SurveyResponseEditRepository,
 )
-from app.repositories.survey_response_repository import SurveyResponseRepository
-from app.repositories.user_establishment_repository import UserEstablishmentRepository
-from app.repositories.user_password_repository import UserPasswordRepository
-from app.repositories.user_repository import UserRepository
-from app.repositories.user_token_repository import TokenRepository
+from app.repositories.surveys.survey_response_repository import SurveyResponseRepository
 
 
 class IUnitOfWork(ABC):
@@ -29,6 +41,7 @@ class IUnitOfWork(ABC):
     password_repo: UserPasswordRepository
     token_repo: TokenRepository
     establishment_repo: EstablishmentRepository
+    establishment_request_repo: EstablishmentRequestRepository
     user_establishment_repo: UserEstablishmentRepository
     subject_repo: SubjectRepository
     subject_event_repo: SubjectEventRepository
@@ -39,6 +52,7 @@ class IUnitOfWork(ABC):
     survey_repo: SurveyRepository
     survey_response_repo: SurveyResponseRepository
     survey_response_edit_repo: SurveyResponseEditRepository
+    establishment_dashboard_repo: EstablishmentDashboardRepository
 
     @abstractmethod
     async def commit(self) -> None: ...

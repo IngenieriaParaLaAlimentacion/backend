@@ -1,33 +1,32 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Response, status
+from fastapi.responses import StreamingResponse
 
-from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams
+from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_stream_response
+from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams, SubjectListingQuery
 from app.core.dependencies import (
     get_measurement_service,
     get_subject_service,
+    require_admin_or_analyst,
     require_any,
-    require_some,
 )
 from app.domain import UserActor
 from app.domain.measurement import EvolutionOrder
-from app.domain.user import UserRole
-from app.schemas.measurement_schema import SubjectEvolutionResponse
+from app.schemas.measurements.measurement_schema import SubjectEvolutionResponse
 from app.schemas.pagination import PaginatedResponse
-from app.schemas.subject_schema import (
+from app.schemas.subjects.subject_schema import (
+    SubjectDetailResponse,
+    SubjectListingResponse,
     SubjectRequest,
     SubjectResponse,
-    SubjectSummaryResponse,
     SubjectUpdateRequest,
 )
-from app.services.measurement_service import MeasurementService
-from app.services.subject_service import SubjectService
+from app.services.exporters.csv.columns import SUBJECT_LISTING_EXPORTER
+from app.services.measurements.measurement_service import MeasurementService
+from app.services.subjects.subject_service import SubjectService
 
 router = APIRouter(prefix="/subjects")
-
-require_admin_or_analyst = require_some(
-    UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN
-)
 
 
 @router.post(
@@ -61,12 +60,53 @@ async def create_subject(
     return SubjectResponse.model_validate(subject)
 
 
+# Declared above GET /{subject_id} so "export" is not matched as a subject id.
+@router.get(
+    "/export",
+    summary="Export the subject listing as CSV",
+    description=(
+        "Download the subject listing as a CSV file. Accepts the same filters "
+        "and sort order as the listing endpoint and exports every matching "
+        "subject rather than one page, so the file mirrors what the user has "
+        "on screen. A filter matching nothing still returns a valid file "
+        "carrying only the column headers. Restricted to admins, analysts and "
+        "superadmins."
+    ),
+    responses={
+        **CSV_EXPORT_RESPONSES,
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Invalid filter range, or a value with no export label"
+        },
+    },
+)
+async def export_subjects(
+    query: SubjectListingQuery = Depends(),
+    _: UserActor = Depends(require_admin_or_analyst),
+    service: SubjectService = Depends(get_subject_service),
+) -> StreamingResponse:
+    query.validate()
+    params = query.to_domain()
+    total = await service.count_subject_export(params)
+    return csv_stream_response(
+        lambda uow: SubjectService(uow).export_subject_listing(
+            params, SUBJECT_LISTING_EXPORTER
+        ),
+        SUBJECT_LISTING_EXPORTER.filename(),
+        total,
+    )
+
+
 @router.get(
     "/{subject_id}",
-    response_model=SubjectResponse,
+    response_model=SubjectDetailResponse,
     status_code=status.HTTP_200_OK,
     summary="Get a subject by ID",
-    description="Returns a subject's data. Accessible by all authenticated roles.",
+    description=(
+        "Returns a subject's data together with their latest measurement across "
+        "every establishment and the anthropometric status derived from it. Both "
+        "are null when the subject has never been measured, which is distinct "
+        "from a `normal` status. Accessible by all authenticated roles."
+    ),
     responses={
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Subject not found"},
@@ -76,35 +116,45 @@ async def get_subject(
     subject_id: UUID,
     _: UserActor = Depends(require_any),
     service: SubjectService = Depends(get_subject_service),
-) -> SubjectResponse:
-    """Return a subject by id."""
+) -> SubjectDetailResponse:
+    """Return a subject by id, enriched with their latest measurement."""
     subject = await service.get_subject(subject_id)
-    return SubjectResponse.model_validate(subject)
+    return SubjectDetailResponse.model_validate(subject)
 
 
 @router.get(
     "",
-    response_model=PaginatedResponse[SubjectSummaryResponse],
+    response_model=PaginatedResponse[SubjectListingResponse],
     status_code=status.HTTP_200_OK,
     summary="List subjects",
-    description="Returns a paginated list of subjects ordered by creation date. "
-    "Supports optional search filtering by name, last name, or DNI. Accessible by "
-    "all authenticated roles.",
-    responses=AUTH_RESPONSES,
+    description=(
+        "Returns a paginated list of subjects. Supports search by name, last "
+        "name or DNI; filtering by birth date range, establishment, rurality, "
+        "indigenous status and sex; and sorting by name, creation date or "
+        "birth date in either direction. Accessible by all authenticated roles."
+    ),
+    responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "`/errors/invalid-date-range`: birth_date_from is after "
+            "birth_date_to"
+        },
+        **AUTH_RESPONSES,
+    },
 )
 async def list_subjects(
     paginated: PaginatedQueryParams = Depends(),
-    search: str | None = Query(default=None, max_length=100),
+    query: SubjectListingQuery = Depends(),
     _: UserActor = Depends(require_any),
     service: SubjectService = Depends(get_subject_service),
-) -> PaginatedResponse[SubjectSummaryResponse]:
+) -> PaginatedResponse[SubjectListingResponse]:
+    query.validate()
     result = await service.get_subject_listing(
-        page=paginated.page, page_size=paginated.page_size, search=search
+        page=paginated.page, page_size=paginated.page_size, params=query.to_domain()
     )
 
-    return PaginatedResponse[SubjectSummaryResponse](
+    return PaginatedResponse[SubjectListingResponse](
         items=[
-            SubjectSummaryResponse.model_validate(subject) for subject in result.items
+            SubjectListingResponse.model_validate(subject) for subject in result.items
         ],
         total=result.total,
         page=result.page,

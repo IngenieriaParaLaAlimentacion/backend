@@ -1,5 +1,6 @@
 import os
 import uuid
+from datetime import date
 
 import pytest
 import pytest_asyncio
@@ -14,11 +15,12 @@ from alembic import command
 from app.core.security import create_access_token, hash_password
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.user import UserRole, UserStatus
+from app.models.auth.user import User
+from app.models.auth.user_establishment import UserEstablishment
+from app.models.auth.user_password import UserPassword
 from app.models.base import Base
-from app.models.establishment import Establishment
-from app.models.user import User
-from app.models.user_establishment import UserEstablishment
-from app.models.user_password import UserPassword
+from app.models.establishments.establishment import Establishment
+from app.models.subjects.subject import Sex, Subject
 
 os.environ["TESTCONTAINERS_RYUK_DISABLED"] = "true"
 
@@ -108,7 +110,7 @@ def app(postgres_url):
     sync_url = postgres_url.replace("postgresql+psycopg2://", "postgresql://")
     asyncpg_url = sync_url.replace("postgresql://", "postgresql+asyncpg://", 1)
 
-    from app.core.config import settings
+    from app.config.settings import settings
 
     original_db_url = settings.database_url
     settings.database_url = asyncpg_url
@@ -134,6 +136,20 @@ async def client(app):
     """Provide an async HTTP client pointed at the test app."""
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://test"
+    ) as async_client:
+        yield async_client
+
+
+@pytest_asyncio.fixture()
+async def raw_client(app):
+    """Client that returns 5xx responses instead of re-raising.
+
+    Needed to assert the canonical 500 envelope; the default `client` fixture
+    re-raises because ASGITransport defaults to raise_app_exceptions=True.
+    """
+    async with AsyncClient(
+        transport=ASGITransport(app=app, raise_app_exceptions=False),
+        base_url="http://test",
     ) as async_client:
         yield async_client
 
@@ -172,6 +188,25 @@ async def db_establishment():
         await session.commit()
         await session.refresh(establishment)
         return establishment
+
+
+@pytest_asyncio.fixture()
+async def db_subject():
+    """Insert a real Subject row and return the ORM instance."""
+    from app.db.database import AsyncSessionLocal
+
+    async with AsyncSessionLocal() as session:
+        subject = Subject(
+            dni=30111222,
+            sex=Sex.FEMALE,
+            name="María",
+            last_name="Gómez",
+            birth_date=date(1990, 5, 2),
+        )
+        session.add(subject)
+        await session.commit()
+        await session.refresh(subject)
+        return subject
 
 
 @pytest_asyncio.fixture()

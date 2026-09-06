@@ -9,9 +9,9 @@ import app.db.database as db_module
 from app.core.security import create_access_token
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.user import UserRole, UserStatus
-from app.models.establishment import Establishment
-from app.models.user import User
-from app.models.user_establishment import UserEstablishment
+from app.models.auth.user import User
+from app.models.auth.user_establishment import UserEstablishment
+from app.models.establishments.establishment import Establishment
 
 pytestmark = pytest.mark.asyncio
 
@@ -244,7 +244,7 @@ class TestProfileEdit:
         assert body["last_name"] == analyst_user.last_name
 
     async def test_empty_name_returns_422_and_keeps_db(self, client, analyst_user):
-        """CA2: an empty name fails validation (422) and persists nothing."""
+        """An empty name fails validation (422) and persists nothing."""
         response = await client.patch(
             ME_URL, json={"name": ""}, headers=_headers_for(analyst_user)
         )
@@ -254,7 +254,7 @@ class TestProfileEdit:
         assert stored.name == analyst_user.name
 
     async def test_empty_body_returns_400(self, client, analyst_user):
-        """CA2: a defined-but-empty body is rejected by the service (400)."""
+        """A defined-but-empty body is rejected by the service (400)."""
         response = await client.patch(
             ME_URL, json={}, headers=_headers_for(analyst_user)
         )
@@ -272,7 +272,7 @@ class TestProfileEdit:
     async def test_non_editable_fields_return_422_and_keep_db(
         self, client, analyst_user, payload
     ):
-        """CA3: editing email/role/status (or any unknown field) is rejected (422)."""
+        """editing email/role/status (or any unknown field) is rejected (422)."""
         response = await client.patch(
             ME_URL, json=payload, headers=_headers_for(analyst_user)
         )
@@ -353,12 +353,6 @@ class TestListOwnEstablishments:
         assert response.status_code == 200
         assert response.json() == []
 
-    async def test_non_field_worker_returns_403(self, client, analyst_user):
-        response = await client.get(
-            ME_ESTABLISHMENTS_URL, headers=_headers_for(analyst_user)
-        )
-        assert response.status_code == 403
-
     async def test_no_token_returns_401(self, client):
         response = await client.get(ME_ESTABLISHMENTS_URL)
         assert response.status_code == 401
@@ -390,6 +384,27 @@ class TestRequestEstablishmentAccess:
         estab = await _insert_establishment("Centro A", "Calle A")
         await _insert_relation(
             field_worker_user.id, estab.id, UserEstablishmentStatus.REJECTED
+        )
+
+        response = await client.post(
+            ME_ESTABLISHMENTS_URL,
+            json={"establishment_ids": [str(estab.id)]},
+            headers=_headers_for(field_worker_user),
+        )
+
+        assert response.status_code == 201
+        assert response.json()[0]["status"] == UserEstablishmentStatus.PENDING
+
+        relations = await _fetch_relations(field_worker_user.id)
+        assert len(relations) == 1
+        assert relations[0].status == UserEstablishmentStatus.PENDING
+
+    async def test_revoked_relation_is_re_requested(self, client, field_worker_user):
+        """A revoked relation can be re-requested (back to pending), same as
+        a rejected one."""
+        estab = await _insert_establishment("Centro A", "Calle A")
+        await _insert_relation(
+            field_worker_user.id, estab.id, UserEstablishmentStatus.REVOKED
         )
 
         response = await client.post(
@@ -463,16 +478,6 @@ class TestRequestEstablishmentAccess:
 
         assert response.status_code == 404
         assert await _fetch_relations(field_worker_user.id) == []
-
-    async def test_non_field_worker_returns_403(self, client, analyst_user):
-        """CA7: a non-field worker cannot request access."""
-        estab = await _insert_establishment("Centro A", "Calle A")
-        response = await client.post(
-            ME_ESTABLISHMENTS_URL,
-            json={"establishment_ids": [str(estab.id)]},
-            headers=_headers_for(analyst_user),
-        )
-        assert response.status_code == 403
 
     async def test_no_token_returns_401(self, client):
         """CA7: no token returns 401."""

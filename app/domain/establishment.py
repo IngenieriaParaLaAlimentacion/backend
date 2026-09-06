@@ -1,9 +1,22 @@
 from dataclasses import dataclass, fields
+from datetime import datetime
 from enum import Enum, StrEnum
+from typing import NamedTuple
 from uuid import UUID
+
+from app.domain.common_domains import normalize_optional_str
 
 
 class UserEstablishmentStatus(str, Enum):
+    APPROVED = "approved"
+    PENDING = "pending"
+    REJECTED = "rejected"
+    REVOKED = "revoked"
+
+
+# TODO:check if we can reuse user status for establishments,
+# to have somthing like a StatusEnum
+class EstablishmentRequestStatus(StrEnum):
     APPROVED = "approved"
     PENDING = "pending"
     REJECTED = "rejected"
@@ -30,9 +43,9 @@ class EstablishmentListingParams:
     sort_order: EstablishmentSortOrder = EstablishmentSortOrder.NEWEST
 
     def __post_init__(self) -> None:
-        self.search = self.search.strip() or None if self.search else None
-        self.city = self.city.strip() or None if self.city else None
-        self.province = self.province.strip() or None if self.province else None
+        self.search = normalize_optional_str(self.search)
+        self.city = normalize_optional_str(self.city)
+        self.province = normalize_optional_str(self.province)
 
 
 @dataclass
@@ -53,8 +66,82 @@ class EstablishmentDomain:
         return cls(**{field.name: getattr(obj, field.name) for field in fields(cls)})
 
 
+class EstablishmentApprovalResult(NamedTuple):
+    """Outcome of approving a creation request: the resolved establishment,
+    and whether it already existed rather than being newly created."""
+
+    establishment: EstablishmentDomain
+    reused: bool
+
+
 @dataclass
 class EstablishmentWithStatusDomain(EstablishmentDomain):
     """Establishment data with its approval status in the context of a field worker."""
 
     status: str
+
+
+@dataclass
+class EstablishmentRequestDomain:
+    """Establishment creation request data as returned from persistence."""
+
+    id: UUID
+    user_id: UUID
+    name: str
+    formatted_address: str
+    city: str | None
+    province: str | None
+    status: str
+    created_at: datetime
+    updated_at: datetime
+    reviewed_by: UUID | None
+
+    @classmethod
+    def from_db(cls, obj) -> "EstablishmentRequestDomain":
+        return cls(**{field.name: getattr(obj, field.name) for field in fields(cls)})
+
+
+class EstablishmentCreationRequestSortOrder(StrEnum):
+    NEWEST = "newest"
+    OLDEST = "oldest"
+
+
+@dataclass
+class EstablishmentCreationRequestListingParams:
+    """Query parameters for a paginated establishment request listing."""
+
+    search: str | None = None
+    city: str | None = None
+    province: str | None = None
+    status: EstablishmentRequestStatus | None = None
+    sort_order: EstablishmentCreationRequestSortOrder = (
+        EstablishmentCreationRequestSortOrder.OLDEST
+    )
+
+    def __post_init__(self) -> None:
+        self.search = normalize_optional_str(self.search)
+        self.city = normalize_optional_str(self.city)
+        self.province = normalize_optional_str(self.province)
+
+
+@dataclass
+class EstablishmentCreationRequestWithRequesterDomain(EstablishmentRequestDomain):
+    """Establishment creation request data with the requesting field
+    worker's identity."""
+
+    requester_name: str
+    requester_last_name: str
+    requester_email: str
+
+    @classmethod
+    def from_db(cls, obj) -> "EstablishmentCreationRequestWithRequesterDomain":
+        base_fields = {
+            field.name: getattr(obj, field.name)
+            for field in fields(EstablishmentRequestDomain)
+        }
+        return cls(
+            **base_fields,
+            requester_name=obj.user.name,
+            requester_last_name=obj.user.last_name,
+            requester_email=obj.user.email,
+        )

@@ -1,8 +1,11 @@
+import pytest
+
 from app.exceptions.domain_exceptions import (
     BaseError,
     EstablishmentNotFoundError,
-    ForbiddenError,
+    NotFoundError,
     PasswordNotFoundError,
+    RoleNotAllowedError,
     SubjectAlreadyExistsError,
     UnauthorizedError,
     UserAlreadyExistsError,
@@ -39,10 +42,11 @@ def test_unauthorized_error():
     assert "Unauthorized" in e.title
 
 
-def test_forbidden_error():
-    e = ForbiddenError()
+def test_role_not_allowed_error():
+    e = RoleNotAllowedError()
     assert isinstance(e, BaseError)
-    assert "Forbidden" in e.title
+    assert e.error_type == "role-not-allowed"
+    assert e.status == 403
 
 
 def test_establishment_not_found_error():
@@ -65,3 +69,31 @@ def test_subject_already_exists_error():
     assert isinstance(e, BaseError)
     assert "20000000" in e.details
     assert "Subject already exists" in e.title
+
+
+def test_subclass_without_own_error_type_is_rejected():
+    with pytest.raises(TypeError, match="must declare `error_type`"):
+
+        class Bad(NotFoundError):
+            pass
+
+
+def test_malformed_slug_is_rejected():
+    with pytest.raises(TypeError, match="malformed"):
+
+        class Bad(NotFoundError):
+            error_type = "Not_A_Slug"
+
+
+def test_duplicate_slug_is_rejected():
+    with pytest.raises(TypeError, match="Duplicate error_type"):
+
+        class Bad(NotFoundError):
+            error_type = "user-not-found"
+
+
+def test_inherited_error_type_is_rejected():
+    with pytest.raises(TypeError, match="must declare `error_type`"):
+
+        class Bad(UserNotFoundError):
+            pass

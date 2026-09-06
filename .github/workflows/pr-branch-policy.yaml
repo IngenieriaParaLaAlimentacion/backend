@@ -1,0 +1,89 @@
+name: PR Branch Policy
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    branches:
+      - develop
+      - main
+
+permissions:
+  pull-requests: write
+
+jobs:
+  check-branch-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR source branch
+        id: validate
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          echo "PR: '${HEAD_REF}' -> '${BASE_REF}'"
+
+          if [ "$BASE_REF" = "main" ]; then
+            if [ "$HEAD_REF" != "develop" ]; then
+              MSG="**Branch policy violation**: PRs to main are only allowed from develop. This PR is from ${HEAD_REF}."
+              echo "::error::${MSG}"
+              echo "error_message=${MSG}" >> "$GITHUB_OUTPUT"
+              exit 1
+            fi
+            echo "OK: develop -> main"
+
+          elif [ "$BASE_REF" = "develop" ]; then
+            case "$HEAD_REF" in
+              feat/*|fix/*|refactor/*|docs/*|chore/*)
+                echo "OK: ${HEAD_REF} -> develop"
+                ;;
+              *)
+                MSG="**Branch policy violation**: PRs to develop must come from a feat/*, fix/*, refactor/*, docs/*, or chore/* branch. This PR is from ${HEAD_REF}."
+                echo "::error::${MSG}"
+                echo "error_message=${MSG}" >> "$GITHUB_OUTPUT"
+                exit 1
+                ;;
+            esac
+          fi
+
+      - name: Comment on PR with failure reason
+        if: failure() && steps.validate.outputs.error_message != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const message = `${{ steps.validate.outputs.error_message }}\n\nPlease reopen this PR from the correct branch.`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: message
+            });
+
+      - name: Write job summary
+        if: always()
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          OUTCOME: ${{ steps.validate.outcome }}
+          ERROR_MESSAGE: ${{ steps.validate.outputs.error_message }}
+        run: |
+          if [ "$OUTCOME" = "success" ]; then
+            {
+              echo "### ✅ Branch Policy Check Passed"
+              echo ""
+              echo "| Field | Value |"
+              echo "|---|---|"
+              echo "| Source branch | \`${HEAD_REF}\` |"
+              echo "| Target branch | \`${BASE_REF}\` |"
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            {
+              echo "### ❌ Branch Policy Check Failed"
+              echo ""
+              echo "| Field | Value |"
+              echo "|---|---|"
+              echo "| Source branch | \`${HEAD_REF}\` |"
+              echo "| Target branch | \`${BASE_REF}\` |"
+              echo ""
+              echo "${ERROR_MESSAGE}"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi

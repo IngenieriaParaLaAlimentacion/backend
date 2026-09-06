@@ -13,7 +13,11 @@ ACTIVITY_URL = "/api/v1/users/me/activity"
 SUBJECTS_URL = "/api/v1/subjects"
 MEASUREMENTS_URL = "/api/v1/measurements"
 SURVEYS_URL = "/api/v1/surveys"
-SURVEY_RESPONSES_URL = "/api/v1/survey-responses"
+
+
+def _responses_url(survey_id, *parts):
+    segments = [SURVEYS_URL, str(survey_id), "responses"] + [str(p) for p in parts]
+    return "/".join(segments)
 
 
 @pytest_asyncio.fixture
@@ -31,8 +35,8 @@ async def survey_author(app):
     """Create a real DB admin user (surveys.created_by_id is a real FK)."""
     from app.db.database import AsyncSessionLocal
     from app.domain.user import UserStatus
-    from app.models.user import User
-    from app.models.user import UserRole as ORMUserRole
+    from app.models.auth.user import User
+    from app.models.auth.user import UserRole as ORMUserRole
 
     user_id = uuid.uuid4()
     async with AsyncSessionLocal() as session:
@@ -95,11 +99,16 @@ async def _create_measurement(
     return response.json()["id"]
 
 
-async def _create_survey(client, author_headers, name: str = "Encuesta A"):
+async def _create_survey(
+    client,
+    author_headers,
+    name: str = "Encuesta A",
+    response_target: str = "anonymous",
+):
     body = {
         "name": name,
         "description": None,
-        "scope": "generic",
+        "response_target": response_target,
         "questions": [
             {
                 "text": "¿Comió hoy?",
@@ -108,25 +117,24 @@ async def _create_survey(client, author_headers, name: str = "Encuesta A"):
                 "options": [{"text": "Sí"}, {"text": "No"}],
             }
         ],
-        "establishment_ids": [],
     }
     response = await client.post(SURVEYS_URL, json=body, headers=author_headers)
     assert response.status_code == status.HTTP_201_CREATED
     return response.json()
 
 
-async def _submit_survey_response(
-    client, headers, survey, establishment_id, event_at, **overrides
-):
+async def _submit_survey_response(client, headers, survey, event_at, **overrides):
+    """Submit to an anonymous survey, which carries no target entity."""
     question = survey["questions"][0]
     body = {
         "survey_id": survey["id"],
-        "establishment_id": str(establishment_id),
         "answers": {question["id"]: question["options"][0]["id"]},
         "event_at": event_at,
         **overrides,
     }
-    response = await client.post(SURVEY_RESPONSES_URL, json=body, headers=headers)
+    response = await client.post(
+        _responses_url(survey["id"]), json=body, headers=headers
+    )
     assert response.status_code == status.HTTP_201_CREATED
     return response.json()["id"]
 
@@ -256,7 +264,7 @@ class TestTypeFilter:
         headers, _ = field_worker_a
         survey = await _create_survey(client, survey_author)
         response_id = await _submit_survey_response(
-            client, headers, survey, db_establishment.id, "2024-01-01T00:00:00Z"
+            client, headers, survey, "2024-01-01T00:00:00Z"
         )
 
         response = await client.get(
@@ -276,7 +284,7 @@ class TestSurveyResponseActivity:
         headers, _ = field_worker_a
         survey = await _create_survey(client, survey_author)
         response_id = await _submit_survey_response(
-            client, headers, survey, db_establishment.id, "2024-01-01T00:00:00Z"
+            client, headers, survey, "2024-01-01T00:00:00Z"
         )
 
         response = await client.get(ACTIVITY_URL, headers=headers)
@@ -285,9 +293,29 @@ class TestSurveyResponseActivity:
         item = body["items"][0]
         assert item["type"] == "survey_response"
         assert item["survey_response"]["id"] == response_id
-        assert item["survey_response"]["establishment"]["id"] == str(
-            db_establishment.id
+        # An anonymous response has no target at all. The feed must render it
+        # rather than blow up dereferencing a missing establishment.
+        assert item["survey_response"]["establishment"] is None
+        assert item["survey_response"]["subject"] is None
+
+    async def test_subject_targeted_response_carries_the_subject(
+        self, client, field_worker_a, survey_author, db_subject
+    ):
+        headers, _ = field_worker_a
+        survey = await _create_survey(client, survey_author, response_target="subject")
+        await _submit_survey_response(
+            client,
+            headers,
+            survey,
+            "2024-01-01T00:00:00Z",
+            subject_id=str(db_subject.id),
         )
+
+        response = await client.get(ACTIVITY_URL, headers=headers)
+        item = response.json()["items"][0]
+        assert item["survey_response"]["subject"]["id"] == str(db_subject.id)
+        assert item["survey_response"]["subject"]["dni"] == db_subject.dni
+        assert item["survey_response"]["establishment"] is None
 
     async def test_does_not_leak_to_other_submitters(
         self, client, db_establishment, field_worker_a, field_worker_b, survey_author
@@ -295,9 +323,7 @@ class TestSurveyResponseActivity:
         headers_a, _ = field_worker_a
         headers_b, _ = field_worker_b
         survey = await _create_survey(client, survey_author)
-        await _submit_survey_response(
-            client, headers_a, survey, db_establishment.id, "2024-01-01T00:00:00Z"
-        )
+        await _submit_survey_response(client, headers_a, survey, "2024-01-01T00:00:00Z")
 
         response_b = await client.get(ACTIVITY_URL, headers=headers_b)
         assert response_b.json()["total"] == 0
@@ -311,9 +337,7 @@ class TestSurveyResponseActivity:
             client, headers, subject_id, db_establishment.id, "2024-02-01T00:00:00Z"
         )
         survey = await _create_survey(client, survey_author)
-        await _submit_survey_response(
-            client, headers, survey, db_establishment.id, "2024-03-01T00:00:00Z"
-        )
+        await _submit_survey_response(client, headers, survey, "2024-03-01T00:00:00Z")
 
         response = await client.get(ACTIVITY_URL, headers=headers)
         body = response.json()

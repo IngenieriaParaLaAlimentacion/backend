@@ -9,23 +9,29 @@ from app.domain.pagination import PaginatedResult
 from app.domain.subject import SubjectDomain
 from app.domain.subject_event import SubjectEventRecord
 from app.domain.user import (
+    BACKOFFICE_ROLES,
     UserRole,
     UserStatus,
     UserWithEstablishmentsDomain,
 )
 from app.exceptions.domain_exceptions import (
-    BadRequestError,
-    ForbiddenError,
+    FieldWorkerNotPendingError,
+    InvalidUserRoleError,
+    InvitePendingError,
     SubjectNotFoundError,
     UserAlreadyExistsError,
+    UserEstablishmentNotApprovedError,
     UserEstablishmentNotFoundError,
+    UserNotActiveError,
+    UserNotFieldWorkerError,
     UserNotFoundError,
+    UserNotPendingError,
 )
-from app.models.user import User
-from app.schemas.admin_schema import InviteAdminRequest
-from app.services.auth_service import AuthService
+from app.models.auth.user import User
+from app.schemas.auth.admin_schema import InviteAdminRequest
+from app.services.auth.auth_service import AuthService
 from app.services.email_service import (
-    build_recovery_deeplink,
+    build_invite_deeplink,
     send_access_granted_email,
     send_invite_email,
 )
@@ -37,6 +43,13 @@ class AdminService:
     def __init__(self, uow: IUnitOfWork, auth_service: AuthService) -> None:
         self.uow = uow
         self.auth_service = auth_service
+
+    async def _get_user(self, user_id: UUID) -> Any:
+        """Return the user, raising if they do not exist."""
+        user = await self.uow.user_repo.get_by_id(user_id)
+        if user is None:
+            raise UserNotFoundError(str(user_id))
+        return user
 
     async def _build_establishments_data(
         self, establishment_ids: list[UUID]
@@ -51,12 +64,14 @@ class AdminService:
         }
 
     async def _get_establishments_per_user(
-        self, user_ids: list[UUID]
+        self,
+        user_ids: list[UUID],
+        status: UserEstablishmentStatus,
     ) -> dict[UUID, list[EstablishmentDomain]]:
         """Return the full establishment details for each user."""
         estab_ids_by_user: dict[
             UUID, list[UUID]
-        ] = await self.uow.user_establishment_repo.get_by_user_ids(user_ids)
+        ] = await self.uow.user_establishment_repo.get_by_user_ids(user_ids, status)
 
         unique_establishment_ids = list(
             {e_id for ids in estab_ids_by_user.values() for e_id in ids}
@@ -76,32 +91,86 @@ class AdminService:
             ]
         return estab_data_by_user
 
+    async def _build_paginated_users_result(
+        self,
+        users: list[User],
+        total: int,
+        page: int,
+        page_size: int,
+        status: UserEstablishmentStatus,
+    ) -> PaginatedResult[UserWithEstablishmentsDomain]:
+        """Hydrate establishments for `users` and wrap them in a PaginatedResult.
+
+        ``status`` narrows the hydrated establishments to relations in that
+        status, and is required for the reason given on
+        _get_establishments_per_user.
+        """
+        if not users:
+            return PaginatedResult(
+                items=[],
+                total=total,
+                page=page,
+                page_size=page_size,
+                total_pages=0,
+            )
+
+        establishments_per_user = await self._get_establishments_per_user(
+            [user.id for user in users], status
+        )
+
+        return PaginatedResult.build(
+            items=[
+                UserWithEstablishmentsDomain.from_db(
+                    user, establishments_per_user.get(user.id, [])
+                )
+                for user in users
+            ],
+            total=total,
+            page=page,
+            page_size=page_size,
+        )
+
     async def _get_field_worker_relations(self, user_id: UUID) -> tuple[Any, list]:
         """Return (user, relations) for a field worker, raising if the user does
-        not exist or their email is not yet verified."""
-        user = await self.uow.user_repo.get_by_id(user_id)
-        if user is None:
-            raise UserNotFoundError(str(user_id))
-        if not user.is_email_verified:
-            raise ForbiddenError(
-                "Email not verified",
-                "The user's email has not been verified yet.",
-            )
+        not exist."""
+        user = await self._get_user(user_id)
         relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
         return user, relations
 
-    async def _validate_access_request(
-        self, user_id: UUID, establishment_ids: list[UUID]
-    ) -> None:
-        """Validate that all establishment IDs belong to the field worker."""
-        _, relations = await self._get_field_worker_relations(user_id)
-        user_establishment_ids = {rel.establishment_id for rel in relations}
+    @staticmethod
+    def _match_relations(
+        user_id: UUID, establishment_ids: list[UUID], relations: list[Any]
+    ) -> dict[UUID, Any]:
+        """Map establishment_ids to their relation, raising if any id has no
+        relation with the user."""
+        relations_by_estab_id = {rel.establishment_id: rel for rel in relations}
 
-        invalid_ids = set(establishment_ids) - user_establishment_ids
+        invalid_ids = set(establishment_ids) - relations_by_estab_id.keys()
         if invalid_ids:
             raise UserEstablishmentNotFoundError(
                 str(next(iter(invalid_ids))), str(user_id)
             )
+        return relations_by_estab_id
+
+    async def _validate_access_request(
+        self, user_id: UUID, establishment_ids: list[UUID]
+    ) -> dict[UUID, Any]:
+        """Validate that all establishment IDs belong to the field worker and
+        return their relations keyed by establishment id."""
+        _, relations = await self._get_field_worker_relations(user_id)
+        return self._match_relations(user_id, establishment_ids, relations)
+
+    @staticmethod
+    def _require_field_worker(user: Any, error_detail: str) -> None:
+        """Raise UserNotFieldWorkerError unless the user is a field worker."""
+        if user.role != UserRole.FIELD_WORKER:
+            raise UserNotFieldWorkerError(error_detail)
+
+    async def _get_field_worker(self, user_id: UUID, error_detail: str) -> Any:
+        """Return the user, raising if they do not exist or are not a field worker."""
+        user = await self._get_user(user_id)
+        self._require_field_worker(user, error_detail)
+        return user
 
     async def _set_user_establishment_relation_status(
         self,
@@ -120,59 +189,125 @@ class AdminService:
         deeplink. Shared by invite_user and resend_invite.
 
         Raises:
+            InvalidUserRoleError: If the user's role is not a backoffice role.
             EmailDeliveryError: If the invitation email could not be delivered.
         """
+        if user.role not in BACKOFFICE_ROLES:
+            raise InvalidUserRoleError()
+
         created_token, plain_token = await self.auth_service.create_recovery_token(
             user.id
         )
         await self.uow.commit()
         await send_invite_email(
             user.email,
-            build_recovery_deeplink(plain_token, user.role),
+            build_invite_deeplink(plain_token, user.role),
             created_token.expires_at,
             user.role,
         )
 
-    async def _build_paginated_users_result(
-        self, users: list[User], total: int, page: int, page_size: int
+    async def get_users_paginated(
+        self,
+        page: int,
+        page_size: int,
+        role: UserRole | None = None,
+        status: UserStatus | None = None,
+        search: str | None = None,
     ) -> PaginatedResult[UserWithEstablishmentsDomain]:
-        """Hydrate establishments for `users` and wrap them in a PaginatedResult."""
-        if not users:
-            return PaginatedResult(
-                items=[],
-                total=total,
-                page=page,
-                page_size=page_size,
-                total_pages=0,
-            )
+        """Return a paginated list of users with their approved establishments.
 
-        establishments_per_user = await self._get_establishments_per_user(
-            [user.id for user in users]
+        Only approved relations are hydrated: a pending request is not access,
+        and is surfaced by get_pending_establishment_requests instead.
+
+        ``search`` matches case-insensitively against email, name, and last_name.
+        Whitespace-only values are treated as no filter.
+        """
+        offset = (page - 1) * page_size
+        search = search.strip() or None if search else None
+
+        users, total = await self.uow.user_repo.get_paginated(
+            role=role,
+            status=status,
+            limit=page_size,
+            offset=offset,
+            search=search,
         )
 
-        return PaginatedResult.build(
-            items=[
-                UserWithEstablishmentsDomain.from_db(
-                    user, establishments_per_user.get(user.id, [])
-                )
-                for user in users
-            ],
-            total=total,
-            page=page,
-            page_size=page_size,
+        return await self._build_paginated_users_result(
+            users, total, page, page_size, UserEstablishmentStatus.APPROVED
+        )
+
+    async def get_pending_establishment_requests(
+        self,
+        page: int,
+        page_size: int,
+        search: str | None = None,
+        establishment_id: UUID | None = None,
+    ) -> tuple[PaginatedResult[UserWithEstablishmentsDomain], int]:
+        """Return active field workers awaiting establishment access.
+
+        Each user carries only their pending establishments. ``search`` matches
+        case-insensitively against email, name, and last_name; whitespace-only
+        values are treated as no filter. ``establishment_id`` keeps only the
+        workers pending on that establishment.
+
+        The second tuple element is the total number of pending establishment
+        relations across every matching field worker, not just this page.
+        """
+        offset = (page - 1) * page_size
+        search = search.strip() or None if search else None
+
+        users, total = await self.uow.user_repo.get_pending_establishments_page(
+            limit=page_size,
+            offset=offset,
+            search=search,
+            establishment_id=establishment_id,
+        )
+        result = await self._build_paginated_users_result(
+            users, total, page, page_size, UserEstablishmentStatus.PENDING
+        )
+        total_pending = await self.uow.user_repo.count_pending_establishments(
+            search=search, establishment_id=establishment_id
+        )
+        return result, total_pending
+
+    async def get_user_info(self, user_id: UUID) -> UserWithEstablishmentsDomain:
+        """Return a user with their approved establishments fully hydrated.
+
+        Pending and rejected relations are excluded — they are requests, not
+        access.
+
+        Raises:
+            UserNotFoundError: If no user with user_id exists.
+        """
+        user = await self._get_user(user_id)
+        establishments_per_user = await self._get_establishments_per_user(
+            [user.id], UserEstablishmentStatus.APPROVED
+        )
+        return UserWithEstablishmentsDomain.from_db(
+            user, establishments_per_user.get(user.id, [])
         )
 
     async def approve_establishments(
         self, user_id: UUID, establishment_ids: list[UUID]
     ) -> None:
-        """Approve access to the given establishments and activate the field worker."""
+        """Approve access to the given establishments.
+
+        Raises:
+            UserNotFoundError: If the user does not exist.
+            UserNotActiveError: If the user's account is not active yet.
+        """
+        user = await self._get_user(user_id)
+        if user.status != UserStatus.ACTIVE:
+            raise UserNotActiveError(
+                "Only active users can be granted access to establishments."
+            )
+
         await self._set_user_establishment_relation_status(
             user_id, establishment_ids, UserEstablishmentStatus.APPROVED
         )
-        await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
         await self.uow.commit()
 
-        user = await self.uow.user_repo.get_by_id(user_id)
         establishments = await self.uow.establishment_repo.find_by_ids(
             establishment_ids
         )
@@ -190,20 +325,103 @@ class AdminService:
         )
         await self.uow.commit()
 
+    async def revoke_establishments(
+        self, user_id: UUID, establishment_ids: list[UUID]
+    ) -> None:
+        """Revoke previously approved access to the given establishments.
+        Does not change the field worker's account status.
+
+        Raises:
+            UserNotFoundError: If the user does not exist.
+            UserNotFieldWorkerError: If the user is not a field worker.
+            UserEstablishmentNotFoundError: If an establishment has no relation
+                with this user.
+            UserEstablishmentNotApprovedError: If an establishment has a
+                relation with this user, but it isn't currently approved.
+        """
+        user, relations = await self._get_field_worker_relations(user_id)
+        self._require_field_worker(
+            user, "Only field workers can have establishment access revoked."
+        )
+
+        relations_by_estab_id = self._match_relations(
+            user_id, establishment_ids, relations
+        )
+        not_approved_ids = [
+            estab_id
+            for estab_id in establishment_ids
+            if relations_by_estab_id[estab_id].status
+            != UserEstablishmentStatus.APPROVED
+        ]
+        if not_approved_ids:
+            raise UserEstablishmentNotApprovedError(
+                str(not_approved_ids[0]),
+                str(user_id),
+                relations_by_estab_id[not_approved_ids[0]].status.value,
+            )
+
+        await self.uow.user_establishment_repo.update_status_for_ids(
+            user_id, establishment_ids, UserEstablishmentStatus.REVOKED
+        )
+        await self.uow.commit()
+
+    async def approve_field_worker(
+        self, user_id: UUID, establishment_ids: list[UUID]
+    ) -> None:
+        """Accept a field worker's request and approve the selected establishments.
+
+        ``establishment_ids`` may be empty: the account is activated and every
+        establishment request stays pending.
+
+        Raises:
+            UserNotFoundError: If the user does not exist.
+            UserNotFieldWorkerError: If the user is not a field worker.
+            FieldWorkerNotPendingError: If the field worker is not in
+                pending status.
+            UserEstablishmentNotFoundError: If an establishment was not
+                requested by this field worker.
+        """
+        user = await self._get_field_worker(
+            user_id, "Only field workers go through establishment approval."
+        )
+        if user.status != UserStatus.PENDING_VALIDATION:
+            raise FieldWorkerNotPendingError(
+                "Only field workers with pending status can be approved through "
+                "this endpoint."
+            )
+
+        await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
+        if establishment_ids:
+            await self._set_user_establishment_relation_status(
+                user_id, establishment_ids, UserEstablishmentStatus.APPROVED
+            )
+        await self.uow.commit()
+
+        if not establishment_ids:
+            return
+
+        establishments = await self.uow.establishment_repo.find_by_ids(
+            establishment_ids
+        )
+        await send_access_granted_email(
+            user.email,
+            [e.name for e in establishments],
+        )
+
     async def reject_field_worker(self, user_id: UUID) -> None:
         """Reject all establishment access for the given field worker and
         mark them inactive.
 
         Raises:
             UserNotFoundError: If the user does not exist.
-            BadRequestError: If the field worker is not in pending status.
+            FieldWorkerNotPendingError: If the field worker is not in pending
+                status.
         """
         user, relations = await self._get_field_worker_relations(user_id)
         if user.status != UserStatus.PENDING_VALIDATION:
-            raise BadRequestError(
-                "Field worker is not pending",
+            raise FieldWorkerNotPendingError(
                 "Only field workers with pending status can be rejected through "
-                "this endpoint.",
+                "this endpoint."
             )
         establishment_ids = [rel.establishment_id for rel in relations]
 
@@ -213,6 +431,65 @@ class AdminService:
             )
         await self.uow.user_repo.update_status(user_id, UserStatus.INACTIVE)
         await self.uow.commit()
+
+    async def invite_user(self, data: InviteAdminRequest, role: UserRole) -> UUID:
+        """Create a new admin user and send a password setup link by email.
+
+        Returns:
+            The id of the newly created user.
+
+        Raises:
+            InvitePendingError: If the email already has an unaccepted
+                backoffice invitation. Carries the ``user_id`` extension so the
+                caller can hand it to resend_invite.
+            UserAlreadyExistsError: If the email belongs to any other user.
+            EmailDeliveryError: If the invitation email could not be delivered.
+        """
+        email = data.email.strip().lower()
+        existing = await self.uow.user_repo.get_by_email(email)
+        if existing is not None:
+            if (
+                existing.status == UserStatus.PENDING_VALIDATION
+                and existing.role in BACKOFFICE_ROLES
+            ):
+                raise InvitePendingError(str(existing.id))
+            raise UserAlreadyExistsError(email)
+
+        user = await self.uow.user_repo.create(
+            email=email,
+            name="",
+            last_name="",
+            role=role,
+            status=UserStatus.PENDING_VALIDATION,
+        )
+        placeholder_password = secrets.token_urlsafe(32)
+        await self.uow.password_repo.create(
+            user.id, hash_password(placeholder_password)
+        )
+        await self.uow.commit()
+
+        await self._issue_and_send_invite(user)
+        return user.id
+
+    async def resend_invite(self, user_id: UUID) -> None:
+        """Re-send the invitation email for a still-pending invited user.
+
+        Raises:
+            UserNotFoundError: If no user with the given id exists.
+            UserNotPendingError: If the user already completed onboarding
+                (status is not PENDING_VALIDATION).
+            InvalidUserRoleError: If the user is not a backoffice user (e.g. a
+                self-registered field worker, who is also PENDING_VALIDATION
+                but was never invited).
+            EmailDeliveryError: If the invitation email could not be delivered.
+        """
+        user = await self._get_user(user_id)
+        if user.status != UserStatus.PENDING_VALIDATION:
+            raise UserNotPendingError(
+                "Only users with a pending invitation can be re-invited."
+            )
+
+        await self._issue_and_send_invite(user)
 
     async def get_subject_detail(
         self,
@@ -240,95 +517,3 @@ class AdminService:
             page_size=history_page_size,
         )
         return SubjectDomain.from_db(subject), history
-
-    async def get_users_paginated(
-        self,
-        page: int,
-        page_size: int,
-        role: UserRole | None = None,
-        status: UserStatus | None = None,
-        search: str | None = None,
-    ) -> PaginatedResult[UserWithEstablishmentsDomain]:
-        """Return a paginated list of users with their establishments.
-
-        ``search`` matches case-insensitively against email, name, and last_name.
-        Whitespace-only values are treated as no filter.
-        """
-        offset = (page - 1) * page_size
-        search = search.strip() or None if search else None
-
-        users, total = await self.uow.user_repo.get_paginated(
-            role=role,
-            status=status,
-            limit=page_size,
-            offset=offset,
-            search=search,
-        )
-
-        return await self._build_paginated_users_result(users, total, page, page_size)
-
-    async def invite_user(self, data: InviteAdminRequest, role: UserRole) -> UUID:
-        """Create a new admin user and send a password setup link by email.
-
-        Returns:
-            The id of the newly created user.
-
-        Raises:
-            UserAlreadyExistsError: If the email already belongs to a user,
-                regardless of that user's status. Use resend_invite to
-                re-send a pending invitation.
-            EmailDeliveryError: If the invitation email could not be delivered.
-        """
-        if await self.uow.user_repo.get_by_email(data.email):
-            raise UserAlreadyExistsError(data.email)
-
-        user = await self.uow.user_repo.create(
-            email=data.email,
-            name="",
-            last_name="",
-            role=role,
-            status=UserStatus.PENDING_VALIDATION,
-        )
-        placeholder_password = secrets.token_urlsafe(32)
-        await self.uow.password_repo.create(
-            user.id, hash_password(placeholder_password)
-        )
-        await self.uow.commit()
-
-        await self._issue_and_send_invite(user)
-        return user.id
-
-    async def resend_invite(self, user_id: UUID) -> None:
-        """Re-send the invitation email for a still-pending invited user.
-
-        Raises:
-            UserNotFoundError: If no user with the given id exists.
-            BadRequestError: If the user already completed onboarding
-                (status is not PENDING_VALIDATION).
-            EmailDeliveryError: If the invitation email could not be delivered.
-        """
-        user = await self.uow.user_repo.get_by_id(user_id)
-        if user is None:
-            raise UserNotFoundError(str(user_id))
-
-        if user.status != UserStatus.PENDING_VALIDATION:
-            raise BadRequestError(
-                "User is not pending",
-                "Only users with a pending invitation can be re-invited.",
-            )
-
-        await self._issue_and_send_invite(user)
-
-    async def get_user_info(self, user_id: UUID) -> UserWithEstablishmentsDomain:
-        """Return a user with fully hydrated establishment objects.
-
-        Raises:
-            UserNotFoundError: If no user with user_id exists.
-        """
-        user = await self.uow.user_repo.get_by_id(user_id)
-        if user is None:
-            raise UserNotFoundError(str(user_id))
-        establishments_per_user = await self._get_establishments_per_user([user.id])
-        return UserWithEstablishmentsDomain.from_db(
-            user, establishments_per_user.get(user.id, [])
-        )

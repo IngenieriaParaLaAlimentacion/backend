@@ -12,6 +12,7 @@ from app.domain.measurement import (
     EvolutionOrder,
     MeasurementDomain,
     MeasurementListingParams,
+    MeasurementListItemDomain,
 )
 from app.domain.pagination import PaginatedResult
 from app.domain.subject import Sex
@@ -22,8 +23,9 @@ from app.exceptions.domain_exceptions import (
     SubjectNotFoundError,
     UniqueConstraintError,
 )
-from app.schemas.measurement_schema import MeasurementRequest
-from app.services.measurement_service import MeasurementService
+from app.schemas.measurements.measurement_schema import MeasurementRequest
+from app.services.measurements.measurement_service import MeasurementService
+from tests.unit.conftest import aiter_of, capturing_exporter, drain
 
 
 @pytest.fixture
@@ -58,7 +60,7 @@ def make_measurement():
 
 
 @pytest.fixture
-def make_uow(make_subject, make_measurement):
+def make_uow(make_subject, make_measurement, stub_establishment_lookup):
     def _make(
         subject=None,
         establishment=MagicMock(),
@@ -67,7 +69,7 @@ def make_uow(make_subject, make_measurement):
     ):
         uow = AsyncMock()
         uow.subject_repo.get_by_id = AsyncMock(return_value=subject or make_subject())
-        uow.establishment_repo.get_by_id = AsyncMock(return_value=establishment)
+        stub_establishment_lookup(uow, establishment)
         uow.user_establishment_repo.get_relation = AsyncMock(return_value=relation)
         uow.measurement_repo.get_by_id = AsyncMock(return_value=None)
         uow.measurement_repo.create = AsyncMock(
@@ -190,7 +192,7 @@ class TestRegisterPersistence:
 
         raw_alerts = [(AlertType.OVERWEIGHT, AlertSeverity.MEDIUM, "detail")]
         with patch(
-            "app.services.measurement_service.evaluate_alerts",
+            "app.services.measurements.measurement_service.evaluate_alerts",
             return_value=raw_alerts,
         ):
             await MeasurementService(uow).register(valid_request, admin_actor)
@@ -207,7 +209,10 @@ class TestRegisterPersistence:
         measurement = make_measurement()
         uow = make_uow(subject=subject, measurement=measurement)
 
-        with patch("app.services.measurement_service.evaluate_alerts", return_value=[]):
+        with patch(
+            "app.services.measurements.measurement_service.evaluate_alerts",
+            return_value=[],
+        ):
             await MeasurementService(uow).register(valid_request, admin_actor)
 
         uow.measurement_alert_repo.create_bulk.assert_not_called()
@@ -405,7 +410,10 @@ class TestRegisterReturnValue:
         measurement = make_measurement()
         uow = make_uow(measurement=measurement)
 
-        with patch("app.services.measurement_service.evaluate_alerts", return_value=[]):
+        with patch(
+            "app.services.measurements.measurement_service.evaluate_alerts",
+            return_value=[],
+        ):
             result, created = await MeasurementService(uow).register(
                 valid_request, admin_actor
             )
@@ -414,3 +422,66 @@ class TestRegisterReturnValue:
         assert isinstance(result, MeasurementDomain)
         assert result.id == measurement.id
         assert result.bmi == measurement.bmi
+
+
+class TestExportMeasurementListing:
+    pytestmark = pytest.mark.asyncio
+
+    async def test_streams_the_whole_filtered_set(self, make_listing_measurement):
+        uow = AsyncMock()
+        uow.measurement_repo.stream_for_export = MagicMock(
+            return_value=aiter_of([make_listing_measurement()])
+        )
+        seen: list = []
+        params = MeasurementListingParams(city="Rosario")
+
+        data = await drain(
+            MeasurementService(uow).export_measurement_listing(
+                params, capturing_exporter(seen)
+            )
+        )
+
+        assert data == b"row"
+        uow.measurement_repo.stream_for_export.assert_called_once_with(params)
+
+    async def test_rows_are_mapped_to_listing_domain_objects(
+        self, make_listing_measurement
+    ):
+        uow = AsyncMock()
+        uow.measurement_repo.stream_for_export = MagicMock(
+            return_value=aiter_of(
+                [make_listing_measurement(), make_listing_measurement()]
+            )
+        )
+        seen: list = []
+
+        await drain(
+            MeasurementService(uow).export_measurement_listing(
+                MeasurementListingParams(), capturing_exporter(seen)
+            )
+        )
+
+        assert len(seen) == 2
+        assert all(isinstance(m, MeasurementListItemDomain) for m in seen)
+
+    async def test_empty_result_still_reaches_the_exporter(self):
+        uow = AsyncMock()
+        uow.measurement_repo.stream_for_export = MagicMock(return_value=aiter_of([]))
+        seen: list = []
+
+        data = await drain(
+            MeasurementService(uow).export_measurement_listing(
+                MeasurementListingParams(), capturing_exporter(seen)
+            )
+        )
+
+        assert data == b""
+        assert seen == []
+
+    async def test_count_uses_the_listing_filters(self):
+        uow = AsyncMock()
+        uow.measurement_repo.count_for_export = AsyncMock(return_value=42)
+        params = MeasurementListingParams(city="Rosario")
+
+        assert await MeasurementService(uow).count_measurement_export(params) == 42
+        uow.measurement_repo.count_for_export.assert_awaited_once_with(params)

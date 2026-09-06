@@ -5,9 +5,11 @@ from urllib.parse import parse_qs, urlparse
 import aiosmtplib
 import pytest
 
-from app.core.config import settings
+from app.config.settings import settings
+from app.domain.user import UserRole
 from app.exceptions.domain_exceptions import EmailDeliveryError
 from app.services.email_service import (
+    build_invite_deeplink,
     build_recovery_deeplink,
     send_access_granted_email,
     send_invite_email,
@@ -18,17 +20,19 @@ _FIXED_NOW = datetime(2024, 6, 1, 12, 0, 0, tzinfo=timezone.utc)
 
 
 @pytest.fixture
-def user_deeplink_settings(monkeypatch):
-    monkeypatch.setattr(settings, "app_deeplink_base", "https://app.example.com")
-    monkeypatch.setattr(settings, "password_recovery_path", "/reset-password")
-
-
-@pytest.fixture
-def admin_deeplink_settings(monkeypatch):
+def recovery_deeplink_settings(monkeypatch):
     monkeypatch.setattr(
         settings, "backoffice_deeplink_base", "https://backoffice.example.com"
     )
     monkeypatch.setattr(settings, "password_recovery_path", "/reset-password")
+
+
+@pytest.fixture
+def invite_deeplink_settings(monkeypatch):
+    monkeypatch.setattr(
+        settings, "backoffice_deeplink_base", "https://backoffice.example.com"
+    )
+    monkeypatch.setattr(settings, "invite_path", "/invite")
 
 
 @pytest.fixture
@@ -47,36 +51,20 @@ def smtp_enabled_no_tls(monkeypatch):
 
 
 class TestBuildRecoveryDeeplink:
-    def test_user_role_uses_user_deeplink(self, user_deeplink_settings):
-        result = build_recovery_deeplink("tok123", user_rol="user")
-        assert urlparse(result).netloc == "app.example.com"
-
-    def test_admin_role_uses_admin_deeplink(self, admin_deeplink_settings):
-        result = build_recovery_deeplink("tok123", user_rol="admin")
-        assert urlparse(result).netloc == "backoffice.example.com"
-
-    def test_superadmin_role_uses_admin_deeplink(self, admin_deeplink_settings):
-        result = build_recovery_deeplink("tok123", user_rol="superadmin")
-        assert urlparse(result).netloc == "backoffice.example.com"
-
-    def test_unknown_role_falls_back_to_user_deeplink(self, user_deeplink_settings):
-        result = build_recovery_deeplink("tok123", user_rol="unknown")
-        assert urlparse(result).netloc == "app.example.com"
-
-    def test_default_role_uses_user_deeplink(self, user_deeplink_settings):
+    def test_uses_backoffice_origin(self, recovery_deeplink_settings):
         result = build_recovery_deeplink("tok123")
-        assert urlparse(result).netloc == "app.example.com"
+        assert urlparse(result).netloc == "backoffice.example.com"
 
-    def test_token_injected_as_query_param(self, user_deeplink_settings):
+    def test_uses_configured_recovery_path(self, recovery_deeplink_settings):
+        result = build_recovery_deeplink("tok123")
+        assert urlparse(result).path == "/reset-password"
+
+    def test_token_injected_as_query_param(self, recovery_deeplink_settings):
         result = build_recovery_deeplink("abc123")
         assert parse_qs(urlparse(result).query)["token"] == ["abc123"]
 
-    def test_token_injected_for_admin(self, admin_deeplink_settings):
-        result = build_recovery_deeplink("admin-token", user_rol="admin")
-        assert parse_qs(urlparse(result).query)["token"] == ["admin-token"]
-
     def test_scheme_netloc_path_and_existing_params_preserved(self, monkeypatch):
-        monkeypatch.setattr(settings, "app_deeplink_base", "https://foo")
+        monkeypatch.setattr(settings, "backoffice_deeplink_base", "https://foo")
         monkeypatch.setattr(settings, "password_recovery_path", "/reset?x=1")
 
         result = build_recovery_deeplink("abc123")
@@ -90,11 +78,38 @@ class TestBuildRecoveryDeeplink:
         assert qs["token"] == ["abc123"]
 
     def test_token_overwrites_existing_token_param(self, monkeypatch):
-        monkeypatch.setattr(settings, "app_deeplink_base", "https://foo")
+        monkeypatch.setattr(settings, "backoffice_deeplink_base", "https://foo")
         monkeypatch.setattr(settings, "password_recovery_path", "/reset?token=old")
 
         result = build_recovery_deeplink("new-token")
         assert parse_qs(urlparse(result).query)["token"] == ["new-token"]
+
+
+class TestBuildInviteDeeplink:
+    def test_admin_role_uses_backoffice_invite_admin_path(
+        self, invite_deeplink_settings
+    ):
+        result = build_invite_deeplink("tok123", user_role=UserRole.ADMIN)
+        assert result == "https://backoffice.example.com/invite/admin?token=tok123"
+
+    def test_analyst_role_uses_backoffice_invite_analyst_path(
+        self, invite_deeplink_settings
+    ):
+        result = build_invite_deeplink("tok123", user_role=UserRole.ANALYST)
+        assert result == "https://backoffice.example.com/invite/analyst?token=tok123"
+
+    def test_enum_role_resolves_to_its_value(self, invite_deeplink_settings):
+        result = build_invite_deeplink("tok123", user_role=UserRole.ANALYST)
+        assert urlparse(result).path == "/invite/analyst"
+
+    def test_trailing_slash_in_base_does_not_duplicate(self, monkeypatch):
+        monkeypatch.setattr(
+            settings, "backoffice_deeplink_base", "https://backoffice.example.com/"
+        )
+        monkeypatch.setattr(settings, "invite_path", "/invite")
+
+        result = build_invite_deeplink("tok123", user_role=UserRole.ANALYST)
+        assert urlparse(result).path == "/invite/analyst"
 
 
 class TestSendRecoveryEmail:

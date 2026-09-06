@@ -1,9 +1,35 @@
+import os
 import uuid
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from app.exceptions.domain_exceptions import EstablishmentNotFoundError
 from app.models import UserRole, UserStatus
+
+os.environ.setdefault("OTEL_SDK_DISABLED", "true")
+
+
+@pytest.fixture
+def stub_establishment_lookup():
+    """Wire ``establishment_repo.get_by_id_or_raise`` on a mocked UoW.
+
+    Mirrors the real repository: passing None makes the lookup raise instead of
+    returning it, so services under test take the same branch they do in
+    production rather than receiving a truthy AsyncMock.
+    """
+
+    def _stub(uow, establishment):
+        uow.establishment_repo.get_by_id_or_raise = AsyncMock(
+            return_value=establishment,
+            side_effect=(
+                None
+                if establishment is not None
+                else EstablishmentNotFoundError(str(uuid.uuid4()))
+            ),
+        )
+
+    return _stub
 
 
 @pytest.fixture
@@ -92,3 +118,34 @@ def make_password_record():
         return p
 
     return _make
+
+
+# --- Streaming export helpers ------------------------------------------------
+
+
+async def drain(chunks) -> bytes:
+    """Collect a streamed export into the bytes it would have sent."""
+    return b"".join([chunk async for chunk in chunks])
+
+
+async def aiter_of(items):
+    """Wrap a list as an async iterator, standing in for a streaming repo."""
+    for item in items:
+        yield item
+
+
+def capturing_exporter(rows_out: list):
+    """A CsvExporter-shaped double that records the domain rows it was fed.
+
+    Real enough to be driven like the production exporter (``stream`` returns
+    an async iterator of bytes) while letting a test assert on the rows the
+    service built, which is the part the service is responsible for.
+    """
+
+    class _Exporter:
+        async def stream(self, rows):
+            async for row in rows:
+                rows_out.append(row)
+                yield b"row"
+
+    return _Exporter()

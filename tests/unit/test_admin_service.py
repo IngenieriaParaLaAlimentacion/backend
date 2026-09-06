@@ -7,7 +7,11 @@ import pytest
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.user import UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
+    FieldWorkerNotPendingError,
+    UserEstablishmentNotApprovedError,
     UserEstablishmentNotFoundError,
+    UserNotActiveError,
+    UserNotFieldWorkerError,
     UserNotFoundError,
 )
 from app.services.admin_service import AdminService
@@ -65,9 +69,10 @@ def make_service(mock_auth_service):
     return _make
 
 
-def _make_relation(establishment_id):
+def _make_relation(establishment_id, status=UserEstablishmentStatus.PENDING):
     rel = MagicMock()
     rel.establishment_id = establishment_id
+    rel.status = status
     return rel
 
 
@@ -161,6 +166,19 @@ class TestGetPaginatedUsers:
         assert result.total_pages == 10
         uow.user_repo.get_paginated.assert_called_once_with(
             role=None, status=None, limit=1, offset=0, search=None
+        )
+
+    @pytest.mark.asyncio
+    async def test_hydrates_only_approved_establishments(self, make_uow, make_service):
+        """The listing means access, so it must ask for approved relations only."""
+        user = _make_user()
+        uow = make_uow(users=[user], total=1)
+        service = make_service(uow)
+
+        await service.get_users_paginated(page=1, page_size=20)
+
+        uow.user_establishment_repo.get_by_user_ids.assert_called_once_with(
+            [user.id], UserEstablishmentStatus.APPROVED
         )
 
     @pytest.mark.asyncio
@@ -274,9 +292,28 @@ class TestGetPaginatedUsers:
 
 class TestApproveEstablishments:
     @pytest.mark.asyncio
-    async def test_sets_user_status_to_active(
+    async def test_approves_relations_without_touching_user_status(
         self, make_establishment, mock_auth_service
     ):
+        """Granting establishment access must not change the account status."""
+        user = _make_user(role=UserRole.FIELD_WORKER, status=UserStatus.ACTIVE)
+        estab = make_establishment()
+        uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
+        service = AdminService(uow, mock_auth_service)
+
+        await service.approve_establishments(user.id, [estab.id])
+
+        uow.user_repo.update_status.assert_not_called()
+        uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
+            user.id, [estab.id], UserEstablishmentStatus.APPROVED
+        )
+        uow.commit.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_pending_user_raises_error(
+        self, make_establishment, mock_auth_service
+    ):
+        """Establishment access can only be granted once the account is active."""
         user = _make_user(
             role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
         )
@@ -284,13 +321,11 @@ class TestApproveEstablishments:
         uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
         service = AdminService(uow, mock_auth_service)
 
-        await service.approve_establishments(user.id, [estab.id])
+        with pytest.raises(UserNotActiveError):
+            await service.approve_establishments(user.id, [estab.id])
 
-        uow.user_repo.update_status.assert_called_once_with(user.id, UserStatus.ACTIVE)
-        uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
-            user.id, [estab.id], UserEstablishmentStatus.APPROVED
-        )
-        uow.commit.assert_called_once()
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.commit.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_user_not_found_raises_error(self, mock_auth_service):
@@ -318,7 +353,7 @@ class TestApproveEstablishments:
     ):
         user = _make_user(
             role=UserRole.FIELD_WORKER,
-            status=UserStatus.PENDING_VALIDATION,
+            status=UserStatus.ACTIVE,
             email="worker@test.com",
         )
         estab1 = make_establishment(name="Centro A")
@@ -340,9 +375,7 @@ class TestApproveEstablishments:
 
     @pytest.mark.asyncio
     async def test_email_sent_after_commit(self, make_establishment, mock_auth_service):
-        user = _make_user(
-            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
-        )
+        user = _make_user(role=UserRole.FIELD_WORKER, status=UserStatus.ACTIVE)
         estab = make_establishment()
         uow = _make_approve_uow(
             user=user,
@@ -414,6 +447,116 @@ class TestRejectEstablishments:
             await service.reject_establishments(user.id, [uuid.uuid4()])
 
 
+class TestRevokeEstablishments:
+    @pytest.mark.asyncio
+    async def test_revokes_approved_establishments_without_touching_user_status(
+        self, make_establishment, mock_auth_service
+    ):
+        user = _make_user(role=UserRole.FIELD_WORKER, status=UserStatus.ACTIVE)
+        estab = make_establishment()
+        uow = _make_approve_uow(
+            user=user,
+            relations=[_make_relation(estab.id, UserEstablishmentStatus.APPROVED)],
+        )
+        service = AdminService(uow, mock_auth_service)
+
+        await service.revoke_establishments(user.id, [estab.id])
+
+        uow.user_repo.update_status.assert_not_called()
+        uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
+            user.id, [estab.id], UserEstablishmentStatus.REVOKED
+        )
+        uow.commit.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_user_not_found_raises_error(self, mock_auth_service):
+        uow = _make_approve_uow(user=None)
+        service = AdminService(uow, mock_auth_service)
+
+        with pytest.raises(UserNotFoundError):
+            await service.revoke_establishments(uuid.uuid4(), [uuid.uuid4()])
+
+    @pytest.mark.asyncio
+    async def test_non_field_worker_raises_error(
+        self, make_establishment, mock_auth_service
+    ):
+        user = _make_user(role=UserRole.ADMIN)
+        estab = make_establishment()
+        uow = _make_approve_uow(
+            user=user,
+            relations=[_make_relation(estab.id, UserEstablishmentStatus.APPROVED)],
+        )
+        service = AdminService(uow, mock_auth_service)
+
+        with pytest.raises(UserNotFieldWorkerError):
+            await service.revoke_establishments(user.id, [estab.id])
+
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_invalid_establishment_id_raises_error(
+        self, make_establishment, mock_auth_service
+    ):
+        """An establishment with no relation at all to this worker is a 404."""
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        estab = make_establishment()
+        uow = _make_approve_uow(
+            user=user,
+            relations=[_make_relation(estab.id, UserEstablishmentStatus.APPROVED)],
+        )
+        service = AdminService(uow, mock_auth_service)
+
+        with pytest.raises(UserEstablishmentNotFoundError):
+            await service.revoke_establishments(user.id, [uuid.uuid4()])
+
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_not_approved_establishment_raises_error(
+        self, make_establishment, mock_auth_service
+    ):
+        """A relation that exists but isn't approved (e.g. still pending)
+        can't be revoked."""
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        estab = make_establishment()
+        uow = _make_approve_uow(
+            user=user,
+            relations=[_make_relation(estab.id, UserEstablishmentStatus.PENDING)],
+        )
+        service = AdminService(uow, mock_auth_service)
+
+        with pytest.raises(UserEstablishmentNotApprovedError):
+            await service.revoke_establishments(user.id, [estab.id])
+
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_all_or_nothing_when_one_establishment_is_not_approved(
+        self, make_establishment, mock_auth_service
+    ):
+        """If any requested establishment isn't approved, none are revoked."""
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        approved = make_establishment()
+        pending = make_establishment()
+        uow = _make_approve_uow(
+            user=user,
+            relations=[
+                _make_relation(approved.id, UserEstablishmentStatus.APPROVED),
+                _make_relation(pending.id, UserEstablishmentStatus.PENDING),
+            ],
+        )
+        service = AdminService(uow, mock_auth_service)
+
+        with pytest.raises(UserEstablishmentNotApprovedError):
+            await service.revoke_establishments(user.id, [approved.id, pending.id])
+
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.commit.assert_not_called()
+
+
 class TestGetUserInfo:
     @pytest.mark.asyncio
     async def test_user_not_found_raises_error(self, mock_auth_service):
@@ -432,6 +575,19 @@ class TestGetUserInfo:
         await service.get_user_info(user.id)
 
         uow.user_repo.get_by_id.assert_called_once_with(user.id)
+
+    @pytest.mark.asyncio
+    async def test_hydrates_only_approved_establishments(self, mock_auth_service):
+        """The detail view means access, so it must ask for approved only."""
+        user = _make_user()
+        uow = _make_user_info_uow(user=user)
+        service = AdminService(uow, mock_auth_service)
+
+        await service.get_user_info(user.id)
+
+        uow.user_establishment_repo.get_by_user_ids.assert_called_once_with(
+            [user.id], UserEstablishmentStatus.APPROVED
+        )
 
     @pytest.mark.asyncio
     async def test_returns_user_with_no_establishments(self, mock_auth_service):
@@ -462,6 +618,125 @@ class TestGetUserInfo:
         assert len(result.establishments) == 1
         assert result.establishments[0].id == estab.id
         assert result.establishments[0].name == "Comedor Norte"
+
+
+class TestApproveFieldWorker:
+    @pytest.mark.asyncio
+    async def test_user_not_found_raises_error(self, mock_auth_service):
+        uow = _make_approve_uow(user=None)
+        service = AdminService(uow, mock_auth_service)
+
+        with pytest.raises(UserNotFoundError):
+            await service.approve_field_worker(uuid.uuid4(), [])
+
+    @pytest.mark.asyncio
+    async def test_approves_only_the_selected_establishments(
+        self, make_establishment, mock_auth_service
+    ):
+        """The admin picks a subset; unselected requests stay pending."""
+        user = _make_user(
+            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
+        )
+        estab1 = make_establishment()
+        estab2 = make_establishment()
+        uow = _make_approve_uow(
+            user=user,
+            relations=[_make_relation(estab1.id), _make_relation(estab2.id)],
+            establishments=[estab1],
+        )
+        service = AdminService(uow, mock_auth_service)
+
+        with patch(
+            "app.services.admin_service.send_access_granted_email",
+            new_callable=AsyncMock,
+        ):
+            await service.approve_field_worker(user.id, [estab1.id])
+
+        uow.user_repo.update_status.assert_called_once_with(user.id, UserStatus.ACTIVE)
+        uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
+            user.id, [estab1.id], UserEstablishmentStatus.APPROVED
+        )
+        uow.commit.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_empty_selection_activates_and_leaves_requests_pending(
+        self, make_establishment, mock_auth_service
+    ):
+        """Selecting nothing is valid: the account opens, requests stay pending
+        and no access-granted email goes out."""
+        user = _make_user(
+            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
+        )
+        estab = make_establishment()
+        uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
+        service = AdminService(uow, mock_auth_service)
+
+        with patch(
+            "app.services.admin_service.send_access_granted_email",
+            new_callable=AsyncMock,
+        ) as mock_email:
+            await service.approve_field_worker(user.id, [])
+
+        uow.user_repo.update_status.assert_called_once_with(user.id, UserStatus.ACTIVE)
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.commit.assert_called_once()
+        mock_email.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_no_establishments_still_activates(self, mock_auth_service):
+        """A field worker without requests can still be let in."""
+        user = _make_user(
+            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
+        )
+        uow = _make_approve_uow(user=user, relations=[])
+        service = AdminService(uow, mock_auth_service)
+
+        await service.approve_field_worker(user.id, [])
+
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.user_repo.update_status.assert_called_once_with(user.id, UserStatus.ACTIVE)
+
+    @pytest.mark.asyncio
+    async def test_unrequested_establishment_raises_error(
+        self, make_establishment, mock_auth_service
+    ):
+        """The admin cannot approve an establishment the worker never asked for."""
+        user = _make_user(
+            role=UserRole.FIELD_WORKER, status=UserStatus.PENDING_VALIDATION
+        )
+        estab = make_establishment()
+        uow = _make_approve_uow(user=user, relations=[_make_relation(estab.id)])
+        service = AdminService(uow, mock_auth_service)
+
+        with pytest.raises(UserEstablishmentNotFoundError):
+            await service.approve_field_worker(user.id, [uuid.uuid4()])
+
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_non_field_worker_raises_error(self, mock_auth_service):
+        """An invited admin must not be activated through this endpoint."""
+        user = _make_user(role=UserRole.ADMIN, status=UserStatus.PENDING_VALIDATION)
+        uow = _make_approve_uow(user=user, relations=[])
+        service = AdminService(uow, mock_auth_service)
+
+        with pytest.raises(UserNotFieldWorkerError):
+            await service.approve_field_worker(user.id, [])
+
+        uow.user_repo.update_status.assert_not_called()
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_non_pending_field_worker_raises_error(self, mock_auth_service):
+        """Already resolved field workers cannot be re-approved."""
+        user = _make_user(role=UserRole.FIELD_WORKER, status=UserStatus.ACTIVE)
+        uow = _make_approve_uow(user=user, relations=[])
+        service = AdminService(uow, mock_auth_service)
+
+        with pytest.raises(FieldWorkerNotPendingError):
+            await service.approve_field_worker(user.id, [])
+
+        uow.user_repo.update_status.assert_not_called()
 
 
 class TestRejectFieldWorker:
@@ -511,3 +786,151 @@ class TestRejectFieldWorker:
             user.id, UserStatus.INACTIVE
         )
         uow.commit.assert_called_once()
+
+
+def _make_pending_uow(
+    users=None,
+    total=0,
+    establishment_ids_by_user=None,
+    establishments=None,
+    total_pending=0,
+):
+    uow = AsyncMock()
+    users = users or []
+    uow.user_repo.get_pending_establishments_page = AsyncMock(
+        return_value=(users, total)
+    )
+    uow.user_establishment_repo.get_by_user_ids = AsyncMock(
+        return_value=establishment_ids_by_user
+        if establishment_ids_by_user is not None
+        else {user.id: [] for user in users}
+    )
+    uow.establishment_repo.find_by_ids = AsyncMock(return_value=establishments or [])
+    uow.user_repo.count_pending_establishments = AsyncMock(return_value=total_pending)
+    return uow
+
+
+class TestGetPendingEstablishmentRequests:
+    @pytest.mark.asyncio
+    async def test_hydrates_only_pending_establishments(
+        self, mock_auth_service, make_establishment
+    ):
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        pending = make_establishment(name="Comedor Norte")
+        uow = _make_pending_uow(
+            users=[user],
+            total=1,
+            establishment_ids_by_user={user.id: [pending.id]},
+            establishments=[pending],
+            total_pending=4,
+        )
+        service = AdminService(uow, mock_auth_service)
+
+        result, total_pending = await service.get_pending_establishment_requests(
+            page=1, page_size=20
+        )
+
+        uow.user_establishment_repo.get_by_user_ids.assert_called_once_with(
+            [user.id], UserEstablishmentStatus.PENDING
+        )
+        assert [e.id for e in result.items[0].establishments] == [pending.id]
+        assert total_pending == 4
+
+    @pytest.mark.asyncio
+    async def test_counts_pending_relations_globally(self, mock_auth_service):
+        uow = _make_pending_uow(users=[_make_user()], total=1, total_pending=37)
+        service = AdminService(uow, mock_auth_service)
+
+        _, total_pending = await service.get_pending_establishment_requests(
+            page=2, page_size=20
+        )
+
+        uow.user_repo.count_pending_establishments.assert_called_once_with(
+            search=None, establishment_id=None
+        )
+        assert total_pending == 37
+
+    @pytest.mark.asyncio
+    async def test_calculates_offset_correctly(self, mock_auth_service):
+        uow = _make_pending_uow()
+        service = AdminService(uow, mock_auth_service)
+
+        await service.get_pending_establishment_requests(page=3, page_size=20)
+
+        uow.user_repo.get_pending_establishments_page.assert_called_once_with(
+            limit=20, offset=40, search=None, establishment_id=None
+        )
+
+    @pytest.mark.asyncio
+    async def test_returns_pagination_metadata(self, mock_auth_service):
+        users = [_make_user(role=UserRole.FIELD_WORKER) for _ in range(5)]
+        uow = _make_pending_uow(users=users, total=45, total_pending=90)
+        service = AdminService(uow, mock_auth_service)
+
+        result, _ = await service.get_pending_establishment_requests(
+            page=3, page_size=20
+        )
+
+        assert len(result.items) == 5
+        assert result.total == 45
+        assert result.page == 3
+        assert result.page_size == 20
+        assert result.total_pages == ceil(45 / 20)
+
+    @pytest.mark.asyncio
+    async def test_no_pending_requests_returns_empty_result(self, mock_auth_service):
+        uow = _make_pending_uow()
+        service = AdminService(uow, mock_auth_service)
+
+        result, total_pending = await service.get_pending_establishment_requests(
+            page=1, page_size=20
+        )
+
+        assert result.items == []
+        assert result.total == 0
+        assert result.total_pages == 0
+        assert total_pending == 0
+        uow.user_establishment_repo.get_by_user_ids.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_forwards_search_and_establishment_filters(self, mock_auth_service):
+        uow = _make_pending_uow()
+        service = AdminService(uow, mock_auth_service)
+        establishment_id = uuid.uuid4()
+
+        await service.get_pending_establishment_requests(
+            page=1, page_size=20, search="ana", establishment_id=establishment_id
+        )
+
+        uow.user_repo.get_pending_establishments_page.assert_called_once_with(
+            limit=20, offset=0, search="ana", establishment_id=establishment_id
+        )
+        uow.user_repo.count_pending_establishments.assert_called_once_with(
+            search="ana", establishment_id=establishment_id
+        )
+
+    @pytest.mark.asyncio
+    async def test_strips_whitespace_from_search(self, mock_auth_service):
+        uow = _make_pending_uow()
+        service = AdminService(uow, mock_auth_service)
+
+        await service.get_pending_establishment_requests(
+            page=1, page_size=20, search="  ana  "
+        )
+
+        uow.user_repo.get_pending_establishments_page.assert_called_once_with(
+            limit=20, offset=0, search="ana", establishment_id=None
+        )
+
+    @pytest.mark.asyncio
+    async def test_whitespace_only_search_passes_none(self, mock_auth_service):
+        uow = _make_pending_uow()
+        service = AdminService(uow, mock_auth_service)
+
+        await service.get_pending_establishment_requests(
+            page=1, page_size=20, search="   "
+        )
+
+        uow.user_repo.get_pending_establishments_page.assert_called_once_with(
+            limit=20, offset=0, search=None, establishment_id=None
+        )
