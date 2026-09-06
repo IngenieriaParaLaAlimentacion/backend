@@ -37,7 +37,7 @@ async def foods(app) -> Foods:
     from app.models.food_catalog.food_category import FoodCategory
 
     async with AsyncSessionLocal() as session:
-        cereals = FoodCategory(code="cereales", name="Cereales", sara2_group_number=1)
+        cereals = FoodCategory(code="cereales", name="Cereales")
         session.add(cereals)
         await session.flush()
 
@@ -46,14 +46,12 @@ async def foods(app) -> Foods:
             name="Arroz",
             category_id=cereals.id,
             base_unit=MeasurementUnit.KILOGRAMOS,
-            is_active=True,
         )
         eggs = Food(
             code="huevo",
             name="Huevo",
             category_id=cereals.id,
             base_unit=MeasurementUnit.UNIDADES,
-            is_active=True,
         )
         session.add_all([rice, eggs])
         await session.commit()

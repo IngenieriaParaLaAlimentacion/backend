@@ -62,7 +62,7 @@ One food line of an intake.
 |---|---|---|
 | `id` | UUID, PK | Surrogate key. |
 | `food_intake_id` | UUID, FK → `food_intakes.id`, `ON DELETE CASCADE`, not null | Owned detail data of an intake — a line has no meaning without the delivery it belongs to, and goes with it. Same relationship `measurement_alerts` has to `measurements`. |
-| `food_id` | UUID, FK → `foods.id`, `ON DELETE RESTRICT`, not null | The catalog entry, referenced by `id` as ADR-0011 requires. `RESTRICT` is what makes ADR-0011's `is_active` flag the correct way to retire a food: a food referenced by a logged intake cannot be deleted, only deactivated. |
+| `food_id` | UUID, FK → `foods.id`, `ON DELETE RESTRICT`, not null | The catalog entry, referenced by `id` as ADR-0011 requires. `RESTRICT` stops a food an intake references from being deleted at all. ADR-0011 deferred the `is_active` retirement flag, so this constraint is currently the only thing keeping a catalog deletion from orphaning logged history. |
 | `quantity` | Numeric(10, 3), not null | How much arrived, in the food's own `base_unit`. `Numeric`, not `Float` — a received quantity is exact data, and `Float` is used in this codebase only for anthropometric readings. Three decimals expresses grams within a `kilogramos` quantity. |
 | `created_at` | DateTime(tz), `server_default now()`, not null | Row creation. |
 | — | `CHECK (quantity > 0)` | A line recording zero or a negative delivery is meaningless; enforced in the database rather than only at the edge, since this table will be written by more than one path (manual load, photo load). |
