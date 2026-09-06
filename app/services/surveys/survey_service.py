@@ -79,8 +79,9 @@ class SurveyService:
             raise SurveyLockedError(
                 "A survey with recorded responses cannot change its response target.",
             )
+        existing_ids = {question.id for question in survey.questions}
         for new in new_questions:
-            if new.id is None and new.is_required:
+            if new.id not in existing_ids and new.is_required:
                 raise SurveyLockedError(
                     "A new question added to a survey with recorded responses "
                     "must be optional.",
