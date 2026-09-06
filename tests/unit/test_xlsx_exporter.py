@@ -67,6 +67,7 @@ def _subject_ref() -> SubjectRefDomain:
 
 def _detail_response(
     survey: SurveyDomain,
+    response_number: int = 1,
     score_fies: int | None = None,
     establishment: EstablishmentRefDomain | None = None,
     subject: SubjectRefDomain | None = None,
@@ -81,6 +82,7 @@ def _detail_response(
         )
     return SurveyResponseDetailDomain(
         id=uuid.uuid4(),
+        response_number=response_number,
         event_at=NOW,
         survey=IdentifierRefDomain(id=survey.id, name=survey.name),
         establishment=establishment,
@@ -194,7 +196,8 @@ class TestSubjectIdentityColumns:
 
         workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
         header = [c.value for c in workbook["Respuestas"][1]]
-        assert header[:3] == ["Nombre", "Apellido", "DNI"]
+        assert header[0] == "N° de respuesta"
+        assert header[1:4] == ["Nombre", "Apellido", "DNI"]
 
     def test_subject_targeted_export_writes_identity_values(self):
         survey = _survey_domain(response_target=SurveyResponseTarget.SUBJECT)
@@ -204,7 +207,8 @@ class TestSubjectIdentityColumns:
 
         workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
         row = [c.value for c in workbook["Respuestas"][2]]
-        assert row[:3] == [subject.name, subject.last_name, subject.dni]
+        assert row[0] == responses[0].response_number
+        assert row[1:4] == [subject.name, subject.last_name, subject.dni]
 
     def test_anonymous_export_has_no_identity_columns(self):
         survey = _survey_domain(response_target=SurveyResponseTarget.ANONYMOUS)
@@ -213,7 +217,8 @@ class TestSubjectIdentityColumns:
 
         workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
         header = [c.value for c in workbook["Respuestas"][1]]
-        assert header[0] == "Completado por"
+        assert header[0] == "N° de respuesta"
+        assert header[1] == "Completado por"
         assert "DNI" not in header
 
     def test_establishment_targeted_export_has_no_identity_columns(self):
@@ -223,7 +228,8 @@ class TestSubjectIdentityColumns:
 
         workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
         header = [c.value for c in workbook["Respuestas"][1]]
-        assert header[0] == "Completado por"
+        assert header[0] == "N° de respuesta"
+        assert header[1] == "Completado por"
 
     def test_missing_subject_writes_blanks_rather_than_raising(self):
         survey = _survey_domain(response_target=SurveyResponseTarget.SUBJECT)
@@ -232,4 +238,4 @@ class TestSubjectIdentityColumns:
 
         workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
         row = [c.value for c in workbook["Respuestas"][2]]
-        assert row[:3] == [None, None, None]
+        assert row[1:4] == [None, None, None]

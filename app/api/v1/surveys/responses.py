@@ -1,7 +1,6 @@
-from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, Response, status
+from fastapi import APIRouter, Depends, Response, status
 
 from app.api.v1.params import (
     AUTH_RESPONSES,
@@ -30,15 +29,14 @@ router = APIRouter(prefix="/surveys/{survey_id}/responses")
 
 @router.get(
     "/export",
-    summary="Export a survey's responses (optionally filtered by target)",
+    summary="Export a survey's responses (accepts the listing's filters)",
     description=(
         "Export responses to a survey into a downloadable file including "
-        "both response data and a visual summary of indicators. A survey "
+        "both response data and a visual summary of indicators. The first "
+        "column is the response number the field worker entered. A survey "
         "targeted at subjects also exports each respondent's name, last name "
-        "and DNI. Can optionally be filtered by the response's target: "
-        "`establishment_id` when `response_target` is `establishment`, "
-        "`subject_id` when it is `subject`. Restricted to admins, analysts "
-        "and superadmins."
+        "and DNI. Accepts exactly the same filters as the listing. Restricted "
+        "to admins, analysts and superadmins."
     ),
     responses={
         **AUTH_RESPONSES,
@@ -50,23 +48,24 @@ router = APIRouter(prefix="/surveys/{survey_id}/responses")
         },
         status.HTTP_400_BAD_REQUEST: {
             "description": "`/errors/filter-not-applicable`: a target filter was "
-            "applied to a survey that does not carry that target"
+            "applied to a survey that does not carry that target. "
+            "`/errors/invalid-date-range`: event_at_from is after event_at_to. "
+            "`/errors/invalid-response-number-range`: response_number_from is "
+            "greater than response_number_to."
         },
         status.HTTP_404_NOT_FOUND: {"description": "Survey not found"},
     },
 )
 async def export_survey_responses(
     survey_id: UUID,
-    establishment_id: Optional[UUID] = Query(default=None),
-    subject_id: Optional[UUID] = Query(default=None),
+    query: SurveyResponseListingQuery = Depends(),
     format: ExportFormat = ExportFormat.XLSX,
     actor: UserActor = Depends(require_admin_or_analyst),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> Response:
+    query.validate()
     exporter = get_exporter(format)
-    file_bytes = await service.export(
-        survey_id, actor, exporter, establishment_id, subject_id
-    )
+    file_bytes = await service.export(survey_id, actor, exporter, query.to_domain())
     return Response(
         content=file_bytes,
         media_type=exporter.content_type,
@@ -90,14 +89,17 @@ async def export_survey_responses(
         "`subject_id` when `response_target` is `subject`, or "
         "`establishment_id` and the establishment's city/province when it is "
         "`establishment`. A filter that resolves through a target the survey "
-        "does not carry is rejected. Restricted to admins, analysts and "
+        "does not carry is rejected. Also filterable by response number, "
+        "exactly or by range. Restricted to admins, analysts and "
         "superadmins."
     ),
     responses={
         **AUTH_RESPONSES,
         status.HTTP_400_BAD_REQUEST: {
             "description": "`/errors/invalid-date-range`: event_at_from is after "
-            "event_at_to. `/errors/filter-not-applicable`: a target filter was "
+            "event_at_to. `/errors/invalid-response-number-range`: "
+            "response_number_from is greater than response_number_to. "
+            "`/errors/filter-not-applicable`: a target filter was "
             "applied to a survey that does not carry that target."
         },
         status.HTTP_404_NOT_FOUND: {"description": "Survey not found"},
@@ -138,7 +140,8 @@ async def list_survey_responses(
         "`response_target`, and neither when it is anonymous. Replaying the same "
         "id returns the stored record unchanged — the id is checked before the "
         "one-response-per-target rule, so a retried sync never reports a "
-        "conflict against itself. No draft mode: required questions must all be "
+        "conflict against itself. `response_number` is required on every survey "
+        "and must be unique within it. No draft mode: required questions must all be "
         "answered or the submission is rejected outright."
     ),
     responses={
@@ -155,8 +158,8 @@ async def list_survey_responses(
         },
         status.HTTP_409_CONFLICT: {
             "description": "This subject or establishment already answered this "
-            "survey; the response already recorded is returned in "
-            "`existing_response`."
+            'survey (`conflict_on: "target"`), or another response already '
+            'uses this `response_number` (`conflict_on: "response_number"`).'
         },
     },
 )
@@ -225,14 +228,17 @@ async def get_survey_response_detail(
     response_model=SurveyResponseResponse,
     summary="Edit a survey response",
     description=(
-        "Full-replace edit of a response's answers. Restricted to the "
-        "original submitter or an admin/superadmin. Idempotent per edit "
-        "attempt id for offline-first retries."
+        "Full-replace edit of a response's answers and response number. "
+        "Restricted to the original submitter or an admin/superadmin. "
+        "Idempotent per edit attempt id for offline-first retries."
     ),
     responses={
         **AUTH_RESPONSES,
         status.HTTP_400_BAD_REQUEST: {"description": "Answers invalid"},
         status.HTTP_404_NOT_FOUND: {"description": "Response not found"},
+        status.HTTP_409_CONFLICT: {
+            "description": "Another response already uses this response number."
+        },
     },
 )
 async def edit_survey_response(

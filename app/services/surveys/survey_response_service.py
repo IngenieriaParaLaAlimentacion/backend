@@ -1,3 +1,4 @@
+from enum import StrEnum
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
@@ -36,6 +37,14 @@ from app.schemas.surveys.survey_response_schema import (
     UserRefResponse,
 )
 from app.services.exporters.base import SurveyResponseExporter
+
+
+class ResponseConflictOn(StrEnum):
+    """What a survey-response conflict collided on."""
+
+    TARGET = "target"
+    RESPONSE_NUMBER = "response_number"
+
 
 # Roles allowed to submit a response.
 _SUBMITTER_ROLES = {UserRole.FIELD_WORKER, UserRole.ADMIN, UserRole.SUPERADMIN}
@@ -190,15 +199,16 @@ class SurveyResponseService:
         return subject
 
     @staticmethod
-    def _target_conflict_error(
-        existing: SurveyResponse,
+    def _conflict_error(
+        existing: SurveyResponse | None,
+        conflict_on: ResponseConflictOn,
     ) -> SurveyResponseAlreadyExistsError:
-        """Build the 409 naming the response already recorded for a target.
+        """Build the 409 naming what already holds the target or number.
 
         Serialized here because the RFC 7807 handler passes extensions straight
         to JSONResponse, which cannot encode a raw UUID or datetime.
         """
-        return SurveyResponseAlreadyExistsError(
+        ref = (
             ExistingResponseRef(
                 id=existing.id,
                 submitted_by=UserRefResponse(
@@ -207,7 +217,13 @@ class SurveyResponseService:
                     last_name=existing.submitted_by.last_name,
                 ),
                 event_at=existing.event_at,
+                response_number=existing.response_number,
             ).model_dump(mode="json")
+            if existing is not None
+            else None
+        )
+        return SurveyResponseAlreadyExistsError(
+            existing=ref, conflict_on=conflict_on.value
         )
 
     async def _raise_if_target_answered(
@@ -223,7 +239,24 @@ class SurveyResponseService:
             survey_id, subject_id=subject_id, establishment_id=establishment_id
         )
         if existing is not None:
-            raise self._target_conflict_error(existing)
+            raise self._conflict_error(existing, ResponseConflictOn.TARGET)
+
+    async def _raise_if_number_taken(
+        self,
+        survey_id: UUID,
+        response_number: int,
+        *,
+        exclude_response_id: UUID | None = None,
+    ) -> None:
+        """Raise the 409 if another response in this survey holds this number."""
+        existing = await self.uow.survey_response_repo.get_by_survey_and_number(
+            survey_id, response_number
+        )
+        if existing is None:
+            return
+        if exclude_response_id is not None and existing.id == exclude_response_id:
+            return
+        raise self._conflict_error(existing, ResponseConflictOn.RESPONSE_NUMBER)
 
     @staticmethod
     def _replayed(existing: SurveyResponse, survey_id: UUID) -> SurveyResponseDomain:
@@ -264,8 +297,7 @@ class SurveyResponseService:
             InvalidSurveyResponseError: payload names an entity that does not
                 match the survey's response target, answers fail validation, or
                 the replayed id belongs to a different survey.
-            SurveyResponseAlreadyExistsError: this subject or establishment has
-                already answered this survey.
+            SurveyResponseAlreadyExistsError: target or response-number conflict.
         """
         self._assert_can_submit(actor)
 
@@ -281,6 +313,7 @@ class SurveyResponseService:
         if subject_id is not None:
             await self._get_subject_or_raise(subject_id)
         await self._raise_if_target_answered(survey_id, subject_id, establishment_id)
+        await self._raise_if_number_taken(survey_id, data.response_number)
         answers = self._validate_answers(survey.questions, data.answers)
         score_fies = self._calculate_fies_score(survey, answers)
 
@@ -293,6 +326,7 @@ class SurveyResponseService:
                 submitted_by_id=actor.user_id,
                 answers=answers,
                 score_fies=score_fies,
+                response_number=data.response_number,
                 event_at=data.event_at,
             )
         except UniqueConstraintError as error:
@@ -305,7 +339,10 @@ class SurveyResponseService:
                 # The conflicting row lost the read race, so it cannot be named
                 # here -- but the condition is the same one the pre-check above
                 # reports, and must not leave with a different contract.
-                raise SurveyResponseAlreadyExistsError()
+                raise self._conflict_error(None, ResponseConflictOn.TARGET)
+            if error.field == "response_number":
+                await self._raise_if_number_taken(survey_id, data.response_number)
+                raise self._conflict_error(None, ResponseConflictOn.RESPONSE_NUMBER)
             if data.id is not None:
                 raced = await self.uow.survey_response_repo.get_by_id(data.id)
                 if raced is not None:
@@ -319,7 +356,7 @@ class SurveyResponseService:
     async def edit(
         self, response_id: UUID, data: SurveyResponseEditRequest, actor: UserActor
     ) -> SurveyResponseDomain:
-        """Full-replace edit of a response's answers.
+        """Full-replace edit of a response's answers and response number.
 
         Every edit attempt appends a row to ``survey_response_edits``; the
         response's current state only advances if ``event_at`` is at least as
@@ -343,12 +380,20 @@ class SurveyResponseService:
         answers = self._validate_answers(survey.questions, data.answers)
         score_fies = self._calculate_fies_score(survey, answers)
 
+        if data.response_number != response.response_number:
+            await self._raise_if_number_taken(
+                response.survey_id,
+                data.response_number,
+                exclude_response_id=response.id,
+            )
+
         try:
             await self.uow.survey_response_edit_repo.create(
                 id=data.id,
                 response_id=response.id,
                 edited_by_id=actor.user_id,
                 answers=answers,
+                response_number=data.response_number,
                 event_at=data.event_at,
             )
         except UniqueConstraintError:
@@ -359,9 +404,23 @@ class SurveyResponseService:
             raise
 
         if data.event_at >= response.event_at:
-            response = await self.uow.survey_response_repo.update_answers(
-                response, answers=answers, score_fies=score_fies, event_at=data.event_at
-            )
+            try:
+                response = await self.uow.survey_response_repo.update_answers(
+                    response,
+                    answers=answers,
+                    score_fies=score_fies,
+                    response_number=data.response_number,
+                    event_at=data.event_at,
+                )
+            except UniqueConstraintError as error:
+                if error.field != "response_number":
+                    raise
+                await self._raise_if_number_taken(
+                    response.survey_id,
+                    data.response_number,
+                    exclude_response_id=response.id,
+                )
+                raise self._conflict_error(None, ResponseConflictOn.RESPONSE_NUMBER)
         await self.uow.commit()
         return SurveyResponseDomain.from_db(response)
 
@@ -374,6 +433,8 @@ class SurveyResponseService:
         params: SurveyResponseListingParams,
     ) -> PaginatedResult[SurveyResponseDashboardItemDomain]:
         """Return a paginated list of a survey's responses in ``params.sort_order``.
+
+        ``params`` may narrow by response number, exactly or by range.
 
         Raises:
             RoleNotAllowedError: actor role isn't a dashboard reader.
@@ -450,12 +511,9 @@ class SurveyResponseService:
         survey_id: UUID,
         actor: UserActor,
         exporter: SurveyResponseExporter,
-        establishment_id: UUID | None = None,
-        subject_id: UUID | None = None,
+        params: SurveyResponseListingParams,
     ) -> bytes:
-        """Export every response to a survey using the given exporter.
-
-        Optionally filter by the response's target.
+        """Export responses using the listing's filters.
 
         Raises:
             RoleNotAllowedError: actor role isn't a dashboard reader.
@@ -466,11 +524,15 @@ class SurveyResponseService:
         self._assert_dashboard_reader(actor)
         survey = await self._get_survey_or_raise(survey_id)
         self._assert_target_filters_applicable(
-            survey, subject_id=subject_id, establishment_id=establishment_id
+            survey,
+            subject_id=params.subject_id,
+            establishment_id=params.establishment_id,
+            city=params.city,
+            province=params.province,
         )
 
         responses = await self.uow.survey_response_repo.list_all_for_export(
-            survey_id, establishment_id, subject_id
+            survey_id, params=params
         )
         detailed = [SurveyResponseDetailDomain.from_db(r) for r in responses]
         return exporter.export(survey, detailed)

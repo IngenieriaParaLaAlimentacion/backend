@@ -114,7 +114,7 @@ def _valid_answers(survey: dict) -> dict:
     return {question["id"]: question["options"][0]["id"]}
 
 
-def _response_body(survey_id, answers, **overrides) -> dict:
+def _response_body(survey_id, answers, response_number: int = 1, **overrides) -> dict:
     """Build a submission body for the default (anonymous) survey.
 
     Anonymous surveys carry no target, so nothing else is sent. Tests covering
@@ -124,6 +124,7 @@ def _response_body(survey_id, answers, **overrides) -> dict:
     body = {
         "survey_id": str(survey_id),
         "answers": answers,
+        "response_number": response_number,
         "event_at": NOW,
     }
     body.update(overrides)
