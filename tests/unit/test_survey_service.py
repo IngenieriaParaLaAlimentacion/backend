@@ -660,6 +660,33 @@ class TestUpdatePermissionsAndLock:
         assert isinstance(result, SurveyDomain)
         uow.survey_repo.reconcile.assert_awaited_once()
 
+    async def test_add_required_question_locked(
+        self, make_uow, make_survey, admin_actor
+    ):
+        existing = _existing_question()
+        survey = make_survey(response_count=1, questions=[existing])
+        uow = make_uow(survey=survey)
+        data = make_update(
+            questions=[
+                QuestionInput(
+                    id=existing.id,
+                    text="Editada",
+                    response_type=ResponseType.TEXT,
+                    is_required=False,
+                    options=[],
+                ),
+                QuestionInput(
+                    text="Nueva pregunta obligatoria",
+                    response_type=ResponseType.TEXT,
+                    is_required=True,
+                    options=[],
+                ),
+            ]
+        )
+        with pytest.raises(SurveyLockedError):
+            await SurveyService(uow).update(survey.id, data, admin_actor)
+        uow.survey_repo.reconcile.assert_not_called()
+
     async def test_rename_conflict_uses_exclude_id(
         self, make_uow, make_survey, admin_actor
     ):
