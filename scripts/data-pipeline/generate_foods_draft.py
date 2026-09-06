@@ -17,7 +17,6 @@ from pathlib import Path
 BASE = Path(__file__).parent
 REFERENCE_DATA = BASE.parent.parent / "app" / "reference_data"
 RAW = BASE / "raw"
-CATEGORIES = REFERENCE_DATA / "food_categories.csv"
 OUTPUT = BASE / "foods_draft.csv"
 
 EXCLUDE_RAW_FILES = {
@@ -32,6 +31,37 @@ EXCLUDE_RAW_FILES = {
 EXCLUDED_NAMES = {
     # not something an establishment receives as donated/purchased stock
     "Leche materna",
+}
+
+# SARA 2's own group numbering (raw/*.csv's `grupo_num`) mapped to this
+# catalog's `food_categories.code`. Lives here, not in
+# app/reference_data/food_categories.csv, because the app's own schema has no
+# use for the source's group number beyond this one-time extraction step.
+GROUP_NUM_TO_CATEGORY = {
+    1: "verduras",
+    2: "frutas",
+    3: "legumbres_cereales_papa_choclo_batata_pan_y_pastas",
+    4: "leche_y_postres_de_leche",
+    5: "yogures",
+    6: "quesos",
+    7: "carnes",
+    8: "huevos",
+    9: "pescados_y_mariscos",
+    10: "aceites",
+    11: "frutas_secas_y_semillas",
+    12: "azucares_mermeladas_y_dulces",
+    13: "golosinas_y_chocolates",
+    14: "grasas",
+    15: "snacks_salados",
+    16: "aderezos",
+    17: "caldos_y_sopas_industriales",
+    18: "postres_industriales_y_helados",
+    19: "sales",
+    20: "bebidas_con_azucar",
+    21: "bebidas_sin_azucar",
+    22: "bebidas_alcoholicas_y_energizantes",
+    24: "infusiones",
+    25: "alimentos_de_locales_de_comidas_rapidas",
 }
 
 GROUP_DEFAULT_UNIT = {
@@ -148,11 +178,6 @@ def assign_base_unit(name: str, category: str) -> tuple[str, str]:
 
 
 def main() -> None:
-    with open(CATEGORIES, newline="", encoding="utf-8") as f:
-        group_to_cat = {
-            int(row["sara2_group_number"]): row["code"] for row in csv.DictReader(f)
-        }
-
     # alimento -> (category, max source page) per group, in first-seen order
     foods: dict[str, tuple[str, int]] = {}
     order: list[str] = []
@@ -162,7 +187,7 @@ def main() -> None:
         with open(path, newline="", encoding="utf-8") as f:
             for row in csv.DictReader(f):
                 group_num = int(row["grupo_num"])
-                category = group_to_cat[group_num]
+                category = GROUP_NUM_TO_CATEGORY[group_num]
                 name = row["alimento"]
                 if name in EXCLUDED_NAMES:
                     continue

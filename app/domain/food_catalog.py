@@ -24,7 +24,7 @@ class NutrientGroup(str, Enum):
 
 
 class FoodSortOrder(StrEnum):
-    """Sort orders accepted by the food catalog listing."""
+    """Sort orders accepted by the food catalog and food category listings."""
 
     NAME_ASC = "name_asc"
     NAME_DESC = "name_desc"
@@ -36,11 +36,17 @@ class FoodListingParams:
 
     search: str | None = None
     category_id: UUID | None = None
-    is_active: bool | None = True
     sort_order: FoodSortOrder = FoodSortOrder.NAME_ASC
 
     def __post_init__(self) -> None:
         self.search = normalize_optional_str(self.search)
+
+
+@dataclass
+class FoodCategoryListingParams:
+    """Query parameters for the food category listing."""
+
+    sort_order: FoodSortOrder = FoodSortOrder.NAME_ASC
 
 
 @dataclass
@@ -51,7 +57,6 @@ class FoodListItemDomain:
     code: str
     name: str
     base_unit: MeasurementUnit
-    is_active: bool
     category: IdentifierRefDomain
 
     @classmethod
@@ -62,7 +67,6 @@ class FoodListItemDomain:
             code=food.code,
             name=food.name,
             base_unit=food.base_unit,
-            is_active=food.is_active,
             category=IdentifierRefDomain.from_db(food.category),
         )
 
@@ -121,7 +125,6 @@ class FoodDetailDomain:
     code: str
     name: str
     base_unit: MeasurementUnit
-    is_active: bool
     category: IdentifierRefDomain
     nutrients: list[FoodNutrientValueDomain]
 
@@ -143,7 +146,6 @@ class FoodDetailDomain:
             code=food.code,
             name=food.name,
             base_unit=food.base_unit,
-            is_active=food.is_active,
             category=IdentifierRefDomain.from_db(food.category),
             nutrients=nutrients,
         )

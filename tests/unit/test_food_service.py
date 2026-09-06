@@ -24,7 +24,6 @@ def make_food():
         food.code = "pollo_pechuga"
         food.name = name
         food.base_unit = MeasurementUnit.KILOGRAMOS
-        food.is_active = True
         food.category = category
         food.nutrient_values = []
         return food

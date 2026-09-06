@@ -18,7 +18,11 @@ from app.domain.establishment_dashboard import (
     EstablishmentSubjectListingParams,
     EstablishmentSubjectSortOrder,
 )
-from app.domain.food_catalog import FoodListingParams, FoodSortOrder
+from app.domain.food_catalog import (
+    FoodCategoryListingParams,
+    FoodListingParams,
+    FoodSortOrder,
+)
 from app.domain.measurement import MeasurementListingParams, MeasurementSortOrder
 from app.domain.subject import Sex, SubjectListingParams, SubjectSortOrder
 from app.domain.survey import (
@@ -173,16 +177,22 @@ class EstablishmentFieldWorkersQuery:
 class FoodListingQuery:
     search: Annotated[str | None, Query(max_length=200)] = None
     category_id: Annotated[UUID | None, Query()] = None
-    is_active: Annotated[bool | None, Query()] = True
     sort_order: FoodSortOrder = FoodSortOrder.NAME_ASC
 
     def to_domain(self) -> FoodListingParams:
         return FoodListingParams(
             search=self.search,
             category_id=self.category_id,
-            is_active=self.is_active,
             sort_order=self.sort_order,
         )
+
+
+@dataclass
+class FoodCategoryListingQuery:
+    sort_order: FoodSortOrder = FoodSortOrder.NAME_ASC
+
+    def to_domain(self) -> FoodCategoryListingParams:
+        return FoodCategoryListingParams(sort_order=self.sort_order)
 
 
 @dataclass

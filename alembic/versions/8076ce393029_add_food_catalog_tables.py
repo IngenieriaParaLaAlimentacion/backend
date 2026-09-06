@@ -26,7 +26,6 @@ def upgrade() -> None:
         sa.Column("id", sa.UUID(), nullable=False),
         sa.Column("code", sa.String(), nullable=False),
         sa.Column("name", sa.String(), nullable=False),
-        sa.Column("sara2_group_number", sa.SmallInteger(), nullable=False),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
@@ -41,7 +40,6 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("code"),
-        sa.UniqueConstraint("sara2_group_number"),
     )
 
     op.create_table(
@@ -59,9 +57,6 @@ def upgrade() -> None:
             "base_unit",
             sa.Enum("unidades", "kilogramos", "litros", name="measurementunit"),
             nullable=False,
-        ),
-        sa.Column(
-            "is_active", sa.Boolean(), server_default=sa.text("true"), nullable=False
         ),
         sa.Column("source_page", sa.SmallInteger(), nullable=True),
         sa.Column(

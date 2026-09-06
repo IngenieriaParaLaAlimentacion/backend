@@ -34,14 +34,12 @@ async def seed_food_categories(uow: UnitOfWork) -> dict[str, UUID]:
         category = existing.get(code)
         if category:
             category.name = row["name"]
-            category.sara2_group_number = int(row["sara2_group_number"])
             await uow.food_category_repo.update(category)
         else:
             category = FoodCategory(
                 id=uuid.uuid4(),
                 code=code,
                 name=row["name"],
-                sara2_group_number=int(row["sara2_group_number"]),
             )
             await uow.food_category_repo.create(category)
         code_to_id[code] = category.id

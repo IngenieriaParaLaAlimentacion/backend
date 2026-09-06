@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, SmallInteger, String, func
+from sqlalchemy import Column, DateTime, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -15,7 +15,6 @@ class FoodCategory(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     code = Column(String, nullable=False, unique=True)
     name = Column(String, nullable=False)
-    sara2_group_number = Column(SmallInteger, nullable=False, unique=True)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

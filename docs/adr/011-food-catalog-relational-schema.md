@@ -66,7 +66,6 @@ The ~26 SARA 2 food groups.
 | `id` | UUID, PK | Surrogate key; the only thing any FK in this schema ever points at. |
 | `code` | String, unique, not null | Stable natural key for the seed script's upsert matching, per ADR-0010 — matched by a slug derived from the group name, not by the display name itself, so a later wording correction doesn't create a duplicate group. |
 | `name` | String, not null | Display name of the group (e.g. "Carnes"), as given by the source. |
-| `sara2_group_number` | SmallInteger, unique, not null | The group's number in the source table (1–26). Kept as an explicit column, not just implied by row order, so any catalog entry can be traced back to exactly where in SARA 2 it came from — supporting the kind of review ADR-0009 requires of an officially auditable source. |
 
 This is modeled as a real table rather than a fixed enum for the same reason ADR-0010 rejected persisting
 the catalog itself as in-memory constants: group names are part of the source and can be corrected as the
@@ -85,7 +84,6 @@ The specific, individual foods an establishment actually selects when logging st
 | `name` | String, not null | Display name, as given by the source (e.g. "Pechuga de pollo sin piel"). |
 | `category_id` | UUID, FK → `food_categories.id`, `ON DELETE RESTRICT`, not null | Every food in SARA 2 belongs to exactly one of the 26 groups; `RESTRICT` prevents a category from being removed while foods still reference it. |
 | `base_unit` | Enum, not null | The unit of measurement an establishment's logged quantity for this food is persisted in. This is a domain decision this catalog has to make on SARA 2's behalf, since the source has no purchasing/receiving unit concept at all — it only defines a 100 g nutrient reference basis, which answers a different question. The unit is chosen per food to match how it is realistically received (e.g. counted for eggs, weighed for meat), so that quantities logged for it are always recorded in a unit coherent with the food itself. |
-| `is_active` | Boolean, not null, default `true` | Lets a food be retired from the catalog (superseded, merged, found to be miscategorized) without deleting the row — deleting it would either cascade into any already-logged stock referencing it, or require blocking the delete outright. A boolean flag keeps historical references intact while hiding the entry from new selections, satisfying the requirement that adding or correcting catalog entries must not break stock already logged against existing ones. |
 | `source_page` | SmallInteger, nullable | The PDF page the entry was read from. Supports the same auditability requirement ADR-0009 raises for the source as a whole, at the level of an individual entry — a reviewer correcting a curated value can go straight to the page it came from. |
 
 The table is named `foods`, not `food_types`: each row is the definitional catalog record itself, and no
@@ -147,8 +145,8 @@ be solved — and sourced — at that time, scoped to only the foods it actually
 *Positives*
 
 - Every column in `foods` and `food_nutrient_values` is either a direct, unmodified reading from the
-  source or a minimal domain addition (`base_unit`, `is_active`) required for stock logging — nothing is
-  speculative or derived through an unaudited calculation.
+  source or a minimal domain addition (`base_unit`) required for stock logging — nothing is speculative or
+  derived through an unaudited calculation.
 - `food_nutrient_values` captures the full nutrient panel SARA 2 provides during the same seed pass that
   populates `foods`, so future nutrition-facing functionality (deficit calculations, recommendations — the
   motivating use case ADR-0009 names for choosing SARA 2 in the first place) does not require re-parsing
@@ -157,8 +155,6 @@ be solved — and sourced — at that time, scoped to only the foods it actually
   this nutrient" claim where the source simply didn't measure it.
 - `foods.id`, not `code`, is the only stable FK target in the schema, so a future correction to a food's
   `code` cannot break any existing reference to it.
-- `is_active` on `foods` means a catalog correction can retire an entry without cascading into, or being
-  blocked by, stock already logged against it.
 
 *Negatives*
 
@@ -207,12 +203,21 @@ foods; sourcing it would require a secondary, external reference for every food 
 volume, for a computation (deriving a nutrient total from a logged stock quantity) that no functionality
 defined for this catalog performs. Deferred to whichever future feature actually needs it.
 
-**An explicit `display_order` column on `food_categories`** — rejected. `sara2_group_number` already
-provides a stable, deterministic ordering directly from the source; a separate ordering column would only
-be justified by a confirmed need to present categories in an order that diverges from the source's own
-group numbering, which does not currently exist.
-
 **`food_categories` as a fixed enum instead of a table** — rejected, for the same reason ADR-0010 rejected
 enum/in-memory constants for the food catalog itself: group names are part of the curated, reviewable
 source data, not a fixed structural detail of the application, and an enum value is exactly as costly to
 correct later as an already-applied migration.
+
+**A `sara2_group_number` column on `food_categories`, to trace each category back to SARA 2's own 1–26
+group number** — rejected. Source traceability for the grouping itself is already
+covered by ADR-0009 documenting SARA 2 as the source. A "1-of-26" group number is also not something this
+schema could guarantee stays populated if a future non-SARA2 source ever contributes a category — unlike
+`foods.source_page`, whose audit value is at the individual-food level SARA 2 doesn't otherwise expose.
+
+**An `is_active` column on `foods`, to let a food be retired from the catalog — rejected for now. No catalog-correction 
+workflow exists yet that needs to retire a food, so the column would carry no behavior beyond a query filter with 
+nothing to filter. Nothing about a food being *removed from the catalog* is expected to happen during normal operation 
+— a food isn't the kind of thing that becomes seasonally or temporarily unavailable, unlike, say, a paused survey. 
+If a genuine catalog-correction need appears later (once real stock data exists to protect), this can be added
+as an additive migration at that point, informed by whatever the actual correction workflow turns out to
+require, rather than speculatively now.
