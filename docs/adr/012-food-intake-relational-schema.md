@@ -48,10 +48,11 @@ One delivery received by an establishment.
 | `source` | Enum (`foodintakesource`), not null | `manual` / `photo`: how the intake was loaded. Kept as a column rather than inferred from the presence of an attachment, because the attachment itself is not modeled yet and a photo-loaded intake is still a photo-loaded intake once its image is discarded. |
 | `synced_at` | DateTime(tz), nullable | When the record reached the server from an offline client; null for a direct online load. Mirrors `measurements.synced_at`. |
 | `created_at` | DateTime(tz), `server_default now()`, not null | Row creation. |
+| `updated_at` | DateTime(tz), `server_default now()`, `onupdate now()`, not null | Last correction. |
 | — | `INDEX(establishment_id, received_at)` | The access path every intake listing will use: one establishment's deliveries, most recent first. |
 
-No `updated_at`: intakes are append-only for now, as `measurements` are. If editing is introduced, the
-column is an additive migration.
+Intakes are correctable in place: a delivery's
+recorded amount or date can turn out wrong, and `updated_at` says when that was last fixed.
 
 ### `food_intake_items`
 

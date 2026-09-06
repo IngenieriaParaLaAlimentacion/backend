@@ -162,6 +162,19 @@ class TestPersistence:
         assert units[foods.rice] == MeasurementUnit.KILOGRAMOS
         assert units[foods.eggs] == MeasurementUnit.UNIDADES
 
+    async def test_a_new_intake_has_matching_timestamps(
+        self, db_establishment, responsible, foods
+    ):
+        """A correction moves updated_at; until then it tracks created_at."""
+        intake_id = await _persist(
+            _build_intake(
+                db_establishment.id, responsible.id, [(foods.rice, Decimal("1"))]
+            )
+        )
+
+        intake = await _fetch(intake_id)
+        assert intake.updated_at == intake.created_at
+
     async def test_comments_and_synced_at_are_optional(
         self, db_establishment, responsible, foods
     ):

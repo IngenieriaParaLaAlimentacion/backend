@@ -14,6 +14,8 @@ class FoodIntake(Base):
 
     ``received_at`` is when the food actually arrived and ``created_at`` when
     the row was written, so a retroactive load keeps both facts.
+
+    A correction edits the row in place and moves ``updated_at``.
     """
 
     __tablename__ = "food_intakes"
@@ -43,6 +45,12 @@ class FoodIntake(Base):
     synced_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
     )
 
     establishment = relationship("Establishment", back_populates="food_intakes")
