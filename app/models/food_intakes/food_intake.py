@@ -1,8 +1,7 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, ForeignKey, Index, String, func
+from sqlalchemy import UUID, Column, DateTime, ForeignKey, Index, String, func
 from sqlalchemy import Enum as SAEnum
-from sqlalchemy import UUID
 from sqlalchemy.orm import relationship
 
 from app.domain.food_intake import FoodIntakeSource
