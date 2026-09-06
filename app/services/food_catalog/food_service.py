@@ -2,19 +2,27 @@ from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.food_catalog import (
+    FoodCategoryListingParams,
     FoodDetailDomain,
     FoodListingParams,
     FoodListItemDomain,
 )
 from app.domain.pagination import PaginatedResult
 from app.exceptions.domain_exceptions import FoodNotFoundError
+from app.models.food_catalog.food_category import FoodCategory
 
 
 class FoodService:
-    """Business logic for reading the food catalog."""
+    """Business logic for reading the food catalog and its categories."""
 
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
+
+    async def list_categories(
+        self, params: FoodCategoryListingParams
+    ) -> list[FoodCategory]:
+        """Return every food category, sorted per ``params.sort_order``."""
+        return await self.uow.food_category_repo.get_all(params.sort_order)
 
     async def get_food(self, food_id: UUID) -> FoodDetailDomain:
         """Return a food's full detail, including its nutrient composition.
