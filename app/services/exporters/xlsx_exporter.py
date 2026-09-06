@@ -8,6 +8,7 @@ from app.domain.survey import SurveyDomain, SurveyResponseTarget
 from app.domain.survey_response import SurveyResponseDetailDomain
 from app.services.exporters.base import SurveyResponseExporter
 
+_NUMBER_HEADER = "N° de respuesta"
 _SUBJECT_HEADERS = ["Nombre", "Apellido", "DNI"]
 
 
@@ -40,14 +41,16 @@ class XlsxSurveyResponseExporter(SurveyResponseExporter):
     ) -> None:
         sheet.title = "Respuestas"
         is_subject_targeted = survey.response_target == SurveyResponseTarget.SUBJECT
-        headers = list(_SUBJECT_HEADERS) if is_subject_targeted else []
+        headers = [_NUMBER_HEADER]
+        headers += list(_SUBJECT_HEADERS) if is_subject_targeted else []
         headers += ["Completado por", "Fecha de relevamiento", "Score FIES"]
         headers += [q.text for q in survey.questions]
         sheet.append(headers)
 
         for response in responses:
             answer_by_question_id = {a.question_id: a for a in response.answers}
-            row = self._subject_cells(response) if is_subject_targeted else []
+            row = [response.response_number]
+            row += self._subject_cells(response) if is_subject_targeted else []
             row += [
                 response.submitted_by.name,
                 response.event_at.replace(tzinfo=None),

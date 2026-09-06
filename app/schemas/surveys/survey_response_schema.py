@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any
+from typing import Annotated, Any
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -14,6 +14,18 @@ from app.schemas.types import ClientGeneratedId
 from app.utils.dates import validate_not_future_datetime
 
 AnswerValue = str | int | float | list[str]
+
+RESPONSE_NUMBER_MIN = 1
+RESPONSE_NUMBER_MAX = 999_999
+
+ResponseNumber = Annotated[
+    int,
+    Field(
+        ge=RESPONSE_NUMBER_MIN,
+        le=RESPONSE_NUMBER_MAX,
+        description="The hand-entered number, unique within the survey.",
+    ),
+]
 
 
 class SurveyResponseRequest(BaseModel):
@@ -31,6 +43,7 @@ class SurveyResponseRequest(BaseModel):
         ),
     )
     answers: dict[str, AnswerValue]
+    response_number: ResponseNumber
     event_at: datetime = Field(
         description=(
             "When the respondent actually completed the survey, client-supplied. "
@@ -50,12 +63,13 @@ class UserRefResponse(IdentifierRefSchema):
 
 
 class ExistingResponseRef(BaseModel):
-    """The response already recorded for a target, returned in the 409 body
+    """The response already holding the target or number, returned in the 409 body
     as the ``existing_response`` member."""
 
     id: UUID
     submitted_by: UserRefResponse
     event_at: datetime
+    response_number: ResponseNumber
 
 
 class SurveyResponseEditRequest(BaseModel):
@@ -67,6 +81,7 @@ class SurveyResponseEditRequest(BaseModel):
         ),
     )
     answers: dict[str, AnswerValue]
+    response_number: ResponseNumber
     event_at: datetime = Field(
         description=(
             "When the edit was actually made, client-supplied. Used for "
@@ -82,6 +97,7 @@ class SurveyResponseResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
+    response_number: ResponseNumber
     survey_id: UUID
     subject_id: UUID | None
     establishment_id: UUID | None
@@ -99,6 +115,7 @@ class SurveyResponseListItem(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
+    response_number: ResponseNumber
     event_at: datetime
     survey: SurveyRefResponse
     establishment: EstablishmentRefResponse | None
@@ -111,6 +128,7 @@ class SurveyResponseDashboardItem(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
+    response_number: ResponseNumber
     event_at: datetime
     survey: SurveyRefResponse
     establishment: EstablishmentRefResponse | None
@@ -136,6 +154,7 @@ class SurveyResponseDetailResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
+    response_number: ResponseNumber
     event_at: datetime
     survey: SurveyRefResponse
     establishment: EstablishmentRefResponse | None

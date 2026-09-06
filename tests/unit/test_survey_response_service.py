@@ -85,6 +85,7 @@ def _make_response(
     establishment_id: uuid.UUID | None = None,
     submitted_by_id: uuid.UUID | None = None,
     answers: dict | None = None,
+    response_number: int = 1,
     event_at: datetime = NOW,
 ) -> MagicMock:
     """A MagicMock standing in for an ORM SurveyResponse.
@@ -98,6 +99,7 @@ def _make_response(
     r.establishment_id = establishment_id
     r.submitted_by_id = submitted_by_id or uuid.uuid4()
     r.answers = answers if answers is not None else {}
+    r.response_number = response_number
     r.event_at = event_at
     r.created_at = NOW
     r.updated_at = NOW
@@ -126,9 +128,10 @@ def _make_fies_survey_orm(num_questions: int = 8) -> tuple[MagicMock, list[Magic
     return survey, questions
 
 
-def _apply_update_answers(response, answers, score_fies, event_at):
+def _apply_update_answers(response, answers, score_fies, response_number, event_at):
     response.answers = answers
     response.score_fies = score_fies
+    response.response_number = response_number
     response.event_at = event_at
     return response
 
@@ -149,6 +152,7 @@ def make_uow(stub_establishment_lookup):
         existing_edit=None,
         subject=_UNSET,
         target_response=None,
+        number_response=None,
     ):
         uow = AsyncMock()
         uow.survey_repo.get_by_id = AsyncMock(return_value=survey)
@@ -160,6 +164,9 @@ def make_uow(stub_establishment_lookup):
         )
         uow.user_establishment_repo.get_relation = AsyncMock(return_value=relation)
         uow.survey_response_repo.get_by_target = AsyncMock(return_value=target_response)
+        uow.survey_response_repo.get_by_survey_and_number = AsyncMock(
+            return_value=number_response
+        )
         uow.survey_response_repo.get_by_id = AsyncMock(return_value=existing_response)
         uow.survey_response_repo.create = AsyncMock(
             return_value=created_response or _make_response()
@@ -266,7 +273,7 @@ class TestSubmit:
     @pytest.fixture
     def request_factory(self):
         def _make(**overrides):
-            data = dict(answers={}, event_at=NOW)
+            data = dict(answers={}, response_number=1, event_at=NOW)
             data.update(overrides)
             return SurveyResponseRequest(**data)
 
@@ -430,7 +437,7 @@ class TestResolveTarget:
     @pytest.fixture
     def request_factory(self):
         def _make(**overrides):
-            data = dict(answers={}, event_at=NOW)
+            data = dict(answers={}, response_number=1, event_at=NOW)
             data.update(overrides)
             return SurveyResponseRequest(**data)
 
@@ -520,7 +527,7 @@ class TestTargetUniqueness:
     @pytest.fixture
     def request_factory(self):
         def _make(**overrides):
-            data = dict(answers={}, event_at=NOW)
+            data = dict(answers={}, response_number=1, event_at=NOW)
             data.update(overrides)
             return SurveyResponseRequest(**data)
 
@@ -654,7 +661,7 @@ class TestEdit:
     @pytest.fixture
     def edit_factory(self):
         def _make(**overrides):
-            data = dict(answers={}, event_at=NOW)
+            data = dict(answers={}, response_number=1, event_at=NOW)
             data.update(overrides)
             return SurveyResponseEditRequest(**data)
 
@@ -1008,7 +1015,7 @@ class TestFiesScoring:
     @pytest.fixture
     def request_factory(self):
         def _make(**overrides):
-            data = dict(answers={}, event_at=NOW)
+            data = dict(answers={}, response_number=1, event_at=NOW)
             data.update(overrides)
             return SurveyResponseRequest(**data)
 
@@ -1017,7 +1024,7 @@ class TestFiesScoring:
     @pytest.fixture
     def edit_factory(self):
         def _make(**overrides):
-            data = dict(answers={}, event_at=NOW)
+            data = dict(answers={}, response_number=1, event_at=NOW)
             data.update(overrides)
             return SurveyResponseEditRequest(**data)
 
@@ -1298,7 +1305,10 @@ class TestExport:
         fake_exporter.export.return_value = b"fake-bytes"
 
         result = await SurveyResponseService(uow).export(
-            survey.id, admin_actor, fake_exporter, uuid.uuid4()
+            survey.id,
+            admin_actor,
+            fake_exporter,
+            SurveyResponseListingParams(establishment_id=uuid.uuid4()),
         )
 
         assert result == b"fake-bytes"
@@ -1311,7 +1321,10 @@ class TestExport:
 
         with pytest.raises(ForbiddenError):
             await SurveyResponseService(uow).export(
-                survey.id, field_worker_actor, fake_exporter, uuid.uuid4()
+                survey.id,
+                field_worker_actor,
+                fake_exporter,
+                SurveyResponseListingParams(establishment_id=uuid.uuid4()),
             )
         fake_exporter.export.assert_not_called()
 
@@ -1321,7 +1334,10 @@ class TestExport:
 
         with pytest.raises(SurveyNotFoundError):
             await SurveyResponseService(uow).export(
-                uuid.uuid4(), admin_actor, fake_exporter, uuid.uuid4()
+                uuid.uuid4(),
+                admin_actor,
+                fake_exporter,
+                SurveyResponseListingParams(establishment_id=uuid.uuid4()),
             )
 
     async def test_filters_by_establishment(self, make_uow, admin_actor):
@@ -1333,11 +1349,15 @@ class TestExport:
         fake_exporter.export.return_value = b""
 
         await SurveyResponseService(uow).export(
-            survey.id, admin_actor, fake_exporter, establishment_id
+            survey.id,
+            admin_actor,
+            fake_exporter,
+            SurveyResponseListingParams(establishment_id=establishment_id),
         )
 
         uow.survey_response_repo.list_all_for_export.assert_awaited_once_with(
-            survey.id, establishment_id, None
+            survey.id,
+            params=SurveyResponseListingParams(establishment_id=establishment_id),
         )
 
     @pytest.mark.parametrize(
@@ -1354,7 +1374,10 @@ class TestExport:
 
         with pytest.raises(InvalidListingFilterError):
             await SurveyResponseService(uow).export(
-                survey.id, admin_actor, fake_exporter, uuid.uuid4()
+                survey.id,
+                admin_actor,
+                fake_exporter,
+                SurveyResponseListingParams(establishment_id=uuid.uuid4()),
             )
         uow.survey_response_repo.list_all_for_export.assert_not_called()
 
@@ -1367,10 +1390,12 @@ class TestExport:
         fake_exporter = MagicMock()
         fake_exporter.export.return_value = b""
 
-        await SurveyResponseService(uow).export(survey.id, admin_actor, fake_exporter)
+        await SurveyResponseService(uow).export(
+            survey.id, admin_actor, fake_exporter, SurveyResponseListingParams()
+        )
 
         uow.survey_response_repo.list_all_for_export.assert_awaited_once_with(
-            survey.id, None, None
+            survey.id, params=SurveyResponseListingParams()
         )
 
     async def test_filters_by_subject(self, make_uow, admin_actor):
@@ -1382,11 +1407,14 @@ class TestExport:
         fake_exporter.export.return_value = b""
 
         await SurveyResponseService(uow).export(
-            survey.id, admin_actor, fake_exporter, subject_id=subject_id
+            survey.id,
+            admin_actor,
+            fake_exporter,
+            SurveyResponseListingParams(subject_id=subject_id),
         )
 
         uow.survey_response_repo.list_all_for_export.assert_awaited_once_with(
-            survey.id, None, subject_id
+            survey.id, params=SurveyResponseListingParams(subject_id=subject_id)
         )
 
     @pytest.mark.parametrize(
@@ -1403,6 +1431,9 @@ class TestExport:
 
         with pytest.raises(InvalidListingFilterError):
             await SurveyResponseService(uow).export(
-                survey.id, admin_actor, fake_exporter, subject_id=uuid.uuid4()
+                survey.id,
+                admin_actor,
+                fake_exporter,
+                SurveyResponseListingParams(subject_id=uuid.uuid4()),
             )
         uow.survey_response_repo.list_all_for_export.assert_not_called()

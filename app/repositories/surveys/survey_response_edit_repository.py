@@ -24,6 +24,7 @@ class SurveyResponseEditRepository:
         response_id: UUID,
         edited_by_id: UUID,
         answers: dict,
+        response_number: int,
         event_at: datetime,
     ) -> SurveyResponseEdit:
         """Persist a new edit-log row. ``id`` is optional; when None the server
@@ -32,17 +33,27 @@ class SurveyResponseEditRepository:
         The insert runs inside a SAVEPOINT so a unique violation rolls back only
         the failed row and leaves the session usable for the caller to re-query.
 
+        ``constraint`` is pinned to the primary key because this table now has a
+        NOT NULL ``response_number``: without it, a caller that omitted the
+        number would produce a NOT NULL violation the helper would relabel as a
+        duplicate id, which the service reads as a raced replay and re-raises as
+        a 500.
+
         Raises:
             UniqueConstraintError: If the id is already in use. The caller is
                 responsible for re-querying to decide the outcome.
+            IntegrityError: for any other constraint the write violated.
         """
         fields = dict(
             response_id=response_id,
             edited_by_id=edited_by_id,
             answers=answers,
+            response_number=response_number,
             event_at=event_at,
         )
         if id is not None:
             fields["id"] = id
         edit = SurveyResponseEdit(**fields)
-        return await insert_with_savepoint(self.db, edit, "id", id)
+        return await insert_with_savepoint(
+            self.db, edit, "id", id, constraint="survey_response_edits_pkey"
+        )

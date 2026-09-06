@@ -23,6 +23,11 @@ class SurveyResponse(Base):
     a subject, an establishment, or nobody (anonymous). At most one of
     ``subject_id`` / ``establishment_id`` is ever set; both are null for an
     anonymous response.
+
+    ``response_number`` is the second, human-facing identity (ADR-0012): a
+    positive integer the field worker copies from their paper form, required on
+    every response regardless of target and unique within the survey. It is not
+    a target and does not participate in the single-target check constraint.
     """
 
     __tablename__ = "survey_responses"
@@ -45,6 +50,12 @@ class SurveyResponse(Base):
             "subject_id",
             unique=True,
             postgresql_where=text("subject_id IS NOT NULL"),
+        ),
+        Index(
+            "uq_survey_responses_survey_response_number",
+            "survey_id",
+            "response_number",
+            unique=True,
         ),
     )
 
@@ -74,6 +85,7 @@ class SurveyResponse(Base):
         index=True,
     )
     answers = Column(JSONB, nullable=False)
+    response_number = Column(Integer, nullable=False)
     score_fies = Column(Integer, nullable=True)
     event_at = Column(DateTime(timezone=True), nullable=False)
     created_at = Column(

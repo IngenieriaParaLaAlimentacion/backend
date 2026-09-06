@@ -29,6 +29,7 @@ EXPECTED: dict[str, int] = {
     "invalid-age-range": status.HTTP_400_BAD_REQUEST,
     "invalid-credentials": status.HTTP_401_UNAUTHORIZED,
     "invalid-date-range": status.HTTP_400_BAD_REQUEST,
+    "invalid-response-number-range": status.HTTP_400_BAD_REQUEST,
     "invalid-survey-payload": status.HTTP_400_BAD_REQUEST,
     "invalid-survey-response": status.HTTP_400_BAD_REQUEST,
     "invalid-survey-structure": status.HTTP_400_BAD_REQUEST,

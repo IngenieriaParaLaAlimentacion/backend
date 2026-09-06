@@ -123,12 +123,15 @@ async def _create_survey(
     return response.json()
 
 
-async def _submit_survey_response(client, headers, survey, event_at, **overrides):
+async def _submit_survey_response(
+    client, headers, survey, event_at, response_number: int = 1, **overrides
+):
     """Submit to an anonymous survey, which carries no target entity."""
     question = survey["questions"][0]
     body = {
         "survey_id": survey["id"],
         "answers": {question["id"]: question["options"][0]["id"]},
+        "response_number": response_number,
         "event_at": event_at,
         **overrides,
     }
