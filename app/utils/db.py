@@ -1,5 +1,6 @@
 from collections.abc import AsyncIterator, Sequence
 
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,6 +23,18 @@ def escape_like(term: str) -> str:
 def ilike_condition(column, value: str):
     """Case-insensitive partial match condition for a column."""
     return column.ilike(f"%{escape_like(value)}%", escape="\\")
+
+
+def unaccent_lower(value):
+    """Lowercase and strip accents from a column or literal."""
+    return func.immutable_unaccent(func.lower(value))
+
+
+def unaccent_ilike_condition(column, value: str):
+    """Accent- and case-insensitive partial match condition for a column."""
+    return unaccent_lower(column).ilike(
+        unaccent_lower(f"%{escape_like(value)}%"), escape="\\"
+    )
 
 
 async def _execute_paginated_query(
