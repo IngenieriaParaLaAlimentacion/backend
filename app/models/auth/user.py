@@ -63,6 +63,11 @@ class User(Base):
         back_populates="responsible",
         foreign_keys="[Measurement.responsible_id]",
     )
+    food_intakes = relationship(
+        "FoodIntake",
+        back_populates="responsible",
+        foreign_keys="[FoodIntake.responsible_id]",
+    )
     recovery_tokens = relationship(
         "PasswordRecoveryToken",
         back_populates="user",
