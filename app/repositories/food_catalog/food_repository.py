@@ -9,7 +9,7 @@ from sqlalchemy.orm import selectinload
 from app.domain.food_catalog import FoodListingParams, FoodSortOrder
 from app.models.food_catalog.food import Food
 from app.models.food_catalog.food_nutrient_value import FoodNutrientValue
-from app.utils.db import execute_paginated, ilike_condition
+from app.utils.db import execute_paginated, unaccent_ilike_condition, unaccent_lower
 
 # Maps each FoodSortOrder value to its SQLAlchemy order clause.
 # KeyError on an unmapped value is intentional: it surfaces missing cases immediately.
@@ -30,10 +30,22 @@ class FoodRepository:
         """Build the filter conditions for a food catalog listing."""
         conditions = []
         if params.search:
-            conditions.append(ilike_condition(Food.name, params.search))
+            conditions.append(unaccent_ilike_condition(Food.name, params.search))
         if params.category_id is not None:
             conditions.append(Food.category_id == params.category_id)
         return conditions
+
+    @staticmethod
+    def _search_order_clauses(term: str) -> list:
+        """Rank matches by relevance: prefix matches first, then similarity."""
+        normalized_name = unaccent_lower(Food.name)
+        normalized_term = unaccent_lower(term)
+        is_prefix_match = normalized_name.like(func.concat(normalized_term, "%"))
+        return [
+            desc(is_prefix_match),
+            desc(func.similarity(normalized_name, normalized_term)),
+            asc(func.lower(Food.name)),
+        ]
 
     async def create(self, food: Food) -> Food:
         """Stage a new food for insertion."""
@@ -55,14 +67,22 @@ class FoodRepository:
 
         ``category`` is eager-loaded via ``selectinload`` so the listing view
         can read the category ref without a per-row lookup.
+
+        When ``params.search`` is set, results are ordered by relevance
+        (prefix match, then similarity) and ``params.sort_order`` is ignored.
         """
         base_query = select(Food).options(selectinload(Food.category))
         count_query = select(func.count()).select_from(Food)
+        order_by = (
+            self._search_order_clauses(params.search)
+            if params.search
+            else _SORT_CLAUSES[params.sort_order]
+        )
         foods, total = await execute_paginated(
             self.db,
             base_query,
             count_query,
-            _SORT_CLAUSES[params.sort_order],
+            order_by,
             limit,
             offset,
             conditions=self._listing_conditions(params),
