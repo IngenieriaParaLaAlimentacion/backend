@@ -21,7 +21,6 @@ from app.services.establishments.establishment_dashboard_service import (
     EstablishmentDashboardService,
 )
 from app.services.establishments.establishment_service import EstablishmentService
-from app.services.food_catalog.food_category_service import FoodCategoryService
 from app.services.food_catalog.food_service import FoodService
 from app.services.measurements.measurement_service import MeasurementService
 from app.services.subjects.subject_service import SubjectService
@@ -95,12 +94,6 @@ async def get_food_service() -> AsyncGenerator[FoodService, None]:
     """Provide a FoodService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
         yield FoodService(uow)
-
-
-async def get_food_category_service() -> AsyncGenerator[FoodCategoryService, None]:
-    """Provide a FoodCategoryService backed by a fresh UnitOfWork."""
-    async with UnitOfWork() as uow:
-        yield FoodCategoryService(uow)
 
 
 async def get_analytics_service() -> AsyncGenerator[AnalyticsService, None]:
