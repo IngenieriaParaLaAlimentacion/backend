@@ -701,12 +701,15 @@ class SurveyAlreadyExistsError(AlreadyExistsError):
 
 
 class SurveyLockedError(ConflictError):
-    """Exception raised when a survey can no longer be modified.
+    """Exception raised when an edit to a survey with recorded responses would
+    invalidate them.
 
-    Gates structural edits -- and changes to ``response_target`` -- once a survey
-    has recorded at least one response. One identity and one client recovery
-    ("stop, the survey is frozen") for every trigger, so the specific trigger is
-    carried by ``detail`` rather than by six near-identical classes.
+    Once a survey has recorded at least one response, most structural edits and
+    any change to ``response_target`` are rejected -- except adding a new
+    optional question, which is still allowed. One identity and one client
+    recovery ("that edit isn't allowed anymore") for every trigger, so the
+    specific trigger is carried by ``detail`` rather than by six near-identical
+    classes.
 
     Args:
         detail (str): Human-readable explanation of this occurrence.
