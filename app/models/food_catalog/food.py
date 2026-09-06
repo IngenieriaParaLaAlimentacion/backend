@@ -1,7 +1,6 @@
 import uuid
 
 from sqlalchemy import (
-    Boolean,
     Column,
     DateTime,
     ForeignKey,
@@ -9,7 +8,6 @@ from sqlalchemy import (
     SmallInteger,
     String,
     func,
-    true,
 )
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
@@ -38,7 +36,6 @@ class Food(Base):
         SAEnum(MeasurementUnit, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
     )
-    is_active = Column(Boolean, nullable=False, server_default=true())
     source_page = Column(SmallInteger, nullable=True)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

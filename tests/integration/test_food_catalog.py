@@ -15,10 +15,9 @@ CATEGORIES_URL = "/api/v1/food-catalog/categories"
 class Catalog:
     category_meats: UUID
     category_fruits: UUID
-    food_chicken: UUID  # "Pechuga de pollo", Carnes, active, has nutrient values
-    food_beef: UUID  # "Bife de vaca", Carnes, active, no nutrient values
-    food_apple: UUID  # "Manzana", Frutas, active
-    food_retired: UUID  # "Alimento discontinuado", Carnes, inactive
+    food_chicken: UUID  # "Pechuga de pollo", Carnes, has nutrient values
+    food_beef: UUID  # "Bife de vaca", Carnes, no nutrient values
+    food_apple: UUID  # "Manzana", Frutas
     nutrient_protein: UUID  # macronutrient, "Proteínas", g
     nutrient_dha: UUID  # fatty_acid, "22:6 DHA", g
     nutrient_vitamin_c: UUID  # vitamin, "Vitamina C", mg
@@ -39,8 +38,8 @@ async def catalog(app) -> Catalog:
     from app.models.food_catalog.nutrient import Nutrient
 
     async with AsyncSessionLocal() as session:
-        meats = FoodCategory(code="carnes", name="Carnes", sara2_group_number=7)
-        fruits = FoodCategory(code="frutas", name="Frutas", sara2_group_number=2)
+        meats = FoodCategory(code="carnes", name="Carnes")
+        fruits = FoodCategory(code="frutas", name="Frutas")
         session.add_all([meats, fruits])
 
         protein = Nutrient(
@@ -63,30 +62,20 @@ async def catalog(app) -> Catalog:
             name="Pechuga de pollo",
             category_id=meats.id,
             base_unit=MeasurementUnit.KILOGRAMOS,
-            is_active=True,
         )
         beef = Food(
             code="vaca_bife",
             name="Bife de vaca",
             category_id=meats.id,
             base_unit=MeasurementUnit.KILOGRAMOS,
-            is_active=True,
         )
         apple = Food(
             code="manzana",
             name="Manzana",
             category_id=fruits.id,
             base_unit=MeasurementUnit.KILOGRAMOS,
-            is_active=True,
         )
-        retired = Food(
-            code="discontinuado",
-            name="Alimento discontinuado",
-            category_id=meats.id,
-            base_unit=MeasurementUnit.UNIDADES,
-            is_active=False,
-        )
-        session.add_all([chicken, beef, apple, retired])
+        session.add_all([chicken, beef, apple])
         await session.flush()
 
         # Only chicken has measured nutrients — mirrors SARA 2's real sparsity
@@ -118,7 +107,6 @@ async def catalog(app) -> Catalog:
             food_chicken=chicken.id,
             food_beef=beef.id,
             food_apple=apple.id,
-            food_retired=retired.id,
             nutrient_protein=protein.id,
             nutrient_dha=dha.id,
             nutrient_vitamin_c=vitamin_c.id,
@@ -148,7 +136,6 @@ class TestShape:
         assert item["code"] == "pollo_pechuga"
         assert item["name"] == "Pechuga de pollo"
         assert item["base_unit"] == "kilogramos"
-        assert item["is_active"] is True
         assert item["category"] == {
             "id": str(catalog.category_meats),
             "name": "Carnes",
@@ -178,23 +165,6 @@ class TestFilters:
         assert body["total"] == 1
         assert body["items"][0]["name"] == "Manzana"
 
-    async def test_inactive_foods_excluded_by_default(
-        self, client, admin_headers, catalog
-    ):
-        response = await client.get(FOODS_URL, headers=admin_headers)
-        names = {item["name"] for item in response.json()["items"]}
-        assert "Alimento discontinuado" not in names
-
-    async def test_is_active_false_returns_only_retired(
-        self, client, admin_headers, catalog
-    ):
-        response = await client.get(
-            FOODS_URL, params={"is_active": False}, headers=admin_headers
-        )
-        body = response.json()
-        assert body["total"] == 1
-        assert body["items"][0]["name"] == "Alimento discontinuado"
-
 
 class TestSortAndPagination:
     async def test_sort_by_name_asc(self, client, admin_headers, catalog):
@@ -209,7 +179,7 @@ class TestSortAndPagination:
             FOODS_URL, params={"page": 1, "page_size": 2}, headers=admin_headers
         )
         body = response.json()
-        assert body["total"] == 3  # 3 active foods, retired one excluded
+        assert body["total"] == 3
         assert body["page"] == 1
         assert body["page_size"] == 2
         assert body["total_pages"] == 2
@@ -221,15 +191,21 @@ class TestCategories:
         response = await client.get(CATEGORIES_URL)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_returns_categories_in_sara2_source_order(
-        self, client, admin_headers, catalog
-    ):
-        # Fixture seeds "Frutas" as group 2 and "Carnes" as group 7.
+    async def test_default_sort_is_alphabetical(self, client, admin_headers, catalog):
         response = await client.get(CATEGORIES_URL, headers=admin_headers)
         assert response.status_code == status.HTTP_200_OK
         items = response.json()
+        assert [i["name"] for i in items] == ["Carnes", "Frutas"]
+        assert items[0] == {"id": str(catalog.category_meats), "name": "Carnes"}
+
+    async def test_sort_order_name_desc_reverses_it(
+        self, client, admin_headers, catalog
+    ):
+        response = await client.get(
+            CATEGORIES_URL, params={"sort_order": "name_desc"}, headers=admin_headers
+        )
+        items = response.json()
         assert [i["name"] for i in items] == ["Frutas", "Carnes"]
-        assert items[0] == {"id": str(catalog.category_fruits), "name": "Frutas"}
 
     async def test_response_is_not_paginated(self, client, admin_headers, catalog):
         response = await client.get(CATEGORIES_URL, headers=admin_headers)
@@ -287,13 +263,3 @@ class TestFoodDetail:
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["nutrients"] == []
-
-    async def test_inactive_food_is_still_returned(
-        self, client, admin_headers, catalog
-    ):
-        """Unlike the listing, the detail view ignores `is_active`."""
-        response = await client.get(
-            f"{FOODS_URL}/{catalog.food_retired}", headers=admin_headers
-        )
-        assert response.status_code == status.HTTP_200_OK
-        assert response.json()["is_active"] is False

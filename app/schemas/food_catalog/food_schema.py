@@ -20,7 +20,6 @@ class FoodListItem(BaseModel):
     code: str
     name: str
     base_unit: MeasurementUnit
-    is_active: bool
     category: FoodCategoryRefResponse
 
 

@@ -33,8 +33,6 @@ class FoodRepository:
             conditions.append(ilike_condition(Food.name, params.search))
         if params.category_id is not None:
             conditions.append(Food.category_id == params.category_id)
-        if params.is_active is not None:
-            conditions.append(Food.is_active == params.is_active)
         return conditions
 
     async def create(self, food: Food) -> Food:

@@ -19,8 +19,7 @@ router = APIRouter(prefix="/food-catalog/foods")
     description=(
         "Paginated, filterable and sortable list of foods, each with its "
         "category and base unit of measurement. Accessible to any "
-        "authenticated role — used to build the stock-logging form. "
-        "Inactive foods are excluded unless `is_active=false` is passed."
+        "authenticated role — used to build the stock-logging form."
     ),
     responses=AUTH_RESPONSES,
 )
@@ -50,8 +49,7 @@ async def list_foods(
         "A single food's full detail, including its complete nutrient "
         "composition per 100g (only the nutrients SARA 2 actually reports "
         "for it — a missing nutrient means 'not measured', never `0`). "
-        "Returned regardless of `is_active`, unlike the listing. Accessible "
-        "to any authenticated role."
+        "Accessible to any authenticated role."
     ),
     responses={
         **AUTH_RESPONSES,
