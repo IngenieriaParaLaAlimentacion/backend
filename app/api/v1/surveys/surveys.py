@@ -125,7 +125,6 @@ async def list_available_surveys(
     )
 
 
-# Declared above GET /{survey_id} so "export" is not matched as a survey id.
 @router.get(
     "/export",
     summary="Export the survey listing as CSV",
@@ -184,8 +183,10 @@ async def get_survey(
     summary="Update a survey",
     description=(
         "Declaratively replace a survey's configuration. Questions and options are "
-        "reconciled by id. Once the survey has responses it is locked: structural "
-        "edits and any change to `response_target` are rejected. Restricted to the "
+        "reconciled by id. Once the survey has responses, existing questions can be "
+        "reordered or renamed, but not removed, made required, have their "
+        "response_type changed, or lose an option some response already picked; "
+        "new questions may only be added if they are optional. Restricted to the "
         "author or an admin."
     ),
     responses={
