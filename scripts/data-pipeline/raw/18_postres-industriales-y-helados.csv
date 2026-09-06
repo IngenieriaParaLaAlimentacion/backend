@@ -1,0 +1,508 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,Alcohol,0
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,Alcohol,0
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,Alcohol,0
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",Alcohol,0
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,Alcohol,0
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),Alcohol,0
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),Alcohol,0
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),Alcohol,0
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,Alcohol,0
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",Alcohol,0
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,Alcohol,0
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,Alcohol,0
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",Alcohol,0
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,Fibra alimentaria,0
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,Fibra alimentaria,"0,8"
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,Fibra alimentaria,0
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",Fibra alimentaria,0
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,Fibra alimentaria,0
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),Fibra alimentaria,"1,0"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),Fibra alimentaria,0
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),Fibra alimentaria,"1,0"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,Fibra alimentaria,0
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",Fibra alimentaria,"0,9"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,Fibra alimentaria,"2,7"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,Fibra alimentaria,0
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",Fibra alimentaria,0
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,Azúcar agregado,"9,4"
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,Azúcar agregado,"18,3"
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,Azúcar agregado,"20,0"
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",Azúcar agregado,0
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,Azúcar agregado,"1,8"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),Azúcar agregado,"27,5"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),Azúcar agregado,"20,6"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),Azúcar agregado,"19,5"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,Azúcar agregado,"27,0"
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",Azúcar agregado,"22,0"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,Azúcar agregado,"70,0"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,Azúcar agregado,"51,5"
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",Azúcar agregado,0
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,Azúcar total,"11,6"
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,Azúcar total,"18,3"
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,Azúcar total,"20,0"
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",Azúcar total,0
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,Azúcar total,"1,8"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),Azúcar total,"27,5"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),Azúcar total,"20,6"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),Azúcar total,"23,3"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,Azúcar total,"28,9"
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",Azúcar total,"24,0"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,Azúcar total,"70,0"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,Azúcar total,"51,5"
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",Azúcar total,0
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,Carbohidratos totales,"22,2"
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,Carbohidratos totales,"24,5"
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,Carbohidratos totales,"20,0"
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",Carbohidratos totales,"0,5"
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,Carbohidratos totales,"1,9"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),Carbohidratos totales,"27,5"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),Carbohidratos totales,"20,6"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),Carbohidratos totales,"25,9"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,Carbohidratos totales,"28,9"
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",Carbohidratos totales,"34,4"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,Carbohidratos totales,"76,3"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,Carbohidratos totales,"91,9"
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",Carbohidratos totales,"85,7"
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,Carbohidratos disponibles,"22,2"
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,Carbohidratos disponibles,"23,7"
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,Carbohidratos disponibles,"20,0"
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",Carbohidratos disponibles,"0,5"
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,Carbohidratos disponibles,"1,9"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),Carbohidratos disponibles,"27,5"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),Carbohidratos disponibles,"20,6"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),Carbohidratos disponibles,"25,0"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,Carbohidratos disponibles,"28,9"
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",Carbohidratos disponibles,"33,5"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,Carbohidratos disponibles,"73,6"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,Carbohidratos disponibles,"91,9"
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",Carbohidratos disponibles,"85,7"
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,22:6 n-3 Docosahexaenoico (DHA),0
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,22:6 n-3 Docosahexaenoico (DHA),0
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,22:6 n-3 Docosahexaenoico (DHA),0
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",22:6 n-3 Docosahexaenoico (DHA),0
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,22:6 n-3 Docosahexaenoico (DHA),0
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),22:6 n-3 Docosahexaenoico (DHA),0
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),22:6 n-3 Docosahexaenoico (DHA),0
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),22:6 n-3 Docosahexaenoico (DHA),0
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,22:6 n-3 Docosahexaenoico (DHA),0
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",22:6 n-3 Docosahexaenoico (DHA),0
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,22:6 n-3 Docosahexaenoico (DHA),0
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,22:6 n-3 Docosahexaenoico (DHA),0
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",22:6 n-3 Docosahexaenoico (DHA),0
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,20:5 n-3 Eicosapentaenoico (EPA),0
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,20:5 n-3 Eicosapentaenoico (EPA),0
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,20:5 n-3 Eicosapentaenoico (EPA),0
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",20:5 n-3 Eicosapentaenoico (EPA),0
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,20:5 n-3 Eicosapentaenoico (EPA),0
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),20:5 n-3 Eicosapentaenoico (EPA),0
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),20:5 n-3 Eicosapentaenoico (EPA),0
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),20:5 n-3 Eicosapentaenoico (EPA),0
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,20:5 n-3 Eicosapentaenoico (EPA),0
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",20:5 n-3 Eicosapentaenoico (EPA),0
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,20:5 n-3 Eicosapentaenoico (EPA),0
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,20:5 n-3 Eicosapentaenoico (EPA),0
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",20:5 n-3 Eicosapentaenoico (EPA),0
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,20:4 Araquidónico,0
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,20:4 Araquidónico,0
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,20:4 Araquidónico,0
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",20:4 Araquidónico,0
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,20:4 Araquidónico,0
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),20:4 Araquidónico,0
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),20:4 Araquidónico,0
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),20:4 Araquidónico,0
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,20:4 Araquidónico,0
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",20:4 Araquidónico,0
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,20:4 Araquidónico,0
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,20:4 Araquidónico,0
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",20:4 Araquidónico,0
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,18:3 cis Alfa linolénico (ALA),"0,060"
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,18:3 cis Alfa linolénico (ALA),"0,283"
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,18:3 cis Alfa linolénico (ALA),0
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",18:3 cis Alfa linolénico (ALA),0
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,18:3 cis Alfa linolénico (ALA),0
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),18:3 cis Alfa linolénico (ALA),0
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),18:3 cis Alfa linolénico (ALA),0
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),18:3 cis Alfa linolénico (ALA),"0,163"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,18:3 cis Alfa linolénico (ALA),0
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",18:3 cis Alfa linolénico (ALA),0
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,18:3 cis Alfa linolénico (ALA),0
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,18:3 cis Alfa linolénico (ALA),0
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",18:3 cis Alfa linolénico (ALA),0
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,18:2 cis Linoléico,"0,24"
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,18:2 cis Linoléico,"2,97"
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,18:2 cis Linoléico,"0,00"
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",18:2 cis Linoléico,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,18:2 cis Linoléico,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),18:2 cis Linoléico,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),18:2 cis Linoléico,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),18:2 cis Linoléico,"0,26"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,18:2 cis Linoléico,"0,00"
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",18:2 cis Linoléico,"0,41"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,18:2 cis Linoléico,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,18:2 cis Linoléico,"0,00"
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",18:2 cis Linoléico,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,Trans,0
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,Trans,0
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,Trans,0
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",Trans,0
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,Trans,0
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),Trans,0
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),Trans,0
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),Trans,"0,23"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,Trans,0
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",Trans,"0,40"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,Trans,0
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,Trans,0
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",Trans,0
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,Poliinsaturados,"0,30"
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,Poliinsaturados,"3,26"
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,Poliinsaturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",Poliinsaturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,Poliinsaturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),Poliinsaturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),Poliinsaturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),Poliinsaturados,"0,43"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,Poliinsaturados,"0,20"
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",Poliinsaturados,"0,45"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,Poliinsaturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,Poliinsaturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",Poliinsaturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,Monoinsaturados,"1,43"
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,Monoinsaturados,"6,39"
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,Monoinsaturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",Monoinsaturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,Monoinsaturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),Monoinsaturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),Monoinsaturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),Monoinsaturados,"3,09"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,Monoinsaturados,"2,20"
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",Monoinsaturados,"3,60"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,Monoinsaturados,"0,50"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,Monoinsaturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",Monoinsaturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,Saturados,"1,22"
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,Saturados,"13,20"
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,Saturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",Saturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,Saturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),Saturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),Saturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),Saturados,"6,80"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,Saturados,"3,90"
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",Saturados,"7,90"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,Saturados,"12,50"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,Saturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",Saturados,"0,00"
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,Colesterol,"7,2"
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,Colesterol,28
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,Colesterol,0
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",Colesterol,0
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,Colesterol,0
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),Colesterol,0
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),Colesterol,0
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),Colesterol,39
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,Colesterol,20
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",Colesterol,19
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,Colesterol,0
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,Colesterol,0
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",Colesterol,0
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,Lípidos totales,"2,8"
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,Lípidos totales,"24,1"
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,Lípidos totales,"0,0"
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",Lípidos totales,"0,0"
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,Lípidos totales,"0,0"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),Lípidos totales,"0,1"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),Lípidos totales,"0,0"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),Lípidos totales,"11,0"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,Lípidos totales,"6,3"
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",Lípidos totales,"12,8"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,Lípidos totales,"13,0"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,Lípidos totales,"0,0"
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",Lípidos totales,"0,0"
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,Proteínas,"3,1"
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,Proteínas,"4,1"
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,Proteínas,"1,7"
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",Proteínas,"1,5"
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,Proteínas,"1,5"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),Proteínas,"0,2"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),Proteínas,"0,0"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),Proteínas,"3,7"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,Proteínas,"1,4"
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",Proteínas,"3,2"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,Proteínas,"1,7"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,Proteínas,"0,3"
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",Proteínas,"0,0"
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,Agua,"71,9"
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,Agua,"46,3"
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,Agua,"78,3"
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",Agua,"97,8"
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,Agua,"96,4"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),Agua,"72,2"
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),Agua,"79,4"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),Agua,"58,4"
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,Agua,"63,4"
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",Agua,"49,6"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,Agua,"9,0"
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,Agua,"7,8"
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",Agua,"14,3"
+18,Postres industriales y helados,macronutrientes,119,Arroz con leche envasado listo para consumir,Valor energético,126
+18,Postres industriales y helados,macronutrientes,119,Bombón helado,Valor energético,328
+18,Postres industriales y helados,macronutrientes,119,Gelatina envasada lista para consumir,Valor energético,87
+18,Postres industriales y helados,macronutrientes,119,"Gelatina light, preparada a partir de polvo",Valor energético,8
+18,Postres industriales y helados,macronutrientes,119,Gelatina preparada a partir de polvo,Valor energético,14
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (heladería),Valor energético,112
+18,Postres industriales y helados,macronutrientes,119,Helado de agua (palito),Valor energético,82
+18,Postres industriales y helados,macronutrientes,119,Helado de crema (heladería),Valor energético,213
+18,Postres industriales y helados,macronutrientes,119,Helado de crema envasado,Valor energético,178
+18,Postres industriales y helados,macronutrientes,119,"Helado envasado con cucurucho, PROMEDIO",Valor energético,262
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar helado,Valor energético,418
+18,Postres industriales y helados,macronutrientes,119,Polvo para preparar postre lácteo,Valor energético,369
+18,Postres industriales y helados,macronutrientes,119,"Polvo para preparar postre lácteo, light",Valor energético,343
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Vitamina D,"0,83"
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Vitamina D,"0,28"
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Vitamina D,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Vitamina D,0
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Vitamina D,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Vitamina D,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Vitamina D,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Vitamina D,"0,20"
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Vitamina D,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Vitamina D,"0,04"
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Vitamina D,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Vitamina D,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Vitamina D,0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Vitamina C,0
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Vitamina C,0
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Vitamina C,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Vitamina C,0
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Vitamina C,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Vitamina C,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Vitamina C,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Vitamina C,"0,7"
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Vitamina C,"0,45"
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Vitamina C,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Vitamina C,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Vitamina C,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Vitamina C,0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Vitamina B-12,"0,32"
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Vitamina B-12,"0,49"
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Vitamina B-12,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Vitamina B-12,0
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Vitamina B-12,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Vitamina B-12,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Vitamina B-12,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Vitamina B-12,"0,34"
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Vitamina B-12,"0,108"
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Vitamina B-12,"0,23"
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Vitamina B-12,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Vitamina B-12,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Vitamina B-12,0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Riboflavina,"0,123"
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Riboflavina,"0,261"
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Riboflavina,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Riboflavina,0
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Riboflavina,"0,006"
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Riboflavina,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Riboflavina,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Riboflavina,"0,217"
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Riboflavina,"0,048"
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Riboflavina,"0,085"
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Riboflavina,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Riboflavina,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Riboflavina,0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Tiamina,"0,038"
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Tiamina,"0,062"
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Tiamina,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Tiamina,0
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Tiamina,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Tiamina,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Tiamina,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Tiamina,"0,042"
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Tiamina,"0,01"
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Tiamina,"0,023"
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Tiamina,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Tiamina,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Tiamina,0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Retinol,100
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Retinol,15
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Retinol,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Retinol,0
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Retinol,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Retinol,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Retinol,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Retinol,116
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Retinol,9
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Retinol,14
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Retinol,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Retinol,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Retinol,0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,"Vitamina A, RAE",100
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,"Vitamina A, RAE",19
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,"Vitamina A, RAE",0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo","Vitamina A, RAE",0
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,"Vitamina A, RAE",0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),"Vitamina A, RAE",2
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),"Vitamina A, RAE",0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),"Vitamina A, RAE",118
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,"Vitamina A, RAE",9
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO","Vitamina A, RAE",14
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,"Vitamina A, RAE",0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,"Vitamina A, RAE",0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light","Vitamina A, RAE",0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Ácido fólico,0
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Ácido fólico,0
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Ácido fólico,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Ácido fólico,0
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Ácido fólico,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Ácido fólico,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Ácido fólico,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Ácido fólico,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Ácido fólico,2
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Ácido fólico,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Ácido fólico,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Ácido fólico,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Ácido fólico,0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Folato EFD,4
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Folato EFD,7
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Folato EFD,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Folato EFD,0
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Folato EFD,1
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Folato EFD,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Folato EFD,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Folato EFD,11
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Folato EFD,2
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Folato EFD,3
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Folato EFD,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Folato EFD,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Folato EFD,0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Niacina,"0,18"
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Niacina,"0,18"
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Niacina,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Niacina,0
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Niacina,"0,00"
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Niacina,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Niacina,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Niacina,"0,17"
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Niacina,"0,03"
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Niacina,"0,04"
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Niacina,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Niacina,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Niacina,0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Zinc,"0,34"
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Zinc,"0,82"
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Zinc,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Zinc,0
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Zinc,"0,01"
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Zinc,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Zinc,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Zinc,"0,64"
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Zinc,"0,11"
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Zinc,"0,15"
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Zinc,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Zinc,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Zinc,0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Magnesio,11
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Magnesio,28
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Magnesio,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Magnesio,1
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Magnesio,1
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Magnesio,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Magnesio,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Magnesio,22
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Magnesio,4
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Magnesio,5
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Magnesio,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Magnesio,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Magnesio,0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Hierro,"0,11"
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Hierro,"0,29"
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Hierro,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Hierro,"0,01"
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Hierro,"0,02"
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Hierro,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Hierro,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Hierro,"0,51"
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Hierro,"0,02"
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Hierro,"0,04"
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Hierro,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Hierro,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Hierro,0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Fósforo,78
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Fósforo,173
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Fósforo,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Fósforo,68
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Fósforo,22
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Fósforo,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Fósforo,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Fósforo,106
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Fósforo,28
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Fósforo,48
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Fósforo,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Fósforo,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Fósforo,0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Cobre,"0,0289"
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Cobre,"0,076"
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Cobre,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Cobre,"0,007"
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Cobre,"0,024"
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Cobre,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Cobre,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Cobre,"0,079"
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Cobre,"0,003"
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Cobre,"0,0125"
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Cobre,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Cobre,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Cobre,0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Calcio,86
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Calcio,119
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Calcio,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Calcio,3
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Calcio,3
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Calcio,6
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Calcio,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Calcio,119
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Calcio,36
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Calcio,62
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Calcio,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Calcio,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Calcio,0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Potasio,105
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Potasio,305
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Potasio,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Potasio,1
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Potasio,1
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Potasio,68
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Potasio,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Potasio,224
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Potasio,51
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Potasio,69
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Potasio,0
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Potasio,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Potasio,0
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Sodio,35
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Sodio,68
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Sodio,3
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Sodio,75
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Sodio,69
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Sodio,20
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Sodio,16
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Sodio,78
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Sodio,60
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Sodio,83
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Sodio,541
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Sodio,622
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Sodio,1256
+18,Postres industriales y helados,vitaminas_minerales,120,Arroz con leche envasado listo para consumir,Cenizas,
+18,Postres industriales y helados,vitaminas_minerales,120,Bombón helado,Cenizas,1
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina envasada lista para consumir,Cenizas,0
+18,Postres industriales y helados,vitaminas_minerales,120,"Gelatina light, preparada a partir de polvo",Cenizas,"0,21"
+18,Postres industriales y helados,vitaminas_minerales,120,Gelatina preparada a partir de polvo,Cenizas,"0,2"
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (heladería),Cenizas,
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de agua (palito),Cenizas,0
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema (heladería),Cenizas,"0,95"
+18,Postres industriales y helados,vitaminas_minerales,120,Helado de crema envasado,Cenizas,
+18,Postres industriales y helados,vitaminas_minerales,120,"Helado envasado con cucurucho, PROMEDIO",Cenizas,
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar helado,Cenizas,
+18,Postres industriales y helados,vitaminas_minerales,120,Polvo para preparar postre lácteo,Cenizas,
+18,Postres industriales y helados,vitaminas_minerales,120,"Polvo para preparar postre lácteo, light",Cenizas,

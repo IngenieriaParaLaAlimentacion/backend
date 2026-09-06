@@ -1,0 +1,1717 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),Alcohol,0
+6,Quesos,macronutrientes,75,Queso Pategrás,Alcohol,0
+6,Quesos,macronutrientes,75,Queso Azul,Alcohol,0
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",Alcohol,0
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",Alcohol,0
+6,Quesos,macronutrientes,75,Queso Cheddar,Alcohol,0
+6,Quesos,macronutrientes,75,Queso Chubut,Alcohol,0
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",Alcohol,0
+6,Quesos,macronutrientes,75,Queso Cremoso,Alcohol,0
+6,Quesos,macronutrientes,75,Queso Cuartirolo,Alcohol,0
+6,Quesos,macronutrientes,75,Queso de cabra,Alcohol,0
+6,Quesos,macronutrientes,75,Queso de máquina,Alcohol,0
+6,Quesos,macronutrientes,75,Queso en hebras,Alcohol,0
+6,Quesos,macronutrientes,75,Queso en hebras light,Alcohol,0
+6,Quesos,macronutrientes,75,Queso Fontina,Alcohol,0
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,Alcohol,0
+6,Quesos,macronutrientes,75,Queso fresco sin sal,Alcohol,0
+6,Quesos,macronutrientes,75,Queso fundido,Alcohol,0
+6,Quesos,macronutrientes,75,Queso Gruyére,Alcohol,0
+6,Quesos,macronutrientes,75,Queso Holanda,Alcohol,0
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),Fibra alimentaria,"1,2"
+6,Quesos,macronutrientes,75,Queso Pategrás,Fibra alimentaria,0
+6,Quesos,macronutrientes,75,Queso Azul,Fibra alimentaria,0
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",Fibra alimentaria,0
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",Fibra alimentaria,0
+6,Quesos,macronutrientes,75,Queso Cheddar,Fibra alimentaria,0
+6,Quesos,macronutrientes,75,Queso Chubut,Fibra alimentaria,0
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",Fibra alimentaria,0
+6,Quesos,macronutrientes,75,Queso Cremoso,Fibra alimentaria,0
+6,Quesos,macronutrientes,75,Queso Cuartirolo,Fibra alimentaria,0
+6,Quesos,macronutrientes,75,Queso de cabra,Fibra alimentaria,0
+6,Quesos,macronutrientes,75,Queso de máquina,Fibra alimentaria,0
+6,Quesos,macronutrientes,75,Queso en hebras,Fibra alimentaria,0
+6,Quesos,macronutrientes,75,Queso en hebras light,Fibra alimentaria,0
+6,Quesos,macronutrientes,75,Queso Fontina,Fibra alimentaria,0
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,Fibra alimentaria,0
+6,Quesos,macronutrientes,75,Queso fresco sin sal,Fibra alimentaria,0
+6,Quesos,macronutrientes,75,Queso fundido,Fibra alimentaria,0
+6,Quesos,macronutrientes,75,Queso Gruyére,Fibra alimentaria,0
+6,Quesos,macronutrientes,75,Queso Holanda,Fibra alimentaria,0
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),Azúcar agregado,"0,6"
+6,Quesos,macronutrientes,75,Queso Pategrás,Azúcar agregado,0
+6,Quesos,macronutrientes,75,Queso Azul,Azúcar agregado,0
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",Azúcar agregado,0
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",Azúcar agregado,0
+6,Quesos,macronutrientes,75,Queso Cheddar,Azúcar agregado,0
+6,Quesos,macronutrientes,75,Queso Chubut,Azúcar agregado,0
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",Azúcar agregado,0
+6,Quesos,macronutrientes,75,Queso Cremoso,Azúcar agregado,0
+6,Quesos,macronutrientes,75,Queso Cuartirolo,Azúcar agregado,0
+6,Quesos,macronutrientes,75,Queso de cabra,Azúcar agregado,0
+6,Quesos,macronutrientes,75,Queso de máquina,Azúcar agregado,0
+6,Quesos,macronutrientes,75,Queso en hebras,Azúcar agregado,0
+6,Quesos,macronutrientes,75,Queso en hebras light,Azúcar agregado,0
+6,Quesos,macronutrientes,75,Queso Fontina,Azúcar agregado,0
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,Azúcar agregado,0
+6,Quesos,macronutrientes,75,Queso fresco sin sal,Azúcar agregado,0
+6,Quesos,macronutrientes,75,Queso fundido,Azúcar agregado,0
+6,Quesos,macronutrientes,75,Queso Gruyére,Azúcar agregado,0
+6,Quesos,macronutrientes,75,Queso Holanda,Azúcar agregado,0
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),Azúcar total,"1,3"
+6,Quesos,macronutrientes,75,Queso Pategrás,Azúcar total,0
+6,Quesos,macronutrientes,75,Queso Azul,Azúcar total,"2,0"
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",Azúcar total,"5,5"
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",Azúcar total,"3,3"
+6,Quesos,macronutrientes,75,Queso Cheddar,Azúcar total,"0,3"
+6,Quesos,macronutrientes,75,Queso Chubut,Azúcar total,"2,2"
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",Azúcar total,"3,8"
+6,Quesos,macronutrientes,75,Queso Cremoso,Azúcar total,"1,8"
+6,Quesos,macronutrientes,75,Queso Cuartirolo,Azúcar total,"0,6"
+6,Quesos,macronutrientes,75,Queso de cabra,Azúcar total,"0,1"
+6,Quesos,macronutrientes,75,Queso de máquina,Azúcar total,"2,2"
+6,Quesos,macronutrientes,75,Queso en hebras,Azúcar total,"0,1"
+6,Quesos,macronutrientes,75,Queso en hebras light,Azúcar total,0
+6,Quesos,macronutrientes,75,Queso Fontina,Azúcar total,"1,6"
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,Azúcar total,"2,0"
+6,Quesos,macronutrientes,75,Queso fresco sin sal,Azúcar total,0
+6,Quesos,macronutrientes,75,Queso fundido,Azúcar total,0
+6,Quesos,macronutrientes,75,Queso Gruyére,Azúcar total,"0,4"
+6,Quesos,macronutrientes,75,Queso Holanda,Azúcar total,"2,2"
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),Carbohidratos totales,"21,1"
+6,Quesos,macronutrientes,75,Queso Pategrás,Carbohidratos totales,0
+6,Quesos,macronutrientes,75,Queso Azul,Carbohidratos totales,"2,0"
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",Carbohidratos totales,"6,1"
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",Carbohidratos totales,"5,5"
+6,Quesos,macronutrientes,75,Queso Cheddar,Carbohidratos totales,"2,1"
+6,Quesos,macronutrientes,75,Queso Chubut,Carbohidratos totales,"2,2"
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",Carbohidratos totales,"3,9"
+6,Quesos,macronutrientes,75,Queso Cremoso,Carbohidratos totales,"2,5"
+6,Quesos,macronutrientes,75,Queso Cuartirolo,Carbohidratos totales,"1,0"
+6,Quesos,macronutrientes,75,Queso de cabra,Carbohidratos totales,"0,1"
+6,Quesos,macronutrientes,75,Queso de máquina,Carbohidratos totales,"2,2"
+6,Quesos,macronutrientes,75,Queso en hebras,Carbohidratos totales,"3,2"
+6,Quesos,macronutrientes,75,Queso en hebras light,Carbohidratos totales,"1,7"
+6,Quesos,macronutrientes,75,Queso Fontina,Carbohidratos totales,"1,6"
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,Carbohidratos totales,"4,0"
+6,Quesos,macronutrientes,75,Queso fresco sin sal,Carbohidratos totales,"0,8"
+6,Quesos,macronutrientes,75,Queso fundido,Carbohidratos totales,"2,9"
+6,Quesos,macronutrientes,75,Queso Gruyére,Carbohidratos totales,"0,4"
+6,Quesos,macronutrientes,75,Queso Holanda,Carbohidratos totales,"2,2"
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),Carbohidratos disponibles,"19,8"
+6,Quesos,macronutrientes,75,Queso Pategrás,Carbohidratos disponibles,0
+6,Quesos,macronutrientes,75,Queso Azul,Carbohidratos disponibles,"2,0"
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",Carbohidratos disponibles,"6,1"
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",Carbohidratos disponibles,"5,5"
+6,Quesos,macronutrientes,75,Queso Cheddar,Carbohidratos disponibles,"2,1"
+6,Quesos,macronutrientes,75,Queso Chubut,Carbohidratos disponibles,"2,2"
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",Carbohidratos disponibles,"3,9"
+6,Quesos,macronutrientes,75,Queso Cremoso,Carbohidratos disponibles,"2,5"
+6,Quesos,macronutrientes,75,Queso Cuartirolo,Carbohidratos disponibles,"1,0"
+6,Quesos,macronutrientes,75,Queso de cabra,Carbohidratos disponibles,"0,1"
+6,Quesos,macronutrientes,75,Queso de máquina,Carbohidratos disponibles,"2,2"
+6,Quesos,macronutrientes,75,Queso en hebras,Carbohidratos disponibles,"3,2"
+6,Quesos,macronutrientes,75,Queso en hebras light,Carbohidratos disponibles,"1,7"
+6,Quesos,macronutrientes,75,Queso Fontina,Carbohidratos disponibles,"1,6"
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,Carbohidratos disponibles,"4,0"
+6,Quesos,macronutrientes,75,Queso fresco sin sal,Carbohidratos disponibles,"0,8"
+6,Quesos,macronutrientes,75,Queso fundido,Carbohidratos disponibles,"2,9"
+6,Quesos,macronutrientes,75,Queso Gruyére,Carbohidratos disponibles,"0,4"
+6,Quesos,macronutrientes,75,Queso Holanda,Carbohidratos disponibles,"2,2"
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Queso Pategrás,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Queso Azul,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Queso Cheddar,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Queso Chubut,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Queso Cremoso,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Queso Cuartirolo,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Queso de cabra,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Queso de máquina,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Queso en hebras,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Queso en hebras light,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Queso Fontina,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Queso fresco sin sal,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Queso fundido,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Queso Gruyére,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Queso Holanda,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Queso Pategrás,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Queso Azul,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Queso Cheddar,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Queso Chubut,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Queso Cremoso,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Queso Cuartirolo,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Queso de cabra,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Queso de máquina,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Queso en hebras,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Queso en hebras light,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Queso Fontina,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Queso fresco sin sal,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Queso fundido,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Queso Gruyére,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Queso Holanda,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Queso Pategrás,20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Queso Azul,20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Queso Cheddar,20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Queso Chubut,20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Queso Cremoso,20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Queso Cuartirolo,20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Queso de cabra,20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Queso de máquina,20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Queso en hebras,20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Queso en hebras light,20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Queso Fontina,20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Queso fresco sin sal,20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Queso fundido,20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Queso Gruyére,20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Queso Holanda,20:4 Araquidónico,0
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),18:3 cis Alfa linolénico (ALA),"0,116"
+6,Quesos,macronutrientes,75,Queso Pategrás,18:3 cis Alfa linolénico (ALA),"0,550"
+6,Quesos,macronutrientes,75,Queso Azul,18:3 cis Alfa linolénico (ALA),"0,396"
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",18:3 cis Alfa linolénico (ALA),0
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",18:3 cis Alfa linolénico (ALA),"0,017"
+6,Quesos,macronutrientes,75,Queso Cheddar,18:3 cis Alfa linolénico (ALA),"0,117"
+6,Quesos,macronutrientes,75,Queso Chubut,18:3 cis Alfa linolénico (ALA),"0,345"
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",18:3 cis Alfa linolénico (ALA),"0,082"
+6,Quesos,macronutrientes,75,Queso Cremoso,18:3 cis Alfa linolénico (ALA),"0,105"
+6,Quesos,macronutrientes,75,Queso Cuartirolo,18:3 cis Alfa linolénico (ALA),"0,105"
+6,Quesos,macronutrientes,75,Queso de cabra,18:3 cis Alfa linolénico (ALA),"0,213"
+6,Quesos,macronutrientes,75,Queso de máquina,18:3 cis Alfa linolénico (ALA),"0,197"
+6,Quesos,macronutrientes,75,Queso en hebras,18:3 cis Alfa linolénico (ALA),"0,089"
+6,Quesos,macronutrientes,75,Queso en hebras light,18:3 cis Alfa linolénico (ALA),"0,150"
+6,Quesos,macronutrientes,75,Queso Fontina,18:3 cis Alfa linolénico (ALA),"0,496"
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,18:3 cis Alfa linolénico (ALA),"0,040"
+6,Quesos,macronutrientes,75,Queso fresco sin sal,18:3 cis Alfa linolénico (ALA),"0,180"
+6,Quesos,macronutrientes,75,Queso fundido,18:3 cis Alfa linolénico (ALA),"0,120"
+6,Quesos,macronutrientes,75,Queso Gruyére,18:3 cis Alfa linolénico (ALA),"0,520"
+6,Quesos,macronutrientes,75,Queso Holanda,18:3 cis Alfa linolénico (ALA),"0,197"
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),18:2 cis Linoléico,"0,99"
+6,Quesos,macronutrientes,75,Queso Pategrás,18:2 cis Linoléico,"1,28"
+6,Quesos,macronutrientes,75,Queso Azul,18:2 cis Linoléico,"0,92"
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",18:2 cis Linoléico,"0,00"
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",18:2 cis Linoléico,"0,11"
+6,Quesos,macronutrientes,75,Queso Cheddar,18:2 cis Linoléico,"0,78"
+6,Quesos,macronutrientes,75,Queso Chubut,18:2 cis Linoléico,"0,80"
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",18:2 cis Linoléico,"0,53"
+6,Quesos,macronutrientes,75,Queso Cremoso,18:2 cis Linoléico,"0,61"
+6,Quesos,macronutrientes,75,Queso Cuartirolo,18:2 cis Linoléico,"0,61"
+6,Quesos,macronutrientes,75,Queso de cabra,18:2 cis Linoléico,"0,50"
+6,Quesos,macronutrientes,75,Queso de máquina,18:2 cis Linoléico,"0,46"
+6,Quesos,macronutrientes,75,Queso en hebras,18:2 cis Linoléico,"0,76"
+6,Quesos,macronutrientes,75,Queso en hebras light,18:2 cis Linoléico,"0,85"
+6,Quesos,macronutrientes,75,Queso Fontina,18:2 cis Linoléico,"1,16"
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,18:2 cis Linoléico,"0,36"
+6,Quesos,macronutrientes,75,Queso fresco sin sal,18:2 cis Linoléico,"0,42"
+6,Quesos,macronutrientes,75,Queso fundido,18:2 cis Linoléico,"0,28"
+6,Quesos,macronutrientes,75,Queso Gruyére,18:2 cis Linoléico,"1,21"
+6,Quesos,macronutrientes,75,Queso Holanda,18:2 cis Linoléico,"0,46"
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),Trans,"0,50"
+6,Quesos,macronutrientes,75,Queso Pategrás,Trans,"1,26"
+6,Quesos,macronutrientes,75,Queso Azul,Trans,"0,93"
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",Trans,0
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",Trans,"0,25"
+6,Quesos,macronutrientes,75,Queso Cheddar,Trans,"1,01"
+6,Quesos,macronutrientes,75,Queso Chubut,Trans,"0,75"
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",Trans,"1,17"
+6,Quesos,macronutrientes,75,Queso Cremoso,Trans,"0,73"
+6,Quesos,macronutrientes,75,Queso Cuartirolo,Trans,"0,64"
+6,Quesos,macronutrientes,75,Queso de cabra,Trans,"0,90"
+6,Quesos,macronutrientes,75,Queso de máquina,Trans,"0,82"
+6,Quesos,macronutrientes,75,Queso en hebras,Trans,"0,75"
+6,Quesos,macronutrientes,75,Queso en hebras light,Trans,"0,50"
+6,Quesos,macronutrientes,75,Queso Fontina,Trans,"0,93"
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,Trans,"0,42"
+6,Quesos,macronutrientes,75,Queso fresco sin sal,Trans,"0,38"
+6,Quesos,macronutrientes,75,Queso fundido,Trans,"1,20"
+6,Quesos,macronutrientes,75,Queso Gruyére,Trans,"1,18"
+6,Quesos,macronutrientes,75,Queso Holanda,Trans,"0,82"
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),Poliinsaturados,"1,14"
+6,Quesos,macronutrientes,75,Queso Pategrás,Poliinsaturados,"1,83"
+6,Quesos,macronutrientes,75,Queso Azul,Poliinsaturados,"1,32"
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",Poliinsaturados,"0,00"
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",Poliinsaturados,"0,20"
+6,Quesos,macronutrientes,75,Queso Cheddar,Poliinsaturados,"1,43"
+6,Quesos,macronutrientes,75,Queso Chubut,Poliinsaturados,"1,15"
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",Poliinsaturados,"0,97"
+6,Quesos,macronutrientes,75,Queso Cremoso,Poliinsaturados,"1,15"
+6,Quesos,macronutrientes,75,Queso Cuartirolo,Poliinsaturados,"1,15"
+6,Quesos,macronutrientes,75,Queso de cabra,Poliinsaturados,"0,71"
+6,Quesos,macronutrientes,75,Queso de máquina,Poliinsaturados,"0,66"
+6,Quesos,macronutrientes,75,Queso en hebras,Poliinsaturados,"0,57"
+6,Quesos,macronutrientes,75,Queso en hebras light,Poliinsaturados,"1,00"
+6,Quesos,macronutrientes,75,Queso Fontina,Poliinsaturados,"1,65"
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,Poliinsaturados,"0,40"
+6,Quesos,macronutrientes,75,Queso fresco sin sal,Poliinsaturados,"0,60"
+6,Quesos,macronutrientes,75,Queso fundido,Poliinsaturados,"0,40"
+6,Quesos,macronutrientes,75,Queso Gruyére,Poliinsaturados,"1,73"
+6,Quesos,macronutrientes,75,Queso Holanda,Poliinsaturados,"0,66"
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),Monoinsaturados,"4,89"
+6,Quesos,macronutrientes,75,Queso Pategrás,Monoinsaturados,"9,62"
+6,Quesos,macronutrientes,75,Queso Azul,Monoinsaturados,"8,47"
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",Monoinsaturados,"0,00"
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",Monoinsaturados,"1,80"
+6,Quesos,macronutrientes,75,Queso Cheddar,Monoinsaturados,"8,43"
+6,Quesos,macronutrientes,75,Queso Chubut,Monoinsaturados,"6,46"
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",Monoinsaturados,"5,84"
+6,Quesos,macronutrientes,75,Queso Cremoso,Monoinsaturados,"6,46"
+6,Quesos,macronutrientes,75,Queso Cuartirolo,Monoinsaturados,"6,46"
+6,Quesos,macronutrientes,75,Queso de cabra,Monoinsaturados,"6,81"
+6,Quesos,macronutrientes,75,Queso de máquina,Monoinsaturados,"7,75"
+6,Quesos,macronutrientes,75,Queso en hebras,Monoinsaturados,"7,52"
+6,Quesos,macronutrientes,75,Queso en hebras light,Monoinsaturados,"5,00"
+6,Quesos,macronutrientes,75,Queso Fontina,Monoinsaturados,"8,69"
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,Monoinsaturados,"4,00"
+6,Quesos,macronutrientes,75,Queso fresco sin sal,Monoinsaturados,"4,50"
+6,Quesos,macronutrientes,75,Queso fundido,Monoinsaturados,"8,30"
+6,Quesos,macronutrientes,75,Queso Gruyére,Monoinsaturados,"10,04"
+6,Quesos,macronutrientes,75,Queso Holanda,Monoinsaturados,"7,75"
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),Saturados,"9,73"
+6,Quesos,macronutrientes,75,Queso Pategrás,Saturados,"21,27"
+6,Quesos,macronutrientes,75,Queso Azul,Saturados,"19,26"
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",Saturados,"0,00"
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",Saturados,"4,90"
+6,Quesos,macronutrientes,75,Queso Cheddar,Saturados,"19,37"
+6,Quesos,macronutrientes,75,Queso Chubut,Saturados,"13,66"
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",Saturados,"13,26"
+6,Quesos,macronutrientes,75,Queso Cremoso,Saturados,"13,66"
+6,Quesos,macronutrientes,75,Queso Cuartirolo,Saturados,"13,66"
+6,Quesos,macronutrientes,75,Queso de cabra,Saturados,"20,64"
+6,Quesos,macronutrientes,75,Queso de máquina,Saturados,"17,61"
+6,Quesos,macronutrientes,75,Queso en hebras,Saturados,"14,85"
+6,Quesos,macronutrientes,75,Queso en hebras light,Saturados,"10,40"
+6,Quesos,macronutrientes,75,Queso Fontina,Saturados,"19,20"
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,Saturados,"7,60"
+6,Quesos,macronutrientes,75,Queso fresco sin sal,Saturados,"7,20"
+6,Quesos,macronutrientes,75,Queso fundido,Saturados,"17,40"
+6,Quesos,macronutrientes,75,Queso Gruyére,Saturados,"18,91"
+6,Quesos,macronutrientes,75,Queso Holanda,Saturados,"17,61"
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),Colesterol,83
+6,Quesos,macronutrientes,75,Queso Pategrás,Colesterol,129
+6,Quesos,macronutrientes,75,Queso Azul,Colesterol,90
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",Colesterol,0
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",Colesterol,22
+6,Quesos,macronutrientes,75,Queso Cheddar,Colesterol,99
+6,Quesos,macronutrientes,75,Queso Chubut,Colesterol,70
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",Colesterol,66
+6,Quesos,macronutrientes,75,Queso Cremoso,Colesterol,70
+6,Quesos,macronutrientes,75,Queso Cuartirolo,Colesterol,70
+6,Quesos,macronutrientes,75,Queso de cabra,Colesterol,79
+6,Quesos,macronutrientes,75,Queso de máquina,Colesterol,114
+6,Quesos,macronutrientes,75,Queso en hebras,Colesterol,68
+6,Quesos,macronutrientes,75,Queso en hebras light,Colesterol,50
+6,Quesos,macronutrientes,75,Queso Fontina,Colesterol,116
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,Colesterol,40
+6,Quesos,macronutrientes,75,Queso fresco sin sal,Colesterol,47
+6,Quesos,macronutrientes,75,Queso fundido,Colesterol,82
+6,Quesos,macronutrientes,75,Queso Gruyére,Colesterol,110
+6,Quesos,macronutrientes,75,Queso Holanda,Colesterol,114
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),Lípidos totales,"16,7"
+6,Quesos,macronutrientes,75,Queso Pategrás,Lípidos totales,"25,6"
+6,Quesos,macronutrientes,75,Queso Azul,Lípidos totales,"31,1"
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",Lípidos totales,"0,3"
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",Lípidos totales,"8,4"
+6,Quesos,macronutrientes,75,Queso Cheddar,Lípidos totales,"33,8"
+6,Quesos,macronutrientes,75,Queso Chubut,Lípidos totales,"24,9"
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",Lípidos totales,"22,6"
+6,Quesos,macronutrientes,75,Queso Cremoso,Lípidos totales,"24,3"
+6,Quesos,macronutrientes,75,Queso Cuartirolo,Lípidos totales,"21,4"
+6,Quesos,macronutrientes,75,Queso de cabra,Lípidos totales,"29,8"
+6,Quesos,macronutrientes,75,Queso de máquina,Lípidos totales,"27,4"
+6,Quesos,macronutrientes,75,Queso en hebras,Lípidos totales,"25,0"
+6,Quesos,macronutrientes,75,Queso en hebras light,Lípidos totales,"16,5"
+6,Quesos,macronutrientes,75,Queso Fontina,Lípidos totales,"31,1"
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,Lípidos totales,"14,0"
+6,Quesos,macronutrientes,75,Queso fresco sin sal,Lípidos totales,"12,6"
+6,Quesos,macronutrientes,75,Queso fundido,Lípidos totales,"27,5"
+6,Quesos,macronutrientes,75,Queso Gruyére,Lípidos totales,"32,3"
+6,Quesos,macronutrientes,75,Queso Holanda,Lípidos totales,"27,4"
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),Proteínas,"18,9"
+6,Quesos,macronutrientes,75,Queso Pategrás,Proteínas,"25,4"
+6,Quesos,macronutrientes,75,Queso Azul,Proteínas,"20,0"
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",Proteínas,"13,7"
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",Proteínas,"7,6"
+6,Quesos,macronutrientes,75,Queso Cheddar,Proteínas,"24,3"
+6,Quesos,macronutrientes,75,Queso Chubut,Proteínas,"25,9"
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",Proteínas,"6,6"
+6,Quesos,macronutrientes,75,Queso Cremoso,Proteínas,"20,4"
+6,Quesos,macronutrientes,75,Queso Cuartirolo,Proteínas,"20,8"
+6,Quesos,macronutrientes,75,Queso de cabra,Proteínas,"21,6"
+6,Quesos,macronutrientes,75,Queso de máquina,Proteínas,"24,9"
+6,Quesos,macronutrientes,75,Queso en hebras,Proteínas,"35,8"
+6,Quesos,macronutrientes,75,Queso en hebras light,Proteínas,"30,5"
+6,Quesos,macronutrientes,75,Queso Fontina,Proteínas,"25,6"
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,Proteínas,"14,0"
+6,Quesos,macronutrientes,75,Queso fresco sin sal,Proteínas,"26,9"
+6,Quesos,macronutrientes,75,Queso fundido,Proteínas,"11,0"
+6,Quesos,macronutrientes,75,Queso Gruyére,Proteínas,"28,6"
+6,Quesos,macronutrientes,75,Queso Holanda,Proteínas,"24,9"
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),Agua,"40,4"
+6,Quesos,macronutrientes,75,Queso Pategrás,Agua,"39,0"
+6,Quesos,macronutrientes,75,Queso Azul,Agua,"40,2"
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",Agua,"78,6"
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",Agua,"76,5"
+6,Quesos,macronutrientes,75,Queso Cheddar,Agua,"36,2"
+6,Quesos,macronutrientes,75,Queso Chubut,Agua,"42,1"
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",Agua,"66,2"
+6,Quesos,macronutrientes,75,Queso Cremoso,Agua,"48,7"
+6,Quesos,macronutrientes,75,Queso Cuartirolo,Agua,"50,2"
+6,Quesos,macronutrientes,75,Queso de cabra,Agua,"45,5"
+6,Quesos,macronutrientes,75,Queso de máquina,Agua,"41,5"
+6,Quesos,macronutrientes,75,Queso en hebras,Agua,"30,0"
+6,Quesos,macronutrientes,75,Queso en hebras light,Agua,"51,3"
+6,Quesos,macronutrientes,75,Queso Fontina,Agua,"37,9"
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,Agua,"68,0"
+6,Quesos,macronutrientes,75,Queso fresco sin sal,Agua,"59,7"
+6,Quesos,macronutrientes,75,Queso fundido,Agua,"52,8"
+6,Quesos,macronutrientes,75,Queso Gruyére,Agua,"37,1"
+6,Quesos,macronutrientes,75,Queso Holanda,Agua,"41,5"
+6,Quesos,macronutrientes,75,Muzzarella rebozada sin freir (pollería o granja),Valor energético,305
+6,Quesos,macronutrientes,75,Queso Pategrás,Valor energético,332
+6,Quesos,macronutrientes,75,Queso Azul,Valor energético,368
+6,Quesos,macronutrientes,75,"Queso blanco descremado, untable",Valor energético,82
+6,Quesos,macronutrientes,75,"Queso blanco semidescremado, untable",Valor energético,128
+6,Quesos,macronutrientes,75,Queso Cheddar,Valor energético,410
+6,Quesos,macronutrientes,75,Queso Chubut,Valor energético,337
+6,Quesos,macronutrientes,75,"Queso crema entero, untable",Valor energético,245
+6,Quesos,macronutrientes,75,Queso Cremoso,Valor energético,310
+6,Quesos,macronutrientes,75,Queso Cuartirolo,Valor energético,280
+6,Quesos,macronutrientes,75,Queso de cabra,Valor energético,355
+6,Quesos,macronutrientes,75,Queso de máquina,Valor energético,356
+6,Quesos,macronutrientes,75,Queso en hebras,Valor energético,381
+6,Quesos,macronutrientes,75,Queso en hebras light,Valor energético,277
+6,Quesos,macronutrientes,75,Queso Fontina,Valor energético,389
+6,Quesos,macronutrientes,75,Queso Fontina fundido light,Valor energético,198
+6,Quesos,macronutrientes,75,Queso fresco sin sal,Valor energético,224
+6,Quesos,macronutrientes,75,Queso fundido,Valor energético,303
+6,Quesos,macronutrientes,75,Queso Gruyére,Valor energético,407
+6,Quesos,macronutrientes,75,Queso Holanda,Valor energético,356
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Vitamina D,"0,35"
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Vitamina D,"0,50"
+6,Quesos,vitaminas_minerales,76,Queso Azul,Vitamina D,"0,50"
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Vitamina D,0
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Vitamina D,"0,10"
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Vitamina D,"1,64"
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Vitamina D,"0,50"
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Vitamina D,0
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Vitamina D,"1,08"
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Vitamina D,"0,70"
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Vitamina D,"0,88"
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Vitamina D,"0,50"
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Vitamina D,"0,76"
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Vitamina D,"0,48"
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Vitamina D,"0,57"
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Vitamina D,"1,08"
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Vitamina D,"0,48"
+6,Quesos,vitaminas_minerales,76,Queso fundido,Vitamina D,0
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Vitamina D,"0,60"
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Vitamina D,"0,50"
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Queso Azul,Vitamina C,0
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Vitamina C,0
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Vitamina C,0
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Queso fundido,Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Vitamina C,0
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Vitamina B-12,"1,58"
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Vitamina B-12,"1,54"
+6,Quesos,vitaminas_minerales,76,Queso Azul,Vitamina B-12,"0,64"
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Vitamina B-12,"0,95"
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Vitamina B-12,"0,40"
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Vitamina B-12,"0,88"
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Vitamina B-12,"1,54"
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Vitamina B-12,"0,22"
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Vitamina B-12,"1,75"
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Vitamina B-12,"1,75"
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Vitamina B-12,"0,22"
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Vitamina B-12,"1,54"
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Vitamina B-12,"1,20"
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Vitamina B-12,"0,82"
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Vitamina B-12,"1,68"
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Vitamina B-12,"1,11"
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Vitamina B-12,"0,82"
+6,Quesos,vitaminas_minerales,76,Queso fundido,Vitamina B-12,"1,03"
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Vitamina B-12,"1,60"
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Vitamina B-12,"1,54"
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Riboflavina,"0,263"
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Riboflavina,"0,334"
+6,Quesos,vitaminas_minerales,76,Queso Azul,Riboflavina,"0,404"
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Riboflavina,"0,265"
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Riboflavina,"0,340"
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Riboflavina,"0,434"
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Riboflavina,"0,334"
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Riboflavina,"0,230"
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Riboflavina,"0,230"
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Riboflavina,"0,230"
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Riboflavina,"0,676"
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Riboflavina,"0,334"
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Riboflavina,"0,332"
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Riboflavina,"0,303"
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Riboflavina,"0,204"
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Riboflavina,"0,480"
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Riboflavina,"0,303"
+6,Quesos,vitaminas_minerales,76,Queso fundido,Riboflavina,"0,200"
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Riboflavina,"0,279"
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Riboflavina,"0,334"
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Tiamina,"0,173"
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Tiamina,"0,030"
+6,Quesos,vitaminas_minerales,76,Queso Azul,Tiamina,"0,040"
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Tiamina,"0,040"
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Tiamina,"0,040"
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Tiamina,"0,027"
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Tiamina,"0,030"
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Tiamina,"0,023"
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Tiamina,"0,048"
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Tiamina,"0,048"
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Tiamina,"0,072"
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Tiamina,"0,030"
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Tiamina,"0,039"
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Tiamina,"0,018"
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Tiamina,"0,021"
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Tiamina,"0,070"
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Tiamina,"0,018"
+6,Quesos,vitaminas_minerales,76,Queso fundido,Tiamina,"0,023"
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Tiamina,"0,040"
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Tiamina,"0,030"
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Retinol,127
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Retinol,164
+6,Quesos,vitaminas_minerales,76,Queso Azul,Retinol,290
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Retinol,10
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Retinol,134
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Retinol,256
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Retinol,164
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Retinol,303
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Retinol,155
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Retinol,155
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Retinol,401
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Retinol,164
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Retinol,201
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Retinol,124
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Retinol,258
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Retinol,243
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Retinol,124
+6,Quesos,vitaminas_minerales,76,Queso fundido,Retinol,270
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Retinol,268
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Retinol,164
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),"Vitamina A, RAE",130
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,"Vitamina A, RAE",165
+6,Quesos,vitaminas_minerales,76,Queso Azul,"Vitamina A, RAE",294
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable","Vitamina A, RAE",11
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable","Vitamina A, RAE",149
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,"Vitamina A, RAE",263
+6,Quesos,vitaminas_minerales,76,Queso Chubut,"Vitamina A, RAE",165
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable","Vitamina A, RAE",308
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,"Vitamina A, RAE",157
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,"Vitamina A, RAE",157
+6,Quesos,vitaminas_minerales,76,Queso de cabra,"Vitamina A, RAE",407
+6,Quesos,vitaminas_minerales,76,Queso de máquina,"Vitamina A, RAE",165
+6,Quesos,vitaminas_minerales,76,Queso en hebras,"Vitamina A, RAE",207
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,"Vitamina A, RAE",127
+6,Quesos,vitaminas_minerales,76,Queso Fontina,"Vitamina A, RAE",261
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,"Vitamina A, RAE",250
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,"Vitamina A, RAE",127
+6,Quesos,vitaminas_minerales,76,Queso fundido,"Vitamina A, RAE",278
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,"Vitamina A, RAE",271
+6,Quesos,vitaminas_minerales,76,Queso Holanda,"Vitamina A, RAE",165
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Ácido fólico,31
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,Queso Azul,Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,Queso fundido,Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Ácido fólico,0
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Folato EFD,68
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Folato EFD,21
+6,Quesos,vitaminas_minerales,76,Queso Azul,Folato EFD,49
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Folato EFD,35
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Folato EFD,30
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Folato EFD,27
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Folato EFD,21
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Folato EFD,9
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Folato EFD,
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Folato EFD,18
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Folato EFD,2
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Folato EFD,21
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Folato EFD,7
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Folato EFD,9
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Folato EFD,6
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Folato EFD,18
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Folato EFD,9
+6,Quesos,vitaminas_minerales,76,Queso fundido,Folato EFD,4
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Folato EFD,10
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Folato EFD,21
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Niacina,"0,64"
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Niacina,"0,06"
+6,Quesos,vitaminas_minerales,76,Queso Azul,Niacina,"0,73"
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Niacina,"0,23"
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Niacina,"0,10"
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Niacina,"0,04"
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Niacina,"0,06"
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Niacina,"0,09"
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Niacina,"0,04"
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Niacina,"0,04"
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Niacina,"1,15"
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Niacina,"0,06"
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Niacina,"0,27"
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Niacina,"0,11"
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Niacina,"0,15"
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Niacina,"0,18"
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Niacina,"0,11"
+6,Quesos,vitaminas_minerales,76,Queso fundido,Niacina,"0,09"
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Niacina,"0,11"
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Niacina,"0,06"
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Zinc,"2,37"
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Zinc,"3,9"
+6,Quesos,vitaminas_minerales,76,Queso Azul,Zinc,"2,08"
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Zinc,"1,5"
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Zinc,"0,7"
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Zinc,"3,74"
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Zinc,"3,9"
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Zinc,"0,5"
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Zinc,"3,06"
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Zinc,"3,06"
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Zinc,"0,66"
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Zinc,"3,9"
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Zinc,"2,75"
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Zinc,"2,76"
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Zinc,"3,5"
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Zinc,"2,36"
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Zinc,"2,76"
+6,Quesos,vitaminas_minerales,76,Queso fundido,Zinc,"1,3"
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Zinc,"3,9"
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Zinc,"3,9"
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Magnesio,24
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Magnesio,29
+6,Quesos,vitaminas_minerales,76,Queso Azul,Magnesio,30
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Magnesio,22
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Magnesio,10
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Magnesio,27
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Magnesio,29
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Magnesio,9
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Magnesio,29
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Magnesio,29
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Magnesio,29
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Magnesio,29
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Magnesio,44
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Magnesio,23
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Magnesio,14
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Magnesio,33
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Magnesio,23
+6,Quesos,vitaminas_minerales,76,Queso fundido,Magnesio,16
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Magnesio,36
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Magnesio,29
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Hierro,"1,70"
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Hierro,"0,24"
+6,Quesos,vitaminas_minerales,76,Queso Azul,Hierro,"0,56"
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Hierro,"0,19"
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Hierro,"0,11"
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Hierro,"0,16"
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Hierro,"0,24"
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Hierro,"0,11"
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Hierro,"0,18"
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Hierro,"0,18"
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Hierro,"1,62"
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Hierro,"0,24"
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Hierro,"0,82"
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Hierro,"0,22"
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Hierro,"0,23"
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Hierro,"0,20"
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Hierro,"0,22"
+6,Quesos,vitaminas_minerales,76,Queso fundido,Hierro,"0,27"
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Hierro,"0,26"
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Hierro,"0,24"
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Fósforo,292
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Fósforo,530
+6,Quesos,vitaminas_minerales,76,Queso Azul,Fósforo,392
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Fósforo,198
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Fósforo,129
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Fósforo,460
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Fósforo,546
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Fósforo,97
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Fósforo,467
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Fósforo,467
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Fósforo,375
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Fósforo,546
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Fósforo,694
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Fósforo,463
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Fósforo,346
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Fósforo,829
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Fósforo,463
+6,Quesos,vitaminas_minerales,76,Queso fundido,Fósforo,577
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Fósforo,698
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Fósforo,546
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Cobre,"0,07"
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Cobre,"0,036"
+6,Quesos,vitaminas_minerales,76,Queso Azul,Cobre,"0,034"
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Cobre,"0,036"
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Cobre,"0,018"
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Cobre,"0,035"
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Cobre,"0,036"
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Cobre,"0,018"
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Cobre,"0,025"
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Cobre,"0,025"
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Cobre,"0,564"
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Cobre,"0,036"
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Cobre,"0,032"
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Cobre,"0,025"
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Cobre,"0,025"
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Cobre,"0,03"
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Cobre,"0,025"
+6,Quesos,vitaminas_minerales,76,Queso fundido,Cobre,"0,02"
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Cobre,"0,032"
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Cobre,"0,036"
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Calcio,378
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Calcio,475
+6,Quesos,vitaminas_minerales,76,Queso Azul,Calcio,662
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Calcio,116
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Calcio,99
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Calcio,711
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Calcio,700
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Calcio,56
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Calcio,690
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Calcio,625
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Calcio,298
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Calcio,700
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Calcio,1184
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Calcio,782
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Calcio,550
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Calcio,529
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Calcio,782
+6,Quesos,vitaminas_minerales,76,Queso fundido,Calcio,323
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Calcio,1080
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Calcio,700
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Potasio,110
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Potasio,74
+6,Quesos,vitaminas_minerales,76,Queso Azul,Potasio,74
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Potasio,260
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Potasio,120
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Potasio,76
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Potasio,121
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Potasio,148
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Potasio,126
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Potasio,64
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Potasio,158
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Potasio,121
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Potasio,92
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Potasio,84
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Potasio,64
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Potasio,330
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Potasio,84
+6,Quesos,vitaminas_minerales,76,Queso fundido,Potasio,193
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Potasio,128
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Potasio,121
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Sodio,480
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Sodio,720
+6,Quesos,vitaminas_minerales,76,Queso Azul,Sodio,1210
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Sodio,106
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Sodio,182
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Sodio,644
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Sodio,819
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Sodio,74
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Sodio,704
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Sodio,360
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Sodio,415
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Sodio,819
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Sodio,1175
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Sodio,752
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Sodio,800
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Sodio,1040
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Sodio,49
+6,Quesos,vitaminas_minerales,76,Queso fundido,Sodio,1102
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Sodio,542
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Sodio,819
+6,Quesos,vitaminas_minerales,76,Muzzarella rebozada sin freir (pollería o granja),Cenizas,"2,856"
+6,Quesos,vitaminas_minerales,76,Queso Pategrás,Cenizas,"7,00"
+6,Quesos,vitaminas_minerales,76,Queso Azul,Cenizas,"4,41"
+6,Quesos,vitaminas_minerales,76,"Queso blanco descremado, untable",Cenizas,"1,29"
+6,Quesos,vitaminas_minerales,76,"Queso blanco semidescremado, untable",Cenizas,"2,03"
+6,Quesos,vitaminas_minerales,76,Queso Cheddar,Cenizas,"3,66"
+6,Quesos,vitaminas_minerales,76,Queso Chubut,Cenizas,"3,94"
+6,Quesos,vitaminas_minerales,76,"Queso crema entero, untable",Cenizas,"0,64"
+6,Quesos,vitaminas_minerales,76,Queso Cremoso,Cenizas,"4,07"
+6,Quesos,vitaminas_minerales,76,Queso Cuartirolo,Cenizas,"3,70"
+6,Quesos,vitaminas_minerales,76,Queso de cabra,Cenizas,"2,94"
+6,Quesos,vitaminas_minerales,76,Queso de máquina,Cenizas,"3,94"
+6,Quesos,vitaminas_minerales,76,Queso en hebras,Cenizas,"6,04"
+6,Quesos,vitaminas_minerales,76,Queso en hebras light,Cenizas,
+6,Quesos,vitaminas_minerales,76,Queso Fontina,Cenizas,"3,79"
+6,Quesos,vitaminas_minerales,76,Queso Fontina fundido light,Cenizas,
+6,Quesos,vitaminas_minerales,76,Queso fresco sin sal,Cenizas,
+6,Quesos,vitaminas_minerales,76,Queso fundido,Cenizas,"5,8"
+6,Quesos,vitaminas_minerales,76,Queso Gruyére,Cenizas,"4,90"
+6,Quesos,vitaminas_minerales,76,Queso Holanda,Cenizas,"3,94"
+6,Quesos,macronutrientes,77,Queso Mar del Plata,Alcohol,0
+6,Quesos,macronutrientes,77,Queso Mascarpone,Alcohol,0
+6,Quesos,macronutrientes,77,Queso Muzzarella,Alcohol,0
+6,Quesos,macronutrientes,77,Queso Parmesano,Alcohol,0
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,Alcohol,0
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,Alcohol,0
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",Alcohol,0
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",Alcohol,0
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",Alcohol,0
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,Alcohol,0
+6,Quesos,macronutrientes,77,Queso Provolone,Alcohol,0
+6,Quesos,macronutrientes,77,Queso rallado envasado,Alcohol,0
+6,Quesos,macronutrientes,77,Queso Reggianito,Alcohol,0
+6,Quesos,macronutrientes,77,Queso Roquefort,Alcohol,0
+6,Quesos,macronutrientes,77,Queso Sardo,Alcohol,0
+6,Quesos,macronutrientes,77,Queso Sbrinz,Alcohol,0
+6,Quesos,macronutrientes,77,Queso Mar del Plata,Fibra alimentaria,0
+6,Quesos,macronutrientes,77,Queso Mascarpone,Fibra alimentaria,0
+6,Quesos,macronutrientes,77,Queso Muzzarella,Fibra alimentaria,0
+6,Quesos,macronutrientes,77,Queso Parmesano,Fibra alimentaria,0
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,Fibra alimentaria,0
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,Fibra alimentaria,0
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",Fibra alimentaria,0
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",Fibra alimentaria,0
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",Fibra alimentaria,0
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,Fibra alimentaria,0
+6,Quesos,macronutrientes,77,Queso Provolone,Fibra alimentaria,0
+6,Quesos,macronutrientes,77,Queso rallado envasado,Fibra alimentaria,0
+6,Quesos,macronutrientes,77,Queso Reggianito,Fibra alimentaria,0
+6,Quesos,macronutrientes,77,Queso Roquefort,Fibra alimentaria,0
+6,Quesos,macronutrientes,77,Queso Sardo,Fibra alimentaria,0
+6,Quesos,macronutrientes,77,Queso Sbrinz,Fibra alimentaria,0
+6,Quesos,macronutrientes,77,Queso Mar del Plata,Azúcar agregado,0
+6,Quesos,macronutrientes,77,Queso Mascarpone,Azúcar agregado,0
+6,Quesos,macronutrientes,77,Queso Muzzarella,Azúcar agregado,0
+6,Quesos,macronutrientes,77,Queso Parmesano,Azúcar agregado,0
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,Azúcar agregado,0
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,Azúcar agregado,0
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",Azúcar agregado,0
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",Azúcar agregado,0
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",Azúcar agregado,0
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,Azúcar agregado,0
+6,Quesos,macronutrientes,77,Queso Provolone,Azúcar agregado,0
+6,Quesos,macronutrientes,77,Queso rallado envasado,Azúcar agregado,0
+6,Quesos,macronutrientes,77,Queso Reggianito,Azúcar agregado,0
+6,Quesos,macronutrientes,77,Queso Roquefort,Azúcar agregado,0
+6,Quesos,macronutrientes,77,Queso Sardo,Azúcar agregado,0
+6,Quesos,macronutrientes,77,Queso Sbrinz,Azúcar agregado,0
+6,Quesos,macronutrientes,77,Queso Mar del Plata,Azúcar total,0
+6,Quesos,macronutrientes,77,Queso Mascarpone,Azúcar total,"3,8"
+6,Quesos,macronutrientes,77,Queso Muzzarella,Azúcar total,0
+6,Quesos,macronutrientes,77,Queso Parmesano,Azúcar total,"0,1"
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,Azúcar total,"0,5"
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,Azúcar total,"1,0"
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",Azúcar total,"1,8"
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",Azúcar total,"0,6"
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",Azúcar total,"2,2"
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,Azúcar total,0
+6,Quesos,macronutrientes,77,Queso Provolone,Azúcar total,"0,6"
+6,Quesos,macronutrientes,77,Queso rallado envasado,Azúcar total,"0,1"
+6,Quesos,macronutrientes,77,Queso Reggianito,Azúcar total,"0,1"
+6,Quesos,macronutrientes,77,Queso Roquefort,Azúcar total,"2,0"
+6,Quesos,macronutrientes,77,Queso Sardo,Azúcar total,"0,7"
+6,Quesos,macronutrientes,77,Queso Sbrinz,Azúcar total,"0,6"
+6,Quesos,macronutrientes,77,Queso Mar del Plata,Carbohidratos totales,0
+6,Quesos,macronutrientes,77,Queso Mascarpone,Carbohidratos totales,"5,5"
+6,Quesos,macronutrientes,77,Queso Muzzarella,Carbohidratos totales,"2,4"
+6,Quesos,macronutrientes,77,Queso Parmesano,Carbohidratos totales,0
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,Carbohidratos totales,"0,5"
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,Carbohidratos totales,"1,0"
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",Carbohidratos totales,"2,5"
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",Carbohidratos totales,"2,1"
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",Carbohidratos totales,"2,2"
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,Carbohidratos totales,"1,0"
+6,Quesos,macronutrientes,77,Queso Provolone,Carbohidratos totales,"2,1"
+6,Quesos,macronutrientes,77,Queso rallado envasado,Carbohidratos totales,"13,9"
+6,Quesos,macronutrientes,77,Queso Reggianito,Carbohidratos totales,"3,2"
+6,Quesos,macronutrientes,77,Queso Roquefort,Carbohidratos totales,"2,0"
+6,Quesos,macronutrientes,77,Queso Sardo,Carbohidratos totales,"3,6"
+6,Quesos,macronutrientes,77,Queso Sbrinz,Carbohidratos totales,"2,1"
+6,Quesos,macronutrientes,77,Queso Mar del Plata,Carbohidratos disponibles,0
+6,Quesos,macronutrientes,77,Queso Mascarpone,Carbohidratos disponibles,"5,5"
+6,Quesos,macronutrientes,77,Queso Muzzarella,Carbohidratos disponibles,"2,4"
+6,Quesos,macronutrientes,77,Queso Parmesano,Carbohidratos disponibles,0
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,Carbohidratos disponibles,"0,5"
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,Carbohidratos disponibles,"1,0"
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",Carbohidratos disponibles,"2,5"
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",Carbohidratos disponibles,"2,1"
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",Carbohidratos disponibles,"2,2"
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,Carbohidratos disponibles,"1,0"
+6,Quesos,macronutrientes,77,Queso Provolone,Carbohidratos disponibles,"2,1"
+6,Quesos,macronutrientes,77,Queso rallado envasado,Carbohidratos disponibles,"13,9"
+6,Quesos,macronutrientes,77,Queso Reggianito,Carbohidratos disponibles,"3,2"
+6,Quesos,macronutrientes,77,Queso Roquefort,Carbohidratos disponibles,"2,0"
+6,Quesos,macronutrientes,77,Queso Sardo,Carbohidratos disponibles,"3,6"
+6,Quesos,macronutrientes,77,Queso Sbrinz,Carbohidratos disponibles,"2,1"
+6,Quesos,macronutrientes,77,Queso Mar del Plata,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,77,Queso Mascarpone,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,77,Queso Muzzarella,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,77,Queso Parmesano,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,77,Queso Provolone,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,77,Queso rallado envasado,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,77,Queso Reggianito,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,77,Queso Roquefort,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,77,Queso Sardo,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,77,Queso Sbrinz,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,77,Queso Mar del Plata,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,77,Queso Mascarpone,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,77,Queso Muzzarella,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,77,Queso Parmesano,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,77,Queso Provolone,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,77,Queso rallado envasado,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,77,Queso Reggianito,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,77,Queso Roquefort,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,77,Queso Sardo,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,77,Queso Sbrinz,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,77,Queso Mar del Plata,20:4 Araquidónico,0
+6,Quesos,macronutrientes,77,Queso Mascarpone,20:4 Araquidónico,0
+6,Quesos,macronutrientes,77,Queso Muzzarella,20:4 Araquidónico,0
+6,Quesos,macronutrientes,77,Queso Parmesano,20:4 Araquidónico,0
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,20:4 Araquidónico,0
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,20:4 Araquidónico,0
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",20:4 Araquidónico,0
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",20:4 Araquidónico,0
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",20:4 Araquidónico,0
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,20:4 Araquidónico,0
+6,Quesos,macronutrientes,77,Queso Provolone,20:4 Araquidónico,0
+6,Quesos,macronutrientes,77,Queso rallado envasado,20:4 Araquidónico,0
+6,Quesos,macronutrientes,77,Queso Reggianito,20:4 Araquidónico,0
+6,Quesos,macronutrientes,77,Queso Roquefort,20:4 Araquidónico,0
+6,Quesos,macronutrientes,77,Queso Sardo,20:4 Araquidónico,0
+6,Quesos,macronutrientes,77,Queso Sbrinz,20:4 Araquidónico,0
+6,Quesos,macronutrientes,77,Queso Mar del Plata,18:3 cis Alfa linolénico (ALA),"0,550"
+6,Quesos,macronutrientes,77,Queso Mascarpone,18:3 cis Alfa linolénico (ALA),"0,125"
+6,Quesos,macronutrientes,77,Queso Muzzarella,18:3 cis Alfa linolénico (ALA),"0,230"
+6,Quesos,macronutrientes,77,Queso Parmesano,18:3 cis Alfa linolénico (ALA),"0,102"
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,18:3 cis Alfa linolénico (ALA),"0,090"
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,18:3 cis Alfa linolénico (ALA),"0,300"
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",18:3 cis Alfa linolénico (ALA),"0,105"
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",18:3 cis Alfa linolénico (ALA),"0,231"
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",18:3 cis Alfa linolénico (ALA),"0,197"
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,18:3 cis Alfa linolénico (ALA),"0,180"
+6,Quesos,macronutrientes,77,Queso Provolone,18:3 cis Alfa linolénico (ALA),"0,231"
+6,Quesos,macronutrientes,77,Queso rallado envasado,18:3 cis Alfa linolénico (ALA),"0,102"
+6,Quesos,macronutrientes,77,Queso Reggianito,18:3 cis Alfa linolénico (ALA),"0,171"
+6,Quesos,macronutrientes,77,Queso Roquefort,18:3 cis Alfa linolénico (ALA),"0,396"
+6,Quesos,macronutrientes,77,Queso Sardo,18:3 cis Alfa linolénico (ALA),"0,178"
+6,Quesos,macronutrientes,77,Queso Sbrinz,18:3 cis Alfa linolénico (ALA),"0,231"
+6,Quesos,macronutrientes,77,Queso Mar del Plata,18:2 cis Linoléico,"1,28"
+6,Quesos,macronutrientes,77,Queso Mascarpone,18:2 cis Linoléico,"0,81"
+6,Quesos,macronutrientes,77,Queso Muzzarella,18:2 cis Linoléico,"0,54"
+6,Quesos,macronutrientes,77,Queso Parmesano,18:2 cis Linoléico,"0,87"
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,18:2 cis Linoléico,"0,21"
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,18:2 cis Linoléico,"0,70"
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",18:2 cis Linoléico,"0,61"
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",18:2 cis Linoléico,"0,54"
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",18:2 cis Linoléico,"0,46"
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,18:2 cis Linoléico,"0,42"
+6,Quesos,macronutrientes,77,Queso Provolone,18:2 cis Linoléico,"0,54"
+6,Quesos,macronutrientes,77,Queso rallado envasado,18:2 cis Linoléico,"0,87"
+6,Quesos,macronutrientes,77,Queso Reggianito,18:2 cis Linoléico,"0,40"
+6,Quesos,macronutrientes,77,Queso Roquefort,18:2 cis Linoléico,"0,92"
+6,Quesos,macronutrientes,77,Queso Sardo,18:2 cis Linoléico,"0,42"
+6,Quesos,macronutrientes,77,Queso Sbrinz,18:2 cis Linoléico,"0,54"
+6,Quesos,macronutrientes,77,Queso Mar del Plata,Trans,"1,26"
+6,Quesos,macronutrientes,77,Queso Mascarpone,Trans,"1,03"
+6,Quesos,macronutrientes,77,Queso Muzzarella,Trans,"0,58"
+6,Quesos,macronutrientes,77,Queso Parmesano,Trans,"0,73"
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,Trans,"0,32"
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,Trans,"0,99"
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",Trans,"0,73"
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",Trans,"0,80"
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",Trans,"0,82"
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,Trans,"0,39"
+6,Quesos,macronutrientes,77,Queso Provolone,Trans,"0,80"
+6,Quesos,macronutrientes,77,Queso rallado envasado,Trans,"0,84"
+6,Quesos,macronutrientes,77,Queso Reggianito,Trans,"0,75"
+6,Quesos,macronutrientes,77,Queso Roquefort,Trans,"1,12"
+6,Quesos,macronutrientes,77,Queso Sardo,Trans,"0,81"
+6,Quesos,macronutrientes,77,Queso Sbrinz,Trans,"0,80"
+6,Quesos,macronutrientes,77,Queso Mar del Plata,Poliinsaturados,"1,83"
+6,Quesos,macronutrientes,77,Queso Mascarpone,Poliinsaturados,"1,48"
+6,Quesos,macronutrientes,77,Queso Muzzarella,Poliinsaturados,"0,77"
+6,Quesos,macronutrientes,77,Queso Parmesano,Poliinsaturados,"1,21"
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,Poliinsaturados,"0,30"
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,Poliinsaturados,"1,00"
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",Poliinsaturados,"1,15"
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",Poliinsaturados,"0,77"
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",Poliinsaturados,"0,66"
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,Poliinsaturados,"0,60"
+6,Quesos,macronutrientes,77,Queso Provolone,Poliinsaturados,"0,77"
+6,Quesos,macronutrientes,77,Queso rallado envasado,Poliinsaturados,"1,39"
+6,Quesos,macronutrientes,77,Queso Reggianito,Poliinsaturados,"0,57"
+6,Quesos,macronutrientes,77,Queso Roquefort,Poliinsaturados,"1,32"
+6,Quesos,macronutrientes,77,Queso Sardo,Poliinsaturados,"0,59"
+6,Quesos,macronutrientes,77,Queso Sbrinz,Poliinsaturados,"0,77"
+6,Quesos,macronutrientes,77,Queso Mar del Plata,Monoinsaturados,"9,62"
+6,Quesos,macronutrientes,77,Queso Mascarpone,Monoinsaturados,"8,91"
+6,Quesos,macronutrientes,77,Queso Muzzarella,Monoinsaturados,"6,57"
+6,Quesos,macronutrientes,77,Queso Parmesano,Monoinsaturados,"6,20"
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,Monoinsaturados,"3,00"
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,Monoinsaturados,"12,00"
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",Monoinsaturados,"6,46"
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",Monoinsaturados,"7,39"
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",Monoinsaturados,"7,75"
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,Monoinsaturados,"4,50"
+6,Quesos,macronutrientes,77,Queso Provolone,Monoinsaturados,"7,39"
+6,Quesos,macronutrientes,77,Queso rallado envasado,Monoinsaturados,"7,13"
+6,Quesos,macronutrientes,77,Queso Reggianito,Monoinsaturados,"7,52"
+6,Quesos,macronutrientes,77,Queso Roquefort,Monoinsaturados,"8,47"
+6,Quesos,macronutrientes,77,Queso Sardo,Monoinsaturados,"7,84"
+6,Quesos,macronutrientes,77,Queso Sbrinz,Monoinsaturados,"7,39"
+6,Quesos,macronutrientes,77,Queso Mar del Plata,Saturados,"21,27"
+6,Quesos,macronutrientes,77,Queso Mascarpone,Saturados,"20,21"
+6,Quesos,macronutrientes,77,Queso Muzzarella,Saturados,"13,90"
+6,Quesos,macronutrientes,77,Queso Parmesano,Saturados,"13,50"
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,Saturados,"6,60"
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,Saturados,"20,00"
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",Saturados,"13,66"
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",Saturados,"17,08"
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",Saturados,"17,61"
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,Saturados,"7,15"
+6,Quesos,macronutrientes,77,Queso Provolone,Saturados,"17,08"
+6,Quesos,macronutrientes,77,Queso rallado envasado,Saturados,"15,37"
+6,Quesos,macronutrientes,77,Queso Reggianito,Saturados,"14,85"
+6,Quesos,macronutrientes,77,Queso Roquefort,Saturados,"19,26"
+6,Quesos,macronutrientes,77,Queso Sardo,Saturados,"17,12"
+6,Quesos,macronutrientes,77,Queso Sbrinz,Saturados,"17,08"
+6,Quesos,macronutrientes,77,Queso Mar del Plata,Colesterol,129
+6,Quesos,macronutrientes,77,Queso Mascarpone,Colesterol,101
+6,Quesos,macronutrientes,77,Queso Muzzarella,Colesterol,79
+6,Quesos,macronutrientes,77,Queso Parmesano,Colesterol,75
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,Colesterol,36
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,Colesterol,123
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",Colesterol,70
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",Colesterol,69
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",Colesterol,114
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,Colesterol,47
+6,Quesos,macronutrientes,77,Queso Provolone,Colesterol,69
+6,Quesos,macronutrientes,77,Queso rallado envasado,Colesterol,86
+6,Quesos,macronutrientes,77,Queso Reggianito,Colesterol,68
+6,Quesos,macronutrientes,77,Queso Roquefort,Colesterol,90
+6,Quesos,macronutrientes,77,Queso Sardo,Colesterol,104
+6,Quesos,macronutrientes,77,Queso Sbrinz,Colesterol,69
+6,Quesos,macronutrientes,77,Queso Mar del Plata,Lípidos totales,"25,6"
+6,Quesos,macronutrientes,77,Queso Mascarpone,Lípidos totales,"34,4"
+6,Quesos,macronutrientes,77,Queso Muzzarella,Lípidos totales,"19,3"
+6,Quesos,macronutrientes,77,Queso Parmesano,Lípidos totales,"24,4"
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,Lípidos totales,"10,6"
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,Lípidos totales,"33,0"
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",Lípidos totales,"24,3"
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",Lípidos totales,"26,6"
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",Lípidos totales,"27,4"
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,Lípidos totales,"12,9"
+6,Quesos,macronutrientes,77,Queso Provolone,Lípidos totales,"26,6"
+6,Quesos,macronutrientes,77,Queso rallado envasado,Lípidos totales,"27,8"
+6,Quesos,macronutrientes,77,Queso Reggianito,Lípidos totales,"25,0"
+6,Quesos,macronutrientes,77,Queso Roquefort,Lípidos totales,"30,6"
+6,Quesos,macronutrientes,77,Queso Sardo,Lípidos totales,"26,9"
+6,Quesos,macronutrientes,77,Queso Sbrinz,Lípidos totales,"26,6"
+6,Quesos,macronutrientes,77,Queso Mar del Plata,Proteínas,"25,4"
+6,Quesos,macronutrientes,77,Queso Mascarpone,Proteínas,"6,2"
+6,Quesos,macronutrientes,77,Queso Muzzarella,Proteínas,"23,6"
+6,Quesos,macronutrientes,77,Queso Parmesano,Proteínas,"32,7"
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,Proteínas,"27,4"
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,Proteínas,"14,0"
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",Proteínas,"20,4"
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",Proteínas,"25,6"
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",Proteínas,"24,9"
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,Proteínas,"26,3"
+6,Quesos,macronutrientes,77,Queso Provolone,Proteínas,"25,6"
+6,Quesos,macronutrientes,77,Queso rallado envasado,Proteínas,"28,4"
+6,Quesos,macronutrientes,77,Queso Reggianito,Proteínas,"35,8"
+6,Quesos,macronutrientes,77,Queso Roquefort,Proteínas,"21,5"
+6,Quesos,macronutrientes,77,Queso Sardo,Proteínas,"31,8"
+6,Quesos,macronutrientes,77,Queso Sbrinz,Proteínas,"25,6"
+6,Quesos,macronutrientes,77,Queso Mar del Plata,Agua,"39,0"
+6,Quesos,macronutrientes,77,Queso Mascarpone,Agua,"52,6"
+6,Quesos,macronutrientes,77,Queso Muzzarella,Agua,"50,7"
+6,Quesos,macronutrientes,77,Queso Parmesano,Agua,"34,3"
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,Agua,"58,2"
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,Agua,"50,4"
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",Agua,"48,7"
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",Agua,"41,0"
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",Agua,"41,5"
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,Agua,"59,8"
+6,Quesos,macronutrientes,77,Queso Provolone,Agua,"41,0"
+6,Quesos,macronutrientes,77,Queso rallado envasado,Agua,"22,7"
+6,Quesos,macronutrientes,77,Queso Reggianito,Agua,"30,0"
+6,Quesos,macronutrientes,77,Queso Roquefort,Agua,"39,4"
+6,Quesos,macronutrientes,77,Queso Sardo,Agua,"30,9"
+6,Quesos,macronutrientes,77,Queso Sbrinz,Agua,"41,0"
+6,Quesos,macronutrientes,77,Queso Mar del Plata,Valor energético,332
+6,Quesos,macronutrientes,77,Queso Mascarpone,Valor energético,357
+6,Quesos,macronutrientes,77,Queso Muzzarella,Valor energético,278
+6,Quesos,macronutrientes,77,Queso Parmesano,Valor energético,350
+6,Quesos,macronutrientes,77,Queso pasta blanda descremado,Valor energético,207
+6,Quesos,macronutrientes,77,Queso pasta blanda doble crema,Valor energético,357
+6,Quesos,macronutrientes,77,"Queso pasta blanda, PROMEDIO *",Valor energético,310
+6,Quesos,macronutrientes,77,"Queso pasta dura, PROMEDIO **",Valor energético,350
+6,Quesos,macronutrientes,77,"*** Queso pasta semidura, PROMEDIO",Valor energético,356
+6,Quesos,macronutrientes,77,Queso porsalut sin sal light,Valor energético,225
+6,Quesos,macronutrientes,77,Queso Provolone,Valor energético,350
+6,Quesos,macronutrientes,77,Queso rallado envasado,Valor energético,420
+6,Quesos,macronutrientes,77,Queso Reggianito,Valor energético,381
+6,Quesos,macronutrientes,77,Queso Roquefort,Valor energético,370
+6,Quesos,macronutrientes,77,Queso Sardo,Valor energético,384
+6,Quesos,macronutrientes,77,Queso Sbrinz,Valor energético,350
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Vitamina D,"0,50"
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Vitamina D,0
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Vitamina D,"0,40"
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Vitamina D,"0,84"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Vitamina D,"0,48"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Vitamina D,"0,84"
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Vitamina D,"1,08"
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Vitamina D,"0,80"
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Vitamina D,"0,80"
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Vitamina D,"0,48"
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Vitamina D,"0,80"
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Vitamina D,"0,84"
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Vitamina D,"0,76"
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Vitamina D,"0,50"
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Vitamina D,"0,80"
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Vitamina D,"0,80"
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Vitamina C,0
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Vitamina C,0
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Vitamina C,0
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Vitamina C,0
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Vitamina C,0
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Vitamina C,0
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Vitamina C,0
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Vitamina C,0
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Vitamina C,0
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Vitamina C,0
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Vitamina C,0
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Vitamina C,0
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Vitamina C,0
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Vitamina C,0
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Vitamina C,0
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Vitamina C,0
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Vitamina B-12,"1,54"
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Vitamina B-12,"0,22"
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Vitamina B-12,"2,28"
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Vitamina B-12,"1,40"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Vitamina B-12,"0,82"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Vitamina B-12,"1,50"
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Vitamina B-12,"1,75"
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Vitamina B-12,"1,46"
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Vitamina B-12,"1,54"
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Vitamina B-12,"0,82"
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Vitamina B-12,"1,46"
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Vitamina B-12,"1,40"
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Vitamina B-12,"1,20"
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Vitamina B-12,"0,64"
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Vitamina B-12,"1,12"
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Vitamina B-12,"1,46"
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Riboflavina,"0,334"
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Riboflavina,"0,230"
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Riboflavina,"0,283"
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Riboflavina,"0,358"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Riboflavina,"0,303"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Riboflavina,"0,240"
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Riboflavina,"0,230"
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Riboflavina,"0,321"
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Riboflavina,"0,334"
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Riboflavina,"0,303"
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Riboflavina,"0,321"
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Riboflavina,"0,358"
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Riboflavina,"0,332"
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Riboflavina,"0,586"
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Riboflavina,"0,370"
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Riboflavina,"0,321"
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Tiamina,"0,030"
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Tiamina,"0,023"
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Tiamina,"0,030"
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Tiamina,"0,026"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Tiamina,"0,018"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Tiamina,"0,014"
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Tiamina,"0,048"
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Tiamina,"0,019"
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Tiamina,"0,030"
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Tiamina,"0,018"
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Tiamina,"0,019"
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Tiamina,"0,026"
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Tiamina,"0,039"
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Tiamina,"0,040"
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Tiamina,"0,037"
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Tiamina,"0,019"
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Retinol,164
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Retinol,303
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Retinol,174
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Retinol,255
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Retinol,124
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Retinol,313
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Retinol,155
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Retinol,230
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Retinol,164
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Retinol,124
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Retinol,230
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Retinol,255
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Retinol,201
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Retinol,290
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Retinol,90
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Retinol,230
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,"Vitamina A, RAE",165
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,"Vitamina A, RAE",308
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,"Vitamina A, RAE",179
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,"Vitamina A, RAE",262
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,"Vitamina A, RAE",127
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,"Vitamina A, RAE",315
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *","Vitamina A, RAE",157
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **","Vitamina A, RAE",236
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO","Vitamina A, RAE",165
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,"Vitamina A, RAE",127
+6,Quesos,vitaminas_minerales,78,Queso Provolone,"Vitamina A, RAE",236
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,"Vitamina A, RAE",262
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,"Vitamina A, RAE",207
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,"Vitamina A, RAE",294
+6,Quesos,vitaminas_minerales,78,Queso Sardo,"Vitamina A, RAE",96
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,"Vitamina A, RAE",236
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Ácido fólico,0
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Ácido fólico,0
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Ácido fólico,0
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Ácido fólico,0
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Ácido fólico,0
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Ácido fólico,0
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Ácido fólico,0
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Ácido fólico,0
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Ácido fólico,0
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Ácido fólico,0
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Ácido fólico,0
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Ácido fólico,0
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Ácido fólico,0
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Ácido fólico,0
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Ácido fólico,0
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Ácido fólico,0
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Folato EFD,21
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Folato EFD,9
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Folato EFD,7
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Folato EFD,6
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Folato EFD,9
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Folato EFD,18
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Folato EFD,
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Folato EFD,10
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Folato EFD,21
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Folato EFD,9
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Folato EFD,10
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Folato EFD,6
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Folato EFD,7
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Folato EFD,49
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Folato EFD,7
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Folato EFD,10
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Niacina,"0,06"
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Niacina,"0,09"
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Niacina,"0,10"
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Niacina,"0,08"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Niacina,"0,11"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Niacina,"0,06"
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Niacina,"0,04"
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Niacina,"0,16"
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Niacina,"0,06"
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Niacina,"0,11"
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Niacina,"0,16"
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Niacina,"0,08"
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Niacina,"0,27"
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Niacina,"0,73"
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Niacina,"0,08"
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Niacina,"0,16"
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Zinc,"3,9"
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Zinc,"0,5"
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Zinc,"2,92"
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Zinc,"4,2"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Zinc,"2,76"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Zinc,"2,6"
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Zinc,"3,06"
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Zinc,"3,23"
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Zinc,"3,9"
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Zinc,"2,76"
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Zinc,"3,23"
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Zinc,"4,2"
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Zinc,"2,75"
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Zinc,"2,08"
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Zinc,"2,58"
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Zinc,"3,23"
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Magnesio,29
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Magnesio,9
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Magnesio,20
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Magnesio,34
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Magnesio,23
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Magnesio,24
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Magnesio,29
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Magnesio,28
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Magnesio,29
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Magnesio,23
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Magnesio,28
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Magnesio,34
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Magnesio,44
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Magnesio,30
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Magnesio,41
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Magnesio,28
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Hierro,"0,24"
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Hierro,"0,11"
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Hierro,"0,44"
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Hierro,"0,49"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Hierro,"0,22"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Hierro,"0,43"
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Hierro,"0,18"
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Hierro,"0,52"
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Hierro,"0,24"
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Hierro,"0,22"
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Hierro,"0,52"
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Hierro,"0,49"
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Hierro,"0,82"
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Hierro,"0,56"
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Hierro,"0,77"
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Hierro,"0,52"
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Fósforo,530
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Fósforo,107
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Fósforo,354
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Fósforo,627
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Fósforo,463
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Fósforo,360
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Fósforo,467
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Fósforo,496
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Fósforo,546
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Fósforo,463
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Fósforo,496
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Fósforo,627
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Fósforo,694
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Fósforo,392
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Fósforo,760
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Fósforo,496
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Cobre,"0,036"
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Cobre,"0,018"
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Cobre,"0,011"
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Cobre,"0,04"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Cobre,"0,025"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Cobre,"0,022"
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Cobre,"0,025"
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Cobre,"0,026"
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Cobre,"0,036"
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Cobre,"0,025"
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Cobre,"0,026"
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Cobre,"0,04"
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Cobre,"0,032"
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Cobre,"0,034"
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Cobre,"0,03"
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Cobre,"0,026"
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Calcio,475
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Calcio,97
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Calcio,505
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Calcio,853
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Calcio,736
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Calcio,721
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Calcio,690
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Calcio,756
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Calcio,700
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Calcio,782
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Calcio,756
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Calcio,853
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Calcio,1184
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Calcio,662
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Calcio,1064
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Calcio,756
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Potasio,74
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Potasio,132
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Potasio,76
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Potasio,180
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Potasio,84
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Potasio,136
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Potasio,126
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Potasio,138
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Potasio,121
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Potasio,84
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Potasio,138
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Potasio,180
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Potasio,92
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Potasio,91
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Potasio,86
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Potasio,138
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Sodio,720
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Sodio,314
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Sodio,486
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Sodio,1804
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Sodio,492
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Sodio,475
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Sodio,704
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Sodio,727
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Sodio,819
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Sodio,55
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Sodio,727
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Sodio,1804
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Sodio,1175
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Sodio,1809
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Sodio,1433
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Sodio,727
+6,Quesos,vitaminas_minerales,78,Queso Mar del Plata,Cenizas,"7,00"
+6,Quesos,vitaminas_minerales,78,Queso Mascarpone,Cenizas,"1,27"
+6,Quesos,vitaminas_minerales,78,Queso Muzzarella,Cenizas,"3,10"
+6,Quesos,vitaminas_minerales,78,Queso Parmesano,Cenizas,"7,18"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda descremado,Cenizas,"3,27"
+6,Quesos,vitaminas_minerales,78,Queso pasta blanda doble crema,Cenizas,"1,60"
+6,Quesos,vitaminas_minerales,78,"Queso pasta blanda, PROMEDIO *",Cenizas,"4,07"
+6,Quesos,vitaminas_minerales,78,"Queso pasta dura, PROMEDIO **",Cenizas,"4,71"
+6,Quesos,vitaminas_minerales,78,"*** Queso pasta semidura, PROMEDIO",Cenizas,"3,94"
+6,Quesos,vitaminas_minerales,78,Queso porsalut sin sal light,Cenizas,
+6,Quesos,vitaminas_minerales,78,Queso Provolone,Cenizas,"4,71"
+6,Quesos,vitaminas_minerales,78,Queso rallado envasado,Cenizas,"7,18"
+6,Quesos,vitaminas_minerales,78,Queso Reggianito,Cenizas,"6,04"
+6,Quesos,vitaminas_minerales,78,Queso Roquefort,Cenizas,"6,44"
+6,Quesos,vitaminas_minerales,78,Queso Sardo,Cenizas,"6,72"
+6,Quesos,vitaminas_minerales,78,Queso Sbrinz,Cenizas,"4,71"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,Alcohol,0
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,Alcohol,0
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,Alcohol,0
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,Alcohol,0
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",Alcohol,0
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,Alcohol,0
+6,Quesos,macronutrientes,79,Ricota,Alcohol,0
+6,Quesos,macronutrientes,79,Ricota descremada,Alcohol,0
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,Fibra alimentaria,"0,3"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,Fibra alimentaria,"0,3"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,Fibra alimentaria,"0,3"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,Fibra alimentaria,0
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",Fibra alimentaria,0
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,Fibra alimentaria,0
+6,Quesos,macronutrientes,79,Ricota,Fibra alimentaria,0
+6,Quesos,macronutrientes,79,Ricota descremada,Fibra alimentaria,0
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,Azúcar agregado,0
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,Azúcar agregado,0
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,Azúcar agregado,0
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,Azúcar agregado,0
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",Azúcar agregado,0
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,Azúcar agregado,0
+6,Quesos,macronutrientes,79,Ricota,Azúcar agregado,0
+6,Quesos,macronutrientes,79,Ricota descremada,Azúcar agregado,0
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,Azúcar total,"3,2"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,Azúcar total,"3,8"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,Azúcar total,"6,7"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,Azúcar total,0
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",Azúcar total,"3,3"
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,Azúcar total,"1,1"
+6,Quesos,macronutrientes,79,Ricota,Azúcar total,"0,3"
+6,Quesos,macronutrientes,79,Ricota descremada,Azúcar total,"0,3"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,Carbohidratos totales,"3,2"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,Carbohidratos totales,"3,8"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,Carbohidratos totales,"9,2"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,Carbohidratos totales,"2,0"
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",Carbohidratos totales,"6,7"
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,Carbohidratos totales,"2,8"
+6,Quesos,macronutrientes,79,Ricota,Carbohidratos totales,"4,0"
+6,Quesos,macronutrientes,79,Ricota descremada,Carbohidratos totales,"5,1"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,Carbohidratos disponibles,"3,2"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,Carbohidratos disponibles,"3,8"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,Carbohidratos disponibles,"8,9"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,Carbohidratos disponibles,"2,0"
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",Carbohidratos disponibles,"6,7"
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,Carbohidratos disponibles,"2,8"
+6,Quesos,macronutrientes,79,Ricota,Carbohidratos disponibles,"4,0"
+6,Quesos,macronutrientes,79,Ricota descremada,Carbohidratos disponibles,"5,1"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,79,Ricota,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,79,Ricota descremada,22:6 n-3 Docosahexaenoico (DHA),0
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,79,Ricota,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,79,Ricota descremada,20:5 n-3 Eicosapentaenoico (EPA),0
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,20:4 Araquidónico,0
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,20:4 Araquidónico,0
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,20:4 Araquidónico,0
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,20:4 Araquidónico,0
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",20:4 Araquidónico,0
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,20:4 Araquidónico,0
+6,Quesos,macronutrientes,79,Ricota,20:4 Araquidónico,0
+6,Quesos,macronutrientes,79,Ricota descremada,20:4 Araquidónico,0
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,18:3 cis Alfa linolénico (ALA),"0,210"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,18:3 cis Alfa linolénico (ALA),"0,150"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,18:3 cis Alfa linolénico (ALA),"0,150"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,18:3 cis Alfa linolénico (ALA),"0,060"
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",18:3 cis Alfa linolénico (ALA),"0,083"
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,18:3 cis Alfa linolénico (ALA),"0,142"
+6,Quesos,macronutrientes,79,Ricota,18:3 cis Alfa linolénico (ALA),"0,151"
+6,Quesos,macronutrientes,79,Ricota descremada,18:3 cis Alfa linolénico (ALA),"0,078"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,18:2 cis Linoléico,"0,49"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,18:2 cis Linoléico,"0,35"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,18:2 cis Linoléico,"0,35"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,18:2 cis Linoléico,"0,14"
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",18:2 cis Linoléico,"0,49"
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,18:2 cis Linoléico,"0,33"
+6,Quesos,macronutrientes,79,Ricota,18:2 cis Linoléico,"0,35"
+6,Quesos,macronutrientes,79,Ricota descremada,18:2 cis Linoléico,"0,18"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,Trans,"0,81"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,Trans,"0,48"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,Trans,"0,72"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,Trans,"0,25"
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",Trans,"1,17"
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,Trans,"0,48"
+6,Quesos,macronutrientes,79,Ricota,Trans,"0,35"
+6,Quesos,macronutrientes,79,Ricota descremada,Trans,"0,24"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,Poliinsaturados,"0,70"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,Poliinsaturados,"0,50"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,Poliinsaturados,"0,50"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,Poliinsaturados,"0,20"
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",Poliinsaturados,"0,58"
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,Poliinsaturados,"0,47"
+6,Quesos,macronutrientes,79,Ricota,Poliinsaturados,"0,50"
+6,Quesos,macronutrientes,79,Ricota descremada,Poliinsaturados,"0,26"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,Monoinsaturados,"9,00"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,Monoinsaturados,"6,00"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,Monoinsaturados,"9,50"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,Monoinsaturados,"2,00"
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",Monoinsaturados,"4,00"
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,Monoinsaturados,"4,51"
+6,Quesos,macronutrientes,79,Ricota,Monoinsaturados,"3,02"
+6,Quesos,macronutrientes,79,Ricota descremada,Monoinsaturados,"2,31"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,Saturados,"16,00"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,Saturados,"9,30"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,Saturados,"13,10"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,Saturados,"5,40"
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",Saturados,"10,00"
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,Saturados,"10,11"
+6,Quesos,macronutrientes,79,Ricota,Saturados,"7,28"
+6,Quesos,macronutrientes,79,Ricota descremada,Saturados,"4,93"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,Colesterol,75
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,Colesterol,44
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,Colesterol,75
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,Colesterol,26
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",Colesterol,54
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,Colesterol,64
+6,Quesos,macronutrientes,79,Ricota,Colesterol,49
+6,Quesos,macronutrientes,79,Ricota descremada,Colesterol,31
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,Lípidos totales,"27,0"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,Lípidos totales,"16,0"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,Lípidos totales,"24,0"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,Lípidos totales,"8,4"
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",Lípidos totales,"16,7"
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,Lípidos totales,"15,9"
+6,Quesos,macronutrientes,79,Ricota,Lípidos totales,"11,8"
+6,Quesos,macronutrientes,79,Ricota descremada,Lípidos totales,"7,9"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,Proteínas,"7,1"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,Proteínas,"9,0"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,Proteínas,"8,0"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,Proteínas,"11,0"
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",Proteínas,"7,9"
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,Proteínas,"24,3"
+6,Quesos,macronutrientes,79,Ricota,Proteínas,"11,6"
+6,Quesos,macronutrientes,79,Ricota descremada,Proteínas,"11,4"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,Agua,"56,9"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,Agua,"71,2"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,Agua,"51,5"
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,Agua,"78,6"
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",Agua,"66,7"
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,Agua,"53,8"
+6,Quesos,macronutrientes,79,Ricota,Agua,"70,9"
+6,Quesos,macronutrientes,79,Ricota descremada,Agua,"74,4"
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia,Valor energético,284
+6,Quesos,macronutrientes,79,Queso untable tipo Finlandia light,Valor energético,195
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem,Valor energético,284
+6,Quesos,macronutrientes,79,Queso untable tipo Tholem light,Valor energético,128
+6,Quesos,macronutrientes,79,"Queso untable, PROMEDIO",Valor energético,208
+6,Quesos,macronutrientes,79,Quesos de pasta semidura descremados,Valor energético,251
+6,Quesos,macronutrientes,79,Ricota,Valor energético,169
+6,Quesos,macronutrientes,79,Ricota descremada,Valor energético,137
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Vitamina D,0
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Vitamina D,0
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Vitamina D,0
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Vitamina D,0
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Vitamina D,"0,44"
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Vitamina D,"0,48"
+6,Quesos,vitaminas_minerales,80,Ricota,Vitamina D,"0,40"
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Vitamina D,"0,24"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Vitamina C,"0,4"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Vitamina C,"0,4"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Vitamina C,"0,4"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Vitamina C,"0,4"
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Vitamina C,0
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Vitamina C,0
+6,Quesos,vitaminas_minerales,80,Ricota,Vitamina C,0
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Vitamina C,0
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Vitamina B-12,"0,40"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Vitamina B-12,"0,40"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Vitamina B-12,"0,40"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Vitamina B-12,"0,40"
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Vitamina B-12,"0,92"
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Vitamina B-12,"0,82"
+6,Quesos,vitaminas_minerales,80,Ricota,Vitamina B-12,"0,85"
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Vitamina B-12,"0,29"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Riboflavina,"0,240"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Riboflavina,"0,240"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Riboflavina,"0,240"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Riboflavina,"0,240"
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Riboflavina,"0,185"
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Riboflavina,"0,303"
+6,Quesos,vitaminas_minerales,80,Ricota,Riboflavina,"0,298"
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Riboflavina,"0,185"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Tiamina,"0,040"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Tiamina,"0,040"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Tiamina,"0,040"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Tiamina,"0,040"
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Tiamina,"0,040"
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Tiamina,"0,018"
+6,Quesos,vitaminas_minerales,80,Ricota,Tiamina,"0,013"
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Tiamina,"0,021"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Retinol,134
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Retinol,134
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Retinol,134
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Retinol,134
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Retinol,160
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Retinol,124
+6,Quesos,vitaminas_minerales,80,Ricota,Retinol,117
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Retinol,105
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,"Vitamina A, RAE",149
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,"Vitamina A, RAE",149
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,"Vitamina A, RAE",149
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,"Vitamina A, RAE",149
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO","Vitamina A, RAE",161
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,"Vitamina A, RAE",127
+6,Quesos,vitaminas_minerales,80,Ricota,"Vitamina A, RAE",120
+6,Quesos,vitaminas_minerales,80,Ricota descremada,"Vitamina A, RAE",107
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Ácido fólico,0
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Ácido fólico,0
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Ácido fólico,0
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Ácido fólico,0
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Ácido fólico,0
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Ácido fólico,0
+6,Quesos,vitaminas_minerales,80,Ricota,Ácido fólico,0
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Ácido fólico,0
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Folato EFD,30
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Folato EFD,30
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Folato EFD,30
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Folato EFD,30
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Folato EFD,19
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Folato EFD,9
+6,Quesos,vitaminas_minerales,80,Ricota,Folato EFD,4
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Folato EFD,13
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Niacina,"0,10"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Niacina,"0,10"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Niacina,"0,10"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Niacina,"0,10"
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Niacina,"0,13"
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Niacina,"0,11"
+6,Quesos,vitaminas_minerales,80,Ricota,Niacina,"0,14"
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Niacina,"0,08"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Zinc,"1,64"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Zinc,"1,64"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Zinc,"1,64"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Zinc,"1,64"
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Zinc,"0,57"
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Zinc,"2,76"
+6,Quesos,vitaminas_minerales,80,Ricota,Zinc,"0,53"
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Zinc,"1,34"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Magnesio,10
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Magnesio,10
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Magnesio,10
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Magnesio,10
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Magnesio,8
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Magnesio,23
+6,Quesos,vitaminas_minerales,80,Ricota,Magnesio,20
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Magnesio,15
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Hierro,"0,19"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Hierro,"0,19"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Hierro,"0,19"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Hierro,"0,19"
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Hierro,"0,17"
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Hierro,"0,22"
+6,Quesos,vitaminas_minerales,80,Ricota,Hierro,"0,26"
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Hierro,"0,44"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Fósforo,806
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Fósforo,806
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Fósforo,806
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Fósforo,806
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Fósforo,152
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Fósforo,463
+6,Quesos,vitaminas_minerales,80,Ricota,Fósforo,241
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Fósforo,183
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Cobre,"0,02"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Cobre,"0,02"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Cobre,"0,02"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Cobre,"0,02"
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Cobre,"0,032"
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Cobre,"0,025"
+6,Quesos,vitaminas_minerales,80,Ricota,Cobre,"0,018"
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Cobre,"0,034"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Calcio,328
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Calcio,367
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Calcio,359
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Calcio,359
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Calcio,148
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Calcio,782
+6,Quesos,vitaminas_minerales,80,Ricota,Calcio,193
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Calcio,272
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Potasio,240
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Potasio,240
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Potasio,240
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Potasio,240
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Potasio,247
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Potasio,84
+6,Quesos,vitaminas_minerales,80,Ricota,Potasio,155
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Potasio,125
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Sodio,409
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Sodio,364
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Sodio,1130
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Sodio,800
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Sodio,317
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Sodio,619
+6,Quesos,vitaminas_minerales,80,Ricota,Sodio,146
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Sodio,99
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia,Cenizas,"5,8"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Finlandia light,Cenizas,
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem,Cenizas,"5,8"
+6,Quesos,vitaminas_minerales,80,Queso untable tipo Tholem light,Cenizas,
+6,Quesos,vitaminas_minerales,80,"Queso untable, PROMEDIO",Cenizas,"2,03"
+6,Quesos,vitaminas_minerales,80,Quesos de pasta semidura descremados,Cenizas,"3,27"
+6,Quesos,vitaminas_minerales,80,Ricota,Cenizas,"1,58"
+6,Quesos,vitaminas_minerales,80,Ricota descremada,Cenizas,"1,15"

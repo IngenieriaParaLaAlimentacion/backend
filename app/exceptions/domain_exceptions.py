@@ -783,3 +783,19 @@ class SurveyResponseAlreadyExistsError(AlreadyExistsError):
             "This survey has already been answered for that target.",
             extensions={"existing_response": existing} if existing else None,
         )
+
+
+class FoodNotFoundError(NotFoundError):
+    """Exception raised when a food cannot be found.
+
+    Args:
+        food_id (str): The ID that was looked up.
+    """
+
+    error_type = "food-not-found"
+
+    def __init__(self, food_id: str):
+        super().__init__(
+            "Food not found",
+            f"No food with id {food_id} exists.",
+        )

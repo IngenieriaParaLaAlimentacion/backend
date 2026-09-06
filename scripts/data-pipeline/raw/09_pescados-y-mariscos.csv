@@ -1,0 +1,1620 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,Camarón,Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,Langostino,Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",Fibra alimentaria,"1,4"
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,Camarón,Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),Fibra alimentaria,"0,3"
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,Langostino,Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",Azúcar agregado,"0,9"
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,Camarón,Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),Azúcar agregado,"0,2"
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,Langostino,Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",Azúcar total,"1,9"
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,Camarón,Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),Azúcar total,"0,4"
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,Langostino,Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",Carbohidratos totales,"0,2"
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",Carbohidratos totales,"3,6"
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",Carbohidratos totales,"22,5"
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",Carbohidratos totales,"0,4"
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",Carbohidratos totales,"3,1"
+9,Pescados y mariscos,macronutrientes,94,Camarón,Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",Carbohidratos totales,"0,6"
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",Carbohidratos totales,"0,4"
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",Carbohidratos totales,"0,1"
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),Carbohidratos totales,"4,8"
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,Carbohidratos totales,"6,9"
+9,Pescados y mariscos,macronutrientes,94,Langostino,Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",Carbohidratos totales,"0,2"
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",Carbohidratos disponibles,"0,2"
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",Carbohidratos disponibles,"3,6"
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",Carbohidratos disponibles,"21,1"
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",Carbohidratos disponibles,"0,4"
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",Carbohidratos disponibles,"3,1"
+9,Pescados y mariscos,macronutrientes,94,Camarón,Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",Carbohidratos disponibles,"0,6"
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",Carbohidratos disponibles,"0,4"
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",Carbohidratos disponibles,"0,1"
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),Carbohidratos disponibles,"4,5"
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,Carbohidratos disponibles,"6,9"
+9,Pescados y mariscos,macronutrientes,94,Langostino,Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",Carbohidratos disponibles,"0,2"
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,266"
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",22:6 n-3 Docosahexaenoico (DHA),"0,064"
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",22:6 n-3 Docosahexaenoico (DHA),"1,292"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",22:6 n-3 Docosahexaenoico (DHA),"0,196"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",22:6 n-3 Docosahexaenoico (DHA),"0,101"
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,890"
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",22:6 n-3 Docosahexaenoico (DHA),"0,231"
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",22:6 n-3 Docosahexaenoico (DHA),"0,266"
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",22:6 n-3 Docosahexaenoico (DHA),"0,796"
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,342"
+9,Pescados y mariscos,macronutrientes,94,Camarón,22:6 n-3 Docosahexaenoico (DHA),"0,031"
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",22:6 n-3 Docosahexaenoico (DHA),"0,058"
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",22:6 n-3 Docosahexaenoico (DHA),"0,058"
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,050"
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,020"
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),22:6 n-3 Docosahexaenoico (DHA),"0,355"
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,22:6 n-3 Docosahexaenoico (DHA),"0,241"
+9,Pescados y mariscos,macronutrientes,94,Langostino,22:6 n-3 Docosahexaenoico (DHA),"0,080"
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,108"
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,100"
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",20:5 n-3 Eicosapentaenoico (EPA),"0,043"
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",20:5 n-3 Eicosapentaenoico (EPA),"0,763"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",20:5 n-3 Eicosapentaenoico (EPA),"0,028"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",20:5 n-3 Eicosapentaenoico (EPA),"0,027"
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,283"
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",20:5 n-3 Eicosapentaenoico (EPA),"0,087"
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",20:5 n-3 Eicosapentaenoico (EPA),"0,100"
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",20:5 n-3 Eicosapentaenoico (EPA),"0,434"
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,146"
+9,Pescados y mariscos,macronutrientes,94,Camarón,20:5 n-3 Eicosapentaenoico (EPA),"0,030"
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",20:5 n-3 Eicosapentaenoico (EPA),"0,074"
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",20:5 n-3 Eicosapentaenoico (EPA),"0,074"
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,030"
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,020"
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),20:5 n-3 Eicosapentaenoico (EPA),"0,132"
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,20:5 n-3 Eicosapentaenoico (EPA),"0,157"
+9,Pescados y mariscos,macronutrientes,94,Langostino,20:5 n-3 Eicosapentaenoico (EPA),"0,110"
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,137"
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",20:4 Araquidónico,"0,025"
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",20:4 Araquidónico,"0,011"
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",20:4 Araquidónico,"0,010"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",20:4 Araquidónico,"0,025"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",20:4 Araquidónico,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",20:4 Araquidónico,"0,043"
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",20:4 Araquidónico,0
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",20:4 Araquidónico,"0,025"
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",20:4 Araquidónico,"0,069"
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",20:4 Araquidónico,"0,009"
+9,Pescados y mariscos,macronutrientes,94,Camarón,20:4 Araquidónico,"0,012"
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",20:4 Araquidónico,"0,055"
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",20:4 Araquidónico,"0,055"
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",20:4 Araquidónico,"0,050"
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",20:4 Araquidónico,"0,010"
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),20:4 Araquidónico,0
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,20:4 Araquidónico,"0,014"
+9,Pescados y mariscos,macronutrientes,94,Langostino,20:4 Araquidónico,"0,010"
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",20:4 Araquidónico,"0,015"
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",18:3 cis Alfa linolénico (ALA),"0,008"
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",18:3 cis Alfa linolénico (ALA),"0,015"
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",18:3 cis Alfa linolénico (ALA),"0,017"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",18:3 cis Alfa linolénico (ALA),"0,002"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",18:3 cis Alfa linolénico (ALA),"0,002"
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",18:3 cis Alfa linolénico (ALA),0
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",18:3 cis Alfa linolénico (ALA),"0,100"
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",18:3 cis Alfa linolénico (ALA),"0,008"
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",18:3 cis Alfa linolénico (ALA),"0,043"
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",18:3 cis Alfa linolénico (ALA),"0,004"
+9,Pescados y mariscos,macronutrientes,94,Camarón,18:3 cis Alfa linolénico (ALA),"0,002"
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",18:3 cis Alfa linolénico (ALA),0
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",18:3 cis Alfa linolénico (ALA),0
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",18:3 cis Alfa linolénico (ALA),"0,075"
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",18:3 cis Alfa linolénico (ALA),0
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),18:3 cis Alfa linolénico (ALA),0
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,18:3 cis Alfa linolénico (ALA),"0,007"
+9,Pescados y mariscos,macronutrientes,94,Langostino,18:3 cis Alfa linolénico (ALA),0
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",18:3 cis Alfa linolénico (ALA),"0,017"
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",18:2 cis Linoléico,"0,02"
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",18:2 cis Linoléico,"0,03"
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",18:2 cis Linoléico,"0,36"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",18:2 cis Linoléico,"0,01"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",18:2 cis Linoléico,"0,02"
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",18:2 cis Linoléico,"0,05"
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",18:2 cis Linoléico,"4,83"
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",18:2 cis Linoléico,"0,02"
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",18:2 cis Linoléico,"0,10"
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",18:2 cis Linoléico,"0,00"
+9,Pescados y mariscos,macronutrientes,94,Camarón,18:2 cis Linoléico,"0,03"
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",18:2 cis Linoléico,"0,00"
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",18:2 cis Linoléico,"0,00"
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",18:2 cis Linoléico,"0,11"
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",18:2 cis Linoléico,"0,00"
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),18:2 cis Linoléico,"0,24"
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,18:2 cis Linoléico,"0,00"
+9,Pescados y mariscos,macronutrientes,94,Langostino,18:2 cis Linoléico,"0,01"
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",18:2 cis Linoléico,"0,04"
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",Trans,0
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",Trans,"0,02"
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",Trans,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",Trans,"0,00"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",Trans,0
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",Trans,0
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",Trans,0
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",Trans,0
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",Trans,0
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",Trans,0
+9,Pescados y mariscos,macronutrientes,94,Camarón,Trans,"0,00"
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",Trans,0
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",Trans,0
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",Trans,0
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",Trans,0
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),Trans,0
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,Trans,0
+9,Pescados y mariscos,macronutrientes,94,Langostino,Trans,0
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",Trans,"0,01"
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",Poliinsaturados,"0,42"
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",Poliinsaturados,"0,19"
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",Poliinsaturados,"2,56"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",Poliinsaturados,"0,28"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",Poliinsaturados,"2,89"
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",Poliinsaturados,"1,43"
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",Poliinsaturados,"5,27"
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",Poliinsaturados,"0,42"
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",Poliinsaturados,"1,65"
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",Poliinsaturados,"0,52"
+9,Pescados y mariscos,macronutrientes,94,Camarón,Poliinsaturados,"0,15"
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",Poliinsaturados,"0,28"
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",Poliinsaturados,"0,28"
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",Poliinsaturados,"0,32"
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",Poliinsaturados,"0,06"
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),Poliinsaturados,"0,80"
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,Poliinsaturados,"0,44"
+9,Pescados y mariscos,macronutrientes,94,Langostino,Poliinsaturados,"0,22"
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",Poliinsaturados,"0,37"
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",Monoinsaturados,"0,43"
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",Monoinsaturados,"0,12"
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",Monoinsaturados,"3,77"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",Monoinsaturados,"0,11"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",Monoinsaturados,"2,95"
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",Monoinsaturados,"1,60"
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",Monoinsaturados,"2,42"
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",Monoinsaturados,"0,43"
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",Monoinsaturados,"2,23"
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",Monoinsaturados,"0,11"
+9,Pescados y mariscos,macronutrientes,94,Camarón,Monoinsaturados,"0,09"
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",Monoinsaturados,"0,69"
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",Monoinsaturados,"0,69"
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",Monoinsaturados,"0,85"
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",Monoinsaturados,"0,06"
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),Monoinsaturados,"0,81"
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,Monoinsaturados,"0,15"
+9,Pescados y mariscos,macronutrientes,94,Langostino,Monoinsaturados,"0,19"
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",Monoinsaturados,"0,54"
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",Saturados,"0,30"
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",Saturados,"0,19"
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",Saturados,"2,20"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",Saturados,"0,21"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",Saturados,"1,53"
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",Saturados,"1,26"
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",Saturados,"1,37"
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",Saturados,"0,30"
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",Saturados,"1,86"
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",Saturados,"0,36"
+9,Pescados y mariscos,macronutrientes,94,Camarón,Saturados,"0,10"
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",Saturados,"0,65"
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",Saturados,"0,65"
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",Saturados,"0,63"
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",Saturados,"0,05"
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),Saturados,"0,60"
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,Saturados,"0,19"
+9,Pescados y mariscos,macronutrientes,94,Langostino,Saturados,"0,15"
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",Saturados,"0,44"
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",Colesterol,23
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",Colesterol,30
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",Colesterol,85
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",Colesterol,36
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",Colesterol,18
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",Colesterol,38
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",Colesterol,20
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",Colesterol,23
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",Colesterol,79
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",Colesterol,233
+9,Pescados y mariscos,macronutrientes,94,Camarón,Colesterol,161
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",Colesterol,61
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",Colesterol,61
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",Colesterol,40
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",Colesterol,23
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),Colesterol,48
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,Colesterol,30
+9,Pescados y mariscos,macronutrientes,94,Langostino,Colesterol,143
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",Colesterol,45
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",Lípidos totales,"0,9"
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",Lípidos totales,"1,0"
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",Lípidos totales,"9,7"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",Lípidos totales,"1,0"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",Lípidos totales,"8,2"
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",Lípidos totales,"4,9"
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",Lípidos totales,"9,7"
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",Lípidos totales,"1,2"
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",Lípidos totales,"6,3"
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",Lípidos totales,"1,4"
+9,Pescados y mariscos,macronutrientes,94,Camarón,Lípidos totales,"0,8"
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",Lípidos totales,"2,2"
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",Lípidos totales,"1,9"
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",Lípidos totales,"2,6"
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",Lípidos totales,"0,2"
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),Lípidos totales,"2,5"
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,Lípidos totales,"0,9"
+9,Pescados y mariscos,macronutrientes,94,Langostino,Lípidos totales,"0,9"
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",Lípidos totales,"1,9"
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",Proteínas,"15,8"
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",Proteínas,"14,7"
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",Proteínas,"28,9"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",Proteínas,"19,4"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",Proteínas,"29,1"
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",Proteínas,"23,3"
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",Proteínas,"19,0"
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",Proteínas,"17,6"
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",Proteínas,"23,2"
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",Proteínas,"18,5"
+9,Pescados y mariscos,macronutrientes,94,Camarón,Proteínas,"21,0"
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",Proteínas,"16,0"
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",Proteínas,"19,5"
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",Proteínas,"18,8"
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",Proteínas,"17,4"
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),Proteínas,"23,9"
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,Proteínas,"15,2"
+9,Pescados y mariscos,macronutrientes,94,Langostino,Proteínas,"22,0"
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",Proteínas,"17,5"
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",Agua,"81,9"
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",Agua,"79,0"
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",Agua,"50,3"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",Agua,"78,1"
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",Agua,"59,8"
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",Agua,"68,1"
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",Agua,"47,9"
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",Agua,"79,5"
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",Agua,"69,2"
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",Agua,"79,1"
+9,Pescados y mariscos,macronutrientes,94,Camarón,Agua,"76,6"
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",Agua,"79,2"
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",Agua,"77,0"
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",Agua,"79,5"
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",Agua,"81,7"
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),Agua,"68,5"
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,Agua,"76,3"
+9,Pescados y mariscos,macronutrientes,94,Langostino,Agua,"75,3"
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",Agua,"80,2"
+9,Pescados y mariscos,macronutrientes,94,"Abadejo, crudo",Valor energético,72
+9,Pescados y mariscos,macronutrientes,94,"Almeja, cruda",Valor energético,82
+9,Pescados y mariscos,macronutrientes,94,"Anchoa, enlatada en aceite",Valor energético,203
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado al natural",Valor energético,86
+9,Pescados y mariscos,macronutrientes,94,"Atún, enlatado en aceite",Valor energético,190
+9,Pescados y mariscos,macronutrientes,94,"Atún, lomito fresco, crudo",Valor energético,137
+9,Pescados y mariscos,macronutrientes,94,"Bocaditos de pescado, prefritos",Valor energético,248
+9,Pescados y mariscos,macronutrientes,94,"Brótola, cruda",Valor energético,83
+9,Pescados y mariscos,macronutrientes,94,"Caballa, enlatada",Valor energético,149
+9,Pescados y mariscos,macronutrientes,94,"Calamar, crudo",Valor energético,99
+9,Pescados y mariscos,macronutrientes,94,Camarón,Valor energético,91
+9,Pescados y mariscos,macronutrientes,94,"Cornalitos, crudos",Valor energético,86
+9,Pescados y mariscos,macronutrientes,94,"Corvina, cruda",Valor energético,97
+9,Pescados y mariscos,macronutrientes,94,"Dorado, crudo",Valor energético,99
+9,Pescados y mariscos,macronutrientes,94,"Gatuzo, crudo",Valor energético,72
+9,Pescados y mariscos,macronutrientes,94,Hamburguesa de pescado (pescadería),Valor energético,136
+9,Pescados y mariscos,macronutrientes,94,Kani Kama,Valor energético,96
+9,Pescados y mariscos,macronutrientes,94,Langostino,Valor energético,96
+9,Pescados y mariscos,macronutrientes,94,"Lenguado, crudo",Valor energético,88
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Vitamina D,"1,40"
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Vitamina D,"0,04"
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Vitamina D,"1,70"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Vitamina D,"1,88"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Vitamina D,"1,88"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Vitamina D,"5,67"
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Vitamina D,"1,21"
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Vitamina D,"1,40"
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Vitamina D,"7,3"
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Vitamina D,0
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Vitamina D,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Vitamina D,"0,68"
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Vitamina D,"0,68"
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Vitamina D,"1,40"
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Vitamina D,"1,40"
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Vitamina D,"1,93"
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Vitamina D,0
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Vitamina D,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Vitamina D,"3,5"
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Vitamina C,"1,1"
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Vitamina C,"0,8"
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Vitamina C,"2,7"
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Vitamina C,"0,9"
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Vitamina C,"4,7"
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Vitamina C,"2,9"
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Vitamina C,"1,1"
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Vitamina C,"1,5"
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Vitamina B-12,"1,10"
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Vitamina B-12,"11,28"
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Vitamina B-12,"0,88"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Vitamina B-12,"2,55"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Vitamina B-12,"2,20"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Vitamina B-12,"9,43"
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Vitamina B-12,"0,86"
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Vitamina B-12,"1,10"
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Vitamina B-12,"6,94"
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Vitamina B-12,"1,30"
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Vitamina B-12,"2,30"
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Vitamina B-12,"2,50"
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Vitamina B-12,"2,50"
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Vitamina B-12,"14,32"
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Vitamina B-12,"1,10"
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Vitamina B-12,"1,49"
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Vitamina B-12,"1,60"
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Vitamina B-12,"2,30"
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Vitamina B-12,"1,13"
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Riboflavina,"0,325"
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Riboflavina,"0,040"
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Riboflavina,"0,363"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Riboflavina,"0,084"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Riboflavina,"0,120"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Riboflavina,"0,251"
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Riboflavina,"0,290"
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Riboflavina,"0,155"
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Riboflavina,"0,212"
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Riboflavina,"0,412"
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Riboflavina,"0,050"
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Riboflavina,"0,214"
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Riboflavina,"0,214"
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Riboflavina,"0,233"
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Riboflavina,"0,325"
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Riboflavina,"0,458"
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Riboflavina,"0,021"
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Riboflavina,"0,050"
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Riboflavina,"0,020"
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Tiamina,"0,061"
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Tiamina,"0,015"
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Tiamina,"0,078"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Tiamina,"0,030"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Tiamina,"0,038"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Tiamina,"0,241"
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Tiamina,"0,178"
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Tiamina,"0,076"
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Tiamina,"0,040"
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Tiamina,"0,020"
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Tiamina,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Tiamina,"0,095"
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Tiamina,"0,095"
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Tiamina,"0,291"
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Tiamina,"0,061"
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Tiamina,"0,114"
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Tiamina,"0,020"
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Tiamina,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Tiamina,"0,081"
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Retinol,90
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Retinol,12
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Retinol,17
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Retinol,23
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Retinol,655
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Retinol,130
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Retinol,10
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Retinol,12
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Retinol,12
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Retinol,6
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Retinol,20
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Retinol,10
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo","Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda","Vitamina A, RAE",90
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite","Vitamina A, RAE",12
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural","Vitamina A, RAE",17
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite","Vitamina A, RAE",23
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo","Vitamina A, RAE",655
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos","Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda","Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada","Vitamina A, RAE",130
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo","Vitamina A, RAE",10
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,"Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos","Vitamina A, RAE",12
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda","Vitamina A, RAE",12
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo","Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo","Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),"Vitamina A, RAE",6
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,"Vitamina A, RAE",20
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,"Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo","Vitamina A, RAE",10
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Ácido fólico,20
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Ácido fólico,5
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Folato EFD,12
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Folato EFD,5
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Folato EFD,13
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Folato EFD,4
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Folato EFD,5
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Folato EFD,2
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Folato EFD,49
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Folato EFD,12
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Folato EFD,5
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Folato EFD,5
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Folato EFD,10
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Folato EFD,15
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Folato EFD,15
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Folato EFD,12
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Folato EFD,12
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Folato EFD,29
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Folato EFD,2
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Folato EFD,10
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Folato EFD,5
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Niacina,"1,20"
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Niacina,"0,35"
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Niacina,"19,90"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Niacina,"10,14"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Niacina,"12,40"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Niacina,"8,65"
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Niacina,"1,55"
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Niacina,"27,20"
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Niacina,"6,18"
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Niacina,"2,18"
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Niacina,"1,78"
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Niacina,"3,10"
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Niacina,"3,10"
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Niacina,"3,04"
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Niacina,"1,20"
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Niacina,"1,72"
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Niacina,"0,22"
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Niacina,0
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Niacina,"1,04"
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Zinc,"0,3"
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Zinc,"0,51"
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Zinc,"2,44"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Zinc,"0,69"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Zinc,"0,9"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Zinc,"0,6"
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Zinc,"0,7"
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Zinc,"0,3"
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Zinc,"1,02"
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Zinc,"1,53"
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Zinc,"1,34"
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Zinc,"0,42"
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Zinc,"0,42"
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Zinc,"0,65"
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Zinc,"0,3"
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Zinc,"0,5"
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Zinc,"0,33"
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Zinc,"1,0"
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Zinc,"0,32"
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Magnesio,23
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Magnesio,19
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Magnesio,69
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Magnesio,23
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Magnesio,31
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Magnesio,50
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Magnesio,33
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Magnesio,23
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Magnesio,37
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Magnesio,33
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Magnesio,35
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Magnesio,40
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Magnesio,40
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Magnesio,23
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Magnesio,23
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Magnesio,34
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Magnesio,43
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Magnesio,36
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Magnesio,18
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Hierro,"1,90"
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Hierro,"1,62"
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Hierro,"4,63"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Hierro,"1,63"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Hierro,"1,39"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Hierro,"1,02"
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Hierro,"3,15"
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Hierro,"2,10"
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Hierro,"2,04"
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Hierro,"0,68"
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Hierro,"0,52"
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Hierro,"2,00"
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Hierro,"0,37"
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Hierro,"0,50"
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Hierro,"1,90"
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Hierro,"2,93"
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Hierro,"0,26"
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Hierro,"1,00"
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Hierro,"0,18"
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Fósforo,216
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Fósforo,198
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Fósforo,252
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Fósforo,139
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Fósforo,311
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Fósforo,254
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Fósforo,239
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Fósforo,207
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Fósforo,301
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Fósforo,221
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Fósforo,214
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Fósforo,590
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Fósforo,210
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Fósforo,190
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Fósforo,216
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Fósforo,304
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Fósforo,282
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Fósforo,127
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Fósforo,252
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Cobre,"0,03"
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Cobre,"0,053"
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Cobre,"0,339"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Cobre,"0,05"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Cobre,"0,071"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Cobre,"0,086"
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Cobre,"0,11"
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Cobre,"0,03"
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Cobre,"0,147"
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Cobre,"1,891"
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Cobre,"0,391"
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Cobre,"0,04"
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Cobre,"0,042"
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Cobre,"0,03"
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Cobre,"0,03"
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Cobre,"0,06"
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Cobre,"0,032"
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Cobre,"0,28"
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Cobre,"0,019"
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Calcio,21
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Calcio,39
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Calcio,232
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Calcio,17
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Calcio,13
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Calcio,8
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Calcio,75
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Calcio,18
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Calcio,241
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Calcio,32
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Calcio,64
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Calcio,680
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Calcio,15
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Calcio,40
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Calcio,21
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Calcio,42
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Calcio,9
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Calcio,65
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Calcio,21
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Potasio,262
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Potasio,46
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Potasio,544
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Potasio,179
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Potasio,207
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Potasio,252
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Potasio,288
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Potasio,282
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Potasio,194
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Potasio,246
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Potasio,264
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Potasio,296
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Potasio,345
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Potasio,316
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Potasio,262
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Potasio,364
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Potasio,112
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Potasio,74
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Potasio,160
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Sodio,91
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Sodio,601
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Sodio,3668
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Sodio,247
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Sodio,416
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Sodio,39
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Sodio,380
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Sodio,82
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Sodio,379
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Sodio,44
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Sodio,119
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Sodio,90
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Sodio,56
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Sodio,47
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Sodio,91
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Sodio,285
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Sodio,143
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Sodio,588
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Sodio,296
+9,Pescados y mariscos,vitaminas_minerales,95,"Abadejo, crudo",Cenizas,"1,21"
+9,Pescados y mariscos,vitaminas_minerales,95,"Almeja, cruda",Cenizas,"1,82"
+9,Pescados y mariscos,vitaminas_minerales,95,"Anchoa, enlatada en aceite",Cenizas,"11,1"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado al natural",Cenizas,"0,95"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, enlatado en aceite",Cenizas,"2,76"
+9,Pescados y mariscos,vitaminas_minerales,95,"Atún, lomito fresco, crudo",Cenizas,"1,18"
+9,Pescados y mariscos,vitaminas_minerales,95,"Bocaditos de pescado, prefritos",Cenizas,"0,9"
+9,Pescados y mariscos,vitaminas_minerales,95,"Brótola, cruda",Cenizas,"1,38"
+9,Pescados y mariscos,vitaminas_minerales,95,"Caballa, enlatada",Cenizas,"1,73"
+9,Pescados y mariscos,vitaminas_minerales,95,"Calamar, crudo",Cenizas,"1,41"
+9,Pescados y mariscos,vitaminas_minerales,95,Camarón,Cenizas,"1,23"
+9,Pescados y mariscos,vitaminas_minerales,95,"Cornalitos, crudos",Cenizas,"2,15"
+9,Pescados y mariscos,vitaminas_minerales,95,"Corvina, cruda",Cenizas,"1,28"
+9,Pescados y mariscos,vitaminas_minerales,95,"Dorado, crudo",Cenizas,
+9,Pescados y mariscos,vitaminas_minerales,95,"Gatuzo, crudo",Cenizas,"0,57"
+9,Pescados y mariscos,vitaminas_minerales,95,Hamburguesa de pescado (pescadería),Cenizas,"0,2"
+9,Pescados y mariscos,vitaminas_minerales,95,Kani Kama,Cenizas,"0,72"
+9,Pescados y mariscos,vitaminas_minerales,95,Langostino,Cenizas,
+9,Pescados y mariscos,vitaminas_minerales,95,"Lenguado, crudo",Cenizas,"1,35"
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,Merluza,Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,Pacú,Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,Palometa,Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,Merluza,Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",Fibra alimentaria,"1,4"
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,Pacú,Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,Palometa,Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),Fibra alimentaria,"0,8"
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,Merluza,Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",Azúcar agregado,"0,9"
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,Pacú,Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,Palometa,Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,Merluza,Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",Azúcar total,"1,9"
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,Pacú,Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,Palometa,Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),Azúcar total,"0,1"
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",Carbohidratos totales,"3,7"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,96,Merluza,Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",Carbohidratos totales,"22,5"
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,96,Pacú,Carbohidratos totales,"0,1"
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",Carbohidratos totales,"0,4"
+9,Pescados y mariscos,macronutrientes,96,Palometa,Carbohidratos totales,"0,9"
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",Carbohidratos totales,"0,2"
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,Carbohidratos totales,"0,3"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Carbohidratos totales,"0,1"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Carbohidratos totales,"0,1"
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",Carbohidratos totales,"0,4"
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",Carbohidratos totales,"2,2"
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),Carbohidratos totales,"17,2"
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",Carbohidratos totales,"0,2"
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",Carbohidratos disponibles,"3,7"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,96,Merluza,Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",Carbohidratos disponibles,"21,1"
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,96,Pacú,Carbohidratos disponibles,"0,1"
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",Carbohidratos disponibles,"0,4"
+9,Pescados y mariscos,macronutrientes,96,Palometa,Carbohidratos disponibles,"0,9"
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",Carbohidratos disponibles,"0,2"
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,Carbohidratos disponibles,"0,3"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Carbohidratos disponibles,"0,1"
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",Carbohidratos disponibles,"0,4"
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",Carbohidratos disponibles,"2,2"
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),Carbohidratos disponibles,"15,9"
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",Carbohidratos disponibles,"0,2"
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,253"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",22:6 n-3 Docosahexaenoico (DHA),"0,266"
+9,Pescados y mariscos,macronutrientes,96,Merluza,22:6 n-3 Docosahexaenoico (DHA),"0,345"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",22:6 n-3 Docosahexaenoico (DHA),"0,361"
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",22:6 n-3 Docosahexaenoico (DHA),"0,231"
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,100"
+9,Pescados y mariscos,macronutrientes,96,Pacú,22:6 n-3 Docosahexaenoico (DHA),"0,128"
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",22:6 n-3 Docosahexaenoico (DHA),"0,670"
+9,Pescados y mariscos,macronutrientes,96,Palometa,22:6 n-3 Docosahexaenoico (DHA),"0,859"
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,244"
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,22:6 n-3 Docosahexaenoico (DHA),"0,313"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,089"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,246"
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,058"
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,081"
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),22:6 n-3 Docosahexaenoico (DHA),"0,227"
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,115"
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,227"
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,333"
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,188"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",20:5 n-3 Eicosapentaenoico (EPA),"0,100"
+9,Pescados y mariscos,macronutrientes,96,Merluza,20:5 n-3 Eicosapentaenoico (EPA),"0,130"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",20:5 n-3 Eicosapentaenoico (EPA),"0,136"
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",20:5 n-3 Eicosapentaenoico (EPA),"0,087"
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,051"
+9,Pescados y mariscos,macronutrientes,96,Pacú,20:5 n-3 Eicosapentaenoico (EPA),"0,066"
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",20:5 n-3 Eicosapentaenoico (EPA),"0,480"
+9,Pescados y mariscos,macronutrientes,96,Palometa,20:5 n-3 Eicosapentaenoico (EPA),"0,615"
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,092"
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,20:5 n-3 Eicosapentaenoico (EPA),"0,118"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,042"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,172"
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,074"
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,076"
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),20:5 n-3 Eicosapentaenoico (EPA),"0,097"
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,145"
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,124"
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,182"
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",20:4 Araquidónico,"0,070"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",20:4 Araquidónico,"0,025"
+9,Pescados y mariscos,macronutrientes,96,Merluza,20:4 Araquidónico,"0,032"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",20:4 Araquidónico,0
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",20:4 Araquidónico,0
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",20:4 Araquidónico,"0,070"
+9,Pescados y mariscos,macronutrientes,96,Pacú,20:4 Araquidónico,"0,090"
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",20:4 Araquidónico,0
+9,Pescados y mariscos,macronutrientes,96,Palometa,20:4 Araquidónico,0
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",20:4 Araquidónico,"0,023"
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,20:4 Araquidónico,0
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",20:4 Araquidónico,"0,009"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",20:4 Araquidónico,0
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",20:4 Araquidónico,"0,055"
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",20:4 Araquidónico,"0,039"
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),20:4 Araquidónico,0
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",20:4 Araquidónico,0
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",20:4 Araquidónico,"0,010"
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",20:4 Araquidónico,"0,014"
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",18:3 cis Alfa linolénico (ALA),"0,020"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",18:3 cis Alfa linolénico (ALA),"0,008"
+9,Pescados y mariscos,macronutrientes,96,Merluza,18:3 cis Alfa linolénico (ALA),"0,010"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",18:3 cis Alfa linolénico (ALA),0
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",18:3 cis Alfa linolénico (ALA),"0,100"
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",18:3 cis Alfa linolénico (ALA),"0,076"
+9,Pescados y mariscos,macronutrientes,96,Pacú,18:3 cis Alfa linolénico (ALA),"0,097"
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",18:3 cis Alfa linolénico (ALA),"0,150"
+9,Pescados y mariscos,macronutrientes,96,Palometa,18:3 cis Alfa linolénico (ALA),"0,192"
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",18:3 cis Alfa linolénico (ALA),"0,007"
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,18:3 cis Alfa linolénico (ALA),0
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",18:3 cis Alfa linolénico (ALA),"0,002"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",18:3 cis Alfa linolénico (ALA),"0,108"
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",18:3 cis Alfa linolénico (ALA),0
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",18:3 cis Alfa linolénico (ALA),0
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),18:3 cis Alfa linolénico (ALA),"0,071"
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",18:3 cis Alfa linolénico (ALA),"0,075"
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",18:3 cis Alfa linolénico (ALA),"0,031"
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",18:3 cis Alfa linolénico (ALA),"0,045"
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",18:2 cis Linoléico,"0,02"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",18:2 cis Linoléico,"0,02"
+9,Pescados y mariscos,macronutrientes,96,Merluza,18:2 cis Linoléico,"0,02"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",18:2 cis Linoléico,"4,17"
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",18:2 cis Linoléico,"4,83"
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",18:2 cis Linoléico,"0,07"
+9,Pescados y mariscos,macronutrientes,96,Pacú,18:2 cis Linoléico,"0,09"
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",18:2 cis Linoléico,"0,43"
+9,Pescados y mariscos,macronutrientes,96,Palometa,18:2 cis Linoléico,"0,55"
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",18:2 cis Linoléico,"0,01"
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,18:2 cis Linoléico,"0,02"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",18:2 cis Linoléico,"0,01"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",18:2 cis Linoléico,"0,18"
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",18:2 cis Linoléico,"0,00"
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",18:2 cis Linoléico,"0,01"
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),18:2 cis Linoléico,"7,32"
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",18:2 cis Linoléico,"0,12"
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",18:2 cis Linoléico,"0,04"
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",18:2 cis Linoléico,"0,06"
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",Trans,0
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",Trans,0
+9,Pescados y mariscos,macronutrientes,96,Merluza,Trans,0
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",Trans,0
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",Trans,0
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",Trans,0
+9,Pescados y mariscos,macronutrientes,96,Pacú,Trans,0
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",Trans,0
+9,Pescados y mariscos,macronutrientes,96,Palometa,Trans,0
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",Trans,0
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,Trans,0
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Trans,"0,00"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Trans,0
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",Trans,0
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",Trans,0
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),Trans,"0,00"
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",Trans,0
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",Trans,0
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",Trans,"0,03"
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",Poliinsaturados,"0,61"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",Poliinsaturados,"0,42"
+9,Pescados y mariscos,macronutrientes,96,Merluza,Poliinsaturados,"0,54"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",Poliinsaturados,"4,74"
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",Poliinsaturados,"5,27"
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",Poliinsaturados,"0,26"
+9,Pescados y mariscos,macronutrientes,96,Pacú,Poliinsaturados,"0,34"
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",Poliinsaturados,"1,81"
+9,Pescados y mariscos,macronutrientes,96,Palometa,Poliinsaturados,"2,32"
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",Poliinsaturados,"0,38"
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,Poliinsaturados,"0,49"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Poliinsaturados,"0,17"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Poliinsaturados,"0,80"
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",Poliinsaturados,"0,28"
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",Poliinsaturados,"0,24"
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),Poliinsaturados,"7,80"
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",Poliinsaturados,"0,67"
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",Poliinsaturados,"0,55"
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",Poliinsaturados,"0,81"
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",Monoinsaturados,"0,51"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",Monoinsaturados,"0,43"
+9,Pescados y mariscos,macronutrientes,96,Merluza,Monoinsaturados,"0,56"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",Monoinsaturados,"2,28"
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",Monoinsaturados,"2,42"
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",Monoinsaturados,"0,69"
+9,Pescados y mariscos,macronutrientes,96,Pacú,Monoinsaturados,"0,88"
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",Monoinsaturados,"6,11"
+9,Pescados y mariscos,macronutrientes,96,Palometa,Monoinsaturados,"7,83"
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",Monoinsaturados,"0,39"
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,Monoinsaturados,"0,51"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Monoinsaturados,"0,06"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Monoinsaturados,"2,06"
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",Monoinsaturados,"0,69"
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",Monoinsaturados,"0,16"
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),Monoinsaturados,"3,72"
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",Monoinsaturados,"1,71"
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",Monoinsaturados,"0,92"
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",Monoinsaturados,"1,35"
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",Saturados,"0,43"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",Saturados,"0,30"
+9,Pescados y mariscos,macronutrientes,96,Merluza,Saturados,"0,40"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",Saturados,"1,13"
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",Saturados,"1,37"
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",Saturados,"2,41"
+9,Pescados y mariscos,macronutrientes,96,Pacú,Saturados,"3,09"
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",Saturados,"4,33"
+9,Pescados y mariscos,macronutrientes,96,Palometa,Saturados,"5,55"
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",Saturados,"0,28"
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,Saturados,"0,36"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Saturados,"0,09"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Saturados,"1,84"
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",Saturados,"0,65"
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",Saturados,"0,23"
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),Saturados,"2,06"
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",Saturados,"1,15"
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",Saturados,"0,55"
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",Saturados,"0,81"
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",Colesterol,28
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",Colesterol,23
+9,Pescados y mariscos,macronutrientes,96,Merluza,Colesterol,28
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",Colesterol,31
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",Colesterol,20
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",Colesterol,46
+9,Pescados y mariscos,macronutrientes,96,Pacú,Colesterol,59
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",Colesterol,40
+9,Pescados y mariscos,macronutrientes,96,Palometa,Colesterol,52
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",Colesterol,28
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,Colesterol,36
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Colesterol,54
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Colesterol,44
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",Colesterol,61
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",Colesterol,48
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),Colesterol,211
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",Colesterol,40
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",Colesterol,46
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",Colesterol,46
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",Lípidos totales,"2,2"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",Lípidos totales,"1,3"
+9,Pescados y mariscos,macronutrientes,96,Merluza,Lípidos totales,"1,7"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",Lípidos totales,"8,6"
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",Lípidos totales,"9,7"
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",Lípidos totales,"4,2"
+9,Pescados y mariscos,macronutrientes,96,Pacú,Lípidos totales,"5,4"
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",Lípidos totales,"14,8"
+9,Pescados y mariscos,macronutrientes,96,Palometa,Lípidos totales,"19,0"
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",Lípidos totales,"1,2"
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,Lípidos totales,"1,5"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Lípidos totales,"1,3"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Lípidos totales,"5,9"
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",Lípidos totales,"2,0"
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",Lípidos totales,"1,0"
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),Lípidos totales,"14,5"
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",Lípidos totales,"6,4"
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",Lípidos totales,"3,0"
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",Lípidos totales,"4,4"
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",Proteínas,"11,9"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",Proteínas,"17,1"
+9,Pescados y mariscos,macronutrientes,96,Merluza,Proteínas,"22,2"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",Proteínas,"23,2"
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",Proteínas,"19,0"
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",Proteínas,"20,7"
+9,Pescados y mariscos,macronutrientes,96,Pacú,Proteínas,"26,5"
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",Proteínas,"20,1"
+9,Pescados y mariscos,macronutrientes,96,Palometa,Proteínas,"25,8"
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",Proteínas,"18,6"
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,Proteínas,"23,8"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Proteínas,"17,1"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Proteínas,"20,2"
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",Proteínas,"20,0"
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",Proteínas,"14,9"
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),Proteínas,"16,1"
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",Proteínas,"22,7"
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",Proteínas,"21,6"
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",Proteínas,"20,5"
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",Agua,"83,0"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",Agua,"80,2"
+9,Pescados y mariscos,macronutrientes,96,Merluza,Agua,"74,1"
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",Agua,"68,2"
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",Agua,"47,9"
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",Agua,"71,6"
+9,Pescados y mariscos,macronutrientes,96,Pacú,Agua,"66,4"
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",Agua,"63,4"
+9,Pescados y mariscos,macronutrientes,96,Palometa,Agua,"52,8"
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",Agua,"78,2"
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,Agua,"73,0"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Agua,"80,2"
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Agua,"73,0"
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",Agua,"76,3"
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",Agua,"80,3"
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),Agua,"50,9"
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",Agua,"69,3"
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",Agua,"75,2"
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",Agua,"75,5"
+9,Pescados y mariscos,macronutrientes,96,"Mejillón, crudo",Valor energético,83
+9,Pescados y mariscos,macronutrientes,96,"Merluza, cruda",Valor energético,80
+9,Pescados y mariscos,macronutrientes,96,Merluza,Valor energético,104
+9,Pescados y mariscos,macronutrientes,96,"Merluza, enlatada en agua y aceite",Valor energético,170
+9,Pescados y mariscos,macronutrientes,96,"Milanesa de pescado, prefrita",Valor energético,248
+9,Pescados y mariscos,macronutrientes,96,"Pacú, crudo",Valor energético,121
+9,Pescados y mariscos,macronutrientes,96,Pacú,Valor energético,155
+9,Pescados y mariscos,macronutrientes,96,"Palometa, cruda",Valor energético,215
+9,Pescados y mariscos,macronutrientes,96,Palometa,Valor energético,277
+9,Pescados y mariscos,macronutrientes,96,"Pejerrey, crudo",Valor energético,86
+9,Pescados y mariscos,macronutrientes,96,Pejerrey,Valor energético,110
+9,Pescados y mariscos,macronutrientes,96,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Valor energético,80
+9,Pescados y mariscos,macronutrientes,96,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Valor energético,134
+9,Pescados y mariscos,macronutrientes,96,"Pollo de mar, crudo",Valor energético,100
+9,Pescados y mariscos,macronutrientes,96,"Pulpo, crudo",Valor energético,78
+9,Pescados y mariscos,macronutrientes,96,Rabas (restaurant),Valor energético,259
+9,Pescados y mariscos,macronutrientes,96,"Sábalo, crudo",Valor energético,148
+9,Pescados y mariscos,macronutrientes,96,"Salmón blanco, crudo",Valor energético,114
+9,Pescados y mariscos,macronutrientes,96,"Salmón rosado, crudo",Valor energético,122
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Vitamina D,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Vitamina D,"1,40"
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Vitamina D,"1,73"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Vitamina D,"1,90"
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Vitamina D,"1,21"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Vitamina D,"1,40"
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Vitamina D,"1,79"
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Vitamina D,"1,40"
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Vitamina D,"1,79"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Vitamina D,"1,40"
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Vitamina D,"1,79"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Vitamina D,"0,72"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Vitamina D,"2,70"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Vitamina D,"0,68"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Vitamina D,0
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Vitamina D,"0,19"
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Vitamina D,"2,00"
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Vitamina D,"10,87"
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Vitamina C,"8,0"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Vitamina C,"1,1"
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Vitamina C,"1,1"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Vitamina C,"1,0"
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Vitamina C,"0,8"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Vitamina C,"1,1"
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Vitamina C,"1,0"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Vitamina C,"1,1"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Vitamina C,"0,4"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Vitamina C,"2,9"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Vitamina C,"5,0"
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Vitamina C,"3,1"
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Vitamina B-12,"12,00"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Vitamina B-12,"1,10"
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Vitamina B-12,"1,29"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Vitamina B-12,"1,27"
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Vitamina B-12,"0,86"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Vitamina B-12,"17,10"
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Vitamina B-12,"21,92"
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Vitamina B-12,"7,27"
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Vitamina B-12,"8,39"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Vitamina B-12,"1,10"
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Vitamina B-12,"1,20"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Vitamina B-12,"1,83"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Vitamina B-12,"10,56"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Vitamina B-12,"2,50"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Vitamina B-12,"20,00"
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Vitamina B-12,"1,07"
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Vitamina B-12,"10,00"
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Vitamina B-12,"4,15"
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Riboflavina,"0,210"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Riboflavina,"0,325"
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Riboflavina,"0,401"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Riboflavina,"0,397"
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Riboflavina,"0,290"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Riboflavina,"0,327"
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Riboflavina,"0,419"
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Riboflavina,"0,112"
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Riboflavina,"0,136"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Riboflavina,"0,050"
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Riboflavina,"0,058"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Riboflavina,"0,325"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Riboflavina,"0,156"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Riboflavina,"0,214"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Riboflavina,"0,040"
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Riboflavina,"0,376"
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Riboflavina,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Riboflavina,"0,105"
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Tiamina,"0,160"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Tiamina,"0,061"
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Tiamina,"0,071"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Tiamina,"0,070"
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Tiamina,"0,178"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Tiamina,"0,366"
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Tiamina,"0,469"
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Tiamina,"0,166"
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Tiamina,"0,191"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Tiamina,"0,010"
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Tiamina,"0,012"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Tiamina,"0,061"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Tiamina,"0,192"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Tiamina,"0,095"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Tiamina,"0,030"
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Tiamina,"0,155"
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Tiamina,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Tiamina,"0,080"
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Retinol,48
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Retinol,17
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Retinol,3
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Retinol,12
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Retinol,45
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Retinol,27
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Retinol,35
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo","Vitamina A, RAE",48
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda","Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,"Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite","Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita","Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo","Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,"Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda","Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,"Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo","Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,"Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo","Vitamina A, RAE",17
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo","Vitamina A, RAE",3
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo","Vitamina A, RAE",12
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo","Vitamina A, RAE",45
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),"Vitamina A, RAE",27
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo","Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo","Vitamina A, RAE",35
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Ácido fólico,20
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Ácido fólico,31
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Folato EFD,42
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Folato EFD,12
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Folato EFD,14
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Folato EFD,11
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Folato EFD,49
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Folato EFD,12
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Folato EFD,15
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Folato EFD,12
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Folato EFD,11
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Folato EFD,12
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Folato EFD,11
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Folato EFD,12
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Folato EFD,12
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Folato EFD,15
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Folato EFD,16
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Folato EFD,65
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Folato EFD,12
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Folato EFD,4
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Niacina,"1,60"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Niacina,"1,20"
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Niacina,"1,48"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Niacina,"1,55"
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Niacina,"1,55"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Niacina,"3,04"
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Niacina,"3,90"
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Niacina,"3,04"
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Niacina,"3,70"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Niacina,"4,50"
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Niacina,"5,48"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Niacina,"1,20"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Niacina,"3,43"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Niacina,"3,10"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Niacina,"2,10"
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Niacina,"1,80"
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Niacina,"3,04"
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Niacina,"8,00"
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Zinc,"1,6"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Zinc,"0,3"
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Zinc,"0,4"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Zinc,"0,4"
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Zinc,"0,7"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Zinc,"0,65"
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Zinc,"0,83"
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Zinc,"0,65"
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Zinc,"0,83"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Zinc,"0,3"
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Zinc,"0,38"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Zinc,"0,32"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Zinc,"0,7"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Zinc,"0,42"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Zinc,"1,68"
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Zinc,"1,3"
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Zinc,"0,65"
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Zinc,"0,39"
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Magnesio,34
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Magnesio,23
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Magnesio,28
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Magnesio,31
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Magnesio,33
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Magnesio,23
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Magnesio,29
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Magnesio,23
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Magnesio,29
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Magnesio,23
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Magnesio,29
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Magnesio,21
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Magnesio,24
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Magnesio,40
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Magnesio,30
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Magnesio,28
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Magnesio,23
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Magnesio,27
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Hierro,"3,95"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Hierro,"1,90"
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Hierro,"2,47"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Hierro,"2,58"
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Hierro,"3,15"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Hierro,"1,10"
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Hierro,"1,41"
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Hierro,"0,50"
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Hierro,"0,64"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Hierro,"0,70"
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Hierro,"0,90"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Hierro,"1,90"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Hierro,"0,87"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Hierro,"0,37"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Hierro,"5,30"
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Hierro,"1,76"
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Hierro,"0,50"
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Hierro,"0,38"
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Fósforo,197
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Fósforo,216
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Fósforo,240
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Fósforo,293
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Fósforo,239
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Fósforo,177
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Fósforo,227
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Fósforo,190
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Fósforo,244
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Fósforo,311
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Fósforo,399
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Fósforo,216
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Fósforo,204
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Fósforo,210
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Fósforo,186
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Fósforo,203
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Fósforo,190
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Fósforo,261
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Cobre,"0,094"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Cobre,"0,03"
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Cobre,"0,04"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Cobre,"0,04"
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Cobre,"0,11"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Cobre,"0,03"
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Cobre,"0,04"
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Cobre,"0,03"
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Cobre,"0,04"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Cobre,"0,03"
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Cobre,"0,04"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Cobre,"0,021"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Cobre,"0,0"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Cobre,"0,042"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Cobre,"0,435"
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Cobre,"1,29"
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Cobre,"0,03"
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Cobre,"0,063"
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Calcio,26
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Calcio,21
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Calcio,17
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Calcio,29
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Calcio,75
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Calcio,22
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Calcio,28
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Calcio,40
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Calcio,51
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Calcio,105
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Calcio,135
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Calcio,21
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Calcio,38
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Calcio,15
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Calcio,53
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Calcio,32
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Calcio,40
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Calcio,7
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Potasio,320
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Potasio,262
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Potasio,340
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Potasio,356
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Potasio,288
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Potasio,407
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Potasio,522
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Potasio,316
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Potasio,405
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Potasio,256
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Potasio,328
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Potasio,262
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Potasio,352
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Potasio,345
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Potasio,350
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Potasio,212
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Potasio,316
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Potasio,366
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Sodio,286
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Sodio,91
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Sodio,130
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Sodio,238
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Sodio,380
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Sodio,47
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Sodio,60
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Sodio,47
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Sodio,60
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Sodio,68
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Sodio,87
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Sodio,91
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Sodio,49
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Sodio,56
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Sodio,230
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Sodio,49
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Sodio,47
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Sodio,75
+9,Pescados y mariscos,vitaminas_minerales,97,"Mejillón, crudo",Cenizas,"1,59"
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, cruda",Cenizas,
+9,Pescados y mariscos,vitaminas_minerales,97,Merluza,Cenizas,
+9,Pescados y mariscos,vitaminas_minerales,97,"Merluza, enlatada en agua y aceite",Cenizas,0
+9,Pescados y mariscos,vitaminas_minerales,97,"Milanesa de pescado, prefrita",Cenizas,"0,9"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pacú, crudo",Cenizas,"1,24"
+9,Pescados y mariscos,vitaminas_minerales,97,Pacú,Cenizas,"1,59"
+9,Pescados y mariscos,vitaminas_minerales,97,"Palometa, cruda",Cenizas,"1,24"
+9,Pescados y mariscos,vitaminas_minerales,97,Palometa,Cenizas,"1,59"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pejerrey, crudo",Cenizas,"1,03"
+9,Pescados y mariscos,vitaminas_minerales,97,Pejerrey,Cenizas,"1,32"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",Cenizas,"1,24"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",Cenizas,"1,4"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pollo de mar, crudo",Cenizas,"1,28"
+9,Pescados y mariscos,vitaminas_minerales,97,"Pulpo, crudo",Cenizas,"1,6"
+9,Pescados y mariscos,vitaminas_minerales,97,Rabas (restaurant),Cenizas,"1,2"
+9,Pescados y mariscos,vitaminas_minerales,97,"Sábalo, crudo",Cenizas,"1,9"
+9,Pescados y mariscos,vitaminas_minerales,97,"Salmón rosado, crudo",Cenizas,"1,52"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",Alcohol,0
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",Alcohol,0
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",Alcohol,0
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",Alcohol,0
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",Fibra alimentaria,0
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",Azúcar agregado,0
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",Azúcar total,0
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",Carbohidratos totales,"0,2"
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",Carbohidratos totales,0
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",Carbohidratos disponibles,"0,2"
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",Carbohidratos disponibles,0
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",22:6 n-3 Docosahexaenoico (DHA),"0,920"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",22:6 n-3 Docosahexaenoico (DHA),"0,509"
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",22:6 n-3 Docosahexaenoico (DHA),"0,120"
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",22:6 n-3 Docosahexaenoico (DHA),"0,420"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",20:5 n-3 Eicosapentaenoico (EPA),"1,100"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",20:5 n-3 Eicosapentaenoico (EPA),"0,473"
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",20:5 n-3 Eicosapentaenoico (EPA),"0,160"
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",20:5 n-3 Eicosapentaenoico (EPA),"0,167"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",20:4 Araquidónico,"0,080"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",20:4 Araquidónico,0
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",20:4 Araquidónico,0
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",20:4 Araquidónico,"0,109"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",18:3 cis Alfa linolénico (ALA),"0,060"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",18:3 cis Alfa linolénico (ALA),"0,498"
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",18:3 cis Alfa linolénico (ALA),"0,150"
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",18:3 cis Alfa linolénico (ALA),"0,119"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",18:2 cis Linoléico,"0,08"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",18:2 cis Linoléico,"3,54"
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",18:2 cis Linoléico,"0,12"
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",18:2 cis Linoléico,"0,24"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",Trans,"0,01"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",Trans,0
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",Trans,0
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",Trans,0
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",Poliinsaturados,"2,73"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",Poliinsaturados,"5,15"
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",Poliinsaturados,"0,52"
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",Poliinsaturados,"1,24"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",Monoinsaturados,"2,29"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",Monoinsaturados,"3,87"
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",Monoinsaturados,"1,87"
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",Monoinsaturados,"1,13"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",Saturados,"2,61"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",Saturados,"1,53"
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",Saturados,"1,80"
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",Saturados,"0,72"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",Colesterol,66
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",Colesterol,142
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",Colesterol,40
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",Colesterol,59
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",Lípidos totales,"9,1"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",Lípidos totales,"11,5"
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",Lípidos totales,"4,0"
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",Lípidos totales,"3,5"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",Proteínas,"22,1"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",Proteínas,"24,6"
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",Proteínas,"18,2"
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",Proteínas,"20,5"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",Agua,"66,1"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",Agua,"59,6"
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",Agua,"76,5"
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",Agua,"71,9"
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas al natural",Valor energético,170
+9,Pescados y mariscos,macronutrientes,98,"Sardinas, enlatadas en aceite",Valor energético,202
+9,Pescados y mariscos,macronutrientes,98,"Surubí, crudo",Valor energético,110
+9,Pescados y mariscos,macronutrientes,98,"Trucha, cruda",Valor energético,113
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Vitamina D,"3,30"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Vitamina D,"7,72"
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Vitamina D,"1,40"
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Vitamina D,"7,90"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Vitamina C,0
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Vitamina C,"2,4"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Vitamina B-12,"10,80"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Vitamina B-12,"8,94"
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Vitamina B-12,"9,68"
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Vitamina B-12,"4,45"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Riboflavina,"0,220"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Riboflavina,"0,227"
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Riboflavina,"0,157"
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Riboflavina,"0,105"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Tiamina,"0,010"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Tiamina,"0,080"
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Tiamina,"0,208"
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Tiamina,"0,123"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Retinol,10
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Retinol,32
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Retinol,0
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Retinol,19
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural","Vitamina A, RAE",10
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite","Vitamina A, RAE",32
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo","Vitamina A, RAE",0
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda","Vitamina A, RAE",19
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Ácido fólico,0
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Folato EFD,4
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Folato EFD,10
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Folato EFD,12
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Folato EFD,12
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Niacina,"5,50"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Niacina,"5,25"
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Niacina,"3,04"
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Niacina,"5,38"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Zinc,"2,2"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Zinc,"1,31"
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Zinc,"0,65"
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Zinc,"1,08"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Magnesio,42
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Magnesio,39
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Magnesio,23
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Magnesio,31
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Hierro,"2,73"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Hierro,"2,92"
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Hierro,"1,90"
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Hierro,"0,70"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Fósforo,545
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Fósforo,490
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Fósforo,203
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Fósforo,271
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Cobre,"0,13"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Cobre,"0,186"
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Cobre,"0,03"
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Cobre,"0,109"
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Calcio,679
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Calcio,382
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Calcio,20
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Calcio,67
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Potasio,287
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Potasio,397
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Potasio,276
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Potasio,481
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Sodio,368
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Sodio,307
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Sodio,72
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Sodio,31
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas al natural",Cenizas,
+9,Pescados y mariscos,vitaminas_minerales,98,"Sardinas, enlatadas en aceite",Cenizas,"3,38"
+9,Pescados y mariscos,vitaminas_minerales,98,"Surubí, crudo",Cenizas,"1,07"
+9,Pescados y mariscos,vitaminas_minerales,98,"Trucha, cruda",Cenizas,"1,31"

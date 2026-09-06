@@ -7,6 +7,10 @@ from .auth.user_token import UserToken
 from .base import Base
 from .establishments.establishment import Establishment
 from .establishments.establishment_request import EstablishmentRequest
+from .food_catalog.food import Food
+from .food_catalog.food_category import FoodCategory
+from .food_catalog.food_nutrient_value import FoodNutrientValue
+from .food_catalog.nutrient import Nutrient
 from .measurements.measurement import Measurement
 from .measurements.measurement_alert import MeasurementAlert
 from .subjects.subject import Sex, Subject
@@ -39,4 +43,8 @@ __all__ = [
     "UserPassword",
     "UserToken",
     "PasswordRecoveryToken",
+    "FoodCategory",
+    "Food",
+    "Nutrient",
+    "FoodNutrientValue",
 ]

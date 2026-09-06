@@ -1,0 +1,40 @@
+code,name,unit,group
+valor_energetico,Valor energético,Kcal,macronutrient
+agua,Agua,g,macronutrient
+proteinas,Proteínas,g,macronutrient
+lipidos_totales,Lípidos totales,g,macronutrient
+colesterol,Colesterol,mg,macronutrient
+carbohidratos_totales,Carbohidratos totales,g,macronutrient
+carbohidratos_disponibles,Carbohidratos disponibles,g,macronutrient
+azucar_total,Azúcar total,g,macronutrient
+azucar_agregado,Azúcar agregado,g,macronutrient
+fibra_alimentaria,Fibra alimentaria,g,macronutrient
+alcohol,Alcohol,g,macronutrient
+saturados,Saturados,g,fatty_acid
+monoinsaturados,Monoinsaturados,g,fatty_acid
+poliinsaturados,Poliinsaturados,g,fatty_acid
+trans,Trans,g,fatty_acid
+acido_linoleico_18_2,18:2 cis Linoléico,g,fatty_acid
+acido_alfa_linolenico_18_3_ala,18:3 cis Alfa linolénico (ALA),g,fatty_acid
+acido_araquidonico_20_4,20:4 Araquidónico,g,fatty_acid
+acido_eicosapentaenoico_20_5_epa,20:5 n-3 Eicosapentaenoico (EPA),g,fatty_acid
+acido_docosahexaenoico_22_6_dha,22:6 n-3 Docosahexaenoico (DHA),g,fatty_acid
+vitamina_a_rae,"Vitamina A, RAE",µg,vitamin
+retinol,Retinol,µg,vitamin
+vitamina_d,Vitamina D,µg,vitamin
+tiamina,Tiamina,mg,vitamin
+riboflavina,Riboflavina,mg,vitamin
+niacina,Niacina,mg,vitamin
+acido_folico,Ácido fólico,µg,vitamin
+folato_efd,Folato EFD,µg,vitamin
+vitamina_b12,Vitamina B-12,µg,vitamin
+vitamina_c,Vitamina C,mg,vitamin
+calcio,Calcio,mg,mineral
+fosforo,Fósforo,mg,mineral
+magnesio,Magnesio,mg,mineral
+hierro,Hierro,mg,mineral
+zinc,Zinc,mg,mineral
+cobre,Cobre,mg,mineral
+sodio,Sodio,mg,mineral
+potasio,Potasio,mg,mineral
+cenizas,Cenizas,g,mineral

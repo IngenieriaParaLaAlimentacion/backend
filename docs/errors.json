@@ -115,6 +115,12 @@
       "description": "Raised when a filter resolves through a target the resource does not carry."
     },
     {
+      "type": "/errors/food-not-found",
+      "status": 404,
+      "exception": "FoodNotFoundError",
+      "description": "Exception raised when a food cannot be found."
+    },
+    {
       "type": "/errors/invalid-age-range",
       "status": 400,
       "exception": "InvalidAgeRangeError",
