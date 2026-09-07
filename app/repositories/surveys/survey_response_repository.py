@@ -36,7 +36,6 @@ from app.utils.db import (
 _CONSTRAINT_FIELDS = {
     "uq_survey_responses_survey_establishment": "establishment_id",
     "uq_survey_responses_survey_subject": "subject_id",
-    "uq_survey_responses_survey_response_number": "response_number",
 }
 
 
@@ -131,9 +130,8 @@ class SurveyResponseRepository:
 
         Raises:
             UniqueConstraintError: ``field`` names what collided — ``id`` for a
-                replayed primary key, ``subject_id`` / ``establishment_id`` when
-                the target already answered this survey, ``response_number``
-                when that number is already used in this survey.
+            replayed primary key, ``subject_id`` / ``establishment_id`` when
+                the target already answered this survey.
         """
         fields = dict(
             survey_id=survey_id,
@@ -186,24 +184,6 @@ class SurveyResponseRepository:
         )
         return (await self.db.execute(query)).scalar_one_or_none()
 
-    async def get_by_survey_and_number(
-        self, survey_id: UUID, response_number: int
-    ) -> SurveyResponse | None:
-        """Return the response already holding this number in this survey.
-
-        ``submitted_by`` is eager-loaded because the service uses this row to
-        build a conflict payload that names the submitter.
-        """
-        query = (
-            select(SurveyResponse)
-            .where(
-                SurveyResponse.survey_id == survey_id,
-                SurveyResponse.response_number == response_number,
-            )
-            .options(selectinload(SurveyResponse.submitted_by))
-        )
-        return (await self.db.execute(query)).scalar_one_or_none()
-
     async def update_answers(
         self,
         response: SurveyResponse,
@@ -213,24 +193,12 @@ class SurveyResponseRepository:
         score_fies: int | None,
         event_at: datetime,
     ) -> SurveyResponse:
-        """Full-replace a response's answers, response number and event time.
-
-        The flush runs inside a SAVEPOINT so a raced response-number update
-        does not poison the session before the service re-reads the winner.
-        """
+        """Full-replace a response's answers, response number and event time."""
         response.answers = answers
         response.response_number = response_number
         response.score_fies = score_fies
         response.event_at = event_at
-        try:
-            async with self.db.begin_nested():
-                await self.db.flush()
-        except IntegrityError as error:
-            await self.db.refresh(response)
-            field = _CONSTRAINT_FIELDS.get(violated_constraint(error))
-            if field is None:
-                raise
-            raise UniqueConstraintError(field, response_number) from error
+        await self.db.flush()
         await self.db.refresh(response, attribute_names=["updated_at"])
         return response
 

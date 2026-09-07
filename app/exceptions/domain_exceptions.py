@@ -778,8 +778,6 @@ class InvalidSurveyResponseError(BadRequestError):
 class SurveyResponseAlreadyExistsError(AlreadyExistsError):
     """Exception raised when a survey's target has already been answered.
 
-    Also raised when another response in the survey holds the submitted number.
-
     Args:
         existing (dict | None): JSON-primitive description of the response
             already recorded, attached as the ``existing_response`` extension.
@@ -788,24 +786,13 @@ class SurveyResponseAlreadyExistsError(AlreadyExistsError):
 
     error_type = "survey-response-already-exists"
 
-    _DETAILS = {
-        "target": "This survey has already been answered for that target.",
-        "response_number": (
-            "Another response to this survey already uses that response number."
-        ),
-    }
-
-    def __init__(self, existing: dict | None = None, conflict_on: str | None = None):
+    def __init__(self, existing: dict | None = None):
         extensions: dict = {}
         if existing:
             extensions["existing_response"] = existing
-        if conflict_on:
-            extensions["conflict_on"] = conflict_on
         super().__init__(
             "Survey response already exists",
-            self._DETAILS.get(
-                conflict_on, "This survey has already been answered for that target."
-            ),
+            "This survey has already been answered for that target.",
             extensions=extensions or None,
         )
 

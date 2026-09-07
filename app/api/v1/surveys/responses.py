@@ -141,8 +141,8 @@ async def list_survey_responses(
         "id returns the stored record unchanged — the id is checked before the "
         "one-response-per-target rule, so a retried sync never reports a "
         "conflict against itself. `response_number` is required on every survey "
-        "and must be unique within it. No draft mode: required questions must all be "
-        "answered or the submission is rejected outright."
+        "but may be shared by multiple responses. No draft mode: required "
+        "questions must all be answered or the submission is rejected outright."
     ),
     responses={
         status.HTTP_200_OK: {
@@ -157,9 +157,7 @@ async def list_survey_responses(
             "description": "Survey, establishment or subject not found"
         },
         status.HTTP_409_CONFLICT: {
-            "description": "This subject or establishment already answered this "
-            'survey (`conflict_on: "target"`), or another response already '
-            'uses this `response_number` (`conflict_on: "response_number"`).'
+            "description": "This subject or establishment already answered this survey."
         },
     },
 )
@@ -236,9 +234,6 @@ async def get_survey_response_detail(
         **AUTH_RESPONSES,
         status.HTTP_400_BAD_REQUEST: {"description": "Answers invalid"},
         status.HTTP_404_NOT_FOUND: {"description": "Response not found"},
-        status.HTTP_409_CONFLICT: {
-            "description": "Another response already uses this response number."
-        },
     },
 )
 async def edit_survey_response(

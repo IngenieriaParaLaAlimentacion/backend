@@ -337,6 +337,7 @@ class TestLockedAfterResponses:
             f"{SURVEYS_URL}/{survey_id}/responses",
             json={
                 "answers": {keep["id"]: keep["options"][0]["id"]},
+                "response_number": 1,
                 "event_at": "2024-06-01T12:00:00Z",
             },
             headers=headers,
@@ -404,6 +405,7 @@ class TestLockedAfterResponses:
             f"{SURVEYS_URL}/{survey_id}/responses",
             json={
                 "answers": {question["id"]: picked_option["id"]},
+                "response_number": 1,
                 "event_at": "2024-06-01T12:00:00Z",
             },
             headers=headers,
@@ -447,6 +449,7 @@ class TestLockedAfterResponses:
             f"{SURVEYS_URL}/{survey_id}/responses",
             json={
                 "answers": {keep["id"]: keep["options"][0]["id"]},
+                "response_number": 1,
                 "event_at": "2024-06-01T12:00:00Z",
             },
             headers=headers,
@@ -514,6 +517,7 @@ class TestLockedAfterResponses:
             f"{SURVEYS_URL}/{survey_id}/responses",
             json={
                 "answers": {question["id"]: [verduras["id"], lacteos["id"]]},
+                "response_number": 1,
                 "event_at": "2024-06-01T12:00:00Z",
             },
             headers=headers,
