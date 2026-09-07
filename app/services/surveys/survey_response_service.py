@@ -1,4 +1,3 @@
-from enum import StrEnum
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
@@ -37,14 +36,6 @@ from app.schemas.surveys.survey_response_schema import (
     UserRefResponse,
 )
 from app.services.exporters.base import SurveyResponseExporter
-
-
-class ResponseConflictOn(StrEnum):
-    """What a survey-response conflict collided on."""
-
-    TARGET = "target"
-    RESPONSE_NUMBER = "response_number"
-
 
 # Roles allowed to submit a response.
 _SUBMITTER_ROLES = {UserRole.FIELD_WORKER, UserRole.ADMIN, UserRole.SUPERADMIN}
@@ -201,9 +192,8 @@ class SurveyResponseService:
     @staticmethod
     def _conflict_error(
         existing: SurveyResponse | None,
-        conflict_on: ResponseConflictOn,
     ) -> SurveyResponseAlreadyExistsError:
-        """Build the 409 naming what already holds the target or number.
+        """Build the 409 naming what already holds the response target.
 
         Serialized here because the RFC 7807 handler passes extensions straight
         to JSONResponse, which cannot encode a raw UUID or datetime.
@@ -222,9 +212,7 @@ class SurveyResponseService:
             if existing is not None
             else None
         )
-        return SurveyResponseAlreadyExistsError(
-            existing=ref, conflict_on=conflict_on.value
-        )
+        return SurveyResponseAlreadyExistsError(existing=ref)
 
     async def _raise_if_target_answered(
         self,
@@ -239,24 +227,7 @@ class SurveyResponseService:
             survey_id, subject_id=subject_id, establishment_id=establishment_id
         )
         if existing is not None:
-            raise self._conflict_error(existing, ResponseConflictOn.TARGET)
-
-    async def _raise_if_number_taken(
-        self,
-        survey_id: UUID,
-        response_number: int,
-        *,
-        exclude_response_id: UUID | None = None,
-    ) -> None:
-        """Raise the 409 if another response in this survey holds this number."""
-        existing = await self.uow.survey_response_repo.get_by_survey_and_number(
-            survey_id, response_number
-        )
-        if existing is None:
-            return
-        if exclude_response_id is not None and existing.id == exclude_response_id:
-            return
-        raise self._conflict_error(existing, ResponseConflictOn.RESPONSE_NUMBER)
+            raise self._conflict_error(existing)
 
     @staticmethod
     def _replayed(existing: SurveyResponse, survey_id: UUID) -> SurveyResponseDomain:
@@ -297,7 +268,7 @@ class SurveyResponseService:
             InvalidSurveyResponseError: payload names an entity that does not
                 match the survey's response target, answers fail validation, or
                 the replayed id belongs to a different survey.
-            SurveyResponseAlreadyExistsError: target or response-number conflict.
+            SurveyResponseAlreadyExistsError: target conflict.
         """
         self._assert_can_submit(actor)
 
@@ -313,7 +284,6 @@ class SurveyResponseService:
         if subject_id is not None:
             await self._get_subject_or_raise(subject_id)
         await self._raise_if_target_answered(survey_id, subject_id, establishment_id)
-        await self._raise_if_number_taken(survey_id, data.response_number)
         answers = self._validate_answers(survey.questions, data.answers)
         score_fies = self._calculate_fies_score(survey, answers)
 
@@ -339,10 +309,7 @@ class SurveyResponseService:
                 # The conflicting row lost the read race, so it cannot be named
                 # here -- but the condition is the same one the pre-check above
                 # reports, and must not leave with a different contract.
-                raise self._conflict_error(None, ResponseConflictOn.TARGET)
-            if error.field == "response_number":
-                await self._raise_if_number_taken(survey_id, data.response_number)
-                raise self._conflict_error(None, ResponseConflictOn.RESPONSE_NUMBER)
+                raise self._conflict_error(None)
             if data.id is not None:
                 raced = await self.uow.survey_response_repo.get_by_id(data.id)
                 if raced is not None:
@@ -380,13 +347,6 @@ class SurveyResponseService:
         answers = self._validate_answers(survey.questions, data.answers)
         score_fies = self._calculate_fies_score(survey, answers)
 
-        if data.response_number != response.response_number:
-            await self._raise_if_number_taken(
-                response.survey_id,
-                data.response_number,
-                exclude_response_id=response.id,
-            )
-
         try:
             await self.uow.survey_response_edit_repo.create(
                 id=data.id,
@@ -404,23 +364,13 @@ class SurveyResponseService:
             raise
 
         if data.event_at >= response.event_at:
-            try:
-                response = await self.uow.survey_response_repo.update_answers(
-                    response,
-                    answers=answers,
-                    score_fies=score_fies,
-                    response_number=data.response_number,
-                    event_at=data.event_at,
-                )
-            except UniqueConstraintError as error:
-                if error.field != "response_number":
-                    raise
-                await self._raise_if_number_taken(
-                    response.survey_id,
-                    data.response_number,
-                    exclude_response_id=response.id,
-                )
-                raise self._conflict_error(None, ResponseConflictOn.RESPONSE_NUMBER)
+            response = await self.uow.survey_response_repo.update_answers(
+                response,
+                answers=answers,
+                score_fies=score_fies,
+                response_number=data.response_number,
+                event_at=data.event_at,
+            )
         await self.uow.commit()
         return SurveyResponseDomain.from_db(response)
 

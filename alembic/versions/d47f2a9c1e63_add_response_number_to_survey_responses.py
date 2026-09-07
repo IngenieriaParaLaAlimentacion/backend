@@ -1,7 +1,7 @@
 """add response_number to survey_responses and survey_response_edits
 
-Backfill and constraint ship in one revision so historical rows are numbered
-before the per-survey uniqueness invariant is enforced.
+Backfill and index creation ship in one revision so historical rows are numbered
+before the response-number index is created.
 
 Revision ID: d47f2a9c1e63
 Revises: b4f1a7c2e590, 4099691d9bcd
@@ -66,17 +66,17 @@ def upgrade() -> None:
     op.alter_column("survey_responses", "response_number", nullable=False)
     op.alter_column("survey_response_edits", "response_number", nullable=False)
     op.create_index(
-        "uq_survey_responses_survey_response_number",
+        "ix_survey_responses_survey_response_number",
         "survey_responses",
         ["survey_id", "response_number"],
-        unique=True,
+        unique=False,
     )
 
 
 def downgrade() -> None:
     """Downgrade schema."""
     op.drop_index(
-        "uq_survey_responses_survey_response_number",
+        "ix_survey_responses_survey_response_number",
         table_name="survey_responses",
     )
     op.drop_column("survey_response_edits", "response_number")

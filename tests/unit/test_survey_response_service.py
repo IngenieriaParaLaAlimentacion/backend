@@ -152,7 +152,6 @@ def make_uow(stub_establishment_lookup):
         existing_edit=None,
         subject=_UNSET,
         target_response=None,
-        number_response=None,
     ):
         uow = AsyncMock()
         uow.survey_repo.get_by_id = AsyncMock(return_value=survey)
@@ -164,9 +163,6 @@ def make_uow(stub_establishment_lookup):
         )
         uow.user_establishment_repo.get_relation = AsyncMock(return_value=relation)
         uow.survey_response_repo.get_by_target = AsyncMock(return_value=target_response)
-        uow.survey_response_repo.get_by_survey_and_number = AsyncMock(
-            return_value=number_response
-        )
         uow.survey_response_repo.get_by_id = AsyncMock(return_value=existing_response)
         uow.survey_response_repo.create = AsyncMock(
             return_value=created_response or _make_response()
@@ -592,6 +588,19 @@ class TestTargetUniqueness:
         )
         assert created is True
 
+    async def test_duplicate_number_is_allowed_for_anonymous_responses(
+        self, make_uow, request_factory, admin_actor
+    ):
+        survey = _make_survey_orm(response_target=SurveyResponseTarget.ANONYMOUS)
+        uow = make_uow(survey=survey)
+
+        _, created = await SurveyResponseService(uow).submit(
+            survey.id, request_factory(response_number=1), admin_actor
+        )
+
+        assert created is True
+        assert uow.survey_response_repo.create.call_args.kwargs["response_number"] == 1
+
     async def test_raced_target_collision_becomes_conflict_not_replay(
         self, make_uow, request_factory, admin_actor
     ):
@@ -766,6 +775,27 @@ class TestEdit:
                 response.id, edit_factory(answers={}), admin_actor
             )
         uow.survey_response_edit_repo.create.assert_not_called()
+
+    async def test_edit_accepts_a_number_used_by_another_response(
+        self, make_uow, edit_factory, admin_actor
+    ):
+        survey = _make_survey_orm()
+        response = _make_response(survey_id=survey.id, response_number=2)
+        uow = make_uow(survey=survey, existing_response=response)
+
+        result = await SurveyResponseService(uow).edit(
+            response.id, edit_factory(response_number=1), admin_actor
+        )
+
+        assert result.response_number == 1
+        assert (
+            uow.survey_response_edit_repo.create.call_args.kwargs["response_number"]
+            == 1
+        )
+        assert (
+            uow.survey_response_repo.update_answers.call_args.kwargs["response_number"]
+            == 1
+        )
 
 
 class TestListBySurvey:
