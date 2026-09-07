@@ -122,7 +122,7 @@ class SurveyResponseRepository:
         establishment_id: UUID | None,
         submitted_by_id: UUID,
         answers: dict,
-        response_number: int,
+        response_number: int | None,
         score_fies: int | None,
         event_at: datetime,
     ) -> SurveyResponse:
@@ -189,7 +189,7 @@ class SurveyResponseRepository:
         response: SurveyResponse,
         *,
         answers: dict,
-        response_number: int,
+        response_number: int | None,
         score_fies: int | None,
         event_at: datetime,
     ) -> SurveyResponse:

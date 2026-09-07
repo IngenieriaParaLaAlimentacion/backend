@@ -24,10 +24,9 @@ class SurveyResponse(Base):
     ``subject_id`` / ``establishment_id`` is ever set; both are null for an
     anonymous response.
 
-    ``response_number`` is a human-facing reference: a positive integer the
-    field worker copies from their paper form, required on every response
-    regardless of target and allowed to repeat within a survey. It is not a
-    target and does not participate in the single-target check constraint.
+    ``response_number`` is a nullable human-facing reference copied from a
+    paper form and allowed to repeat within a survey. The service conditionally
+    requires it from the parent survey's configuration.
     """
 
     __tablename__ = "survey_responses"
@@ -85,7 +84,7 @@ class SurveyResponse(Base):
         index=True,
     )
     answers = Column(JSONB, nullable=False)
-    response_number = Column(Integer, nullable=False)
+    response_number = Column(Integer, nullable=True)
     score_fies = Column(Integer, nullable=True)
     event_at = Column(DateTime(timezone=True), nullable=False)
     created_at = Column(

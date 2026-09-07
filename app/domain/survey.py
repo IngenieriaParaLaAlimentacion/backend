@@ -124,6 +124,7 @@ class SurveyDomain:
     description: str | None
     response_target: SurveyResponseTarget
     instrument_type: SurveyInstrumentType
+    requires_response_number: bool | None
     created_by_id: UUID
     is_active: bool
     response_count: int
@@ -140,6 +141,7 @@ class SurveyDomain:
             description=obj.description,
             response_target=obj.response_target,
             instrument_type=obj.instrument_type,
+            requires_response_number=obj.requires_response_number,
             created_by_id=obj.created_by_id,
             is_active=obj.is_active,
             response_count=obj.response_count,
@@ -156,6 +158,7 @@ class SurveyListItemDomain:
     id: UUID
     name: str
     response_target: SurveyResponseTarget
+    requires_response_number: bool | None
     is_active: bool
     created_by_id: UUID
     question_count: int
@@ -175,6 +178,7 @@ class SurveyListItemDomain:
             id=obj.id,
             name=obj.name,
             response_target=obj.response_target,
+            requires_response_number=obj.requires_response_number,
             is_active=obj.is_active,
             created_by_id=obj.created_by_id,
             question_count=question_count,

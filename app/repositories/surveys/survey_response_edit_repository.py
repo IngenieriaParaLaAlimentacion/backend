@@ -24,7 +24,7 @@ class SurveyResponseEditRepository:
         response_id: UUID,
         edited_by_id: UUID,
         answers: dict,
-        response_number: int,
+        response_number: int | None,
         event_at: datetime,
     ) -> SurveyResponseEdit:
         """Persist a new edit-log row. ``id`` is optional; when None the server
@@ -32,12 +32,6 @@ class SurveyResponseEditRepository:
 
         The insert runs inside a SAVEPOINT so a unique violation rolls back only
         the failed row and leaves the session usable for the caller to re-query.
-
-        ``constraint`` is pinned to the primary key because this table now has a
-        NOT NULL ``response_number``: without it, a caller that omitted the
-        number would produce a NOT NULL violation the helper would relabel as a
-        duplicate id, which the service reads as a raced replay and re-raises as
-        a 500.
 
         Raises:
             UniqueConstraintError: If the id is already in use. The caller is

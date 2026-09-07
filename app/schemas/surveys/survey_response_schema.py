@@ -23,7 +23,7 @@ ResponseNumber = Annotated[
     Field(
         ge=RESPONSE_NUMBER_MIN,
         le=RESPONSE_NUMBER_MAX,
-        description="The hand-entered number, unique within the survey.",
+        description="A hand-entered number that may repeat within a survey.",
     ),
 ]
 
@@ -43,7 +43,7 @@ class SurveyResponseRequest(BaseModel):
         ),
     )
     answers: dict[str, AnswerValue]
-    response_number: ResponseNumber
+    response_number: ResponseNumber | None = None
     event_at: datetime = Field(
         description=(
             "When the respondent actually completed the survey, client-supplied. "
@@ -63,13 +63,13 @@ class UserRefResponse(IdentifierRefSchema):
 
 
 class ExistingResponseRef(BaseModel):
-    """The response already holding the target or number, returned in the 409 body
-    as the ``existing_response`` member."""
+    """The response already holding the target, returned in the 409 body as the
+    ``existing_response`` member."""
 
     id: UUID
     submitted_by: UserRefResponse
     event_at: datetime
-    response_number: ResponseNumber
+    response_number: ResponseNumber | None
 
 
 class SurveyResponseEditRequest(BaseModel):
@@ -81,7 +81,7 @@ class SurveyResponseEditRequest(BaseModel):
         ),
     )
     answers: dict[str, AnswerValue]
-    response_number: ResponseNumber
+    response_number: ResponseNumber | None = None
     event_at: datetime = Field(
         description=(
             "When the edit was actually made, client-supplied. Used for "
@@ -97,7 +97,7 @@ class SurveyResponseResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
-    response_number: ResponseNumber
+    response_number: ResponseNumber | None
     survey_id: UUID
     subject_id: UUID | None
     establishment_id: UUID | None
@@ -115,7 +115,7 @@ class SurveyResponseListItem(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
-    response_number: ResponseNumber
+    response_number: ResponseNumber | None
     event_at: datetime
     survey: SurveyRefResponse
     establishment: EstablishmentRefResponse | None
@@ -128,7 +128,7 @@ class SurveyResponseDashboardItem(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
-    response_number: ResponseNumber
+    response_number: ResponseNumber | None
     event_at: datetime
     survey: SurveyRefResponse
     establishment: EstablishmentRefResponse | None
@@ -154,7 +154,7 @@ class SurveyResponseDetailResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
-    response_number: ResponseNumber
+    response_number: ResponseNumber | None
     event_at: datetime
     survey: SurveyRefResponse
     establishment: EstablishmentRefResponse | None

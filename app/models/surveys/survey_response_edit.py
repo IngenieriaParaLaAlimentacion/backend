@@ -11,8 +11,8 @@ class SurveyResponseEdit(Base):
 
     Trimmed version of the `SubjectEvent` pattern (app/models/subject_event.py):
     no `event_type` column since this table only ever logs edits, and a full
-    post-edit snapshot (`answers` + `response_number`) instead of a structured
-    before/after diff.
+    post-edit snapshot (``answers`` plus a nullable ``response_number``) instead
+    of a structured before/after diff. Requiredness is enforced by the service.
     """
 
     __tablename__ = "survey_response_edits"
@@ -30,7 +30,7 @@ class SurveyResponseEdit(Base):
         nullable=False,
     )
     answers = Column(JSONB, nullable=False)
-    response_number = Column(Integer, nullable=False)
+    response_number = Column(Integer, nullable=True)
     event_at = Column(DateTime(timezone=True), nullable=False)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
