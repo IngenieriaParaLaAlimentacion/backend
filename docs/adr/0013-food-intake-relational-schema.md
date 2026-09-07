@@ -1,13 +1,13 @@
-# ADR-0012: Relational schema for food intakes
+# ADR-0013: Relational schema for food intakes
 
 - **Status**: Accepted
 - **Date**: 2026-09-05
 - **Deciders**: Backend team
-- **Related**: ADR-0011 (relational schema for the food catalog), ADR-0004 (offline-first response sync via client ids)
+- **Related**: ADR-0012 (relational schema for the food catalog), ADR-0004 (offline-first response sync via client ids)
 
 ## Context
 
-ADR-0011 built the food catalog and explicitly stopped at the point where an establishment would
+ADR-0012 built the food catalog and explicitly stopped at the point where an establishment would
 actually *use* it: it guarantees that `foods.id` is a stable FK target for "a future
 `food_stock`/`food_intake` entry", but models nothing about what an establishment receives. This ADR
 defines that entity.
@@ -24,7 +24,7 @@ Three constraints shape it:
    `RESTRICT` on the actor and establishment FKs, `CASCADE` on owned child rows, an event timestamp
    separate from the row's `created_at`, and a `synced_at` column for the offline sync path. There is
    no reason for food intakes to answer any of those questions differently.
-2. **The unit is the catalog's to define, not the intake's.** ADR-0011 put `base_unit` on `foods`
+2. **The unit is the catalog's to define, not the intake's.** ADR-0012 put `base_unit` on `foods`
    precisely so that quantities logged by different establishments are comparable.
 3. **Enrichment is coming and must not force a re-model.** Supplier/donor, receipt number, estimated
    monetary value and a photo attachment are all anticipated but out of scope, and the schema must
@@ -62,14 +62,14 @@ One food line of an intake.
 |---|---|---|
 | `id` | UUID, PK | Surrogate key. |
 | `food_intake_id` | UUID, FK → `food_intakes.id`, `ON DELETE CASCADE`, not null | Owned detail data of an intake — a line has no meaning without the delivery it belongs to, and goes with it. Same relationship `measurement_alerts` has to `measurements`. |
-| `food_id` | UUID, FK → `foods.id`, `ON DELETE RESTRICT`, not null | The catalog entry, referenced by `id` as ADR-0011 requires. `RESTRICT` stops a food an intake references from being deleted at all. ADR-0011 deferred the `is_active` retirement flag, so this constraint is currently the only thing keeping a catalog deletion from orphaning logged history. |
+| `food_id` | UUID, FK → `foods.id`, `ON DELETE RESTRICT`, not null | The catalog entry, referenced by `id` as ADR-0012 requires. `RESTRICT` stops a food an intake references from being deleted at all. ADR-0012 deferred the `is_active` retirement flag, so this constraint is currently the only thing keeping a catalog deletion from orphaning logged history. |
 | `quantity` | Numeric(10, 3), not null | How much arrived, in the food's own `base_unit`. `Numeric`, not `Float` — a received quantity is exact data, and `Float` is used in this codebase only for anthropometric readings. Three decimals expresses grams within a `kilogramos` quantity. |
 | `created_at` | DateTime(tz), `server_default now()`, not null | Row creation. |
 | — | `CHECK (quantity > 0)` | A line recording zero or a negative delivery is meaningless; enforced in the database rather than only at the edge, since this table will be written by more than one path (manual load, photo load). |
 | — | `INDEX(food_intake_id)`, `INDEX(food_id)` | Loading an intake's lines, and answering "where has this food been received". |
 
 **There is no `unit` column on the line.** The unit of a quantity is the referenced food's
-`base_unit`, read through the `food` relationship. ADR-0011 chose `base_unit` per food specifically so
+`base_unit`, read through the `food` relationship. ADR-0012 chose `base_unit` per food specifically so
 that logged quantities are always in a unit coherent with the food itself; copying it onto the line
 would create a second copy of the same fact that a later catalog correction could leave disagreeing
 with the catalog, with no rule for which one wins.
@@ -95,11 +95,11 @@ is a decision for whoever registers the intake, not a constraint the schema shou
 
 - Because the unit is derived, correcting a food's `base_unit` in the catalog silently reinterprets
   every historical quantity logged against it. This is the accepted cost of not duplicating the fact;
-  it is a catalog-curation concern, and ADR-0011 already treats `base_unit` as a curated, reviewed
+  it is a catalog-curation concern, and ADR-0012 already treats `base_unit` as a curated, reviewed
   value rather than one expected to churn.
 - Reading an intake's units requires loading the referenced foods (`selectinload`), so no listing can
   render a quantity's unit from the intake tables alone.
-- Nutrient totals for an intake remain uncomputable, for exactly the reason ADR-0011 gives: no
+- Nutrient totals for an intake remain uncomputable, for exactly the reason ADR-0012 gives: no
   `base_unit`-to-grams bridge exists for foods measured by count or volume. This ADR does not solve
   that either.
 
@@ -116,7 +116,7 @@ is a decision for whoever registers the intake, not a constraint the schema shou
 
 **Snapshotting the unit onto `food_intake_items` at write time** — rejected. It buys immutability of
 historical rows against a catalog edit, at the cost of a denormalized column that can disagree with
-`foods.base_unit` with no rule for resolving the conflict. ADR-0011 already assigned the unit to the
+`foods.base_unit` with no rule for resolving the conflict. ADR-0012 already assigned the unit to the
 food, and this preserves that single source of truth. Should immutable historical units ever become a
 real requirement (e.g. an audited report), the column can be added and backfilled from the catalog
 additively.
