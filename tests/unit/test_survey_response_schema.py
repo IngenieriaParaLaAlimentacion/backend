@@ -36,14 +36,12 @@ def test_response_number_columns_and_survey_setting_are_nullable():
     assert SurveyResponseEdit.__table__.c.response_number.nullable is True
 
 
-def test_optional_number_migration_follows_the_head_merge():
+def test_response_number_migration_is_the_only_head_after_develop():
     scripts = ScriptDirectory.from_config(Config("alembic.ini"))
-    merge = scripts.get_revision("f8c3b5a71d20")
-    optional = scripts.get_revision("a91c4e7b2f60")
+    migration = scripts.get_revision("d47f2a9c1e63")
 
-    assert merge.down_revision == ("d47f2a9c1e63", "9dfe0f10b762")
-    assert optional.down_revision == merge.revision
-    assert scripts.get_heads() == [optional.revision]
+    assert migration.down_revision == "9dfe0f10b762"
+    assert scripts.get_heads() == [migration.revision]
 
 
 def test_submit_and_edit_accept_missing_or_null_response_number():
