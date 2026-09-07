@@ -1,13 +1,14 @@
-# ADR-0013: Materialized food stock per establishment
+# ADR-0014: Materialized food stock per establishment
 
 - **Status**: Accepted
 - **Date**: 2026-09-05
 - **Deciders**: Backend team
-- **Related**: ADR-0011 (food catalog relational schema), ADR-0012 (food intake relational schema), ADR-0004 (offline-first sync via client ids)
+- **Related**: ADR-0012 (food catalog relational schema), ADR-0013 (food intake
+  relational schema), ADR-0004 (offline-first sync via client ids)
 
 ## Context
 
-ADR-0012 modeled what an establishment *receives* and stopped there, noting explicitly that no
+ADR-0013 modeled what an establishment *receives* and stopped there, noting explicitly that no
 stock or balance concept was included: "this entity records what arrived; what is currently held
 (consumption, spoilage, running balance) is a separate question". This ADR answers that question.
 
@@ -119,5 +120,5 @@ round trips for something a single statement decides atomically, and it invites 
 balance, act on it, and write back outside the lock.
 
 **A signed-quantity `food_movements` table replacing both intakes and outflows** — rejected. It
-would collapse `food_intakes`, already delivered and referenced by ADR-0012, into a rewrite, and a
+would collapse `food_intakes`, already delivered and referenced by ADR-0013, into a rewrite, and a
 signed quantity gives up the `CHECK (quantity > 0)` that catches a nonsense line at the boundary.
