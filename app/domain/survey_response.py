@@ -42,7 +42,7 @@ class SurveyResponseDomain:
     """A registered survey response."""
 
     id: UUID
-    response_number: int
+    response_number: int | None
     survey_id: UUID
     subject_id: UUID | None
     establishment_id: UUID | None
@@ -79,7 +79,7 @@ class SurveyResponseListItemDomain:
     """
 
     id: UUID
-    response_number: int
+    response_number: int | None
     event_at: datetime
     survey: IdentifierRefDomain
     establishment: EstablishmentRefDomain | None
@@ -110,7 +110,7 @@ class SurveyResponseDashboardItemDomain:
     """
 
     id: UUID
-    response_number: int
+    response_number: int | None
     event_at: datetime
     survey: IdentifierRefDomain
     establishment: EstablishmentRefDomain | None
@@ -155,7 +155,7 @@ class SurveyResponseDetailDomain:
     resolved to option text when the question is choice-based."""
 
     id: UUID
-    response_number: int
+    response_number: int | None
     event_at: datetime
     survey: IdentifierRefDomain
     establishment: EstablishmentRefDomain | None
