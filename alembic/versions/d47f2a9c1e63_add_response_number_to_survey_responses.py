@@ -4,7 +4,7 @@ Backfill and constraint ship in one revision so historical rows are numbered
 before the per-survey uniqueness invariant is enforced.
 
 Revision ID: d47f2a9c1e63
-Revises: b4f1a7c2e590
+Revises: b4f1a7c2e590, 4099691d9bcd
 Create Date: 2026-09-06 10:00:00.000000
 
 """
@@ -17,7 +17,10 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "d47f2a9c1e63"
-down_revision: Union[str, Sequence[str], None] = "b4f1a7c2e590"
+down_revision: Union[str, Sequence[str], None] = (
+    "b4f1a7c2e590",
+    "4099691d9bcd",
+)
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
