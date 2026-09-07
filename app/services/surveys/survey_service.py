@@ -70,10 +70,10 @@ class SurveyService:
         response_target: SurveyResponseTarget,
         requires_response_number: bool,
     ) -> None:
-        """Raise if an edit would invalidate existing answers: a changed
-        response target, a deleted question, a changed response_type, optional
-        turning required, a new required question, or removing a choice option
-        some response already selected."""
+        """Raise if an edit would invalidate existing answers: a changed response
+        target or response-number requiredness, a deleted question, a changed
+        response_type, optional turning required, a new required question, or
+        removing a choice option some response already selected."""
         if survey.response_count == 0:
             return
         if response_target != survey.response_target:

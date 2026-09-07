@@ -158,7 +158,9 @@ async def list_survey_responses(
             "description": "Survey, establishment or subject not found"
         },
         status.HTTP_409_CONFLICT: {
-            "description": "This subject or establishment already answered this survey."
+            "description": "This subject or establishment already answered this "
+            "survey. The recorded response is returned in `existing_response` "
+            "when it can be identified."
         },
     },
 )
