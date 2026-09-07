@@ -102,6 +102,66 @@ async def test_unhandled_error_is_problem_json(raw_client, app):
     assert body["detail"] == "An unexpected error occurred."
 
 
+def _dbapi_error(sqlstate: str):
+    """A DBAPIError shaped like the one asyncpg's wrapper raises."""
+    from sqlalchemy.exc import DBAPIError
+
+    class _DriverError(Exception):
+        pass
+
+    orig = _DriverError("database said no")
+    orig.sqlstate = sqlstate
+    return DBAPIError("UPDATE food_stock SET ...", None, orig)
+
+
+async def _post_login_with_failing_dependency(raw_client, app, error: Exception):
+    """Drive a request whose dependency blows up with ``error``."""
+
+    def _boom():
+        raise error
+
+    app.dependency_overrides[get_auth_service] = _boom
+    try:
+        return await raw_client.post(
+            LOGIN_URL,
+            json={
+                "email": "a@b.com",
+                "password": "whatever",
+                "device_id": "11111111-1111-1111-1111-111111111111",
+            },
+        )
+    finally:
+        app.dependency_overrides.pop(get_auth_service, None)
+
+
+async def test_deadlock_is_a_retryable_503(raw_client, app):
+    """40P01 rolled everything back, so the client should just try again."""
+    response = await _post_login_with_failing_dependency(
+        raw_client, app, _dbapi_error("40P01")
+    )
+
+    _assert_problem(response, status_code=503, error_type="concurrent-update")
+    assert response.headers["retry-after"] == "1"
+
+
+async def test_serialization_failure_is_a_retryable_503(raw_client, app):
+    response = await _post_login_with_failing_dependency(
+        raw_client, app, _dbapi_error("40001")
+    )
+
+    _assert_problem(response, status_code=503, error_type="concurrent-update")
+
+
+async def test_other_database_errors_stay_500(raw_client, app):
+    """Only class 40 is retryable: everything else must not invite a replay."""
+    response = await _post_login_with_failing_dependency(
+        raw_client, app, _dbapi_error("23505")
+    )
+
+    _assert_problem(response, status_code=500, error_type="internal-error")
+    assert "retry-after" not in response.headers
+
+
 async def test_missing_and_invalid_token_share_one_envelope(client):
     missing = await client.get("/api/v1/users/me")
     invalid = await client.get(

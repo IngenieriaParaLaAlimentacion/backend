@@ -121,6 +121,12 @@
       "description": "Exception raised when a food cannot be found."
     },
     {
+      "type": "/errors/insufficient-stock",
+      "status": 409,
+      "exception": "InsufficientStockError",
+      "description": "Exception raised when an outflow exceeds an establishment's stock."
+    },
+    {
       "type": "/errors/invalid-age-range",
       "status": 400,
       "exception": "InvalidAgeRangeError",

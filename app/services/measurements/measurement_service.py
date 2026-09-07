@@ -2,7 +2,6 @@ from collections.abc import AsyncIterator
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.domain.establishment import UserEstablishmentStatus
 from app.domain.measurement import (
     EvolutionOrder,
     MeasurementDomain,
@@ -12,15 +11,15 @@ from app.domain.measurement import (
 )
 from app.domain.pagination import PaginatedResult
 from app.domain.subject_detail import EvolutionPointDomain, SubjectEvolutionDomain
-from app.domain.user import UserActor, UserRole
+from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
-    EstablishmentAccessDeniedError,
     SubjectNotFoundError,
     UniqueConstraintError,
 )
 from app.models.subjects.subject import Subject
 from app.reference_data.anthropometry import evaluate_alerts
 from app.schemas.measurements.measurement_schema import MeasurementRequest
+from app.services.access import check_establishment_access
 from app.services.exporters.csv.csv_exporter import CsvExporter
 
 
@@ -35,17 +34,6 @@ class MeasurementService:
         if subject is None:
             raise SubjectNotFoundError(str(subject_id))
         return subject
-
-    async def _check_establishment_access(
-        self, actor: UserActor, establishment_id: UUID
-    ) -> None:
-        if actor.role != UserRole.FIELD_WORKER:
-            return
-        relation = await self.uow.user_establishment_repo.get_relation(
-            actor.user_id, establishment_id
-        )
-        if relation is None or relation.status != UserEstablishmentStatus.APPROVED:
-            raise EstablishmentAccessDeniedError()
 
     async def register(
         self,
@@ -70,7 +58,7 @@ class MeasurementService:
 
         subject = await self._get_subject_or_raise(data.subject_id)
         await self.uow.establishment_repo.get_by_id_or_raise(data.establishment_id)
-        await self._check_establishment_access(actor, data.establishment_id)
+        await check_establishment_access(self.uow, actor, data.establishment_id)
 
         bmi = data.weight_kg / (data.height_cm / 100) ** 2
 
