@@ -56,7 +56,7 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/subject-already-exists` | 409 | `SubjectAlreadyExistsError` | Exception raised when trying to register a subject with an existing DNI. |
 | `/errors/subject-not-found` | 404 | `SubjectNotFoundError` | Exception raised when a subject cannot be found. |
 | `/errors/survey-already-exists` | 409 | `SurveyAlreadyExistsError` | Exception raised when a survey name collides with an existing one. |
-| `/errors/survey-locked` | 409 | `SurveyLockedError` | Exception raised when a survey can no longer be modified. |
+| `/errors/survey-locked` | 409 | `SurveyLockedError` | Exception raised when an edit to a survey with recorded responses would invalidate them. |
 | `/errors/survey-not-available` | 403 | `SurveyNotAvailableError` | Raised when a field worker reaches a survey that is not currently active. |
 | `/errors/survey-not-found` | 404 | `SurveyNotFoundError` | Exception raised when a survey cannot be found. |
 | `/errors/survey-response-already-exists` | 409 | `SurveyResponseAlreadyExistsError` | Exception raised when a survey's target has already been answered. |

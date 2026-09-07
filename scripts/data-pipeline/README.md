@@ -6,11 +6,11 @@ consumed by `seed_food_catalog.py` at container boot.
 
 Not part of the app runtime — excluded from the Docker build context
 (`.dockerignore`). Kept in version control so the extraction is reproducible and
-auditable, per ADR-0009.
+auditable, per ADR-0010.
 
 For the design decisions behind the source, the seed mechanism, and the DB
-schema, see `docs/adr/009-food-catalog-source.md`, `010-food-catalog-seed-and-upsert.md`
-and `011-food-catalog-relational-schema.md`. This file only covers the pipeline
+schema, see `docs/adr/0010-food-catalog-source.md`, `0011-food-catalog-seed-and-upsert.md`
+and `0012-food-catalog-relational-schema.md`. This file only covers the pipeline
 itself, as it stands today.
 
 ## Layout
@@ -73,7 +73,7 @@ prepared to redo that review.
   without being able to confirm intent against the source.
 - **Blank cells in `raw/` mean "not measured," never `0`.** Downstream, this
   becomes an absent row in `food_nutrient_values`, not a zero value (see
-  ADR-0011). `raw/_blank_values.csv` is the full audit list of these.
+  ADR-0012). `raw/_blank_values.csv` is the full audit list of these.
 - **Groups 23 (bebidas de frutas naturales) and 26 (suplementos nutricionales)
   are excluded from the catalog entirely** — never extracted into `raw/` at
   all, not just filtered out downstream. **"Leche materna" is excluded

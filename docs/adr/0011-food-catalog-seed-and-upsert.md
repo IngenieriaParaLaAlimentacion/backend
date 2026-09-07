@@ -1,9 +1,9 @@
-# ADR-000X: Food catalog population via an idempotent seed script (upsert), not Alembic data migrations
+# ADR-0011: Food catalog population via an idempotent seed script (upsert), not Alembic data migrations
 
 - **Status**: Accepted
 - **Date**: 2026-08-28
 - **Deciders**: Backend team
-- **Related**: ADR-0009 (SARA 2 as the food catalog source)
+- **Related**: ADR-0010 (SARA 2 as the food catalog source)
 
 ## Context
 
@@ -30,7 +30,7 @@ a brand-new migration each time.
 The food catalog is populated by an **idempotent seed script that performs an upsert**, following the same execution 
 pattern already proven in production by `seed_superadmin.py`:
 
-- The curated list of foods (derived from SARA 2, per ADR-0009) lives in a **plain data file** (JSON or CSV) checked 
+- The curated list of foods (derived from SARA 2, per ADR-0010) lives in a **plain data file** (JSON or CSV) checked 
 into the repository — one entry per food, human-reviewable in a pull request diff.
 - A **seed script** (e.g. `seed_food_types.py`), using the existing ORM/UnitOfWork pattern, reads that file and
 **upserts** each entry into the `food_types` table, matched by a **stable natural key** (a code/slug, not the display 
@@ -58,7 +58,7 @@ upfront (renaming a code later is a breaking change for any food intake already 
 deploy, not just the first one), which is slightly more logic than a one-time insert.
 
 *Neutral*
-- This decision only concerns *how* catalog rows reach the database. It does not affect ADR-0009, which concerns 
+- This decision only concerns *how* catalog rows reach the database. It does not affect ADR-0010, which concerns 
 *where* the catalog's content comes from — the two can evolve independently.
 
 ## Alternatives considered
