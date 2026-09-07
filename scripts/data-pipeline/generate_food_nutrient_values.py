@@ -1,7 +1,7 @@
 """Generate food_nutrient_values.csv from raw/ and reference_data/{foods,nutrients}.csv.
 
 One row per (food, nutrient) reading SARA 2 actually reports. A blank `valor_raw`
-cell in raw/ means "not measured" (per ADR-0011) and is skipped entirely rather
+cell in raw/ means "not measured" (per ADR-0012) and is skipped entirely rather
 than written as 0.
 
 Foods excluded from the catalog at curation time (e.g. "Leche materna", see

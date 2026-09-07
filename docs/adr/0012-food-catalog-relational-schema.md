@@ -1,14 +1,14 @@
-# ADR-0011: Relational schema for the food catalog
+# ADR-0012: Relational schema for the food catalog
 
 - **Status**: Accepted
 - **Date**: 2026-08-30
 - **Deciders**: Backend team
-- **Related**: ADR-0009 (SARA 2 as the food catalog source), ADR-0010 (idempotent seed/upsert mechanism)
+- **Related**: ADR-0010 (SARA 2 as the food catalog source), ADR-0011 (idempotent seed/upsert mechanism)
 
 ## Context
 
-ADR-0009 settled *where* the food catalog's content comes from (SARA 2, raw/as-purchased entries only)
-and ADR-0010 settled *how* it reaches the database (an idempotent upsert seed script, matched by a stable
+ADR-0010 settled *where* the food catalog's content comes from (SARA 2, raw/as-purchased entries only)
+and ADR-0011 settled *how* it reaches the database (an idempotent upsert seed script, matched by a stable
 `code`, run after `alembic upgrade head`). Neither ADR defines the actual table structure. This ADR does.
 
 The catalog has to satisfy two things at once:
@@ -18,7 +18,7 @@ The catalog has to satisfy two things at once:
    establishments are comparable, and a stable identifier a future `food_stock` table can hold a real
    foreign key to (out of scope for this ADR — this ADR only has to guarantee that FK target exists and
    is stable).
-2. **A faithful representation of what SARA 2 actually contains**, since ADR-0009 chose SARA 2 specifically
+2. **A faithful representation of what SARA 2 actually contains**, since ADR-0010 chose SARA 2 specifically
    for its nutrient composition data, in anticipation of nutritional reasoning (deficits, recommendations)
    in later work. Populating the catalog's own tables is the only point where the SARA 2 PDF gets parsed;
    deferring nutrient capture to later work would mean re-parsing the same source PDF a second time for
@@ -28,13 +28,13 @@ The catalog has to satisfy two things at once:
 
 SARA 2 organizes its content as roughly 26 food groups (following the GAPA — Guías Alimentarias para la
 Población Argentina — grouping logic), each containing a list of specific foods. For each food, in raw/
-as-purchased state (per ADR-0009's scope), SARA 2 states nutrient composition **per 100 g of edible
+as-purchased state (per ADR-0010's scope), SARA 2 states nutrient composition **per 100 g of edible
 portion** — the PDF states this explicitly ("posee los nutrientes expresados en 100 g de porción
 comestible"), and it's applied uniformly across every food group, not just some. The nutrient panel itself
 is fixed and identical across food groups: the same ~20 macronutrient fields (protein, total lipids,
 carbohydrates, fiber, energy value, individual fatty acids, etc.) and the same ~19 vitamin/mineral fields
 (iron, calcium, vitamin C, zinc, etc.) are reported for every food, for a combined ~39 nutritional
-components — consistent with the figure already cited in ADR-0009.
+components — consistent with the figure already cited in ADR-0010.
 
 SARA 2 does **not** provide:
 
@@ -64,12 +64,12 @@ The ~26 SARA 2 food groups.
 | Column | Type | Rationale |
 |---|---|---|
 | `id` | UUID, PK | Surrogate key; the only thing any FK in this schema ever points at. |
-| `code` | String, unique, not null | Stable natural key for the seed script's upsert matching, per ADR-0010 — matched by a slug derived from the group name, not by the display name itself, so a later wording correction doesn't create a duplicate group. |
+| `code` | String, unique, not null | Stable natural key for the seed script's upsert matching, per ADR-0011 — matched by a slug derived from the group name, not by the display name itself, so a later wording correction doesn't create a duplicate group. |
 | `name` | String, not null | Display name of the group (e.g. "Carnes"), as given by the source. |
 
-This is modeled as a real table rather than a fixed enum for the same reason ADR-0010 rejected persisting
+This is modeled as a real table rather than a fixed enum for the same reason ADR-0011 rejected persisting
 the catalog itself as in-memory constants: group names are part of the source and can be corrected as the
-seed data is curated and reviewed (ADR-0010 already anticipates the catalog is not write-once). An
+seed data is curated and reviewed (ADR-0011 already anticipates the catalog is not write-once). An
 already-applied enum value is exactly as costly to correct as an already-applied migration — a table with
 an upsertable row avoids that.
 
@@ -79,12 +79,12 @@ The specific, individual foods an establishment actually selects when logging st
 
 | Column | Type | Rationale |
 |---|---|---|
-| `id` | UUID, PK | Surrogate key. This — not `code` — is what a future `food_stock`/`food_intake` entry references, so that renaming a food's `code` later (a risk ADR-0010 already flags) never breaks an existing reference; only the seed script's own upsert matching depends on `code`. |
-| `code` | String, unique, not null | Stable natural key for upsert matching, per ADR-0010, derived from the food's name (e.g. `pollo_pechuga_sin_piel`). |
+| `id` | UUID, PK | Surrogate key. This — not `code` — is what a future `food_stock`/`food_intake` entry references, so that renaming a food's `code` later (a risk ADR-0011 already flags) never breaks an existing reference; only the seed script's own upsert matching depends on `code`. |
+| `code` | String, unique, not null | Stable natural key for upsert matching, per ADR-0011, derived from the food's name (e.g. `pollo_pechuga_sin_piel`). |
 | `name` | String, not null | Display name, as given by the source (e.g. "Pechuga de pollo sin piel"). |
 | `category_id` | UUID, FK → `food_categories.id`, `ON DELETE RESTRICT`, not null | Every food in SARA 2 belongs to exactly one of the 26 groups; `RESTRICT` prevents a category from being removed while foods still reference it. |
 | `base_unit` | Enum, not null | The unit of measurement an establishment's logged quantity for this food is persisted in. This is a domain decision this catalog has to make on SARA 2's behalf, since the source has no purchasing/receiving unit concept at all — it only defines a 100 g nutrient reference basis, which answers a different question. The unit is chosen per food to match how it is realistically received (e.g. counted for eggs, weighed for meat), so that quantities logged for it are always recorded in a unit coherent with the food itself. |
-| `source_page` | SmallInteger, nullable | The PDF page the entry was read from. Supports the same auditability requirement ADR-0009 raises for the source as a whole, at the level of an individual entry — a reviewer correcting a curated value can go straight to the page it came from. |
+| `source_page` | SmallInteger, nullable | The PDF page the entry was read from. Supports the same auditability requirement ADR-0010 raises for the source as a whole, at the level of an individual entry — a reviewer correcting a curated value can go straight to the page it came from. |
 
 The table is named `foods`, not `food_types`: each row is the definitional catalog record itself, and no
 other table in this codebase uses a `_type` suffix for a reference/catalog table (`establishments`,
@@ -149,7 +149,7 @@ be solved — and sourced — at that time, scoped to only the foods it actually
   derived through an unaudited calculation.
 - `food_nutrient_values` captures the full nutrient panel SARA 2 provides during the same seed pass that
   populates `foods`, so future nutrition-facing functionality (deficit calculations, recommendations — the
-  motivating use case ADR-0009 names for choosing SARA 2 in the first place) does not require re-parsing
+  motivating use case ADR-0010 names for choosing SARA 2 in the first place) does not require re-parsing
   the source PDF.
 - Blank source cells are represented as absent rows, not as `0`, avoiding a false "this food has none of
   this nutrient" claim where the source simply didn't measure it.
@@ -203,14 +203,14 @@ foods; sourcing it would require a secondary, external reference for every food 
 volume, for a computation (deriving a nutrient total from a logged stock quantity) that no functionality
 defined for this catalog performs. Deferred to whichever future feature actually needs it.
 
-**`food_categories` as a fixed enum instead of a table** — rejected, for the same reason ADR-0010 rejected
+**`food_categories` as a fixed enum instead of a table** — rejected, for the same reason ADR-0011 rejected
 enum/in-memory constants for the food catalog itself: group names are part of the curated, reviewable
 source data, not a fixed structural detail of the application, and an enum value is exactly as costly to
 correct later as an already-applied migration.
 
 **A `sara2_group_number` column on `food_categories`, to trace each category back to SARA 2's own 1–26
 group number** — rejected. Source traceability for the grouping itself is already
-covered by ADR-0009 documenting SARA 2 as the source. A "1-of-26" group number is also not something this
+covered by ADR-0010 documenting SARA 2 as the source. A "1-of-26" group number is also not something this
 schema could guarantee stays populated if a future non-SARA2 source ever contributes a category — unlike
 `foods.source_page`, whose audit value is at the individual-food level SARA 2 doesn't otherwise expose.
 

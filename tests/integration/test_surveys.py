@@ -483,6 +483,171 @@ class TestLockedAfterResponses:
             response.json()["questions"][0]["text"] == "¿Comió bien hoy? (renombrada)"
         )
 
+    async def test_add_optional_question_after_response_succeeds(
+        self, client, admin_author, db_establishment
+    ):
+        headers, _ = admin_author
+        created = (await _create(client, headers)).json()
+        survey_id = created["id"]
+        keep = created["questions"][0]
+        second = created["questions"][1]
+
+        submit = await client.post(
+            f"{SURVEYS_URL}/{survey_id}/responses",
+            json={
+                "answers": {keep["id"]: keep["options"][0]["id"]},
+                "event_at": "2024-06-01T12:00:00Z",
+            },
+            headers=headers,
+        )
+        assert submit.status_code == status.HTTP_201_CREATED
+
+        # Keep both existing questions untouched, add a new optional one.
+        payload = _survey_body(
+            questions=[
+                {
+                    "id": keep["id"],
+                    "text": keep["text"],
+                    "response_type": "single_choice",
+                    "is_required": True,
+                    "options": [
+                        {"id": keep["options"][0]["id"], "text": "Sí"},
+                        {"id": keep["options"][1]["id"], "text": "No"},
+                    ],
+                },
+                {
+                    "id": second["id"],
+                    "text": second["text"],
+                    "response_type": "text",
+                    "is_required": False,
+                    "options": [],
+                },
+                {
+                    "text": "¿Cuántas personas viven en el hogar?",
+                    "response_type": "numeric",
+                    "is_required": False,
+                    "options": [],
+                },
+            ]
+        )
+        response = await client.put(
+            f"{SURVEYS_URL}/{survey_id}", json=payload, headers=headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert [q["text"] for q in body["questions"]] == [
+            keep["text"],
+            second["text"],
+            "¿Cuántas personas viven en el hogar?",
+        ]
+        assert body["questions"][2]["is_required"] is False
+
+    async def test_add_required_question_with_foreign_id_returns_409(
+        self, client, admin_author, db_establishment
+    ):
+        headers, _ = admin_author
+        created = (await _create(client, headers)).json()
+        survey_id = created["id"]
+        keep = created["questions"][0]
+        second = created["questions"][1]
+
+        submit = await client.post(
+            f"{SURVEYS_URL}/{survey_id}/responses",
+            json={
+                "answers": {keep["id"]: keep["options"][0]["id"]},
+                "event_at": "2024-06-01T12:00:00Z",
+            },
+            headers=headers,
+        )
+        assert submit.status_code == status.HTTP_201_CREATED
+
+        # A required "new" question posing as existing via a foreign id must
+        # still be rejected, not slip past the lock check.
+        payload = _survey_body(
+            questions=[
+                {
+                    "id": keep["id"],
+                    "text": keep["text"],
+                    "response_type": "single_choice",
+                    "is_required": True,
+                    "options": [
+                        {"id": keep["options"][0]["id"], "text": "Sí"},
+                        {"id": keep["options"][1]["id"], "text": "No"},
+                    ],
+                },
+                {
+                    "id": second["id"],
+                    "text": second["text"],
+                    "response_type": "text",
+                    "is_required": False,
+                    "options": [],
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "text": "¿Cuántas personas viven en el hogar?",
+                    "response_type": "numeric",
+                    "is_required": True,
+                    "options": [],
+                },
+            ]
+        )
+        response = await client.put(
+            f"{SURVEYS_URL}/{survey_id}", json=payload, headers=headers
+        )
+        assert response.status_code == status.HTTP_409_CONFLICT
+
+    async def test_add_required_question_after_response_returns_409(
+        self, client, admin_author, db_establishment
+    ):
+        headers, _ = admin_author
+        created = (await _create(client, headers)).json()
+        survey_id = created["id"]
+        keep = created["questions"][0]
+        second = created["questions"][1]
+
+        submit = await client.post(
+            f"{SURVEYS_URL}/{survey_id}/responses",
+            json={
+                "answers": {keep["id"]: keep["options"][0]["id"]},
+                "event_at": "2024-06-01T12:00:00Z",
+            },
+            headers=headers,
+        )
+        assert submit.status_code == status.HTTP_201_CREATED
+
+        # Keep both existing questions untouched, add a new required one.
+        payload = _survey_body(
+            questions=[
+                {
+                    "id": keep["id"],
+                    "text": keep["text"],
+                    "response_type": "single_choice",
+                    "is_required": True,
+                    "options": [
+                        {"id": keep["options"][0]["id"], "text": "Sí"},
+                        {"id": keep["options"][1]["id"], "text": "No"},
+                    ],
+                },
+                {
+                    "id": second["id"],
+                    "text": second["text"],
+                    "response_type": "text",
+                    "is_required": False,
+                    "options": [],
+                },
+                {
+                    "text": "¿Cuántas personas viven en el hogar?",
+                    "response_type": "numeric",
+                    "is_required": True,
+                    "options": [],
+                },
+            ]
+        )
+        response = await client.put(
+            f"{SURVEYS_URL}/{survey_id}", json=payload, headers=headers
+        )
+        assert response.status_code == status.HTTP_409_CONFLICT
+
     async def test_remove_option_referenced_in_multiple_choice_returns_409(
         self, client, admin_author, db_establishment
     ):

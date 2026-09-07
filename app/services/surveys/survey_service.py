@@ -71,14 +71,21 @@ class SurveyService:
     ) -> None:
         """Raise if an edit would invalidate existing answers: a changed
         response target, a deleted question, a changed response_type, optional
-        turning required, or removing a choice option some response already
-        selected."""
+        turning required, a new required question, or removing a choice option
+        some response already selected."""
         if survey.response_count == 0:
             return
         if response_target != survey.response_target:
             raise SurveyLockedError(
                 "A survey with recorded responses cannot change its response target.",
             )
+        existing_ids = {question.id for question in survey.questions}
+        for new in new_questions:
+            if new.id not in existing_ids and new.is_required:
+                raise SurveyLockedError(
+                    "A new question added to a survey with recorded responses "
+                    "must be optional.",
+                )
         new_by_id = {q.id: q for q in new_questions if q.id is not None}
         removed_option_pairs: list[tuple[UUID, UUID]] = []
         for question in survey.questions:
@@ -305,11 +312,14 @@ class SurveyService:
         """
         survey = await self._get_or_raise(survey_id)
         self._assert_can_edit(actor, survey)
+
         new_questions = self._to_question_inputs(data.questions)
         await self._assert_editable(survey, new_questions, data.response_target)
+
         if await self.uow.survey_repo.name_exists(data.name, exclude_id=survey.id):
             raise SurveyAlreadyExistsError(data.name)
         self._validate_structure(data.questions)
+
         try:
             survey = await self.uow.survey_repo.reconcile(
                 survey,
@@ -321,6 +331,7 @@ class SurveyService:
             )
         except UniqueConstraintError:
             raise SurveyAlreadyExistsError(data.name)
+
         await self.uow.commit()
         return SurveyDomain.from_db(survey)
 

@@ -208,7 +208,7 @@
       "type": "/errors/survey-locked",
       "status": 409,
       "exception": "SurveyLockedError",
-      "description": "Exception raised when a survey can no longer be modified."
+      "description": "Exception raised when an edit to a survey with recorded responses would invalidate them."
     },
     {
       "type": "/errors/survey-not-available",
