@@ -1,4 +1,3 @@
-from decimal import Decimal
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
@@ -10,6 +9,7 @@ from app.models.food_intakes.food_intake import FoodIntake
 from app.models.food_intakes.food_intake_item import FoodIntakeItem
 from app.schemas.food_intakes.food_intake_schema import FoodIntakeRequest
 from app.services.access import check_establishment_access
+from app.services.food_lines import aggregate_quantities
 
 
 class FoodIntakeService:
@@ -80,10 +80,10 @@ class FoodIntakeService:
                     return FoodIntakeDomain.from_db(raced), False
             raise
 
-        for item in data.items:
-            await self.uow.food_stock_repo.increase(
-                data.establishment_id, item.food_id, Decimal(item.quantity)
-            )
+        await self.uow.food_stock_repo.increase_batch(
+            establishment_id=data.establishment_id,
+            quantities=aggregate_quantities(data.items),
+        )
 
         await self.uow.commit()
         return FoodIntakeDomain.from_db(intake), True

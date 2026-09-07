@@ -47,22 +47,30 @@ class FoodStockRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def increase(
-        self, establishment_id: UUID, food_id: UUID, quantity: Decimal
+    async def increase_batch(
+        self, establishment_id: UUID, quantities: dict[UUID, Decimal]
     ) -> None:
-        """Add ``quantity`` to the balance, creating the row on first arrival."""
+        """Add each food's quantity to its balance, creating rows on first arrival.
+        """
+        if not quantities:
+            return
+
+        stmt = insert(FoodStock).values(
+            [
+                {
+                    "id": uuid.uuid4(),
+                    "establishment_id": establishment_id,
+                    "food_id": food_id,
+                    "quantity": quantity,
+                }
+                for food_id, quantity in sorted(quantities.items())
+            ]
+        )
         await self.db.execute(
-            insert(FoodStock)
-            .values(
-                id=uuid.uuid4(),
-                establishment_id=establishment_id,
-                food_id=food_id,
-                quantity=quantity,
-            )
-            .on_conflict_do_update(
+            stmt.on_conflict_do_update(
                 index_elements=_CONFLICT_TARGET,
                 set_={
-                    "quantity": FoodStock.quantity + quantity,
+                    "quantity": FoodStock.quantity + stmt.excluded.quantity,
                     "updated_at": func.now(),
                 },
             )

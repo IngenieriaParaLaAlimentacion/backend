@@ -1,4 +1,5 @@
 import uuid
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     CheckConstraint,
@@ -10,9 +11,13 @@ from sqlalchemy import (
     func,
 )
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, relationship
 
 from ..base import Base
+
+if TYPE_CHECKING:
+    from ..food_catalog.food import Food
+    from .food_outflow import FoodOutflow
 
 
 class FoodOutflowItem(Base):
@@ -43,5 +48,5 @@ class FoodOutflowItem(Base):
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
-    outflow = relationship("FoodOutflow", back_populates="items")
-    food = relationship("Food")
+    outflow: Mapped["FoodOutflow"] = relationship("FoodOutflow", back_populates="items")
+    food: Mapped["Food"] = relationship("Food")
