@@ -1,8 +1,8 @@
-"""Column specs for the five exportable listing views.
+"""Column specs for the exportable listing views.
 
 Each spec's headers and their order mirror the columns of the corresponding
 UI table, so an exported file lines up with the screen it came from. Keeping
-all five in one module makes that correspondence reviewable at a glance.
+them all in one module makes that correspondence reviewable at a glance.
 
 Every ``latest_measurement`` is optional on the subject listing — a subject who
 has never been measured exports blank measurement cells rather than being
@@ -11,6 +11,7 @@ dropped from the file.
 
 from app.domain.establishment import EstablishmentDomain
 from app.domain.establishment_dashboard import EstablishmentSubjectItemDomain
+from app.domain.food_stock import FoodStockItemDomain
 from app.domain.measurement import MeasurementListItemDomain
 from app.domain.subject_detail import SubjectDetailDomain
 from app.domain.survey import SurveyListItemDomain
@@ -104,3 +105,14 @@ SURVEY_LISTING_EXPORTER = CsvExporter(SURVEY_COLUMNS, entity_name="encuestas")
 ESTABLISHMENT_SUBJECT_EXPORTER = CsvExporter(
     ESTABLISHMENT_SUBJECT_COLUMNS, entity_name="sujetos"
 )
+
+
+FOOD_STOCK_COLUMNS: tuple[CsvColumn[FoodStockItemDomain], ...] = (
+    CsvColumn("Alimento", lambda s: normalize_cell(s.food.name)),
+    CsvColumn("Categoría", lambda s: normalize_cell(s.category.name)),
+    CsvColumn("Cantidad", lambda s: format_decimal(s.quantity, 3)),
+    CsvColumn("Unidad", lambda s: normalize_cell(s.unit.value)),
+    CsvColumn("Última actualización", lambda s: format_datetime(s.updated_at)),
+)
+
+FOOD_STOCK_EXPORTER = CsvExporter(FOOD_STOCK_COLUMNS, entity_name="stock")

@@ -23,6 +23,7 @@ from app.domain.food_catalog import (
     FoodListingParams,
     FoodSortOrder,
 )
+from app.domain.food_stock import FoodStockListingParams, FoodStockSortOrder
 from app.domain.measurement import MeasurementListingParams, MeasurementSortOrder
 from app.domain.subject import Sex, SubjectListingParams, SubjectSortOrder
 from app.domain.survey import (
@@ -185,6 +186,23 @@ class EstablishmentFieldWorkersQuery:
         return EstablishmentFieldWorkerListingParams(
             search=self.search,
             relation_status=self.relation_status,
+        )
+
+
+@dataclass
+class FoodStockListingQuery:
+    category_id: Annotated[UUID | None, Query()] = None
+    only_available: Annotated[
+        bool,
+        Query(description="Exclude foods whose balance is zero."),
+    ] = False
+    sort_order: FoodStockSortOrder = FoodStockSortOrder.NAME_ASC
+
+    def to_domain(self) -> FoodStockListingParams:
+        return FoodStockListingParams(
+            category_id=self.category_id,
+            only_available=self.only_available,
+            sort_order=self.sort_order,
         )
 
 

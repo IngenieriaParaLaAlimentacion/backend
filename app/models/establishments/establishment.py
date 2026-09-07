@@ -43,3 +43,11 @@ class Establishment(Base):
         "FoodIntake",
         back_populates="establishment",
     )
+    food_outflows = relationship(
+        "FoodOutflow",
+        back_populates="establishment",
+    )
+    food_stock = relationship(
+        "FoodStock",
+        back_populates="establishment",
+    )
