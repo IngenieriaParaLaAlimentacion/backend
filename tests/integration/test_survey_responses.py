@@ -87,6 +87,7 @@ async def _create_survey(client, headers, **overrides):
         "name": overrides.pop("name", "Encuesta A"),
         "description": overrides.pop("description", None),
         "response_target": overrides.pop("response_target", "anonymous"),
+        "requires_response_number": overrides.pop("requires_response_number", True),
         "questions": overrides.pop(
             "questions",
             [
@@ -437,6 +438,36 @@ class TestTargetUniqueness:
             )
             assert response.status_code == status.HTTP_201_CREATED
 
+    async def test_required_survey_rejects_missing_number(self, client, admin_user):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers, requires_response_number=True)
+        body = _response_body(survey["id"], _valid_answers(survey))
+        del body["response_number"]
+
+        response = await client.post(
+            _responses_url(survey["id"]), json=body, headers=headers
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json()["type"].endswith("/errors/invalid-survey-response")
+
+    @pytest.mark.parametrize("setting", [False, None])
+    async def test_optional_survey_persists_null_number(
+        self, client, admin_user, setting
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers, requires_response_number=setting)
+        body = _response_body(
+            survey["id"], _valid_answers(survey), response_number=None
+        )
+
+        response = await client.post(
+            _responses_url(survey["id"]), json=body, headers=headers
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.json()["response_number"] is None
+
     async def test_anonymous_responses_may_share_a_response_number(
         self, client, admin_user
     ):
@@ -650,6 +681,72 @@ class TestResponseCount:
 
 
 class TestEdit:
+    async def test_optional_edit_clears_live_and_audit_number(
+        self, client, db_establishment, admin_user
+    ):
+        from app.db.database import AsyncSessionLocal
+        from app.models.surveys.survey_response import SurveyResponse
+        from app.models.surveys.survey_response_edit import SurveyResponseEdit
+
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers, requires_response_number=False)
+        created = (
+            await client.post(
+                _responses_url(survey["id"]),
+                json=_response_body(
+                    survey["id"], _valid_answers(survey), response_number=12
+                ),
+                headers=headers,
+            )
+        ).json()
+
+        edited = await client.put(
+            _responses_url(survey["id"], created["id"]),
+            json={"answers": _valid_answers(survey), "event_at": NOW},
+            headers=headers,
+        )
+
+        assert edited.status_code == status.HTTP_200_OK
+        assert edited.json()["response_number"] is None
+        async with AsyncSessionLocal() as session:
+            live = await session.get(SurveyResponse, uuid.UUID(created["id"]))
+            audit = await session.scalar(
+                select(SurveyResponseEdit).where(
+                    SurveyResponseEdit.response_id == uuid.UUID(created["id"])
+                )
+            )
+        assert live.response_number is None
+        assert audit.response_number is None
+
+    async def test_required_edit_without_number_creates_no_audit(
+        self, client, db_establishment, admin_user
+    ):
+        from app.db.database import AsyncSessionLocal
+        from app.models.surveys.survey_response_edit import SurveyResponseEdit
+
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers, requires_response_number=True)
+        created = (
+            await client.post(
+                _responses_url(survey["id"]),
+                json=_response_body(survey["id"], _valid_answers(survey)),
+                headers=headers,
+            )
+        ).json()
+
+        edited = await client.put(
+            _responses_url(survey["id"], created["id"]),
+            json={"answers": _valid_answers(survey), "event_at": NOW},
+            headers=headers,
+        )
+
+        assert edited.status_code == status.HTTP_400_BAD_REQUEST
+        async with AsyncSessionLocal() as session:
+            count = await session.scalar(
+                select(func.count()).select_from(SurveyResponseEdit)
+            )
+        assert count == 0
+
     async def test_missing_response_returns_404(self, client, admin_user):
         headers, _ = admin_user
         response = await client.put(

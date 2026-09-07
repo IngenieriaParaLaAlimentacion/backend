@@ -32,11 +32,11 @@ router = APIRouter(prefix="/surveys/{survey_id}/responses")
     summary="Export a survey's responses (accepts the listing's filters)",
     description=(
         "Export responses to a survey into a downloadable file including "
-        "both response data and a visual summary of indicators. The first "
-        "column is the response number the field worker entered. A survey "
-        "targeted at subjects also exports each respondent's name, last name "
-        "and DNI. Accepts exactly the same filters as the listing. Restricted "
-        "to admins, analysts and superadmins."
+        "both response data and a visual summary of indicators. For surveys "
+        "that require response numbers, the first column contains that number. "
+        "A survey targeted at subjects also exports each respondent's name, "
+        "last name and DNI. Accepts exactly the same filters as the listing. "
+        "Restricted to admins, analysts and superadmins."
     ),
     responses={
         **AUTH_RESPONSES,
@@ -140,9 +140,10 @@ async def list_survey_responses(
         "`response_target`, and neither when it is anonymous. Replaying the same "
         "id returns the stored record unchanged — the id is checked before the "
         "one-response-per-target rule, so a retried sync never reports a "
-        "conflict against itself. `response_number` is required on every survey "
-        "but may be shared by multiple responses. No draft mode: required "
-        "questions must all be answered or the submission is rejected outright."
+        "conflict against itself. `response_number` may be shared by multiple "
+        "responses and is required only when the survey setting enables it. No "
+        "draft mode: required questions must all be answered or the submission "
+        "is rejected outright."
     ),
     responses={
         status.HTTP_200_OK: {
@@ -226,7 +227,8 @@ async def get_survey_response_detail(
     response_model=SurveyResponseResponse,
     summary="Edit a survey response",
     description=(
-        "Full-replace edit of a response's answers and response number. "
+        "Full-replace edit of a response's answers and nullable response number. "
+        "A number is required only when the parent survey setting enables it. "
         "Restricted to the original submitter or an admin/superadmin. "
         "Idempotent per edit attempt id for offline-first retries."
     ),

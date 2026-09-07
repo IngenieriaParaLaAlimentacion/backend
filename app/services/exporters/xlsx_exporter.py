@@ -41,7 +41,8 @@ class XlsxSurveyResponseExporter(SurveyResponseExporter):
     ) -> None:
         sheet.title = "Respuestas"
         is_subject_targeted = survey.response_target == SurveyResponseTarget.SUBJECT
-        headers = [_NUMBER_HEADER]
+        include_number = survey.requires_response_number is True
+        headers = [_NUMBER_HEADER] if include_number else []
         headers += list(_SUBJECT_HEADERS) if is_subject_targeted else []
         headers += ["Completado por", "Fecha de relevamiento", "Score FIES"]
         headers += [q.text for q in survey.questions]
@@ -49,7 +50,7 @@ class XlsxSurveyResponseExporter(SurveyResponseExporter):
 
         for response in responses:
             answer_by_question_id = {a.question_id: a for a in response.answers}
-            row = [response.response_number]
+            row = [response.response_number] if include_number else []
             row += self._subject_cells(response) if is_subject_targeted else []
             row += [
                 response.submitted_by.name,

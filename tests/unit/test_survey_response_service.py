@@ -63,6 +63,7 @@ def _make_question(
 def _make_survey_orm(
     response_target: SurveyResponseTarget = SurveyResponseTarget.ANONYMOUS,
     questions: list | None = None,
+    requires_response_number: bool | None = None,
 ) -> MagicMock:
     """A MagicMock standing in for an ORM Survey with eager-loaded relations."""
     s = MagicMock()
@@ -70,6 +71,7 @@ def _make_survey_orm(
     s.name = "Encuesta"
     s.description = None
     s.response_target = response_target
+    s.requires_response_number = requires_response_number
     s.created_by_id = uuid.uuid4()
     s.is_active = True
     s.response_count = 0
@@ -274,6 +276,38 @@ class TestSubmit:
             return SurveyResponseRequest(**data)
 
         return _make
+
+    @pytest.mark.parametrize("setting", [False, None])
+    async def test_optional_survey_accepts_missing_number(
+        self, make_uow, request_factory, admin_actor, setting
+    ):
+        survey = _make_survey_orm(requires_response_number=setting)
+        created = _make_response(survey_id=survey.id, response_number=None)
+        uow = make_uow(survey=survey, created_response=created)
+
+        result, was_created = await SurveyResponseService(uow).submit(
+            survey.id, request_factory(response_number=None), admin_actor
+        )
+
+        assert was_created is True
+        assert result.response_number is None
+        assert (
+            uow.survey_response_repo.create.call_args.kwargs["response_number"] is None
+        )
+
+    async def test_required_survey_rejects_missing_number_without_persistence(
+        self, make_uow, request_factory, admin_actor
+    ):
+        survey = _make_survey_orm(requires_response_number=True)
+        uow = make_uow(survey=survey)
+
+        with pytest.raises(InvalidSurveyResponseError):
+            await SurveyResponseService(uow).submit(
+                survey.id, request_factory(response_number=None), admin_actor
+            )
+
+        uow.survey_response_repo.create.assert_not_called()
+        uow.commit.assert_not_called()
 
     async def test_analyst_forbidden(self, make_uow, request_factory, analyst_actor):
         survey = _make_survey_orm()
@@ -675,6 +709,44 @@ class TestEdit:
             return SurveyResponseEditRequest(**data)
 
         return _make
+
+    @pytest.mark.parametrize("setting", [False, None])
+    async def test_optional_survey_edit_can_clear_number(
+        self, make_uow, edit_factory, admin_actor, setting
+    ):
+        survey = _make_survey_orm(requires_response_number=setting)
+        response = _make_response(survey_id=survey.id, response_number=9)
+        uow = make_uow(survey=survey, existing_response=response)
+
+        result = await SurveyResponseService(uow).edit(
+            response.id, edit_factory(response_number=None), admin_actor
+        )
+
+        assert result.response_number is None
+        assert (
+            uow.survey_response_edit_repo.create.call_args.kwargs["response_number"]
+            is None
+        )
+        assert (
+            uow.survey_response_repo.update_answers.call_args.kwargs["response_number"]
+            is None
+        )
+
+    async def test_required_survey_edit_rejects_missing_number_without_audit(
+        self, make_uow, edit_factory, admin_actor
+    ):
+        survey = _make_survey_orm(requires_response_number=True)
+        response = _make_response(survey_id=survey.id)
+        uow = make_uow(survey=survey, existing_response=response)
+
+        with pytest.raises(InvalidSurveyResponseError):
+            await SurveyResponseService(uow).edit(
+                response.id, edit_factory(response_number=None), admin_actor
+            )
+
+        uow.survey_response_edit_repo.create.assert_not_called()
+        uow.survey_response_repo.update_answers.assert_not_called()
+        uow.commit.assert_not_called()
 
     async def test_response_not_found(self, make_uow, edit_factory, admin_actor):
         uow = make_uow(existing_response=None)

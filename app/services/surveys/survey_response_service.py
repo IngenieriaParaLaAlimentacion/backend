@@ -87,6 +87,16 @@ class SurveyResponseService:
         return None, None
 
     @staticmethod
+    def _validate_response_number(
+        survey: SurveyDomain,
+        response_number: int | None,
+    ) -> int | None:
+        """Enforce the survey's conditional response-number invariant."""
+        if survey.requires_response_number is True and response_number is None:
+            raise InvalidSurveyResponseError("This survey requires a response_number.")
+        return response_number
+
+    @staticmethod
     def _assert_target_filters_applicable(
         survey: SurveyDomain,
         *,
@@ -278,6 +288,7 @@ class SurveyResponseService:
                 return self._replayed(existing, survey_id), False
 
         survey = await self._get_survey_or_raise(survey_id)
+        response_number = self._validate_response_number(survey, data.response_number)
         subject_id, establishment_id = self._resolve_target(survey, data)
         if establishment_id is not None:
             await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
@@ -296,7 +307,7 @@ class SurveyResponseService:
                 submitted_by_id=actor.user_id,
                 answers=answers,
                 score_fies=score_fies,
-                response_number=data.response_number,
+                response_number=response_number,
                 event_at=data.event_at,
             )
         except UniqueConstraintError as error:
@@ -327,7 +338,7 @@ class SurveyResponseService:
 
         Every edit attempt appends a row to ``survey_response_edits``; the
         response's current state only advances if ``event_at`` is at least as
-        recent as what it already has (last-write-wins).The FIES score is
+        recent as what it already has (last-write-wins). The FIES score is
         recalculated from the new answers whenever the edit is applied.
 
         Raises:
@@ -344,6 +355,7 @@ class SurveyResponseService:
                 return SurveyResponseDomain.from_db(response)
 
         survey = await self._get_survey_or_raise(response.survey_id)
+        response_number = self._validate_response_number(survey, data.response_number)
         answers = self._validate_answers(survey.questions, data.answers)
         score_fies = self._calculate_fies_score(survey, answers)
 
@@ -353,7 +365,7 @@ class SurveyResponseService:
                 response_id=response.id,
                 edited_by_id=actor.user_id,
                 answers=answers,
-                response_number=data.response_number,
+                response_number=response_number,
                 event_at=data.event_at,
             )
         except UniqueConstraintError:
@@ -368,7 +380,7 @@ class SurveyResponseService:
                 response,
                 answers=answers,
                 score_fies=score_fies,
-                response_number=data.response_number,
+                response_number=response_number,
                 event_at=data.event_at,
             )
         await self.uow.commit()

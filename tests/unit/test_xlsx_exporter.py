@@ -2,6 +2,7 @@ import uuid
 from datetime import date, datetime, timezone
 from io import BytesIO
 
+import pytest
 from openpyxl import load_workbook
 
 from app.domain.common_domains import IdentifierRefDomain
@@ -28,6 +29,7 @@ NOW = datetime(2026, 1, 1, tzinfo=timezone.utc)
 def _survey_domain(
     fies: bool = False,
     response_target: SurveyResponseTarget = SurveyResponseTarget.ANONYMOUS,
+    requires_response_number: bool | None = True,
 ) -> SurveyDomain:
     question = QuestionDomain(
         id=uuid.uuid4(),
@@ -45,6 +47,7 @@ def _survey_domain(
         instrument_type=SurveyInstrumentType.FIES
         if fies
         else SurveyInstrumentType.CUSTOM,
+        requires_response_number=requires_response_number,
         created_by_id=uuid.uuid4(),
         is_active=True,
         response_count=0,
@@ -128,6 +131,21 @@ class TestXlsxSurveyResponseExporter:
         workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
         sheet = workbook["Respuestas"]
         assert sheet.max_row == 3  # header + 2 responses
+
+    @pytest.mark.parametrize("setting", [False, None])
+    def test_optional_survey_omits_response_number_column(self, setting):
+        survey = _survey_domain(requires_response_number=setting)
+        responses = [_detail_response(survey, response_number=88)]
+
+        workbook = load_workbook(
+            BytesIO(XlsxSurveyResponseExporter().export(survey, responses))
+        )
+        sheet = workbook["Respuestas"]
+        header = [cell.value for cell in sheet[1]]
+        row = [cell.value for cell in sheet[2]]
+
+        assert "N° de respuesta" not in header
+        assert 88 not in row
 
     def test_data_sheet_resolves_option_label(self):
         survey = _survey_domain()

@@ -81,12 +81,30 @@ class TestCreateAndGet:
         body = response.json()
         assert body["name"] == "Encuesta A"
         assert body["response_target"] == "anonymous"
+        assert body["requires_response_number"] is None
         assert body["is_active"] is True
         assert body["created_by_id"] == str(user_id)
         assert [q["position"] for q in body["questions"]] == [0, 1]
         first = body["questions"][0]
         assert first["response_type"] == "single_choice"
         assert [o["text"] for o in first["options"]] == ["Sí", "No"]
+
+    @pytest.mark.parametrize("setting", [True, False])
+    async def test_response_number_setting_round_trips(
+        self, client, admin_author, setting
+    ):
+        headers, _ = admin_author
+        body = _survey_body(name=f"Number setting {setting}")
+        body["requires_response_number"] = setting
+
+        created = await client.post(SURVEYS_URL, json=body, headers=headers)
+        fetched = await client.get(
+            f"{SURVEYS_URL}/{created.json()['id']}", headers=headers
+        )
+
+        assert created.status_code == status.HTTP_201_CREATED
+        assert created.json()["requires_response_number"] is setting
+        assert fetched.json()["requires_response_number"] is setting
 
     async def test_get_returns_questions_in_order(self, client, admin_author):
         headers, _ = admin_author
@@ -325,6 +343,36 @@ class TestUpdate:
 
 
 class TestLockedAfterResponses:
+    async def test_effective_response_number_setting_is_locked(
+        self, client, admin_author, db_establishment
+    ):
+        headers, _ = admin_author
+        create_body = _survey_body(name="Locked number policy")
+        create_body["requires_response_number"] = True
+        created_response = await client.post(
+            SURVEYS_URL, json=create_body, headers=headers
+        )
+        created = created_response.json()
+        first = created["questions"][0]
+        submitted = await client.post(
+            f"{SURVEYS_URL}/{created['id']}/responses",
+            json={
+                "answers": {first["id"]: first["options"][0]["id"]},
+                "response_number": 1,
+                "event_at": "2024-06-01T12:00:00Z",
+            },
+            headers=headers,
+        )
+        update_body = _survey_body(name=created["name"], questions=created["questions"])
+        update_body["requires_response_number"] = False
+
+        updated = await client.put(
+            f"{SURVEYS_URL}/{created['id']}", json=update_body, headers=headers
+        )
+
+        assert submitted.status_code == status.HTTP_201_CREATED
+        assert updated.status_code == status.HTTP_409_CONFLICT
+
     async def test_delete_question_after_response_returns_409(
         self, client, admin_author, db_establishment
     ):
@@ -710,6 +758,22 @@ class TestLockedAfterResponses:
 
 
 class TestDuplicate:
+    @pytest.mark.parametrize("setting", [True, False, None])
+    async def test_duplicate_inherits_response_number_setting(
+        self, client, admin_author, setting
+    ):
+        headers, _ = admin_author
+        body = _survey_body(name=f"Source {setting}")
+        if setting is not None:
+            body["requires_response_number"] = setting
+        original = await client.post(SURVEYS_URL, json=body, headers=headers)
+
+        duplicate = await client.post(
+            f"{SURVEYS_URL}/{original.json()['id']}/duplicate", headers=headers
+        )
+
+        assert duplicate.json()["requires_response_number"] is setting
+
     async def test_duplicate_suffixes_name(self, client, admin_author):
         headers, _ = admin_author
         survey_id = (await _create(client, headers, name="Base")).json()["id"]
@@ -866,6 +930,7 @@ class TestFiesTemplate:
         response = await client.get(f"{SURVEYS_URL}/templates/fies", headers=headers)
         assert response.status_code == status.HTTP_200_OK
         body = response.json()
+        assert body["requires_response_number"] is True
         assert body["name"] == ""
         assert "12 meses" in body["description"]
         assert len(body["questions"]) == 8
