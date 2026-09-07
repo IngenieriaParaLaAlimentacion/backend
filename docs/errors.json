@@ -145,6 +145,12 @@
       "description": "Raised when a date-range filter starts after it ends."
     },
     {
+      "type": "/errors/invalid-response-number-range",
+      "status": 400,
+      "exception": "InvalidNumberRangeError",
+      "description": "Raised when a response-number-range filter starts above where it ends."
+    },
+    {
       "type": "/errors/invalid-survey-payload",
       "status": 400,
       "exception": "InvalidSurveyPayloadError",

@@ -63,6 +63,7 @@ def _make_question(
 def _make_survey_orm(
     response_target: SurveyResponseTarget = SurveyResponseTarget.ANONYMOUS,
     questions: list | None = None,
+    requires_response_number: bool | None = None,
 ) -> MagicMock:
     """A MagicMock standing in for an ORM Survey with eager-loaded relations."""
     s = MagicMock()
@@ -70,6 +71,7 @@ def _make_survey_orm(
     s.name = "Encuesta"
     s.description = None
     s.response_target = response_target
+    s.requires_response_number = requires_response_number
     s.created_by_id = uuid.uuid4()
     s.is_active = True
     s.response_count = 0
@@ -85,6 +87,7 @@ def _make_response(
     establishment_id: uuid.UUID | None = None,
     submitted_by_id: uuid.UUID | None = None,
     answers: dict | None = None,
+    response_number: int = 1,
     event_at: datetime = NOW,
 ) -> MagicMock:
     """A MagicMock standing in for an ORM SurveyResponse.
@@ -98,6 +101,7 @@ def _make_response(
     r.establishment_id = establishment_id
     r.submitted_by_id = submitted_by_id or uuid.uuid4()
     r.answers = answers if answers is not None else {}
+    r.response_number = response_number
     r.event_at = event_at
     r.created_at = NOW
     r.updated_at = NOW
@@ -126,9 +130,10 @@ def _make_fies_survey_orm(num_questions: int = 8) -> tuple[MagicMock, list[Magic
     return survey, questions
 
 
-def _apply_update_answers(response, answers, score_fies, event_at):
+def _apply_update_answers(response, answers, score_fies, response_number, event_at):
     response.answers = answers
     response.score_fies = score_fies
+    response.response_number = response_number
     response.event_at = event_at
     return response
 
@@ -266,11 +271,43 @@ class TestSubmit:
     @pytest.fixture
     def request_factory(self):
         def _make(**overrides):
-            data = dict(answers={}, event_at=NOW)
+            data = dict(answers={}, response_number=1, event_at=NOW)
             data.update(overrides)
             return SurveyResponseRequest(**data)
 
         return _make
+
+    @pytest.mark.parametrize("setting", [False, None])
+    async def test_optional_survey_accepts_missing_number(
+        self, make_uow, request_factory, admin_actor, setting
+    ):
+        survey = _make_survey_orm(requires_response_number=setting)
+        created = _make_response(survey_id=survey.id, response_number=None)
+        uow = make_uow(survey=survey, created_response=created)
+
+        result, was_created = await SurveyResponseService(uow).submit(
+            survey.id, request_factory(response_number=None), admin_actor
+        )
+
+        assert was_created is True
+        assert result.response_number is None
+        assert (
+            uow.survey_response_repo.create.call_args.kwargs["response_number"] is None
+        )
+
+    async def test_required_survey_rejects_missing_number_without_persistence(
+        self, make_uow, request_factory, admin_actor
+    ):
+        survey = _make_survey_orm(requires_response_number=True)
+        uow = make_uow(survey=survey)
+
+        with pytest.raises(InvalidSurveyResponseError):
+            await SurveyResponseService(uow).submit(
+                survey.id, request_factory(response_number=None), admin_actor
+            )
+
+        uow.survey_response_repo.create.assert_not_called()
+        uow.commit.assert_not_called()
 
     async def test_analyst_forbidden(self, make_uow, request_factory, analyst_actor):
         survey = _make_survey_orm()
@@ -315,6 +352,19 @@ class TestSubmit:
         survey = _make_survey_orm(response_target=SurveyResponseTarget.SUBJECT)
         uow = make_uow(survey=survey, subject=None)
         data = request_factory(subject_id=uuid.uuid4())
+        with pytest.raises(SubjectNotFoundError):
+            await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
+
+    async def test_subject_not_found_takes_precedence_over_required_number(
+        self, make_uow, request_factory, admin_actor
+    ):
+        survey = _make_survey_orm(
+            response_target=SurveyResponseTarget.SUBJECT,
+            requires_response_number=True,
+        )
+        uow = make_uow(survey=survey, subject=None)
+        data = request_factory(subject_id=uuid.uuid4(), response_number=None)
+
         with pytest.raises(SubjectNotFoundError):
             await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
 
@@ -430,7 +480,7 @@ class TestResolveTarget:
     @pytest.fixture
     def request_factory(self):
         def _make(**overrides):
-            data = dict(answers={}, event_at=NOW)
+            data = dict(answers={}, response_number=1, event_at=NOW)
             data.update(overrides)
             return SurveyResponseRequest(**data)
 
@@ -520,7 +570,7 @@ class TestTargetUniqueness:
     @pytest.fixture
     def request_factory(self):
         def _make(**overrides):
-            data = dict(answers={}, event_at=NOW)
+            data = dict(answers={}, response_number=1, event_at=NOW)
             data.update(overrides)
             return SurveyResponseRequest(**data)
 
@@ -559,6 +609,19 @@ class TestTargetUniqueness:
         with pytest.raises(SurveyResponseAlreadyExistsError):
             await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
 
+    async def test_target_conflict_takes_precedence_over_required_number(
+        self, make_uow, request_factory, admin_actor
+    ):
+        survey = _make_survey_orm(
+            response_target=SurveyResponseTarget.SUBJECT,
+            requires_response_number=True,
+        )
+        uow = make_uow(survey=survey, target_response=self._answered_response())
+        data = request_factory(subject_id=uuid.uuid4(), response_number=None)
+
+        with pytest.raises(SurveyResponseAlreadyExistsError):
+            await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
+
     async def test_conflict_payload_names_who_answered_and_when(
         self, make_uow, request_factory, admin_actor
     ):
@@ -584,6 +647,19 @@ class TestTargetUniqueness:
             survey.id, request_factory(), admin_actor
         )
         assert created is True
+
+    async def test_duplicate_number_is_allowed_for_anonymous_responses(
+        self, make_uow, request_factory, admin_actor
+    ):
+        survey = _make_survey_orm(response_target=SurveyResponseTarget.ANONYMOUS)
+        uow = make_uow(survey=survey)
+
+        _, created = await SurveyResponseService(uow).submit(
+            survey.id, request_factory(response_number=1), admin_actor
+        )
+
+        assert created is True
+        assert uow.survey_response_repo.create.call_args.kwargs["response_number"] == 1
 
     async def test_raced_target_collision_becomes_conflict_not_replay(
         self, make_uow, request_factory, admin_actor
@@ -654,11 +730,49 @@ class TestEdit:
     @pytest.fixture
     def edit_factory(self):
         def _make(**overrides):
-            data = dict(answers={}, event_at=NOW)
+            data = dict(answers={}, response_number=1, event_at=NOW)
             data.update(overrides)
             return SurveyResponseEditRequest(**data)
 
         return _make
+
+    @pytest.mark.parametrize("setting", [False, None])
+    async def test_optional_survey_edit_can_clear_number(
+        self, make_uow, edit_factory, admin_actor, setting
+    ):
+        survey = _make_survey_orm(requires_response_number=setting)
+        response = _make_response(survey_id=survey.id, response_number=9)
+        uow = make_uow(survey=survey, existing_response=response)
+
+        result = await SurveyResponseService(uow).edit(
+            response.id, edit_factory(response_number=None), admin_actor
+        )
+
+        assert result.response_number is None
+        assert (
+            uow.survey_response_edit_repo.create.call_args.kwargs["response_number"]
+            is None
+        )
+        assert (
+            uow.survey_response_repo.update_answers.call_args.kwargs["response_number"]
+            is None
+        )
+
+    async def test_required_survey_edit_rejects_missing_number_without_audit(
+        self, make_uow, edit_factory, admin_actor
+    ):
+        survey = _make_survey_orm(requires_response_number=True)
+        response = _make_response(survey_id=survey.id)
+        uow = make_uow(survey=survey, existing_response=response)
+
+        with pytest.raises(InvalidSurveyResponseError):
+            await SurveyResponseService(uow).edit(
+                response.id, edit_factory(response_number=None), admin_actor
+            )
+
+        uow.survey_response_edit_repo.create.assert_not_called()
+        uow.survey_response_repo.update_answers.assert_not_called()
+        uow.commit.assert_not_called()
 
     async def test_response_not_found(self, make_uow, edit_factory, admin_actor):
         uow = make_uow(existing_response=None)
@@ -759,6 +873,27 @@ class TestEdit:
                 response.id, edit_factory(answers={}), admin_actor
             )
         uow.survey_response_edit_repo.create.assert_not_called()
+
+    async def test_edit_accepts_a_number_used_by_another_response(
+        self, make_uow, edit_factory, admin_actor
+    ):
+        survey = _make_survey_orm()
+        response = _make_response(survey_id=survey.id, response_number=2)
+        uow = make_uow(survey=survey, existing_response=response)
+
+        result = await SurveyResponseService(uow).edit(
+            response.id, edit_factory(response_number=1), admin_actor
+        )
+
+        assert result.response_number == 1
+        assert (
+            uow.survey_response_edit_repo.create.call_args.kwargs["response_number"]
+            == 1
+        )
+        assert (
+            uow.survey_response_repo.update_answers.call_args.kwargs["response_number"]
+            == 1
+        )
 
 
 class TestListBySurvey:
@@ -1008,7 +1143,7 @@ class TestFiesScoring:
     @pytest.fixture
     def request_factory(self):
         def _make(**overrides):
-            data = dict(answers={}, event_at=NOW)
+            data = dict(answers={}, response_number=1, event_at=NOW)
             data.update(overrides)
             return SurveyResponseRequest(**data)
 
@@ -1017,7 +1152,7 @@ class TestFiesScoring:
     @pytest.fixture
     def edit_factory(self):
         def _make(**overrides):
-            data = dict(answers={}, event_at=NOW)
+            data = dict(answers={}, response_number=1, event_at=NOW)
             data.update(overrides)
             return SurveyResponseEditRequest(**data)
 
@@ -1298,7 +1433,10 @@ class TestExport:
         fake_exporter.export.return_value = b"fake-bytes"
 
         result = await SurveyResponseService(uow).export(
-            survey.id, admin_actor, fake_exporter, uuid.uuid4()
+            survey.id,
+            admin_actor,
+            fake_exporter,
+            SurveyResponseListingParams(establishment_id=uuid.uuid4()),
         )
 
         assert result == b"fake-bytes"
@@ -1311,7 +1449,10 @@ class TestExport:
 
         with pytest.raises(ForbiddenError):
             await SurveyResponseService(uow).export(
-                survey.id, field_worker_actor, fake_exporter, uuid.uuid4()
+                survey.id,
+                field_worker_actor,
+                fake_exporter,
+                SurveyResponseListingParams(establishment_id=uuid.uuid4()),
             )
         fake_exporter.export.assert_not_called()
 
@@ -1321,7 +1462,10 @@ class TestExport:
 
         with pytest.raises(SurveyNotFoundError):
             await SurveyResponseService(uow).export(
-                uuid.uuid4(), admin_actor, fake_exporter, uuid.uuid4()
+                uuid.uuid4(),
+                admin_actor,
+                fake_exporter,
+                SurveyResponseListingParams(establishment_id=uuid.uuid4()),
             )
 
     async def test_filters_by_establishment(self, make_uow, admin_actor):
@@ -1333,11 +1477,15 @@ class TestExport:
         fake_exporter.export.return_value = b""
 
         await SurveyResponseService(uow).export(
-            survey.id, admin_actor, fake_exporter, establishment_id
+            survey.id,
+            admin_actor,
+            fake_exporter,
+            SurveyResponseListingParams(establishment_id=establishment_id),
         )
 
         uow.survey_response_repo.list_all_for_export.assert_awaited_once_with(
-            survey.id, establishment_id, None
+            survey.id,
+            params=SurveyResponseListingParams(establishment_id=establishment_id),
         )
 
     @pytest.mark.parametrize(
@@ -1354,7 +1502,10 @@ class TestExport:
 
         with pytest.raises(InvalidListingFilterError):
             await SurveyResponseService(uow).export(
-                survey.id, admin_actor, fake_exporter, uuid.uuid4()
+                survey.id,
+                admin_actor,
+                fake_exporter,
+                SurveyResponseListingParams(establishment_id=uuid.uuid4()),
             )
         uow.survey_response_repo.list_all_for_export.assert_not_called()
 
@@ -1367,10 +1518,12 @@ class TestExport:
         fake_exporter = MagicMock()
         fake_exporter.export.return_value = b""
 
-        await SurveyResponseService(uow).export(survey.id, admin_actor, fake_exporter)
+        await SurveyResponseService(uow).export(
+            survey.id, admin_actor, fake_exporter, SurveyResponseListingParams()
+        )
 
         uow.survey_response_repo.list_all_for_export.assert_awaited_once_with(
-            survey.id, None, None
+            survey.id, params=SurveyResponseListingParams()
         )
 
     async def test_filters_by_subject(self, make_uow, admin_actor):
@@ -1382,11 +1535,14 @@ class TestExport:
         fake_exporter.export.return_value = b""
 
         await SurveyResponseService(uow).export(
-            survey.id, admin_actor, fake_exporter, subject_id=subject_id
+            survey.id,
+            admin_actor,
+            fake_exporter,
+            SurveyResponseListingParams(subject_id=subject_id),
         )
 
         uow.survey_response_repo.list_all_for_export.assert_awaited_once_with(
-            survey.id, None, subject_id
+            survey.id, params=SurveyResponseListingParams(subject_id=subject_id)
         )
 
     @pytest.mark.parametrize(
@@ -1403,6 +1559,9 @@ class TestExport:
 
         with pytest.raises(InvalidListingFilterError):
             await SurveyResponseService(uow).export(
-                survey.id, admin_actor, fake_exporter, subject_id=uuid.uuid4()
+                survey.id,
+                admin_actor,
+                fake_exporter,
+                SurveyResponseListingParams(subject_id=uuid.uuid4()),
             )
         uow.survey_response_repo.list_all_for_export.assert_not_called()

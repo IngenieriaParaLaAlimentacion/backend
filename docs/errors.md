@@ -45,6 +45,7 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/invalid-age-range` | 400 | `InvalidAgeRangeError` | Raised when an age-range filter has a minimum above its maximum. |
 | `/errors/invalid-credentials` | 401 | `InvalidCredentialsError` | Exception raised when credentials are invalid. |
 | `/errors/invalid-date-range` | 400 | `InvalidDateRangeError` | Raised when a date-range filter starts after it ends. |
+| `/errors/invalid-response-number-range` | 400 | `InvalidNumberRangeError` | Raised when a response-number-range filter starts above where it ends. |
 | `/errors/invalid-survey-payload` | 400 | `InvalidSurveyPayloadError` | Exception raised when a reconcile payload references ids outside the survey. |
 | `/errors/invalid-survey-response` | 400 | `InvalidSurveyResponseError` | Exception raised when submitted answers fail validation, or the payload names an entity that does not match the survey's response target. |
 | `/errors/invalid-survey-structure` | 400 | `InvalidSurveyStructureError` | Exception raised when a survey's questions or options are inconsistent. |

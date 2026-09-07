@@ -51,6 +51,14 @@ def _survey_body(
     }
 
 
+def _survey_update_body(**overrides):
+    """Build a complete PUT payload with an explicit numbering policy."""
+    requires_response_number = overrides.pop("requires_response_number", False)
+    body = _survey_body(**overrides)
+    body["requires_response_number"] = requires_response_number
+    return body
+
+
 async def _create(client, headers, **overrides):
     return await client.post(
         SURVEYS_URL, json=_survey_body(**overrides), headers=headers
@@ -81,12 +89,30 @@ class TestCreateAndGet:
         body = response.json()
         assert body["name"] == "Encuesta A"
         assert body["response_target"] == "anonymous"
+        assert body["requires_response_number"] is None
         assert body["is_active"] is True
         assert body["created_by_id"] == str(user_id)
         assert [q["position"] for q in body["questions"]] == [0, 1]
         first = body["questions"][0]
         assert first["response_type"] == "single_choice"
         assert [o["text"] for o in first["options"]] == ["Sí", "No"]
+
+    @pytest.mark.parametrize("setting", [True, False])
+    async def test_response_number_setting_round_trips(
+        self, client, admin_author, setting
+    ):
+        headers, _ = admin_author
+        body = _survey_body(name=f"Number setting {setting}")
+        body["requires_response_number"] = setting
+
+        created = await client.post(SURVEYS_URL, json=body, headers=headers)
+        fetched = await client.get(
+            f"{SURVEYS_URL}/{created.json()['id']}", headers=headers
+        )
+
+        assert created.status_code == status.HTTP_201_CREATED
+        assert created.json()["requires_response_number"] is setting
+        assert fetched.json()["requires_response_number"] is setting
 
     async def test_get_returns_questions_in_order(self, client, admin_author):
         headers, _ = admin_author
@@ -259,7 +285,7 @@ class TestUpdate:
         keep = created["questions"][0]  # single_choice question, keep by id
         # Rename the survey (changes a surveys column -> exercises updated_at onupdate),
         # rename the kept question, drop the second, add a new numeric question.
-        payload = _survey_body(
+        payload = _survey_update_body(
             name="Encuesta A renombrada",
             questions=[
                 {
@@ -296,7 +322,7 @@ class TestUpdate:
     ):
         headers, _ = admin_author
         survey_id = (await _create(client, headers)).json()["id"]
-        payload = _survey_body(
+        payload = _survey_update_body(
             questions=[
                 {
                     "id": str(uuid.uuid4()),
@@ -319,12 +345,46 @@ class TestUpdate:
         analyst_headers, _ = analyst_author
         survey_id = (await _create(client, admin_headers)).json()["id"]
         response = await client.put(
-            f"{SURVEYS_URL}/{survey_id}", json=_survey_body(), headers=analyst_headers
+            f"{SURVEYS_URL}/{survey_id}",
+            json=_survey_update_body(),
+            headers=analyst_headers,
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 class TestLockedAfterResponses:
+    async def test_effective_response_number_setting_is_locked(
+        self, client, admin_author, db_establishment
+    ):
+        headers, _ = admin_author
+        create_body = _survey_body(name="Locked number policy")
+        create_body["requires_response_number"] = True
+        created_response = await client.post(
+            SURVEYS_URL, json=create_body, headers=headers
+        )
+        created = created_response.json()
+        first = created["questions"][0]
+        submitted = await client.post(
+            f"{SURVEYS_URL}/{created['id']}/responses",
+            json={
+                "answers": {first["id"]: first["options"][0]["id"]},
+                "response_number": 1,
+                "event_at": "2024-06-01T12:00:00Z",
+            },
+            headers=headers,
+        )
+        update_body = _survey_update_body(
+            name=created["name"], questions=created["questions"]
+        )
+        update_body["requires_response_number"] = False
+
+        updated = await client.put(
+            f"{SURVEYS_URL}/{created['id']}", json=update_body, headers=headers
+        )
+
+        assert submitted.status_code == status.HTTP_201_CREATED
+        assert updated.status_code == status.HTTP_409_CONFLICT
+
     async def test_delete_question_after_response_returns_409(
         self, client, admin_author, db_establishment
     ):
@@ -337,6 +397,7 @@ class TestLockedAfterResponses:
             f"{SURVEYS_URL}/{survey_id}/responses",
             json={
                 "answers": {keep["id"]: keep["options"][0]["id"]},
+                "response_number": 1,
                 "event_at": "2024-06-01T12:00:00Z",
             },
             headers=headers,
@@ -344,7 +405,7 @@ class TestLockedAfterResponses:
         assert submit.status_code == status.HTTP_201_CREATED
 
         # Drop the second question entirely -> structural deletion, locked.
-        payload = _survey_body(
+        payload = _survey_update_body(
             questions=[
                 {
                     "id": keep["id"],
@@ -404,6 +465,7 @@ class TestLockedAfterResponses:
             f"{SURVEYS_URL}/{survey_id}/responses",
             json={
                 "answers": {question["id"]: picked_option["id"]},
+                "response_number": 1,
                 "event_at": "2024-06-01T12:00:00Z",
             },
             headers=headers,
@@ -411,7 +473,7 @@ class TestLockedAfterResponses:
         assert submit.status_code == status.HTTP_201_CREATED
 
         # Always try to drop "No sabe" (index 2); only referenced when picked.
-        payload = _survey_body(
+        payload = _survey_update_body(
             questions=[
                 {
                     "id": question["id"],
@@ -447,6 +509,7 @@ class TestLockedAfterResponses:
             f"{SURVEYS_URL}/{survey_id}/responses",
             json={
                 "answers": {keep["id"]: keep["options"][0]["id"]},
+                "response_number": 1,
                 "event_at": "2024-06-01T12:00:00Z",
             },
             headers=headers,
@@ -454,7 +517,7 @@ class TestLockedAfterResponses:
         assert submit.status_code == status.HTTP_201_CREATED
 
         # Rename the kept question and leave the rest structurally identical.
-        payload = _survey_body(
+        payload = _survey_update_body(
             questions=[
                 {
                     "id": keep["id"],
@@ -503,7 +566,7 @@ class TestLockedAfterResponses:
         assert submit.status_code == status.HTTP_201_CREATED
 
         # Keep both existing questions untouched, add a new optional one.
-        payload = _survey_body(
+        payload = _survey_update_body(
             questions=[
                 {
                     "id": keep["id"],
@@ -563,7 +626,7 @@ class TestLockedAfterResponses:
 
         # A required "new" question posing as existing via a foreign id must
         # still be rejected, not slip past the lock check.
-        payload = _survey_body(
+        payload = _survey_update_body(
             questions=[
                 {
                     "id": keep["id"],
@@ -616,7 +679,7 @@ class TestLockedAfterResponses:
         assert submit.status_code == status.HTTP_201_CREATED
 
         # Keep both existing questions untouched, add a new required one.
-        payload = _survey_body(
+        payload = _survey_update_body(
             questions=[
                 {
                     "id": keep["id"],
@@ -679,13 +742,14 @@ class TestLockedAfterResponses:
             f"{SURVEYS_URL}/{survey_id}/responses",
             json={
                 "answers": {question["id"]: [verduras["id"], lacteos["id"]]},
+                "response_number": 1,
                 "event_at": "2024-06-01T12:00:00Z",
             },
             headers=headers,
         )
         assert submit.status_code == status.HTTP_201_CREATED
 
-        payload = _survey_body(
+        payload = _survey_update_body(
             questions=[
                 {
                     "id": question["id"],
@@ -706,6 +770,22 @@ class TestLockedAfterResponses:
 
 
 class TestDuplicate:
+    @pytest.mark.parametrize("setting", [True, False, None])
+    async def test_duplicate_inherits_response_number_setting(
+        self, client, admin_author, setting
+    ):
+        headers, _ = admin_author
+        body = _survey_body(name=f"Source {setting}")
+        if setting is not None:
+            body["requires_response_number"] = setting
+        original = await client.post(SURVEYS_URL, json=body, headers=headers)
+
+        duplicate = await client.post(
+            f"{SURVEYS_URL}/{original.json()['id']}/duplicate", headers=headers
+        )
+
+        assert duplicate.json()["requires_response_number"] is setting
+
     async def test_duplicate_suffixes_name(self, client, admin_author):
         headers, _ = admin_author
         survey_id = (await _create(client, headers, name="Base")).json()["id"]
@@ -862,6 +942,7 @@ class TestFiesTemplate:
         response = await client.get(f"{SURVEYS_URL}/templates/fies", headers=headers)
         assert response.status_code == status.HTTP_200_OK
         body = response.json()
+        assert body["requires_response_number"] is True
         assert body["name"] == ""
         assert "12 meses" in body["description"]
         assert len(body["questions"]) == 8

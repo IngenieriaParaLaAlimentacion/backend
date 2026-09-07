@@ -1,8 +1,10 @@
 import uuid
+from io import BytesIO
 
 import pytest
 import pytest_asyncio
 from fastapi import status
+from openpyxl import load_workbook
 from sqlalchemy import func, select
 
 from app.domain.user import UserRole
@@ -85,6 +87,7 @@ async def _create_survey(client, headers, **overrides):
         "name": overrides.pop("name", "Encuesta A"),
         "description": overrides.pop("description", None),
         "response_target": overrides.pop("response_target", "anonymous"),
+        "requires_response_number": overrides.pop("requires_response_number", True),
         "questions": overrides.pop(
             "questions",
             [
@@ -114,7 +117,7 @@ def _valid_answers(survey: dict) -> dict:
     return {question["id"]: question["options"][0]["id"]}
 
 
-def _response_body(survey_id, answers, **overrides) -> dict:
+def _response_body(survey_id, answers, response_number: int = 1, **overrides) -> dict:
     """Build a submission body for the default (anonymous) survey.
 
     Anonymous surveys carry no target, so nothing else is sent. Tests covering
@@ -124,6 +127,7 @@ def _response_body(survey_id, answers, **overrides) -> dict:
     body = {
         "survey_id": str(survey_id),
         "answers": answers,
+        "response_number": response_number,
         "event_at": NOW,
     }
     body.update(overrides)
@@ -434,6 +438,82 @@ class TestTargetUniqueness:
             )
             assert response.status_code == status.HTTP_201_CREATED
 
+    async def test_required_survey_rejects_missing_number(self, client, admin_user):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers, requires_response_number=True)
+        body = _response_body(survey["id"], _valid_answers(survey))
+        del body["response_number"]
+
+        response = await client.post(
+            _responses_url(survey["id"]), json=body, headers=headers
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json()["type"].endswith("/errors/invalid-survey-response")
+
+    @pytest.mark.parametrize("setting", [False, None])
+    async def test_optional_survey_persists_null_number(
+        self, client, admin_user, setting
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers, requires_response_number=setting)
+        body = _response_body(
+            survey["id"], _valid_answers(survey), response_number=None
+        )
+
+        response = await client.post(
+            _responses_url(survey["id"]), json=body, headers=headers
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.json()["response_number"] is None
+
+    async def test_anonymous_responses_may_share_a_response_number(
+        self, client, admin_user
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        body = _response_body(survey["id"], _valid_answers(survey), response_number=1)
+
+        first = await client.post(
+            _responses_url(survey["id"]), json=body, headers=headers
+        )
+        second = await client.post(
+            _responses_url(survey["id"]), json=body, headers=headers
+        )
+
+        assert first.status_code == status.HTTP_201_CREATED
+        assert second.status_code == status.HTTP_201_CREATED
+        assert first.json()["response_number"] == second.json()["response_number"] == 1
+
+    @pytest.mark.parametrize("target", ["subject", "establishment"])
+    async def test_targeted_responses_may_share_a_number_when_targets_differ(
+        self, client, admin_user, db_establishment, db_subject, target
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers, response_target=target)
+        if target == "subject":
+            other_target = await _make_subject(dni=33444556)
+            target_key = "subject_id"
+            target_ids = (db_subject.id, other_target.id)
+        else:
+            other_target = await _make_establishment(place_id="place-test-003")
+            target_key = "establishment_id"
+            target_ids = (db_establishment.id, other_target.id)
+
+        for target_id in target_ids:
+            response = await client.post(
+                _responses_url(survey["id"]),
+                json=_response_body(
+                    survey["id"],
+                    _valid_answers(survey),
+                    response_number=1,
+                    **{target_key: str(target_id)},
+                ),
+                headers=headers,
+            )
+            assert response.status_code == status.HTTP_201_CREATED
+
     async def test_same_subject_may_answer_a_different_survey(
         self, client, admin_user, db_subject
     ):
@@ -601,11 +681,77 @@ class TestResponseCount:
 
 
 class TestEdit:
+    async def test_optional_edit_clears_live_and_audit_number(
+        self, client, db_establishment, admin_user
+    ):
+        from app.db.database import AsyncSessionLocal
+        from app.models.surveys.survey_response import SurveyResponse
+        from app.models.surveys.survey_response_edit import SurveyResponseEdit
+
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers, requires_response_number=False)
+        created = (
+            await client.post(
+                _responses_url(survey["id"]),
+                json=_response_body(
+                    survey["id"], _valid_answers(survey), response_number=12
+                ),
+                headers=headers,
+            )
+        ).json()
+
+        edited = await client.put(
+            _responses_url(survey["id"], created["id"]),
+            json={"answers": _valid_answers(survey), "event_at": NOW},
+            headers=headers,
+        )
+
+        assert edited.status_code == status.HTTP_200_OK
+        assert edited.json()["response_number"] is None
+        async with AsyncSessionLocal() as session:
+            live = await session.get(SurveyResponse, uuid.UUID(created["id"]))
+            audit = await session.scalar(
+                select(SurveyResponseEdit).where(
+                    SurveyResponseEdit.response_id == uuid.UUID(created["id"])
+                )
+            )
+        assert live.response_number is None
+        assert audit.response_number is None
+
+    async def test_required_edit_without_number_creates_no_audit(
+        self, client, db_establishment, admin_user
+    ):
+        from app.db.database import AsyncSessionLocal
+        from app.models.surveys.survey_response_edit import SurveyResponseEdit
+
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers, requires_response_number=True)
+        created = (
+            await client.post(
+                _responses_url(survey["id"]),
+                json=_response_body(survey["id"], _valid_answers(survey)),
+                headers=headers,
+            )
+        ).json()
+
+        edited = await client.put(
+            _responses_url(survey["id"], created["id"]),
+            json={"answers": _valid_answers(survey), "event_at": NOW},
+            headers=headers,
+        )
+
+        assert edited.status_code == status.HTTP_400_BAD_REQUEST
+        async with AsyncSessionLocal() as session:
+            count = await session.scalar(
+                select(func.count()).select_from(SurveyResponseEdit)
+            )
+        assert count == 0
+
     async def test_missing_response_returns_404(self, client, admin_user):
         headers, _ = admin_user
         response = await client.put(
             _responses_url(uuid.uuid4(), uuid.uuid4()),
-            json={"answers": {}, "event_at": NOW},
+            json={"answers": {}, "response_number": 1, "event_at": NOW},
             headers=headers,
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -625,7 +771,11 @@ class TestEdit:
         ).json()
         response = await client.put(
             _responses_url(created["survey_id"], created["id"]),
-            json={"answers": _valid_answers(survey), "event_at": NOW},
+            json={
+                "answers": _valid_answers(survey),
+                "response_number": created["response_number"],
+                "event_at": NOW,
+            },
             headers=fw_headers,
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -647,7 +797,11 @@ class TestEdit:
         new_answers = {question["id"]: question["options"][1]["id"]}
         response = await client.put(
             _responses_url(created["survey_id"], created["id"]),
-            json={"answers": new_answers, "event_at": NOW},
+            json={
+                "answers": new_answers,
+                "response_number": created["response_number"],
+                "event_at": NOW,
+            },
             headers=fw_headers,
         )
         assert response.status_code == status.HTTP_200_OK
@@ -668,7 +822,11 @@ class TestEdit:
         ).json()
         response = await client.put(
             _responses_url(created["survey_id"], created["id"]),
-            json={"answers": _valid_answers(survey), "event_at": NOW},
+            json={
+                "answers": _valid_answers(survey),
+                "response_number": created["response_number"],
+                "event_at": NOW,
+            },
             headers=admin_headers,
         )
         assert response.status_code == status.HTTP_200_OK
@@ -687,7 +845,11 @@ class TestEdit:
         ).json()
         await client.put(
             _responses_url(created["survey_id"], created["id"]),
-            json={"answers": _valid_answers(survey), "event_at": NOW},
+            json={
+                "answers": _valid_answers(survey),
+                "response_number": created["response_number"],
+                "event_at": NOW,
+            },
             headers=headers,
         )
 
@@ -698,6 +860,49 @@ class TestEdit:
                 select(func.count()).select_from(SurveyResponseEdit)
             )
             assert count.scalar_one() == 1
+
+    async def test_edit_to_a_used_number_succeeds_and_preserves_audit_snapshot(
+        self, client, db_establishment, admin_user
+    ):
+        from app.db.database import AsyncSessionLocal
+        from app.models.surveys.survey_response_edit import SurveyResponseEdit
+
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        answers = _valid_answers(survey)
+        first = await client.post(
+            _responses_url(survey["id"]),
+            json=_response_body(survey["id"], answers, response_number=1),
+            headers=headers,
+        )
+        second = await client.post(
+            _responses_url(survey["id"]),
+            json=_response_body(survey["id"], answers, response_number=2),
+            headers=headers,
+        )
+        assert first.status_code == status.HTTP_201_CREATED
+        assert second.status_code == status.HTTP_201_CREATED
+
+        edited = await client.put(
+            _responses_url(survey["id"], second.json()["id"]),
+            json={
+                "answers": answers,
+                "response_number": 1,
+                "event_at": NOW,
+            },
+            headers=headers,
+        )
+
+        assert edited.status_code == status.HTTP_200_OK
+        assert edited.json()["response_number"] == 1
+        async with AsyncSessionLocal() as session:
+            audit = await session.scalar(
+                select(SurveyResponseEdit).where(
+                    SurveyResponseEdit.response_id == uuid.UUID(second.json()["id"])
+                )
+            )
+        assert audit is not None
+        assert audit.response_number == 1
 
     async def test_last_write_wins_older_event_at_does_not_overwrite(
         self, client, db_establishment, admin_user
@@ -719,7 +924,11 @@ class TestEdit:
 
         response = await client.put(
             _responses_url(created["survey_id"], created["id"]),
-            json={"answers": older_answers, "event_at": "2024-06-01T00:00:00Z"},
+            json={
+                "answers": older_answers,
+                "response_number": created["response_number"],
+                "event_at": "2024-06-01T00:00:00Z",
+            },
             headers=headers,
         )
         assert response.status_code == status.HTTP_200_OK
@@ -1337,7 +1546,11 @@ class TestFiesScoring:
         edited = (
             await client.put(
                 _responses_url(created["survey_id"], created["id"]),
-                json={"answers": new_answers, "event_at": NOW},
+                json={
+                    "answers": new_answers,
+                    "response_number": created["response_number"],
+                    "event_at": NOW,
+                },
                 headers=headers,
             )
         ).json()
@@ -1537,6 +1750,47 @@ class TestListFilters:
         ids = [item["id"] for item in response.json()["items"]]
         assert ids == [recent["id"]]
         assert old["id"] not in ids
+
+    async def test_response_number_exact_and_range_filters_include_duplicates(
+        self, client, db_establishment, admin_user
+    ):
+        """Number filters return every response sharing the requested number."""
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        responses = []
+        for response_number in (74, 74, 75):
+            response = await client.post(
+                _responses_url(survey["id"]),
+                json=_response_body(
+                    survey["id"],
+                    _valid_answers(survey),
+                    response_number=response_number,
+                ),
+                headers=headers,
+            )
+            assert response.status_code == status.HTTP_201_CREATED
+            responses.append(response.json())
+
+        exact = await client.get(
+            _responses_url(survey["id"]),
+            params={"response_number": 74},
+            headers=headers,
+        )
+        assert exact.status_code == status.HTTP_200_OK
+        assert {item["id"] for item in exact.json()["items"]} == {
+            responses[0]["id"],
+            responses[1]["id"],
+        }
+
+        ranged = await client.get(
+            _responses_url(survey["id"]),
+            params={"response_number_from": 74, "response_number_to": 75},
+            headers=headers,
+        )
+        assert ranged.status_code == status.HTTP_200_OK
+        assert {item["id"] for item in ranged.json()["items"]} == {
+            item["id"] for item in responses
+        }
 
     async def test_filters_by_city(self, client, db_establishment, admin_user):
         headers, _ = admin_user
@@ -1807,6 +2061,35 @@ class TestExport:
         assert response.status_code == status.HTTP_200_OK
         assert "spreadsheetml" in response.headers["content-type"]
         assert response.content[:2] == b"PK"  # xlsx is a zip archive
+
+    async def test_response_number_range_export_includes_duplicates(
+        self, client, db_establishment, admin_user
+    ):
+        """The number range export retains all matching duplicate labels."""
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        for response_number in (74, 74, 75):
+            response = await client.post(
+                _responses_url(survey["id"]),
+                json=_response_body(
+                    survey["id"],
+                    _valid_answers(survey),
+                    response_number=response_number,
+                ),
+                headers=headers,
+            )
+            assert response.status_code == status.HTTP_201_CREATED
+
+        response = await client.get(
+            _responses_url(survey["id"], "export"),
+            params={"response_number_from": 74, "response_number_to": 74},
+            headers=headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        workbook = load_workbook(BytesIO(response.content))
+        rows = list(workbook["Respuestas"].iter_rows(min_row=2, values_only=True))
+        assert [row[0] for row in rows] == [74, 74]
 
     async def test_filters_by_establishment(self, client, db_establishment, admin_user):
         headers, _ = admin_user

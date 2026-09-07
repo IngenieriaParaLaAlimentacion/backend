@@ -75,6 +75,13 @@ class SurveyCreateRequest(BaseModel):
         )
     )
     instrument_type: SurveyInstrumentType = SurveyInstrumentType.CUSTOM
+    requires_response_number: bool | None = Field(
+        default=None,
+        description=(
+            "Whether every response must carry a response number. Null/omitted "
+            "keeps numbering optional for backward compatibility."
+        ),
+    )
     questions: list[QuestionInput] = Field(default_factory=list)
 
     @field_validator("name")
@@ -91,8 +98,15 @@ class SurveyCreateRequest(BaseModel):
 
 
 class SurveyUpdateRequest(SurveyCreateRequest):
-    """Declarative survey configuration for a reconciling ``PUT`` (same shape as
-    create; question/option ids identify rows to keep)."""
+    """Complete survey configuration for a reconciling ``PUT``.
+
+    Question and option ids identify rows to keep. All configuration fields must
+    carry their desired value, including ``requires_response_number``.
+    """
+
+    requires_response_number: bool = Field(
+        description="Whether every response must carry a response number."
+    )
 
 
 class SurveyStatusRequest(BaseModel):
@@ -130,6 +144,7 @@ class SurveyDetailResponse(BaseModel):
     name: str
     description: str | None
     response_target: SurveyResponseTarget
+    requires_response_number: bool | None
     is_active: bool
     created_by_id: UUID
     response_count: int
@@ -144,6 +159,7 @@ class SurveyListItem(BaseModel):
     id: UUID
     name: str
     response_target: SurveyResponseTarget
+    requires_response_number: bool | None
     is_active: bool
     created_by_id: UUID
     question_count: int
@@ -173,4 +189,5 @@ class SurveyTemplateResponse(BaseModel):
     name: str
     description: str | None
     response_target: SurveyResponseTarget
+    requires_response_number: bool
     questions: list[TemplateQuestion]

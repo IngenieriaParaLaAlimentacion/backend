@@ -123,12 +123,15 @@ async def _create_survey(
     return response.json()
 
 
-async def _submit_survey_response(client, headers, survey, event_at, **overrides):
+async def _submit_survey_response(
+    client, headers, survey, event_at, response_number: int | None = 1, **overrides
+):
     """Submit to an anonymous survey, which carries no target entity."""
     question = survey["questions"][0]
     body = {
         "survey_id": survey["id"],
         "answers": {question["id"]: question["options"][0]["id"]},
+        "response_number": response_number,
         "event_at": event_at,
         **overrides,
     }
@@ -278,6 +281,24 @@ class TestTypeFilter:
 
 
 class TestSurveyResponseActivity:
+    async def test_numberless_response_appears_with_null_number(
+        self, client, db_establishment, field_worker_a, survey_author
+    ):
+        headers, _ = field_worker_a
+        survey = await _create_survey(client, survey_author)
+        await _submit_survey_response(
+            client,
+            headers,
+            survey,
+            "2024-01-01T00:00:00Z",
+            response_number=None,
+        )
+
+        response = await client.get(ACTIVITY_URL, headers=headers)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["items"][0]["survey_response"]["response_number"] is None
+
     async def test_submitted_response_appears_for_submitter(
         self, client, db_establishment, field_worker_a, survey_author
     ):

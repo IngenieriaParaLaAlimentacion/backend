@@ -10,6 +10,7 @@ from sqlalchemy.orm import noload
 
 from app.domain.survey import (
     QuestionInputData,
+    SurveyInstrumentType,
     SurveyListingParams,
     SurveyResponseTarget,
 )
@@ -223,7 +224,8 @@ class SurveyRepository:
         name: str,
         description: str | None,
         response_target: SurveyResponseTarget,
-        instrument_type,
+        instrument_type: SurveyInstrumentType,
+        requires_response_number: bool | None,
         created_by_id: UUID,
         questions: list[QuestionInputData],
     ) -> Survey:
@@ -238,6 +240,7 @@ class SurveyRepository:
             description=description,
             response_target=response_target,
             instrument_type=instrument_type,
+            requires_response_number=requires_response_number,
             created_by_id=created_by_id,
             questions=[
                 self._build_question(q, position)
@@ -254,7 +257,8 @@ class SurveyRepository:
         name: str,
         description: str | None,
         response_target: SurveyResponseTarget,
-        instrument_type,
+        instrument_type: SurveyInstrumentType,
+        requires_response_number: bool | None,
         questions: list[QuestionInputData],
     ) -> Survey:
         """Declaratively reconcile a survey to match the supplied configuration.
@@ -272,6 +276,7 @@ class SurveyRepository:
         survey.description = description
         survey.response_target = response_target
         survey.instrument_type = instrument_type
+        survey.requires_response_number = requires_response_number
         self._reconcile_questions(survey, questions)
         await self._flush_aggregate(survey, name)
         return survey
@@ -297,6 +302,7 @@ class SurveyRepository:
             description=source.description,
             response_target=source.response_target,
             instrument_type=source.instrument_type,
+            requires_response_number=source.requires_response_number,
             is_active=source.is_active,
             created_by_id=created_by_id,
             questions=[

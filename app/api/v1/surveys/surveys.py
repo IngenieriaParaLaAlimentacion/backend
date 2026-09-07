@@ -35,7 +35,8 @@ router = APIRouter(prefix="/surveys")
     description=(
         "Create a FIES or custom survey with its ordered questions and options. "
         "`response_target` fixes what each response will be about — a subject, "
-        "an establishment, or nobody — and is locked once responses exist. "
+        "an establishment, or nobody. `requires_response_number` controls whether "
+        "responses must carry a number. Both settings are locked once responses exist. "
         "Accessible by admins and analysts."
     ),
     responses={
@@ -87,7 +88,8 @@ async def list_surveys(
     summary="Get the FIES survey template",
     description=(
         "Returns the canonical 8-item FAO FIES instrument as a ready-to-edit draft "
-        "(no ids). The author fills in the name before saving."
+        "(no ids), with response-number requiredness enabled by default. The author "
+        "fills in the name before saving."
     ),
     responses=AUTH_RESPONSES,
 )
@@ -103,8 +105,8 @@ async def get_fies_template(
     summary="List surveys available to the caller",
     description=(
         "Paginated list of every active survey. Each item carries "
-        "`response_target`, so the client knows which entity to ask for before "
-        "opening the form. Accessible to any authenticated role."
+        "`response_target` and `requires_response_number`, so the client can build "
+        "the correct response form. Accessible to any authenticated role."
     ),
     responses=AUTH_RESPONSES,
 )
@@ -183,10 +185,13 @@ async def get_survey(
     summary="Update a survey",
     description=(
         "Declaratively replace a survey's configuration. Questions and options are "
-        "reconciled by id. Once the survey has responses, existing questions can be "
+        "reconciled by id. The payload must explicitly include the desired "
+        "`requires_response_number` value. Once the survey has responses, existing "
+        "questions can be "
         "reordered or renamed, but not removed, made required, have their "
         "response_type changed, or lose an option some response already picked; "
-        "new questions may only be added if they are optional. Restricted to the "
+        "new questions may only be added if they are optional. Response-number "
+        "requiredness is also locked once responses exist. Restricted to the "
         "author or an admin."
     ),
     responses={
@@ -215,7 +220,8 @@ async def update_survey(
     summary="Duplicate a survey",
     description=(
         "Create a new survey from an existing one, deep-copying its questions, "
-        "options and `response_target` under a unique '<name> (copy)' name."
+        "options, `response_target`, and response-number setting under a unique "
+        "'<name> (copy)' name."
     ),
     responses={
         **AUTH_RESPONSES,

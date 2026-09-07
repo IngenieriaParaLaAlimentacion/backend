@@ -68,16 +68,24 @@ class SurveyService:
         survey: Survey,
         new_questions: list[QuestionInputData],
         response_target: SurveyResponseTarget,
+        requires_response_number: bool,
     ) -> None:
-        """Raise if an edit would invalidate existing answers: a changed
-        response target, a deleted question, a changed response_type, optional
-        turning required, a new required question, or removing a choice option
-        some response already selected."""
+        """Raise if an edit would invalidate existing answers: a changed response
+        target or response-number requiredness, a deleted question, a changed
+        response_type, optional turning required, a new required question, or
+        removing a choice option some response already selected."""
         if survey.response_count == 0:
             return
         if response_target != survey.response_target:
             raise SurveyLockedError(
                 "A survey with recorded responses cannot change its response target.",
+            )
+        if (survey.requires_response_number is True) != (
+            requires_response_number is True
+        ):
+            raise SurveyLockedError(
+                "A survey with recorded responses cannot change response-number "
+                "requiredness."
             )
         existing_ids = {question.id for question in survey.questions}
         for new in new_questions:
@@ -228,6 +236,7 @@ class SurveyService:
                 description=data.description,
                 response_target=data.response_target,
                 instrument_type=data.instrument_type,
+                requires_response_number=data.requires_response_number,
                 created_by_id=actor.user_id,
                 questions=self._to_question_inputs(data.questions),
             )
@@ -314,7 +323,12 @@ class SurveyService:
         self._assert_can_edit(actor, survey)
 
         new_questions = self._to_question_inputs(data.questions)
-        await self._assert_editable(survey, new_questions, data.response_target)
+        await self._assert_editable(
+            survey,
+            new_questions,
+            data.response_target,
+            data.requires_response_number,
+        )
 
         if await self.uow.survey_repo.name_exists(data.name, exclude_id=survey.id):
             raise SurveyAlreadyExistsError(data.name)
@@ -327,6 +341,7 @@ class SurveyService:
                 description=data.description,
                 response_target=data.response_target,
                 instrument_type=data.instrument_type,
+                requires_response_number=data.requires_response_number,
                 questions=new_questions,
             )
         except UniqueConstraintError:

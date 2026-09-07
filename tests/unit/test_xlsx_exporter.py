@@ -2,6 +2,7 @@ import uuid
 from datetime import date, datetime, timezone
 from io import BytesIO
 
+import pytest
 from openpyxl import load_workbook
 
 from app.domain.common_domains import IdentifierRefDomain
@@ -28,6 +29,7 @@ NOW = datetime(2026, 1, 1, tzinfo=timezone.utc)
 def _survey_domain(
     fies: bool = False,
     response_target: SurveyResponseTarget = SurveyResponseTarget.ANONYMOUS,
+    requires_response_number: bool | None = True,
 ) -> SurveyDomain:
     question = QuestionDomain(
         id=uuid.uuid4(),
@@ -45,6 +47,7 @@ def _survey_domain(
         instrument_type=SurveyInstrumentType.FIES
         if fies
         else SurveyInstrumentType.CUSTOM,
+        requires_response_number=requires_response_number,
         created_by_id=uuid.uuid4(),
         is_active=True,
         response_count=0,
@@ -67,6 +70,7 @@ def _subject_ref() -> SubjectRefDomain:
 
 def _detail_response(
     survey: SurveyDomain,
+    response_number: int = 1,
     score_fies: int | None = None,
     establishment: EstablishmentRefDomain | None = None,
     subject: SubjectRefDomain | None = None,
@@ -81,6 +85,7 @@ def _detail_response(
         )
     return SurveyResponseDetailDomain(
         id=uuid.uuid4(),
+        response_number=response_number,
         event_at=NOW,
         survey=IdentifierRefDomain(id=survey.id, name=survey.name),
         establishment=establishment,
@@ -126,6 +131,21 @@ class TestXlsxSurveyResponseExporter:
         workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
         sheet = workbook["Respuestas"]
         assert sheet.max_row == 3  # header + 2 responses
+
+    @pytest.mark.parametrize("setting", [False, None])
+    def test_optional_survey_omits_response_number_column(self, setting):
+        survey = _survey_domain(requires_response_number=setting)
+        responses = [_detail_response(survey, response_number=88)]
+
+        workbook = load_workbook(
+            BytesIO(XlsxSurveyResponseExporter().export(survey, responses))
+        )
+        sheet = workbook["Respuestas"]
+        header = [cell.value for cell in sheet[1]]
+        row = [cell.value for cell in sheet[2]]
+
+        assert "N° de respuesta" not in header
+        assert 88 not in row
 
     def test_data_sheet_resolves_option_label(self):
         survey = _survey_domain()
@@ -194,7 +214,8 @@ class TestSubjectIdentityColumns:
 
         workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
         header = [c.value for c in workbook["Respuestas"][1]]
-        assert header[:3] == ["Nombre", "Apellido", "DNI"]
+        assert header[0] == "N° de respuesta"
+        assert header[1:4] == ["Nombre", "Apellido", "DNI"]
 
     def test_subject_targeted_export_writes_identity_values(self):
         survey = _survey_domain(response_target=SurveyResponseTarget.SUBJECT)
@@ -204,7 +225,8 @@ class TestSubjectIdentityColumns:
 
         workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
         row = [c.value for c in workbook["Respuestas"][2]]
-        assert row[:3] == [subject.name, subject.last_name, subject.dni]
+        assert row[0] == responses[0].response_number
+        assert row[1:4] == [subject.name, subject.last_name, subject.dni]
 
     def test_anonymous_export_has_no_identity_columns(self):
         survey = _survey_domain(response_target=SurveyResponseTarget.ANONYMOUS)
@@ -213,7 +235,8 @@ class TestSubjectIdentityColumns:
 
         workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
         header = [c.value for c in workbook["Respuestas"][1]]
-        assert header[0] == "Completado por"
+        assert header[0] == "N° de respuesta"
+        assert header[1] == "Completado por"
         assert "DNI" not in header
 
     def test_establishment_targeted_export_has_no_identity_columns(self):
@@ -223,7 +246,8 @@ class TestSubjectIdentityColumns:
 
         workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
         header = [c.value for c in workbook["Respuestas"][1]]
-        assert header[0] == "Completado por"
+        assert header[0] == "N° de respuesta"
+        assert header[1] == "Completado por"
 
     def test_missing_subject_writes_blanks_rather_than_raising(self):
         survey = _survey_domain(response_target=SurveyResponseTarget.SUBJECT)
@@ -232,4 +256,4 @@ class TestSubjectIdentityColumns:
 
         workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
         row = [c.value for c in workbook["Respuestas"][2]]
-        assert row[:3] == [None, None, None]
+        assert row[1:4] == [None, None, None]

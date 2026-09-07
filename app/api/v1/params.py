@@ -40,6 +40,11 @@ from app.domain.survey_response import (
 from app.exceptions.domain_exceptions import (
     InvalidAgeRangeError,
     InvalidDateRangeError,
+    InvalidNumberRangeError,
+)
+from app.schemas.surveys.survey_response_schema import (
+    RESPONSE_NUMBER_MAX,
+    RESPONSE_NUMBER_MIN,
 )
 
 AUTH_RESPONSES: dict[int | str, dict[str, str]] = {
@@ -61,6 +66,16 @@ def _validate_date_range(
     if start is not None and end is not None and start > end:
         raise InvalidDateRangeError(
             f"{field_prefix}_from cannot be after {field_prefix}_to"
+        )
+
+
+def _validate_number_range(
+    start: int | None, end: int | None, field_prefix: str
+) -> None:
+    """Raise InvalidNumberRangeError if ``start`` is greater than ``end``."""
+    if start is not None and end is not None and start > end:
+        raise InvalidNumberRangeError(
+            f"{field_prefix}_from cannot be greater than {field_prefix}_to"
         )
 
 
@@ -237,11 +252,23 @@ class SurveyResponseListingQuery(LocationQuery):
     establishment_id: Annotated[UUID | None, Query()] = None
     event_at_from: Annotated[datetime | None, Query()] = None
     event_at_to: Annotated[datetime | None, Query()] = None
+    response_number: Annotated[
+        int | None, Query(ge=RESPONSE_NUMBER_MIN, le=RESPONSE_NUMBER_MAX)
+    ] = None
+    response_number_from: Annotated[
+        int | None, Query(ge=RESPONSE_NUMBER_MIN, le=RESPONSE_NUMBER_MAX)
+    ] = None
+    response_number_to: Annotated[
+        int | None, Query(ge=RESPONSE_NUMBER_MIN, le=RESPONSE_NUMBER_MAX)
+    ] = None
     sort_order: SurveyResponseSortOrder = SurveyResponseSortOrder.EVENT_AT_DESC
 
     def validate(self) -> None:
-        """Raise InvalidDateRangeError if the date bounds are inverted."""
+        """Raise when the date or response-number bounds are inverted."""
         _validate_date_range(self.event_at_from, self.event_at_to, "event_at")
+        _validate_number_range(
+            self.response_number_from, self.response_number_to, "response_number"
+        )
 
     def to_domain(self) -> SurveyResponseListingParams:
         return SurveyResponseListingParams(
@@ -251,6 +278,9 @@ class SurveyResponseListingQuery(LocationQuery):
             event_at_to=self.event_at_to,
             city=self.city,
             province=self.province,
+            response_number=self.response_number,
+            response_number_from=self.response_number_from,
+            response_number_to=self.response_number_to,
             sort_order=self.sort_order,
         )
 

@@ -405,6 +405,15 @@ class InvalidAgeRangeError(InvalidListingFilterError):
         super().__init__("Invalid age range", detail)
 
 
+class InvalidNumberRangeError(InvalidListingFilterError):
+    """Raised when a response-number-range filter starts above where it ends."""
+
+    error_type = "invalid-response-number-range"
+
+    def __init__(self, detail: str):
+        super().__init__("Invalid response number range", detail)
+
+
 class FilterNotApplicableError(InvalidListingFilterError):
     """Raised when a filter resolves through a target the resource does not carry."""
 
@@ -781,10 +790,13 @@ class SurveyResponseAlreadyExistsError(AlreadyExistsError):
     error_type = "survey-response-already-exists"
 
     def __init__(self, existing: dict | None = None):
+        extensions: dict = {}
+        if existing:
+            extensions["existing_response"] = existing
         super().__init__(
             "Survey response already exists",
             "This survey has already been answered for that target.",
-            extensions={"existing_response": existing} if existing else None,
+            extensions=extensions or None,
         )
 
 

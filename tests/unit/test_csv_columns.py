@@ -185,6 +185,7 @@ class TestSurveyColumns:
             id=uuid.uuid4(),
             name="FIES 2026",
             response_target=SurveyResponseTarget.SUBJECT,
+            requires_response_number=True,
             is_active=is_active,
             created_by_id=uuid.uuid4(),
             question_count=8,

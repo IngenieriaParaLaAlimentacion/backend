@@ -35,6 +35,7 @@ class Survey(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
+    requires_response_number = Column(Boolean, nullable=True)
     response_target = Column(
         SAEnum(SurveyResponseTarget, values_callable=lambda x: [e.value for e in x]),
         nullable=False,

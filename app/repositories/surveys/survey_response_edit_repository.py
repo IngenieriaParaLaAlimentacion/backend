@@ -24,6 +24,7 @@ class SurveyResponseEditRepository:
         response_id: UUID,
         edited_by_id: UUID,
         answers: dict,
+        response_number: int | None,
         event_at: datetime,
     ) -> SurveyResponseEdit:
         """Persist a new edit-log row. ``id`` is optional; when None the server
@@ -35,14 +36,18 @@ class SurveyResponseEditRepository:
         Raises:
             UniqueConstraintError: If the id is already in use. The caller is
                 responsible for re-querying to decide the outcome.
+            IntegrityError: for any other constraint the write violated.
         """
         fields = dict(
             response_id=response_id,
             edited_by_id=edited_by_id,
             answers=answers,
+            response_number=response_number,
             event_at=event_at,
         )
         if id is not None:
             fields["id"] = id
         edit = SurveyResponseEdit(**fields)
-        return await insert_with_savepoint(self.db, edit, "id", id)
+        return await insert_with_savepoint(
+            self.db, edit, "id", id, constraint="survey_response_edits_pkey"
+        )

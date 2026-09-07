@@ -26,7 +26,12 @@ from app.models.establishments.establishment import Establishment
 from app.models.surveys.survey import Survey
 from app.models.surveys.survey_response import SurveyResponse
 from app.repositories.surveys.constants import SURVEY_RESPONSE_SORT_CLAUSES
-from app.utils.db import execute_paginated, ilike_condition, violated_constraint
+from app.utils.db import (
+    execute_all,
+    execute_paginated,
+    ilike_condition,
+    violated_constraint,
+)
 
 _CONSTRAINT_FIELDS = {
     "uq_survey_responses_survey_establishment": "establishment_id",
@@ -56,9 +61,16 @@ class SurveyResponseRepository:
         params: SurveyResponseListingParams | SurveyResponseSummaryParams,
         survey_id: UUID | None = None,
     ) -> Any:
-        """Applies common filters and conditional joins to a SQLAlchemy query."""
+        """Apply filters and conditional joins to a SQLAlchemy query.
+
+        Filters the summary does not offer are read with ``getattr`` so its
+        params object needs no placeholder attributes.
+        """
         target_survey_id = survey_id or getattr(params, "survey_id", None)
         subject_id = getattr(params, "subject_id", None)
+        response_number = getattr(params, "response_number", None)
+        response_number_from = getattr(params, "response_number_from", None)
+        response_number_to = getattr(params, "response_number_to", None)
         conditions = []
 
         if target_survey_id:
@@ -73,6 +85,12 @@ class SurveyResponseRepository:
             conditions.append(SurveyResponse.event_at >= params.event_at_from)
         if params.event_at_to:
             conditions.append(SurveyResponse.event_at <= params.event_at_to)
+        if response_number is not None:
+            conditions.append(SurveyResponse.response_number == response_number)
+        if response_number_from is not None:
+            conditions.append(SurveyResponse.response_number >= response_number_from)
+        if response_number_to is not None:
+            conditions.append(SurveyResponse.response_number <= response_number_to)
 
         # Dynamic join based on location filters
         if params.city or params.province:
@@ -104,6 +122,7 @@ class SurveyResponseRepository:
         establishment_id: UUID | None,
         submitted_by_id: UUID,
         answers: dict,
+        response_number: int | None,
         score_fies: int | None,
         event_at: datetime,
     ) -> SurveyResponse:
@@ -111,7 +130,7 @@ class SurveyResponseRepository:
 
         Raises:
             UniqueConstraintError: ``field`` names what collided — ``id`` for a
-                replayed primary key, ``subject_id`` / ``establishment_id`` when
+            replayed primary key, ``subject_id`` / ``establishment_id`` when
                 the target already answered this survey.
         """
         fields = dict(
@@ -120,6 +139,7 @@ class SurveyResponseRepository:
             establishment_id=establishment_id,
             submitted_by_id=submitted_by_id,
             answers=answers,
+            response_number=response_number,
             score_fies=score_fies,
             event_at=event_at,
         )
@@ -169,11 +189,13 @@ class SurveyResponseRepository:
         response: SurveyResponse,
         *,
         answers: dict,
+        response_number: int | None,
         score_fies: int | None,
         event_at: datetime,
     ) -> SurveyResponse:
-        """Full-replace a response's answers and event_at."""
+        """Full-replace a response's answers, response number and event time."""
         response.answers = answers
+        response.response_number = response_number
         response.score_fies = score_fies
         response.event_at = event_at
         await self.db.flush()
@@ -193,27 +215,20 @@ class SurveyResponseRepository:
     async def list_all_for_export(
         self,
         survey_id: UUID,
-        establishment_id: UUID | None = None,
-        subject_id: UUID | None = None,
+        *,
+        params: SurveyResponseListingParams,
     ) -> list[SurveyResponse]:
-        """Return every response to a survey with relations.
+        """Return every response to a survey matching ``params``, with relations.
 
-        Optionally filter by the response's target.
+        Shares filters and sort order with the response listing.
         """
-        conditions = [SurveyResponse.survey_id == survey_id]
-        if establishment_id is not None:
-            conditions.append(SurveyResponse.establishment_id == establishment_id)
-        if subject_id is not None:
-            conditions.append(SurveyResponse.subject_id == subject_id)
-
-        query = (
-            select(SurveyResponse)
-            .where(*conditions)
-            .options(*self._full_relations_options())
-            .order_by(SurveyResponse.event_at.desc())
+        query = self._apply_filters(
+            select(SurveyResponse), params, survey_id=survey_id
+        ).options(*self._full_relations_options())
+        rows = await execute_all(
+            self.db, query, SURVEY_RESPONSE_SORT_CLAUSES[params.sort_order]
         )
-        result = await self.db.execute(query)
-        return list(result.scalars().all())
+        return list(rows)
 
     async def list_by_survey(
         self,
