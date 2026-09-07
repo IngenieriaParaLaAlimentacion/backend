@@ -1,7 +1,7 @@
 from collections.abc import AsyncIterator, Sequence
 
 from sqlalchemy import func
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import DBAPIError, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.exceptions.domain_exceptions import UniqueConstraintError
@@ -253,6 +253,24 @@ def violated_constraint(error: IntegrityError) -> str | None:
         )
         if name:
             return name
+    return None
+
+
+def sqlstate(error: DBAPIError) -> str | None:
+    """Return the SQLSTATE code Postgres failed the statement with.
+
+    asyncpg carries it as ``sqlstate`` on the driver error at ``orig.__cause__``,
+    psycopg2 as ``pgcode`` on ``orig`` -- the same split ``violated_constraint``
+    has to straddle.
+    """
+    for candidate in (error.orig, getattr(error.orig, "__cause__", None)):
+        if candidate is None:
+            continue
+        code = getattr(candidate, "sqlstate", None) or getattr(
+            candidate, "pgcode", None
+        )
+        if code:
+            return code
     return None
 
 

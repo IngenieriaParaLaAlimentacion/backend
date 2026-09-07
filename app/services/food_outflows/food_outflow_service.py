@@ -39,21 +39,31 @@ class FoodOutflowService:
         return found
 
     async def _spend(
-        self, establishment_id: UUID, food_id: UUID, quantity: Decimal
+        self, establishment_id: UUID, quantities: dict[UUID, Decimal]
     ) -> None:
-        """Take ``quantity`` off the balance, or raise naming what is available.
+        """Take the whole outflow off the balance, or raise naming what is short.
 
-        The balance is only read on the failure path: on the happy path the
-        repository's conditional update already decided, and reading it first
-        would open the very race that update exists to close.
+        One statement decides every food: the repository's conditional update
+        both checks and spends, so reading the balances first would open the
+        very race that update exists to close. They are only read on the
+        failure path, to say how much the establishment actually holds.
         """
-        if await self.uow.food_stock_repo.decrease(establishment_id, food_id, quantity):
+        applied = await self.uow.food_stock_repo.decrease_many(
+            establishment_id, quantities
+        )
+        short = set(quantities) - applied
+        if not short:
             return
-        held = await self.uow.food_stock_repo.get(establishment_id, food_id)
+
+        held = await self.uow.food_stock_repo.get_many(establishment_id, short)
+        # The error names one food even when several fell short. Picking the
+        # lowest id keeps a given outflow failing the same way every time,
+        # rather than on whichever line the plan happened to reach first.
+        food_id = min(short)
         raise InsufficientStockError(
             food_id=str(food_id),
-            requested=str(quantity),
-            available=str(held.quantity if held is not None else Decimal(0)),
+            requested=str(quantities[food_id]),
+            available=str(held.get(food_id, Decimal(0))),
         )
 
     async def register(
@@ -106,8 +116,7 @@ class FoodOutflowService:
                     return FoodOutflowDomain.from_db(raced), False
             raise
 
-        for food_id, quantity in sorted(aggregate_quantities(data.items).items()):
-            await self._spend(data.establishment_id, food_id, quantity)
+        await self._spend(data.establishment_id, aggregate_quantities(data.items))
 
         await self.uow.commit()
         return FoodOutflowDomain.from_db(outflow), True
