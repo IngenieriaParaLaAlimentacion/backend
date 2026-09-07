@@ -67,7 +67,7 @@ async def _move(establishment_id, food_id, quantity: Decimal, *, up: bool) -> bo
     async with AsyncSessionLocal() as session:
         repo = FoodStockRepository(session)
         if up:
-            await repo.increase(establishment_id, food_id, quantity)
+            await repo.increase_batch(establishment_id, {food_id: quantity})
             applied = True
         else:
             applied = await repo.decrease(establishment_id, food_id, quantity)
@@ -267,9 +267,7 @@ async def _persist_intake(establishment_id, responsible_id, items):
             for food_id, quantity in items
         ]
         await FoodIntakeRepository(session).create(intake)
-        stock = FoodStockRepository(session)
-        for food_id, quantity in items:
-            await stock.increase(establishment_id, food_id, quantity)
+        await FoodStockRepository(session).increase_batch(establishment_id, dict(items))
         await session.commit()
 
 
@@ -373,6 +371,24 @@ class TestRegisterIntake:
         assert second.status_code == 200
         assert await _balance(db_establishment.id, foods.rice) == Decimal("10.000")
 
+    async def test_repeated_lines_of_one_food_add_up(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        """Two lines of the same food are their sum, not the last one."""
+        headers, _ = field_worker_with_access
+
+        response = await client.post(
+            INTAKES_URL,
+            json=_intake_body(
+                db_establishment.id, [(foods.rice, "10"), (foods.rice, "2.5")]
+            ),
+            headers=headers,
+        )
+
+        assert response.status_code == 201
+        assert len(response.json()["items"]) == 2
+        assert await _balance(db_establishment.id, foods.rice) == Decimal("12.500")
+
     async def test_unknown_food_answers_404(
         self, client, field_worker_with_access, db_establishment, foods
     ) -> None:
@@ -437,6 +453,31 @@ class TestRegisterOutflow:
 
         assert response.status_code == 201
         assert await _balance(db_establishment.id, foods.rice) == Decimal("6.000")
+
+    async def test_repeated_lines_of_one_food_are_spent_together(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        """Folded into one spend, so the balance answers the total once."""
+        headers, _ = field_worker_with_access
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
+            headers=headers,
+        )
+
+        response = await client.post(
+            OUTFLOWS_URL,
+            json=_outflow_body(
+                db_establishment.id, [(foods.rice, "7"), (foods.rice, "6")]
+            ),
+            headers=headers,
+        )
+
+        assert response.status_code == 409
+        body = response.json()
+        assert body["requested"] == "13"
+        assert body["available"] == "10.000"
+        assert await _balance(db_establishment.id, foods.rice) == Decimal("10.000")
 
     async def test_outflow_beyond_the_stock_answers_409_and_persists_nothing(
         self, client, field_worker_with_access, db_establishment, foods, app

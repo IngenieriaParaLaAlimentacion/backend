@@ -14,6 +14,7 @@ from app.models.food_outflows.food_outflow import FoodOutflow
 from app.models.food_outflows.food_outflow_item import FoodOutflowItem
 from app.schemas.food_outflows.food_outflow_schema import FoodOutflowRequest
 from app.services.access import check_establishment_access
+from app.services.food_lines import aggregate_quantities
 
 
 class FoodOutflowService:
@@ -89,6 +90,7 @@ class FoodOutflowService:
             comments=data.comments,
             source=data.source,
         )
+
         outflow.items = [
             FoodOutflowItem(food=foods[item.food_id], quantity=item.quantity)
             for item in data.items
@@ -104,10 +106,8 @@ class FoodOutflowService:
                     return FoodOutflowDomain.from_db(raced), False
             raise
 
-        for item in data.items:
-            await self._spend(
-                data.establishment_id, item.food_id, Decimal(item.quantity)
-            )
+        for food_id, quantity in sorted(aggregate_quantities(data.items).items()):
+            await self._spend(data.establishment_id, food_id, quantity)
 
         await self.uow.commit()
         return FoodOutflowDomain.from_db(outflow), True
