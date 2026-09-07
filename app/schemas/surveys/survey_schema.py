@@ -98,8 +98,15 @@ class SurveyCreateRequest(BaseModel):
 
 
 class SurveyUpdateRequest(SurveyCreateRequest):
-    """Declarative survey configuration for a reconciling ``PUT`` (same shape as
-    create; question/option ids identify rows to keep)."""
+    """Complete survey configuration for a reconciling ``PUT``.
+
+    Question and option ids identify rows to keep. All configuration fields must
+    carry their desired value, including ``requires_response_number``.
+    """
+
+    requires_response_number: bool = Field(
+        description="Whether every response must carry a response number."
+    )
 
 
 class SurveyStatusRequest(BaseModel):

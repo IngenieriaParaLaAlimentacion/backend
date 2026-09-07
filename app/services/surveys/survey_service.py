@@ -68,7 +68,7 @@ class SurveyService:
         survey: Survey,
         new_questions: list[QuestionInputData],
         response_target: SurveyResponseTarget,
-        requires_response_number: bool | None,
+        requires_response_number: bool,
     ) -> None:
         """Raise if an edit would invalidate existing answers: a changed
         response target, a deleted question, a changed response_type, optional
@@ -323,16 +323,11 @@ class SurveyService:
         self._assert_can_edit(actor, survey)
 
         new_questions = self._to_question_inputs(data.questions)
-        next_requires_number = (
-            survey.requires_response_number
-            if data.requires_response_number is None
-            else data.requires_response_number
-        )
         await self._assert_editable(
             survey,
             new_questions,
             data.response_target,
-            next_requires_number,
+            data.requires_response_number,
         )
 
         if await self.uow.survey_repo.name_exists(data.name, exclude_id=survey.id):
@@ -346,7 +341,7 @@ class SurveyService:
                 description=data.description,
                 response_target=data.response_target,
                 instrument_type=data.instrument_type,
-                requires_response_number=next_requires_number,
+                requires_response_number=data.requires_response_number,
                 questions=new_questions,
             )
         except UniqueConstraintError:
