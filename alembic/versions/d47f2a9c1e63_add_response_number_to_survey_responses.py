@@ -4,7 +4,7 @@ Backfill and index creation ship in one revision so historical rows are numbered
 before the response-number index is created.
 
 Revision ID: d47f2a9c1e63
-Revises: 9dfe0f10b762
+Revises: c8e3d5a91f74
 Create Date: 2026-09-06 10:00:00.000000
 
 """
@@ -17,7 +17,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "d47f2a9c1e63"
-down_revision: Union[str, Sequence[str], None] = "9dfe0f10b762"
+down_revision: Union[str, Sequence[str], None] = "c8e3d5a91f74"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

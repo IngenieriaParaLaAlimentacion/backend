@@ -40,7 +40,7 @@ def test_response_number_migration_is_the_only_head_after_develop():
     scripts = ScriptDirectory.from_config(Config("alembic.ini"))
     migration = scripts.get_revision("d47f2a9c1e63")
 
-    assert migration.down_revision == "9dfe0f10b762"
+    assert migration.down_revision == "c8e3d5a91f74"
     assert scripts.get_heads() == [migration.revision]
 
 
