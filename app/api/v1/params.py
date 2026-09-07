@@ -41,6 +41,10 @@ from app.exceptions.domain_exceptions import (
     InvalidDateRangeError,
     InvalidNumberRangeError,
 )
+from app.schemas.surveys.survey_response_schema import (
+    RESPONSE_NUMBER_MAX,
+    RESPONSE_NUMBER_MIN,
+)
 
 AUTH_RESPONSES: dict[int | str, dict[str, str]] = {
     status.HTTP_401_UNAUTHORIZED: {
@@ -230,9 +234,15 @@ class SurveyResponseListingQuery(LocationQuery):
     establishment_id: Annotated[UUID | None, Query()] = None
     event_at_from: Annotated[datetime | None, Query()] = None
     event_at_to: Annotated[datetime | None, Query()] = None
-    response_number: Annotated[int | None, Query(ge=1, le=999_999)] = None
-    response_number_from: Annotated[int | None, Query(ge=1, le=999_999)] = None
-    response_number_to: Annotated[int | None, Query(ge=1, le=999_999)] = None
+    response_number: Annotated[
+        int | None, Query(ge=RESPONSE_NUMBER_MIN, le=RESPONSE_NUMBER_MAX)
+    ] = None
+    response_number_from: Annotated[
+        int | None, Query(ge=RESPONSE_NUMBER_MIN, le=RESPONSE_NUMBER_MAX)
+    ] = None
+    response_number_to: Annotated[
+        int | None, Query(ge=RESPONSE_NUMBER_MIN, le=RESPONSE_NUMBER_MAX)
+    ] = None
     sort_order: SurveyResponseSortOrder = SurveyResponseSortOrder.EVENT_AT_DESC
 
     def validate(self) -> None:
