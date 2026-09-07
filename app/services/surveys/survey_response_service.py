@@ -288,13 +288,13 @@ class SurveyResponseService:
                 return self._replayed(existing, survey_id), False
 
         survey = await self._get_survey_or_raise(survey_id)
-        response_number = self._validate_response_number(survey, data.response_number)
         subject_id, establishment_id = self._resolve_target(survey, data)
         if establishment_id is not None:
             await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
         if subject_id is not None:
             await self._get_subject_or_raise(subject_id)
         await self._raise_if_target_answered(survey_id, subject_id, establishment_id)
+        response_number = self._validate_response_number(survey, data.response_number)
         answers = self._validate_answers(survey.questions, data.answers)
         score_fies = self._calculate_fies_score(survey, answers)
 

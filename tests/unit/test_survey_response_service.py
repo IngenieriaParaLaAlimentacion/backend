@@ -355,6 +355,19 @@ class TestSubmit:
         with pytest.raises(SubjectNotFoundError):
             await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
 
+    async def test_subject_not_found_takes_precedence_over_required_number(
+        self, make_uow, request_factory, admin_actor
+    ):
+        survey = _make_survey_orm(
+            response_target=SurveyResponseTarget.SUBJECT,
+            requires_response_number=True,
+        )
+        uow = make_uow(survey=survey, subject=None)
+        data = request_factory(subject_id=uuid.uuid4(), response_number=None)
+
+        with pytest.raises(SubjectNotFoundError):
+            await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
+
     async def test_required_question_missing_rejected_no_partial_save(
         self, make_uow, request_factory, admin_actor
     ):
@@ -593,6 +606,19 @@ class TestTargetUniqueness:
         survey = _make_survey_orm(response_target=SurveyResponseTarget.ESTABLISHMENT)
         uow = make_uow(survey=survey, target_response=self._answered_response())
         data = request_factory(establishment_id=uuid.uuid4())
+        with pytest.raises(SurveyResponseAlreadyExistsError):
+            await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
+
+    async def test_target_conflict_takes_precedence_over_required_number(
+        self, make_uow, request_factory, admin_actor
+    ):
+        survey = _make_survey_orm(
+            response_target=SurveyResponseTarget.SUBJECT,
+            requires_response_number=True,
+        )
+        uow = make_uow(survey=survey, target_response=self._answered_response())
+        data = request_factory(subject_id=uuid.uuid4(), response_number=None)
+
         with pytest.raises(SurveyResponseAlreadyExistsError):
             await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
 

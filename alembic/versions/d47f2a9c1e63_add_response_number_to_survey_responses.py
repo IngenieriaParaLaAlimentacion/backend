@@ -1,7 +1,7 @@
 """Add configurable response numbers to surveys and their responses.
 
-Backfill and index creation ship in one revision so historical rows are numbered
-before the response-number index is created.
+Historical rows remain unnumbered because response numbers are optional references
+copied from paper forms.
 
 Revision ID: d47f2a9c1e63
 Revises: c8e3d5a91f74
@@ -32,37 +32,9 @@ def upgrade() -> None:
         "survey_responses",
         sa.Column("response_number", sa.Integer(), nullable=True),
     )
-    op.execute(
-        sa.text(
-            """
-            UPDATE survey_responses AS r
-            SET response_number = numbered.row_number
-            FROM (
-                SELECT
-                    id,
-                    row_number() OVER (
-                        PARTITION BY survey_id
-                        ORDER BY created_at, id
-                    ) AS row_number
-                FROM survey_responses
-            ) AS numbered
-            WHERE r.id = numbered.id
-            """
-        )
-    )
     op.add_column(
         "survey_response_edits",
         sa.Column("response_number", sa.Integer(), nullable=True),
-    )
-    op.execute(
-        sa.text(
-            """
-            UPDATE survey_response_edits AS e
-            SET response_number = r.response_number
-            FROM survey_responses AS r
-            WHERE e.response_id = r.id
-            """
-        )
     )
     op.create_index(
         "ix_survey_responses_survey_response_number",
