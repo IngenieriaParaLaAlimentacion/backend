@@ -104,6 +104,7 @@ def make_survey():
         is_active: bool = True,
         name: str = "Encuesta A",
         response_target: SurveyResponseTarget = SurveyResponseTarget.ANONYMOUS,
+        requires_response_number: bool | None = None,
         questions: list | None = None,
     ):
         s = MagicMock()
@@ -111,6 +112,7 @@ def make_survey():
         s.name = name
         s.description = None
         s.response_target = response_target
+        s.requires_response_number = requires_response_number
         s.created_by_id = created_by_id or uuid.uuid4()
         s.is_active = is_active
         s.response_count = response_count
@@ -202,6 +204,15 @@ class TestCreatePermissionsAndName:
         _, kwargs = uow.survey_repo.create.call_args
         assert kwargs["created_by_id"] == admin_actor.user_id
         assert isinstance(kwargs["questions"][0], QuestionInputData)
+
+    async def test_create_passes_response_number_setting(self, make_uow, admin_actor):
+        uow = make_uow()
+        await SurveyService(uow).create(
+            make_create(requires_response_number=True), admin_actor
+        )
+        assert (
+            uow.survey_repo.create.call_args.kwargs["requires_response_number"] is True
+        )
 
 
 class TestCreateStructureValidation:
@@ -385,6 +396,78 @@ class TestListAvailable:
 
 class TestUpdatePermissionsAndLock:
     pytestmark = pytest.mark.asyncio
+
+    async def test_update_preserves_omitted_setting(
+        self, make_uow, make_survey, admin_actor
+    ):
+        survey = make_survey(requires_response_number=True)
+        uow = make_uow(survey=survey)
+
+        await SurveyService(uow).update(survey.id, make_update(), admin_actor)
+
+        assert (
+            uow.survey_repo.reconcile.call_args.kwargs["requires_response_number"]
+            is True
+        )
+
+    async def test_null_to_false_is_effectively_unchanged_after_response(
+        self, make_uow, make_survey, admin_actor
+    ):
+        existing = _existing_question()
+        survey = make_survey(
+            response_count=1,
+            requires_response_number=None,
+            questions=[existing],
+        )
+        uow = make_uow(survey=survey)
+        data = make_update(
+            requires_response_number=False,
+            questions=[
+                QuestionInput(
+                    id=existing.id,
+                    text="Question",
+                    response_type=existing.response_type,
+                    is_required=existing.is_required,
+                    options=[],
+                )
+            ],
+        )
+
+        await SurveyService(uow).update(survey.id, data, admin_actor)
+
+        assert (
+            uow.survey_repo.reconcile.call_args.kwargs["requires_response_number"]
+            is False
+        )
+
+    @pytest.mark.parametrize(("current", "next_value"), [(False, True), (True, False)])
+    async def test_effective_setting_change_locked_after_response(
+        self, make_uow, make_survey, admin_actor, current, next_value
+    ):
+        existing = _existing_question()
+        survey = make_survey(
+            response_count=1,
+            requires_response_number=current,
+            questions=[existing],
+        )
+        uow = make_uow(survey=survey)
+        data = make_update(
+            requires_response_number=next_value,
+            questions=[
+                QuestionInput(
+                    id=existing.id,
+                    text="Question",
+                    response_type=existing.response_type,
+                    is_required=existing.is_required,
+                    options=[],
+                )
+            ],
+        )
+
+        with pytest.raises(SurveyLockedError):
+            await SurveyService(uow).update(survey.id, data, admin_actor)
+
+        uow.survey_repo.reconcile.assert_not_called()
 
     async def test_response_target_change_locked_once_answered(
         self, make_uow, make_survey, admin_actor
