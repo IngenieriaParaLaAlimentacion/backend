@@ -51,6 +51,14 @@ def _survey_body(
     }
 
 
+def _survey_update_body(**overrides):
+    """Build a complete PUT payload with an explicit numbering policy."""
+    requires_response_number = overrides.pop("requires_response_number", False)
+    body = _survey_body(**overrides)
+    body["requires_response_number"] = requires_response_number
+    return body
+
+
 async def _create(client, headers, **overrides):
     return await client.post(
         SURVEYS_URL, json=_survey_body(**overrides), headers=headers
@@ -277,7 +285,7 @@ class TestUpdate:
         keep = created["questions"][0]  # single_choice question, keep by id
         # Rename the survey (changes a surveys column -> exercises updated_at onupdate),
         # rename the kept question, drop the second, add a new numeric question.
-        payload = _survey_body(
+        payload = _survey_update_body(
             name="Encuesta A renombrada",
             questions=[
                 {
@@ -314,7 +322,7 @@ class TestUpdate:
     ):
         headers, _ = admin_author
         survey_id = (await _create(client, headers)).json()["id"]
-        payload = _survey_body(
+        payload = _survey_update_body(
             questions=[
                 {
                     "id": str(uuid.uuid4()),
@@ -337,7 +345,9 @@ class TestUpdate:
         analyst_headers, _ = analyst_author
         survey_id = (await _create(client, admin_headers)).json()["id"]
         response = await client.put(
-            f"{SURVEYS_URL}/{survey_id}", json=_survey_body(), headers=analyst_headers
+            f"{SURVEYS_URL}/{survey_id}",
+            json=_survey_update_body(),
+            headers=analyst_headers,
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
@@ -363,7 +373,9 @@ class TestLockedAfterResponses:
             },
             headers=headers,
         )
-        update_body = _survey_body(name=created["name"], questions=created["questions"])
+        update_body = _survey_update_body(
+            name=created["name"], questions=created["questions"]
+        )
         update_body["requires_response_number"] = False
 
         updated = await client.put(
@@ -393,7 +405,7 @@ class TestLockedAfterResponses:
         assert submit.status_code == status.HTTP_201_CREATED
 
         # Drop the second question entirely -> structural deletion, locked.
-        payload = _survey_body(
+        payload = _survey_update_body(
             questions=[
                 {
                     "id": keep["id"],
@@ -461,7 +473,7 @@ class TestLockedAfterResponses:
         assert submit.status_code == status.HTTP_201_CREATED
 
         # Always try to drop "No sabe" (index 2); only referenced when picked.
-        payload = _survey_body(
+        payload = _survey_update_body(
             questions=[
                 {
                     "id": question["id"],
@@ -505,7 +517,7 @@ class TestLockedAfterResponses:
         assert submit.status_code == status.HTTP_201_CREATED
 
         # Rename the kept question and leave the rest structurally identical.
-        payload = _survey_body(
+        payload = _survey_update_body(
             questions=[
                 {
                     "id": keep["id"],
@@ -554,7 +566,7 @@ class TestLockedAfterResponses:
         assert submit.status_code == status.HTTP_201_CREATED
 
         # Keep both existing questions untouched, add a new optional one.
-        payload = _survey_body(
+        payload = _survey_update_body(
             questions=[
                 {
                     "id": keep["id"],
@@ -614,7 +626,7 @@ class TestLockedAfterResponses:
 
         # A required "new" question posing as existing via a foreign id must
         # still be rejected, not slip past the lock check.
-        payload = _survey_body(
+        payload = _survey_update_body(
             questions=[
                 {
                     "id": keep["id"],
@@ -667,7 +679,7 @@ class TestLockedAfterResponses:
         assert submit.status_code == status.HTTP_201_CREATED
 
         # Keep both existing questions untouched, add a new required one.
-        payload = _survey_body(
+        payload = _survey_update_body(
             questions=[
                 {
                     "id": keep["id"],
@@ -737,7 +749,7 @@ class TestLockedAfterResponses:
         )
         assert submit.status_code == status.HTTP_201_CREATED
 
-        payload = _survey_body(
+        payload = _survey_update_body(
             questions=[
                 {
                     "id": question["id"],

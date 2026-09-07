@@ -87,6 +87,7 @@ def make_update(**overrides) -> SurveyUpdateRequest:
         name="Encuesta A",
         description=None,
         response_target=SurveyResponseTarget.ANONYMOUS,
+        requires_response_number=False,
         questions=[_text_question()],
     )
     data.update(overrides)
@@ -290,6 +291,23 @@ class TestCreateResponseTarget:
             )
 
 
+class TestSurveyUpdateRequest:
+    @pytest.mark.parametrize("value", [None, pytest.param("missing", id="omitted")])
+    def test_requires_response_number_must_be_an_explicit_boolean(self, value):
+        data = {
+            "name": "Encuesta A",
+            "description": None,
+            "response_target": SurveyResponseTarget.ANONYMOUS,
+            "requires_response_number": value,
+            "questions": [_text_question()],
+        }
+        if value == "missing":
+            del data["requires_response_number"]
+
+        with pytest.raises(ValueError):
+            SurveyUpdateRequest.model_validate(data)
+
+
 class TestGet:
     pytestmark = pytest.mark.asyncio
 
@@ -396,19 +414,6 @@ class TestListAvailable:
 
 class TestUpdatePermissionsAndLock:
     pytestmark = pytest.mark.asyncio
-
-    async def test_update_preserves_omitted_setting(
-        self, make_uow, make_survey, admin_actor
-    ):
-        survey = make_survey(requires_response_number=True)
-        uow = make_uow(survey=survey)
-
-        await SurveyService(uow).update(survey.id, make_update(), admin_actor)
-
-        assert (
-            uow.survey_repo.reconcile.call_args.kwargs["requires_response_number"]
-            is True
-        )
 
     async def test_null_to_false_is_effectively_unchanged_after_response(
         self, make_uow, make_survey, admin_actor

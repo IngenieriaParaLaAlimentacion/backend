@@ -185,7 +185,9 @@ async def get_survey(
     summary="Update a survey",
     description=(
         "Declaratively replace a survey's configuration. Questions and options are "
-        "reconciled by id. Once the survey has responses, existing questions can be "
+        "reconciled by id. The payload must explicitly include the desired "
+        "`requires_response_number` value. Once the survey has responses, existing "
+        "questions can be "
         "reordered or renamed, but not removed, made required, have their "
         "response_type changed, or lose an option some response already picked; "
         "new questions may only be added if they are optional. Response-number "
