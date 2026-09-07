@@ -80,7 +80,7 @@ def uow(make_food, make_stored):
     uow.food_repo.get_by_ids = AsyncMock(return_value=[make_food()])
     uow.food_intake_repo.get_by_id = AsyncMock(return_value=None)
     uow.food_outflow_repo.get_by_id = AsyncMock(return_value=make_stored())
-    uow.food_stock_repo.decrease = AsyncMock(return_value=True)
+    uow.food_stock_repo.decrease_many = AsyncMock(return_value={RICE_ID})
     return uow
 
 
@@ -105,12 +105,12 @@ def _outflow_request(**overrides) -> FoodOutflowRequest:
 
 
 class TestRegisterIntake:
-    async def test_moves_the_balance_once_per_line(self, uow, actor, make_stored):
+    async def test_moves_the_balance_in_one_statement(self, uow, actor, make_stored):
         _, created = await FoodIntakeService(uow).register(_intake_request(), actor)
 
         assert created is True
-        uow.food_stock_repo.increase.assert_awaited_once_with(
-            ESTABLISHMENT_ID, RICE_ID, Decimal("10")
+        uow.food_stock_repo.increase_batch.assert_awaited_once_with(
+            establishment_id=ESTABLISHMENT_ID, quantities={RICE_ID: Decimal("10")}
         )
         uow.commit.assert_awaited_once()
 
@@ -123,7 +123,7 @@ class TestRegisterIntake:
         )
 
         assert created is False
-        uow.food_stock_repo.increase.assert_not_awaited()
+        uow.food_stock_repo.increase_batch.assert_not_awaited()
         uow.commit.assert_not_awaited()
 
     async def test_unknown_food_raises_before_writing(self, uow, actor):
@@ -133,7 +133,7 @@ class TestRegisterIntake:
             await FoodIntakeService(uow).register(_intake_request(), actor)
 
         uow.food_intake_repo.create.assert_not_awaited()
-        uow.food_stock_repo.increase.assert_not_awaited()
+        uow.food_stock_repo.increase_batch.assert_not_awaited()
 
 
 class TestRegisterOutflow:
@@ -141,16 +141,16 @@ class TestRegisterOutflow:
         _, created = await FoodOutflowService(uow).register(_outflow_request(), actor)
 
         assert created is True
-        uow.food_stock_repo.decrease.assert_awaited_once_with(
-            ESTABLISHMENT_ID, RICE_ID, Decimal("4")
+        uow.food_stock_repo.decrease_many.assert_awaited_once_with(
+            ESTABLISHMENT_ID, {RICE_ID: Decimal("4")}
         )
 
     async def test_insufficient_stock_reports_what_is_held(self, uow, actor):
         uow.food_outflow_repo.get_by_id = AsyncMock(return_value=None)
-        uow.food_stock_repo.decrease = AsyncMock(return_value=False)
-        held = MagicMock()
-        held.quantity = Decimal("2.500")
-        uow.food_stock_repo.get = AsyncMock(return_value=held)
+        uow.food_stock_repo.decrease_many = AsyncMock(return_value=set())
+        uow.food_stock_repo.get_many = AsyncMock(
+            return_value={RICE_ID: Decimal("2.500")}
+        )
 
         with pytest.raises(InsufficientStockError) as error:
             await FoodOutflowService(uow).register(_outflow_request(), actor)
@@ -161,8 +161,8 @@ class TestRegisterOutflow:
 
     async def test_a_food_with_no_balance_row_reports_zero(self, uow, actor):
         uow.food_outflow_repo.get_by_id = AsyncMock(return_value=None)
-        uow.food_stock_repo.decrease = AsyncMock(return_value=False)
-        uow.food_stock_repo.get = AsyncMock(return_value=None)
+        uow.food_stock_repo.decrease_many = AsyncMock(return_value=set())
+        uow.food_stock_repo.get_many = AsyncMock(return_value={})
 
         with pytest.raises(InsufficientStockError) as error:
             await FoodOutflowService(uow).register(_outflow_request(), actor)
@@ -173,7 +173,7 @@ class TestRegisterOutflow:
         """Reading it first would reopen the race the conditional update closes."""
         await FoodOutflowService(uow).register(_outflow_request(), actor)
 
-        uow.food_stock_repo.get.assert_not_awaited()
+        uow.food_stock_repo.get_many.assert_not_awaited()
 
 
 class TestStockListing:

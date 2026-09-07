@@ -55,8 +55,8 @@ async def _balance(establishment_id, food_id) -> Decimal | None:
     from app.repositories.food_stock.food_stock_repository import FoodStockRepository
 
     async with AsyncSessionLocal() as session:
-        row = await FoodStockRepository(session).get(establishment_id, food_id)
-        return None if row is None else row.quantity
+        held = await FoodStockRepository(session).get_many(establishment_id, [food_id])
+        return held.get(food_id)
 
 
 async def _move(establishment_id, food_id, quantity: Decimal, *, up: bool) -> bool:
@@ -70,7 +70,8 @@ async def _move(establishment_id, food_id, quantity: Decimal, *, up: bool) -> bo
             await repo.increase_batch(establishment_id, {food_id: quantity})
             applied = True
         else:
-            applied = await repo.decrease(establishment_id, food_id, quantity)
+            covered = await repo.decrease_many(establishment_id, {food_id: quantity})
+            applied = food_id in covered
         await session.commit()
         return applied
 
@@ -294,9 +295,10 @@ async def _persist_outflow(establishment_id, responsible_id, items):
             for food_id, quantity in items
         ]
         await FoodOutflowRepository(session).create(outflow)
-        stock = FoodStockRepository(session)
-        for food_id, quantity in items:
-            assert await stock.decrease(establishment_id, food_id, quantity)
+        covered = await FoodStockRepository(session).decrease_many(
+            establishment_id, dict(items)
+        )
+        assert covered == {food_id for food_id, _ in items}
         await session.commit()
 
 
@@ -533,6 +535,8 @@ class TestRegisterOutflow:
         )
 
         assert response.status_code == 409
+        # The covered line is not the one that failed: the error must name eggs.
+        assert response.json()["food_id"] == str(foods.eggs)
         assert await _balance(db_establishment.id, foods.rice) == Decimal("10.000")
         assert await _balance(db_establishment.id, foods.eggs) == Decimal("5.000")
 

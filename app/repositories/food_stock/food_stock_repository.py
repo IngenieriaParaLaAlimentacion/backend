@@ -1,11 +1,24 @@
 from __future__ import annotations
 
 import uuid
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Collection
 from decimal import Decimal
 from uuid import UUID
 
-from sqlalchemy import Row, asc, delete, desc, func, literal, select, update
+from sqlalchemy import (
+    Numeric,
+    Row,
+    asc,
+    column,
+    delete,
+    desc,
+    func,
+    literal,
+    select,
+    update,
+    values,
+)
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -50,8 +63,7 @@ class FoodStockRepository:
     async def increase_batch(
         self, establishment_id: UUID, quantities: dict[UUID, Decimal]
     ) -> None:
-        """Add each food's quantity to its balance, creating rows on first arrival.
-        """
+        """Add each food's quantity to its balance, creating rows on first arrival."""
         if not quantities:
             return
 
@@ -76,37 +88,61 @@ class FoodStockRepository:
             )
         )
 
-    async def decrease(
-        self, establishment_id: UUID, food_id: UUID, quantity: Decimal
-    ) -> bool:
-        """Subtract ``quantity``, and report whether the balance allowed it.
+    async def decrease_many(
+        self, establishment_id: UUID, quantities: dict[UUID, Decimal]
+    ) -> set[UUID]:
+        """Subtract each food's quantity, returning the foods the balance covered.
 
-        The ``quantity >= :quantity`` guard makes checking the balance and
-        spending it the same act, so two concurrent outflows cannot both pass a
-        balance that only covers one. Returns False when the establishment has
-        no row for this food at all, or not enough of it — the caller decides
-        what that means.
+        The ``quantity >= requested`` guard stays inside the UPDATE, so checking
+        a balance and spending it remain one act and two concurrent outflows
+        cannot both pass a balance that only covers one. The foods missing from
+        the result are the ones that fell short — either not enough held, or no
+        row at all — and the caller decides what that means.
+
+        ``quantities`` must already be aggregated per food: two rows for the
+        same food would join the same balance twice and only one would apply.
         """
+        if not quantities:
+            return set()
+
+        requested = values(
+            column("food_id", PGUUID(as_uuid=True)),
+            column("quantity", Numeric(10, 3)),
+            name="requested",
+        ).data(sorted(quantities.items()))
         result = await self.db.execute(
             update(FoodStock)
             .where(
                 FoodStock.establishment_id == establishment_id,
-                FoodStock.food_id == food_id,
-                FoodStock.quantity >= quantity,
+                FoodStock.food_id == requested.c.food_id,
+                FoodStock.quantity >= requested.c.quantity,
             )
-            .values(quantity=FoodStock.quantity - quantity, updated_at=func.now())
+            .values(
+                quantity=FoodStock.quantity - requested.c.quantity,
+                updated_at=func.now(),
+            )
+            .returning(FoodStock.food_id)
         )
-        return result.rowcount == 1
+        return set(result.scalars())
 
-    async def get(self, establishment_id: UUID, food_id: UUID) -> FoodStock | None:
-        """Return the balance row for one food, or None if there never was one."""
+    async def get_many(
+        self, establishment_id: UUID, food_ids: Collection[UUID]
+    ) -> dict[UUID, Decimal]:
+        """Return the balances held for these foods.
+
+        A food the establishment never received has no row and is simply absent
+        from the mapping, which is not the same fact as a balance of zero.
+        """
+        if not food_ids:
+            return {}
+
         result = await self.db.execute(
-            select(FoodStock).where(
+            select(FoodStock.food_id, FoodStock.quantity).where(
                 FoodStock.establishment_id == establishment_id,
-                FoodStock.food_id == food_id,
+                FoodStock.food_id.in_(food_ids),
             )
         )
-        return result.scalar_one_or_none()
+        return dict(result.all())
 
     async def recompute(self, establishment_id: UUID) -> None:
         """Rebuild the establishment's balances from its movements.

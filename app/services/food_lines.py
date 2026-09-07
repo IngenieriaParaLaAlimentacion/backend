@@ -1,5 +1,4 @@
-"""Line folding shared by the services that move food in and out of stock.
-"""
+"""Line folding shared by the services that move food in and out of stock."""
 
 from decimal import Decimal
 from uuid import UUID
