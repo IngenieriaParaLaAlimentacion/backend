@@ -12,15 +12,13 @@ from app.services.access import check_establishment_access
 
 
 class ReceiptIntakeService:
-    """Assisted registration of a food intake from a photo of the receipt.
+    """Assisted registration of a food intake from a photo of the receipt."""
 
-    """
-
-    # TODO: remove after. Returned while there is no extractor: every accepted upload comes back
-    # with no lines, so the client is told to fall back to manual entry
-    _MANUAL_FALLBACK_MESSAGE = (
-        "No se pudieron extraer alimentos de la factura. Porfavor carguelos de forma manual. "
-    )
+    # TODO: remove after. Returned while there is no extractor: every accepted 
+    # upload comes back with no lines, so the client is told 
+    # to fall back to manual entry
+    _MANUAL_FALLBACK_MESSAGE = "No se pudieron extraer alimentos de la factura. " \
+    "Porfavor carguelos de forma manual. "
 
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
