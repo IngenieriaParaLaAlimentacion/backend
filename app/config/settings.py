@@ -74,6 +74,14 @@ class Settings(BaseSettings):
     email_verification_path: str = "/verify-email"
     invite_path: str = "/invite"
 
+    # Receipt upload
+    receipt_image_max_bytes: int = 10 * 1024 * 1024  # 10 MiB
+    receipt_image_allowed_types: set[str] = {
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+    }
+
     def _build_deeplink(self, base: str | AnyUrl, path: str) -> str:
         base = str(base).rstrip("/")
         if not path.startswith("/"):

@@ -25,6 +25,13 @@ def test_settings_defaults():
     assert s.access_token_expire_minutes == 15
     assert s.refresh_token_expire_days == 7
 
+    assert s.receipt_image_max_bytes == 10 * 1024 * 1024
+    assert s.receipt_image_allowed_types == {
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+    }
+
 
 def test_settings_invalid_port():
     with pytest.raises(ValidationError):
