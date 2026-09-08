@@ -27,6 +27,7 @@ opentelemetry-exporter-otlp-proto-http = "^1.44.0"
 opentelemetry-instrumentation-fastapi = "^0.65b0"
 structlog = "^26.1.0"
 opentelemetry-instrumentation-logging = "^0.65b0"
+python-multipart = "^0.0.32"
 
 [tool.poetry.group.dev.dependencies]
 ruff = ">=0.15.8,<0.16.0"
