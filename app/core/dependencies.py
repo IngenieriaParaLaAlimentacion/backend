@@ -23,6 +23,7 @@ from app.services.establishments.establishment_dashboard_service import (
 from app.services.establishments.establishment_service import EstablishmentService
 from app.services.food_catalog.food_service import FoodService
 from app.services.food_intakes.food_intake_service import FoodIntakeService
+from app.services.food_intakes.receipt_intake_service import ReceiptIntakeService
 from app.services.food_outflows.food_outflow_service import FoodOutflowService
 from app.services.food_stock.food_stock_service import FoodStockService
 from app.services.measurements.measurement_service import MeasurementService
@@ -97,6 +98,12 @@ async def get_food_intake_service() -> AsyncGenerator[FoodIntakeService, None]:
     """Provide a FoodIntakeService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
         yield FoodIntakeService(uow)
+
+
+async def get_receipt_intake_service() -> AsyncGenerator[ReceiptIntakeService, None]:
+    """Provide a ReceiptIntakeService backed by a fresh UnitOfWork."""
+    async with UnitOfWork() as uow:
+        yield ReceiptIntakeService(uow)
 
 
 async def get_food_outflow_service() -> AsyncGenerator[FoodOutflowService, None]:
