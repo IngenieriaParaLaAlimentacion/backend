@@ -107,6 +107,18 @@ class ConflictError(BaseError, abstract=True):
     status = status.HTTP_409_CONFLICT
 
 
+class UnprocessableEntityError(BaseError, abstract=True):
+    """Base exception for a well-formed request whose content the server
+    understands but cannot process (HTTP 422).
+
+    Distinct from ``BadRequestError`` (400): the request syntax is fine and the
+    route matched -- it is the uploaded payload itself that is unacceptable, e.g.
+    an image in a format or size the server will not take.
+    """
+
+    status = status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
 class UserNotFoundError(NotFoundError):
     """Exception raised when a user is not found.
 
@@ -840,4 +852,50 @@ class InsufficientStockError(ConflictError):
                 "requested": requested,
                 "available": available,
             },
+        )
+
+
+class UnsupportedImageTypeError(UnprocessableEntityError):
+    """Raised when an uploaded image's content type is not in the allow-list.
+
+    Carries the rejected type and the accepted ones so a client can tell the
+    user what to send instead rather than only that the upload failed.
+
+    Args:
+        content_type (str | None): The rejected type, or None if the upload
+            declared none.
+        allowed (list[str]): The accepted content types.
+    """
+
+    error_type = "unsupported-image-type"
+
+    def __init__(self, content_type: str | None, allowed: list[str]):
+        accepted = sorted(allowed)
+        super().__init__(
+            "Unsupported image type",
+            f"Image type {content_type or 'unknown'!r} is not supported. "
+            f"Accepted types: {', '.join(accepted)}.",
+            extensions={"content_type": content_type, "accepted_types": accepted},
+        )
+
+
+class ImageTooLargeError(UnprocessableEntityError):
+    """Raised when an uploaded image is larger than the configured ceiling.
+
+    Carries both sizes so a client can report how far over the limit the file
+    is rather than only that it was rejected.
+
+    Args:
+        size_bytes (int): The size of the uploaded image.
+        max_bytes (int): The configured ceiling it exceeded.
+    """
+
+    error_type = "image-too-large"
+
+    def __init__(self, size_bytes: int, max_bytes: int):
+        super().__init__(
+            "Image too large",
+            f"The uploaded image is {size_bytes} bytes, over the "
+            f"{max_bytes}-byte limit.",
+            extensions={"size_bytes": size_bytes, "max_bytes": max_bytes},
         )

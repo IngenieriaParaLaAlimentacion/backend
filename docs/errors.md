@@ -41,6 +41,7 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/field-worker-is-not-pending` | 400 | `FieldWorkerNotPendingError` | Raised when a field worker is not awaiting validation. |
 | `/errors/filter-not-applicable` | 400 | `FilterNotApplicableError` | Raised when a filter resolves through a target the resource does not carry. |
 | `/errors/food-not-found` | 404 | `FoodNotFoundError` | Exception raised when a food cannot be found. |
+| `/errors/image-too-large` | 422 | `ImageTooLargeError` | Raised when an uploaded image is larger than the configured ceiling. |
 | `/errors/insufficient-stock` | 409 | `InsufficientStockError` | Exception raised when an outflow exceeds an establishment's stock. |
 | `/errors/invalid-age-range` | 400 | `InvalidAgeRangeError` | Raised when an age-range filter has a minimum above its maximum. |
 | `/errors/invalid-credentials` | 401 | `InvalidCredentialsError` | Exception raised when credentials are invalid. |
@@ -63,6 +64,7 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/survey-response-already-exists` | 409 | `SurveyResponseAlreadyExistsError` | Exception raised when a survey's target has already been answered. |
 | `/errors/survey-response-not-found` | 404 | `SurveyResponseNotFoundError` | Exception raised when a survey response cannot be found. |
 | `/errors/unauthorized` | 401 | `UnauthorizedError` | Exception raised when authorization fails. |
+| `/errors/unsupported-image-type` | 422 | `UnsupportedImageTypeError` | Raised when an uploaded image's content type is not in the allow-list. |
 | `/errors/user-already-exists` | 409 | `UserAlreadyExistsError` | Exception raised when trying to register with an existing email. |
 | `/errors/user-establishment-not-approved` | 409 | `UserEstablishmentNotApprovedError` | Raised when revoking access to an establishment that isn't currently approved for the given user. |
 | `/errors/user-establishment-not-found` | 404 | `UserEstablishmentNotFoundError` | Exception raised when a user-establishment relation does not exist. |
