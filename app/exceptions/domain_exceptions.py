@@ -383,6 +383,20 @@ class UniqueConstraintError(Exception):
         super().__init__(f"Unique constraint violated: {field}={value}")
 
 
+class ObjectStorageError(Exception):
+    """Raised by an ObjectStorage backend when a save fails.
+
+    Callers (services) are responsible for translating this into the
+    appropriate domain exception -- the storage layer knows nothing about
+    HTTP status codes, only that the object did not get written.
+    """
+
+    def __init__(self, key: str, reason: str) -> None:
+        self.key = key
+        self.reason = reason
+        super().__init__(f"Failed to store object {key!r}: {reason}")
+
+
 class EmptyUpdateRequestError(BadRequestError):
     """Exception raised when an update has no attributes to be updated."""
 
