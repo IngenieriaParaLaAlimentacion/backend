@@ -1,3 +1,4 @@
+import uuid
 from uuid import UUID
 
 from app.config.settings import settings
@@ -6,6 +7,8 @@ from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
     ImageTooLargeError,
+    ObjectStorageError,
+    ReceiptPhotoStorageError,
     UnsupportedImageTypeError,
 )
 from app.schemas.food_intakes.receipt_schema import ReceiptProposalResponse
@@ -45,6 +48,18 @@ class ReceiptIntakeService:
         if size_bytes > settings.receipt_image_max_bytes:
             raise ImageTooLargeError(size_bytes, settings.receipt_image_max_bytes)
 
+    @staticmethod
+    def _build_photo_key(establishment_id: UUID, content_type: str) -> str:
+        """A unique storage key, namespaced by establishment.
+
+        The extension is the content type's subtype (``image/png`` -> ``.png``).
+
+        A fresh UUID per upload means re-uploading the same photo (e.g. after
+        a rejected proposal) never collides with the earlier attempt.
+        """
+        extension = content_type.split("/", 1)[-1]
+        return f"food-intake-receipts/{establishment_id}/{uuid.uuid4()}.{extension}"
+
     async def propose_from_photo(
         self,
         *,
@@ -53,11 +68,13 @@ class ReceiptIntakeService:
         image: bytes,
         actor: UserActor,
     ) -> ReceiptProposalResponse:
-        """Validate a receipt photo and return the (currently empty) proposal.
+        """Validate a receipt photo, store it, and return the (currently
+        empty) proposal.
 
-        The image is neither stored nor persisted: the caller reviews the
-        proposal and submits the lines through the normal intake path with
-        ``source = photo``.
+        The photo is durably saved before this returns, independent of
+        whether the intake is ever confirmed. The caller reviews
+        the proposal and submits its lines, plus ``photo_key``, through the
+        normal intake path with ``source = photo``.
 
         Raises:
             UnsupportedImageTypeError: image type not accepted.
@@ -65,14 +82,24 @@ class ReceiptIntakeService:
             EstablishmentNotFoundError: ``establishment_id`` does not exist.
             EstablishmentAccessDeniedError: field worker without approved
                 access to the establishment.
+            ReceiptPhotoStorageError: the storage backend rejected the save.
         """
         self._validate_image(content_type, len(image))
 
         await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
         await check_establishment_access(self.uow, actor, establishment_id)
 
+        photo_key = self._build_photo_key(establishment_id, content_type)
+        try:
+            await self.storage.save(
+                key=photo_key, content_type=content_type, data=image
+            )
+        except ObjectStorageError as exc:
+            raise ReceiptPhotoStorageError() from exc
+
         return ReceiptProposalResponse(
             establishment_id=establishment_id,
+            photo_key=photo_key,
             lines=[],
             message=self._MANUAL_FALLBACK_MESSAGE,
         )

@@ -60,6 +60,13 @@ class TestImageValidation:
         assert proposal.establishment_id == establishment_id
         assert proposal.lines == []
         assert proposal.message  # manual-fallback hint while there is no extractor
+        assert proposal.photo_key.startswith(
+            f"food-intake-receipts/{establishment_id}/"
+        )
+        assert proposal.photo_key.endswith(".png")
+        storage.save.assert_awaited_once_with(
+            key=proposal.photo_key, content_type="image/png", data=PNG_BYTES
+        )
 
     async def test_unsupported_type_is_rejected_before_any_db_access(
         self, uow, storage, admin_actor
