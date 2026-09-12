@@ -32,6 +32,12 @@ def test_settings_defaults():
         "image/webp",
     }
 
+    assert s.storage_endpoint_url is None
+    assert s.storage_bucket is None
+    assert s.storage_access_key_id is None
+    assert s.storage_secret_access_key is None
+    assert s.storage_region == "auto"
+
 
 def test_settings_invalid_port():
     with pytest.raises(ValidationError):

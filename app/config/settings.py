@@ -82,6 +82,13 @@ class Settings(BaseSettings):
         "image/webp",
     }
 
+    # Object storage (Cloudflare R2, S3-compatible).
+    storage_endpoint_url: Optional[str] = None
+    storage_bucket: Optional[str] = None
+    storage_access_key_id: Optional[str] = None
+    storage_secret_access_key: Optional[str] = None
+    storage_region: str = "auto"
+
     def _build_deeplink(self, base: str | AnyUrl, path: str) -> str:
         base = str(base).rstrip("/")
         if not path.startswith("/"):
