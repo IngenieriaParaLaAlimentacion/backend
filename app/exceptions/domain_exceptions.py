@@ -370,6 +370,26 @@ class EmailDeliveryError(BaseError):
         super().__init__("Email delivery failed", details)
 
 
+class ReceiptPhotoStorageError(BaseError):
+    """Raised when a receipt photo cannot be persisted to object storage.
+
+    Nothing has been saved yet at this point -- no intake exists, no DB row
+    references the failed key -- so the client's only recourse is to retry
+    the upload.
+    """
+
+    error_type = "receipt-photo-storage-failed"
+    status = status.HTTP_502_BAD_GATEWAY
+
+    def __init__(
+        self,
+        details: str = (
+            "The receipt photo could not be saved. Please try uploading it again."
+        ),
+    ):
+        super().__init__("Receipt photo storage failed", details)
+
+
 class UniqueConstraintError(Exception):
     """Raised by a repository when a unique constraint is violated.
 

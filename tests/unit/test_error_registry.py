@@ -39,6 +39,7 @@ EXPECTED: dict[str, int] = {
     "no-fields-to-update": status.HTTP_400_BAD_REQUEST,
     "not-resource-owner": status.HTTP_403_FORBIDDEN,
     "password-not-found": status.HTTP_404_NOT_FOUND,
+    "receipt-photo-storage-failed": status.HTTP_502_BAD_GATEWAY,
     "role-not-allowed": status.HTTP_403_FORBIDDEN,
     "subject-already-exists": status.HTTP_409_CONFLICT,
     "subject-not-found": status.HTTP_404_NOT_FOUND,

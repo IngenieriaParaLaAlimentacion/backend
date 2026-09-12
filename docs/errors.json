@@ -199,6 +199,12 @@
       "description": "Exception raised when a user's password record is not found."
     },
     {
+      "type": "/errors/receipt-photo-storage-failed",
+      "status": 502,
+      "exception": "ReceiptPhotoStorageError",
+      "description": "Raised when a receipt photo cannot be persisted to object storage."
+    },
+    {
       "type": "/errors/role-not-allowed",
       "status": 403,
       "exception": "RoleNotAllowedError",
