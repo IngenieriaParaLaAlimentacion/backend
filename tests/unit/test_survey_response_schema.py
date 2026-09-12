@@ -41,7 +41,10 @@ def test_response_number_migration_is_the_only_head_after_develop():
     migration = scripts.get_revision("d47f2a9c1e63")
 
     assert migration.down_revision == "c8e3d5a91f74"
-    assert scripts.get_heads() == [migration.revision]
+
+    photo_key_migration = scripts.get_revision("ec7aacdaf1ae")
+    assert photo_key_migration.down_revision == migration.revision
+    assert scripts.get_heads() == [photo_key_migration.revision]
 
 
 def test_submit_and_edit_accept_missing_or_null_response_number():

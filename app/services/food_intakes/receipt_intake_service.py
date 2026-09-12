@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from app.config.settings import settings
+from app.core.interfaces.object_storage import IObjectStorage
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
@@ -22,8 +23,9 @@ class ReceiptIntakeService:
         "Porfavor carguelos de forma manual. "
     )
 
-    def __init__(self, uow: IUnitOfWork) -> None:
+    def __init__(self, uow: IUnitOfWork, storage: IObjectStorage) -> None:
         self.uow = uow
+        self.storage = storage
 
     def _validate_image(self, content_type: str | None, size_bytes: int) -> None:
         """Reject an upload whose type or size the server will not process.

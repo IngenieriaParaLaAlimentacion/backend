@@ -17,6 +17,7 @@ from app.services.admin_service import AdminService
 from app.services.analytics_service import AnalyticsService
 from app.services.auth.auth_service import AuthService
 from app.services.auth.user_service import UserService
+from app.services.cloudflare_storage.r2_object_storage import R2ObjectStorage
 from app.services.establishments.establishment_dashboard_service import (
     EstablishmentDashboardService,
 )
@@ -101,9 +102,9 @@ async def get_food_intake_service() -> AsyncGenerator[FoodIntakeService, None]:
 
 
 async def get_receipt_intake_service() -> AsyncGenerator[ReceiptIntakeService, None]:
-    """Provide a ReceiptIntakeService backed by a fresh UnitOfWork."""
+    """Provide a ReceiptIntakeService backed by a fresh UnitOfWork and R2."""
     async with UnitOfWork() as uow:
-        yield ReceiptIntakeService(uow)
+        yield ReceiptIntakeService(uow, R2ObjectStorage())
 
 
 async def get_food_outflow_service() -> AsyncGenerator[FoodOutflowService, None]:
