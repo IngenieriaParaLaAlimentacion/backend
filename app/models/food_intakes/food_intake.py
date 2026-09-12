@@ -42,6 +42,7 @@ class FoodIntake(Base):
         SAEnum(FoodIntakeSource, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
     )
+    photo_key = Column(String, nullable=True)
     synced_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
