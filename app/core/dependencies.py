@@ -104,7 +104,8 @@ async def get_food_intake_service() -> AsyncGenerator[FoodIntakeService, None]:
 async def get_receipt_intake_service() -> AsyncGenerator[ReceiptIntakeService, None]:
     """Provide a ReceiptIntakeService backed by a fresh UnitOfWork and R2."""
     async with UnitOfWork() as uow:
-        yield ReceiptIntakeService(uow, R2ObjectStorage())
+        food_intake_service = FoodIntakeService(uow)
+        yield ReceiptIntakeService(uow, R2ObjectStorage(), food_intake_service)
 
 
 async def get_food_outflow_service() -> AsyncGenerator[FoodOutflowService, None]:
