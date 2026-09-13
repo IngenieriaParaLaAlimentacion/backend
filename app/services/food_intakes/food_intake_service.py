@@ -34,9 +34,17 @@ class FoodIntakeService:
         return found
 
     async def register(
-        self, data: FoodIntakeRequest, actor: UserActor
+        self,
+        data: FoodIntakeRequest,
+        actor: UserActor,
+        photo_key: str | None = None,
     ) -> tuple[FoodIntakeDomain, bool]:
         """Idempotently register an intake and add it to the establishment's stock.
+
+        ``photo_key`` is not part of ``FoodIntakeRequest``: it is never
+        client-supplied JSON, since that would let a plain manual submission
+        claim a photo it never uploaded. It is only ever passed by
+        ReceiptIntakeService, after it has actually saved the image to R2.
 
         Returns a ``(intake, created)`` tuple: ``created`` is True for a brand-new
         intake (201) and False for an idempotent replay of an existing id (200).
@@ -64,7 +72,7 @@ class FoodIntakeService:
             received_at=data.received_at,
             comments=data.comments,
             source=data.source,
-            photo_key=data.photo_key,
+            photo_key=photo_key,
         )
         intake.items = [
             FoodIntakeItem(food=foods[item.food_id], quantity=item.quantity)
