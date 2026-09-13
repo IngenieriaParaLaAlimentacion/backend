@@ -7,8 +7,6 @@ from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
     ImageTooLargeError,
-    ObjectStorageError,
-    ReceiptPhotoStorageError,
     UnsupportedImageTypeError,
 )
 from app.schemas.food_intakes.receipt_schema import ReceiptProposalResponse
@@ -68,13 +66,12 @@ class ReceiptIntakeService:
         image: bytes,
         actor: UserActor,
     ) -> ReceiptProposalResponse:
-        """Validate a receipt photo, store it, and return the (currently
-        empty) proposal.
+        """Validate a receipt photo and return the (currently empty) proposal.
 
-        The photo is durably saved before this returns, independent of
-        whether the intake is ever confirmed. The caller reviews
-        the proposal and submits its lines, plus ``photo_key``, through the
-        normal intake path with ``source = photo``.
+        Nothing is stored here: the image is only held in memory for this
+        request. It is only persisted to R2 if and when the user confirms via
+        ``POST /food-intakes/from-photo/confirm`` -- so an abandoned or
+        rejected proposal never leaves an orphaned object in storage.
 
         Raises:
             UnsupportedImageTypeError: image type not accepted.
@@ -82,24 +79,14 @@ class ReceiptIntakeService:
             EstablishmentNotFoundError: ``establishment_id`` does not exist.
             EstablishmentAccessDeniedError: field worker without approved
                 access to the establishment.
-            ReceiptPhotoStorageError: the storage backend rejected the save.
         """
         self._validate_image(content_type, len(image))
 
         await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
         await check_establishment_access(self.uow, actor, establishment_id)
 
-        photo_key = self._build_photo_key(establishment_id, content_type)
-        try:
-            await self.storage.save(
-                key=photo_key, content_type=content_type, data=image
-            )
-        except ObjectStorageError as exc:
-            raise ReceiptPhotoStorageError() from exc
-
         return ReceiptProposalResponse(
             establishment_id=establishment_id,
-            photo_key=photo_key,
             lines=[],
             message=self._MANUAL_FALLBACK_MESSAGE,
         )

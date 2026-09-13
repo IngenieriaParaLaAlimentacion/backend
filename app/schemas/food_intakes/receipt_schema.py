@@ -43,12 +43,6 @@ class ReceiptProposalResponse(BaseModel):
     """The assisted proposal for a receipt photo, before confirmation."""
 
     establishment_id: UUID
-    photo_key: str = Field(
-        description=(
-            "Storage key of the uploaded photo. Pass this back to "
-            "POST /food-intakes to link the confirmed intake to it."
-        ),
-    )
     lines: list[ProposedFoodLine] = Field(
         default_factory=list,
         description="Proposed food lines; empty when nothing was detected.",

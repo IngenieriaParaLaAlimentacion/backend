@@ -64,6 +64,7 @@ class FoodIntakeService:
             received_at=data.received_at,
             comments=data.comments,
             source=data.source,
+            photo_key=data.photo_key,
         )
         intake.items = [
             FoodIntakeItem(food=foods[item.food_id], quantity=item.quantity)

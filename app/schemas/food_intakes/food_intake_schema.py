@@ -36,6 +36,14 @@ class FoodIntakeRequest(BaseModel):
     )
     comments: str | None = Field(default=None, max_length=500)
     source: FoodIntakeSource = FoodIntakeSource.MANUAL
+    photo_key: str | None = Field(
+        default=None,
+        description=(
+            "Storage key of the receipt photo, as returned by "
+            "POST /food-intakes/from-photo. Independent of `source`: a photo-"
+            "loaded intake is still photo-loaded once its image is discarded."
+        ),
+    )
     items: list[FoodLineRequest] = Field(min_length=1)
 
     _check_received_at = field_validator("received_at")(validate_not_future_datetime)
@@ -61,5 +69,6 @@ class FoodIntakeResponse(BaseModel):
     received_at: datetime
     comments: str | None
     source: FoodIntakeSource
+    photo_key: str | None
     created_at: datetime
     items: list[FoodLineResponse]

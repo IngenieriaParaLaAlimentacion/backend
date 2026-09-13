@@ -11,17 +11,10 @@ from app.schemas.food_intakes.receipt_schema import (
 
 
 def test_empty_proposal_defaults_to_no_lines_and_no_message():
-    proposal = ReceiptProposalResponse(
-        establishment_id=uuid.uuid4(), photo_key="food-intake-receipts/e/f.jpg"
-    )
+    proposal = ReceiptProposalResponse(establishment_id=uuid.uuid4())
 
     assert proposal.lines == []
     assert proposal.message is None
-
-
-def test_proposal_requires_a_photo_key():
-    with pytest.raises(ValidationError):
-        ReceiptProposalResponse(establishment_id=uuid.uuid4())
 
 
 def test_proposed_line_requires_an_explicit_review_flag():
