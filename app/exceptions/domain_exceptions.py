@@ -417,6 +417,19 @@ class ObjectStorageError(Exception):
         super().__init__(f"Failed to store object {key!r}: {reason}")
 
 
+class LlmClientError(Exception):
+    """Raised by an ILlmClient implementation when a completion fails.
+
+    Callers (services) are responsible for translating this into the
+    appropriate domain exception -- the LLM layer knows nothing about HTTP
+    status codes, only that a usable response was not obtained.
+    """
+
+    def __init__(self, reason: str) -> None:
+        self.reason = reason
+        super().__init__(f"LLM completion failed: {reason}")
+
+
 class EmptyUpdateRequestError(BadRequestError):
     """Exception raised when an update has no attributes to be updated."""
 
