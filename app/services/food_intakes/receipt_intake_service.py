@@ -2,6 +2,7 @@ import uuid
 from uuid import UUID
 
 from app.config.settings import settings
+from app.core.interfaces.llm_client import ILlmClient
 from app.core.interfaces.object_storage import IObjectStorage
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.food_intake import FoodIntakeDomain
@@ -34,10 +35,12 @@ class ReceiptIntakeService:
         uow: IUnitOfWork,
         storage: IObjectStorage,
         food_intake_service: FoodIntakeService,
+        llm_client: ILlmClient,
     ) -> None:
         self.uow = uow
         self.storage = storage
         self.food_intake_service = food_intake_service
+        self.llm_client = llm_client
 
     def _validate_image(self, content_type: str | None, size_bytes: int) -> None:
         """Reject an upload whose type or size the server will not process.

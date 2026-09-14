@@ -27,6 +27,7 @@ from app.services.food_intakes.food_intake_service import FoodIntakeService
 from app.services.food_intakes.receipt_intake_service import ReceiptIntakeService
 from app.services.food_outflows.food_outflow_service import FoodOutflowService
 from app.services.food_stock.food_stock_service import FoodStockService
+from app.services.llm.gemini_llm_client import GeminiLlmClient
 from app.services.measurements.measurement_service import MeasurementService
 from app.services.subjects.subject_service import SubjectService
 from app.services.surveys.survey_response_service import SurveyResponseService
@@ -105,7 +106,10 @@ async def get_receipt_intake_service() -> AsyncGenerator[ReceiptIntakeService, N
     """Provide a ReceiptIntakeService backed by a fresh UnitOfWork and R2."""
     async with UnitOfWork() as uow:
         food_intake_service = FoodIntakeService(uow)
-        yield ReceiptIntakeService(uow, R2ObjectStorage(), food_intake_service)
+        llm_client = GeminiLlmClient()
+        yield ReceiptIntakeService(
+            uow, R2ObjectStorage(), food_intake_service, llm_client
+        )
 
 
 async def get_food_outflow_service() -> AsyncGenerator[FoodOutflowService, None]:
