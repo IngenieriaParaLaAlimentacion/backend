@@ -821,7 +821,7 @@ class TestFoodMovementTypeFilter:
             ACTIVITY_URL, params={"type": "food_movement"}, headers=headers
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 class TestMixedFeedWithFoodMovements:
