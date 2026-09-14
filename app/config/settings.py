@@ -89,6 +89,10 @@ class Settings(BaseSettings):
     storage_secret_access_key: Optional[str] = None
     storage_region: str = "auto"
 
+    # LLM
+    gemini_api_key: Optional[str] = None
+    gemini_model: str = "gemini-2.0-flash"
+
     def _build_deeplink(self, base: str | AnyUrl, path: str) -> str:
         base = str(base).rstrip("/")
         if not path.startswith("/"):
