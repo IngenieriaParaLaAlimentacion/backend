@@ -25,6 +25,11 @@ class FoodIntake(Base):
             "establishment_id",
             "received_at",
         ),
+        Index(
+            "ix_food_intakes_responsible_id_received_at",
+            "responsible_id",
+            "received_at",
+        ),
     )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
