@@ -1,17 +1,14 @@
 ---
 name: implement
 description: >
-  Phase 3 of the feature development workflow. Use this skill whenever the user invokes /implement
-  or asks to implement, build, code, or execute a plan produced by /plan (Phase 2).
-  Triggers on: "/implement [folder]", "implement this plan", "build this feature", "phase 3",
-  "let's implement", "code this up", "execute the plan", "start building", "let's build it".
-  Reads the plan.md from Phase 2, uses the dedicated worktree assigned to each Ingeniería para
-  la Alimentación repo (backend, backoffice, app_mobile), creates client branches, spawns parallel agents per lane, runs
-  each repo's tests/lint/typecheck, cleans the code, and opens one PR per repo in the plan's
-  landing order. Use this skill even if the user just says "let's build" or "implement it".
+  Explicit-only Phase 3 workflow for Ingeniería para la Alimentación. Invoke only through
+  /implement or $implement to execute an approved Phase 2 plan across its dedicated worktrees.
+  Never select this skill implicitly for ordinary implementation requests.
 ---
 
 # Implement Skill — Phase 3
+
+Run this workflow only when the user explicitly invokes `/implement` or `$implement`.
 
 You are performing Phase 3 of a structured feature-development workflow. Your job is to turn
 a plan.md into working, tested, linted code across every repo the feature touches — then open

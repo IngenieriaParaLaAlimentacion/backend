@@ -1,18 +1,14 @@
 ---
 name: research
 description: >
-  Phase 1 of the feature development workflow. Use this skill whenever the user invokes /research
-  or asks to research, investigate, or understand the codebase before building a feature.
-  Triggers on: "research [feature]", "investigate [feature]", "/research", "phase 1",
-  "understand how X works before I build", "map out the current flow for".
-  Creates docs/plans/[N]-[feature-name]/research.md with a deep analysis of the current flow
-  across every Ingeniería para la Alimentación repo the feature touches — the FastAPI backend,
-  the backoffice web app and the Compose Multiplatform mobile app — without touching
-  implementation. Use this skill even if the user just says "I want to research X" or
-  "let's do phase 1 for X".
+  Explicit-only Phase 1 workflow for Ingeniería para la Alimentación. Invoke only through
+  /research or $research to create cross-repo worktrees and docs/plans/[N]-[feature]/research.md.
+  Never select this skill implicitly for ordinary research or investigation requests.
 ---
 
 # Research Skill — Phase 1
+
+Run this workflow only when the user explicitly invokes `/research` or `$research`.
 
 You are performing Phase 1 of a structured feature-development workflow. Your only job here
 is to deeply understand the _current_ system as it relates to the feature being planned.

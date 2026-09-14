@@ -1,17 +1,14 @@
 ---
 name: plan
 description: >
-  Phase 2 of the feature development workflow. Use this skill whenever the user invokes /plan
-  or asks to create a plan, write a plan, plan a feature, or move from research to implementation planning.
-  Triggers on: "/plan [folder]", "plan this feature", "create a plan for", "phase 2",
-  "write the implementation plan", "plan it out before we build".
-  Reads the research.md from Phase 1 and produces a detailed plan.md with architecture decisions,
-  Mermaid diagrams, Alembic migrations, per-repo implementation specs with code snippets, and the
-  PR-per-repo landing order across the Ingeniería para la Alimentación backend, backoffice and
-  mobile repos. Use this skill even if the user just says "let's plan" or "ready to plan X".
+  Explicit-only Phase 2 workflow for Ingeniería para la Alimentación. Invoke only through
+  /plan or $plan to turn a Phase 1 research document into a cross-repo implementation plan.
+  Never select this skill implicitly for ordinary planning requests.
 ---
 
 # Plan Skill — Phase 2
+
+Run this workflow only when the user explicitly invokes `/plan` or `$plan`.
 
 You are performing Phase 2 of a structured feature-development workflow. Your job is to
 produce a detailed, actionable implementation plan based on the Phase 1 research.
