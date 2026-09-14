@@ -103,6 +103,8 @@ class TestActivityTypeFilter:
             ActivityType.SUBJECT,
             ActivityType.MEASUREMENT,
             ActivityType.SURVEY_RESPONSE,
+            ActivityType.FOOD_INTAKE,
+            ActivityType.FOOD_OUTFLOW,
         ],
     )
     async def test_passes_activity_type_through_unchanged(
