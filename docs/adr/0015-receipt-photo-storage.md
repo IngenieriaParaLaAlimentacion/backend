@@ -152,7 +152,9 @@ row), and no acceptance criterion currently depends on rejecting that specific m
 - `IObjectStorage`'s genericity means `valores_de_hierro`'s consent PDFs can reuse the same port
   and bucket later with no new infrastructure.
 - The whole path — upload, idempotent replay, establishment/access checks, and the no-reupload
-  guarantee — is verified against a real R2 bucket and a real Postgres instance, not only mocks.
+  guarantee — is verified against a real S3-compatible backend (MinIO, via testcontainers) and a
+  real Postgres instance, not only mocks. Both containers are ephemeral and torn down at the end
+  of the test session, so no test run leaves objects behind in any persistent bucket.
 
 **Negatives**
 
@@ -160,9 +162,6 @@ row), and no acceptance criterion currently depends on rejecting that specific m
   an accepted bandwidth cost.
 - An unknown `food_id` is still discovered only after the photo has already been uploaded,
   leaving a narrow, accepted orphan case with no cleanup mechanism.
-- The integration tests that exercise this flow hit the real R2 bucket configured in `.env` and
-  currently leave the objects they create behind, with no automated cleanup. Acceptable only if
-  that bucket is a dedicated dev/test bucket, not one shared with real data.
 
 **Neutral**
 

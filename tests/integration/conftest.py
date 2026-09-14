@@ -9,6 +9,7 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
+from testcontainers.minio import MinioContainer
 from testcontainers.postgres import PostgresContainer
 
 from alembic import command
@@ -99,7 +100,29 @@ def postgres_url():
 
 
 @pytest.fixture(scope="session")
-def app(postgres_url):
+def storage_config():
+    """Start a MinIO container for the test session and create the test bucket.
+
+    MinIO is a real S3-compatible server (not a mock), so it exercises the
+    same aioboto3 client code path R2 does in production -- the point of the
+    receipt-upload tests (see test_receipt_intake_confirm.py), just without
+    depending on external Cloudflare credentials in CI.
+    """
+    image = "quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z"
+    with MinioContainer(image=image) as minio:
+        bucket = "test-bucket"
+        minio.get_client().make_bucket(bucket)
+        config = minio.get_config()
+        yield {
+            "endpoint_url": f"http://{config['endpoint']}",
+            "bucket": bucket,
+            "access_key_id": config["access_key"],
+            "secret_access_key": config["secret_key"],
+        }
+
+
+@pytest.fixture(scope="session")
+def app(postgres_url, storage_config):
     """
     Build the FastAPI app against the test database.
 
@@ -119,6 +142,11 @@ def app(postgres_url):
         command.upgrade(alembic_cfg, "head")
     finally:
         settings.database_url = original_db_url
+
+    settings.storage_endpoint_url = storage_config["endpoint_url"]
+    settings.storage_bucket = storage_config["bucket"]
+    settings.storage_access_key_id = storage_config["access_key_id"]
+    settings.storage_secret_access_key = storage_config["secret_access_key"]
 
     import app.db.database as db_module
     from app.main import app as fastapi_app

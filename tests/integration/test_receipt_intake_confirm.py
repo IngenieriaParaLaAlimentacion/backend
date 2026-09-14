@@ -1,13 +1,3 @@
-"""Integration tests for POST /food-intakes/from-photo/confirm.
-
-Exercises the real R2 bucket (via .env credentials) and the real DB, since
-this endpoint's whole point is a specific ordering guarantee -- every check
-that would make registration fail must run before the photo is uploaded, so a
-rejected or replayed confirm never leaves an orphaned object in storage. That
-guarantee is only meaningfully proven against the real storage backend, not a
-mock.
-"""
-
 import json
 import uuid
 from datetime import datetime, timezone
