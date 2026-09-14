@@ -27,7 +27,7 @@ class ActivityService:
             actor_id=UUID(str(actor.user_id)),
             limit=page_size,
             offset=offset,
-            activity_type=params.activity_type,
+            activity_types=params.activity_types,
         )
         return PaginatedResult.build(
             items=items, total=total, page=page, page_size=page_size

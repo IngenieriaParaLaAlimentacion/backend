@@ -30,20 +30,26 @@ class ActivityRepository:
         self.db = db
 
     def _build_feed_subquery(
-        self, actor_id: UUID, activity_type: ActivityType | None
+        self, actor_id: UUID, activity_types: list[ActivityType] | None
     ) -> Subquery:
-        """Build the id/type/occurred_at UNION ALL of the requested branches."""
-        branches = []
-        if activity_type is None or activity_type == ActivityType.SUBJECT:
-            branches.append(self._build_subjects_created_query(actor_id))
-        if activity_type is None or activity_type == ActivityType.MEASUREMENT:
-            branches.append(self._build_measurements_taken_query(actor_id))
-        if activity_type is None or activity_type == ActivityType.SURVEY_RESPONSE:
-            branches.append(self._build_survey_responses_query(actor_id))
-        if activity_type is None or activity_type == ActivityType.FOOD_INTAKE:
-            branches.append(self._build_food_intakes_query(actor_id))
-        if activity_type is None or activity_type == ActivityType.FOOD_OUTFLOW:
-            branches.append(self._build_food_outflows_query(actor_id))
+        """Build the id/type/occurred_at UNION ALL of the requested branches.
+
+        `activity_types` is the raw request filter: None/empty means every
+        type, and it may contain duplicates because FastAPI does not collapse
+        repeated query values. Collecting it into a set is what makes a
+        repeated `?type=x&type=x` idempotent -- appending the same branch
+        twice would silently double both the rows and the total.
+
+        Iteration is over `_FEED_BRANCH_BUILDERS` (enum declaration order),
+        filtered by membership, so branch order is deterministic and
+        independent of both the set's iteration order and the request order.
+        """
+        requested = set(activity_types) if activity_types else set(ActivityType)
+        branches = [
+            builder(self, actor_id)
+            for activity_type, builder in self._FEED_BRANCH_BUILDERS.items()
+            if activity_type in requested
+        ]
         return union_all(*branches).subquery()
 
     def _build_subjects_created_query(self, actor_id: UUID) -> Select:
@@ -107,6 +113,20 @@ class ActivityRepository:
             literal(ActivityType.FOOD_OUTFLOW.value).label("type"),
             FoodOutflow.occurred_at.label("occurred_at"),
         ).where(FoodOutflow.responsible_id == actor_id)
+
+    # Per activity type: the method that builds its id/type/occurred_at branch
+    # of the feed union. Keys are unbound methods, so they take `self`.
+    # No fallback entry on purpose: a type added to the enum but forgotten here
+    # raises instead of silently vanishing from the unfiltered feed.
+    _FEED_BRANCH_BUILDERS: ClassVar[
+        dict[ActivityType, Callable[["ActivityRepository", UUID], Select]]
+    ] = {
+        ActivityType.SUBJECT: _build_subjects_created_query,
+        ActivityType.MEASUREMENT: _build_measurements_taken_query,
+        ActivityType.SURVEY_RESPONSE: _build_survey_responses_query,
+        ActivityType.FOOD_INTAKE: _build_food_intakes_query,
+        ActivityType.FOOD_OUTFLOW: _build_food_outflows_query,
+    }
 
     async def _fetch_page_rows(
         self, feed_query: Subquery, limit: int, offset: int
@@ -272,13 +292,17 @@ class ActivityRepository:
         actor_id: UUID,
         limit: int,
         offset: int,
-        activity_type: ActivityType | None,
+        activity_types: list[ActivityType] | None,
     ) -> tuple[list[ActivityItemDomain], int]:
         """Return a paginated, date-descending merge of the actor's own subject
         registrations, measurement uploads, survey responses and food movements
         (intakes and outflows), and the total matching count.
+
+        `activity_types` selects which branches enter the union; None or empty
+        means every type. `total` and the page slice read the same subquery
+        object, so they cannot disagree about the filter.
         """
-        feed_query = self._build_feed_subquery(actor_id, activity_type)
+        feed_query = self._build_feed_subquery(actor_id, activity_types)
 
         total = await self.db.scalar(select(func.count()).select_from(feed_query))
         page_rows = await self._fetch_page_rows(feed_query, limit, offset)

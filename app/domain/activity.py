@@ -20,9 +20,16 @@ class ActivityType(StrEnum):
 
 @dataclass
 class ActivityListingParams:
-    """Query parameters for the current user's activity feed."""
+    """Query parameters for the current user's activity feed.
 
-    activity_type: ActivityType | None = None
+    `activity_types` is the *requested* filter, carried verbatim: None means
+    "no filter", and duplicates are possible because FastAPI does not collapse
+    repeated query values. Normalization (dedupe, and None/empty meaning every
+    type) happens in the repository, where a `set` makes duplication
+    structurally impossible for every caller.
+    """
+
+    activity_types: list[ActivityType] | None = None
 
 
 @dataclass

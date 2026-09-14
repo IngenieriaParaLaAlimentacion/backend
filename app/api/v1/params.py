@@ -5,6 +5,7 @@ from uuid import UUID
 
 from fastapi import Query, status
 
+from app.domain.activity import ActivityListingParams, ActivityType
 from app.domain.establishment import (
     EstablishmentCreationRequestListingParams,
     EstablishmentCreationRequestSortOrder,
@@ -187,6 +188,23 @@ class EstablishmentFieldWorkersQuery:
             search=self.search,
             relation_status=self.relation_status,
         )
+
+
+@dataclass
+class ActivityQuery:
+    activity_types: Annotated[
+        list[ActivityType] | None,
+        Query(
+            alias="type",
+            description="Activity types to include. Repeat the parameter to "
+            "merge several types into one date-descending feed "
+            "(`?type=food_intake&type=food_outflow`). Repeated values are "
+            "idempotent. Defaults to every type when omitted.",
+        ),
+    ] = None
+
+    def to_domain(self) -> ActivityListingParams:
+        return ActivityListingParams(activity_types=self.activity_types)
 
 
 @dataclass
