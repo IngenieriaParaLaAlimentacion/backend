@@ -123,9 +123,9 @@ async def request_establishment_access(
     summary="Get the current user's recent activity",
     description=(
         "Returns a paginated, date-descending feed of the caller's own "
-        "subject registrations, measurement uploads, and survey responses. "
-        "Optionally filter to a single activity type. Accessible by all "
-        "authenticated roles."
+        "subject registrations, measurement uploads, survey responses, and "
+        "food movements (intakes and outflows). Optionally filter to a single "
+        "activity type. Accessible by all authenticated roles."
     ),
     responses={
         status.HTTP_401_UNAUTHORIZED: {
