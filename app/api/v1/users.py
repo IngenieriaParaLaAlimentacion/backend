@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status
 
-from app.api.v1.params import AUTH_RESPONSES, ActivityQuery, PaginatedQueryParams
+from app.api.v1.params import AUTH_RESPONSES, ActivityListingQuery, PaginatedQueryParams
 from app.core.dependencies import (
     get_activity_service,
     get_user_service,
@@ -132,11 +132,14 @@ async def request_establishment_access(
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Missing or invalid authentication token"
         },
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {
+            "description": "Unknown activity type, or invalid pagination values"
+        },
     },
 )
 async def get_my_activity(
     paginated: PaginatedQueryParams = Depends(),
-    query: ActivityQuery = Depends(),
+    activity_query: ActivityListingQuery = Depends(),
     actor: UserActor = Depends(require_any),
     service: ActivityService = Depends(get_activity_service),
 ) -> PaginatedResponse[ActivityItemResponse]:
@@ -144,7 +147,7 @@ async def get_my_activity(
         actor,
         page=paginated.page,
         page_size=paginated.page_size,
-        params=query.to_domain(),
+        params=activity_query.to_domain(),
     )
     return PaginatedResponse[ActivityItemResponse](
         items=[ActivityItemResponse.model_validate(i) for i in result.items],

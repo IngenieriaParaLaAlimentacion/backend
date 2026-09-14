@@ -191,7 +191,9 @@ class EstablishmentFieldWorkersQuery:
 
 
 @dataclass
-class ActivityQuery:
+class ActivityListingQuery:
+    """Query params for the current user's activity feed."""
+
     activity_types: Annotated[
         list[ActivityType] | None,
         Query(
