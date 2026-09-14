@@ -66,15 +66,12 @@ class FoodIntakeDomain:
 class FoodMovementListItemDomain:
     """A food intake or outflow row for the activity-feed view.
 
-    One shape serves both directions. The column asymmetry
-    (``food_intakes.received_at`` vs ``food_outflows.occurred_at``) is
-    normalized to ``occurred_at`` here, the same way the feed's phase-A union
-    normalizes it for ordering.
+    One shape serves both directions: ``food_intakes.received_at`` and
+    ``food_outflows.occurred_at`` are normalized to ``occurred_at``.
 
-    No responsible reference: ``/me/activity`` is already scoped to the caller,
-    matching ``SurveyResponseListItemDomain``. ``items`` are rendered as stored,
-    including repeated foods -- a single movement may legally carry two lines
-    for the same food, and the feed reports what was recorded, not a rollup.
+    ``items`` are rendered as stored, repeated foods included: a movement may
+    legally carry two lines for the same food, and the feed reports what was
+    recorded rather than a rollup.
     """
 
     id: UUID
@@ -88,24 +85,23 @@ class FoodMovementListItemDomain:
     def from_intake(cls, intake) -> "FoodMovementListItemDomain":
         """Build from an intake row with ``establishment`` and ``items``
         (each with its ``food``) loaded."""
-        return cls(
-            id=intake.id,
-            occurred_at=intake.received_at,
-            comments=intake.comments,
-            source=intake.source,
-            establishment=EstablishmentRefDomain.from_db(intake.establishment),
-            items=[FoodLineDomain.from_db(item) for item in intake.items],
-        )
+        return cls._from_movement(intake, intake.received_at)
 
     @classmethod
     def from_outflow(cls, outflow) -> "FoodMovementListItemDomain":
         """Build from an outflow row with ``establishment`` and ``items``
         (each with its ``food``) loaded."""
+        return cls._from_movement(outflow, outflow.occurred_at)
+
+    @classmethod
+    def _from_movement(
+        cls, movement, occurred_at: datetime
+    ) -> "FoodMovementListItemDomain":
         return cls(
-            id=outflow.id,
-            occurred_at=outflow.occurred_at,
-            comments=outflow.comments,
-            source=outflow.source,
-            establishment=EstablishmentRefDomain.from_db(outflow.establishment),
-            items=[FoodLineDomain.from_db(item) for item in outflow.items],
+            id=movement.id,
+            occurred_at=occurred_at,
+            comments=movement.comments,
+            source=movement.source,
+            establishment=EstablishmentRefDomain.from_db(movement.establishment),
+            items=[FoodLineDomain.from_db(item) for item in movement.items],
         )

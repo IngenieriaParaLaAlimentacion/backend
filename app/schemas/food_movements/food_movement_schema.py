@@ -13,20 +13,13 @@ from app.schemas.measurements.measurement_schema import EstablishmentRefResponse
 class FoodMovementListItem(BaseModel):
     """A food intake or outflow row for the activity-feed view.
 
-    One schema serves both directions: the repository normalizes
-    ``food_intakes.received_at`` and ``food_outflows.occurred_at`` to a single
-    ``occurred_at``, and the two source enums have identical members
-    (``FoodOutflowSource`` validates through ``FoodIntakeSource`` because
-    Pydantic coerces a ``str``-mixin enum by value). Which direction a row is
-    comes from the item's ``type`` and from which sibling key of
-    ``ActivityItemResponse`` is populated.
+    One schema serves both directions; which one a row is comes from the
+    item's ``type``. ``source`` is typed as ``FoodIntakeSource`` because
+    ``FoodOutflowSource`` has identical members and Pydantic coerces a
+    ``str``-mixin enum by value.
 
-    No responsible reference: ``/me/activity`` is already scoped to the caller
-    (same reasoning as ``SurveyResponseListItemDomain``).
-
-    ``items`` is rendered exactly as stored, duplicate food lines included: the
-    read path never aggregates. ``aggregate_quantities`` is a stock-update
-    helper and must not be used here.
+    ``items`` is rendered exactly as stored, duplicate food lines included:
+    the read path never aggregates.
     """
 
     model_config = ConfigDict(from_attributes=True)

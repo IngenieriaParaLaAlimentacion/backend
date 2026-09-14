@@ -89,8 +89,7 @@ class ActivityRepository:
 
         One row per intake, paired with the timestamp the food arrived.
         ``received_at`` is labelled ``occurred_at`` so every branch of the
-        union exposes the same three columns; the intake payload keeps the
-        table's own column name.
+        union exposes the same three columns.
         """
         return select(
             FoodIntake.id.label("id"),
@@ -135,11 +134,8 @@ class ActivityRepository:
     ) -> dict[ActivityType, dict[UUID, object]]:
         """Fetch the full row for every id in the current page, keyed by type.
 
-        Returns a mapping per activity type so a new type is one entry here and
-        one entry in `_ITEM_BUILDERS`, with no positional argument to keep in
-        sync. Each per-type fetch short-circuits to `{}` when the page carries
-        no row of that type, so an unfiltered page costs at most one query per
-        type present.
+        Each per-type fetch short-circuits to `{}` when the page carries no row
+        of that type, so a page costs at most one query per type present.
         """
         return {
             ActivityType.SUBJECT: await self._get_subjects_by_id(
@@ -231,9 +227,8 @@ class ActivityRepository:
 
     # Per activity type: the `ActivityItemDomain` field to populate, and the
     # domain builder that turns the hydrated ORM row into that field's value.
-    # A new activity type is one entry here plus one in `_hydrate_page_rows`;
-    # there is deliberately no fallback branch, so a type added to the enum and
-    # forgotten here fails loudly instead of being mislabelled as another type.
+    # No fallback entry on purpose: a type added to the enum but forgotten here
+    # raises instead of being silently mislabelled as another type.
     _ITEM_BUILDERS: ClassVar[
         dict[ActivityType, tuple[str, Callable[[object], object]]]
     ] = {

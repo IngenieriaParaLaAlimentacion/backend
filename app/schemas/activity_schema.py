@@ -15,12 +15,8 @@ class ActivityItemResponse(BaseModel):
     """A single entry in a user's recent-activity feed.
 
     Not a discriminated union: exactly one payload sibling is populated,
-    matching ``type``; every other sibling is serialized as null. Adding a
-    sibling is therefore additive for clients, at the cost of one more null
-    key on every item.
-
-    ``food_intake`` and ``food_outflow`` share the same payload schema; the
-    direction is carried by ``type`` and by which key is set.
+    matching ``type``; every other sibling is serialized as null, so adding a
+    sibling stays additive for clients.
     """
 
     model_config = ConfigDict(from_attributes=True)
