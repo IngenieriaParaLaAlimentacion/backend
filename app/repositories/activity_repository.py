@@ -40,14 +40,16 @@ class ActivityRepository:
         repeated `?type=x&type=x` idempotent -- appending the same branch
         twice would silently double both the rows and the total.
 
-        Iteration is over `_FEED_BRANCH_BUILDERS` (enum declaration order),
-        filtered by membership, so branch order is deterministic and
-        independent of both the set's iteration order and the request order.
+        Iteration is over `ActivityType` (declaration order), filtered by
+        membership, so branch order is deterministic and independent of both
+        the set's iteration order and the request order. Looking each member up
+        in `_FEED_BRANCH_BUILDERS` is also what makes an unmapped type a loud
+        `KeyError` rather than a branch that silently disappears.
         """
         requested = set(activity_types) if activity_types else set(ActivityType)
         branches = [
-            builder(self, actor_id)
-            for activity_type, builder in self._FEED_BRANCH_BUILDERS.items()
+            self._FEED_BRANCH_BUILDERS[activity_type](self, actor_id)
+            for activity_type in ActivityType
             if activity_type in requested
         ]
         return union_all(*branches).subquery()
@@ -115,9 +117,10 @@ class ActivityRepository:
         ).where(FoodOutflow.responsible_id == actor_id)
 
     # Per activity type: the method that builds its id/type/occurred_at branch
-    # of the feed union. Keys are unbound methods, so they take `self`.
-    # No fallback entry on purpose: a type added to the enum but forgotten here
-    # raises instead of silently vanishing from the unfiltered feed.
+    # of the feed union. The values are unbound methods, so they take `self`.
+    # No fallback entry on purpose: `_build_feed_subquery` iterates the enum and
+    # looks each member up here, so a type added to the enum but forgotten here
+    # raises a KeyError instead of silently vanishing from the unfiltered feed.
     _FEED_BRANCH_BUILDERS: ClassVar[
         dict[ActivityType, Callable[["ActivityRepository", UUID], Select]]
     ] = {
