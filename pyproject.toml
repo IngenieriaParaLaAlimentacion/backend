@@ -29,6 +29,7 @@ structlog = "^26.1.0"
 opentelemetry-instrumentation-logging = "^0.65b0"
 python-multipart = "^0.0.32"
 aioboto3 = "^15.5.0"
+google-genai = "^2.23.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = ">=0.15.8,<0.16.0"
