@@ -13,10 +13,12 @@ import pytest
 import pytest_asyncio
 from fastapi import status
 
+from app.utils.dates import today_in_argentina
+
 pytestmark = pytest.mark.asyncio
 
 BOM = b"\xef\xbb\xbf"
-TODAY = date.today().isoformat()
+TODAY = today_in_argentina().isoformat()
 
 SUBJECTS_URL = "/api/v1/subjects/export"
 ESTABLISHMENTS_URL = "/api/v1/establishments/export"
