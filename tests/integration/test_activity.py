@@ -824,6 +824,281 @@ class TestFoodMovementTypeFilter:
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
+class TestMultiTypeFilter:
+    """A repeated `type` yields one merged, correctly-paginated feed."""
+
+    async def _seed_two_direction_feed(
+        self, client, headers, establishment_id, foods, dni
+    ):
+        """Seed four interleaved food movements plus one subject and one
+        measurement, so "and nothing else" is a meaningful assertion.
+
+        The first intake covers the stock every outflow draws down, so the
+        movements can then be dated in any order.
+        """
+        intake_a = await _create_food_intake(
+            client,
+            headers,
+            establishment_id,
+            "2024-04-01T00:00:00Z",
+            [(foods.rice, "10.000")],
+        )
+        outflow_1 = await _create_food_outflow(
+            client,
+            headers,
+            establishment_id,
+            "2024-03-01T00:00:00Z",
+            [(foods.rice, "1.000")],
+        )
+        intake_b = await _create_food_intake(
+            client,
+            headers,
+            establishment_id,
+            "2024-02-01T00:00:00Z",
+            [(foods.rice, "1.000")],
+        )
+        outflow_2 = await _create_food_outflow(
+            client,
+            headers,
+            establishment_id,
+            "2024-01-01T00:00:00Z",
+            [(foods.rice, "1.000")],
+        )
+
+        subject_id = await _create_subject(client, headers, dni=dni)
+        await _create_measurement(
+            client, headers, subject_id, establishment_id, "2024-07-01T00:00:00Z"
+        )
+        return [intake_a, outflow_1, intake_b, outflow_2]
+
+    async def test_two_types_return_one_merged_feed(
+        self, client, db_establishment, field_worker_a, foods
+    ):
+        headers, _ = field_worker_a
+        expected_order = await self._seed_two_direction_feed(
+            client, headers, db_establishment.id, foods, dni=77777771
+        )
+
+        body = (
+            await client.get(
+                ACTIVITY_URL,
+                params={"type": ["food_intake", "food_outflow"]},
+                headers=headers,
+            )
+        ).json()
+
+        assert body["total"] == 4
+        assert all(i["type"] in {"food_intake", "food_outflow"} for i in body["items"])
+        assert [_item_id(i) for i in body["items"]] == expected_order
+
+    async def test_duplicate_type_is_idempotent(
+        self, client, db_establishment, field_worker_a
+    ):
+        """An un-deduped duplicate branch silently doubles the rows AND the
+        total, so both are asserted against the single-value baseline."""
+        headers, _ = field_worker_a
+        await _create_subject(client, headers, dni=77777772)
+
+        single = (
+            await client.get(ACTIVITY_URL, params={"type": "subject"}, headers=headers)
+        ).json()
+        duplicated = (
+            await client.get(
+                ACTIVITY_URL, params={"type": ["subject", "subject"]}, headers=headers
+            )
+        ).json()
+
+        assert duplicated["total"] == single["total"] == 1
+        assert [_item_id(i) for i in duplicated["items"]] == [
+            _item_id(i) for i in single["items"]
+        ]
+
+    async def test_total_equals_the_sum_of_the_single_type_totals(
+        self, client, db_establishment, field_worker_a
+    ):
+        headers, _ = field_worker_a
+        subject_id = await _create_subject(client, headers, dni=77777773)
+        await _create_measurement(
+            client, headers, subject_id, db_establishment.id, "2024-01-01T00:00:00Z"
+        )
+        await _create_measurement(
+            client, headers, subject_id, db_establishment.id, "2024-06-01T00:00:00Z"
+        )
+
+        subjects = (
+            await client.get(ACTIVITY_URL, params={"type": "subject"}, headers=headers)
+        ).json()
+        measurements = (
+            await client.get(
+                ACTIVITY_URL, params={"type": "measurement"}, headers=headers
+            )
+        ).json()
+        merged = (
+            await client.get(
+                ACTIVITY_URL,
+                params={"type": ["subject", "measurement"]},
+                headers=headers,
+            )
+        ).json()
+
+        assert merged["total"] == subjects["total"] + measurements["total"] == 3
+
+    async def test_types_interleave_across_branches_by_occurred_at_desc(
+        self, client, db_establishment, field_worker_a, foods
+    ):
+        """An intake dated between two outflows lands between them -- exactly
+        what a client-side merge could not guarantee."""
+        headers, _ = field_worker_a
+        intake_a, outflow_1, intake_b, outflow_2 = await self._seed_two_direction_feed(
+            client, headers, db_establishment.id, foods, dni=77777774
+        )
+
+        body = (
+            await client.get(
+                ACTIVITY_URL,
+                params={"type": ["food_intake", "food_outflow"]},
+                headers=headers,
+            )
+        ).json()
+
+        returned = [_item_id(i) for i in body["items"]]
+        assert (
+            returned.index(outflow_1)
+            < returned.index(intake_b)
+            < returned.index(outflow_2)
+        )
+        assert returned[0] == intake_a
+
+    async def test_request_order_does_not_change_the_result(
+        self, client, db_establishment, field_worker_a, foods
+    ):
+        headers, _ = field_worker_a
+        await self._seed_two_direction_feed(
+            client, headers, db_establishment.id, foods, dni=77777775
+        )
+
+        forward = (
+            await client.get(
+                ACTIVITY_URL,
+                params={"type": ["food_intake", "food_outflow"]},
+                headers=headers,
+            )
+        ).json()
+        reversed_ = (
+            await client.get(
+                ACTIVITY_URL,
+                params={"type": ["food_outflow", "food_intake"]},
+                headers=headers,
+            )
+        ).json()
+
+        assert reversed_["total"] == forward["total"]
+        assert [_item_id(i) for i in reversed_["items"]] == [
+            _item_id(i) for i in forward["items"]
+        ]
+
+    async def test_all_five_types_requested_equals_the_unfiltered_feed(
+        self, client, db_establishment, field_worker_a, foods
+    ):
+        headers, _ = field_worker_a
+        await self._seed_two_direction_feed(
+            client, headers, db_establishment.id, foods, dni=77777776
+        )
+
+        every_type = (
+            await client.get(
+                ACTIVITY_URL,
+                params={
+                    "type": [
+                        "subject",
+                        "measurement",
+                        "survey_response",
+                        "food_intake",
+                        "food_outflow",
+                    ]
+                },
+                headers=headers,
+            )
+        ).json()
+        unfiltered = (await client.get(ACTIVITY_URL, headers=headers)).json()
+
+        assert every_type["total"] == unfiltered["total"] == 6
+        assert [_item_id(i) for i in every_type["items"]] == [
+            _item_id(i) for i in unfiltered["items"]
+        ]
+
+    async def test_omitted_type_returns_every_type(
+        self, client, db_establishment, field_worker_a, foods
+    ):
+        headers, _ = field_worker_a
+        await self._seed_two_direction_feed(
+            client, headers, db_establishment.id, foods, dni=77777777
+        )
+
+        body = (await client.get(ACTIVITY_URL, headers=headers)).json()
+
+        assert body["total"] == 6
+        assert {i["type"] for i in body["items"]} == {
+            "subject",
+            "measurement",
+            "food_intake",
+            "food_outflow",
+        }
+
+    async def test_pagination_across_a_two_type_feed_neither_skips_nor_repeats(
+        self, client, db_establishment, field_worker_a, foods
+    ):
+        headers, _ = field_worker_a
+        expected = await self._seed_two_direction_feed(
+            client, headers, db_establishment.id, foods, dni=77777778
+        )
+
+        walked = []
+        for page in (1, 2):
+            body = (
+                await client.get(
+                    ACTIVITY_URL,
+                    params={
+                        "page": page,
+                        "page_size": 2,
+                        "type": ["food_intake", "food_outflow"],
+                    },
+                    headers=headers,
+                )
+            ).json()
+            assert body["total"] == 4
+            assert body["total_pages"] == 2
+            assert len(body["items"]) == 2
+            walked += [_item_id(i) for i in body["items"]]
+
+        assert walked == expected
+        assert len(set(walked)) == 4
+
+
+class TestMultiTypeFilterRejections:
+    @pytest.mark.parametrize(
+        "params",
+        [
+            {"type": ""},
+            {"type": "bogus"},
+            {"type": ["subject", "bogus"]},
+            {"type": "subject,food_intake"},
+        ],
+        ids=["empty", "unknown", "one-good-one-bad", "comma-separated"],
+    )
+    async def test_invalid_type_values_are_rejected_with_422(
+        self, client, field_worker_a, params
+    ):
+        """Widening `type` to a list must not degrade it into a free-form
+        string param: no empty value, no unknown value, no partial acceptance
+        and no comma-separated form."""
+        headers, _ = field_worker_a
+
+        response = await client.get(ACTIVITY_URL, params=params, headers=headers)
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
 class TestMixedFeedWithFoodMovements:
     async def _seed_five_row_feed(
         self, client, headers, survey_author, establishment_id, foods, dni

@@ -97,19 +97,23 @@ class TestActivityTypeFilter:
     pytestmark = pytest.mark.asyncio
 
     @pytest.mark.parametrize(
-        "activity_type",
+        "activity_types",
         [
             None,
-            ActivityType.SUBJECT,
-            ActivityType.MEASUREMENT,
-            ActivityType.SURVEY_RESPONSE,
-            ActivityType.FOOD_INTAKE,
-            ActivityType.FOOD_OUTFLOW,
+            [ActivityType.SUBJECT],
+            [ActivityType.MEASUREMENT],
+            [ActivityType.SURVEY_RESPONSE],
+            [ActivityType.FOOD_INTAKE],
+            [ActivityType.FOOD_OUTFLOW],
+            [ActivityType.FOOD_INTAKE, ActivityType.FOOD_OUTFLOW],
+            [ActivityType.SUBJECT, ActivityType.SUBJECT],
         ],
     )
-    async def test_passes_activity_type_through_unchanged(
-        self, make_uow, activity_type
+    async def test_passes_activity_types_through_unchanged(
+        self, make_uow, activity_types
     ):
+        """The service must not normalize: no dedupe, no default expansion,
+        no reordering. Normalization belongs to the repository."""
         uow = make_uow()
         actor = UserActor(user_id=str(uuid.uuid4()), role=UserRole.FIELD_WORKER)
 
@@ -117,11 +121,11 @@ class TestActivityTypeFilter:
             actor,
             page=1,
             page_size=20,
-            params=ActivityListingParams(activity_type=activity_type),
+            params=ActivityListingParams(activity_types=activity_types),
         )
 
         call_kwargs = uow.activity_repo.get_activity_feed.call_args.kwargs
-        assert call_kwargs["activity_type"] == activity_type
+        assert call_kwargs["activity_types"] == activity_types
 
 
 class TestGetRecentActivityReturnValue:
