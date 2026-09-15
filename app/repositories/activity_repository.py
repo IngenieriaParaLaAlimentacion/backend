@@ -21,6 +21,35 @@ from app.models.measurements.measurement import Measurement
 from app.models.subjects.subject import Subject
 from app.models.subjects.subject_event import SubjectEvent
 from app.models.surveys.survey_response import SurveyResponse
+from app.utils.db import execute_paginated_rows
+
+
+def _feed_branch(
+    activity_type: ActivityType,
+    id_col,
+    ts_col,
+    actor_col,
+    *extra_conditions,
+) -> Callable[[UUID], Select]:
+    """Build the branch builder for one activity type.
+
+    Every branch of the feed union has the same shape -- id, a literal type
+    tag, and the timestamp relabelled ``occurred_at`` so the columns line up
+    -- filtered to the rows a given actor is responsible for. This closes over
+    the per-type columns and returns the builder that still needs the actor.
+
+    ``extra_conditions`` is for the branches whose "authored by" is narrower
+    than one column, e.g. subjects, which also have to pin the event type.
+    """
+
+    def build(actor_id: UUID) -> Select:
+        return select(
+            id_col.label("id"),
+            literal(activity_type.value).label("type"),
+            ts_col.label("occurred_at"),
+        ).where(actor_col == actor_id, *extra_conditions)
+
+    return build
 
 
 class ActivityRepository:
@@ -42,110 +71,56 @@ class ActivityRepository:
 
         Iteration is over `ActivityType` (declaration order), filtered by
         membership, so branch order is deterministic and independent of both
-        the set's iteration order and the request order. Looking each member up
-        in `_FEED_BRANCH_BUILDERS` is also what makes an unmapped type a loud
-        `KeyError` rather than a branch that silently disappears.
+        the set's iteration order and the request order.
         """
         requested = set(activity_types) if activity_types else set(ActivityType)
         branches = [
-            self._FEED_BRANCH_BUILDERS[activity_type](self, actor_id)
+            self._FEED_BRANCH_BUILDERS[activity_type](actor_id)
             for activity_type in ActivityType
             if activity_type in requested
         ]
         return union_all(*branches).subquery()
 
-    def _build_subjects_created_query(self, actor_id: UUID) -> Select:
-        """Return the query for the subjects that the `actor_id` registered.
-
-        One row per subject, paired with its creation timestamp. Reads from
-        `subject_events` because that's where authorship and timing are
-        recorded, not on the subject row itself.
-        """
-        return select(
-            SubjectEvent.subject_id.label("id"),
-            literal(ActivityType.SUBJECT.value).label("type"),
-            SubjectEvent.occurred_at.label("occurred_at"),
-        ).where(
-            SubjectEvent.actor_id == actor_id,
-            SubjectEvent.event_type == SubjectEventType.SUBJECT_CREATED,
-        )
-
-    def _build_measurements_taken_query(self, actor_id: UUID) -> Select:
-        """Return the query for the measurements ``actor_id`` is responsible for.
-
-        One row per measurement, paired with the timestamp it was measured at.
-        """
-        return select(
-            Measurement.id.label("id"),
-            literal(ActivityType.MEASUREMENT.value).label("type"),
-            Measurement.measured_at.label("occurred_at"),
-        ).where(Measurement.responsible_id == actor_id)
-
-    def _build_survey_responses_query(self, actor_id: UUID) -> Select:
-        """Return the query for the survey responses ``actor_id`` submitted.
-
-        One row per response, paired with the timestamp it was completed at.
-        """
-        return select(
-            SurveyResponse.id.label("id"),
-            literal(ActivityType.SURVEY_RESPONSE.value).label("type"),
-            SurveyResponse.event_at.label("occurred_at"),
-        ).where(SurveyResponse.submitted_by_id == actor_id)
-
-    def _build_food_intakes_query(self, actor_id: UUID) -> Select:
-        """Return the query for the food intakes ``actor_id`` registered.
-
-        One row per intake, paired with the timestamp the food arrived.
-        ``received_at`` is labelled ``occurred_at`` so every branch of the
-        union exposes the same three columns.
-        """
-        return select(
-            FoodIntake.id.label("id"),
-            literal(ActivityType.FOOD_INTAKE.value).label("type"),
-            FoodIntake.received_at.label("occurred_at"),
-        ).where(FoodIntake.responsible_id == actor_id)
-
-    def _build_food_outflows_query(self, actor_id: UUID) -> Select:
-        """Return the query for the food outflows ``actor_id`` registered.
-
-        One row per outflow, paired with the timestamp the food left.
-        """
-        return select(
-            FoodOutflow.id.label("id"),
-            literal(ActivityType.FOOD_OUTFLOW.value).label("type"),
-            FoodOutflow.occurred_at.label("occurred_at"),
-        ).where(FoodOutflow.responsible_id == actor_id)
-
-    # Per activity type: the method that builds its id/type/occurred_at branch
-    # of the feed union. The values are unbound methods, so they take `self`.
+    # Per activity type: the builder for its id/type/occurred_at branch of the
+    # feed union, each one an application of `_feed_branch`.
     # No fallback entry on purpose: `_build_feed_subquery` iterates the enum and
     # looks each member up here, so a type added to the enum but forgotten here
     # raises a KeyError instead of silently vanishing from the unfiltered feed.
-    _FEED_BRANCH_BUILDERS: ClassVar[
-        dict[ActivityType, Callable[["ActivityRepository", UUID], Select]]
-    ] = {
-        ActivityType.SUBJECT: _build_subjects_created_query,
-        ActivityType.MEASUREMENT: _build_measurements_taken_query,
-        ActivityType.SURVEY_RESPONSE: _build_survey_responses_query,
-        ActivityType.FOOD_INTAKE: _build_food_intakes_query,
-        ActivityType.FOOD_OUTFLOW: _build_food_outflows_query,
+    _FEED_BRANCH_BUILDERS: ClassVar[dict[ActivityType, Callable[[UUID], Select]]] = {
+        # Subjects read from `subject_events`: that is where authorship and
+        # timing are recorded, not on the subject row itself.
+        ActivityType.SUBJECT: _feed_branch(
+            ActivityType.SUBJECT,
+            SubjectEvent.subject_id,
+            SubjectEvent.occurred_at,
+            SubjectEvent.actor_id,
+            SubjectEvent.event_type == SubjectEventType.SUBJECT_CREATED,
+        ),
+        ActivityType.MEASUREMENT: _feed_branch(
+            ActivityType.MEASUREMENT,
+            Measurement.id,
+            Measurement.measured_at,
+            Measurement.responsible_id,
+        ),
+        ActivityType.SURVEY_RESPONSE: _feed_branch(
+            ActivityType.SURVEY_RESPONSE,
+            SurveyResponse.id,
+            SurveyResponse.event_at,
+            SurveyResponse.submitted_by_id,
+        ),
+        ActivityType.FOOD_INTAKE: _feed_branch(
+            ActivityType.FOOD_INTAKE,
+            FoodIntake.id,
+            FoodIntake.received_at,
+            FoodIntake.responsible_id,
+        ),
+        ActivityType.FOOD_OUTFLOW: _feed_branch(
+            ActivityType.FOOD_OUTFLOW,
+            FoodOutflow.id,
+            FoodOutflow.occurred_at,
+            FoodOutflow.responsible_id,
+        ),
     }
-
-    async def _fetch_page_rows(
-        self, feed_query: Subquery, limit: int, offset: int
-    ) -> list[Row]:
-        """Slice the merged feed: id + type + timestamp only, no hydration yet.
-
-        `id DESC` breaks ties on `occurred_at` deterministically so
-        pagination never skips or repeats a row across pages.
-        """
-        result = await self.db.execute(
-            select(feed_query.c.id, feed_query.c.type, feed_query.c.occurred_at)
-            .order_by(feed_query.c.occurred_at.desc(), feed_query.c.id.desc())
-            .limit(limit)
-            .offset(offset)
-        )
-        return result.all()
 
     @staticmethod
     def _ids_of(page_rows: list[Row], activity_type: ActivityType) -> list[UUID]:
@@ -304,11 +279,20 @@ class ActivityRepository:
         `activity_types` selects which branches enter the union; None or empty
         means every type. `total` and the page slice read the same subquery
         object, so they cannot disagree about the filter.
+
+        `id DESC` breaks ties on `occurred_at` deterministically so pagination
+        never skips or repeats a row across pages.
         """
         feed_query = self._build_feed_subquery(actor_id, activity_types)
 
-        total = await self.db.scalar(select(func.count()).select_from(feed_query))
-        page_rows = await self._fetch_page_rows(feed_query, limit, offset)
+        page_rows, total = await execute_paginated_rows(
+            self.db,
+            select(feed_query.c.id, feed_query.c.type, feed_query.c.occurred_at),
+            select(func.count()).select_from(feed_query),
+            (feed_query.c.occurred_at.desc(), feed_query.c.id.desc()),
+            limit,
+            offset,
+        )
 
         hydrated = await self._hydrate_page_rows(page_rows)
         items = self._assemble_items(page_rows, hydrated)
