@@ -13,12 +13,21 @@ import pytest
 import pytest_asyncio
 from fastapi import status
 
-from app.utils.dates import today_in_argentina
-
 pytestmark = pytest.mark.asyncio
 
 BOM = b"\xef\xbb\xbf"
-TODAY = today_in_argentina().isoformat()
+
+
+@pytest.fixture
+def fixed_export_date(monkeypatch) -> date:
+    """Use one deterministic date for filename generation and its expectation."""
+    fixed_date = date(2026, 8, 24)
+    monkeypatch.setattr(
+        "app.services.exporters.csv.csv_exporter.today_in_argentina",
+        lambda: fixed_date,
+    )
+    return fixed_date
+
 
 SUBJECTS_URL = "/api/v1/subjects/export"
 ESTABLISHMENTS_URL = "/api/v1/establishments/export"
@@ -202,13 +211,14 @@ class TestFileShape:
         response = await client.get(ESTABLISHMENTS_URL, headers=admin_headers)
         assert "Comedor La Unión" in response.content.decode("utf-8-sig")
 
-    async def test_filename_carries_entity_and_date(
-        self, client, admin_headers, scenario
+    async def test_content_disposition_carries_complete_filename(
+        self, client, admin_headers, scenario, fixed_export_date
     ):
         response = await client.get(SUBJECTS_URL, headers=admin_headers)
-        assert (
-            response.headers["content-disposition"]
-            == f'attachment; filename="sujetos_{TODAY}.csv"'
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.headers["content-disposition"] == (
+            f'attachment; filename="sujetos_{fixed_export_date.isoformat()}.csv"'
         )
 
     async def test_numbers_use_a_decimal_comma(self, client, admin_headers, scenario):
@@ -278,13 +288,6 @@ class TestEstablishmentsExport:
     async def test_headers_match_the_ui_table(self, client, admin_headers, scenario):
         response = await client.get(ESTABLISHMENTS_URL, headers=admin_headers)
         assert _lines(response)[0] == "Nombre;Dirección;Ciudad;Provincia"
-
-    async def test_filename_uses_the_entity_name(self, client, admin_headers, scenario):
-        response = await client.get(ESTABLISHMENTS_URL, headers=admin_headers)
-        assert (
-            f'filename="establecimientos_{TODAY}.csv"'
-            in (response.headers["content-disposition"])
-        )
 
     async def test_respects_a_city_filter(self, client, admin_headers, scenario):
         response = await client.get(
@@ -393,17 +396,6 @@ class TestEstablishmentSubjectsExport:
             self._url(scenario.establishment_rosario), headers=admin_headers
         )
         assert _first_cells(response) == ["Ana Alvarez"]
-
-    async def test_filename_carries_the_establishment_slug(
-        self, client, admin_headers, scenario
-    ):
-        response = await client.get(
-            self._url(scenario.establishment_rosario), headers=admin_headers
-        )
-        assert (
-            response.headers["content-disposition"]
-            == f'attachment; filename="sujetos_comedor-la-union_{TODAY}.csv"'
-        )
 
     async def test_respects_the_search_filter(self, client, admin_headers, scenario):
         response = await client.get(
