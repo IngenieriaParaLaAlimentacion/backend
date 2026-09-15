@@ -38,12 +38,20 @@ from app.utils.db import execute_count, execute_paginated, stream_all
 
 # A KeyError on an unmapped value is intentional: it surfaces a missing case
 # immediately rather than silently falling back to an arbitrary order.
+#
+# Each pairs the sort column with `id` as a tiebreaker: every criterion here
+# ties in normal operation -- depleted foods all sit at 0.000, and one batched
+# intake stamps the same updated_at on every row it touched -- and an
+# unresolved tie lets LIMIT/OFFSET repeat a row on one page and skip another.
 _SORT_CLAUSES = {
-    FoodStockSortOrder.NAME_ASC: asc(func.lower(Food.name)),
-    FoodStockSortOrder.NAME_DESC: desc(func.lower(Food.name)),
-    FoodStockSortOrder.QUANTITY_DESC: desc(FoodStock.quantity),
-    FoodStockSortOrder.QUANTITY_ASC: asc(FoodStock.quantity),
-    FoodStockSortOrder.UPDATED_AT_DESC: desc(FoodStock.updated_at),
+    FoodStockSortOrder.NAME_ASC: (asc(func.lower(Food.name)), asc(FoodStock.id)),
+    FoodStockSortOrder.NAME_DESC: (desc(func.lower(Food.name)), asc(FoodStock.id)),
+    FoodStockSortOrder.QUANTITY_DESC: (desc(FoodStock.quantity), asc(FoodStock.id)),
+    FoodStockSortOrder.QUANTITY_ASC: (asc(FoodStock.quantity), asc(FoodStock.id)),
+    FoodStockSortOrder.UPDATED_AT_DESC: (
+        desc(FoodStock.updated_at),
+        asc(FoodStock.id),
+    ),
 }
 
 _CONFLICT_TARGET = ["establishment_id", "food_id"]
