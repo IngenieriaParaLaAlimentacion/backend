@@ -56,13 +56,11 @@ TIED_FOOD_COUNT = 7
 async def tied_stock(db_establishment) -> list[str]:
     """Seed TIED_FOOD_COUNT foods whose balances all sit at exactly 0.000.
 
-    Insertion order is deliberately uncorrelated with the random uuid4 primary
-    keys, so a seq scan returns these rows in an order that is almost certainly
-    not id order. That is what makes the assertions below detect a missing
-    tiebreaker instead of passing by luck.
+    Insertion order is uncorrelated with the random uuid4 primary keys, so an
+    unordered scan almost certainly returns these rows in some order other than
+    id order -- without that, a missing tiebreaker would pass by luck.
 
-    Returns the food ids in stock-id order -- the sequence the tiebreaker
-    dictates.
+    Returns the food ids in stock-id order: the sequence the tiebreaker dictates.
     """
     from sqlalchemy import select
 
@@ -97,13 +95,15 @@ async def tied_stock(db_establishment) -> list[str]:
         )
         await session.commit()
 
+        # increase_batch generates the stock ids internally and does not return
+        # them, so read them back -- ordered by Postgres, whose uuid comparison
+        # is the one the tiebreaker will use.
         rows = await session.execute(
-            select(FoodStock.id, FoodStock.food_id).where(
-                FoodStock.establishment_id == db_establishment.id
-            )
+            select(FoodStock.food_id)
+            .where(FoodStock.establishment_id == db_establishment.id)
+            .order_by(FoodStock.id)
         )
-        by_stock_id = sorted(rows.all(), key=lambda row: str(row.id))
-        return [str(food_id) for _, food_id in by_stock_id]
+        return [str(food_id) for food_id in rows.scalars()]
 
 
 async def _balance(establishment_id, food_id) -> Decimal | None:
@@ -367,6 +367,36 @@ OUTFLOWS_URL = "/api/v1/food-outflows"
 
 def _stock_url(establishment_id) -> str:
     return f"/api/v1/establishments/{establishment_id}/stock"
+
+
+async def _walk_stock_pages(
+    client, headers, establishment_id, sort_order, page_size: int = 4
+) -> list[dict]:
+    """Return the items of every page of a stock listing, in page order.
+
+    The page size is deliberately smaller than the seeded row count, so the
+    concatenation crosses at least one page boundary -- the only place an
+    unresolved sort tie can duplicate or drop a row.
+    """
+    items: list[dict] = []
+    page = 1
+    while True:
+        response = await client.get(
+            _stock_url(establishment_id),
+            params={
+                "sort_order": sort_order,
+                "page": page,
+                "page_size": page_size,
+            },
+            headers=headers,
+        )
+        assert response.status_code == 200
+        body = response.json()
+        assert body["total_pages"] > 1, "page_size is too large to cross a boundary"
+        items.extend(body["items"])
+        if page >= body["total_pages"]:
+            return items
+        page += 1
 
 
 def _intake_body(establishment_id, items, **overrides) -> dict:
@@ -674,29 +704,14 @@ class TestStockListing:
         food twice and lose a different one entirely.
         """
         headers, _ = field_worker_with_access
-        page_size = 4
 
-        seen: list[str] = []
-        for page in (1, 2):
-            response = await client.get(
-                _stock_url(db_establishment.id),
-                params={
-                    "sort_order": "quantity_asc",
-                    "page": page,
-                    "page_size": page_size,
-                },
-                headers=headers,
-            )
-            assert response.status_code == 200
-            body = response.json()
-            assert body["total"] == TIED_FOOD_COUNT
-            assert body["total_pages"] == 2
-            assert {item["quantity"] for item in body["items"]} == {"0.000"}
-            seen.extend(item["food"]["id"] for item in body["items"])
+        items = await _walk_stock_pages(
+            client, headers, db_establishment.id, "quantity_asc"
+        )
 
-        assert len(seen) == TIED_FOOD_COUNT
-        assert len(set(seen)) == TIED_FOOD_COUNT, "a food appeared on both pages"
-        assert set(seen) == set(tied_stock), "a food was skipped between pages"
+        assert {item["quantity"] for item in items} == {"0.000"}, "nothing tied"
+        seen = [item["food"]["id"] for item in items]
+        assert len(set(seen)) == TIED_FOOD_COUNT, "a food was duplicated or skipped"
         assert seen == tied_stock, "pages are not ordered by the id tiebreaker"
 
     async def test_a_single_intake_ties_updated_at_and_still_paginates_cleanly(
@@ -704,24 +719,15 @@ class TestStockListing:
     ) -> None:
         """One batched intake writes the same now() to every row it touched."""
         headers, _ = field_worker_with_access
-        page_size = 4
 
-        seen: list[str] = []
-        for page in (1, 2):
-            response = await client.get(
-                _stock_url(db_establishment.id),
-                params={
-                    "sort_order": "updated_at_desc",
-                    "page": page,
-                    "page_size": page_size,
-                },
-                headers=headers,
-            )
-            assert response.status_code == 200
-            seen.extend(item["food"]["id"] for item in response.json()["items"])
+        items = await _walk_stock_pages(
+            client, headers, db_establishment.id, "updated_at_desc"
+        )
 
-        assert len(set(seen)) == TIED_FOOD_COUNT
-        assert seen == tied_stock
+        assert len({item["updated_at"] for item in items}) == 1, "nothing tied"
+        seen = [item["food"]["id"] for item in items]
+        assert len(set(seen)) == TIED_FOOD_COUNT, "a food was duplicated or skipped"
+        assert seen == tied_stock, "pages are not ordered by the id tiebreaker"
 
     async def test_unknown_establishment_answers_404(
         self, client, admin_headers
