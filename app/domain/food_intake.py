@@ -6,6 +6,7 @@ from uuid import UUID
 
 from app.domain.common_domains import IdentifierRefDomain
 from app.domain.food_catalog import MeasurementUnit
+from app.domain.measurement import EstablishmentRefDomain
 
 
 class FoodIntakeSource(str, Enum):
@@ -58,4 +59,49 @@ class FoodIntakeDomain:
             source=intake.source,
             created_at=intake.created_at,
             items=[FoodLineDomain.from_db(item) for item in intake.items],
+        )
+
+
+@dataclass
+class FoodMovementListItemDomain:
+    """A food intake or outflow row for the activity-feed view.
+
+    One shape serves both directions: ``food_intakes.received_at`` and
+    ``food_outflows.occurred_at`` are normalized to ``occurred_at``.
+
+    ``items`` are rendered as stored, repeated foods included: a movement may
+    legally carry two lines for the same food, and the feed reports what was
+    recorded rather than a rollup.
+    """
+
+    id: UUID
+    occurred_at: datetime
+    comments: str | None
+    source: str
+    establishment: EstablishmentRefDomain
+    items: list[FoodLineDomain]
+
+    @classmethod
+    def from_intake(cls, intake) -> "FoodMovementListItemDomain":
+        """Build from an intake row with ``establishment`` and ``items``
+        (each with its ``food``) loaded."""
+        return cls._from_movement(intake, intake.received_at)
+
+    @classmethod
+    def from_outflow(cls, outflow) -> "FoodMovementListItemDomain":
+        """Build from an outflow row with ``establishment`` and ``items``
+        (each with its ``food``) loaded."""
+        return cls._from_movement(outflow, outflow.occurred_at)
+
+    @classmethod
+    def _from_movement(
+        cls, movement, occurred_at: datetime
+    ) -> "FoodMovementListItemDomain":
+        return cls(
+            id=movement.id,
+            occurred_at=occurred_at,
+            comments=movement.comments,
+            source=movement.source,
+            establishment=EstablishmentRefDomain.from_db(movement.establishment),
+            items=[FoodLineDomain.from_db(item) for item in movement.items],
         )

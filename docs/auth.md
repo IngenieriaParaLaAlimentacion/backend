@@ -63,11 +63,18 @@ Establishment access is **not encoded in the JWT**. It is resolved at the endpoi
 
 This means:
 - Permissions can be updated without invalidating active sessions.
-- A centralized middleware handles the check — **never implement it inline per endpoint**.
+- One shared service helper, `app/services/access.py::check_establishment_access`, owns the check — **never re-implement the rule inline**.
 
 ### How it works
 
-1. The middleware extracts `user_id` from the validated JWT.
-2. It queries `user_establishments` to check if the user has access to the establishment referenced in the request.
-3. `admin` users bypass this check and have access to all establishments.
-4. If access is denied, the middleware returns `403 Forbidden` before the endpoint handler runs.
+There is **no middleware**. A service that touches establishment-scoped data calls
+`check_establishment_access(uow, actor, establishment_id)` explicitly:
+
+1. The route's auth dependency validates the JWT and builds a `UserActor` from `user_id` and `role`.
+2. The service passes that actor and the establishment id to `check_establishment_access`.
+3. `admin` and `analyst` return immediately — only `field_worker` is establishment-scoped.
+4. For a field worker, the helper queries `user_establishments` and requires an `APPROVED` relation.
+5. Otherwise it raises `EstablishmentAccessDeniedError`, which surfaces as `403 Forbidden`.
+
+Endpoints that are already caller-scoped by construction — such as `GET /api/v1/users/me/activity`,
+which only ever returns rows the caller produced — need no establishment check at all.

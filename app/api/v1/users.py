@@ -1,12 +1,11 @@
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, status
 
-from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams
+from app.api.v1.params import AUTH_RESPONSES, ActivityListingQuery, PaginatedQueryParams
 from app.core.dependencies import (
     get_activity_service,
     get_user_service,
     require_any,
 )
-from app.domain.activity import ActivityListingParams, ActivityType
 from app.domain.user import UserActor
 from app.schemas.activity_schema import ActivityItemResponse
 from app.schemas.auth.user_schema import (
@@ -123,19 +122,24 @@ async def request_establishment_access(
     summary="Get the current user's recent activity",
     description=(
         "Returns a paginated, date-descending feed of the caller's own "
-        "subject registrations, measurement uploads, and survey responses. "
-        "Optionally filter to a single activity type. Accessible by all "
+        "subject registrations, measurement uploads, survey responses, and "
+        "food movements (intakes and outflows). Optionally filter to one or "
+        "more activity types by repeating `type`; the server merges, sorts "
+        "and paginates them as a single feed. Accessible by all "
         "authenticated roles."
     ),
     responses={
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Missing or invalid authentication token"
         },
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {
+            "description": "Unknown activity type, or invalid pagination values"
+        },
     },
 )
 async def get_my_activity(
     paginated: PaginatedQueryParams = Depends(),
-    activity_type: ActivityType | None = Query(default=None, alias="type"),
+    activity_query: ActivityListingQuery = Depends(),
     actor: UserActor = Depends(require_any),
     service: ActivityService = Depends(get_activity_service),
 ) -> PaginatedResponse[ActivityItemResponse]:
@@ -143,7 +147,7 @@ async def get_my_activity(
         actor,
         page=paginated.page,
         page_size=paginated.page_size,
-        params=ActivityListingParams(activity_type=activity_type),
+        params=activity_query.to_domain(),
     )
     return PaginatedResponse[ActivityItemResponse](
         items=[ActivityItemResponse.model_validate(i) for i in result.items],

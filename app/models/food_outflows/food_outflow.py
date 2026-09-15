@@ -24,6 +24,11 @@ class FoodOutflow(Base):
             "establishment_id",
             "occurred_at",
         ),
+        Index(
+            "ix_food_outflows_responsible_id_occurred_at",
+            "responsible_id",
+            "occurred_at",
+        ),
     )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

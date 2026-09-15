@@ -62,7 +62,7 @@ poetry run ruff check . --fix && poetry run ruff format .  # lint + format
 
 ## Architecture rules
 
-- Auth middleware is centralized — never check establishment permissions inside individual endpoints.
+- Establishment permission checks go through `app/services/access.py::check_establishment_access` — never re-derive the rule inline in a route handler.
 - Business logic belongs in `app/services/`, not in route handlers or repositories.
 - Route handlers live in `app/api/` and are mounted in `app/main.py` — never add routes directly to `main.py`.
 - Never modify the DB schema manually — all changes go through Alembic migrations.
@@ -72,7 +72,7 @@ poetry run ruff check . --fix && poetry run ruff format .  # lint + format
 ## Auth and authorization
 
 - Access token contains `user_id` and `role`. Per-establishment access is **not** in the token — resolved at request time via DB query.
-- A centralized middleware handles establishment permission checks — **never implement inline per endpoint**.
+- Establishment permission checks live in one shared service helper, `app/services/access.py::check_establishment_access` — services call it explicitly; **never re-implement the rule inline**.
 - Roles: `admin`, `analyst`, `field_worker`.
 
 → Full auth model, token flow, and data model: `docs/auth.md`
