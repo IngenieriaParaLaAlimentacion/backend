@@ -38,12 +38,22 @@ from app.utils.db import execute_count, execute_paginated, stream_all
 
 # A KeyError on an unmapped value is intentional: it surfaces a missing case
 # immediately rather than silently falling back to an arbitrary order.
+#
+# Every order ends on the primary key. Each of these criteria ties in normal
+# operation -- every depleted food sits at exactly 0.000, and one multi-line
+# intake stamps the same updated_at on every row it touched -- and an ORDER BY
+# that leaves ties unresolved lets LIMIT/OFFSET show a row twice on one page
+# and never on another. The tiebreaker is what makes a page boundary mean the
+# same thing on both sides of it.
 _SORT_CLAUSES = {
-    FoodStockSortOrder.NAME_ASC: asc(func.lower(Food.name)),
-    FoodStockSortOrder.NAME_DESC: desc(func.lower(Food.name)),
-    FoodStockSortOrder.QUANTITY_DESC: desc(FoodStock.quantity),
-    FoodStockSortOrder.QUANTITY_ASC: asc(FoodStock.quantity),
-    FoodStockSortOrder.UPDATED_AT_DESC: desc(FoodStock.updated_at),
+    FoodStockSortOrder.NAME_ASC: (asc(func.lower(Food.name)), asc(FoodStock.id)),
+    FoodStockSortOrder.NAME_DESC: (desc(func.lower(Food.name)), asc(FoodStock.id)),
+    FoodStockSortOrder.QUANTITY_DESC: (desc(FoodStock.quantity), asc(FoodStock.id)),
+    FoodStockSortOrder.QUANTITY_ASC: (asc(FoodStock.quantity), asc(FoodStock.id)),
+    FoodStockSortOrder.UPDATED_AT_DESC: (
+        desc(FoodStock.updated_at),
+        asc(FoodStock.id),
+    ),
 }
 
 _CONFLICT_TARGET = ["establishment_id", "food_id"]
