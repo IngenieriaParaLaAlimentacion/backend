@@ -1,4 +1,5 @@
 import uuid
+from typing import Any
 from uuid import UUID
 
 from app.config.settings import settings
@@ -9,22 +10,48 @@ from app.domain.food_intake import FoodIntakeDomain
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
     ImageTooLargeError,
+    LlmClientError,
     ObjectStorageError,
     ReceiptPhotoStorageError,
     UnsupportedImageTypeError,
 )
 from app.schemas.food_intakes.food_intake_schema import FoodIntakeRequest
-from app.schemas.food_intakes.receipt_schema import ReceiptProposalResponse
+from app.schemas.food_intakes.receipt_schema import (
+    ProposedFoodLine,
+    ReceiptProposalResponse,
+)
 from app.services.access import check_establishment_access
 from app.services.food_intakes.food_intake_service import FoodIntakeService
+
+_EXTRACTION_PROMPT = (
+    "You are reading a photo of a store receipt for a community kitchen in "
+    "Argentina. List every line item that is a food or beverage, in the "
+    "order it appears. Ignore totals, taxes, discounts, payment methods, "
+    "and store header/footer information. For each item, return only its "
+    "description exactly as printed on the receipt."
+)
+
+_EXTRACTION_RESPONSE_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "lines": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {"description": {"type": "string"}},
+                "required": ["description"],
+            },
+        }
+    },
+    "required": ["lines"],
+}
 
 
 class ReceiptIntakeService:
     """Assisted registration of a food intake from a photo of the receipt."""
 
-    # TODO: remove after. Returned while there is no extractor: every accepted
-    # upload comes back with no lines, so the client is told
-    # to fall back to manual entry
+    # Shown when the extractor finds nothing to propose -- either because the
+    # receipt truly had no food lines, or because the LLM call itself failed
     _MANUAL_FALLBACK_MESSAGE = (
         "No se pudieron extraer alimentos de la factura. "
         "Porfavor carguelos de forma manual. "
@@ -80,12 +107,18 @@ class ReceiptIntakeService:
         image: bytes,
         actor: UserActor,
     ) -> ReceiptProposalResponse:
-        """Validate a receipt photo and return the (currently empty) proposal.
+        """Validate a receipt photo and return the LLM-proposed food lines.
 
         Nothing is stored here: the image is only held in memory for this
         request. It is only persisted to R2 if and when the user confirms via
         ``POST /food-intakes/from-photo/confirm`` -- so an abandoned or
         rejected proposal never leaves an orphaned object in storage.
+
+        Every proposed line comes back unmatched (``food=None``,
+        ``needs_review=True``): catalog matching happens in a later step.
+        When the extractor finds nothing, or the LLM call itself fails, the
+        response falls back to an empty proposal with a hint to enter the
+        intake manually rather than surfacing the failure as an error.
 
         Raises:
             UnsupportedImageTypeError: image type not accepted.
@@ -99,11 +132,32 @@ class ReceiptIntakeService:
         await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
         await check_establishment_access(self.uow, actor, establishment_id)
 
-        return ReceiptProposalResponse(
-            establishment_id=establishment_id,
-            lines=[],
-            message=self._MANUAL_FALLBACK_MESSAGE,
-        )
+        try:
+            result = await self.llm_client.complete(
+                prompt=_EXTRACTION_PROMPT,
+                response_schema=_EXTRACTION_RESPONSE_SCHEMA,
+                image=image,
+                image_content_type=content_type,
+            )
+        except LlmClientError:
+            return ReceiptProposalResponse(
+                establishment_id=establishment_id,
+                lines=[],
+                message=self._MANUAL_FALLBACK_MESSAGE,
+            )
+
+        lines = [
+            ProposedFoodLine(description=raw["description"], needs_review=True)
+            for raw in result["lines"]
+        ]
+        if not lines:
+            return ReceiptProposalResponse(
+                establishment_id=establishment_id,
+                lines=[],
+                message=self._MANUAL_FALLBACK_MESSAGE,
+            )
+
+        return ReceiptProposalResponse(establishment_id=establishment_id, lines=lines)
 
     async def confirm_from_photo(
         self,
