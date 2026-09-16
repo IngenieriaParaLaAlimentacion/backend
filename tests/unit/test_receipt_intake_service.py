@@ -11,6 +11,7 @@ from app.exceptions.domain_exceptions import (
     EstablishmentAccessDeniedError,
     EstablishmentNotFoundError,
     ImageTooLargeError,
+    LlmClientError,
     ObjectStorageError,
     ReceiptPhotoStorageError,
     UnsupportedImageTypeError,
@@ -69,29 +70,19 @@ def food_intake_service():
     return AsyncMock()
 
 
+@pytest.fixture
+def llm_client():
+    """A mocked ILlmClient defaulting to an empty extraction result."""
+    client = AsyncMock()
+    client.complete = AsyncMock(return_value={"lines": []})
+    return client
+
+
 class TestImageValidation:
-    async def test_accepted_image_returns_an_empty_proposal(
-        self, uow, storage, food_intake_service, admin_actor
-    ):
-        establishment_id = uuid.uuid4()
-
-        service = ReceiptIntakeService(uow, storage, food_intake_service)
-        proposal = await service.propose_from_photo(
-            establishment_id=establishment_id,
-            content_type="image/png",
-            image=PNG_BYTES,
-            actor=admin_actor,
-        )
-
-        assert proposal.establishment_id == establishment_id
-        assert proposal.lines == []
-        assert proposal.message  # manual-fallback hint while there is no extractor
-        storage.save.assert_not_called()  # nothing is stored until confirmation
-
     async def test_unsupported_type_is_rejected_before_any_db_access(
-        self, uow, storage, food_intake_service, admin_actor
+        self, uow, storage, food_intake_service, llm_client, admin_actor
     ):
-        service = ReceiptIntakeService(uow, storage, food_intake_service)
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
         with pytest.raises(UnsupportedImageTypeError):
             await service.propose_from_photo(
                 establishment_id=uuid.uuid4(),
@@ -103,9 +94,9 @@ class TestImageValidation:
         uow.establishment_repo.get_by_id_or_raise.assert_not_called()
 
     async def test_missing_content_type_is_rejected(
-        self, uow, storage, food_intake_service, admin_actor
+        self, uow, storage, food_intake_service, llm_client, admin_actor
     ):
-        service = ReceiptIntakeService(uow, storage, food_intake_service)
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
         with pytest.raises(UnsupportedImageTypeError):
             await service.propose_from_photo(
                 establishment_id=uuid.uuid4(),
@@ -115,11 +106,11 @@ class TestImageValidation:
             )
 
     async def test_oversized_image_is_rejected(
-        self, uow, storage, food_intake_service, admin_actor, monkeypatch
+        self, uow, storage, food_intake_service, llm_client, admin_actor, monkeypatch
     ):
         monkeypatch.setattr(settings, "receipt_image_max_bytes", 8)
 
-        service = ReceiptIntakeService(uow, storage, food_intake_service)
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
         with pytest.raises(ImageTooLargeError):
             await service.propose_from_photo(
                 establishment_id=uuid.uuid4(),
@@ -136,7 +127,7 @@ class TestEstablishmentChecks:
         _uow = AsyncMock()
         stub_establishment_lookup(_uow, establishment=None)
 
-        service = ReceiptIntakeService(_uow, AsyncMock(), AsyncMock())
+        service = ReceiptIntakeService(_uow, AsyncMock(), AsyncMock(), AsyncMock())
         with pytest.raises(EstablishmentNotFoundError):
             await service.propose_from_photo(
                 establishment_id=uuid.uuid4(),
@@ -146,9 +137,9 @@ class TestEstablishmentChecks:
             )
 
     async def test_field_worker_without_approved_access_raises(
-        self, uow, storage, food_intake_service, field_worker_actor
+        self, uow, storage, food_intake_service, llm_client, field_worker_actor
     ):
-        service = ReceiptIntakeService(uow, storage, food_intake_service)
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
         with pytest.raises(EstablishmentAccessDeniedError):
             await service.propose_from_photo(
                 establishment_id=uuid.uuid4(),
@@ -158,19 +149,81 @@ class TestEstablishmentChecks:
             )
 
 
+class TestExtraction:
+    """propose_from_photo's LLM-backed extraction step."""
+
+    async def test_extracted_lines_are_returned_needing_review(
+        self, uow, storage, food_intake_service, llm_client, admin_actor
+    ):
+        llm_client.complete = AsyncMock(
+            return_value={
+                "lines": [{"description": "Arroz 1kg"}, {"description": "Leche 1L"}]
+            }
+        )
+        establishment_id = uuid.uuid4()
+
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+        proposal = await service.propose_from_photo(
+            establishment_id=establishment_id,
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        )
+
+        assert proposal.establishment_id == establishment_id
+        assert [line.description for line in proposal.lines] == [
+            "Arroz 1kg",
+            "Leche 1L",
+        ]
+        assert all(line.food is None for line in proposal.lines)
+        assert all(line.needs_review for line in proposal.lines)
+        assert proposal.message is None
+        storage.save.assert_not_called()  # nothing is stored until confirmation
+
+    async def test_no_lines_detected_returns_manual_fallback_message(
+        self, uow, storage, food_intake_service, llm_client, admin_actor
+    ):
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+        proposal = await service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        )
+
+        assert proposal.lines == []
+        assert proposal.message
+
+    async def test_llm_failure_falls_back_to_manual_message(
+        self, uow, storage, food_intake_service, llm_client, admin_actor
+    ):
+        llm_client.complete = AsyncMock(side_effect=LlmClientError("gemini is down"))
+
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+        proposal = await service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        )
+
+        assert proposal.lines == []
+        assert proposal.message
+
+
 class TestConfirmFromPhoto:
     """Every check that would make registration fail must run before the
     photo is uploaded, so a rejected confirm never leaves an orphan in R2."""
 
     async def test_happy_path_saves_photo_then_registers(
-        self, uow, storage, food_intake_service, admin_actor
+        self, uow, storage, food_intake_service, llm_client, admin_actor
     ):
         uow.food_intake_repo.get_by_id = AsyncMock(return_value=None)
         registered = object()
         food_intake_service.register = AsyncMock(return_value=(registered, True))
         data = _intake_request()
 
-        service = ReceiptIntakeService(uow, storage, food_intake_service)
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
         result = await service.confirm_from_photo(
             data=data,
             content_type="image/png",
@@ -187,7 +240,7 @@ class TestConfirmFromPhoto:
         )
 
     async def test_replay_of_an_existing_id_never_touches_storage(
-        self, uow, storage, food_intake_service, admin_actor
+        self, uow, storage, food_intake_service, llm_client, admin_actor
     ):
         """A retried confirm (same client id) must not upload a second, now
         orphaned, copy of the photo."""
@@ -196,7 +249,7 @@ class TestConfirmFromPhoto:
         uow.food_intake_repo.get_by_id = AsyncMock(return_value=existing)
         data = _intake_request(id=uuid.uuid4())
 
-        service = ReceiptIntakeService(uow, storage, food_intake_service)
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
         result = await service.confirm_from_photo(
             data=data,
             content_type="image/png",
@@ -209,13 +262,18 @@ class TestConfirmFromPhoto:
         food_intake_service.register.assert_not_called()
 
     async def test_unknown_establishment_is_rejected_before_upload(
-        self, stub_establishment_lookup, storage, food_intake_service, admin_actor
+        self,
+        stub_establishment_lookup,
+        storage,
+        food_intake_service,
+        llm_client,
+        admin_actor,
     ):
         _uow = AsyncMock()
         _uow.food_intake_repo.get_by_id = AsyncMock(return_value=None)
         stub_establishment_lookup(_uow, establishment=None)
 
-        service = ReceiptIntakeService(_uow, storage, food_intake_service)
+        service = ReceiptIntakeService(_uow, storage, food_intake_service, llm_client)
         with pytest.raises(EstablishmentNotFoundError):
             await service.confirm_from_photo(
                 data=_intake_request(),
@@ -228,11 +286,11 @@ class TestConfirmFromPhoto:
         food_intake_service.register.assert_not_called()
 
     async def test_access_denied_is_rejected_before_upload(
-        self, uow, storage, food_intake_service, field_worker_actor
+        self, uow, storage, food_intake_service, llm_client, field_worker_actor
     ):
         uow.food_intake_repo.get_by_id = AsyncMock(return_value=None)
 
-        service = ReceiptIntakeService(uow, storage, food_intake_service)
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
         with pytest.raises(EstablishmentAccessDeniedError):
             await service.confirm_from_photo(
                 data=_intake_request(),
@@ -245,12 +303,12 @@ class TestConfirmFromPhoto:
         food_intake_service.register.assert_not_called()
 
     async def test_storage_failure_is_translated_and_skips_register(
-        self, uow, storage, food_intake_service, admin_actor
+        self, uow, storage, food_intake_service, llm_client, admin_actor
     ):
         uow.food_intake_repo.get_by_id = AsyncMock(return_value=None)
         storage.save.side_effect = ObjectStorageError("some-key", "connection reset")
 
-        service = ReceiptIntakeService(uow, storage, food_intake_service)
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
         with pytest.raises(ReceiptPhotoStorageError):
             await service.confirm_from_photo(
                 data=_intake_request(),

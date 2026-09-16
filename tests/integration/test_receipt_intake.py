@@ -3,6 +3,7 @@ import uuid
 import pytest
 
 from app.config.settings import settings
+from app.exceptions.domain_exceptions import LlmClientError
 
 pytestmark = pytest.mark.asyncio
 
@@ -18,8 +19,8 @@ def _upload(establishment_id, *, filename="receipt.png", content_type="image/png
 
 
 class TestAcceptedUpload:
-    async def test_valid_image_returns_an_empty_proposal(
-        self, client, admin_headers, db_establishment
+    async def test_no_items_detected_returns_manual_fallback_message(
+        self, client, admin_headers, db_establishment, fake_llm_client
     ):
         response = await client.post(
             URL, headers=admin_headers, **_upload(db_establishment.id)
@@ -31,8 +32,43 @@ class TestAcceptedUpload:
         assert body["lines"] == []
         assert body["message"]
 
+    async def test_detected_items_are_returned_needing_review(
+        self, client, admin_headers, db_establishment, fake_llm_client
+    ):
+        fake_llm_client.response = {
+            "lines": [{"description": "Arroz 1kg"}, {"description": "Leche 1L"}]
+        }
+
+        response = await client.post(
+            URL, headers=admin_headers, **_upload(db_establishment.id)
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert [line["description"] for line in body["lines"]] == [
+            "Arroz 1kg",
+            "Leche 1L",
+        ]
+        assert all(line["food"] is None for line in body["lines"])
+        assert all(line["needs_review"] for line in body["lines"])
+        assert body["message"] is None
+
+    async def test_llm_failure_falls_back_to_manual_entry(
+        self, client, admin_headers, db_establishment, fake_llm_client
+    ):
+        fake_llm_client.error = LlmClientError("gemini is down")
+
+        response = await client.post(
+            URL, headers=admin_headers, **_upload(db_establishment.id)
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["lines"] == []
+        assert body["message"]
+
     async def test_field_worker_with_approved_access_can_upload(
-        self, client, db_establishment, field_worker_with_access
+        self, client, db_establishment, field_worker_with_access, fake_llm_client
     ):
         headers, _ = field_worker_with_access
 

@@ -1,6 +1,7 @@
 import os
 import uuid
 from datetime import date
+from typing import Any
 
 import pytest
 import pytest_asyncio
@@ -13,6 +14,8 @@ from testcontainers.minio import MinioContainer
 from testcontainers.postgres import PostgresContainer
 
 from alembic import command
+from app.core.dependencies import get_llm_client
+from app.core.interfaces.llm_client import ILlmClient
 from app.core.security import create_access_token, hash_password
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.user import UserRole, UserStatus
@@ -148,6 +151,14 @@ def app(postgres_url, storage_config):
     settings.storage_access_key_id = storage_config["access_key_id"]
     settings.storage_secret_access_key = storage_config["secret_access_key"]
 
+    # GeminiLlmClient() is constructed by the get_llm_client dependency on
+    # every request that resolves get_receipt_intake_service, even for tests
+    # that never reach the actual extraction call -- so it needs *a* key to
+    # construct without error. Tests that exercise extraction override the
+    # dependency outright via the fake_llm_client fixture instead of hitting
+    # the real API.
+    settings.gemini_api_key = "test-gemini-key"
+
     import app.db.database as db_module
     from app.main import app as fastapi_app
 
@@ -157,6 +168,34 @@ def app(postgres_url, storage_config):
     )
 
     return fastapi_app
+
+
+class FakeLlmClient(ILlmClient):
+    """Test double for ILlmClient: returns a scripted result instead of
+    calling the real Gemini API.
+
+    Defaults to no detected lines, matching the manual-fallback behavior a
+    test gets by default. Set ``response`` or ``error`` before the request
+    to script an extraction result or a provider failure.
+    """
+
+    def __init__(self) -> None:
+        self.response: dict[str, Any] = {"lines": []}
+        self.error: Exception | None = None
+
+    async def complete(self, **_: Any) -> dict[str, Any]:
+        if self.error is not None:
+            raise self.error
+        return self.response
+
+
+@pytest.fixture
+def fake_llm_client(app):
+    """Override the receipt extractor with a scripted double for the test."""
+    fake = FakeLlmClient()
+    app.dependency_overrides[get_llm_client] = lambda: fake
+    yield fake
+    app.dependency_overrides.pop(get_llm_client, None)
 
 
 @pytest_asyncio.fixture()
