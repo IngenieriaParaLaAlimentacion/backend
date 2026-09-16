@@ -4,6 +4,7 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
+from app.core.interfaces.llm_client import ILlmClient
 from app.core.security import decode_token
 from app.db.unit_of_work import UnitOfWork
 from app.domain.user import UserActor, UserRole
@@ -102,11 +103,21 @@ async def get_food_intake_service() -> AsyncGenerator[FoodIntakeService, None]:
         yield FoodIntakeService(uow)
 
 
-async def get_receipt_intake_service() -> AsyncGenerator[ReceiptIntakeService, None]:
+async def get_llm_client() -> AsyncGenerator[ILlmClient, None]:
+    """Provide the LLM client used for receipt extraction.
+
+    Its own dependency (rather than inlined in ``get_receipt_intake_service``)
+    so tests can swap in a scripted double instead of calling Gemini for real.
+    """
+    yield GeminiLlmClient()
+
+
+async def get_receipt_intake_service(
+    llm_client: ILlmClient = Depends(get_llm_client),
+) -> AsyncGenerator[ReceiptIntakeService, None]:
     """Provide a ReceiptIntakeService backed by a fresh UnitOfWork and R2."""
     async with UnitOfWork() as uow:
         food_intake_service = FoodIntakeService(uow)
-        llm_client = GeminiLlmClient()
         yield ReceiptIntakeService(
             uow, R2ObjectStorage(), food_intake_service, llm_client
         )
