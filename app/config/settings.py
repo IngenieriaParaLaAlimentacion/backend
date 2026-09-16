@@ -91,7 +91,7 @@ class Settings(BaseSettings):
 
     # LLM
     gemini_api_key: Optional[str] = None
-    gemini_model: str = "gemini-2.0-flash"
+    gemini_model: str = "gemini-3.6-flash"
 
     def _build_deeplink(self, base: str | AnyUrl, path: str) -> str:
         base = str(base).rstrip("/")
