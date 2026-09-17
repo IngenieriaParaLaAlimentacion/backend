@@ -1,7 +1,7 @@
 from collections.abc import AsyncGenerator
 
 from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 
 from app.core.interfaces.llm_client import ILlmClient
@@ -39,7 +39,19 @@ from app.services.surveys.survey_service import SurveyService
 # runs. That lets us answer with the specific MissingTokenError ("auth/missing-token")
 # rather than the catch-all "http-error" type, and lets one scheme serve both the
 # required and the optional dependencies.
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
+#
+# HTTPBearer (rather than OAuth2PasswordBearer) is used purely so Swagger's
+# "Authorize" dialog offers a plain field to paste an access token obtained from
+# POST /auth/login. OAuth2PasswordBearer instead makes Swagger submit a
+# form-encoded username/password to the tokenUrl, which doesn't match this API's
+# JSON login contract (email/password/device_id) and always fails.
+_http_bearer_scheme = HTTPBearer(auto_error=False)
+
+
+async def oauth2_scheme(
+    credentials: HTTPAuthorizationCredentials | None = Depends(_http_bearer_scheme),
+) -> str | None:
+    return credentials.credentials if credentials else None
 
 
 async def get_admin_service() -> AsyncGenerator[AdminService, None]:
