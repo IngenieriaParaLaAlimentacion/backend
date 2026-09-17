@@ -2,6 +2,8 @@ import uuid
 from typing import Any
 from uuid import UUID
 
+import structlog
+
 from app.config.settings import settings
 from app.core.interfaces.llm_client import ILlmClient
 from app.core.interfaces.object_storage import IObjectStorage
@@ -22,6 +24,8 @@ from app.schemas.food_intakes.receipt_schema import (
 )
 from app.services.access import check_establishment_access
 from app.services.food_intakes.food_intake_service import FoodIntakeService
+
+logger = structlog.get_logger()
 
 _EXTRACTION_PROMPT = (
     "You are reading a photo of a store receipt for a community kitchen in "
@@ -139,7 +143,12 @@ class ReceiptIntakeService:
                 image=image,
                 image_content_type=content_type,
             )
-        except LlmClientError:
+        except LlmClientError as exc:
+            logger.warning(
+                "receipt_intake_llm_failed",
+                establishment_id=str(establishment_id),
+                error=str(exc),
+            )
             return ReceiptProposalResponse(
                 establishment_id=establishment_id,
                 lines=[],
@@ -151,6 +160,10 @@ class ReceiptIntakeService:
             for raw in result["lines"]
         ]
         if not lines:
+            logger.info(
+                "receipt_intake_no_lines_found",
+                establishment_id=str(establishment_id),
+            )
             return ReceiptProposalResponse(
                 establishment_id=establishment_id,
                 lines=[],

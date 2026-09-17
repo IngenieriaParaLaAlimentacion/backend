@@ -1,6 +1,7 @@
 import json
 from typing import Any
 
+import structlog
 from google import genai
 from google.genai import types
 from google.genai.errors import APIError
@@ -8,6 +9,8 @@ from google.genai.errors import APIError
 from app.config.settings import settings
 from app.core.interfaces.llm_client import ILlmClient
 from app.exceptions.domain_exceptions import LlmClientError
+
+logger = structlog.get_logger()
 
 
 class GeminiLlmClient(ILlmClient):
@@ -35,6 +38,9 @@ class GeminiLlmClient(ILlmClient):
                 types.Part.from_bytes(data=image, mime_type=image_content_type)
             )
 
+        logger.info(
+            "gemini_llm_call", model=settings.gemini_model, has_image=image is not None
+        )
         try:
             response = await self._client.aio.models.generate_content(
                 model=settings.gemini_model,
@@ -45,7 +51,10 @@ class GeminiLlmClient(ILlmClient):
                 ),
             )
         except APIError as exc:
+            logger.warning("gemini_llm_call_failed", error=str(exc))
             raise LlmClientError(str(exc)) from exc
+
+        logger.info("gemini_llm_response", raw_text=response.text)
 
         if not response.text:
             raise LlmClientError("empty response from Gemini")
