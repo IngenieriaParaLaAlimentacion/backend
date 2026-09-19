@@ -156,3 +156,32 @@ async def get_my_activity(
         page_size=result.page_size,
         total_pages=result.total_pages,
     )
+
+
+@router.patch(
+    "/me/establishments/withdraw",
+    response_model=list[EstablishmentWithStatusResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Withdraw establishment access",
+    description="Withdraws the caller's own access to one or more "
+    "establishments. Only relations currently approved or pending can be "
+    "withdrawn. Accessible by all authenticated roles.",
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Establishment not associated with the caller"
+        },
+        status.HTTP_409_CONFLICT: {
+            "description": "Relation is not currently approved or pending"
+        },
+    },
+)
+async def withdraw_establishment_access(
+    data: EstablishmentIdsRequest,
+    actor: UserActor = Depends(require_any),
+    service: UserService = Depends(get_user_service),
+) -> list[EstablishmentWithStatusResponse]:
+    relations = await service.withdraw_establishment_access(
+        actor, data.establishment_ids
+    )
+    return [EstablishmentWithStatusResponse.model_validate(r) for r in relations]

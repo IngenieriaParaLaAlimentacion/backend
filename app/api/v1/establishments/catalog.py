@@ -59,7 +59,7 @@ async def create_establishment(
     response_model=EstablishmentCreationRequestResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Request creation of a missing establishment",
-    description="Notifies an admin that the establishment the field worker "
+    description="Notifies an admin that the establishment the authenticated user "
     "needs access to is missing from the catalog, so it can be reviewed and "
     "registered. Name and address are not optional.",
     responses={

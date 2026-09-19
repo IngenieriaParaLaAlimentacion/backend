@@ -51,6 +51,7 @@ EXPECTED: dict[str, int] = {
     "user-already-exists": status.HTTP_409_CONFLICT,
     "user-establishment-not-approved": status.HTTP_409_CONFLICT,
     "user-establishment-not-found": status.HTTP_404_NOT_FOUND,
+    "user-establishment-not-withdrawable": status.HTTP_409_CONFLICT,
     "user-is-not-a-field-worker": status.HTTP_400_BAD_REQUEST,
     "user-is-not-active": status.HTTP_400_BAD_REQUEST,
     "user-is-not-pending": status.HTTP_400_BAD_REQUEST,
