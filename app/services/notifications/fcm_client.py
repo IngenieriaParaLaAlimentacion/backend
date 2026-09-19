@@ -44,7 +44,8 @@ class FcmClient:
         self.timeout_seconds = timeout_seconds
         self.credentials = Credentials.from_service_account_info(
             {
-                "type": "service_account",
+                # This is a credential-schema discriminator, not a secret value.
+                "type": "service_account",  # nosemgrep
                 "project_id": project_id,
                 "client_email": client_email,
                 "private_key": private_key.replace("\\n", "\n"),
