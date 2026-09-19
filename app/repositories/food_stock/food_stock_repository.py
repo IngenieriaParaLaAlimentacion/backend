@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import uuid
-from collections.abc import AsyncIterator, Collection
+from collections.abc import AsyncIterator, Callable, Collection
 from decimal import Decimal
+from typing import ClassVar
 from uuid import UUID
 
 from sqlalchemy import (
     Numeric,
     Row,
+    Select,
+    Subquery,
     asc,
     column,
     delete,
@@ -15,6 +18,7 @@ from sqlalchemy import (
     func,
     literal,
     select,
+    union_all,
     update,
     values,
 )
@@ -25,6 +29,8 @@ from sqlalchemy.orm import selectinload
 
 from app.domain.food_stock import (
     FoodMovementDirection,
+    FoodMovementDomain,
+    FoodMovementListingParams,
     FoodStockListingParams,
     FoodStockSortOrder,
 )
@@ -34,7 +40,12 @@ from app.models.food_intakes.food_intake_item import FoodIntakeItem
 from app.models.food_outflows.food_outflow import FoodOutflow
 from app.models.food_outflows.food_outflow_item import FoodOutflowItem
 from app.models.food_stock.food_stock import FoodStock
-from app.utils.db import execute_count, execute_paginated, stream_all
+from app.utils.db import (
+    execute_count,
+    execute_paginated,
+    execute_paginated_rows,
+    stream_all,
+)
 
 # A KeyError on an unmapped value is intentional: it surfaces a missing case
 # immediately rather than silently falling back to an arbitrary order.
@@ -267,55 +278,178 @@ class FoodStockRepository:
             conditions=self._listing_conditions(establishment_id, params),
         )
 
-    def _movements_query(self, establishment_id: UUID, food_id: UUID):
-        """Union of the intake and outflow lines touching one food.
+    # Per direction: the header table, the column carrying its event date, and
+    # the domain builder for a hydrated header. `received_at` and `occurred_at`
+    # are the same fact under two names; the union relabels both.
+    #
+    # No fallback entry on purpose: `_build_movements_subquery` iterates the
+    # enum and looks each member up here, so a direction added to the enum but
+    # forgotten here raises a KeyError instead of silently vanishing from the
+    # unfiltered listing.
+    _MOVEMENT_SOURCES: ClassVar[
+        dict[FoodMovementDirection, tuple[type, object, Callable[[object], object]]]
+    ] = {
+        FoodMovementDirection.IN: (
+            FoodIntake,
+            FoodIntake.received_at,
+            FoodMovementDomain.from_intake,
+        ),
+        FoodMovementDirection.OUT: (
+            FoodOutflow,
+            FoodOutflow.occurred_at,
+            FoodMovementDomain.from_outflow,
+        ),
+    }
 
-        The two sides carry different column names for the same facts, so each
-        is relabelled to a common shape and tagged with its direction — the
-        balance's history is one sequence, not two lists the client must merge.
+    def _movement_branch(
+        self,
+        direction: FoodMovementDirection,
+        establishment_id: UUID,
+        params: FoodMovementListingParams,
+    ) -> Select:
+        """Build one header branch of the movements union.
+
+        Both filters go inside the branch, not on the union: the establishment
+        column does not survive into the union's shape, and keeping the date
+        bounds on each table's own column is what lets each branch use its
+        ``(establishment_id, event date)`` index.
         """
-        intakes = (
-            select(
-                FoodIntakeItem.id.label("id"),
-                literal(FoodMovementDirection.IN.value).label("direction"),
-                FoodIntake.received_at.label("occurred_at"),
-                FoodIntakeItem.quantity.label("quantity"),
-                FoodIntake.comments.label("comments"),
-            )
-            .join(FoodIntake, FoodIntake.id == FoodIntakeItem.food_intake_id)
-            .where(
-                FoodIntake.establishment_id == establishment_id,
-                FoodIntakeItem.food_id == food_id,
-            )
-        )
-        outflows = (
-            select(
-                FoodOutflowItem.id.label("id"),
-                literal(FoodMovementDirection.OUT.value).label("direction"),
-                FoodOutflow.occurred_at.label("occurred_at"),
-                FoodOutflowItem.quantity.label("quantity"),
-                FoodOutflow.comments.label("comments"),
-            )
-            .join(FoodOutflow, FoodOutflow.id == FoodOutflowItem.food_outflow_id)
-            .where(
-                FoodOutflow.establishment_id == establishment_id,
-                FoodOutflowItem.food_id == food_id,
-            )
-        )
-        return intakes.union_all(outflows).subquery()
+        model, event_at, _ = self._MOVEMENT_SOURCES[direction]
+        conditions = [model.establishment_id == establishment_id]
+        if params.occurred_from is not None:
+            conditions.append(event_at >= params.occurred_from)
+        if params.occurred_to is not None:
+            conditions.append(event_at <= params.occurred_to)
+        return select(
+            model.id.label("id"),
+            literal(direction.value).label("direction"),
+            event_at.label("occurred_at"),
+        ).where(*conditions)
 
-    async def get_movements(
-        self, establishment_id: UUID, food_id: UUID, limit: int, offset: int
-    ) -> tuple[list[Row], int]:
-        """Return a page of one food's movement history, newest first."""
-        movements = self._movements_query(establishment_id, food_id)
-        total = (
-            await self.db.execute(select(func.count()).select_from(movements))
-        ).scalar_one()
-        rows = await self.db.execute(
-            select(movements)
-            .order_by(desc(movements.c.occurred_at), desc(movements.c.id))
-            .limit(limit)
-            .offset(offset)
+    def _build_movements_subquery(
+        self, establishment_id: UUID, params: FoodMovementListingParams
+    ) -> Subquery:
+        """Build the id/direction/occurred_at UNION ALL of the header tables.
+
+        Only the three columns the ordering needs cross the union; everything
+        else is hydrated per direction afterwards. ``source`` in particular
+        cannot cross it -- the two tables carry distinct Postgres enum types,
+        and unioning those fails at query time, not at import time.
+
+        Iteration is over ``FoodMovementDirection``, so branch order is
+        deterministic regardless of the request. A direction filter drops the
+        other branch entirely rather than filtering the union after the fact.
+        """
+        requested = (
+            {params.direction} if params.direction else set(FoodMovementDirection)
         )
-        return list(rows.all()), total
+        branches = [
+            self._movement_branch(direction, establishment_id, params)
+            for direction in FoodMovementDirection
+            if direction in requested
+        ]
+        return union_all(*branches).subquery()
+
+    async def _get_intakes_by_id(
+        self, intake_ids: list[UUID]
+    ) -> dict[UUID, FoodIntake]:
+        if not intake_ids:
+            return {}
+        result = await self.db.execute(
+            select(FoodIntake)
+            .options(
+                selectinload(FoodIntake.responsible),
+                selectinload(FoodIntake.items).selectinload(FoodIntakeItem.food),
+            )
+            .where(FoodIntake.id.in_(intake_ids))
+        )
+        return {intake.id: intake for intake in result.scalars().all()}
+
+    async def _get_outflows_by_id(
+        self, outflow_ids: list[UUID]
+    ) -> dict[UUID, FoodOutflow]:
+        if not outflow_ids:
+            return {}
+        result = await self.db.execute(
+            select(FoodOutflow)
+            .options(
+                selectinload(FoodOutflow.responsible),
+                selectinload(FoodOutflow.items).selectinload(FoodOutflowItem.food),
+            )
+            .where(FoodOutflow.id.in_(outflow_ids))
+        )
+        return {outflow.id: outflow for outflow in result.scalars().all()}
+
+    @staticmethod
+    def _ids_of(page_rows: list[Row], direction: FoodMovementDirection) -> list[UUID]:
+        """Return the ids in the page that belong to one direction."""
+        return [row.id for row in page_rows if row.direction == direction]
+
+    async def _hydrate_page_rows(
+        self, page_rows: list[Row]
+    ) -> dict[FoodMovementDirection, dict[UUID, object]]:
+        """Fetch the full header for every id in the page, keyed by direction.
+
+        Each fetch short-circuits to ``{}`` when the page carries no row of that
+        direction, so a single-direction page costs one hydration, not two.
+        """
+        return {
+            FoodMovementDirection.IN: await self._get_intakes_by_id(
+                self._ids_of(page_rows, FoodMovementDirection.IN)
+            ),
+            FoodMovementDirection.OUT: await self._get_outflows_by_id(
+                self._ids_of(page_rows, FoodMovementDirection.OUT)
+            ),
+        }
+
+    def _assemble_movements(
+        self,
+        page_rows: list[Row],
+        hydrated: dict[FoodMovementDirection, dict[UUID, object]],
+    ) -> list[FoodMovementDomain]:
+        """Rebuild domain movements in the page's original (already sorted) order."""
+        movements = []
+        for row in page_rows:
+            direction = FoodMovementDirection(row.direction)
+            _, _, build = self._MOVEMENT_SOURCES[direction]
+            movements.append(build(hydrated[direction][row.id]))
+        return movements
+
+    async def list_movements(
+        self,
+        establishment_id: UUID,
+        limit: int,
+        offset: int,
+        params: FoodMovementListingParams,
+    ) -> tuple[list[FoodMovementDomain], int]:
+        """Return a page of the establishment's movement documents, newest first.
+
+        One row per document -- both directions merged into one sequence, each
+        tagged with its own -- rather than one row per food line.
+
+        Unlike its neighbours this returns domain objects rather than ORM rows:
+        the reassembly interleaves two ORM types in the order of raw rows
+        carrying the union's column names, and handing that to the service would
+        force it to know the union's shape.
+
+        ``total`` and the page slice read the same subquery object, so they
+        cannot disagree about the filter.
+
+        ``id DESC`` breaks ties on ``occurred_at`` deterministically -- a batch
+        of movements sharing one timestamp is the normal case here, and an
+        unresolved tie lets LIMIT/OFFSET repeat a row on one page and skip
+        another.
+        """
+        movements = self._build_movements_subquery(establishment_id, params)
+
+        page_rows, total = await execute_paginated_rows(
+            self.db,
+            select(movements.c.id, movements.c.direction, movements.c.occurred_at),
+            select(func.count()).select_from(movements),
+            (movements.c.occurred_at.desc(), movements.c.id.desc()),
+            limit,
+            offset,
+        )
+
+        hydrated = await self._hydrate_page_rows(page_rows)
+        return self._assemble_movements(page_rows, hydrated), total

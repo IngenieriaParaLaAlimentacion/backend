@@ -10,9 +10,17 @@ import pytest
 from app.domain.food_catalog import MeasurementUnit
 from app.domain.food_intake import FoodIntakeSource
 from app.domain.food_outflow import FoodOutflowSource
-from app.domain.food_stock import FoodStockListingParams
+from app.domain.food_stock import (
+    FoodMovementDirection,
+    FoodMovementListingParams,
+    FoodStockListingParams,
+)
 from app.domain.user import UserActor, UserRole
-from app.exceptions.domain_exceptions import FoodNotFoundError, InsufficientStockError
+from app.exceptions.domain_exceptions import (
+    EstablishmentNotFoundError,
+    FoodNotFoundError,
+    InsufficientStockError,
+)
 from app.schemas.food_intakes.food_intake_schema import (
     FoodIntakeRequest,
     FoodLineRequest,
@@ -205,14 +213,66 @@ class TestStockListing:
 
         assert result.page == 1
 
-    async def test_movements_of_an_unknown_food_raise(self, uow, actor):
-        uow.food_repo.get_by_ids = AsyncMock(return_value=[])
 
-        with pytest.raises(FoodNotFoundError):
+class TestMovementListing:
+    async def test_computes_the_offset_from_the_page(self, uow, actor):
+        uow.food_stock_repo.list_movements = AsyncMock(return_value=([], 0))
+        params = FoodMovementListingParams(direction=FoodMovementDirection.IN)
+
+        await FoodStockService(uow).list_movements(
+            establishment_id=ESTABLISHMENT_ID,
+            actor=actor,
+            page=3,
+            page_size=10,
+            params=params,
+        )
+
+        _, kwargs = uow.food_stock_repo.list_movements.call_args
+        assert kwargs["limit"] == 10
+        assert kwargs["offset"] == 20
+        assert kwargs["params"] is params
+
+    async def test_page_zero_is_clamped(self, uow, actor):
+        uow.food_stock_repo.list_movements = AsyncMock(return_value=([], 0))
+
+        result = await FoodStockService(uow).list_movements(
+            establishment_id=ESTABLISHMENT_ID,
+            actor=actor,
+            page=0,
+            page_size=10,
+            params=FoodMovementListingParams(),
+        )
+
+        assert result.page == 1
+
+    async def test_an_unknown_establishment_is_never_read(self, uow, actor):
+        """The access check runs first, so a bad id costs no movement query."""
+        uow.establishment_repo.get_by_id_or_raise = AsyncMock(
+            side_effect=EstablishmentNotFoundError(str(ESTABLISHMENT_ID))
+        )
+        uow.food_stock_repo.list_movements = AsyncMock(return_value=([], 0))
+
+        with pytest.raises(EstablishmentNotFoundError):
             await FoodStockService(uow).list_movements(
                 establishment_id=ESTABLISHMENT_ID,
-                food_id=uuid.uuid4(),
                 actor=actor,
                 page=1,
                 page_size=10,
+                params=FoodMovementListingParams(),
             )
+
+        uow.food_stock_repo.list_movements.assert_not_awaited()
+
+    async def test_the_food_catalog_is_not_consulted(self, uow, actor):
+        """The listing is establishment-scoped: there is no food to validate."""
+        uow.food_stock_repo.list_movements = AsyncMock(return_value=([], 0))
+
+        await FoodStockService(uow).list_movements(
+            establishment_id=ESTABLISHMENT_ID,
+            actor=actor,
+            page=1,
+            page_size=10,
+            params=FoodMovementListingParams(),
+        )
+
+        uow.food_repo.get_by_ids.assert_not_awaited()

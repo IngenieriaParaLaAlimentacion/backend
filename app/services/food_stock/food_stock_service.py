@@ -4,12 +4,12 @@ from uuid import UUID
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.food_stock import (
     FoodMovementDomain,
+    FoodMovementListingParams,
     FoodStockItemDomain,
     FoodStockListingParams,
 )
 from app.domain.pagination import PaginatedResult
 from app.domain.user import UserActor
-from app.exceptions.domain_exceptions import FoodNotFoundError
 from app.services.access import check_establishment_access
 from app.services.exporters.csv.csv_exporter import CsvExporter
 
@@ -60,30 +60,30 @@ class FoodStockService:
     async def list_movements(
         self,
         establishment_id: UUID,
-        food_id: UUID,
         actor: UserActor,
         page: int,
         page_size: int,
+        params: FoodMovementListingParams,
     ) -> PaginatedResult[FoodMovementDomain]:
-        """Return a page of one food's movement history, newest first.
+        """Return a page of the establishment's movements, newest first.
+
+        One entry per movement document -- an intake or an outflow with all its
+        food lines -- not one per line.
 
         Raises:
             EstablishmentNotFoundError: establishment_id does not exist.
             EstablishmentAccessDeniedError: field worker lacks approved access.
-            FoodNotFoundError: the food is not in the catalog.
         """
         await self._resolve_establishment(establishment_id, actor)
-        if not await self.uow.food_repo.get_by_ids([food_id]):
-            raise FoodNotFoundError(str(food_id))
         page = max(1, page)
-        rows, total = await self.uow.food_stock_repo.get_movements(
+        movements, total = await self.uow.food_stock_repo.list_movements(
             establishment_id=establishment_id,
-            food_id=food_id,
             limit=page_size,
             offset=(page - 1) * page_size,
+            params=params,
         )
         return PaginatedResult.build(
-            items=[FoodMovementDomain.from_row(row) for row in rows],
+            items=movements,
             total=total,
             page=page,
             page_size=page_size,

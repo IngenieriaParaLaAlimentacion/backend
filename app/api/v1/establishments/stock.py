@@ -6,6 +6,7 @@ from fastapi.responses import StreamingResponse
 from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_stream_response
 from app.api.v1.params import (
     AUTH_RESPONSES,
+    FoodMovementListingQuery,
     FoodStockListingQuery,
     PaginatedQueryParams,
 )
@@ -81,32 +82,42 @@ async def export_establishment_stock(
 
 
 @router.get(
-    "/{establishment_id}/stock/{food_id}/movements",
+    "/{establishment_id}/food-movements",
     response_model=PaginatedResponse[FoodMovementItem],
-    summary="List the movements behind one food's balance",
+    summary="List an establishment's food movements",
     description=(
-        "Intakes and outflows of a single food as one sequence, newest first, "
-        "each tagged with its direction — the history that explains how the "
-        "current balance got there."
+        "Intakes and outflows as complete documents — one entry per movement "
+        "with all its food lines nested, not one entry per line — merged into "
+        "a single sequence, newest first, each tagged with its `direction`. "
+        "Both the ordering and the date filter read the event date "
+        "(`received_at` for an intake, `occurred_at` for an outflow) and never "
+        "when the row was written, so a retroactive load appears in the period "
+        "it happened in. Pass `direction=in` or `direction=out` for one side "
+        "only."
     ),
     responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "`/errors/invalid-date-range`: occurred_from is "
+            "after occurred_to"
+        },
         **AUTH_RESPONSES,
-        status.HTTP_404_NOT_FOUND: {"description": "Establishment or food not found"},
+        **_NOT_FOUND,
     },
 )
-async def list_food_movements(
+async def list_establishment_movements(
     establishment_id: UUID,
-    food_id: UUID,
+    query: FoodMovementListingQuery = Depends(),
     paginated: PaginatedQueryParams = Depends(),
     actor: UserActor = Depends(require_any),
     service: FoodStockService = Depends(get_food_stock_service),
 ) -> PaginatedResponse[FoodMovementItem]:
+    query.validate()
     result = await service.list_movements(
         establishment_id=establishment_id,
-        food_id=food_id,
         actor=actor,
         page=paginated.page,
         page_size=paginated.page_size,
+        params=query.to_domain(),
     )
     return PaginatedResponse[FoodMovementItem](
         items=[FoodMovementItem.model_validate(item) for item in result.items],
