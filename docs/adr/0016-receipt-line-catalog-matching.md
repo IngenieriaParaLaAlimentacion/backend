@@ -30,9 +30,8 @@ confident that match has to be before it's shown to the user as already resolved
 
 ### Trigram similarity against `foods.name`, not an LLM-side catalog lookup
 
-Matching is done with a Postgres query — `similarity(unaccent(lower(foods.name)), unaccent(lower(description)))`
-via the existing `pg_trgm` extension — not by asking the LLM to pick from the catalog during extraction.
-Two reasons:
+Matching is done with a Postgres query via the existing `pg_trgm` extension — not by asking the LLM to pick
+from the catalog during extraction. Two reasons:
 
 1. **The catalog has hundreds of entries** (SARA 2's full raw/as-purchased list, ADR-0010). Passing the
    full catalog into every Gemini prompt to have the model select from it would meaningfully grow prompt
@@ -44,19 +43,29 @@ Two reasons:
    LLM-side selection would make matching behavior dependent on model version and prompt phrasing, on top of
    what the extraction step already depends on it for.
 
-### A single configurable similarity threshold decides auto-match vs. leaving `food` null
+### Two configurable trigram scores, both required, decide auto-match vs. leaving `food` null
 
-`FoodRepository.find_best_match(description, min_similarity)` returns the single highest-`similarity()` food
-whose score is at or above `min_similarity`, or `None` if nothing clears it. There is no "top-N suggestions"
-list — this is a binary decision per line: either the match is confident enough to prefill, or the line is
-left exactly as it behaves today (`food=null`), and the user searches manually.
+`FoodRepository.find_best_match(description, min_word_similarity, min_similarity)` returns the food with the
+highest `word_similarity(unaccent(lower(foods.name)), unaccent(lower(description)))` among those where *both*
+that score and `similarity(unaccent(lower(foods.name)), unaccent(lower(description)))` clear their respective
+floor, or `None` if nothing clears both. There is no "top-N suggestions" list — this is a binary decision per
+line: either the match is confident enough to prefill, or the line is left exactly as it behaves today
+(`food=null`), and the user searches manually.
 
-The threshold is a plain setting, `receipt_food_match_min_similarity` (default `0.3`) — not a schema column,
-not hardcoded in the query. `0.3` is `pg_trgm`'s own default for its `%` similarity operator
-(`pg_trgm.similarity_threshold`), chosen as a starting point precisely because it's the extension's own
-judgment call for "these two strings are related enough to be worth surfacing," which is the same bar this
-feature needs. Being a setting means it can be tuned from real receipt data (false-positive vs. false-negative
-matches) without a migration or a deploy of new query code.
+Both thresholds are plain settings — not schema columns, not hardcoded in the query — tunable from real
+receipt data without a migration or a deploy of new query code:
+
+- `receipt_food_match_min_word_similarity` (default `0.5`): the primary signal. `word_similarity` scores a
+  catalog name against its best-matching contiguous extent of the description, so it isn't diluted by a
+  brand name or pack size elsewhere in the line the way whole-string `similarity` is (see "Amendment" below).
+- `receipt_food_match_min_similarity` (default `0.22`): a whole-string `similarity` floor applied alongside
+  it. `word_similarity` alone is a poor filter for *short* catalog names (e.g. `"Sal"`) — a short name can
+  score deceptively high against some coincidental extent of an unrelated, noisy line. A genuine match also
+  carries non-trivial whole-string overlap with the full description; a short spurious match doesn't. This
+  floor exists specifically to reject that case.
+
+Both defaults were tuned empirically against a sample of real receipt lines and the actual food catalog
+(`app/reference_data/foods.csv`) rather than derived analytically — see "Amendment" below.
 
 ### `needs_review` stays `true` unconditionally — matching never marks a line as resolved
 
@@ -122,3 +131,28 @@ score's. May be revisited alongside a broader per-line resolution model once uni
 — rejected for this ADR. Even the "safe" subset still requires deciding how to handle every other case (no
 unit text, a dimension mismatch, an unrecognized unit string) consistently, which is real design work
 deferred to its own iteration rather than bundled into the matching decision this ADR is scoped to.
+
+## Amendment (2026-09-19): whole-string `similarity()` under-matched real receipt lines
+
+Testing the original decision (plain `similarity()`, threshold `0.3`) against real receipt photos surfaced a
+systematic false-negative problem, not just the anticipated brand-name edge case: lines like
+`"Ketchup HELLMANNS x250g DOY 237 gr. (21,00)"` failed to match `"Ketchup"` even though the catalog name is a
+perfect substring of the line. `similarity()` is a Jaccard-like ratio over the *union* of both strings'
+trigrams — a short catalog name compared against a long, brand-and-pack-noisy line gets diluted by the extra
+trigrams the noise contributes to that union, regardless of how well the actual product name matches. This
+was not an edge case: it affected the majority of lines in a real receipt, including exact substring matches.
+
+Switching to `word_similarity()` (which scores a name against its best-matching contiguous *extent* of the
+other string, rather than the whole-string union) fixes that dilution — but probing it against the full real
+catalog (`app/reference_data/foods.csv`, ~900 rows) showed it introduces the opposite failure mode: a *short*
+catalog name (e.g. `"Sal"`) can score deceptively high (0.5–0.75) against a coincidental extent of a
+completely unrelated line, sometimes outscoring genuine matches. Neither function alone gives a threshold that
+cleanly separates real matches from spurious ones across the sample tested.
+
+The fix adopted (see "Decision" above) requires both scores to clear independent floors:
+`word_similarity() >= 0.5` as the primary match signal, gated by `similarity() >= 0.22` specifically to reject
+the short-name false-positive case, since a genuine match reliably clears both while a spurious short-name
+match reliably fails the whole-string floor. Both values were chosen empirically against a sample of real
+receipt lines run against the real catalog — including cases where the catalog does not have a matching entry
+at all (e.g. no bare `"Fideos"`, no `"Danbo"` cheese) — not derived analytically; they're the kind of thing
+the "Negatives" section above already expected to need retuning from observed data.

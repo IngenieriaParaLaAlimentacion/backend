@@ -81,9 +81,9 @@ class Settings(BaseSettings):
         "image/png",
         "image/webp",
     }
-    # Minimum trigram similarity (ADR-0016) for a receipt line's description to
-    # auto-match a catalog food. 0.3 is pg_trgm's own default `%` operator threshold.
-    receipt_food_match_min_similarity: float = 0.3
+
+    receipt_food_match_min_word_similarity: float = 0.5
+    receipt_food_match_min_similarity: float = 0.22
 
     # Object storage (Cloudflare R2, S3-compatible).
     storage_endpoint_url: Optional[str] = None

@@ -34,11 +34,14 @@ _EXTRACTION_PROMPT = (
     "Argentina. List every line item that is a food or beverage, in the "
     "order it appears. Ignore totals, taxes, discounts, payment methods, "
     "and store header/footer information. For each item, return its "
-    "description exactly as printed on the receipt. If the line also states "
-    "a quantity (e.g. a weight, volume, or unit count such as '1kg', '900ml', "
-    "'x3'), also return that quantity as a number and the unit text exactly "
-    "as printed (e.g. 'kg', 'ml', 'un'); leave both null when the line does "
-    "not state a quantity."
+    "description exactly as printed on the receipt, but leave out any price "
+    "shown on the line (unit price, line total, or a discount amount) -- "
+    "there is no field for it, and its exact position and format vary by "
+    "store, so it must not be left inside the description text. If the line "
+    "also states a quantity (e.g. a weight, volume, or unit count such as "
+    "'1kg', '900ml', 'x3'), also return that quantity as a number and the "
+    "unit text exactly as printed (e.g. 'kg', 'ml', 'un'); leave both null "
+    "when the line does not state a quantity."
 )
 
 _EXTRACTION_RESPONSE_SCHEMA: dict[str, Any] = {
@@ -125,7 +128,9 @@ class ReceiptIntakeService:
         this only shapes the result for ``ProposedFoodLine.food``.
         """
         food = await self.uow.food_repo.find_best_match(
-            description, settings.receipt_food_match_min_similarity
+            description,
+            settings.receipt_food_match_min_word_similarity,
+            settings.receipt_food_match_min_similarity,
         )
         return IdentifierRefSchema.model_validate(food) if food is not None else None
 

@@ -247,7 +247,9 @@ class TestExtraction:
         assert line.food.name == "Arroz"
         assert line.needs_review is True
         uow.food_repo.find_best_match.assert_awaited_once_with(
-            "Arroz 1kg", settings.receipt_food_match_min_similarity
+            "Arroz 1kg",
+            settings.receipt_food_match_min_word_similarity,
+            settings.receipt_food_match_min_similarity,
         )
 
     async def test_no_catalog_match_leaves_food_null(

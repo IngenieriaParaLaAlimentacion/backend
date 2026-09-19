@@ -45,6 +45,46 @@ async def db_food(app):
         return rice
 
 
+@pytest_asyncio.fixture
+async def db_foods(app):
+    """Seed a small, varied catalog to exercise the word-similarity + whole-string
+    floor combination (ADR-0016) against a real Postgres instance.
+
+    Includes "Sal" -- a short name that a naive word-similarity match would score
+    deceptively high against an unrelated, noisy receipt line -- to prove the
+    whole-string floor actually guards against that false positive.
+    """
+    from app.db.database import AsyncSessionLocal
+    from app.domain.food_catalog import MeasurementUnit
+    from app.models.food_catalog.food import Food
+    from app.models.food_catalog.food_category import FoodCategory
+
+    async with AsyncSessionLocal() as session:
+        category = FoodCategory(code="varios", name="Varios")
+        session.add(category)
+        await session.flush()
+
+        foods = {
+            "ketchup": Food(
+                code="ketchup",
+                name="Ketchup",
+                category_id=category.id,
+                base_unit=MeasurementUnit.KILOGRAMOS,
+            ),
+            "sal": Food(
+                code="sal",
+                name="Sal",
+                category_id=category.id,
+                base_unit=MeasurementUnit.KILOGRAMOS,
+            ),
+        }
+        session.add_all(foods.values())
+        await session.commit()
+        for food in foods.values():
+            await session.refresh(food)
+        return foods
+
+
 class TestAcceptedUpload:
     async def test_no_items_detected_returns_manual_fallback_message(
         self, client, admin_headers, db_establishment, fake_llm_client
@@ -127,6 +167,47 @@ class TestCatalogMatching:
         self, client, admin_headers, db_establishment, db_food, fake_llm_client
     ):
         fake_llm_client.response = {"lines": [{"description": "Mute Santandereano"}]}
+
+        response = await client.post(
+            URL, headers=admin_headers, **_upload(db_establishment.id)
+        )
+
+        assert response.status_code == 200
+        (line,) = response.json()["lines"]
+        assert line["food"] is None
+        assert line["needs_review"] is True
+
+    async def test_brand_and_pack_size_noise_still_matches_the_catalog_food(
+        self, client, admin_headers, db_establishment, db_foods, fake_llm_client
+    ):
+        """A real receipt line is far noisier than "Arroz 1kg": brand name and pack
+        size surround the actual product name. Whole-string ``similarity`` dilutes
+        to well under threshold on a line like this (the bug this test guards
+        against); ``word_similarity`` isn't diluted by it."""
+        fake_llm_client.response = {
+            "lines": [{"description": "Ketchup HELLMANNS x250g DOY 237 gr."}]
+        }
+
+        response = await client.post(
+            URL, headers=admin_headers, **_upload(db_establishment.id)
+        )
+
+        assert response.status_code == 200
+        (line,) = response.json()["lines"]
+        ketchup = db_foods["ketchup"]
+        assert line["food"] == {"id": str(ketchup.id), "name": ketchup.name}
+        assert line["needs_review"] is True
+
+    async def test_short_catalog_name_does_not_false_positive_on_unrelated_noise(
+        self, client, admin_headers, db_establishment, db_foods, fake_llm_client
+    ):
+        """``word_similarity`` alone can score a short catalog name like "Sal"
+        deceptively high against a coincidental extent of unrelated, noisy text --
+        the whole-string floor (``receipt_food_match_min_similarity``) must reject
+        it anyway."""
+        fake_llm_client.response = {
+            "lines": [{"description": "Tapas para Tarta LA SALTENA Hojaldr 400"}]
+        }
 
         response = await client.post(
             URL, headers=admin_headers, **_upload(db_establishment.id)

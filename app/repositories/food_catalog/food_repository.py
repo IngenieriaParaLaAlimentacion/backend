@@ -49,23 +49,42 @@ class FoodRepository:
         ]
 
     @staticmethod
-    def _match_score(term: str):
-        """Trigram similarity of ``foods.name`` against ``term``,
-        accent/case-insensitive."""
-        return func.similarity(unaccent_lower(Food.name), unaccent_lower(term))
+    def _match_scores(term: str):
+        """Trigram scores of ``foods.name`` against ``term``, accent/case-insensitive.
+
+        ``word_similarity`` scores the catalog name against its best-matching
+        extent of ``term``, so brand names and pack sizes elsewhere in a receipt
+        line don't dilute the score the way whole-string ``similarity`` does --
+        it's the primary signal. On its own, though, it's a poor filter for
+        *short* catalog names (e.g. "Sal"): a short name can score deceptively
+        high against a coincidental extent of unrelated text. Whole-string
+        ``similarity`` is used as a second, independent floor -- a genuine match
+        also carries non-trivial whole-string overlap, while a short spurious
+        match doesn't (see ADR-0016).
+        """
+        normalized_name = unaccent_lower(Food.name)
+        normalized_term = unaccent_lower(term)
+        word_score = func.word_similarity(normalized_name, normalized_term)
+        whole_score = func.similarity(normalized_name, normalized_term)
+        return word_score, whole_score
 
     async def find_best_match(
-        self, description: str, min_similarity: float
+        self, description: str, min_word_similarity: float, min_similarity: float
     ) -> Food | None:
         """Return the catalog food whose name best matches ``description``, or None.
 
         Used to auto-fill a receipt-extracted line's catalog reference (ADR-0016) -- a
-        single best-or-nothing match, not a ranked candidate list. No relations are
+        single best-or-nothing match, not a ranked candidate list. A food only
+        qualifies once both scores from ``_match_scores`` clear their respective
+        floor; among those, the highest ``word_similarity`` wins. No relations are
         eager-loaded: callers only need ``id``/``name``, mirroring ``get_by_ids``.
         """
-        score = self._match_score(description)
+        word_score, whole_score = self._match_scores(description)
         result = await self.db.execute(
-            select(Food).where(score >= min_similarity).order_by(desc(score)).limit(1)
+            select(Food)
+            .where(word_score >= min_word_similarity, whole_score >= min_similarity)
+            .order_by(desc(word_score))
+            .limit(1)
         )
         return result.scalar_one_or_none()
 
