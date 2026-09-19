@@ -285,6 +285,30 @@ class UserEstablishmentNotApprovedError(ConflictError):
         )
 
 
+class UserEstablishmentNotWithdrawableError(ConflictError):
+    """Raised when a user tries to withdraw their own access to an
+    establishment whose relation is not currently approved or pending.
+
+    Args:
+        establishment_id (str): The establishment whose relation cannot be
+            withdrawn.
+        user_id (str): The user the relation belongs to.
+        relation_status (str): The state the relation is actually in
+            (rejected/revoked), attached as the ``relation_status`` extension.
+    """
+
+    error_type = "user-establishment-not-withdrawable"
+
+    def __init__(self, establishment_id: str, user_id: str, relation_status: str):
+        super().__init__(
+            "User establishment not withdrawable",
+            f"The establishment with id {establishment_id} is not currently "
+            f"approved or pending for the user with id {user_id}, so its "
+            "access cannot be withdrawn.",
+            extensions={"relation_status": relation_status},
+        )
+
+
 class EstablishmentRequestNotFoundError(NotFoundError):
     """Exception raised when an establishment request does not exist.
 

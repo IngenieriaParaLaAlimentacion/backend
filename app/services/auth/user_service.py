@@ -10,6 +10,8 @@ from app.domain.establishment import (
 from app.domain.user import ProfileDomain, UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EmptyUpdateRequestError,
+    UserEstablishmentNotFoundError,
+    UserEstablishmentNotWithdrawableError,
     UserNotFoundError,
 )
 from app.models.auth.user import User
@@ -157,7 +159,8 @@ class UserService:
         self, actor: UserActor, establishment_ids: list[UUID]
     ) -> list[EstablishmentWithStatusDomain]:
         """Request (or re-request) access to establishments. Idempotent per item:
-        approved/pending stay as-is, rejected/revoked/new become pending.
+        approved/pending stay as-is, rejected/revoked/withdrawn/new become
+        pending.
 
         Raises:
             EstablishmentNotFoundError: If any establishment id does not exist.
@@ -184,6 +187,7 @@ class UserService:
             elif current in (
                 UserEstablishmentStatus.REJECTED,
                 UserEstablishmentStatus.REVOKED,
+                UserEstablishmentStatus.WITHDRAWN,
             ):
                 to_repend.append(estab_id)
                 result_status[estab_id] = UserEstablishmentStatus.PENDING
@@ -202,6 +206,56 @@ class UserService:
         return [
             EstablishmentWithStatusDomain(
                 **info[estab_id], status=result_status[estab_id]
+            )
+            for estab_id in unique_ids
+        ]
+
+    async def withdraw_establishment_access(
+        self, actor: UserActor, establishment_ids: list[UUID]
+    ) -> list[EstablishmentWithStatusDomain]:
+        """Withdraw the caller's own access to one or more establishments.
+
+        Only relations currently approved or pending can be withdrawn.
+        A withdrawn establishment can be re-requested through
+        request_establishment_access exactly like a rejected or revoked one.
+
+        Raises:
+            UserEstablishmentNotFoundError: If an establishment id has no
+                relation with the caller.
+            UserEstablishmentNotWithdrawableError: If a relation exists but is
+                not currently approved or pending.
+        """
+        user_id = actor.user_id
+        unique_ids = list(dict.fromkeys(establishment_ids))
+
+        relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
+        status_by_estab = {rel.establishment_id: rel.status for rel in relations}
+
+        to_withdraw: list[UUID] = []
+        for estab_id in unique_ids:
+            current = status_by_estab.get(estab_id)
+            if current is None:
+                raise UserEstablishmentNotFoundError(str(estab_id), str(user_id))
+            if current not in (
+                UserEstablishmentStatus.APPROVED,
+                UserEstablishmentStatus.PENDING,
+            ):
+                raise UserEstablishmentNotWithdrawableError(
+                    str(estab_id), str(user_id), current.value
+                )
+            to_withdraw.append(estab_id)
+
+        await self.uow.user_establishment_repo.update_status_for_ids(
+            user_id, to_withdraw, UserEstablishmentStatus.WITHDRAWN
+        )
+        await self.uow.commit()
+
+        establishments = await self.uow.establishment_repo.find_by_ids(unique_ids)
+        info = {e.id: _establishment_snapshot(e) for e in establishments}
+
+        return [
+            EstablishmentWithStatusDomain(
+                **info[estab_id], status=UserEstablishmentStatus.WITHDRAWN
             )
             for estab_id in unique_ids
         ]
