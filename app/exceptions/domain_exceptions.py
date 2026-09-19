@@ -166,21 +166,8 @@ class UnauthorizedError(BaseError):
         super().__init__(title, details, extensions)
 
 
-class InternalAuthenticationError(BaseError):
-    """Raised when the infrastructure cron secret is absent or invalid."""
-
-    error_type = "internal-authentication-failed"
-    status = status.HTTP_401_UNAUTHORIZED
-
-    def __init__(self):
-        super().__init__(
-            "Internal authentication failed",
-            "Internal authentication credentials are missing or invalid.",
-        )
-
-
 class NotificationConfigurationError(BaseError):
-    """Raised when cron runs without activation or complete FCM configuration."""
+    """Raised when scheduled notifications are not fully configured."""
 
     error_type = "notification-configuration-invalid"
     status = status.HTTP_503_SERVICE_UNAVAILABLE

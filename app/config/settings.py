@@ -77,7 +77,6 @@ class Settings(BaseSettings):
 
     # Stale-establishment notifications
     stale_notifications_feature_activated_at: datetime | None = None
-    stale_notifications_cron_secret: str | None = None
     fcm_project_id: str | None = None
     fcm_client_email: str | None = None
     fcm_private_key: str | None = None

@@ -3,7 +3,6 @@ import pytest
 from app.exceptions.domain_exceptions import (
     BaseError,
     EstablishmentNotFoundError,
-    InternalAuthenticationError,
     NotFoundError,
     NotificationConfigurationError,
     PasswordNotFoundError,
@@ -45,12 +44,7 @@ def test_unauthorized_error():
 
 
 def test_notification_errors_have_stable_slugs_and_statuses():
-    internal = InternalAuthenticationError()
     configuration = NotificationConfigurationError()
-    assert (internal.error_type, internal.status) == (
-        "internal-authentication-failed",
-        401,
-    )
     assert (configuration.error_type, configuration.status) == (
         "notification-configuration-invalid",
         503,

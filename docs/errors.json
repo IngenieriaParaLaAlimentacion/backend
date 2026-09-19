@@ -127,12 +127,6 @@
       "description": "Exception raised when an outflow exceeds an establishment's stock."
     },
     {
-      "type": "/errors/internal-authentication-failed",
-      "status": 401,
-      "exception": "InternalAuthenticationError",
-      "description": "Raised when the infrastructure cron secret is absent or invalid."
-    },
-    {
       "type": "/errors/invalid-age-range",
       "status": 400,
       "exception": "InvalidAgeRangeError",
@@ -196,7 +190,7 @@
       "type": "/errors/notification-configuration-invalid",
       "status": 503,
       "exception": "NotificationConfigurationError",
-      "description": "Raised when cron runs without activation or complete FCM configuration."
+      "description": "Raised when scheduled notifications are not fully configured."
     },
     {
       "type": "/errors/password-not-found",

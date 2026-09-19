@@ -29,6 +29,7 @@ structlog = "^26.1.0"
 opentelemetry-instrumentation-logging = "^0.65b0"
 httpx = "^0.28.1"
 google-auth = {extras = ["requests"], version = "^2.0"}
+apscheduler = "^3.11.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = ">=0.15.8,<0.16.0"
