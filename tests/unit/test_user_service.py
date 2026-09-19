@@ -11,6 +11,8 @@ from app.domain.user import ProfileDomain, UserActor, UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
     EmptyUpdateRequestError,
     EstablishmentNotFoundError,
+    UserEstablishmentNotFoundError,
+    UserEstablishmentNotWithdrawableError,
     UserNotFoundError,
 )
 from app.schemas.auth.user_schema import ProfileUpdateRequest
@@ -411,6 +413,27 @@ class TestRequestEstablishmentAccess:
         assert result[0].status == UserEstablishmentStatus.PENDING
 
     @pytest.mark.asyncio
+    async def test_withdrawn_id_is_re_requested(self):
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        estab = _make_establishment()
+        relations = [_make_relation(estab.id, UserEstablishmentStatus.WITHDRAWN)]
+        uow = _make_uow(user=user, relations=relations, establishments_by_ids=[estab])
+        service = UserService(uow)
+
+        result = await service.request_establishment_access(
+            _actor_for(user), [estab.id]
+        )
+
+        uow.user_establishment_repo.update_status_for_ids.assert_awaited_once()
+        _, ids, new_status = (
+            uow.user_establishment_repo.update_status_for_ids.call_args.args
+        )
+        assert ids == [estab.id]
+        assert new_status == UserEstablishmentStatus.PENDING
+        uow.user_establishment_repo.preset_relation.assert_not_called()
+        assert result[0].status == UserEstablishmentStatus.PENDING
+
+    @pytest.mark.asyncio
     async def test_approved_id_is_untouched(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         estab = _make_establishment()
@@ -503,5 +526,104 @@ class TestRequestEstablishmentAccess:
             await service.request_establishment_access(_actor_for(user), [uuid.uuid4()])
 
         uow.user_establishment_repo.preset_relation.assert_not_called()
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.commit.assert_not_called()
+
+
+class TestWithdrawEstablishmentAccess:
+    @pytest.mark.asyncio
+    async def test_approved_id_is_withdrawn(self):
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        estab = _make_establishment()
+        relations = [_make_relation(estab.id, UserEstablishmentStatus.APPROVED)]
+        uow = _make_uow(user=user, relations=relations, establishments=[estab])
+        service = UserService(uow)
+
+        result = await service.withdraw_establishment_access(
+            _actor_for(user), [estab.id]
+        )
+
+        uow.user_establishment_repo.update_status_for_ids.assert_awaited_once()
+        _, ids, new_status = (
+            uow.user_establishment_repo.update_status_for_ids.call_args.args
+        )
+        assert ids == [estab.id]
+        assert new_status == UserEstablishmentStatus.WITHDRAWN
+        uow.commit.assert_awaited_once()
+        assert result[0].id == estab.id
+        assert result[0].status == UserEstablishmentStatus.WITHDRAWN
+
+    @pytest.mark.asyncio
+    async def test_pending_id_is_withdrawn(self):
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        estab = _make_establishment()
+        relations = [_make_relation(estab.id, UserEstablishmentStatus.PENDING)]
+        uow = _make_uow(user=user, relations=relations, establishments=[estab])
+        service = UserService(uow)
+
+        result = await service.withdraw_establishment_access(
+            _actor_for(user), [estab.id]
+        )
+
+        _, ids, new_status = (
+            uow.user_establishment_repo.update_status_for_ids.call_args.args
+        )
+        assert ids == [estab.id]
+        assert new_status == UserEstablishmentStatus.WITHDRAWN
+        assert result[0].status == UserEstablishmentStatus.WITHDRAWN
+
+    @pytest.mark.asyncio
+    async def test_establishment_with_no_relation_raises_and_writes_nothing(self):
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        uow = _make_uow(user=user, relations=[])
+        service = UserService(uow)
+        missing_id = uuid.uuid4()
+
+        with pytest.raises(UserEstablishmentNotFoundError):
+            await service.withdraw_establishment_access(_actor_for(user), [missing_id])
+
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "status",
+        [
+            UserEstablishmentStatus.REJECTED,
+            UserEstablishmentStatus.REVOKED,
+            UserEstablishmentStatus.WITHDRAWN,
+        ],
+    )
+    async def test_relation_in_non_withdrawable_status_raises(self, status):
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        estab = _make_establishment()
+        relations = [_make_relation(estab.id, status)]
+        uow = _make_uow(user=user, relations=relations)
+        service = UserService(uow)
+
+        with pytest.raises(UserEstablishmentNotWithdrawableError) as exc_info:
+            await service.withdraw_establishment_access(_actor_for(user), [estab.id])
+
+        assert exc_info.value.extensions["relation_status"] == status.value
+        uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_partial_invalid_batch_raises_and_writes_nothing(self):
+        user = _make_user(role=UserRole.FIELD_WORKER)
+        approved = _make_establishment()
+        rejected = _make_establishment()
+        relations = [
+            _make_relation(approved.id, UserEstablishmentStatus.APPROVED),
+            _make_relation(rejected.id, UserEstablishmentStatus.REJECTED),
+        ]
+        uow = _make_uow(user=user, relations=relations)
+        service = UserService(uow)
+
+        with pytest.raises(UserEstablishmentNotWithdrawableError):
+            await service.withdraw_establishment_access(
+                _actor_for(user), [approved.id, rejected.id]
+            )
+
         uow.user_establishment_repo.update_status_for_ids.assert_not_called()
         uow.commit.assert_not_called()

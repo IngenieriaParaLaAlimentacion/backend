@@ -17,6 +17,7 @@ pytestmark = pytest.mark.asyncio
 
 ME_URL = "/api/v1/users/me"
 ME_ESTABLISHMENTS_URL = "/api/v1/users/me/establishments"
+ME_ESTABLISHMENTS_WITHDRAW_URL = "/api/v1/users/me/establishments/withdraw"
 
 
 async def _insert_user(
@@ -483,5 +484,79 @@ class TestRequestEstablishmentAccess:
         """CA7: no token returns 401."""
         response = await client.post(
             ME_ESTABLISHMENTS_URL, json={"establishment_ids": [str(uuid.uuid4())]}
+        )
+        assert response.status_code == 401
+
+
+class TestWithdrawEstablishmentAccess:
+    async def test_approved_relation_is_withdrawn(self, client, field_worker_user):
+        estab = await _insert_establishment("Centro A", "Calle A")
+        await _insert_relation(
+            field_worker_user.id, estab.id, UserEstablishmentStatus.APPROVED
+        )
+
+        response = await client.patch(
+            ME_ESTABLISHMENTS_WITHDRAW_URL,
+            json={"establishment_ids": [str(estab.id)]},
+            headers=_headers_for(field_worker_user),
+        )
+
+        assert response.status_code == 200
+        assert response.json()[0]["status"] == UserEstablishmentStatus.WITHDRAWN
+
+        relations = await _fetch_relations(field_worker_user.id)
+        assert len(relations) == 1
+        assert relations[0].status == UserEstablishmentStatus.WITHDRAWN
+
+    async def test_pending_relation_is_withdrawn(self, client, field_worker_user):
+        estab = await _insert_establishment("Centro A", "Calle A")
+        await _insert_relation(
+            field_worker_user.id, estab.id, UserEstablishmentStatus.PENDING
+        )
+
+        response = await client.patch(
+            ME_ESTABLISHMENTS_WITHDRAW_URL,
+            json={"establishment_ids": [str(estab.id)]},
+            headers=_headers_for(field_worker_user),
+        )
+
+        assert response.status_code == 200
+        relations = await _fetch_relations(field_worker_user.id)
+        assert relations[0].status == UserEstablishmentStatus.WITHDRAWN
+
+    async def test_rejected_relation_returns_409_and_writes_nothing(
+        self, client, field_worker_user
+    ):
+        estab = await _insert_establishment("Centro A", "Calle A")
+        await _insert_relation(
+            field_worker_user.id, estab.id, UserEstablishmentStatus.REJECTED
+        )
+
+        response = await client.patch(
+            ME_ESTABLISHMENTS_WITHDRAW_URL,
+            json={"establishment_ids": [str(estab.id)]},
+            headers=_headers_for(field_worker_user),
+        )
+
+        assert response.status_code == 409
+        relations = await _fetch_relations(field_worker_user.id)
+        assert relations[0].status == UserEstablishmentStatus.REJECTED
+
+    async def test_unknown_establishment_returns_404_and_writes_nothing(
+        self, client, field_worker_user
+    ):
+        response = await client.patch(
+            ME_ESTABLISHMENTS_WITHDRAW_URL,
+            json={"establishment_ids": [str(uuid.uuid4())]},
+            headers=_headers_for(field_worker_user),
+        )
+
+        assert response.status_code == 404
+        assert await _fetch_relations(field_worker_user.id) == []
+
+    async def test_no_token_returns_401(self, client):
+        response = await client.patch(
+            ME_ESTABLISHMENTS_WITHDRAW_URL,
+            json={"establishment_ids": [str(uuid.uuid4())]},
         )
         assert response.status_code == 401

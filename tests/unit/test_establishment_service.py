@@ -860,6 +860,31 @@ class TestApproveCreationRequest:
         )
         uow.user_establishment_repo.preset_relation.assert_not_called()
 
+    async def test_reopens_a_withdrawn_relation_to_pending(
+        self, make_uow, make_establishment
+    ):
+        """A field worker who withdrew their own access to this establishment
+        gets another chance at admin review instead of staying withdrawn."""
+        user_id = uuid.uuid4()
+        request = _make_request_orm(user_id)
+        existing = make_establishment()
+        relation = MagicMock(status=UserEstablishmentStatus.WITHDRAWN)
+        uow = make_uow(
+            request=request,
+            existing_establishment=existing,
+            existing_relation=relation,
+        )
+        service = EstablishmentService(uow=uow)
+
+        await service.approve_creation_request(
+            request.id, _make_request(), reviewer_id=uuid.uuid4()
+        )
+
+        uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
+            user_id, [existing.id], UserEstablishmentStatus.PENDING
+        )
+        uow.user_establishment_repo.preset_relation.assert_not_called()
+
     @pytest.mark.parametrize(
         "status",
         [UserEstablishmentStatus.APPROVED, UserEstablishmentStatus.PENDING],
