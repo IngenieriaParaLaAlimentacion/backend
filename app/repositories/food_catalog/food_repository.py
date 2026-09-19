@@ -48,6 +48,27 @@ class FoodRepository:
             asc(func.lower(Food.name)),
         ]
 
+    @staticmethod
+    def _match_score(term: str):
+        """Trigram similarity of ``foods.name`` against ``term``,
+        accent/case-insensitive."""
+        return func.similarity(unaccent_lower(Food.name), unaccent_lower(term))
+
+    async def find_best_match(
+        self, description: str, min_similarity: float
+    ) -> Food | None:
+        """Return the catalog food whose name best matches ``description``, or None.
+
+        Used to auto-fill a receipt-extracted line's catalog reference (ADR-0016) -- a
+        single best-or-nothing match, not a ranked candidate list. No relations are
+        eager-loaded: callers only need ``id``/``name``, mirroring ``get_by_ids``.
+        """
+        score = self._match_score(description)
+        result = await self.db.execute(
+            select(Food).where(score >= min_similarity).order_by(desc(score)).limit(1)
+        )
+        return result.scalar_one_or_none()
+
     async def create(self, food: Food) -> Food:
         """Stage a new food for insertion."""
         self.db.add(food)
