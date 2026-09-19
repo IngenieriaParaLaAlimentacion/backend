@@ -24,7 +24,12 @@ from app.domain.food_catalog import (
     FoodListingParams,
     FoodSortOrder,
 )
-from app.domain.food_stock import FoodStockListingParams, FoodStockSortOrder
+from app.domain.food_stock import (
+    FoodMovementDirection,
+    FoodMovementListingParams,
+    FoodStockListingParams,
+    FoodStockSortOrder,
+)
 from app.domain.measurement import MeasurementListingParams, MeasurementSortOrder
 from app.domain.subject import Sex, SubjectListingParams, SubjectSortOrder
 from app.domain.survey import (
@@ -223,6 +228,42 @@ class FoodStockListingQuery:
             category_id=self.category_id,
             only_available=self.only_available,
             sort_order=self.sort_order,
+        )
+
+
+@dataclass
+class FoodMovementListingQuery:
+    direction: Annotated[
+        FoodMovementDirection | None,
+        Query(description="Keep only intakes (`in`) or only outflows (`out`)."),
+    ] = None
+    occurred_from: Annotated[
+        datetime | None,
+        Query(
+            description=("Lower bound on `occurred_at`, the date the movement happened")
+        ),
+    ] = None
+    occurred_to: Annotated[
+        datetime | None,
+        Query(description="Upper bound on the event date."),
+    ] = None
+    food_id: Annotated[
+        UUID | None,
+        Query(
+            description=("Keep only movements carrying this food on at least one line.")
+        ),
+    ] = None
+
+    def validate(self) -> None:
+        """Raise InvalidDateRangeError if the event-date bounds are inverted."""
+        _validate_date_range(self.occurred_from, self.occurred_to, "occurred")
+
+    def to_domain(self) -> FoodMovementListingParams:
+        return FoodMovementListingParams(
+            direction=self.direction,
+            occurred_from=self.occurred_from,
+            occurred_to=self.occurred_to,
+            food_id=self.food_id,
         )
 
 

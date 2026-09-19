@@ -22,6 +22,8 @@ class EstablishmentMetricsResponse(BaseModel):
     subject_count: int
     measurement_count: int
     last_measured_at: datetime | None
+    last_intake_at: datetime | None
+    last_outflow_at: datetime | None
     avg_height_cm: RoundedNullableFloat
     avg_weight_kg: RoundedNullableFloat
     avg_bmi: RoundedNullableFloat

@@ -118,3 +118,23 @@ class MeasurementRepository:
 ```
 
 Private methods (prefixed with `_`) do not require a docstring unless the behavior is non-obvious.
+
+### Docstrings say what, comments say why
+
+A docstring describes **what** the class or method does — the shape of what it returns and
+the arguments that change it. It does not argue for the design: no comparisons against
+rejected alternatives, no performance trade-offs, no history of why the code looks like
+this. That kind of prose pushes the signature off the screen and goes stale the moment the
+reasoning changes.
+
+Rationale worth keeping goes in an inline `#` comment on the line it guards, where the
+person about to change that line will actually read it:
+
+```python
+.join(User, User.id == source.model.responsible_id)
+# Outer: a movement with no lines counts 0 instead of vanishing.
+.outerjoin(source.item_model, source.item_fk == source.model.id)
+```
+
+`Raises:` sections stay — an exception a caller has to handle is part of the contract, not
+rationale.

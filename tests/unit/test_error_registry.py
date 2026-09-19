@@ -25,6 +25,7 @@ EXPECTED: dict[str, int] = {
     "export/unmapped-label": status.HTTP_400_BAD_REQUEST,
     "field-worker-is-not-pending": status.HTTP_400_BAD_REQUEST,
     "filter-not-applicable": status.HTTP_400_BAD_REQUEST,
+    "food-movement-not-found": status.HTTP_404_NOT_FOUND,
     "food-not-found": status.HTTP_404_NOT_FOUND,
     "insufficient-stock": status.HTTP_409_CONFLICT,
     "invalid-age-range": status.HTTP_400_BAD_REQUEST,

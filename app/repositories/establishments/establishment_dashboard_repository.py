@@ -12,6 +12,8 @@ from app.domain.establishment_dashboard import (
 from app.models.auth.user import User
 from app.models.auth.user_establishment import UserEstablishment
 from app.models.establishments.establishment import Establishment
+from app.models.food_intakes.food_intake import FoodIntake
+from app.models.food_outflows.food_outflow import FoodOutflow
 from app.models.measurements.measurement import Measurement
 from app.models.measurements.measurement_alert import MeasurementAlert
 from app.models.subjects.subject import Subject
@@ -165,6 +167,26 @@ class EstablishmentDashboardRepository:
             .select_from(latest)
             .join(Measurement, Measurement.id == latest.c.id)
             .join(Subject, Measurement.subject_id == Subject.id)
+        )
+        return result.one()
+
+    async def get_last_movement_dates(self, establishment_id: UUID) -> Row:
+        """Return the most recent intake and outflow dates, None where absent.
+
+        Independent of the measurement metrics: an establishment may hold food
+        before any subject is registered.
+        """
+        result = await self.db.execute(
+            select(
+                select(func.max(FoodIntake.occurred_at))
+                .where(FoodIntake.establishment_id == establishment_id)
+                .scalar_subquery()
+                .label("last_intake_at"),
+                select(func.max(FoodOutflow.occurred_at))
+                .where(FoodOutflow.establishment_id == establishment_id)
+                .scalar_subquery()
+                .label("last_outflow_at"),
+            )
         )
         return result.one()
 

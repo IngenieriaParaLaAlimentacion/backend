@@ -61,7 +61,7 @@ class FoodIntakeService:
             id=data.id,
             establishment_id=data.establishment_id,
             responsible_id=actor.user_id,
-            received_at=data.received_at,
+            occurred_at=data.occurred_at,
             comments=data.comments,
             source=data.source,
         )

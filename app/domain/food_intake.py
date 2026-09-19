@@ -41,7 +41,7 @@ class FoodIntakeDomain:
     id: UUID
     establishment_id: UUID
     responsible_id: UUID
-    received_at: datetime
+    occurred_at: datetime
     comments: str | None
     source: FoodIntakeSource
     created_at: datetime
@@ -54,7 +54,7 @@ class FoodIntakeDomain:
             id=intake.id,
             establishment_id=intake.establishment_id,
             responsible_id=intake.responsible_id,
-            received_at=intake.received_at,
+            occurred_at=intake.occurred_at,
             comments=intake.comments,
             source=intake.source,
             created_at=intake.created_at,
@@ -64,15 +64,7 @@ class FoodIntakeDomain:
 
 @dataclass
 class FoodMovementListItemDomain:
-    """A food intake or outflow row for the activity-feed view.
-
-    One shape serves both directions: ``food_intakes.received_at`` and
-    ``food_outflows.occurred_at`` are normalized to ``occurred_at``.
-
-    ``items`` are rendered as stored, repeated foods included: a movement may
-    legally carry two lines for the same food, and the feed reports what was
-    recorded rather than a rollup.
-    """
+    """A food intake or outflow row for the activity-feed view."""
 
     id: UUID
     occurred_at: datetime
@@ -82,24 +74,12 @@ class FoodMovementListItemDomain:
     items: list[FoodLineDomain]
 
     @classmethod
-    def from_intake(cls, intake) -> "FoodMovementListItemDomain":
-        """Build from an intake row with ``establishment`` and ``items``
-        (each with its ``food``) loaded."""
-        return cls._from_movement(intake, intake.received_at)
-
-    @classmethod
-    def from_outflow(cls, outflow) -> "FoodMovementListItemDomain":
-        """Build from an outflow row with ``establishment`` and ``items``
-        (each with its ``food``) loaded."""
-        return cls._from_movement(outflow, outflow.occurred_at)
-
-    @classmethod
-    def _from_movement(
-        cls, movement, occurred_at: datetime
-    ) -> "FoodMovementListItemDomain":
+    def from_db(cls, movement) -> "FoodMovementListItemDomain":
+        """Build from an intake or outflow row with ``establishment`` and
+        ``items`` (each with its ``food``) loaded."""
         return cls(
             id=movement.id,
-            occurred_at=occurred_at,
+            occurred_at=movement.occurred_at,
             comments=movement.comments,
             source=movement.source,
             establishment=EstablishmentRefDomain.from_db(movement.establishment),

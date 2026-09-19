@@ -66,7 +66,7 @@ This is the single most important correctness condition of the design.
 
 ### The balance is "now", never "as of"
 
-Movements carry `received_at` / `occurred_at` independent of `created_at`, so retroactive loads are
+Movements carry `occurred_at` independent of `created_at`, so retroactive loads are
 representable. Addition is commutative, so late arrivals do not corrupt the final balance — but the
 409 is evaluated against the balance *at the moment of writing*, not at `occurred_at`. A retroactive
 outflow can therefore be refused even though stock existed on its own date. Answering "what did this

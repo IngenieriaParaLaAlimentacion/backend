@@ -88,7 +88,7 @@ def _build_intake(establishment_id, responsible_id, items, **overrides):
     fields = {
         "establishment_id": establishment_id,
         "responsible_id": responsible_id,
-        "received_at": datetime.now(timezone.utc),
+        "occurred_at": datetime.now(timezone.utc),
         "source": FoodIntakeSource.MANUAL,
         **overrides,
     }
@@ -230,24 +230,24 @@ class TestPersistence:
 
 
 class TestRetroactiveLoad:
-    async def test_received_at_is_independent_of_created_at(
+    async def test_occurred_at_is_independent_of_created_at(
         self, db_establishment, responsible, foods
     ):
         """CA 3: an intake loaded days after the delivery keeps both dates."""
-        received_at = datetime.now(timezone.utc) - timedelta(days=5)
+        occurred_at = datetime.now(timezone.utc) - timedelta(days=5)
 
         intake_id = await _persist(
             _build_intake(
                 db_establishment.id,
                 responsible.id,
                 [(foods.rice, Decimal("3"))],
-                received_at=received_at,
+                occurred_at=occurred_at,
             )
         )
 
         intake = await _fetch(intake_id)
-        assert intake.received_at == received_at
-        assert intake.created_at - intake.received_at >= timedelta(days=4)
+        assert intake.occurred_at == occurred_at
+        assert intake.created_at - intake.occurred_at >= timedelta(days=4)
 
 
 class TestConstraints:

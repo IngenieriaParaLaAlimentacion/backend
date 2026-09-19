@@ -12,7 +12,7 @@ from ..base import Base
 class FoodIntake(Base):
     """A batch of food an establishment received, grouping one or more items.
 
-    ``received_at`` is when the food actually arrived and ``created_at`` when
+    ``occurred_at`` is when the food actually arrived and ``created_at`` when
     the row was written, so a retroactive load keeps both facts.
 
     A correction edits the row in place and moves ``updated_at``.
@@ -21,14 +21,14 @@ class FoodIntake(Base):
     __tablename__ = "food_intakes"
     __table_args__ = (
         Index(
-            "ix_food_intakes_establishment_id_received_at",
+            "ix_food_intakes_establishment_id_occurred_at",
             "establishment_id",
-            "received_at",
+            "occurred_at",
         ),
         Index(
-            "ix_food_intakes_responsible_id_received_at",
+            "ix_food_intakes_responsible_id_occurred_at",
             "responsible_id",
-            "received_at",
+            "occurred_at",
         ),
     )
 
@@ -41,7 +41,7 @@ class FoodIntake(Base):
     responsible_id = Column(
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="RESTRICT"), nullable=False
     )
-    received_at = Column(DateTime(timezone=True), nullable=False)
+    occurred_at = Column(DateTime(timezone=True), nullable=False)
     comments = Column(String, nullable=True)
     source = Column(
         SAEnum(FoodIntakeSource, values_callable=lambda x: [e.value for e in x]),

@@ -133,9 +133,9 @@ def _movement_body(establishment_id, lines, **overrides):
 
 
 async def _create_food_intake(
-    client, headers, establishment_id, received_at, lines, **overrides
+    client, headers, establishment_id, occurred_at, lines, **overrides
 ):
-    body = _movement_body(establishment_id, lines, received_at=received_at, **overrides)
+    body = _movement_body(establishment_id, lines, occurred_at=occurred_at, **overrides)
     response = await client.post(FOOD_INTAKES_URL, json=body, headers=headers)
     assert response.status_code == status.HTTP_201_CREATED
     return response.json()["id"]
@@ -568,7 +568,7 @@ class TestFoodIntakeActivity:
         body = (await client.get(ACTIVITY_URL, headers=headers)).json()
         payload = body["items"][0]["food_intake"]
 
-        # received_at is normalized to the shared occurred_at.
+        # occurred_at is normalized to the shared occurred_at.
         assert payload["occurred_at"] == "2024-04-01T00:00:00Z"
         assert set(payload) == MOVEMENT_PAYLOAD_KEYS
         assert set(payload["establishment"]) == {"id", "name", "city", "province"}
