@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from uuid import uuid4
 
 import pytest
 
@@ -13,20 +14,23 @@ SEPTEMBER = datetime(2026, 9, 1, tzinfo=timezone.utc)
 class TestFoodMovementListingQueryToDomain:
     def test_an_empty_query_filters_nothing(self):
         assert FoodMovementListingQuery().to_domain() == FoodMovementListingParams(
-            direction=None, occurred_from=None, occurred_to=None
+            direction=None, occurred_from=None, occurred_to=None, food_id=None
         )
 
     def test_every_field_is_carried_verbatim(self):
+        food_id = uuid4()
         query = FoodMovementListingQuery(
             direction=FoodMovementDirection.OUT,
             occurred_from=AUGUST,
             occurred_to=SEPTEMBER,
+            food_id=food_id,
         )
 
         assert query.to_domain() == FoodMovementListingParams(
             direction=FoodMovementDirection.OUT,
             occurred_from=AUGUST,
             occurred_to=SEPTEMBER,
+            food_id=food_id,
         )
 
 

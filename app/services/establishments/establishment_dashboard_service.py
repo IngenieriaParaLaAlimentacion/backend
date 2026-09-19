@@ -22,7 +22,9 @@ from app.domain.measurement import (
     status_from_alerts,
 )
 from app.domain.pagination import PaginatedResult
+from app.domain.user import UserActor
 from app.reference_data.anthropometry import age_in_months
+from app.services.access import check_establishment_access
 from app.services.exporters.csv.csv_exporter import CsvExporter
 
 
@@ -107,26 +109,34 @@ class EstablishmentDashboardService:
         )
 
     async def get_establishment_dashboard(
-        self, establishment_id: UUID
+        self, establishment_id: UUID, actor: UserActor
     ) -> EstablishmentDashboardDomain:
         """Return identification data, aggregated metrics and the alert state
         for one establishment.
 
         Raises:
             EstablishmentNotFoundError: If the establishment does not exist.
+            EstablishmentAccessDeniedError: field worker lacks approved access.
         """
         establishment = await self.uow.establishment_repo.get_by_id_or_raise(
             establishment_id
         )
+        await check_establishment_access(self.uow, actor, establishment_id)
 
+        movements = await self.uow.establishment_dashboard_repo.get_last_movement_dates(
+            establishment_id
+        )
         row = await self.uow.establishment_dashboard_repo.get_metrics(establishment_id)
         subject_count = row.subject_count or 0
 
         if subject_count == 0:
+            empty = EstablishmentMetricsDomain.empty()
+            empty.last_intake_at = movements.last_intake_at
+            empty.last_outflow_at = movements.last_outflow_at
             return EstablishmentDashboardDomain(
                 establishment=EstablishmentDomain.from_db(establishment),
                 has_data=False,
-                metrics=EstablishmentMetricsDomain.empty(),
+                metrics=empty,
                 alert_status=EstablishmentAlertStatusDomain.empty(),
             )
 
@@ -144,6 +154,8 @@ class EstablishmentDashboardService:
             avg_bmi=_round(row.avg_bmi),
             # Completed months, not a 2-decimal average: _round would give a float.
             avg_age_months=round(float(row.avg_age_months)),
+            last_intake_at=movements.last_intake_at,
+            last_outflow_at=movements.last_outflow_at,
         )
 
         rows = await self.uow.establishment_dashboard_repo.get_status_distribution(

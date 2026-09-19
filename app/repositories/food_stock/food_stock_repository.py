@@ -323,6 +323,17 @@ class FoodStockRepository:
             conditions.append(source.occurred_at >= params.occurred_from)
         if params.occurred_to is not None:
             conditions.append(source.occurred_at <= params.occurred_to)
+        if params.food_id is not None:
+            # EXISTS, not a join: a movement listing the same food twice would
+            # come back twice, and be counted twice in the total.
+            conditions.append(
+                select(1)
+                .where(
+                    source.item_fk == source.model.id,
+                    source.item_model.food_id == params.food_id,
+                )
+                .exists()
+            )
         return select(
             source.model.id.label("id"),
             literal(direction.value).label("direction"),

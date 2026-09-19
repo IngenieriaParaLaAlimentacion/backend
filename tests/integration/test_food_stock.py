@@ -967,6 +967,131 @@ class TestMovements:
         # `occurred_at` as sent: the event date, not when the row was written.
         assert item["occurred_at"] == "2026-09-01T10:00:00Z"
 
+    async def test_the_food_filter_keeps_only_movements_carrying_it(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        headers, _ = field_worker_with_access
+        with_rice = await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
+            headers=headers,
+        )
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.eggs, "12")]),
+            headers=headers,
+        )
+
+        response = await client.get(
+            _movements_url(db_establishment.id),
+            params={"food_id": str(foods.rice)},
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["total"] == 1
+        assert [item["id"] for item in body["items"]] == [with_rice.json()["id"]]
+
+    async def test_a_movement_repeating_the_food_is_listed_once(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        """A join to the line table would return it twice and count it twice."""
+        headers, _ = field_worker_with_access
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(
+                db_establishment.id, [(foods.rice, "2"), (foods.rice, "3")]
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            _movements_url(db_establishment.id),
+            params={"food_id": str(foods.rice)},
+            headers=headers,
+        )
+
+        body = response.json()
+        assert body["total"] == 1
+        assert len(body["items"]) == 1
+
+    async def test_the_food_filter_reaches_the_total_not_just_the_page(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        """`total` is counted over the filtered set, so a paged client is not
+        told there are more movements than the filter admits."""
+        headers, _ = field_worker_with_access
+        for _ in range(2):
+            await client.post(
+                INTAKES_URL,
+                json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
+                headers=headers,
+            )
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.eggs, "12")]),
+            headers=headers,
+        )
+
+        response = await client.get(
+            _movements_url(db_establishment.id),
+            params={"food_id": str(foods.rice), "page_size": 1},
+            headers=headers,
+        )
+
+        body = response.json()
+        assert len(body["items"]) == 1
+        assert body["total"] == 2
+        assert body["total_pages"] == 2
+
+    async def test_an_unknown_food_is_an_empty_page(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        """A filter, not a resource: filtering by something absent matches
+        nothing rather than answering 404."""
+        headers, _ = field_worker_with_access
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
+            headers=headers,
+        )
+
+        response = await client.get(
+            _movements_url(db_establishment.id),
+            params={"food_id": str(uuid.uuid4())},
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        assert response.json()["items"] == []
+        assert response.json()["total"] == 0
+
+    async def test_the_food_filter_combines_with_direction(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        headers, _ = field_worker_with_access
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
+            headers=headers,
+        )
+        outflow = await client.post(
+            OUTFLOWS_URL,
+            json=_outflow_body(db_establishment.id, [(foods.rice, "4")]),
+            headers=headers,
+        )
+
+        response = await client.get(
+            _movements_url(db_establishment.id),
+            params={"food_id": str(foods.rice), "direction": "out"},
+            headers=headers,
+        )
+
+        body = response.json()
+        assert body["total"] == 1
+        assert body["items"][0]["id"] == outflow.json()["id"]
+
     @pytest.mark.parametrize("direction", ["in", "out"])
     async def test_the_direction_filter_keeps_one_side(
         self, client, field_worker_with_access, db_establishment, foods, direction

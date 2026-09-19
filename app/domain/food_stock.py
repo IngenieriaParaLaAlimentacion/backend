@@ -43,6 +43,7 @@ class FoodMovementListingParams:
     direction: FoodMovementDirection | None = None
     occurred_from: datetime | None = None
     occurred_to: datetime | None = None
+    food_id: UUID | None = None
 
 
 @dataclass

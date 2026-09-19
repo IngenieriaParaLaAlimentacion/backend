@@ -91,8 +91,9 @@ async def export_establishment_stock(
     summary="List an establishment's food movements",
     description=(
         "Intakes and outflows merged into a single sequence, newest first, one "
-        "entry per movement"
-        "Pass `direction=in` or `direction=out` for one side only."
+        "entry per movement. Filter with `direction`, a date range over "
+        "`occurred_at`, or `food_id` to keep only the movements carrying that "
+        "food on at least one line."
     ),
     responses={
         status.HTTP_400_BAD_REQUEST: {

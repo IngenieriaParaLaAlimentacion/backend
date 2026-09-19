@@ -247,6 +247,12 @@ class FoodMovementListingQuery:
         datetime | None,
         Query(description="Upper bound on the event date."),
     ] = None
+    food_id: Annotated[
+        UUID | None,
+        Query(
+            description=("Keep only movements carrying this food on at least one line.")
+        ),
+    ] = None
 
     def validate(self) -> None:
         """Raise InvalidDateRangeError if the event-date bounds are inverted."""
@@ -257,6 +263,7 @@ class FoodMovementListingQuery:
             direction=self.direction,
             occurred_from=self.occurred_from,
             occurred_to=self.occurred_to,
+            food_id=self.food_id,
         )
 
 
