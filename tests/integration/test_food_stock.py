@@ -773,11 +773,10 @@ class TestStockListing:
 
 
 class TestMovements:
-    async def test_a_movement_is_one_entry_not_one_per_line(
+    async def test_a_movement_is_one_entry_counting_its_foods(
         self, client, field_worker_with_access, db_establishment, foods
     ) -> None:
-        """The whole point of the listing: a remito with three foods is one
-        entry with three lines, not three entries."""
+        """A remito with two foods is one entry reporting two, not two entries."""
         headers, _ = field_worker_with_access
         await client.post(
             INTAKES_URL,
@@ -795,13 +794,115 @@ class TestMovements:
         body = response.json()
         assert body["total"] == 1
         assert len(body["items"]) == 1
-        lines = body["items"][0]["items"]
-        assert {
-            (line["food"]["name"], line["unit"], line["quantity"]) for line in lines
-        } == {
-            ("Arroz", "kilogramos", "2.500"),
-            ("Huevo", "unidades", "12.000"),
-        }
+        assert body["items"][0]["food_count"] == 2
+
+    async def test_the_same_food_on_two_lines_counts_once(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        """The same food on two lines counts once: `food_count` is distinct."""
+        headers, _ = field_worker_with_access
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(
+                db_establishment.id, [(foods.rice, "2"), (foods.rice, "3")]
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            _movements_url(db_establishment.id), headers=headers
+        )
+
+        assert response.json()["items"][0]["food_count"] == 1
+
+    async def test_an_outflow_counts_its_own_lines(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        """An outflow's `food_count` reads the outflow line table."""
+        headers, _ = field_worker_with_access
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(
+                db_establishment.id, [(foods.rice, "10"), (foods.eggs, "12")]
+            ),
+            headers=headers,
+        )
+        await client.post(
+            OUTFLOWS_URL,
+            json=_outflow_body(
+                db_establishment.id, [(foods.rice, "4"), (foods.eggs, "2")]
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            _movements_url(db_establishment.id),
+            params={"direction": "out"},
+            headers=headers,
+        )
+
+        assert response.json()["items"][0]["food_count"] == 2
+
+    async def test_each_movement_counts_only_its_own_foods(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        """Each row counts its own foods, not the establishment's total."""
+        headers, _ = field_worker_with_access
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(
+                db_establishment.id,
+                [(foods.rice, "10")],
+                occurred_at="2026-09-01T10:00:00Z",
+            ),
+            headers=headers,
+        )
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(
+                db_establishment.id,
+                [(foods.rice, "5"), (foods.eggs, "12")],
+                occurred_at="2026-09-02T10:00:00Z",
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            _movements_url(db_establishment.id), headers=headers
+        )
+
+        assert [item["food_count"] for item in response.json()["items"]] == [2, 1]
+
+    async def test_each_movement_carries_its_own_responsible(
+        self, client, make_field_worker_with_access, db_establishment, foods
+    ) -> None:
+        """Each row's responsible is the author of that movement."""
+        first_headers, first_id = await make_field_worker_with_access(
+            db_establishment.id
+        )
+        second_headers, second_id = await make_field_worker_with_access(
+            db_establishment.id
+        )
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
+            headers=first_headers,
+        )
+        await client.post(
+            OUTFLOWS_URL,
+            json=_outflow_body(db_establishment.id, [(foods.rice, "4")]),
+            headers=second_headers,
+        )
+
+        response = await client.get(
+            _movements_url(db_establishment.id), headers=first_headers
+        )
+
+        items = response.json()["items"]
+        assert [item["responsible"]["id"] for item in items] == [
+            str(second_id),
+            str(first_id),
+        ]
 
     async def test_both_directions_merge_newest_first(
         self, client, field_worker_with_access, db_establishment, foods
@@ -830,13 +931,13 @@ class TestMovements:
             intake.json()["id"],
         ]
 
-    async def test_an_entry_is_the_document_shape(
+    async def test_an_entry_is_the_summary_shape(
         self, client, field_worker_with_access, db_establishment, foods
     ) -> None:
-        """No `establishment` per row: the listing is already scoped to the one
-        in the path, and the sibling stock listing omits it for the same reason.
-        """
+        """A listing row carries five keys: no establishment, lines, source
+        or comments."""
         headers, user_id = field_worker_with_access
+        # Posted with comments so the key set proves they are withheld.
         await client.post(
             INTAKES_URL,
             json=_intake_body(
@@ -854,16 +955,12 @@ class TestMovements:
             "id",
             "direction",
             "occurred_at",
-            "source",
-            "comments",
             "responsible",
-            "items",
+            "food_count",
         }
         assert set(item["responsible"]) == {"id", "name", "last_name"}
         assert item["responsible"]["id"] == str(user_id)
-        assert item["comments"] == "Donación"
-        assert item["source"] == "manual"
-        # `occurred_at` as sent, normalized to the common `occurred_at` name.
+        # `occurred_at` as sent: the event date, not when the row was written.
         assert item["occurred_at"] == "2026-09-01T10:00:00Z"
 
     @pytest.mark.parametrize("direction", ["in", "out"])
@@ -1012,12 +1109,12 @@ class TestMovements:
 
         mine_headers, _ = await make_field_worker_with_access(db_establishment.id)
         other_headers, _ = await make_field_worker_with_access(other_id)
-        await client.post(
+        my_intake = await client.post(
             INTAKES_URL,
             json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
             headers=mine_headers,
         )
-        await client.post(
+        their_intake = await client.post(
             INTAKES_URL,
             json=_intake_body(other_id, [(foods.eggs, "6")]),
             headers=other_headers,
@@ -1030,8 +1127,8 @@ class TestMovements:
 
         assert mine.json()["total"] == 1
         assert theirs.json()["total"] == 1
-        assert mine.json()["items"][0]["items"][0]["food"]["name"] == "Arroz"
-        assert theirs.json()["items"][0]["items"][0]["food"]["name"] == "Huevo"
+        assert mine.json()["items"][0]["id"] == my_intake.json()["id"]
+        assert theirs.json()["items"][0]["id"] == their_intake.json()["id"]
 
     async def test_no_movements_is_an_empty_page_not_a_404(
         self, client, field_worker_with_access, db_establishment

@@ -5,10 +5,8 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 
 from app.domain.food_catalog import MeasurementUnit
-from app.domain.food_intake import FoodIntakeSource
 from app.domain.food_stock import FoodMovementDirection
 from app.schemas.common import IdentifierRefSchema
-from app.schemas.food_intakes.food_intake_schema import FoodLineResponse
 from app.schemas.measurements.measurement_schema import ResponsibleRefResponse
 
 
@@ -24,19 +22,12 @@ class FoodStockItem(BaseModel):
     updated_at: datetime
 
 
-class FoodMovementItem(BaseModel):
-    """One movement document -- an intake or an outflow -- with its lines.
+class FoodMovementSummary(BaseModel):
+    """One row of the movement listing: a movement without its lines.
 
-    ``direction`` is what distinguishes the two, and ``occurred_at`` is the
-    date the movement happened, not when the row was written. The
-    establishment is not repeated per row: the listing is already scoped to
-    the one in the path.
-
-    ``source`` is typed as ``FoodIntakeSource`` because ``FoodOutflowSource``
-    has identical members and Pydantic coerces a ``str``-mixin enum by value.
-
-    ``items`` is rendered exactly as stored, duplicate food lines included:
-    the read path never aggregates.
+    ``occurred_at`` is the date the movement happened, not when the row was
+    written, and ``food_count`` how many *distinct* foods it touched. The
+    lines, source and comments come from the detail endpoint.
     """
 
     model_config = ConfigDict(from_attributes=True)
@@ -44,7 +35,5 @@ class FoodMovementItem(BaseModel):
     id: UUID
     direction: FoodMovementDirection
     occurred_at: datetime
-    source: FoodIntakeSource
-    comments: str | None
     responsible: ResponsibleRefResponse
-    items: list[FoodLineResponse]
+    food_count: int

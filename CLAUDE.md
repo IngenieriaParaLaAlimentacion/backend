@@ -82,6 +82,7 @@ poetry run ruff check . --fix && poetry run ruff format .  # lint + format
 - **Commits**: Conventional Commits — `feat:`, `fix:`, `chore:`, `docs:`, `test:`.
 - **Branches**: `main` (production), `feature/<ticket>` (development).
 - **Language**: English for all code, comments, and documentation.
+- **Docstrings**: describe *what* the code does, never why it was built that way. Rationale belongs in an inline `#` comment on the line it guards.
 - **Format**: Ruff, double quotes, line length 88. Pre-commit hooks run automatically.
 
 → Full conventions (naming, layers, docstrings, PRs): `docs/conventions.md`

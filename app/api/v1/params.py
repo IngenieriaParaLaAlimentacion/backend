@@ -240,10 +240,7 @@ class FoodMovementListingQuery:
     occurred_from: Annotated[
         datetime | None,
         Query(
-            description=(
-                "Lower bound on `occurred_at`, the date the movement "
-                "happened"
-            )
+            description=("Lower bound on `occurred_at`, the date the movement happened")
         ),
     ] = None
     occurred_to: Annotated[

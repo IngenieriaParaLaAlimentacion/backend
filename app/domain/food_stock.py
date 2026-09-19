@@ -6,7 +6,6 @@ from uuid import UUID
 
 from app.domain.common_domains import IdentifierRefDomain
 from app.domain.food_catalog import MeasurementUnit
-from app.domain.food_intake import FoodLineDomain
 from app.domain.measurement import ResponsibleRefDomain
 
 
@@ -38,9 +37,7 @@ class FoodStockListingParams:
 
 @dataclass
 class FoodMovementListingParams:
-    """Query parameters for an establishment's movement listing.
-
-    """
+    """Query parameters for an establishment's movement listing."""
 
     direction: FoodMovementDirection | None = None
     occurred_from: datetime | None = None
@@ -70,41 +67,29 @@ class FoodStockItemDomain:
 
 
 @dataclass
-class FoodMovementDomain:
-    """One movement document -- an intake or an outflow -- with its lines.
+class FoodMovementSummaryDomain:
+    """One row of the movement listing: a movement without its lines.
 
+    ``food_count`` is how many *distinct* foods the movement touched.
     """
 
     id: UUID
     direction: FoodMovementDirection
     occurred_at: datetime
-    comments: str | None
-    source: str
     responsible: ResponsibleRefDomain
-    items: list[FoodLineDomain]
+    food_count: int
 
     @classmethod
-    def _from_movement(
-        cls, movement, direction: FoodMovementDirection
-    ) -> "FoodMovementDomain":
+    def from_rows(cls, page_row, summary_row) -> "FoodMovementSummaryDomain":
+        """Build from the union's page row plus its per-direction summary row."""
         return cls(
-            id=movement.id,
-            direction=direction,
-            occurred_at=movement.occurred_at,
-            comments=movement.comments,
-            source=movement.source,
-            responsible=ResponsibleRefDomain.from_db(movement.responsible),
-            items=[FoodLineDomain.from_db(item) for item in movement.items],
+            id=page_row.id,
+            direction=FoodMovementDirection(page_row.direction),
+            occurred_at=page_row.occurred_at,
+            responsible=ResponsibleRefDomain(
+                id=summary_row.responsible_id,
+                name=summary_row.responsible_name,
+                last_name=summary_row.responsible_last_name,
+            ),
+            food_count=summary_row.food_count,
         )
-
-    @classmethod
-    def from_intake(cls, intake) -> "FoodMovementDomain":
-        """Build from an intake row with ``responsible`` and ``items`` (each
-        with its ``food``) loaded."""
-        return cls._from_movement(intake, FoodMovementDirection.IN)
-
-    @classmethod
-    def from_outflow(cls, outflow) -> "FoodMovementDomain":
-        """Build from an outflow row with ``responsible`` and ``items`` (each
-        with its ``food``) loaded."""
-        return cls._from_movement(outflow, FoodMovementDirection.OUT)

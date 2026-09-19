@@ -3,8 +3,8 @@ from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.food_stock import (
-    FoodMovementDomain,
     FoodMovementListingParams,
+    FoodMovementSummaryDomain,
     FoodStockItemDomain,
     FoodStockListingParams,
 )
@@ -64,11 +64,11 @@ class FoodStockService:
         page: int,
         page_size: int,
         params: FoodMovementListingParams,
-    ) -> PaginatedResult[FoodMovementDomain]:
+    ) -> PaginatedResult[FoodMovementSummaryDomain]:
         """Return a page of the establishment's movements, newest first.
 
-        One entry per movement document -- an intake or an outflow with all its
-        food lines -- not one per line.
+        One entry per movement -- an intake or an outflow -- with its
+        responsible and how many distinct foods it moved, not its lines.
 
         Raises:
             EstablishmentNotFoundError: establishment_id does not exist.

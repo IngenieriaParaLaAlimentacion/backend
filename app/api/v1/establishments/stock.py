@@ -12,7 +12,7 @@ from app.api.v1.params import (
 )
 from app.core.dependencies import get_food_stock_service, require_any
 from app.domain import UserActor
-from app.schemas.food_stock.food_stock_schema import FoodMovementItem, FoodStockItem
+from app.schemas.food_stock.food_stock_schema import FoodMovementSummary, FoodStockItem
 from app.schemas.pagination import PaginatedResponse
 from app.services.exporters.csv.columns import FOOD_STOCK_EXPORTER
 from app.services.food_stock.food_stock_service import FoodStockService
@@ -83,12 +83,12 @@ async def export_establishment_stock(
 
 @router.get(
     "/{establishment_id}/food-movements",
-    response_model=PaginatedResponse[FoodMovementItem],
+    response_model=PaginatedResponse[FoodMovementSummary],
     summary="List an establishment's food movements",
     description=(
-        "Intakes and outflows as complete documents — one entry per movement —"
-        "merged into a single sequence, newest first, each tagged with its "
-        "`direction`. "
+        "Intakes and outflows merged into a single sequence, newest first, one "
+        "entry per movement"
+        "Pass `direction=in` or `direction=out` for one side only."
     ),
     responses={
         status.HTTP_400_BAD_REQUEST: {
@@ -105,7 +105,7 @@ async def list_establishment_movements(
     paginated: PaginatedQueryParams = Depends(),
     actor: UserActor = Depends(require_any),
     service: FoodStockService = Depends(get_food_stock_service),
-) -> PaginatedResponse[FoodMovementItem]:
+) -> PaginatedResponse[FoodMovementSummary]:
     query.validate()
     result = await service.list_movements(
         establishment_id=establishment_id,
@@ -114,8 +114,8 @@ async def list_establishment_movements(
         page_size=paginated.page_size,
         params=query.to_domain(),
     )
-    return PaginatedResponse[FoodMovementItem](
-        items=[FoodMovementItem.model_validate(item) for item in result.items],
+    return PaginatedResponse[FoodMovementSummary](
+        items=[FoodMovementSummary.model_validate(item) for item in result.items],
         total=result.total,
         page=result.page,
         page_size=result.page_size,

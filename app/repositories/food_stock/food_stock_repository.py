@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import uuid
-from collections.abc import AsyncIterator, Callable, Collection
+from collections.abc import AsyncIterator, Collection
 from decimal import Decimal
-from typing import ClassVar
+from typing import ClassVar, NamedTuple
 from uuid import UUID
 
 from sqlalchemy import (
@@ -15,6 +15,7 @@ from sqlalchemy import (
     column,
     delete,
     desc,
+    distinct,
     func,
     literal,
     select,
@@ -25,15 +26,16 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import InstrumentedAttribute, selectinload
 
 from app.domain.food_stock import (
     FoodMovementDirection,
-    FoodMovementDomain,
     FoodMovementListingParams,
+    FoodMovementSummaryDomain,
     FoodStockListingParams,
     FoodStockSortOrder,
 )
+from app.models.auth.user import User
 from app.models.food_catalog.food import Food
 from app.models.food_intakes.food_intake import FoodIntake
 from app.models.food_intakes.food_intake_item import FoodIntakeItem
@@ -66,6 +68,15 @@ _SORT_CLAUSES = {
 }
 
 _CONFLICT_TARGET = ["establishment_id", "food_id"]
+
+
+class _MovementSource(NamedTuple):
+    """The header table, its event-date column and its line table."""
+
+    model: type
+    occurred_at: InstrumentedAttribute
+    item_model: type
+    item_fk: InstrumentedAttribute
 
 
 class FoodStockRepository:
@@ -278,25 +289,21 @@ class FoodStockRepository:
             conditions=self._listing_conditions(establishment_id, params),
         )
 
-    # Per direction: the header table, its event-date column, and the domain
-    # builder for a hydrated header.
-    #
-    # No fallback entry on purpose: `_build_movements_subquery` iterates the
-    # enum and looks each member up here, so a direction added to the enum but
-    # forgotten here raises a KeyError instead of silently vanishing from the
-    # unfiltered listing.
-    _MOVEMENT_SOURCES: ClassVar[
-        dict[FoodMovementDirection, tuple[type, object, Callable[[object], object]]]
-    ] = {
-        FoodMovementDirection.IN: (
+    # Per direction: the header table, its event-date column, and the line
+    # table with the foreign key back to the header. No fallback entry: a
+    # direction missing here raises a KeyError instead of vanishing silently.
+    _MOVEMENT_SOURCES: ClassVar[dict[FoodMovementDirection, _MovementSource]] = {
+        FoodMovementDirection.IN: _MovementSource(
             FoodIntake,
             FoodIntake.occurred_at,
-            FoodMovementDomain.from_intake,
+            FoodIntakeItem,
+            FoodIntakeItem.food_intake_id,
         ),
-        FoodMovementDirection.OUT: (
+        FoodMovementDirection.OUT: _MovementSource(
             FoodOutflow,
             FoodOutflow.occurred_at,
-            FoodMovementDomain.from_outflow,
+            FoodOutflowItem,
+            FoodOutflowItem.food_outflow_id,
         ),
     }
 
@@ -306,42 +313,31 @@ class FoodStockRepository:
         establishment_id: UUID,
         params: FoodMovementListingParams,
     ) -> Select:
-        """Build one header branch of the movements union.
-
-        Both filters go inside the branch, not on the union: the establishment
-        column does not survive into the union's shape, and keeping the date
-        bounds on each table's own column is what lets each branch use its
-        ``(establishment_id, event date)`` index.
-        """
-        model, event_at, _ = self._MOVEMENT_SOURCES[direction]
-        conditions = [model.establishment_id == establishment_id]
+        """Select id, direction and occurred_at for one direction's movements."""
+        source = self._MOVEMENT_SOURCES[direction]
+        # Filters belong in the branch: establishment_id does not cross the
+        # union, and per-table dates keep the (establishment_id, date) index.
+        conditions = [source.model.establishment_id == establishment_id]
         if params.occurred_from is not None:
-            conditions.append(event_at >= params.occurred_from)
+            conditions.append(source.occurred_at >= params.occurred_from)
         if params.occurred_to is not None:
-            conditions.append(event_at <= params.occurred_to)
+            conditions.append(source.occurred_at <= params.occurred_to)
         return select(
-            model.id.label("id"),
+            source.model.id.label("id"),
             literal(direction.value).label("direction"),
-            event_at.label("occurred_at"),
+            source.occurred_at.label("occurred_at"),
         ).where(*conditions)
 
     def _build_movements_subquery(
         self, establishment_id: UUID, params: FoodMovementListingParams
     ) -> Subquery:
-        """Build the id/direction/occurred_at UNION ALL of the header tables.
-
-        Only the three columns the ordering needs cross the union; everything
-        else is hydrated per direction afterwards. ``source`` in particular
-        cannot cross it -- the two tables carry distinct Postgres enum types,
-        and unioning those fails at query time, not at import time.
-
-        Iteration is over ``FoodMovementDirection``, so branch order is
-        deterministic regardless of the request. A direction filter drops the
-        other branch entirely rather than filtering the union after the fact.
-        """
+        """UNION ALL the header tables into id/direction/occurred_at rows."""
         requested = (
             {params.direction} if params.direction else set(FoodMovementDirection)
         )
+        # Iterate the enum, not `requested`, so branch order never depends on
+        # the request. Do not widen these columns: the two tables' `source` are
+        # distinct Postgres enum types and unioning them fails at query time.
         branches = [
             self._movement_branch(direction, establishment_id, params)
             for direction in FoodMovementDirection
@@ -349,70 +345,57 @@ class FoodStockRepository:
         ]
         return union_all(*branches).subquery()
 
-    async def _get_intakes_by_id(
-        self, intake_ids: list[UUID]
-    ) -> dict[UUID, FoodIntake]:
-        if not intake_ids:
+    async def _summaries_by_id(
+        self, direction: FoodMovementDirection, movement_ids: list[UUID]
+    ) -> dict[UUID, Row]:
+        """Fetch responsible and distinct-food count for one direction's ids."""
+        if not movement_ids:
             return {}
+        source = self._MOVEMENT_SOURCES[direction]
         result = await self.db.execute(
-            select(FoodIntake)
-            .options(
-                selectinload(FoodIntake.responsible),
-                selectinload(FoodIntake.items).selectinload(FoodIntakeItem.food),
+            select(
+                source.model.id.label("id"),
+                User.id.label("responsible_id"),
+                User.name.label("responsible_name"),
+                User.last_name.label("responsible_last_name"),
+                func.count(distinct(source.item_model.food_id)).label("food_count"),
             )
-            .where(FoodIntake.id.in_(intake_ids))
+            .join(User, User.id == source.model.responsible_id)
+            # Outer: a movement with no lines counts 0 instead of vanishing.
+            .outerjoin(source.item_model, source.item_fk == source.model.id)
+            .where(source.model.id.in_(movement_ids))
+            .group_by(source.model.id, User.id)
         )
-        return {intake.id: intake for intake in result.scalars().all()}
-
-    async def _get_outflows_by_id(
-        self, outflow_ids: list[UUID]
-    ) -> dict[UUID, FoodOutflow]:
-        if not outflow_ids:
-            return {}
-        result = await self.db.execute(
-            select(FoodOutflow)
-            .options(
-                selectinload(FoodOutflow.responsible),
-                selectinload(FoodOutflow.items).selectinload(FoodOutflowItem.food),
-            )
-            .where(FoodOutflow.id.in_(outflow_ids))
-        )
-        return {outflow.id: outflow for outflow in result.scalars().all()}
+        return {row.id: row for row in result.all()}
 
     @staticmethod
     def _ids_of(page_rows: list[Row], direction: FoodMovementDirection) -> list[UUID]:
         """Return the ids in the page that belong to one direction."""
         return [row.id for row in page_rows if row.direction == direction]
 
-    async def _hydrate_page_rows(
+    async def _summarize_page_rows(
         self, page_rows: list[Row]
-    ) -> dict[FoodMovementDirection, dict[UUID, object]]:
-        """Fetch the full header for every id in the page, keyed by direction.
-
-        Each fetch short-circuits to ``{}`` when the page carries no row of that
-        direction, so a single-direction page costs one hydration, not two.
-        """
+    ) -> dict[FoodMovementDirection, dict[UUID, Row]]:
+        """Fetch the listing fields for every id in the page, keyed by direction."""
         return {
-            FoodMovementDirection.IN: await self._get_intakes_by_id(
-                self._ids_of(page_rows, FoodMovementDirection.IN)
-            ),
-            FoodMovementDirection.OUT: await self._get_outflows_by_id(
-                self._ids_of(page_rows, FoodMovementDirection.OUT)
-            ),
+            direction: await self._summaries_by_id(
+                direction, self._ids_of(page_rows, direction)
+            )
+            for direction in FoodMovementDirection
         }
 
-    def _assemble_movements(
-        self,
+    @staticmethod
+    def _assemble_summaries(
         page_rows: list[Row],
-        hydrated: dict[FoodMovementDirection, dict[UUID, object]],
-    ) -> list[FoodMovementDomain]:
-        """Rebuild domain movements in the page's original (already sorted) order."""
-        movements = []
-        for row in page_rows:
-            direction = FoodMovementDirection(row.direction)
-            _, _, build = self._MOVEMENT_SOURCES[direction]
-            movements.append(build(hydrated[direction][row.id]))
-        return movements
+        summaries: dict[FoodMovementDirection, dict[UUID, Row]],
+    ) -> list[FoodMovementSummaryDomain]:
+        """Rebuild domain rows in the page's original (already sorted) order."""
+        return [
+            FoodMovementSummaryDomain.from_rows(
+                row, summaries[FoodMovementDirection(row.direction)][row.id]
+            )
+            for row in page_rows
+        ]
 
     async def list_movements(
         self,
@@ -420,24 +403,13 @@ class FoodStockRepository:
         limit: int,
         offset: int,
         params: FoodMovementListingParams,
-    ) -> tuple[list[FoodMovementDomain], int]:
-        """Return a page of the establishment's movement documents, newest first.
+    ) -> tuple[list[FoodMovementSummaryDomain], int]:
+        """Return a page of the establishment's movements and the total count.
 
-        One row per document -- both directions merged into one sequence, each
-        tagged with its own -- rather than one row per food line.
-
-        Unlike its neighbours this returns domain objects rather than ORM rows:
-        the reassembly interleaves two ORM types in the order of raw rows
-        carrying the union's column names, and handing that to the service would
-        force it to know the union's shape.
-
-        ``total`` and the page slice read the same subquery object, so they
-        cannot disagree about the filter.
-
-        ``id DESC`` breaks ties on ``occurred_at`` deterministically -- a batch
-        of movements sharing one timestamp is the normal case here, and an
-        unresolved tie lets LIMIT/OFFSET repeat a row on one page and skip
-        another.
+        Intakes and outflows merged into one sequence, one row per movement,
+        each tagged with its direction and carrying its responsible and how
+        many distinct foods it touched -- not its lines. Ordered by
+        ``occurred_at`` descending, ties broken by ``id`` descending.
         """
         movements = self._build_movements_subquery(establishment_id, params)
 
@@ -450,5 +422,5 @@ class FoodStockRepository:
             offset,
         )
 
-        hydrated = await self._hydrate_page_rows(page_rows)
-        return self._assemble_movements(page_rows, hydrated), total
+        summaries = await self._summarize_page_rows(page_rows)
+        return self._assemble_summaries(page_rows, summaries), total

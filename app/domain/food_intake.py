@@ -64,9 +64,7 @@ class FoodIntakeDomain:
 
 @dataclass
 class FoodMovementListItemDomain:
-    """A food intake or outflow row for the activity-feed view.
-
-    """
+    """A food intake or outflow row for the activity-feed view."""
 
     id: UUID
     occurred_at: datetime
