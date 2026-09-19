@@ -277,6 +277,12 @@
       "description": "Exception raised when a user-establishment relation does not exist."
     },
     {
+      "type": "/errors/user-establishment-not-withdrawable",
+      "status": 409,
+      "exception": "UserEstablishmentNotWithdrawableError",
+      "description": "Raised when a user tries to withdraw their own access to an establishment whose relation is not currently approved or pending."
+    },
+    {
       "type": "/errors/user-is-not-a-field-worker",
       "status": 400,
       "exception": "UserNotFieldWorkerError",

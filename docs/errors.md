@@ -67,6 +67,7 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/user-already-exists` | 409 | `UserAlreadyExistsError` | Exception raised when trying to register with an existing email. |
 | `/errors/user-establishment-not-approved` | 409 | `UserEstablishmentNotApprovedError` | Raised when revoking access to an establishment that isn't currently approved for the given user. |
 | `/errors/user-establishment-not-found` | 404 | `UserEstablishmentNotFoundError` | Exception raised when a user-establishment relation does not exist. |
+| `/errors/user-establishment-not-withdrawable` | 409 | `UserEstablishmentNotWithdrawableError` | Raised when a user tries to withdraw their own access to an establishment whose relation is not currently approved or pending. |
 | `/errors/user-is-not-a-field-worker` | 400 | `UserNotFieldWorkerError` | Raised when an operation requires the target user to be a field worker. |
 | `/errors/user-is-not-active` | 400 | `UserNotActiveError` | Raised when an operation requires the target user to be active. |
 | `/errors/user-is-not-pending` | 400 | `UserNotPendingError` | Raised when a user has no pending invitation. |
