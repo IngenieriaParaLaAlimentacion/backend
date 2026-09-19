@@ -34,7 +34,7 @@ def _feed_branch(
     """Build the branch builder for one activity type.
 
     Every branch of the feed union has the same shape -- id, a literal type
-    tag, and the timestamp relabelled ``occurred_at`` so the columns line up
+    tag, and the event timestamp labelled ``occurred_at`` so the columns line up
     -- filtered to the rows a given actor is responsible for. This closes over
     the per-type columns and returns the builder that still needs the actor.
 
@@ -111,7 +111,7 @@ class ActivityRepository:
         ActivityType.FOOD_INTAKE: _feed_branch(
             ActivityType.FOOD_INTAKE,
             FoodIntake.id,
-            FoodIntake.received_at,
+            FoodIntake.occurred_at,
             FoodIntake.responsible_id,
         ),
         ActivityType.FOOD_OUTFLOW: _feed_branch(
@@ -238,11 +238,11 @@ class ActivityRepository:
         ),
         ActivityType.FOOD_INTAKE: (
             "food_intake",
-            FoodMovementListItemDomain.from_intake,
+            FoodMovementListItemDomain.from_db,
         ),
         ActivityType.FOOD_OUTFLOW: (
             "food_outflow",
-            FoodMovementListItemDomain.from_outflow,
+            FoodMovementListItemDomain.from_db,
         ),
     }
 

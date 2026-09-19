@@ -317,7 +317,7 @@ async def _persist_intake(establishment_id, responsible_id, items):
         intake = FoodIntake(
             establishment_id=establishment_id,
             responsible_id=responsible_id,
-            received_at=datetime.now(timezone.utc),
+            occurred_at=datetime.now(timezone.utc),
             source=FoodIntakeSource.MANUAL,
         )
         intake.items = [
@@ -406,7 +406,7 @@ async def _walk_stock_pages(
 def _intake_body(establishment_id, items, **overrides) -> dict:
     body = {
         "establishment_id": str(establishment_id),
-        "received_at": "2026-09-01T10:00:00Z",
+        "occurred_at": "2026-09-01T10:00:00Z",
         "items": [
             {"food_id": str(food_id), "quantity": str(quantity)}
             for food_id, quantity in items
@@ -863,7 +863,7 @@ class TestMovements:
         assert item["responsible"]["id"] == str(user_id)
         assert item["comments"] == "Donación"
         assert item["source"] == "manual"
-        # `received_at` as sent, normalized to the common `occurred_at` name.
+        # `occurred_at` as sent, normalized to the common `occurred_at` name.
         assert item["occurred_at"] == "2026-09-01T10:00:00Z"
 
     @pytest.mark.parametrize("direction", ["in", "out"])
@@ -904,7 +904,7 @@ class TestMovements:
             json=_intake_body(
                 db_establishment.id,
                 [(foods.rice, "10")],
-                received_at="2026-08-15T10:00:00Z",
+                occurred_at="2026-08-15T10:00:00Z",
             ),
             headers=headers,
         )

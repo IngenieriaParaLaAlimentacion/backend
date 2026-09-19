@@ -29,7 +29,7 @@ class FoodLineRequest(BaseModel):
 class FoodIntakeRequest(BaseModel):
     id: ClientGeneratedId
     establishment_id: UUID
-    received_at: datetime = Field(
+    occurred_at: datetime = Field(
         description=(
             "When the food arrived. May predate the load for retroactive entries."
         )
@@ -38,7 +38,7 @@ class FoodIntakeRequest(BaseModel):
     source: FoodIntakeSource = FoodIntakeSource.MANUAL
     items: list[FoodLineRequest] = Field(min_length=1)
 
-    _check_received_at = field_validator("received_at")(validate_not_future_datetime)
+    _check_occurred_at = field_validator("occurred_at")(validate_not_future_datetime)
 
 
 # -- Response --
@@ -58,7 +58,7 @@ class FoodIntakeResponse(BaseModel):
     id: UUID
     establishment_id: UUID
     responsible_id: UUID
-    received_at: datetime
+    occurred_at: datetime
     comments: str | None
     source: FoodIntakeSource
     created_at: datetime

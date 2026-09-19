@@ -28,8 +28,8 @@ class FoodMovementItem(BaseModel):
     """One movement document -- an intake or an outflow -- with its lines.
 
     ``direction`` is what distinguishes the two, and ``occurred_at`` is the
-    event date (``received_at`` for an intake), never when the row was written.
-    The establishment is not repeated per row: the listing is already scoped to
+    date the movement happened, not when the row was written. The
+    establishment is not repeated per row: the listing is already scoped to
     the one in the path.
 
     ``source`` is typed as ``FoodIntakeSource`` because ``FoodOutflowSource``

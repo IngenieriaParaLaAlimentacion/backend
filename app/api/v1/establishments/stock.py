@@ -86,14 +86,9 @@ async def export_establishment_stock(
     response_model=PaginatedResponse[FoodMovementItem],
     summary="List an establishment's food movements",
     description=(
-        "Intakes and outflows as complete documents — one entry per movement "
-        "with all its food lines nested, not one entry per line — merged into "
-        "a single sequence, newest first, each tagged with its `direction`. "
-        "Both the ordering and the date filter read the event date "
-        "(`received_at` for an intake, `occurred_at` for an outflow) and never "
-        "when the row was written, so a retroactive load appears in the period "
-        "it happened in. Pass `direction=in` or `direction=out` for one side "
-        "only."
+        "Intakes and outflows as complete documents — one entry per movement —"
+        "merged into a single sequence, newest first, each tagged with its "
+        "`direction`. "
     ),
     responses={
         status.HTTP_400_BAD_REQUEST: {

@@ -69,11 +69,11 @@ def make_stored(make_food):
         stored.id = uuid.uuid4()
         stored.establishment_id = ESTABLISHMENT_ID
         stored.responsible_id = uuid.uuid4()
-        stored.received_at = datetime.now(timezone.utc)
-        stored.occurred_at = stored.received_at
+        stored.occurred_at = datetime.now(timezone.utc)
+        stored.occurred_at = stored.occurred_at
         stored.comments = None
         stored.source = FoodIntakeSource.MANUAL
-        stored.created_at = stored.received_at
+        stored.created_at = stored.occurred_at
         stored.items = [item]
         for key, value in overrides.items():
             setattr(stored, key, value)
@@ -95,7 +95,7 @@ def uow(make_food, make_stored):
 def _intake_request(**overrides) -> FoodIntakeRequest:
     return FoodIntakeRequest(
         establishment_id=ESTABLISHMENT_ID,
-        received_at=datetime(2026, 9, 1, tzinfo=timezone.utc),
+        occurred_at=datetime(2026, 9, 1, tzinfo=timezone.utc),
         items=[FoodLineRequest(food_id=RICE_ID, quantity=Decimal("10"))],
         source=FoodIntakeSource.MANUAL,
         **overrides,

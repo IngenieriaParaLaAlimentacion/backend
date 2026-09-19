@@ -41,7 +41,7 @@ class ActivityItemDomain:
 
     `occurred_at` is always the domain event time of the underlying row
     (`subject_events.occurred_at`, `measurements.measured_at`,
-    `survey_responses.event_at`, `food_intakes.received_at`,
+    `survey_responses.event_at`, `food_intakes.occurred_at`,
     `food_outflows.occurred_at`), never `created_at`.
     """
 

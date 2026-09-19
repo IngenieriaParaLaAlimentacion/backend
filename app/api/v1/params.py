@@ -241,10 +241,8 @@ class FoodMovementListingQuery:
         datetime | None,
         Query(
             description=(
-                "Lower bound on the event date -- `received_at` for an intake, "
-                "`occurred_at` for an outflow -- never on when the row was "
-                "written, so a retroactive load falls in the period it "
-                "happened in."
+                "Lower bound on `occurred_at`, the date the movement "
+                "happened"
             )
         ),
     ] = None

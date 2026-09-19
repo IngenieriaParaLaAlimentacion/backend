@@ -278,9 +278,8 @@ class FoodStockRepository:
             conditions=self._listing_conditions(establishment_id, params),
         )
 
-    # Per direction: the header table, the column carrying its event date, and
-    # the domain builder for a hydrated header. `received_at` and `occurred_at`
-    # are the same fact under two names; the union relabels both.
+    # Per direction: the header table, its event-date column, and the domain
+    # builder for a hydrated header.
     #
     # No fallback entry on purpose: `_build_movements_subquery` iterates the
     # enum and looks each member up here, so a direction added to the enum but
@@ -291,7 +290,7 @@ class FoodStockRepository:
     ] = {
         FoodMovementDirection.IN: (
             FoodIntake,
-            FoodIntake.received_at,
+            FoodIntake.occurred_at,
             FoodMovementDomain.from_intake,
         ),
         FoodMovementDirection.OUT: (

@@ -40,9 +40,6 @@ class FoodStockListingParams:
 class FoodMovementListingParams:
     """Query parameters for an establishment's movement listing.
 
-    The date bounds read the event date -- ``food_intakes.received_at`` or
-    ``food_outflows.occurred_at`` -- never ``created_at``, so a retroactive
-    load falls in the period it actually happened in.
     """
 
     direction: FoodMovementDirection | None = None
@@ -76,18 +73,6 @@ class FoodStockItemDomain:
 class FoodMovementDomain:
     """One movement document -- an intake or an outflow -- with its lines.
 
-    ``food_intakes.received_at`` and ``food_outflows.occurred_at`` are the same
-    fact under two names and are normalized to ``occurred_at``; ``direction``
-    is what tells the two apart, so a row says which one it is without needing
-    the envelope it arrived in.
-
-    ``source`` is annotated ``str`` because the attribute carries a
-    ``FoodIntakeSource`` *or* a ``FoodOutflowSource`` -- both ``str``-mixin
-    enums with identical members.
-
-    ``items`` are rendered as stored, repeated foods included: a movement may
-    legally carry two lines for the same food, and the listing reports what was
-    recorded rather than a rollup.
     """
 
     id: UUID
@@ -100,12 +85,12 @@ class FoodMovementDomain:
 
     @classmethod
     def _from_movement(
-        cls, movement, direction: FoodMovementDirection, occurred_at: datetime
+        cls, movement, direction: FoodMovementDirection
     ) -> "FoodMovementDomain":
         return cls(
             id=movement.id,
             direction=direction,
-            occurred_at=occurred_at,
+            occurred_at=movement.occurred_at,
             comments=movement.comments,
             source=movement.source,
             responsible=ResponsibleRefDomain.from_db(movement.responsible),
@@ -116,12 +101,10 @@ class FoodMovementDomain:
     def from_intake(cls, intake) -> "FoodMovementDomain":
         """Build from an intake row with ``responsible`` and ``items`` (each
         with its ``food``) loaded."""
-        return cls._from_movement(intake, FoodMovementDirection.IN, intake.received_at)
+        return cls._from_movement(intake, FoodMovementDirection.IN)
 
     @classmethod
     def from_outflow(cls, outflow) -> "FoodMovementDomain":
         """Build from an outflow row with ``responsible`` and ``items`` (each
         with its ``food``) loaded."""
-        return cls._from_movement(
-            outflow, FoodMovementDirection.OUT, outflow.occurred_at
-        )
+        return cls._from_movement(outflow, FoodMovementDirection.OUT)
