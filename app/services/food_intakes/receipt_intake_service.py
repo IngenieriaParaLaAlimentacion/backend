@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal, InvalidOperation
 from typing import Any
 from uuid import UUID
 
@@ -31,8 +32,12 @@ _EXTRACTION_PROMPT = (
     "You are reading a photo of a store receipt for a community kitchen in "
     "Argentina. List every line item that is a food or beverage, in the "
     "order it appears. Ignore totals, taxes, discounts, payment methods, "
-    "and store header/footer information. For each item, return only its "
-    "description exactly as printed on the receipt."
+    "and store header/footer information. For each item, return its "
+    "description exactly as printed on the receipt. If the line also states "
+    "a quantity (e.g. a weight, volume, or unit count such as '1kg', '900ml', "
+    "'x3'), also return that quantity as a number and the unit text exactly "
+    "as printed (e.g. 'kg', 'ml', 'un'); leave both null when the line does "
+    "not state a quantity."
 )
 
 _EXTRACTION_RESPONSE_SCHEMA: dict[str, Any] = {
@@ -42,8 +47,12 @@ _EXTRACTION_RESPONSE_SCHEMA: dict[str, Any] = {
             "type": "array",
             "items": {
                 "type": "object",
-                "properties": {"description": {"type": "string"}},
-                "required": ["description"],
+                "properties": {
+                    "description": {"type": "string"},
+                    "raw_quantity": {"type": "number", "nullable": True},
+                    "raw_unit_text": {"type": "string", "nullable": True},
+                },
+                "required": ["description", "raw_quantity", "raw_unit_text"],
             },
         }
     },
@@ -90,6 +99,22 @@ class ReceiptIntakeService:
             raise UnsupportedImageTypeError(content_type, sorted(allowed))
         if size_bytes > settings.receipt_image_max_bytes:
             raise ImageTooLargeError(size_bytes, settings.receipt_image_max_bytes)
+
+    @staticmethod
+    def _to_decimal(value: Any) -> Decimal | None:
+        """Convert an LLM-returned number to Decimal, via its string form to
+        avoid binary float artifacts (e.g. ``0.1`` -> ``Decimal("0.1")``).
+
+        Returns None for a missing/null value or one the model returned in
+        an unparsable shape, rather than letting a malformed extraction
+        break the whole proposal.
+        """
+        if value is None:
+            return None
+        try:
+            return Decimal(str(value))
+        except InvalidOperation:
+            return None
 
     @staticmethod
     def _build_photo_key(establishment_id: UUID, content_type: str) -> str:
@@ -156,7 +181,12 @@ class ReceiptIntakeService:
             )
 
         lines = [
-            ProposedFoodLine(description=raw["description"], needs_review=True)
+            ProposedFoodLine(
+                description=raw["description"],
+                raw_quantity=self._to_decimal(raw.get("raw_quantity")),
+                raw_unit_text=raw.get("raw_unit_text"),
+                needs_review=True,
+            )
             for raw in result["lines"]
         ]
         if not lines:

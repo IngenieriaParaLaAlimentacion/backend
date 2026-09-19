@@ -34,6 +34,24 @@ class ProposedFoodLine(BaseModel):
         default=None,
         description="Base unit of the matched catalog food; null when unmatched.",
     )
+    raw_quantity: Decimal | None = Field(
+        default=None,
+        max_digits=10,
+        decimal_places=3,
+        description=(
+            "Quantity as printed on the receipt, before any catalog "
+            "matching or unit conversion. Null when the receipt line does "
+            "not specify one."
+        ),
+    )
+    raw_unit_text: str | None = Field(
+        default=None,
+        description=(
+            "Unit text as printed next to raw_quantity on the receipt "
+            "(e.g. 'kg', 'un', 'L'), verbatim. Null when raw_quantity is null "
+            "or the receipt gives a bare count with no unit."
+        ),
+    )
     needs_review: bool = Field(
         description="True when the user must fix this line before confirming.",
     )

@@ -180,6 +180,40 @@ class TestExtraction:
         assert proposal.message is None
         storage.save.assert_not_called()  # nothing is stored until confirmation
 
+    async def test_extracted_quantity_and_unit_text_are_returned_when_present(
+        self, uow, storage, food_intake_service, llm_client, admin_actor
+    ):
+        llm_client.complete = AsyncMock(
+            return_value={
+                "lines": [
+                    {
+                        "description": "Arroz 1kg",
+                        "raw_quantity": 1,
+                        "raw_unit_text": "kg",
+                    },
+                    {
+                        "description": "Yerba",
+                        "raw_quantity": None,
+                        "raw_unit_text": None,
+                    },
+                ]
+            }
+        )
+
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+        proposal = await service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        )
+
+        rice, yerba = proposal.lines
+        assert rice.raw_quantity == Decimal("1")
+        assert rice.raw_unit_text == "kg"
+        assert yerba.raw_quantity is None
+        assert yerba.raw_unit_text is None
+
     async def test_no_lines_detected_returns_manual_fallback_message(
         self, uow, storage, food_intake_service, llm_client, admin_actor
     ):
