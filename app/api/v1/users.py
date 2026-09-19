@@ -1,8 +1,11 @@
-from fastapi import APIRouter, Depends, status
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Path, Response, status
 
 from app.api.v1.params import AUTH_RESPONSES, ActivityListingQuery, PaginatedQueryParams
 from app.core.dependencies import (
     get_activity_service,
+    get_device_service,
     get_user_service,
     require_any,
 )
@@ -14,9 +17,14 @@ from app.schemas.auth.user_schema import (
     ProfileResponse,
     ProfileUpdateRequest,
 )
+from app.schemas.notifications.device_schema import (
+    DeviceRegistrationRequest,
+    DeviceResponse,
+)
 from app.schemas.pagination import PaginatedResponse
 from app.services.activity_service import ActivityService
 from app.services.auth.user_service import UserService
+from app.services.notifications.device_service import DeviceService
 
 router = APIRouter(prefix="/users")
 
@@ -156,3 +164,39 @@ async def get_my_activity(
         page_size=result.page_size,
         total_pages=result.total_pages,
     )
+
+
+@router.post(
+    "/me/devices",
+    response_model=DeviceResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Register a push-notification installation",
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Authenticated user no longer exists"
+        },
+    },
+)
+async def register_my_device(
+    data: DeviceRegistrationRequest,
+    actor: UserActor = Depends(require_any),
+    service: DeviceService = Depends(get_device_service),
+) -> DeviceResponse:
+    device = await service.register(actor, data)
+    return DeviceResponse.model_validate(device)
+
+
+@router.delete(
+    "/me/devices/{installation_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Unregister a push-notification installation",
+    responses=AUTH_RESPONSES,
+)
+async def unregister_my_device(
+    installation_id: Annotated[str, Path(min_length=1, max_length=255)],
+    actor: UserActor = Depends(require_any),
+    service: DeviceService = Depends(get_device_service),
+) -> Response:
+    await service.unregister(actor, installation_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

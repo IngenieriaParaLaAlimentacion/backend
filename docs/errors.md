@@ -42,6 +42,7 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/filter-not-applicable` | 400 | `FilterNotApplicableError` | Raised when a filter resolves through a target the resource does not carry. |
 | `/errors/food-not-found` | 404 | `FoodNotFoundError` | Exception raised when a food cannot be found. |
 | `/errors/insufficient-stock` | 409 | `InsufficientStockError` | Exception raised when an outflow exceeds an establishment's stock. |
+| `/errors/internal-authentication-failed` | 401 | `InternalAuthenticationError` | Raised when the infrastructure cron secret is absent or invalid. |
 | `/errors/invalid-age-range` | 400 | `InvalidAgeRangeError` | Raised when an age-range filter has a minimum above its maximum. |
 | `/errors/invalid-credentials` | 401 | `InvalidCredentialsError` | Exception raised when credentials are invalid. |
 | `/errors/invalid-date-range` | 400 | `InvalidDateRangeError` | Raised when a date-range filter starts after it ends. |
@@ -52,6 +53,7 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/invalid-user-role` | 400 | `InvalidUserRoleError` | Raised when the target user's role is not valid for the operation. |
 | `/errors/no-fields-to-update` | 400 | `EmptyUpdateRequestError` | Exception raised when an update has no attributes to be updated. |
 | `/errors/not-resource-owner` | 403 | `NotResourceOwnerError` | Raised when a non-admin acts on a resource somebody else created. |
+| `/errors/notification-configuration-invalid` | 503 | `NotificationConfigurationError` | Raised when cron runs without activation or complete FCM configuration. |
 | `/errors/password-not-found` | 404 | `PasswordNotFoundError` | Exception raised when a user's password record is not found. |
 | `/errors/role-not-allowed` | 403 | `RoleNotAllowedError` | Raised when the actor's role is not permitted to perform the operation. |
 | `/errors/subject-already-exists` | 409 | `SubjectAlreadyExistsError` | Exception raised when trying to register a subject with an existing DNI. |

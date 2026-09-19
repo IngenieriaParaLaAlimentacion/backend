@@ -127,6 +127,12 @@
       "description": "Exception raised when an outflow exceeds an establishment's stock."
     },
     {
+      "type": "/errors/internal-authentication-failed",
+      "status": 401,
+      "exception": "InternalAuthenticationError",
+      "description": "Raised when the infrastructure cron secret is absent or invalid."
+    },
+    {
       "type": "/errors/invalid-age-range",
       "status": 400,
       "exception": "InvalidAgeRangeError",
@@ -185,6 +191,12 @@
       "status": 403,
       "exception": "NotResourceOwnerError",
       "description": "Raised when a non-admin acts on a resource somebody else created."
+    },
+    {
+      "type": "/errors/notification-configuration-invalid",
+      "status": 503,
+      "exception": "NotificationConfigurationError",
+      "description": "Raised when cron runs without activation or complete FCM configuration."
     },
     {
       "type": "/errors/password-not-found",

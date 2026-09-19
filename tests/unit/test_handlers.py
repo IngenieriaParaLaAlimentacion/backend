@@ -2,6 +2,8 @@ import asyncio
 import json
 
 from app.exceptions.domain_exceptions import (
+    InternalAuthenticationError,
+    NotificationConfigurationError,
     RoleNotAllowedError,
     SubjectAlreadyExistsError,
     SubjectNotFoundError,
@@ -59,6 +61,26 @@ def test_unauthorized_error():
 
     assert response.status_code == 401
     assert json.loads(response.body)["type"] == "/errors/unauthorized"
+
+
+def test_internal_authentication_error_uses_canonical_envelope():
+    response = _handle("/api/v1/internal/run", InternalAuthenticationError())
+    assert response.status_code == 401
+    assert json.loads(response.body) == {
+        "type": "/errors/internal-authentication-failed",
+        "title": "Internal authentication failed",
+        "status": 401,
+        "detail": "Internal authentication credentials are missing or invalid.",
+        "instance": "/api/v1/internal/run",
+    }
+
+
+def test_notification_configuration_error_uses_canonical_envelope():
+    response = _handle("/api/v1/internal/run", NotificationConfigurationError())
+    assert response.status_code == 503
+    assert json.loads(response.body)["type"] == (
+        "/errors/notification-configuration-invalid"
+    )
 
 
 def test_forbidden_error():

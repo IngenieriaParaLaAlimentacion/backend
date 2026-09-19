@@ -7,6 +7,7 @@ from app.api.v1 import (
     establishments,
     food_intakes,
     food_outflows,
+    internal,
     measurements,
     subjects,
     users,
@@ -31,3 +32,4 @@ v1_router.include_router(surveys.router, tags=["Surveys V1"])
 v1_router.include_router(survey_responses.router, tags=["Survey Responses V1"])
 v1_router.include_router(users.router, tags=["Users V1"])
 v1_router.include_router(analytics.router, tags=["Analytics V1"])
+v1_router.include_router(internal.router, tags=["Internal V1"])

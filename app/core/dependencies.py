@@ -1,14 +1,19 @@
+import secrets
 from collections.abc import AsyncGenerator
+from typing import Annotated
 
-from fastapi import Depends
+from fastapi import Depends, Header
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
+from app.config.settings import settings
 from app.core.security import decode_token
 from app.db.unit_of_work import UnitOfWork
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
+    InternalAuthenticationError,
     MissingTokenError,
+    NotificationConfigurationError,
     RoleNotAllowedError,
     UnauthorizedError,
 )
@@ -26,6 +31,11 @@ from app.services.food_intakes.food_intake_service import FoodIntakeService
 from app.services.food_outflows.food_outflow_service import FoodOutflowService
 from app.services.food_stock.food_stock_service import FoodStockService
 from app.services.measurements.measurement_service import MeasurementService
+from app.services.notifications.device_service import DeviceService
+from app.services.notifications.fcm_client import FcmClient
+from app.services.notifications.stale_establishment_notification_service import (
+    StaleEstablishmentNotificationService,
+)
 from app.services.subjects.subject_service import SubjectService
 from app.services.surveys.survey_response_service import SurveyResponseService
 from app.services.surveys.survey_service import SurveyService
@@ -73,6 +83,49 @@ async def get_user_service() -> AsyncGenerator[UserService, None]:
     """Provide a UserService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
         yield UserService(uow)
+
+
+async def get_device_service() -> AsyncGenerator[DeviceService, None]:
+    """Provide a DeviceService backed by a fresh UnitOfWork."""
+    async with UnitOfWork() as uow:
+        yield DeviceService(uow)
+
+
+def get_stale_establishment_notification_service() -> (
+    StaleEstablishmentNotificationService
+):
+    """Build the cron service without holding a DB transaction open."""
+    fcm_client = None
+    if settings.has_fcm_credentials:
+        assert settings.fcm_project_id is not None
+        assert settings.fcm_client_email is not None
+        assert settings.fcm_private_key is not None
+        try:
+            fcm_client = FcmClient(
+                project_id=settings.fcm_project_id,
+                client_email=settings.fcm_client_email,
+                private_key=settings.fcm_private_key,
+            )
+        except ValueError as error:
+            raise NotificationConfigurationError() from error
+    return StaleEstablishmentNotificationService(
+        uow_factory=UnitOfWork,
+        fcm_client=fcm_client,
+        feature_activated_at=settings.stale_notifications_feature_activated_at,
+    )
+
+
+async def require_internal_cron(
+    x_internal_secret: Annotated[str | None, Header(alias="X-Internal-Secret")] = None,
+) -> None:
+    """Authenticate infrastructure cron without accepting a user JWT."""
+    expected = settings.stale_notifications_cron_secret
+    if (
+        not expected
+        or not x_internal_secret
+        or not secrets.compare_digest(x_internal_secret, expected)
+    ):
+        raise InternalAuthenticationError()
 
 
 async def get_activity_service() -> AsyncGenerator[ActivityService, None]:
