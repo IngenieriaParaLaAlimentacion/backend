@@ -18,6 +18,7 @@ from app.exceptions.domain_exceptions import (
     ReceiptPhotoStorageError,
     UnsupportedImageTypeError,
 )
+from app.schemas.common import IdentifierRefSchema
 from app.schemas.food_intakes.food_intake_schema import FoodIntakeRequest
 from app.schemas.food_intakes.receipt_schema import (
     ProposedFoodLine,
@@ -116,6 +117,18 @@ class ReceiptIntakeService:
         except InvalidOperation:
             return None
 
+    async def _match_food(self, description: str) -> IdentifierRefSchema | None:
+        """Return the catalog food that best matches ``description``, if any.
+
+        Delegates the confidence decision entirely to
+        ``FoodRepository.find_best_match`` (trigram similarity, ADR-0016) --
+        this only shapes the result for ``ProposedFoodLine.food``.
+        """
+        food = await self.uow.food_repo.find_best_match(
+            description, settings.receipt_food_match_min_similarity
+        )
+        return IdentifierRefSchema.model_validate(food) if food is not None else None
+
     @staticmethod
     def _build_photo_key(establishment_id: UUID, content_type: str) -> str:
         """A unique storage key, namespaced by establishment.
@@ -143,9 +156,12 @@ class ReceiptIntakeService:
         ``POST /food-intakes/from-photo/confirm`` -- so an abandoned or
         rejected proposal never leaves an orphaned object in storage.
 
-        Every proposed line comes back unmatched (``food=None``,
-        ``needs_review=True``): catalog matching happens in a later step.
-        When the extractor finds nothing, or the LLM call itself fails, the
+        Each line is matched against the food catalog by name similarity
+        (ADR-0016); ``food`` is set when a confident match is found, and left
+        ``None`` otherwise. ``needs_review`` is always ``True`` regardless --
+        matching never marks a line as resolved, since the last validation
+        before this data hits establishment stock is always the user's. When
+        the extractor finds nothing, or the LLM call itself fails, the
         response falls back to an empty proposal with a hint to enter the
         intake manually rather than surfacing the failure as an error.
 
@@ -183,6 +199,7 @@ class ReceiptIntakeService:
         lines = [
             ProposedFoodLine(
                 description=raw["description"],
+                food=await self._match_food(raw["description"]),
                 raw_quantity=self._to_decimal(raw.get("raw_quantity")),
                 raw_unit_text=raw.get("raw_unit_text"),
                 needs_review=True,
