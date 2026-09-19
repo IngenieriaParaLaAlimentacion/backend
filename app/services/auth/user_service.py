@@ -122,7 +122,7 @@ class UserService:
         """Sort ids into what a request/re-request must do to each one.
 
         Returns (to_repend, to_insert, result_status): approved/pending relations
-        are left as-is; rejected/revoked/withdrawn ones are repent to pending;
+        are left as-is; rejected/revoked/withdrawn ones are re-pended to pending;
         ids with no relation yet are inserted as pending. ``result_status`` holds
         the status every id will end up with, for building the response.
         """
