@@ -505,7 +505,6 @@ async def test_notice_consumption_requires_devices_and_advances_only_once(app):
     service = StaleEstablishmentNotificationService(
         uow_factory=UnitOfWork,
         fcm_client=None,
-        feature_activated_at=None,
     )
     await service._consume_due_thresholds(now=now)
     async with AsyncSessionLocal() as session:

@@ -1,5 +1,4 @@
 import enum
-from datetime import datetime
 from typing import Optional
 
 from pydantic import AnyUrl, EmailStr, model_validator
@@ -76,7 +75,6 @@ class Settings(BaseSettings):
     invite_path: str = "/invite"
 
     # Stale-establishment notifications
-    stale_notifications_feature_activated_at: datetime | None = None
     fcm_project_id: str | None = None
     fcm_client_email: str | None = None
     fcm_private_key: str | None = None

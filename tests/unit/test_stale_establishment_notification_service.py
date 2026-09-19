@@ -36,24 +36,17 @@ class UowFactory:
         return self.uows.pop(0)
 
 
-def _service(factory, fcm=object(), activated_at=NOW):
-    return StaleEstablishmentNotificationService(factory, fcm, activated_at)
+def _service(factory, fcm=object()):
+    return StaleEstablishmentNotificationService(factory, fcm)
 
 
-@pytest.mark.parametrize("fcm,activated_at", [(None, NOW), (object(), None)])
-async def test_missing_configuration_is_rejected(fcm, activated_at):
-    service = StaleEstablishmentNotificationService(lambda: None, fcm, activated_at)
+async def test_missing_fcm_configuration_is_rejected():
+    service = StaleEstablishmentNotificationService(lambda: None, None)
     with pytest.raises(NotificationConfigurationError):
         await service.run(NOW)
 
 
-async def test_naive_activation_is_rejected():
-    service = _service(lambda: None, activated_at=NOW.replace(tzinfo=None))
-    with pytest.raises(NotificationConfigurationError):
-        await service.run(NOW)
-
-
-async def test_historical_activity_uses_activation_baseline_and_exact_168_hours():
+async def test_cycle_starts_at_latest_activity_and_is_due_after_exact_168_hours():
     establishment_id = uuid4()
     latest = NOW - timedelta(days=90)
     repo = SimpleNamespace(
@@ -71,10 +64,10 @@ async def test_historical_activity_uses_activation_baseline_and_exact_168_hours(
     )
     uow = FakeUow(stale_cycle_repo=repo)
 
-    await _service(UowFactory(uow))._synchronize_cycles(activated_at=NOW)
+    await _service(UowFactory(uow))._synchronize_cycles()
 
-    assert repo.create_if_absent.await_args.kwargs["started_at"] == NOW
-    assert repo.create_if_absent.await_args.kwargs["next_due_at"] == NOW + timedelta(
+    assert repo.create_if_absent.await_args.kwargs["started_at"] == latest
+    assert repo.create_if_absent.await_args.kwargs["next_due_at"] == latest + timedelta(
         hours=168
     )
     uow.commit.assert_awaited_once()
@@ -88,7 +81,7 @@ async def test_no_outflow_advances_creates_no_cycles():
     )
     uow = FakeUow(stale_cycle_repo=repo)
 
-    await _service(UowFactory(uow))._synchronize_cycles(activated_at=NOW)
+    await _service(UowFactory(uow))._synchronize_cycles()
 
     repo.get_for_update.assert_not_awaited()
     repo.create_if_absent.assert_not_awaited()
@@ -117,9 +110,7 @@ async def test_newer_activity_cancels_jobs_and_resets_cycle():
         delete_pending_jobs=AsyncMock(),
     )
 
-    await _service(UowFactory(FakeUow(stale_cycle_repo=repo)))._synchronize_cycles(
-        activated_at=NOW - timedelta(days=30)
-    )
+    await _service(UowFactory(FakeUow(stale_cycle_repo=repo)))._synchronize_cycles()
 
     repo.delete_pending_jobs.assert_awaited_once_with(cycle.id)
     assert cycle.last_outflow_at == latest
@@ -141,9 +132,7 @@ async def test_concurrent_first_insert_reloads_equal_winner_without_reset():
         delete_pending_jobs=AsyncMock(),
     )
 
-    await _service(UowFactory(FakeUow(stale_cycle_repo=repo)))._synchronize_cycles(
-        activated_at=NOW
-    )
+    await _service(UowFactory(FakeUow(stale_cycle_repo=repo)))._synchronize_cycles()
 
     assert repo.get_for_update.await_count == 2
     repo.delete_pending_jobs.assert_not_awaited()

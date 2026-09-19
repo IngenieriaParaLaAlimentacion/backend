@@ -48,7 +48,6 @@ def build_stale_establishment_notification_service() -> (
     return StaleEstablishmentNotificationService(
         uow_factory=UnitOfWork,
         fcm_client=fcm_client,
-        feature_activated_at=settings.stale_notifications_feature_activated_at,
     )
 
 

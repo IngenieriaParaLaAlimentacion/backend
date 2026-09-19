@@ -5,6 +5,12 @@ The persistent FastAPI server owns the hourly scheduler; no Railway cron service
 callback is required. Complete the test environment first, then repeat the process with
 separate production credentials.
 
+> **Scheduling model:** deploy only the existing Railway backend service. FastAPI starts
+> APScheduler during application startup, and PostgreSQL advisory locking ensures that a
+> single process performs each run. Do not create a Railway Cron Service, do not configure
+> a cron callback URL, and do not add a `CRON_SECRET` variable. The backend service must
+> remain awake for the in-process schedule to fire.
+
 ## Before you begin
 
 You need:
@@ -66,39 +72,18 @@ The downloaded JSON contains the three backend values used below:
 The project ID must match the Android `google-services.json` for the same environment.
 The private key is a server credential and must never be included in the mobile app.
 
-## 3. Choose the activation instant
-
-The activation instant prevents old outflows from generating an immediate historical
-notification burst. Choose it immediately before the first scheduled run for that
-environment.
-
-Use an offset-aware UTC value:
-
-```text
-STALE_NOTIFICATIONS_FEATURE_ACTIVATED_AT=YYYY-MM-DDTHH:MM:SSZ
-```
-
-Example format only:
-
-```text
-STALE_NOTIFICATIONS_FEATURE_ACTIVATED_AT=2026-09-19T18:00:00Z
-```
-
-Do not reuse the example blindly. Record the real rollout time in UTC.
-
-## 4. Configure the Railway backend service
+## 3. Configure the persistent Railway backend service
 
 1. Open the Railway project.
 2. Select the correct environment: test or production.
 3. Select the backend service.
 4. Open **Variables**.
-5. Add these four variables:
+5. Add these three variables:
 
 ```text
 FCM_PROJECT_ID=<project_id from the service-account JSON>
 FCM_CLIENT_EMAIL=<client_email from the service-account JSON>
 FCM_PRIVATE_KEY=<complete private_key from the service-account JSON>
-STALE_NOTIFICATIONS_FEATURE_ACTIVATED_AT=<real UTC rollout instant>
 ```
 
 For `FCM_PRIVATE_KEY`, paste the entire PEM value, including its header and footer:
@@ -116,10 +101,10 @@ credential.
 6. Seal `FCM_PRIVATE_KEY` from its three-dot menu.
 7. Review and deploy the staged Railway changes.
 
-`FCM_PROJECT_ID`, `FCM_CLIENT_EMAIL`, and the activation instant are configuration rather
-than secrets, but they should still remain server-side.
+`FCM_PROJECT_ID` and `FCM_CLIENT_EMAIL` are configuration rather than secrets, but they
+should still remain server-side.
 
-## 5. Verify the backend deployment
+## 4. Verify the backend and scheduler deployment
 
 The Docker startup command applies Alembic migrations automatically. After deployment:
 
@@ -131,11 +116,11 @@ The Docker startup command applies Alembic migrations automatically. After deplo
 5. After an active-hour boundary, confirm the logs contain a completed run or a lock-skip
    entry when another server process owns the run.
 
-The scheduler logs a configuration error instead of stopping FastAPI when activation or
-FCM credentials are incomplete. A due threshold is not advanced when there are no eligible
-registered devices.
+The scheduler logs a configuration error instead of stopping FastAPI when FCM credentials
+are incomplete. A due threshold is not advanced when there are no eligible registered
+devices.
 
-## 6. Provision and verify the mobile environment
+## 5. Provision and verify the mobile environment
 
 Before deploying the configured production backend:
 
@@ -153,7 +138,7 @@ Before deploying the configured production backend:
 Do not enable iOS sending until the Xcode project, Firebase package references, APNs
 entitlements, and per-environment plist wiring are versioned and physically tested.
 
-## 7. In-process schedule and silent hours
+## 6. In-process schedule and silent hours
 
 The FastAPI lifespan starts an APScheduler job in every server process. PostgreSQL advisory
 locking admits only one process at a time, including across Uvicorn workers, Railway
@@ -171,22 +156,24 @@ finish gracefully.
 
 There is no public or internal HTTP trigger and no cron secret to provision or rotate.
 
-## 8. Final test checklist
+## 7. Final test checklist
 
 - [ ] Test and production use separate Firebase projects and service-account keys.
 - [ ] FCM HTTP v1 is enabled in both Firebase projects.
-- [ ] Each Railway environment contains all four backend variables.
+- [ ] Each Railway environment contains all three backend variables.
 - [ ] Both private keys are sealed in Railway.
 - [ ] Each Android flavor uses the matching `google-services.json`.
 - [ ] The migration is applied before mobile rollout.
 - [ ] Backend logs confirm the scheduler starts with ART active hours `8-22`.
 - [ ] Railway Serverless/App Sleep is disabled.
+- [ ] No separate Railway Cron Service or cron callback is configured.
+- [ ] No obsolete `CRON_SECRET` variable remains in the backend environment.
 - [ ] Device registration and unregister-before-logout work on a physical device.
 - [ ] Foreground, background, and killed-app notifications work.
 - [ ] Notification taps open Food Stock for the payload establishment.
 - [ ] A scheduled active-hour run completes after all earlier checks pass.
 
-## 9. Rotation and incident response
+## 8. Rotation and incident response
 
 If the service-account key might have leaked:
 

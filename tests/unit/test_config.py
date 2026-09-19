@@ -1,5 +1,3 @@
-from datetime import timezone
-
 import pytest
 from pydantic import ValidationError
 
@@ -60,12 +58,3 @@ def test_fcm_credentials_are_complete_only_when_every_field_is_present():
         fcm_private_key="key",
     )
     assert settings.has_fcm_credentials is True
-
-
-def test_notification_activation_parses_offset_aware_datetime():
-    settings = Settings(
-        _env_file=None,
-        stale_notifications_feature_activated_at="2026-09-19T12:00:00Z",
-    )
-    assert settings.stale_notifications_feature_activated_at is not None
-    assert settings.stale_notifications_feature_activated_at.tzinfo == timezone.utc

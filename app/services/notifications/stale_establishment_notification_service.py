@@ -20,19 +20,14 @@ class StaleEstablishmentNotificationService:
         self,
         uow_factory: Callable[[], IUnitOfWork],
         fcm_client: FcmClient | None,
-        feature_activated_at: datetime | None,
     ) -> None:
         self.uow_factory = uow_factory
         self.fcm_client = fcm_client
-        self.feature_activated_at = feature_activated_at
 
-    def _configuration(self) -> tuple[FcmClient, datetime]:
-        if self.fcm_client is None or self.feature_activated_at is None:
+    def _configuration(self) -> FcmClient:
+        if self.fcm_client is None:
             raise NotificationConfigurationError()
-        activated_at = self.feature_activated_at
-        if activated_at.tzinfo is None:
-            raise NotificationConfigurationError()
-        return self.fcm_client, activated_at.astimezone(timezone.utc)
+        return self.fcm_client
 
     @staticmethod
     def _message(stale_days: int) -> tuple[str, str]:
@@ -41,7 +36,7 @@ class StaleEstablishmentNotificationService:
             "Registrá una salida para mantener actualizado el stock.",
         )
 
-    async def _synchronize_cycles(self, *, activated_at: datetime) -> None:
+    async def _synchronize_cycles(self) -> None:
         """Create/reset current cycles from strictly newer event-time maxima."""
         async with self.uow_factory() as uow:
             advances = await uow.stale_cycle_repo.list_activity_advances()
@@ -50,7 +45,7 @@ class StaleEstablishmentNotificationService:
                 cycle = await uow.stale_cycle_repo.get_for_update(
                     activity.establishment_id
                 )
-                started_at = max(latest, activated_at)
+                started_at = latest
                 first_due_at = started_at + timedelta(hours=_FIRST_THRESHOLD_HOURS)
                 if cycle is None:
                     cycle = await uow.stale_cycle_repo.create_if_absent(
@@ -137,9 +132,9 @@ class StaleEstablishmentNotificationService:
 
     async def run(self, now: datetime | None = None) -> None:
         """Enqueue due notices, then drain a bounded set of durable jobs."""
-        fcm_client, activated_at = self._configuration()
+        fcm_client = self._configuration()
         current = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
-        await self._synchronize_cycles(activated_at=activated_at)
+        await self._synchronize_cycles()
         await self._consume_due_thresholds(now=current)
 
         remaining = _MAX_JOBS_PER_RUN
