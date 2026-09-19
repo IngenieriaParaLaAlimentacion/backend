@@ -26,9 +26,10 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import InstrumentedAttribute, selectinload
+from sqlalchemy.orm import InstrumentedAttribute, joinedload, selectinload
 
 from app.domain.food_stock import (
+    FoodMovementDetailDomain,
     FoodMovementDirection,
     FoodMovementListingParams,
     FoodMovementSummaryDomain,
@@ -424,3 +425,33 @@ class FoodStockRepository:
 
         summaries = await self._summarize_page_rows(page_rows)
         return self._assemble_summaries(page_rows, summaries), total
+
+    async def get_movement(
+        self, establishment_id: UUID, movement_id: UUID
+    ) -> FoodMovementDetailDomain | None:
+        """Return one of the establishment's movements with its lines, or None.
+
+        Probes each direction in turn, since the id alone does not say which
+        table holds it.
+        """
+        for direction in FoodMovementDirection:
+            source = self._MOVEMENT_SOURCES[direction]
+            result = await self.db.execute(
+                select(source.model)
+                .options(
+                    joinedload(source.model.responsible),
+                    selectinload(source.model.items).selectinload(
+                        source.item_model.food
+                    ),
+                )
+                # Scoping in the WHERE, not in a later comparison: a movement of
+                # another establishment is not found rather than found and hidden.
+                .where(
+                    source.model.id == movement_id,
+                    source.model.establishment_id == establishment_id,
+                )
+            )
+            movement = result.unique().scalar_one_or_none()
+            if movement is not None:
+                return FoodMovementDetailDomain.from_db(movement, direction)
+        return None

@@ -40,6 +40,7 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/export/unmapped-label` | 400 | `UnmappedExportLabelError` | Exception raised when a CSV export hits an enum value with no label. |
 | `/errors/field-worker-is-not-pending` | 400 | `FieldWorkerNotPendingError` | Raised when a field worker is not awaiting validation. |
 | `/errors/filter-not-applicable` | 400 | `FilterNotApplicableError` | Raised when a filter resolves through a target the resource does not carry. |
+| `/errors/food-movement-not-found` | 404 | `FoodMovementNotFoundError` | Exception raised when a food movement cannot be found in an establishment. |
 | `/errors/food-not-found` | 404 | `FoodNotFoundError` | Exception raised when a food cannot be found. |
 | `/errors/insufficient-stock` | 409 | `InsufficientStockError` | Exception raised when an outflow exceeds an establishment's stock. |
 | `/errors/invalid-age-range` | 400 | `InvalidAgeRangeError` | Raised when an age-range filter has a minimum above its maximum. |

@@ -816,6 +816,25 @@ class FoodNotFoundError(NotFoundError):
         )
 
 
+class FoodMovementNotFoundError(NotFoundError):
+    """Exception raised when a food movement cannot be found in an establishment.
+
+    Also raised when the movement exists but belongs to a different
+    establishment, so the two cases are indistinguishable to the caller.
+
+    Args:
+        movement_id (str): The ID that was looked up.
+    """
+
+    error_type = "food-movement-not-found"
+
+    def __init__(self, movement_id: str):
+        super().__init__(
+            "Food movement not found",
+            f"No food movement with id {movement_id} exists in this establishment.",
+        )
+
+
 class InsufficientStockError(ConflictError):
     """Exception raised when an outflow exceeds an establishment's stock.
 

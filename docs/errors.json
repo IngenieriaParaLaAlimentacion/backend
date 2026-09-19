@@ -115,6 +115,12 @@
       "description": "Raised when a filter resolves through a target the resource does not carry."
     },
     {
+      "type": "/errors/food-movement-not-found",
+      "status": 404,
+      "exception": "FoodMovementNotFoundError",
+      "description": "Exception raised when a food movement cannot be found in an establishment."
+    },
+    {
       "type": "/errors/food-not-found",
       "status": 404,
       "exception": "FoodNotFoundError",

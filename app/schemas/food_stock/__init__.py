@@ -1,3 +1,3 @@
-from .food_stock_schema import FoodMovementSummary, FoodStockItem
+from .food_stock_schema import FoodMovementDetail, FoodMovementSummary, FoodStockItem
 
-__all__ = ["FoodMovementSummary", "FoodStockItem"]
+__all__ = ["FoodMovementDetail", "FoodMovementSummary", "FoodStockItem"]

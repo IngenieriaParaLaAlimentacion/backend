@@ -373,6 +373,10 @@ def _movements_url(establishment_id) -> str:
     return f"/api/v1/establishments/{establishment_id}/food-movements"
 
 
+def _movement_detail_url(establishment_id, movement_id) -> str:
+    return f"{_movements_url(establishment_id)}/{movement_id}"
+
+
 async def _walk_stock_pages(
     client, headers, establishment_id, sort_order, page_size: int = 4
 ) -> list[dict]:
@@ -1182,6 +1186,225 @@ class TestMovements:
 
     async def test_unauthenticated_is_refused(self, client, db_establishment) -> None:
         response = await client.get(_movements_url(db_establishment.id))
+
+        assert response.status_code == 401
+
+
+class TestMovementDetail:
+    async def test_an_intake_detail_carries_its_lines(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        headers, user_id = field_worker_with_access
+        intake = await client.post(
+            INTAKES_URL,
+            json=_intake_body(
+                db_establishment.id,
+                [(foods.rice, "2.5"), (foods.eggs, "12")],
+                comments="Donación",
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            _movement_detail_url(db_establishment.id, intake.json()["id"]),
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert set(body) == {
+            "id",
+            "direction",
+            "occurred_at",
+            "source",
+            "comments",
+            "responsible",
+            "items",
+        }
+        assert body["direction"] == "in"
+        assert body["source"] == "manual"
+        assert body["comments"] == "Donación"
+        assert body["responsible"]["id"] == str(user_id)
+        assert set(body["responsible"]) == {"id", "name", "last_name"}
+        assert {
+            (line["food"]["name"], line["unit"], line["quantity"])
+            for line in body["items"]
+        } == {
+            ("Arroz", "kilogramos", "2.500"),
+            ("Huevo", "unidades", "12.000"),
+        }
+
+    async def test_an_outflow_detail_has_the_same_shape(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        """Source and comments are exposed on both directions, not just intakes."""
+        headers, _ = field_worker_with_access
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
+            headers=headers,
+        )
+        outflow = await client.post(
+            OUTFLOWS_URL,
+            json=_outflow_body(
+                db_establishment.id, [(foods.rice, "4")], comments="Almuerzo"
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            _movement_detail_url(db_establishment.id, outflow.json()["id"]),
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["direction"] == "out"
+        assert body["source"] == "manual"
+        assert body["comments"] == "Almuerzo"
+        assert [line["quantity"] for line in body["items"]] == ["4.000"]
+
+    async def test_repeated_food_lines_are_returned_as_recorded(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        """The counterpart of the listing's distinct `food_count`: the detail
+        never aggregates."""
+        headers, _ = field_worker_with_access
+        intake = await client.post(
+            INTAKES_URL,
+            json=_intake_body(
+                db_establishment.id, [(foods.rice, "2"), (foods.rice, "3")]
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            _movement_detail_url(db_establishment.id, intake.json()["id"]),
+            headers=headers,
+        )
+
+        lines = response.json()["items"]
+        assert len(lines) == 2
+        assert sorted(line["quantity"] for line in lines) == ["2.000", "3.000"]
+
+    async def test_a_listed_movement_resolves_in_the_detail(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        """The two endpoints agree on ids and on the direction they report."""
+        headers, _ = field_worker_with_access
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
+            headers=headers,
+        )
+        listed = (
+            await client.get(_movements_url(db_establishment.id), headers=headers)
+        ).json()["items"][0]
+
+        response = await client.get(
+            _movement_detail_url(db_establishment.id, listed["id"]), headers=headers
+        )
+
+        assert response.status_code == 200
+        assert response.json()["id"] == listed["id"]
+        assert response.json()["direction"] == listed["direction"]
+
+    async def test_a_movement_of_another_establishment_is_not_found(
+        self, client, make_field_worker_with_access, db_establishment, foods
+    ) -> None:
+        """404, not 403: a 403 would confirm the id exists somewhere else."""
+        from app.db.database import AsyncSessionLocal
+        from app.models.establishments.establishment import Establishment
+
+        async with AsyncSessionLocal() as session:
+            other = Establishment(
+                name="Ajeno",
+                formatted_address="Calle 7",
+                latitude=-34.6,
+                longitude=-58.4,
+                place_id="place-test-007",
+                city="Buenos Aires",
+                province="Buenos Aires",
+            )
+            session.add(other)
+            await session.commit()
+            other_id = other.id
+
+        mine_headers, _ = await make_field_worker_with_access(db_establishment.id)
+        other_headers, _ = await make_field_worker_with_access(other_id)
+        intake = await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
+            headers=mine_headers,
+        )
+
+        response = await client.get(
+            _movement_detail_url(other_id, intake.json()["id"]),
+            headers=other_headers,
+        )
+
+        assert response.status_code == 404
+
+    async def test_an_unknown_movement_is_not_found(
+        self, client, field_worker_with_access, db_establishment
+    ) -> None:
+        headers, _ = field_worker_with_access
+
+        response = await client.get(
+            _movement_detail_url(db_establishment.id, uuid.uuid4()), headers=headers
+        )
+
+        assert response.status_code == 404
+        assert response.json()["type"] == "/errors/food-movement-not-found"
+
+    async def test_an_unknown_establishment_is_not_found(
+        self, client, admin_headers
+    ) -> None:
+        response = await client.get(
+            _movement_detail_url(uuid.uuid4(), uuid.uuid4()), headers=admin_headers
+        )
+
+        assert response.status_code == 404
+
+    async def test_a_field_worker_without_access_is_refused(
+        self, client, make_field_worker_with_access, db_establishment, foods
+    ) -> None:
+        from app.db.database import AsyncSessionLocal
+        from app.models.establishments.establishment import Establishment
+
+        async with AsyncSessionLocal() as session:
+            other = Establishment(
+                name="Ajeno",
+                formatted_address="Calle 8",
+                latitude=-34.6,
+                longitude=-58.4,
+                place_id="place-test-008",
+                city="Buenos Aires",
+                province="Buenos Aires",
+            )
+            session.add(other)
+            await session.commit()
+            other_id = other.id
+
+        mine_headers, _ = await make_field_worker_with_access(db_establishment.id)
+        outsider_headers, _ = await make_field_worker_with_access(other_id)
+        intake = await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
+            headers=mine_headers,
+        )
+
+        response = await client.get(
+            _movement_detail_url(db_establishment.id, intake.json()["id"]),
+            headers=outsider_headers,
+        )
+
+        assert response.status_code == 403
+
+    async def test_unauthenticated_is_refused(self, client, db_establishment) -> None:
+        response = await client.get(
+            _movement_detail_url(db_establishment.id, uuid.uuid4())
+        )
 
         assert response.status_code == 401
 

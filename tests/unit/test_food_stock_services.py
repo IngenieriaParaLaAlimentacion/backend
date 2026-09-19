@@ -18,6 +18,7 @@ from app.domain.food_stock import (
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
+    FoodMovementNotFoundError,
     FoodNotFoundError,
     InsufficientStockError,
 )
@@ -276,3 +277,43 @@ class TestMovementListing:
         )
 
         uow.food_repo.get_by_ids.assert_not_awaited()
+
+
+class TestMovementDetail:
+    async def test_an_unknown_movement_raises(self, uow, actor):
+        uow.food_stock_repo.get_movement = AsyncMock(return_value=None)
+
+        with pytest.raises(FoodMovementNotFoundError):
+            await FoodStockService(uow).get_movement(
+                establishment_id=ESTABLISHMENT_ID,
+                movement_id=uuid.uuid4(),
+                actor=actor,
+            )
+
+    async def test_an_unknown_establishment_is_never_read(self, uow, actor):
+        """The access check runs first, so a bad id costs no movement query."""
+        uow.establishment_repo.get_by_id_or_raise = AsyncMock(
+            side_effect=EstablishmentNotFoundError(str(ESTABLISHMENT_ID))
+        )
+        uow.food_stock_repo.get_movement = AsyncMock(return_value=None)
+
+        with pytest.raises(EstablishmentNotFoundError):
+            await FoodStockService(uow).get_movement(
+                establishment_id=ESTABLISHMENT_ID,
+                movement_id=uuid.uuid4(),
+                actor=actor,
+            )
+
+        uow.food_stock_repo.get_movement.assert_not_awaited()
+
+    async def test_the_movement_is_returned_verbatim(self, uow, actor):
+        movement = object()
+        uow.food_stock_repo.get_movement = AsyncMock(return_value=movement)
+
+        result = await FoodStockService(uow).get_movement(
+            establishment_id=ESTABLISHMENT_ID,
+            movement_id=uuid.uuid4(),
+            actor=actor,
+        )
+
+        assert result is movement

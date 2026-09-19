@@ -3,6 +3,7 @@ from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.food_stock import (
+    FoodMovementDetailDomain,
     FoodMovementListingParams,
     FoodMovementSummaryDomain,
     FoodStockItemDomain,
@@ -10,6 +11,7 @@ from app.domain.food_stock import (
 )
 from app.domain.pagination import PaginatedResult
 from app.domain.user import UserActor
+from app.exceptions.domain_exceptions import FoodMovementNotFoundError
 from app.services.access import check_establishment_access
 from app.services.exporters.csv.csv_exporter import CsvExporter
 
@@ -88,6 +90,25 @@ class FoodStockService:
             page=page,
             page_size=page_size,
         )
+
+    async def get_movement(
+        self, establishment_id: UUID, movement_id: UUID, actor: UserActor
+    ) -> FoodMovementDetailDomain:
+        """Return one of the establishment's movements with all of its lines.
+
+        Raises:
+            EstablishmentNotFoundError: establishment_id does not exist.
+            EstablishmentAccessDeniedError: field worker lacks approved access.
+            FoodMovementNotFoundError: the movement does not exist in this
+                establishment.
+        """
+        await self._resolve_establishment(establishment_id, actor)
+        movement = await self.uow.food_stock_repo.get_movement(
+            establishment_id, movement_id
+        )
+        if movement is None:
+            raise FoodMovementNotFoundError(str(movement_id))
+        return movement
 
     async def prepare_stock_export(
         self, establishment_id: UUID, actor: UserActor, params: FoodStockListingParams

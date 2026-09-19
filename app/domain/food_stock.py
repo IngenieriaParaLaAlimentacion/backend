@@ -6,6 +6,7 @@ from uuid import UUID
 
 from app.domain.common_domains import IdentifierRefDomain
 from app.domain.food_catalog import MeasurementUnit
+from app.domain.food_intake import FoodLineDomain
 from app.domain.measurement import ResponsibleRefDomain
 
 
@@ -92,4 +93,39 @@ class FoodMovementSummaryDomain:
                 last_name=summary_row.responsible_last_name,
             ),
             food_count=summary_row.food_count,
+        )
+
+
+@dataclass
+class FoodMovementDetailDomain:
+    """One movement -- an intake or an outflow -- with all of its lines.
+
+    ``source`` is annotated ``str`` because the attribute carries a
+    ``FoodIntakeSource`` *or* a ``FoodOutflowSource``.
+
+    ``items`` are rendered as stored, repeated foods included.
+    """
+
+    id: UUID
+    direction: FoodMovementDirection
+    occurred_at: datetime
+    comments: str | None
+    source: str
+    responsible: ResponsibleRefDomain
+    items: list[FoodLineDomain]
+
+    @classmethod
+    def from_db(
+        cls, movement, direction: FoodMovementDirection
+    ) -> "FoodMovementDetailDomain":
+        """Build from an intake or outflow row with ``responsible`` and ``items``
+        (each with its ``food``) loaded."""
+        return cls(
+            id=movement.id,
+            direction=direction,
+            occurred_at=movement.occurred_at,
+            comments=movement.comments,
+            source=movement.source,
+            responsible=ResponsibleRefDomain.from_db(movement.responsible),
+            items=[FoodLineDomain.from_db(item) for item in movement.items],
         )

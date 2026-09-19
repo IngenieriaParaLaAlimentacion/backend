@@ -12,7 +12,11 @@ from app.api.v1.params import (
 )
 from app.core.dependencies import get_food_stock_service, require_any
 from app.domain import UserActor
-from app.schemas.food_stock.food_stock_schema import FoodMovementSummary, FoodStockItem
+from app.schemas.food_stock.food_stock_schema import (
+    FoodMovementDetail,
+    FoodMovementSummary,
+    FoodStockItem,
+)
 from app.schemas.pagination import PaginatedResponse
 from app.services.exporters.csv.columns import FOOD_STOCK_EXPORTER
 from app.services.food_stock.food_stock_service import FoodStockService
@@ -121,3 +125,36 @@ async def list_establishment_movements(
         page_size=result.page_size,
         total_pages=result.total_pages,
     )
+
+
+@router.get(
+    "/{establishment_id}/food-movements/{movement_id}",
+    response_model=FoodMovementDetail,
+    summary="Get one of an establishment's food movements",
+    description=(
+        "One movement — an intake or an outflow — with all of its food lines, "
+        "each carrying the unit from the catalog, plus the movement's source "
+        "and comments. Lines are returned as recorded: a movement that lists "
+        "the same food twice comes back with both lines. A movement that "
+        "belongs to another establishment answers 404, the same as one that "
+        "does not exist."
+    ),
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Establishment or movement not found"
+        },
+    },
+)
+async def get_establishment_movement(
+    establishment_id: UUID,
+    movement_id: UUID,
+    actor: UserActor = Depends(require_any),
+    service: FoodStockService = Depends(get_food_stock_service),
+) -> FoodMovementDetail:
+    movement = await service.get_movement(
+        establishment_id=establishment_id,
+        movement_id=movement_id,
+        actor=actor,
+    )
+    return FoodMovementDetail.model_validate(movement)
