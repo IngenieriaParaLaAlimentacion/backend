@@ -121,6 +121,12 @@
       "description": "Exception raised when a food cannot be found."
     },
     {
+      "type": "/errors/image-content-mismatch",
+      "status": 422,
+      "exception": "ImageContentMismatchError",
+      "description": "Raised when an image's bytes do not match its declared content type."
+    },
+    {
       "type": "/errors/image-too-large",
       "status": 422,
       "exception": "ImageTooLargeError",
