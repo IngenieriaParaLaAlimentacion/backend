@@ -1,5 +1,4 @@
 import asyncio
-from contextlib import asynccontextmanager
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -15,7 +14,7 @@ from app.services.notifications.stale_establishment_scheduler import (
 
 
 def test_schedule_runs_hourly_from_08_through_22_art():
-    scheduler = StaleEstablishmentScheduler(database_engine=object())
+    scheduler = StaleEstablishmentScheduler()
     job = scheduler.scheduler.get_job(SCHEDULER_JOB_ID)
 
     assert job is not None
@@ -28,7 +27,7 @@ def test_schedule_runs_hourly_from_08_through_22_art():
 
 @pytest.mark.asyncio
 async def test_scheduler_starts_and_stops_on_the_running_event_loop():
-    scheduler = StaleEstablishmentScheduler(database_engine=object())
+    scheduler = StaleEstablishmentScheduler()
 
     scheduler.start()
     assert scheduler.scheduler.running is True
@@ -38,48 +37,18 @@ async def test_scheduler_starts_and_stops_on_the_running_event_loop():
 
 
 @pytest.mark.asyncio
-async def test_run_once_executes_service_when_database_lock_is_acquired():
+async def test_run_once_executes_service_directly_without_database_lock():
     service = AsyncMock()
 
-    @asynccontextmanager
-    async def acquired_lock(*args, **kwargs):
-        yield True
-
-    scheduler = StaleEstablishmentScheduler(
-        database_engine=object(), service_factory=lambda: service
-    )
-    with patch(
-        "app.services.notifications.stale_establishment_scheduler.try_advisory_lock",
-        acquired_lock,
-    ):
-        await scheduler.run_once()
+    scheduler = StaleEstablishmentScheduler(service_factory=lambda: service)
+    await scheduler.run_once()
 
     service.run.assert_awaited_once_with()
 
 
 @pytest.mark.asyncio
-async def test_run_once_skips_when_another_process_owns_database_lock():
-    service_factory = AsyncMock()
-
-    @asynccontextmanager
-    async def unavailable_lock(*args, **kwargs):
-        yield False
-
-    scheduler = StaleEstablishmentScheduler(
-        database_engine=object(), service_factory=service_factory
-    )
-    with patch(
-        "app.services.notifications.stale_establishment_scheduler.try_advisory_lock",
-        unavailable_lock,
-    ):
-        await scheduler.run_once()
-
-    service_factory.assert_not_called()
-
-
-@pytest.mark.asyncio
 async def test_shutdown_pauses_new_runs_and_waits_for_active_run():
-    scheduler = StaleEstablishmentScheduler(database_engine=object())
+    scheduler = StaleEstablishmentScheduler()
     apscheduler = MagicMock()
     apscheduler.running = True
     apscheduler.shutdown.side_effect = lambda **kwargs: setattr(

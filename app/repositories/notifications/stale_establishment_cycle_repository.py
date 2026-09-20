@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import delete, func, or_, select
+from sqlalchemy import and_, delete, func, or_, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -96,16 +96,35 @@ class StaleEstablishmentCycleRepository:
         )
 
     async def list_due_for_update(
-        self, *, now: datetime, limit: int
+        self,
+        *,
+        now: datetime,
+        limit: int,
+        after_due_at: datetime | None = None,
+        after_id: UUID | None = None,
     ) -> list[StaleEstablishmentCycle]:
-        """Lock a bounded due cohort, allowing concurrent runners to skip it."""
+        """Lock one keyset page, allowing concurrent runners to skip it."""
+        predicates = [
+            StaleEstablishmentCycle.next_due_at.is_not(None),
+            StaleEstablishmentCycle.next_due_at <= now,
+        ]
+        if after_due_at is not None and after_id is not None:
+            predicates.append(
+                or_(
+                    StaleEstablishmentCycle.next_due_at > after_due_at,
+                    and_(
+                        StaleEstablishmentCycle.next_due_at == after_due_at,
+                        StaleEstablishmentCycle.id > after_id,
+                    ),
+                )
+            )
         result = await self.db.execute(
             select(StaleEstablishmentCycle)
-            .where(
-                StaleEstablishmentCycle.next_due_at.is_not(None),
-                StaleEstablishmentCycle.next_due_at <= now,
+            .where(*predicates)
+            .order_by(
+                StaleEstablishmentCycle.next_due_at,
+                StaleEstablishmentCycle.id,
             )
-            .order_by(StaleEstablishmentCycle.next_due_at)
             .limit(limit)
             .with_for_update(skip_locked=True)
         )

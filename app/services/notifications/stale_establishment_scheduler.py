@@ -5,11 +5,8 @@ from zoneinfo import ZoneInfo
 import structlog
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
-from sqlalchemy.ext.asyncio import AsyncEngine
 
 from app.config.settings import settings
-from app.db.advisory_lock import try_advisory_lock
-from app.db.database import engine
 from app.db.unit_of_work import UnitOfWork
 from app.exceptions.domain_exceptions import NotificationConfigurationError
 from app.services.notifications.fcm_client import FcmClient
@@ -22,11 +19,6 @@ logger = structlog.get_logger()
 ART = ZoneInfo("America/Argentina/Buenos_Aires")
 ACTIVE_HOURS = "8-22"
 SCHEDULER_JOB_ID = "stale-establishment-notifications"
-
-# Stable application-specific bigint. Session advisory locks are released by PostgreSQL
-# when a crashed process loses its connection.
-_ADVISORY_LOCK_ID = 0x5354414C45505553
-
 
 def build_stale_establishment_notification_service() -> (
     StaleEstablishmentNotificationService
@@ -57,12 +49,10 @@ class StaleEstablishmentScheduler:
     def __init__(
         self,
         *,
-        database_engine: AsyncEngine = engine,
         service_factory: Callable[
             [], StaleEstablishmentNotificationService
         ] = build_stale_establishment_notification_service,
     ) -> None:
-        self.database_engine = database_engine
         self.service_factory = service_factory
         self._idle = asyncio.Event()
         self._idle.set()
@@ -101,31 +91,21 @@ class StaleEstablishmentScheduler:
             await asyncio.sleep(0)
 
     async def run_once(self) -> None:
-        """Run once when this process wins cross-process database ownership."""
+        """Run one scheduled workflow execution."""
         self._idle.clear()
         try:
-            async with try_advisory_lock(
-                self.database_engine, _ADVISORY_LOCK_ID
-            ) as acquired:
-                if not acquired:
-                    logger.info(
-                        "Stale-establishment scheduler run skipped",
-                        reason="another_process_owns_lock",
-                    )
-                    return
-
-                logger.info("Stale-establishment scheduler run started")
-                try:
-                    await self.service_factory().run()
-                except NotificationConfigurationError:
-                    logger.error(
-                        "Stale-establishment scheduler is not configured",
-                        exc_info=True,
-                    )
-                    return
-                except Exception:
-                    logger.exception("Stale-establishment scheduler run failed")
-                    raise
-                logger.info("Stale-establishment scheduler run completed")
+            logger.info("Stale-establishment scheduler run started")
+            try:
+                await self.service_factory().run()
+            except NotificationConfigurationError:
+                logger.error(
+                    "Stale-establishment scheduler is not configured",
+                    exc_info=True,
+                )
+                return
+            except Exception:
+                logger.exception("Stale-establishment scheduler run failed")
+                raise
+            logger.info("Stale-establishment scheduler run completed")
         finally:
             self._idle.set()

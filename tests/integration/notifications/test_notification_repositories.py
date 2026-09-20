@@ -535,6 +535,64 @@ async def test_notice_consumption_requires_devices_and_advances_only_once(app):
         assert jobs[0].threshold_hours == 168
 
 
+async def test_device_less_due_pages_do_not_starve_a_later_eligible_cycle(app):
+    from app.db.database import AsyncSessionLocal
+    from app.db.unit_of_work import UnitOfWork
+    from app.services.notifications.stale_establishment_notification_service import (
+        StaleEstablishmentNotificationService,
+    )
+
+    now = ACTIVATED_AT + timedelta(days=22)
+    async with AsyncSessionLocal() as session:
+        earlier_cycle_ids = []
+        for index in range(101):
+            establishment = _establishment(f"No devices {index}")
+            session.add(establishment)
+            await session.flush()
+            cycle = await _create_cycle(
+                session,
+                establishment.id,
+                started_at=ACTIVATED_AT - timedelta(days=1),
+            )
+            earlier_cycle_ids.append(cycle.id)
+
+        eligible_establishment = _establishment("Eligible after page one")
+        worker = _user("eligible-after-page-one")
+        session.add_all([eligible_establishment, worker])
+        await session.flush()
+        eligible_cycle = await _create_cycle(session, eligible_establishment.id)
+        session.add(
+            UserEstablishment(
+                user_id=worker.id,
+                establishment_id=eligible_establishment.id,
+                status=UserEstablishmentStatus.APPROVED,
+            )
+        )
+        device = await _create_device(session, worker.id, "eligible-after-page-one")
+        await session.commit()
+        eligible_cycle_id = eligible_cycle.id
+        device_id = device.id
+
+    service = StaleEstablishmentNotificationService(
+        uow_factory=UnitOfWork,
+        fcm_client=None,
+    )
+    await service._consume_due_thresholds(now=now)
+
+    async with AsyncSessionLocal() as session:
+        eligible_cycle = await session.get(
+            StaleEstablishmentCycle, eligible_cycle_id
+        )
+        assert eligible_cycle.next_threshold_hours == 336
+        jobs = list((await session.scalars(select(PushDeliveryJob))).all())
+        assert len(jobs) == 1
+        assert jobs[0].device_id == device_id
+        first_earlier_cycle = await session.get(
+            StaleEstablishmentCycle, earlier_cycle_ids[0]
+        )
+        assert first_earlier_cycle.next_threshold_hours == 168
+
+
 async def test_guarded_token_rotation_and_database_cascades(app):
     from app.db.database import AsyncSessionLocal
 

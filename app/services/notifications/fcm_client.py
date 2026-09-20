@@ -42,6 +42,8 @@ class FcmClient:
     ) -> None:
         self.project_id = project_id
         self.timeout_seconds = timeout_seconds
+        self._http_client: httpx.AsyncClient | None = None
+        self._refresh_lock = asyncio.Lock()
         self.credentials = Credentials.from_service_account_info(
             {
                 # This is a credential-schema discriminator, not a secret value.
@@ -56,9 +58,24 @@ class FcmClient:
 
     async def _access_token(self) -> str:
         if not self.credentials.valid:
-            await asyncio.to_thread(self.credentials.refresh, Request())
+            async with self._refresh_lock:
+                if not self.credentials.valid:
+                    await asyncio.to_thread(self.credentials.refresh, Request())
         assert self.credentials.token is not None
         return self.credentials.token
+
+    async def start(self) -> None:
+        """Open the bounded-run connection pool and validate credentials."""
+        if self._http_client is None:
+            self._http_client = httpx.AsyncClient(timeout=self.timeout_seconds)
+        await self._access_token()
+
+    async def aclose(self) -> None:
+        """Close the bounded-run connection pool."""
+        if self._http_client is not None:
+            client = self._http_client
+            self._http_client = None
+            await client.aclose()
 
     @staticmethod
     def _fcm_error_code(body: Mapping) -> str | None:
@@ -105,28 +122,30 @@ class FcmClient:
     ) -> FcmResult:
         """Send one visible notification and classify its terminality."""
         try:
+            if self._http_client is None:
+                await self.start()
             access_token = await self._access_token()
-            async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
-                response = await client.post(
-                    "https://fcm.googleapis.com/v1/projects/"
-                    f"{self.project_id}/messages:send",
-                    headers={"Authorization": f"Bearer {access_token}"},
-                    json={
-                        "message": {
-                            "token": token,
-                            "notification": {"title": title, "body": body},
-                            "data": data,
-                            "android": {
-                                "collapse_key": collapse_key,
-                                "notification": {
-                                    "channel_id": "stale_establishments",
-                                    "tag": collapse_key,
-                                },
+            assert self._http_client is not None
+            response = await self._http_client.post(
+                "https://fcm.googleapis.com/v1/projects/"
+                f"{self.project_id}/messages:send",
+                headers={"Authorization": f"Bearer {access_token}"},
+                json={
+                    "message": {
+                        "token": token,
+                        "notification": {"title": title, "body": body},
+                        "data": data,
+                        "android": {
+                            "collapse_key": collapse_key,
+                            "notification": {
+                                "channel_id": "stale_establishments",
+                                "tag": collapse_key,
                             },
-                            "apns": {"headers": {"apns-collapse-id": collapse_key}},
-                        }
-                    },
-                )
+                        },
+                        "apns": {"headers": {"apns-collapse-id": collapse_key}},
+                    }
+                },
+            )
         except (GoogleAuthError, httpx.HTTPError, TimeoutError, OSError):
             return FcmResult(FcmOutcome.TRANSIENT)
 

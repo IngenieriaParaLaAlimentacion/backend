@@ -1,6 +1,7 @@
+import asyncio
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, call
 from uuid import uuid4
 
 import pytest
@@ -20,11 +21,14 @@ class FakeUow:
     def __init__(self, **repositories):
         self.__dict__.update(repositories)
         self.commit = AsyncMock()
+        self.active = False
 
     async def __aenter__(self):
+        self.active = True
         return self
 
     async def __aexit__(self, exc_type, exc, traceback):
+        self.active = False
         return None
 
 
@@ -36,8 +40,16 @@ class UowFactory:
         return self.uows.pop(0)
 
 
-def _service(factory, fcm=object()):
-    return StaleEstablishmentNotificationService(factory, fcm)
+def _service(factory, fcm=object(), clock=lambda: NOW):
+    return StaleEstablishmentNotificationService(factory, fcm, clock=clock)
+
+
+def _fcm(*, send):
+    return SimpleNamespace(
+        start=AsyncMock(),
+        send=send,
+        aclose=AsyncMock(),
+    )
 
 
 async def test_missing_fcm_configuration_is_rejected():
@@ -283,7 +295,7 @@ async def test_message_and_payload_contract():
         threshold_hours=336,
         attempt_count=0,
     )
-    fcm = SimpleNamespace(send=AsyncMock(return_value=FcmResult(FcmOutcome.SUCCESS)))
+    fcm = _fcm(send=AsyncMock(return_value=FcmResult(FcmOutcome.SUCCESS)))
     service = _service(lambda: None, fcm=fcm)
     service._synchronize_cycles = AsyncMock()
     service._consume_due_thresholds = AsyncMock()
@@ -304,6 +316,8 @@ async def test_message_and_payload_contract():
         collapse_key=f"stale-establishment:{establishment_id}",
     )
     service._finish.assert_awaited_once_with(job, FcmOutcome.SUCCESS, NOW)
+    fcm.start.assert_awaited_once_with()
+    fcm.aclose.assert_awaited_once_with()
 
 
 async def test_unexpected_provider_error_is_isolated_as_transient():
@@ -315,7 +329,7 @@ async def test_unexpected_provider_error_is_isolated_as_transient():
         threshold_hours=168,
         attempt_count=0,
     )
-    fcm = SimpleNamespace(send=AsyncMock(side_effect=RuntimeError("provider")))
+    fcm = _fcm(send=AsyncMock(side_effect=RuntimeError("provider")))
     service = _service(lambda: None, fcm=fcm)
     service._synchronize_cycles = AsyncMock()
     service._consume_due_thresholds = AsyncMock()
@@ -325,3 +339,214 @@ async def test_unexpected_provider_error_is_isolated_as_transient():
     await service.run(NOW)
 
     service._finish.assert_awaited_once_with(job, FcmOutcome.TRANSIENT, NOW)
+
+
+async def test_claims_fresh_waves_of_ten_after_prior_wave_is_finalized():
+    jobs = [
+        SimpleNamespace(
+            job_id=uuid4(),
+            fcm_token=f"token-{index}",
+            establishment_id=uuid4(),
+            threshold_hours=168,
+            attempt_count=0,
+        )
+        for index in range(12)
+    ]
+    times = iter(
+        [
+            NOW + timedelta(seconds=1),
+            *[NOW + timedelta(seconds=2)] * 10,
+            NOW + timedelta(seconds=3),
+            *[NOW + timedelta(seconds=4)] * 2,
+            NOW + timedelta(seconds=5),
+        ]
+    )
+    fcm = _fcm(send=AsyncMock(return_value=FcmResult(FcmOutcome.SUCCESS)))
+    service = _service(lambda: None, fcm=fcm, clock=lambda: next(times))
+    service._synchronize_cycles = AsyncMock()
+    service._consume_due_thresholds = AsyncMock()
+    events = []
+
+    async def claim_jobs(claimed_at, limit):
+        events.append(("claim", claimed_at, limit))
+        if len([event for event in events if event[0] == "claim"]) == 1:
+            return jobs[:10]
+        if len([event for event in events if event[0] == "claim"]) == 2:
+            assert events[-2][0] == "finish"
+            return jobs[10:]
+        return []
+
+    async def finish_job(job, outcome, finished_at):
+        events.append(("finish", finished_at, job.job_id))
+
+    service._claim = AsyncMock(side_effect=claim_jobs)
+    service._finish = AsyncMock(side_effect=finish_job)
+
+    await service.run(NOW)
+
+    assert service._claim.await_args_list == [
+        call(NOW + timedelta(seconds=1), 10),
+        call(NOW + timedelta(seconds=3), 10),
+        call(NOW + timedelta(seconds=5), 10),
+    ]
+    assert fcm.send.await_count == 12
+    fcm.aclose.assert_awaited_once_with()
+
+
+async def test_ten_provider_sends_are_in_flight_together():
+    jobs = [
+        SimpleNamespace(
+            job_id=uuid4(),
+            fcm_token=f"token-{index}",
+            establishment_id=uuid4(),
+            threshold_hours=168,
+            attempt_count=0,
+        )
+        for index in range(10)
+    ]
+    all_started = asyncio.Event()
+    release = asyncio.Event()
+    in_flight = 0
+
+    async def send(**kwargs):
+        nonlocal in_flight
+        in_flight += 1
+        if in_flight == 10:
+            all_started.set()
+        await release.wait()
+        return FcmResult(FcmOutcome.SUCCESS)
+
+    fcm = _fcm(send=AsyncMock(side_effect=send))
+    service = _service(lambda: None, fcm=fcm)
+    service._synchronize_cycles = AsyncMock()
+    service._consume_due_thresholds = AsyncMock()
+    service._claim = AsyncMock(side_effect=[jobs, []])
+    service._finish = AsyncMock()
+
+    run = asyncio.create_task(service.run(NOW))
+    await asyncio.wait_for(all_started.wait(), timeout=1)
+    assert service._finish.await_count == 0
+    release.set()
+    await run
+
+    assert service._finish.await_count == 10
+
+
+async def test_retry_uses_actual_finalization_time():
+    job = SimpleNamespace(job_id=uuid4(), attempt_count=1)
+    release = AsyncMock()
+    uow = FakeUow(push_delivery_job_repo=SimpleNamespace(release_for_retry=release))
+    finished_at = NOW + timedelta(minutes=7)
+
+    await _service(UowFactory(uow))._finish(job, FcmOutcome.TRANSIENT, finished_at)
+
+    release.assert_awaited_once_with(
+        job.job_id, available_at=finished_at + timedelta(minutes=1)
+    )
+
+
+async def test_no_uow_is_open_while_provider_send_is_blocked():
+    job_id = uuid4()
+    job = SimpleNamespace(
+        job_id=job_id,
+        fcm_token="token",
+        establishment_id=uuid4(),
+        threshold_hours=168,
+        attempt_count=0,
+    )
+    claim_uow = FakeUow(
+        push_delivery_job_repo=SimpleNamespace(
+            claim_due=AsyncMock(return_value=[job_id])
+        )
+    )
+    hydrate_uow = FakeUow(
+        push_delivery_job_repo=SimpleNamespace(
+            get_contexts=AsyncMock(return_value=[job])
+        )
+    )
+    empty_uow = FakeUow(
+        push_delivery_job_repo=SimpleNamespace(claim_due=AsyncMock(return_value=[]))
+    )
+    send_started = asyncio.Event()
+    release = asyncio.Event()
+
+    async def send(**kwargs):
+        assert not claim_uow.active
+        assert not hydrate_uow.active
+        send_started.set()
+        await release.wait()
+        return FcmResult(FcmOutcome.SUCCESS)
+
+    fcm = _fcm(send=AsyncMock(side_effect=send))
+    service = _service(UowFactory(claim_uow, hydrate_uow, empty_uow), fcm=fcm)
+    service._synchronize_cycles = AsyncMock()
+    service._consume_due_thresholds = AsyncMock()
+    service._finish = AsyncMock()
+
+    run = asyncio.create_task(service.run(NOW))
+    await asyncio.wait_for(send_started.wait(), timeout=1)
+    release.set()
+    await run
+
+
+async def test_one_provider_failure_does_not_cancel_other_nine_sends():
+    jobs = [
+        SimpleNamespace(
+            job_id=uuid4(),
+            fcm_token=f"token-{index}",
+            establishment_id=uuid4(),
+            threshold_hours=168,
+            attempt_count=0,
+        )
+        for index in range(10)
+    ]
+    completed = []
+
+    async def send(*, token, **kwargs):
+        await asyncio.sleep(0)
+        if token == "token-0":
+            raise RuntimeError("provider")
+        completed.append(token)
+        return FcmResult(FcmOutcome.SUCCESS)
+
+    fcm = _fcm(send=AsyncMock(side_effect=send))
+    service = _service(lambda: None, fcm=fcm)
+    service._synchronize_cycles = AsyncMock()
+    service._consume_due_thresholds = AsyncMock()
+    service._claim = AsyncMock(side_effect=[jobs, []])
+    service._finish = AsyncMock()
+
+    await service.run(NOW)
+
+    assert len(completed) == 9
+    outcomes = {
+        args.args[0].fcm_token: args.args[1]
+        for args in service._finish.await_args_list
+    }
+    assert outcomes["token-0"] == FcmOutcome.TRANSIENT
+    assert all(
+        outcomes[f"token-{index}"] == FcmOutcome.SUCCESS
+        for index in range(1, 10)
+    )
+
+
+async def test_run_never_processes_more_than_500_jobs():
+    job = SimpleNamespace(
+        job_id=uuid4(),
+        fcm_token="token",
+        establishment_id=uuid4(),
+        threshold_hours=168,
+        attempt_count=0,
+    )
+    fcm = _fcm(send=AsyncMock(return_value=FcmResult(FcmOutcome.SUCCESS)))
+    service = _service(lambda: None, fcm=fcm)
+    service._synchronize_cycles = AsyncMock()
+    service._consume_due_thresholds = AsyncMock()
+    service._claim = AsyncMock(return_value=[job] * 10)
+    service._finish = AsyncMock()
+
+    await service.run(NOW)
+
+    assert service._claim.await_count == 50
+    assert all(args.args[1] == 10 for args in service._claim.await_args_list)
+    assert fcm.send.await_count == 500
