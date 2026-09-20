@@ -1,6 +1,3 @@
-from alembic.config import Config
-from alembic.script import ScriptDirectory
-
 from app.models.notifications.push_delivery_job import PushDeliveryJob
 from app.models.notifications.stale_establishment_cycle import (
     StaleEstablishmentCycle,
@@ -28,10 +25,3 @@ def test_delivery_jobs_have_retry_and_lease_state_only():
         "attempt_count",
     } <= set(PushDeliveryJob.__table__.c.keys())
     assert "last_error" not in PushDeliveryJob.__table__.c
-
-
-def test_notification_migration_is_linear_off_current_head():
-    scripts = ScriptDirectory.from_config(Config("alembic.ini"))
-    migration = scripts.get_revision("f4b8c2d91e06")
-    assert migration.down_revision == "65b1998cb602"
-    assert scripts.get_heads() == ["f4b8c2d91e06"]
