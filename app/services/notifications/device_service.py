@@ -1,6 +1,7 @@
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import UserNotFoundError
+from app.models.notifications.user_push_device import UserPushDevice
 from app.schemas.notifications.device_schema import DeviceRegistrationRequest
 
 
@@ -10,7 +11,9 @@ class DeviceService:
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
 
-    async def register(self, actor: UserActor, data: DeviceRegistrationRequest):
+    async def register(
+        self, actor: UserActor, data: DeviceRegistrationRequest
+    ) -> UserPushDevice:
         """Upsert an installation and reassign globally duplicated tokens."""
         if await self.uow.user_repo.get_by_id(actor.user_id) is None:
             raise UserNotFoundError(str(actor.user_id))

@@ -9,7 +9,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.service_account import Credentials
 
 _SCOPE = "https://www.googleapis.com/auth/firebase.messaging"
-_TRANSIENT_HTTP = frozenset({401, 403, 408, 429, 500, 502, 503, 504})
+_TRANSIENT_HTTP = frozenset({408, 429, 500, 502, 503, 504})
 _PERMANENT_TOKEN_CODES = frozenset({"UNREGISTERED", "SENDER_ID_MISMATCH"})
 
 

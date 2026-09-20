@@ -125,7 +125,7 @@ class StaleEstablishmentNotificationService:
 
     @staticmethod
     def _retry_delay(attempt_count: int) -> timedelta:
-        seconds = min(60 * (2 ** max(attempt_count - 1, 0)), 6 * 60 * 60)
+        seconds = min(60 * (2**attempt_count), 6 * 60 * 60)
         return timedelta(seconds=seconds)
 
     async def _claim(self, now: datetime, limit: int):
@@ -160,21 +160,18 @@ class StaleEstablishmentNotificationService:
     async def _send(self, fcm_client: FcmClient, job) -> FcmOutcome:
         stale_days = job.threshold_hours // 24
         title, body = self._message(stale_days)
-        try:
-            result = await fcm_client.send(
-                token=job.fcm_token,
-                title=title,
-                body=body,
-                data={
-                    "type": "stale_establishment",
-                    "establishment_id": str(job.establishment_id),
-                    "stale_days": str(stale_days),
-                },
-                collapse_key=f"stale-establishment:{job.establishment_id}",
-            )
-            return result.outcome
-        except Exception:
-            return FcmOutcome.TRANSIENT
+        result = await fcm_client.send(
+            token=job.fcm_token,
+            title=title,
+            body=body,
+            data={
+                "type": "stale_establishment",
+                "establishment_id": str(job.establishment_id),
+                "stale_days": str(stale_days),
+            },
+            collapse_key=f"stale-establishment:{job.establishment_id}",
+        )
+        return result.outcome
 
     async def _finalize_wave(self, jobs, outcomes) -> None:
         async def finalize(job, outcome) -> None:
@@ -204,15 +201,26 @@ class StaleEstablishmentNotificationService:
             remaining = _MAX_JOBS_PER_RUN
             while remaining:
                 claimed_at = self.clock().astimezone(timezone.utc)
-                jobs = await self._claim(
-                    claimed_at, min(_BATCH_SIZE, remaining)
-                )
+                jobs = await self._claim(claimed_at, min(_BATCH_SIZE, remaining))
                 if not jobs:
                     break
-                outcomes = await asyncio.gather(
-                    *(self._send(fcm_client, job) for job in jobs)
+                results = await asyncio.gather(
+                    *(self._send(fcm_client, job) for job in jobs),
+                    return_exceptions=True,
                 )
-                await self._finalize_wave(jobs, outcomes)
+                completed = [
+                    (job, result)
+                    for job, result in zip(jobs, results, strict=True)
+                    if not isinstance(result, BaseException)
+                ]
+                if completed:
+                    await self._finalize_wave(
+                        [job for job, _ in completed],
+                        [outcome for _, outcome in completed],
+                    )
+                for result in results:
+                    if isinstance(result, BaseException):
+                        raise result
                 remaining -= len(jobs)
         finally:
             await fcm_client.aclose()

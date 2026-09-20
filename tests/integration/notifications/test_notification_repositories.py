@@ -580,9 +580,7 @@ async def test_device_less_due_pages_do_not_starve_a_later_eligible_cycle(app):
     await service._consume_due_thresholds(now=now)
 
     async with AsyncSessionLocal() as session:
-        eligible_cycle = await session.get(
-            StaleEstablishmentCycle, eligible_cycle_id
-        )
+        eligible_cycle = await session.get(StaleEstablishmentCycle, eligible_cycle_id)
         assert eligible_cycle.next_threshold_hours == 336
         jobs = list((await session.scalars(select(PushDeliveryJob))).all())
         assert len(jobs) == 1

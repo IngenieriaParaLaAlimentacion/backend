@@ -239,9 +239,12 @@ async def test_empty_claim_does_not_open_hydration_uow():
     claim_uow.commit.assert_awaited_once()
 
 
-@pytest.mark.parametrize("attempt", [1, 2, 20])
+@pytest.mark.parametrize(
+    ("attempt", "expected_seconds"),
+    [(0, 60), (1, 120), (2, 240), (3, 480), (20, 21_600)],
+)
 async def test_transient_release_uses_exponential_backoff_capped_at_six_hours(
-    attempt,
+    attempt, expected_seconds
 ):
     job = SimpleNamespace(job_id=uuid4(), attempt_count=attempt)
     release = AsyncMock()
@@ -249,9 +252,8 @@ async def test_transient_release_uses_exponential_backoff_capped_at_six_hours(
 
     await _service(UowFactory(uow))._finish(job, FcmOutcome.TRANSIENT, NOW)
 
-    expected = min(60 * (2 ** (attempt - 1)), 6 * 60 * 60)
     release.assert_awaited_once_with(
-        job.job_id, available_at=NOW + timedelta(seconds=expected)
+        job.job_id, available_at=NOW + timedelta(seconds=expected_seconds)
     )
 
 
@@ -320,7 +322,7 @@ async def test_message_and_payload_contract():
     fcm.aclose.assert_awaited_once_with()
 
 
-async def test_unexpected_provider_error_is_isolated_as_transient():
+async def test_unexpected_provider_error_fails_the_run_without_finalizing_the_job():
     job = SimpleNamespace(
         job_id=uuid4(),
         device_id=uuid4(),
@@ -336,9 +338,11 @@ async def test_unexpected_provider_error_is_isolated_as_transient():
     service._claim = AsyncMock(side_effect=[[job], []])
     service._finish = AsyncMock()
 
-    await service.run(NOW)
+    with pytest.raises(RuntimeError, match="provider"):
+        await service.run(NOW)
 
-    service._finish.assert_awaited_once_with(job, FcmOutcome.TRANSIENT, NOW)
+    service._finish.assert_not_awaited()
+    fcm.aclose.assert_awaited_once_with()
 
 
 async def test_claims_fresh_waves_of_ten_after_prior_wave_is_finalized():
@@ -441,7 +445,7 @@ async def test_retry_uses_actual_finalization_time():
     await _service(UowFactory(uow))._finish(job, FcmOutcome.TRANSIENT, finished_at)
 
     release.assert_awaited_once_with(
-        job.job_id, available_at=finished_at + timedelta(minutes=1)
+        job.job_id, available_at=finished_at + timedelta(minutes=2)
     )
 
 
@@ -516,17 +520,16 @@ async def test_one_provider_failure_does_not_cancel_other_nine_sends():
     service._claim = AsyncMock(side_effect=[jobs, []])
     service._finish = AsyncMock()
 
-    await service.run(NOW)
+    with pytest.raises(RuntimeError, match="provider"):
+        await service.run(NOW)
 
     assert len(completed) == 9
     outcomes = {
-        args.args[0].fcm_token: args.args[1]
-        for args in service._finish.await_args_list
+        args.args[0].fcm_token: args.args[1] for args in service._finish.await_args_list
     }
-    assert outcomes["token-0"] == FcmOutcome.TRANSIENT
+    assert "token-0" not in outcomes
     assert all(
-        outcomes[f"token-{index}"] == FcmOutcome.SUCCESS
-        for index in range(1, 10)
+        outcomes[f"token-{index}"] == FcmOutcome.SUCCESS for index in range(1, 10)
     )
 
 

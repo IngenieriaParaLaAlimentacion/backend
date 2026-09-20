@@ -20,6 +20,7 @@ ART = ZoneInfo("America/Argentina/Buenos_Aires")
 ACTIVE_HOURS = "8-22"
 SCHEDULER_JOB_ID = "stale-establishment-notifications"
 
+
 def build_stale_establishment_notification_service() -> (
     StaleEstablishmentNotificationService
 ):

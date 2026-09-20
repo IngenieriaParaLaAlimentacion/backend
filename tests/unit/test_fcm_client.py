@@ -118,7 +118,13 @@ async def test_credential_refresh_failure_is_transient():
             FcmOutcome.PERMANENT_TOKEN,
         ),
         (400, {"error": {"details": []}}, FcmOutcome.PERMANENT_MESSAGE),
-        (401, {}, FcmOutcome.TRANSIENT),
+        (401, {}, FcmOutcome.PERMANENT_MESSAGE),
+        (403, {}, FcmOutcome.PERMANENT_MESSAGE),
+        (
+            403,
+            {"error": {"details": [{"errorCode": "SENDER_ID_MISMATCH"}]}},
+            FcmOutcome.PERMANENT_TOKEN,
+        ),
     ],
 )
 async def test_provider_error_classification(status, body, outcome):
