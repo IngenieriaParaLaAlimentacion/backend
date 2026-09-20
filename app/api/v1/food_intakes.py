@@ -88,7 +88,8 @@ async def register_food_intake(
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
         status.HTTP_422_UNPROCESSABLE_CONTENT: {
-            "description": "Unsupported image type, or file over the size limit"
+            "description": "Unsupported image type, file over the size limit, "
+            "or file content does not match the declared type"
         },
     },
 )
@@ -132,8 +133,8 @@ async def propose_food_intake_from_photo(
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Establishment or food not found"},
         status.HTTP_422_UNPROCESSABLE_CONTENT: {
-            "description": "Unsupported image type, file over the size limit, or "
-            "malformed `data`"
+            "description": "Unsupported image type, file over the size limit, "
+            "file content does not match the declared type, or malformed `data`"
         },
     },
 )

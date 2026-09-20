@@ -26,6 +26,7 @@ EXPECTED: dict[str, int] = {
     "field-worker-is-not-pending": status.HTTP_400_BAD_REQUEST,
     "filter-not-applicable": status.HTTP_400_BAD_REQUEST,
     "food-not-found": status.HTTP_404_NOT_FOUND,
+    "image-content-mismatch": status.HTTP_422_UNPROCESSABLE_CONTENT,
     "image-too-large": status.HTTP_422_UNPROCESSABLE_CONTENT,
     "insufficient-stock": status.HTTP_409_CONFLICT,
     "invalid-age-range": status.HTTP_400_BAD_REQUEST,

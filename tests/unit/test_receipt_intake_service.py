@@ -11,6 +11,7 @@ from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentAccessDeniedError,
     EstablishmentNotFoundError,
+    ImageContentMismatchError,
     ImageTooLargeError,
     LlmClientError,
     ObjectStorageError,
@@ -120,6 +121,23 @@ class TestImageValidation:
                 image=PNG_BYTES,
                 actor=admin_actor,
             )
+
+    async def test_content_not_matching_declared_type_is_rejected(
+        self, uow, storage, food_intake_service, llm_client, admin_actor
+    ):
+        """An allow-listed content type whose bytes don't back it up -- e.g. a
+        mislabeled upload or a spoofed header -- is rejected before any DB
+        access, same as an unsupported type."""
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+        with pytest.raises(ImageContentMismatchError):
+            await service.propose_from_photo(
+                establishment_id=uuid.uuid4(),
+                content_type="image/png",
+                image=b"not actually a png",
+                actor=admin_actor,
+            )
+
+        uow.establishment_repo.get_by_id_or_raise.assert_not_called()
 
 
 class TestEstablishmentChecks:

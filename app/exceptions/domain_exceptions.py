@@ -946,3 +946,25 @@ class ImageTooLargeError(UnprocessableEntityError):
             f"{max_bytes}-byte limit.",
             extensions={"size_bytes": size_bytes, "max_bytes": max_bytes},
         )
+
+
+class ImageContentMismatchError(UnprocessableEntityError):
+    """Raised when an image's bytes do not match its declared content type.
+
+    The declared ``content_type`` passes the allow-list check, but the file's
+    magic bytes say otherwise -- e.g. a client mislabeling an upload, or one
+    spoofing the header to smuggle a non-image file past validation.
+
+    Args:
+        content_type (str): The declared type the file's bytes did not match.
+    """
+
+    error_type = "image-content-mismatch"
+
+    def __init__(self, content_type: str):
+        super().__init__(
+            "Image content does not match declared type",
+            f"The uploaded file's content does not match the declared type "
+            f"{content_type!r}.",
+            extensions={"content_type": content_type},
+        )

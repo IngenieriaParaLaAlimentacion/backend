@@ -12,6 +12,7 @@ from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.food_intake import FoodIntakeDomain
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
+    ImageContentMismatchError,
     ImageTooLargeError,
     LlmClientError,
     ObjectStorageError,
@@ -28,6 +29,11 @@ from app.services.access import check_establishment_access
 from app.services.food_intakes.food_intake_service import FoodIntakeService
 
 logger = structlog.get_logger()
+
+_JPEG_MAGIC_BYTES = b"\xff\xd8\xff"
+_PNG_MAGIC_BYTES = b"\x89PNG\r\n\x1a\n"
+_WEBP_RIFF_MAGIC_BYTES = b"RIFF"
+_WEBP_FORMAT_MARKER = b"WEBP"
 
 _EXTRACTION_PROMPT = (
     "You are reading a photo of a store receipt for a community kitchen in "
@@ -86,7 +92,29 @@ class ReceiptIntakeService:
         self.food_intake_service = food_intake_service
         self.llm_client = llm_client
 
-    def _validate_image(self, content_type: str | None, size_bytes: int) -> None:
+    @staticmethod
+    def _validate_magic_bytes(data: bytes, content_type: str) -> bool:
+        """Check whether the leading bytes of a file match the expected format.
+
+        Inspect the actual file bytes (magic numbers) to verify the file is
+        what it claims to be, rather than trusting the client-declared
+        ``content_type`` header, which is trivially spoofable.
+
+        Returns True if the bytes match the declared type, False otherwise.
+        """
+        if content_type == "image/jpeg":
+            return data.startswith(_JPEG_MAGIC_BYTES)
+        if content_type == "image/png":
+            return data.startswith(_PNG_MAGIC_BYTES)
+        if content_type == "image/webp":
+            return (
+                len(data) >= 12
+                and data.startswith(_WEBP_RIFF_MAGIC_BYTES)
+                and data[8:12] == _WEBP_FORMAT_MARKER
+            )
+        return False
+
+    def _validate_image(self, content_type: str | None, data: bytes) -> None:
         """Reject an upload whose type or size the server will not process.
 
         Checked before any DB access and before the bytes are handed anywhere,
@@ -97,12 +125,16 @@ class ReceiptIntakeService:
                 allow-list (also covers a missing content type).
             ImageTooLargeError: body larger than
                 ``settings.receipt_image_max_bytes``.
+            ImageContentMismatchError: the declared content type passes the
+                allow-list, but the file's magic bytes say otherwise.
         """
         allowed = settings.receipt_image_allowed_types
         if content_type not in allowed:
             raise UnsupportedImageTypeError(content_type, sorted(allowed))
-        if size_bytes > settings.receipt_image_max_bytes:
-            raise ImageTooLargeError(size_bytes, settings.receipt_image_max_bytes)
+        if len(data) > settings.receipt_image_max_bytes:
+            raise ImageTooLargeError(len(data), settings.receipt_image_max_bytes)
+        if not self._validate_magic_bytes(data, content_type):
+            raise ImageContentMismatchError(content_type)
 
     @staticmethod
     def _to_decimal(value: Any) -> Decimal | None:
@@ -173,11 +205,13 @@ class ReceiptIntakeService:
         Raises:
             UnsupportedImageTypeError: image type not accepted.
             ImageTooLargeError: image over the size ceiling.
+            ImageContentMismatchError: the file's bytes do not match the
+                declared content type.
             EstablishmentNotFoundError: ``establishment_id`` does not exist.
             EstablishmentAccessDeniedError: field worker without approved
                 access to the establishment.
         """
-        self._validate_image(content_type, len(image))
+        self._validate_image(content_type, image)
 
         await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
         await check_establishment_access(self.uow, actor, establishment_id)
@@ -243,13 +277,15 @@ class ReceiptIntakeService:
         Raises:
             UnsupportedImageTypeError: image type not accepted.
             ImageTooLargeError: image over the size ceiling.
+            ImageContentMismatchError: the file's bytes do not match the
+                declared content type.
             EstablishmentNotFoundError: ``establishment_id`` does not exist.
             EstablishmentAccessDeniedError: field worker without approved
                 access to the establishment.
             ReceiptPhotoStorageError: the storage backend rejected the save.
             FoodNotFoundError: a line references a food that does not exist.
         """
-        self._validate_image(content_type, len(image))
+        self._validate_image(content_type, image)
 
         if data.id is not None:
             existing = await self.uow.food_intake_repo.get_by_id(data.id)
