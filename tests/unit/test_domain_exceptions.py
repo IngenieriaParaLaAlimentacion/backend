@@ -4,6 +4,7 @@ from app.exceptions.domain_exceptions import (
     BaseError,
     EstablishmentNotFoundError,
     NotFoundError,
+    NotificationConfigurationError,
     PasswordNotFoundError,
     RoleNotAllowedError,
     SubjectAlreadyExistsError,
@@ -40,6 +41,14 @@ def test_unauthorized_error():
     assert isinstance(e, BaseError)
     assert "Authentication credentials are missing or invalid." in e.details
     assert "Unauthorized" in e.title
+
+
+def test_notification_errors_have_stable_slugs_and_statuses():
+    configuration = NotificationConfigurationError()
+    assert (configuration.error_type, configuration.status) == (
+        "notification-configuration-invalid",
+        503,
+    )
 
 
 def test_role_not_allowed_error():

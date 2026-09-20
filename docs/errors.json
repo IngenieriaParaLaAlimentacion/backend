@@ -193,6 +193,12 @@
       "description": "Raised when a non-admin acts on a resource somebody else created."
     },
     {
+      "type": "/errors/notification-configuration-invalid",
+      "status": 503,
+      "exception": "NotificationConfigurationError",
+      "description": "Raised when scheduled notifications are not fully configured."
+    },
+    {
       "type": "/errors/password-not-found",
       "status": 404,
       "exception": "PasswordNotFoundError",

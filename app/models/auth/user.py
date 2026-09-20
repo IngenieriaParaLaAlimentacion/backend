@@ -83,3 +83,8 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan",
     )
+    push_devices = relationship(
+        "UserPushDevice",
+        back_populates="user",
+        passive_deletes=True,
+    )

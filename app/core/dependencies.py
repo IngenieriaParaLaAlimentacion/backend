@@ -26,6 +26,7 @@ from app.services.food_intakes.food_intake_service import FoodIntakeService
 from app.services.food_outflows.food_outflow_service import FoodOutflowService
 from app.services.food_stock.food_stock_service import FoodStockService
 from app.services.measurements.measurement_service import MeasurementService
+from app.services.notifications.device_service import DeviceService
 from app.services.subjects.subject_service import SubjectService
 from app.services.surveys.survey_response_service import SurveyResponseService
 from app.services.surveys.survey_service import SurveyService
@@ -73,6 +74,12 @@ async def get_user_service() -> AsyncGenerator[UserService, None]:
     """Provide a UserService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
         yield UserService(uow)
+
+
+async def get_device_service() -> AsyncGenerator[DeviceService, None]:
+    """Provide a DeviceService backed by a fresh UnitOfWork."""
+    async with UnitOfWork() as uow:
+        yield DeviceService(uow)
 
 
 async def get_activity_service() -> AsyncGenerator[ActivityService, None]:

@@ -4,12 +4,11 @@ from uuid import uuid4
 import pytest
 from jose import JWTError
 
-from app.core.dependencies import (
-    require_admin,
-    require_admin_or_analyst,
-    require_any,
+from app.core.dependencies import require_admin, require_admin_or_analyst, require_any
+from app.exceptions.domain_exceptions import (
+    ForbiddenError,
+    UnauthorizedError,
 )
-from app.exceptions.domain_exceptions import ForbiddenError, UnauthorizedError
 from app.models.auth.user import UserRole
 
 # --- require_admin_or_superadmin ---

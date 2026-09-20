@@ -166,6 +166,19 @@ class UnauthorizedError(BaseError):
         super().__init__(title, details, extensions)
 
 
+class NotificationConfigurationError(BaseError):
+    """Raised when scheduled notifications are not fully configured."""
+
+    error_type = "notification-configuration-invalid"
+    status = status.HTTP_503_SERVICE_UNAVAILABLE
+
+    def __init__(self):
+        super().__init__(
+            "Notification configuration invalid",
+            "Stale-establishment notifications are not fully configured.",
+        )
+
+
 class ForbiddenError(BaseError, abstract=True):
     """Base exception for a request the caller is not permitted to make.
 

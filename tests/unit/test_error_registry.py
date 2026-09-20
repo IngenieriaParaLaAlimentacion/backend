@@ -38,6 +38,7 @@ EXPECTED: dict[str, int] = {
     "invalid-user-role": status.HTTP_400_BAD_REQUEST,
     "no-fields-to-update": status.HTTP_400_BAD_REQUEST,
     "not-resource-owner": status.HTTP_403_FORBIDDEN,
+    "notification-configuration-invalid": status.HTTP_503_SERVICE_UNAVAILABLE,
     "password-not-found": status.HTTP_404_NOT_FOUND,
     "role-not-allowed": status.HTTP_403_FORBIDDEN,
     "subject-already-exists": status.HTTP_409_CONFLICT,

@@ -2,6 +2,7 @@ import asyncio
 import json
 
 from app.exceptions.domain_exceptions import (
+    NotificationConfigurationError,
     RoleNotAllowedError,
     SubjectAlreadyExistsError,
     SubjectNotFoundError,
@@ -59,6 +60,14 @@ def test_unauthorized_error():
 
     assert response.status_code == 401
     assert json.loads(response.body)["type"] == "/errors/unauthorized"
+
+
+def test_notification_configuration_error_uses_canonical_envelope():
+    response = _handle("/api/v1/internal/run", NotificationConfigurationError())
+    assert response.status_code == 503
+    assert json.loads(response.body)["type"] == (
+        "/errors/notification-configuration-invalid"
+    )
 
 
 def test_forbidden_error():

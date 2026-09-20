@@ -39,6 +39,11 @@ from app.repositories.measurements.measurement_alert_repository import (
     MeasurementAlertRepository,
 )
 from app.repositories.measurements.measurement_repository import MeasurementRepository
+from app.repositories.notifications import (
+    PushDeliveryJobRepository,
+    StaleEstablishmentCycleRepository,
+    UserPushDeviceRepository,
+)
 from app.repositories.subjects.subject_event_repository import SubjectEventRepository
 from app.repositories.subjects.subject_repository import SubjectRepository
 from app.repositories.surveys.survey_repository import SurveyRepository
@@ -86,6 +91,9 @@ class UnitOfWork(IUnitOfWork):
         self.food_intake_repo = FoodIntakeRepository(self.session)
         self.food_outflow_repo = FoodOutflowRepository(self.session)
         self.food_stock_repo = FoodStockRepository(self.session)
+        self.push_device_repo = UserPushDeviceRepository(self.session)
+        self.stale_cycle_repo = StaleEstablishmentCycleRepository(self.session)
+        self.push_delivery_job_repo = PushDeliveryJobRepository(self.session)
         return self
 
     async def commit(self) -> None:
