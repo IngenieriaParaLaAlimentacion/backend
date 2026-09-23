@@ -42,6 +42,8 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/filter-not-applicable` | 400 | `FilterNotApplicableError` | Raised when a filter resolves through a target the resource does not carry. |
 | `/errors/food-movement-not-found` | 404 | `FoodMovementNotFoundError` | Exception raised when a food movement cannot be found in an establishment. |
 | `/errors/food-not-found` | 404 | `FoodNotFoundError` | Exception raised when a food cannot be found. |
+| `/errors/image-content-mismatch` | 422 | `ImageContentMismatchError` | Raised when an image's bytes do not match its declared content type. |
+| `/errors/image-too-large` | 422 | `ImageTooLargeError` | Raised when an uploaded image is larger than the configured ceiling. |
 | `/errors/insufficient-stock` | 409 | `InsufficientStockError` | Exception raised when an outflow exceeds an establishment's stock. |
 | `/errors/invalid-age-range` | 400 | `InvalidAgeRangeError` | Raised when an age-range filter has a minimum above its maximum. |
 | `/errors/invalid-credentials` | 401 | `InvalidCredentialsError` | Exception raised when credentials are invalid. |
@@ -55,6 +57,7 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/not-resource-owner` | 403 | `NotResourceOwnerError` | Raised when a non-admin acts on a resource somebody else created. |
 | `/errors/notification-configuration-invalid` | 503 | `NotificationConfigurationError` | Raised when scheduled notifications are not fully configured. |
 | `/errors/password-not-found` | 404 | `PasswordNotFoundError` | Exception raised when a user's password record is not found. |
+| `/errors/receipt-photo-storage-failed` | 502 | `ReceiptPhotoStorageError` | Raised when a receipt photo cannot be persisted to object storage. |
 | `/errors/role-not-allowed` | 403 | `RoleNotAllowedError` | Raised when the actor's role is not permitted to perform the operation. |
 | `/errors/subject-already-exists` | 409 | `SubjectAlreadyExistsError` | Exception raised when trying to register a subject with an existing DNI. |
 | `/errors/subject-not-found` | 404 | `SubjectNotFoundError` | Exception raised when a subject cannot be found. |
@@ -65,6 +68,7 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/survey-response-already-exists` | 409 | `SurveyResponseAlreadyExistsError` | Exception raised when a survey's target has already been answered. |
 | `/errors/survey-response-not-found` | 404 | `SurveyResponseNotFoundError` | Exception raised when a survey response cannot be found. |
 | `/errors/unauthorized` | 401 | `UnauthorizedError` | Exception raised when authorization fails. |
+| `/errors/unsupported-image-type` | 422 | `UnsupportedImageTypeError` | Raised when an uploaded image's content type is not in the allow-list. |
 | `/errors/user-already-exists` | 409 | `UserAlreadyExistsError` | Exception raised when trying to register with an existing email. |
 | `/errors/user-establishment-not-approved` | 409 | `UserEstablishmentNotApprovedError` | Raised when revoking access to an establishment that isn't currently approved for the given user. |
 | `/errors/user-establishment-not-found` | 404 | `UserEstablishmentNotFoundError` | Exception raised when a user-establishment relation does not exist. |

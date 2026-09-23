@@ -25,6 +25,19 @@ def test_settings_defaults():
     assert s.access_token_expire_minutes == 15
     assert s.refresh_token_expire_days == 7
 
+    assert s.receipt_image_max_bytes == 10 * 1024 * 1024
+    assert s.receipt_image_allowed_types == {
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+    }
+
+    assert s.storage_endpoint_url is None
+    assert s.storage_bucket is None
+    assert s.storage_access_key_id is None
+    assert s.storage_secret_access_key is None
+    assert s.storage_region == "auto"
+
 
 def test_settings_invalid_port():
     with pytest.raises(ValidationError):

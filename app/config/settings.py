@@ -74,6 +74,27 @@ class Settings(BaseSettings):
     email_verification_path: str = "/verify-email"
     invite_path: str = "/invite"
 
+    # Receipt upload
+    receipt_image_max_bytes: int = 10 * 1024 * 1024  # 10 MiB
+    receipt_image_allowed_types: set[str] = {
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+    }
+
+    receipt_food_match_min_word_similarity: float = 0.5
+    receipt_food_match_min_similarity: float = 0.22
+
+    # Object storage (Cloudflare R2, S3-compatible).
+    storage_endpoint_url: Optional[str] = None
+    storage_bucket: Optional[str] = None
+    storage_access_key_id: Optional[str] = None
+    storage_secret_access_key: Optional[str] = None
+    storage_region: str = "auto"
+
+    # LLM
+    gemini_api_key: Optional[str] = None
+    gemini_model: str = "gemini-3.6-flash"
     # Stale-establishment notifications
     fcm_project_id: str | None = None
     fcm_client_email: str | None = None

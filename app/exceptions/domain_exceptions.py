@@ -107,6 +107,18 @@ class ConflictError(BaseError, abstract=True):
     status = status.HTTP_409_CONFLICT
 
 
+class UnprocessableEntityError(BaseError, abstract=True):
+    """Base exception for a well-formed request whose content the server
+    understands but cannot process (HTTP 422).
+
+    Distinct from ``BadRequestError`` (400): the request syntax is fine and the
+    route matched -- it is the uploaded payload itself that is unacceptable, e.g.
+    an image in a format or size the server will not take.
+    """
+
+    status = status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
 class UserNotFoundError(NotFoundError):
     """Exception raised when a user is not found.
 
@@ -395,6 +407,26 @@ class EmailDeliveryError(BaseError):
         super().__init__("Email delivery failed", details)
 
 
+class ReceiptPhotoStorageError(BaseError):
+    """Raised when a receipt photo cannot be persisted to object storage.
+
+    Nothing has been saved yet at this point -- no intake exists, no DB row
+    references the failed key -- so the client's only recourse is to retry
+    the upload.
+    """
+
+    error_type = "receipt-photo-storage-failed"
+    status = status.HTTP_502_BAD_GATEWAY
+
+    def __init__(
+        self,
+        details: str = (
+            "The receipt photo could not be saved. Please try uploading it again."
+        ),
+    ):
+        super().__init__("Receipt photo storage failed", details)
+
+
 class UniqueConstraintError(Exception):
     """Raised by a repository when a unique constraint is violated.
 
@@ -406,6 +438,33 @@ class UniqueConstraintError(Exception):
         self.field = field
         self.value = value
         super().__init__(f"Unique constraint violated: {field}={value}")
+
+
+class ObjectStorageError(Exception):
+    """Raised by an ObjectStorage backend when a save fails.
+
+    Callers (services) are responsible for translating this into the
+    appropriate domain exception -- the storage layer knows nothing about
+    HTTP status codes, only that the object did not get written.
+    """
+
+    def __init__(self, key: str, reason: str) -> None:
+        self.key = key
+        self.reason = reason
+        super().__init__(f"Failed to store object {key!r}: {reason}")
+
+
+class LlmClientError(Exception):
+    """Raised by an ILlmClient implementation when a completion fails.
+
+    Callers (services) are responsible for translating this into the
+    appropriate domain exception -- the LLM layer knows nothing about HTTP
+    status codes, only that a usable response was not obtained.
+    """
+
+    def __init__(self, reason: str) -> None:
+        self.reason = reason
+        super().__init__(f"LLM completion failed: {reason}")
 
 
 class EmptyUpdateRequestError(BadRequestError):
@@ -896,4 +955,72 @@ class InsufficientStockError(ConflictError):
                 "requested": requested,
                 "available": available,
             },
+        )
+
+
+class UnsupportedImageTypeError(UnprocessableEntityError):
+    """Raised when an uploaded image's content type is not in the allow-list.
+
+    Carries the rejected type and the accepted ones so a client can tell the
+    user what to send instead rather than only that the upload failed.
+
+    Args:
+        content_type (str | None): The rejected type, or None if the upload
+            declared none.
+        allowed (list[str]): The accepted content types.
+    """
+
+    error_type = "unsupported-image-type"
+
+    def __init__(self, content_type: str | None, allowed: list[str]):
+        accepted = sorted(allowed)
+        super().__init__(
+            "Unsupported image type",
+            f"Image type {content_type or 'unknown'!r} is not supported. "
+            f"Accepted types: {', '.join(accepted)}.",
+            extensions={"content_type": content_type, "accepted_types": accepted},
+        )
+
+
+class ImageTooLargeError(UnprocessableEntityError):
+    """Raised when an uploaded image is larger than the configured ceiling.
+
+    Carries both sizes so a client can report how far over the limit the file
+    is rather than only that it was rejected.
+
+    Args:
+        size_bytes (int): The size of the uploaded image.
+        max_bytes (int): The configured ceiling it exceeded.
+    """
+
+    error_type = "image-too-large"
+
+    def __init__(self, size_bytes: int, max_bytes: int):
+        super().__init__(
+            "Image too large",
+            f"The uploaded image is {size_bytes} bytes, over the "
+            f"{max_bytes}-byte limit.",
+            extensions={"size_bytes": size_bytes, "max_bytes": max_bytes},
+        )
+
+
+class ImageContentMismatchError(UnprocessableEntityError):
+    """Raised when an image's bytes do not match its declared content type.
+
+    The declared ``content_type`` passes the allow-list check, but the file's
+    magic bytes say otherwise -- e.g. a client mislabeling an upload, or one
+    spoofing the header to smuggle a non-image file past validation.
+
+    Args:
+        content_type (str): The declared type the file's bytes did not match.
+    """
+
+    error_type = "image-content-mismatch"
+
+    def __init__(self, content_type: str):
+        super().__init__(
+            "Image content does not match declared type",
+            f"The uploaded file's content does not match the declared type "
+            f"{content_type!r}.",
+            extensions={"content_type": content_type},
         )

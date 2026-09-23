@@ -127,6 +127,18 @@
       "description": "Exception raised when a food cannot be found."
     },
     {
+      "type": "/errors/image-content-mismatch",
+      "status": 422,
+      "exception": "ImageContentMismatchError",
+      "description": "Raised when an image's bytes do not match its declared content type."
+    },
+    {
+      "type": "/errors/image-too-large",
+      "status": 422,
+      "exception": "ImageTooLargeError",
+      "description": "Raised when an uploaded image is larger than the configured ceiling."
+    },
+    {
       "type": "/errors/insufficient-stock",
       "status": 409,
       "exception": "InsufficientStockError",
@@ -205,6 +217,12 @@
       "description": "Exception raised when a user's password record is not found."
     },
     {
+      "type": "/errors/receipt-photo-storage-failed",
+      "status": 502,
+      "exception": "ReceiptPhotoStorageError",
+      "description": "Raised when a receipt photo cannot be persisted to object storage."
+    },
+    {
       "type": "/errors/role-not-allowed",
       "status": 403,
       "exception": "RoleNotAllowedError",
@@ -263,6 +281,12 @@
       "status": 401,
       "exception": "UnauthorizedError",
       "description": "Exception raised when authorization fails."
+    },
+    {
+      "type": "/errors/unsupported-image-type",
+      "status": 422,
+      "exception": "UnsupportedImageTypeError",
+      "description": "Raised when an uploaded image's content type is not in the allow-list."
     },
     {
       "type": "/errors/user-already-exists",

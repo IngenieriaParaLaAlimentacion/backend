@@ -44,6 +44,7 @@ class FoodIntakeDomain:
     occurred_at: datetime
     comments: str | None
     source: FoodIntakeSource
+    photo_key: str | None
     created_at: datetime
     items: list[FoodLineDomain]
 
@@ -57,6 +58,7 @@ class FoodIntakeDomain:
             occurred_at=intake.occurred_at,
             comments=intake.comments,
             source=intake.source,
+            photo_key=intake.photo_key,
             created_at=intake.created_at,
             items=[FoodLineDomain.from_db(item) for item in intake.items],
         )

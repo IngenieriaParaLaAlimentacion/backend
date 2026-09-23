@@ -61,5 +61,6 @@ class FoodIntakeResponse(BaseModel):
     occurred_at: datetime
     comments: str | None
     source: FoodIntakeSource
+    photo_key: str | None
     created_at: datetime
     items: list[FoodLineResponse]

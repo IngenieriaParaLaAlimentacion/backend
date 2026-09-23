@@ -1,9 +1,10 @@
 from collections.abc import AsyncGenerator
 
 from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 
+from app.core.interfaces.llm_client import ILlmClient
 from app.core.security import decode_token
 from app.db.unit_of_work import UnitOfWork
 from app.domain.user import UserActor, UserRole
@@ -17,14 +18,17 @@ from app.services.admin_service import AdminService
 from app.services.analytics_service import AnalyticsService
 from app.services.auth.auth_service import AuthService
 from app.services.auth.user_service import UserService
+from app.services.cloudflare_storage.r2_object_storage import R2ObjectStorage
 from app.services.establishments.establishment_dashboard_service import (
     EstablishmentDashboardService,
 )
 from app.services.establishments.establishment_service import EstablishmentService
 from app.services.food_catalog.food_service import FoodService
 from app.services.food_intakes.food_intake_service import FoodIntakeService
+from app.services.food_intakes.receipt_intake_service import ReceiptIntakeService
 from app.services.food_outflows.food_outflow_service import FoodOutflowService
 from app.services.food_stock.food_stock_service import FoodStockService
+from app.services.llm.gemini_llm_client import GeminiLlmClient
 from app.services.measurements.measurement_service import MeasurementService
 from app.services.notifications.device_service import DeviceService
 from app.services.subjects.subject_service import SubjectService
@@ -36,7 +40,19 @@ from app.services.surveys.survey_service import SurveyService
 # runs. That lets us answer with the specific MissingTokenError ("auth/missing-token")
 # rather than the catch-all "http-error" type, and lets one scheme serve both the
 # required and the optional dependencies.
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
+#
+# HTTPBearer (rather than OAuth2PasswordBearer) is used purely so Swagger's
+# "Authorize" dialog offers a plain field to paste an access token obtained from
+# POST /auth/login. OAuth2PasswordBearer instead makes Swagger submit a
+# form-encoded username/password to the tokenUrl, which doesn't match this API's
+# JSON login contract (email/password/device_id) and always fails.
+_http_bearer_scheme = HTTPBearer(auto_error=False)
+
+
+async def oauth2_scheme(
+    credentials: HTTPAuthorizationCredentials | None = Depends(_http_bearer_scheme),
+) -> str | None:
+    return credentials.credentials if credentials else None
 
 
 async def get_admin_service() -> AsyncGenerator[AdminService, None]:
@@ -104,6 +120,26 @@ async def get_food_intake_service() -> AsyncGenerator[FoodIntakeService, None]:
     """Provide a FoodIntakeService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
         yield FoodIntakeService(uow)
+
+
+async def get_llm_client() -> AsyncGenerator[ILlmClient, None]:
+    """Provide the LLM client used for receipt extraction.
+
+    Its own dependency (rather than inlined in ``get_receipt_intake_service``)
+    so tests can swap in a scripted double instead of calling Gemini for real.
+    """
+    yield GeminiLlmClient()
+
+
+async def get_receipt_intake_service(
+    llm_client: ILlmClient = Depends(get_llm_client),
+) -> AsyncGenerator[ReceiptIntakeService, None]:
+    """Provide a ReceiptIntakeService backed by a fresh UnitOfWork and R2."""
+    async with UnitOfWork() as uow:
+        food_intake_service = FoodIntakeService(uow)
+        yield ReceiptIntakeService(
+            uow, R2ObjectStorage(), food_intake_service, llm_client
+        )
 
 
 async def get_food_outflow_service() -> AsyncGenerator[FoodOutflowService, None]:
