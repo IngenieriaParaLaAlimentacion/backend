@@ -10,9 +10,18 @@ import pytest
 from app.domain.food_catalog import MeasurementUnit
 from app.domain.food_intake import FoodIntakeSource
 from app.domain.food_outflow import FoodOutflowSource
-from app.domain.food_stock import FoodStockListingParams
+from app.domain.food_stock import (
+    FoodMovementDirection,
+    FoodMovementListingParams,
+    FoodStockListingParams,
+)
 from app.domain.user import UserActor, UserRole
-from app.exceptions.domain_exceptions import FoodNotFoundError, InsufficientStockError
+from app.exceptions.domain_exceptions import (
+    EstablishmentNotFoundError,
+    FoodMovementNotFoundError,
+    FoodNotFoundError,
+    InsufficientStockError,
+)
 from app.schemas.food_intakes.food_intake_schema import (
     FoodIntakeRequest,
     FoodLineRequest,
@@ -61,11 +70,11 @@ def make_stored(make_food):
         stored.id = uuid.uuid4()
         stored.establishment_id = ESTABLISHMENT_ID
         stored.responsible_id = uuid.uuid4()
-        stored.received_at = datetime.now(timezone.utc)
-        stored.occurred_at = stored.received_at
+        stored.occurred_at = datetime.now(timezone.utc)
+        stored.occurred_at = stored.occurred_at
         stored.comments = None
         stored.source = FoodIntakeSource.MANUAL
-        stored.created_at = stored.received_at
+        stored.created_at = stored.occurred_at
         stored.items = [item]
         for key, value in overrides.items():
             setattr(stored, key, value)
@@ -87,7 +96,7 @@ def uow(make_food, make_stored):
 def _intake_request(**overrides) -> FoodIntakeRequest:
     return FoodIntakeRequest(
         establishment_id=ESTABLISHMENT_ID,
-        received_at=datetime(2026, 9, 1, tzinfo=timezone.utc),
+        occurred_at=datetime(2026, 9, 1, tzinfo=timezone.utc),
         items=[FoodLineRequest(food_id=RICE_ID, quantity=Decimal("10"))],
         source=FoodIntakeSource.MANUAL,
         **overrides,
@@ -205,14 +214,106 @@ class TestStockListing:
 
         assert result.page == 1
 
-    async def test_movements_of_an_unknown_food_raise(self, uow, actor):
-        uow.food_repo.get_by_ids = AsyncMock(return_value=[])
 
-        with pytest.raises(FoodNotFoundError):
+class TestMovementListing:
+    async def test_computes_the_offset_from_the_page(self, uow, actor):
+        uow.food_stock_repo.list_movements = AsyncMock(return_value=([], 0))
+        params = FoodMovementListingParams(direction=FoodMovementDirection.IN)
+
+        await FoodStockService(uow).list_movements(
+            establishment_id=ESTABLISHMENT_ID,
+            actor=actor,
+            page=3,
+            page_size=10,
+            params=params,
+        )
+
+        _, kwargs = uow.food_stock_repo.list_movements.call_args
+        assert kwargs["limit"] == 10
+        assert kwargs["offset"] == 20
+        assert kwargs["params"] is params
+
+    async def test_page_zero_is_clamped(self, uow, actor):
+        uow.food_stock_repo.list_movements = AsyncMock(return_value=([], 0))
+
+        result = await FoodStockService(uow).list_movements(
+            establishment_id=ESTABLISHMENT_ID,
+            actor=actor,
+            page=0,
+            page_size=10,
+            params=FoodMovementListingParams(),
+        )
+
+        assert result.page == 1
+
+    async def test_an_unknown_establishment_is_never_read(self, uow, actor):
+        """The access check runs first, so a bad id costs no movement query."""
+        uow.establishment_repo.get_by_id_or_raise = AsyncMock(
+            side_effect=EstablishmentNotFoundError(str(ESTABLISHMENT_ID))
+        )
+        uow.food_stock_repo.list_movements = AsyncMock(return_value=([], 0))
+
+        with pytest.raises(EstablishmentNotFoundError):
             await FoodStockService(uow).list_movements(
                 establishment_id=ESTABLISHMENT_ID,
-                food_id=uuid.uuid4(),
                 actor=actor,
                 page=1,
                 page_size=10,
+                params=FoodMovementListingParams(),
             )
+
+        uow.food_stock_repo.list_movements.assert_not_awaited()
+
+    async def test_the_food_catalog_is_not_consulted(self, uow, actor):
+        """The listing is establishment-scoped: there is no food to validate."""
+        uow.food_stock_repo.list_movements = AsyncMock(return_value=([], 0))
+
+        await FoodStockService(uow).list_movements(
+            establishment_id=ESTABLISHMENT_ID,
+            actor=actor,
+            page=1,
+            page_size=10,
+            params=FoodMovementListingParams(),
+        )
+
+        uow.food_repo.get_by_ids.assert_not_awaited()
+
+
+class TestMovementDetail:
+    async def test_an_unknown_movement_raises(self, uow, actor):
+        uow.food_stock_repo.get_movement = AsyncMock(return_value=None)
+
+        with pytest.raises(FoodMovementNotFoundError):
+            await FoodStockService(uow).get_movement(
+                establishment_id=ESTABLISHMENT_ID,
+                movement_id=uuid.uuid4(),
+                actor=actor,
+            )
+
+    async def test_an_unknown_establishment_is_never_read(self, uow, actor):
+        """The access check runs first, so a bad id costs no movement query."""
+        uow.establishment_repo.get_by_id_or_raise = AsyncMock(
+            side_effect=EstablishmentNotFoundError(str(ESTABLISHMENT_ID))
+        )
+        uow.food_stock_repo.get_movement = AsyncMock(return_value=None)
+
+        with pytest.raises(EstablishmentNotFoundError):
+            await FoodStockService(uow).get_movement(
+                establishment_id=ESTABLISHMENT_ID,
+                movement_id=uuid.uuid4(),
+                actor=actor,
+            )
+
+        uow.food_stock_repo.get_movement.assert_not_awaited()
+
+    async def test_the_movement_is_returned_verbatim(self, uow, actor):
+        movement = object()
+        uow.food_stock_repo.get_movement = AsyncMock(return_value=movement)
+
+        result = await FoodStockService(uow).get_movement(
+            establishment_id=ESTABLISHMENT_ID,
+            movement_id=uuid.uuid4(),
+            actor=actor,
+        )
+
+        assert result is movement

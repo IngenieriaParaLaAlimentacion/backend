@@ -33,7 +33,7 @@ def _intake_request(**overrides) -> FoodIntakeRequest:
     fields = {
         "id": None,
         "establishment_id": uuid.uuid4(),
-        "received_at": datetime.now(timezone.utc),
+        "occurred_at": datetime.now(timezone.utc),
         "items": [FoodLineRequest(food_id=uuid.uuid4(), quantity=Decimal("1"))],
         **overrides,
     }

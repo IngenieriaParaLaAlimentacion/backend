@@ -70,7 +70,7 @@ async def rice_food_id(app) -> uuid.UUID:
 def _confirm_payload(establishment_id, food_id, **overrides) -> dict:
     fields = {
         "establishment_id": str(establishment_id),
-        "received_at": datetime.now(timezone.utc).isoformat(),
+        "occurred_at": datetime.now(timezone.utc).isoformat(),
         "source": "photo",
         "items": [{"food_id": str(food_id), "quantity": "2.5"}],
         **overrides,

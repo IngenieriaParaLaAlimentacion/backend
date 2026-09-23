@@ -115,6 +115,12 @@
       "description": "Raised when a filter resolves through a target the resource does not carry."
     },
     {
+      "type": "/errors/food-movement-not-found",
+      "status": 404,
+      "exception": "FoodMovementNotFoundError",
+      "description": "Exception raised when a food movement cannot be found in an establishment."
+    },
+    {
       "type": "/errors/food-not-found",
       "status": 404,
       "exception": "FoodNotFoundError",
@@ -197,6 +203,12 @@
       "status": 403,
       "exception": "NotResourceOwnerError",
       "description": "Raised when a non-admin acts on a resource somebody else created."
+    },
+    {
+      "type": "/errors/notification-configuration-invalid",
+      "status": 503,
+      "exception": "NotificationConfigurationError",
+      "description": "Raised when scheduled notifications are not fully configured."
     },
     {
       "type": "/errors/password-not-found",
@@ -293,6 +305,12 @@
       "status": 404,
       "exception": "UserEstablishmentNotFoundError",
       "description": "Exception raised when a user-establishment relation does not exist."
+    },
+    {
+      "type": "/errors/user-establishment-not-withdrawable",
+      "status": 409,
+      "exception": "UserEstablishmentNotWithdrawableError",
+      "description": "Raised when a user tries to withdraw their own access to an establishment whose relation is not currently approved or pending."
     },
     {
       "type": "/errors/user-is-not-a-field-worker",

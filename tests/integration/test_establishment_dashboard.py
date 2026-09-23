@@ -218,13 +218,39 @@ class TestDashboardAuth:
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_field_worker_is_forbidden(
+    async def test_a_field_worker_without_access_is_forbidden(
         self, client, field_worker_headers, scenario
     ):
+        """The role alone no longer decides: an approved relation does."""
         response = await client.get(
             DASHBOARD_URL.format(establishment_id=scenario.establishment_a),
             headers=field_worker_headers,
         )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_a_field_worker_with_approved_access_is_allowed(
+        self, client, make_field_worker_with_access, scenario
+    ):
+        headers, _ = await make_field_worker_with_access(scenario.establishment_a)
+
+        response = await client.get(
+            DASHBOARD_URL.format(establishment_id=scenario.establishment_a),
+            headers=headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+    async def test_a_field_worker_cannot_read_another_establishment(
+        self, client, make_field_worker_with_access, scenario
+    ):
+        """Approved at B does not open A."""
+        headers, _ = await make_field_worker_with_access(scenario.establishment_b)
+
+        response = await client.get(
+            DASHBOARD_URL.format(establishment_id=scenario.establishment_a),
+            headers=headers,
+        )
+
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     async def test_analyst_is_allowed(self, client, analyst_headers, scenario):
@@ -350,6 +376,99 @@ class TestEmptyEstablishment:
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["total"] == 0
+
+    async def test_movement_dates_are_null_when_nothing_moved(self, body):
+        assert body["metrics"]["last_intake_at"] is None
+        assert body["metrics"]["last_outflow_at"] is None
+
+
+class TestFoodMovementDates:
+    """CA 5: the last intake and outflow dates, independent of measurements."""
+
+    @pytest_asyncio.fixture
+    async def rice(self, app) -> UUID:
+        """Seed one catalog food to move."""
+        from app.db.database import AsyncSessionLocal
+        from app.domain.food_catalog import MeasurementUnit
+        from app.models.food_catalog.food import Food
+        from app.models.food_catalog.food_category import FoodCategory
+
+        async with AsyncSessionLocal() as session:
+            category = FoodCategory(code="cereales", name="Cereales")
+            session.add(category)
+            await session.flush()
+            food = Food(
+                code="arroz",
+                name="Arroz",
+                category_id=category.id,
+                base_unit=MeasurementUnit.KILOGRAMOS,
+            )
+            session.add(food)
+            await session.commit()
+            return cast(UUID, food.id)
+
+    @pytest_asyncio.fixture
+    async def seeded(self, client, make_field_worker_with_access, scenario, rice):
+        """Load food into the establishment that has no subjects at all.
+
+        Deliberately the empty one: the metrics short-circuit on a zero subject
+        count, and these two dates must survive it.
+        """
+        headers, _ = await make_field_worker_with_access(scenario.establishment_empty)
+        await client.post(
+            "/api/v1/food-intakes",
+            json={
+                "establishment_id": str(scenario.establishment_empty),
+                "occurred_at": "2026-09-01T10:00:00Z",
+                "items": [{"food_id": str(rice), "quantity": "10"}],
+            },
+            headers=headers,
+        )
+        await client.post(
+            "/api/v1/food-intakes",
+            json={
+                "establishment_id": str(scenario.establishment_empty),
+                "occurred_at": "2026-09-05T10:00:00Z",
+                "items": [{"food_id": str(rice), "quantity": "5"}],
+            },
+            headers=headers,
+        )
+        await client.post(
+            "/api/v1/food-outflows",
+            json={
+                "establishment_id": str(scenario.establishment_empty),
+                "occurred_at": "2026-09-03T10:00:00Z",
+                "items": [{"food_id": str(rice), "quantity": "4"}],
+            },
+            headers=headers,
+        )
+        return headers
+
+    async def test_reports_the_most_recent_of_each_direction(
+        self, client, admin_headers, scenario, seeded
+    ):
+        response = await client.get(
+            DASHBOARD_URL.format(establishment_id=scenario.establishment_empty),
+            headers=admin_headers,
+        )
+
+        metrics = response.json()["metrics"]
+        assert metrics["last_intake_at"] == "2026-09-05T10:00:00Z"
+        assert metrics["last_outflow_at"] == "2026-09-03T10:00:00Z"
+
+    async def test_they_survive_the_no_subjects_short_circuit(
+        self, client, admin_headers, scenario, seeded
+    ):
+        """`has_data` speaks of measurements, not of food."""
+        response = await client.get(
+            DASHBOARD_URL.format(establishment_id=scenario.establishment_empty),
+            headers=admin_headers,
+        )
+
+        body = response.json()
+        assert body["has_data"] is False
+        assert body["metrics"]["subject_count"] == 0
+        assert body["metrics"]["last_intake_at"] is not None
 
 
 class TestAlertStatus:

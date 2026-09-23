@@ -111,7 +111,7 @@ def storage_config():
     receipt-upload tests (see test_receipt_intake_confirm.py), just without
     depending on external Cloudflare credentials in CI.
     """
-    image = "quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z"
+    image = "quay.io/minio/minio:RELEASE.2022-12-02T19-19-22Z"
     with MinioContainer(image=image) as minio:
         bucket = "test-bucket"
         minio.get_client().make_bucket(bucket)

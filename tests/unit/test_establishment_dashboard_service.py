@@ -11,11 +11,14 @@ from app.domain.establishment_dashboard import (
 )
 from app.domain.measurement import AlertSeverity, AlertType
 from app.domain.subject import Sex
+from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import EstablishmentNotFoundError
 from app.services.establishments.establishment_dashboard_service import (
     EstablishmentDashboardService,
 )
 from tests.unit.conftest import aiter_of, capturing_exporter, drain
+
+_ADMIN = UserActor(user_id=uuid.uuid4(), role=UserRole.ADMIN)
 
 
 def _row(alert_type: AlertType | None, count: int) -> SimpleNamespace:
@@ -60,12 +63,18 @@ def make_dashboard_uow(establishment, stub_establishment_lookup):
         measurement_count=0,
         subject_rows=None,
         subject_total=0,
+        movement_dates=None,
         found=True,
     ):
         uow = AsyncMock()
         stub_establishment_lookup(uow, establishment if found else None)
         uow.establishment_dashboard_repo.get_metrics = AsyncMock(
             return_value=metrics_row if metrics_row is not None else _metrics_row(0)
+        )
+        uow.establishment_dashboard_repo.get_last_movement_dates = AsyncMock(
+            return_value=movement_dates
+            if movement_dates is not None
+            else SimpleNamespace(last_intake_at=None, last_outflow_at=None)
         )
         uow.establishment_dashboard_repo.count_measurements = AsyncMock(
             return_value=measurement_count
@@ -161,13 +170,13 @@ class TestGetEstablishmentDashboard:
     async def test_raises_when_establishment_is_unknown(self, make_dashboard_uow):
         service = EstablishmentDashboardService(make_dashboard_uow(found=False))
         with pytest.raises(EstablishmentNotFoundError):
-            await service.get_establishment_dashboard(uuid.uuid4())
+            await service.get_establishment_dashboard(uuid.uuid4(), _ADMIN)
 
     async def test_empty_establishment_reports_no_data(self, make_dashboard_uow):
         service = EstablishmentDashboardService(
             make_dashboard_uow(metrics_row=_metrics_row(0))
         )
-        result = await service.get_establishment_dashboard(uuid.uuid4())
+        result = await service.get_establishment_dashboard(uuid.uuid4(), _ADMIN)
 
         assert result.has_data is False
         assert result.metrics.avg_bmi is None
@@ -183,7 +192,7 @@ class TestGetEstablishmentDashboard:
     ):
         uow = make_dashboard_uow(metrics_row=_metrics_row(0))
         await EstablishmentDashboardService(uow).get_establishment_dashboard(
-            uuid.uuid4()
+            uuid.uuid4(), _ADMIN
         )
 
         uow.establishment_dashboard_repo.count_measurements.assert_not_called()
@@ -198,7 +207,7 @@ class TestGetEstablishmentDashboard:
             measurement_count=7,
         )
         result = await EstablishmentDashboardService(uow).get_establishment_dashboard(
-            uuid.uuid4()
+            uuid.uuid4(), _ADMIN
         )
 
         assert result.has_data is True
@@ -213,7 +222,7 @@ class TestGetEstablishmentDashboard:
             metrics_row=_metrics_row(3), distribution=[_row(None, 3)]
         )
         result = await EstablishmentDashboardService(uow).get_establishment_dashboard(
-            uuid.uuid4()
+            uuid.uuid4(), _ADMIN
         )
         assert result.metrics.avg_age_months == 77
 
@@ -222,7 +231,7 @@ class TestGetEstablishmentDashboard:
     ):
         uow = make_dashboard_uow(metrics_row=_metrics_row(0))
         result = await EstablishmentDashboardService(uow).get_establishment_dashboard(
-            uuid.uuid4()
+            uuid.uuid4(), _ADMIN
         )
         assert result.establishment.name == establishment.name
         assert result.establishment.city == establishment.city

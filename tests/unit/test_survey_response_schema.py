@@ -36,15 +36,17 @@ def test_response_number_columns_and_survey_setting_are_nullable():
     assert SurveyResponseEdit.__table__.c.response_number.nullable is True
 
 
-def test_response_number_migration_is_the_only_head_after_develop():
+def test_response_number_migration_is_linear_off_develop():
+    """The migration stays a single unbranched line off develop.
+
+    It is no longer the head — later features stack on top of it — so the
+    guard checks its parent and that the tree still has exactly one head.
+    """
     scripts = ScriptDirectory.from_config(Config("alembic.ini"))
     migration = scripts.get_revision("d47f2a9c1e63")
 
     assert migration.down_revision == "c8e3d5a91f74"
-
-    photo_key_migration = scripts.get_revision("ec7aacdaf1ae")
-    assert photo_key_migration.down_revision == migration.revision
-    assert scripts.get_heads() == [photo_key_migration.revision]
+    assert len(scripts.get_heads()) == 1
 
 
 def test_submit_and_edit_accept_missing_or_null_response_number():

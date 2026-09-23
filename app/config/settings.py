@@ -95,6 +95,15 @@ class Settings(BaseSettings):
     # LLM
     gemini_api_key: Optional[str] = None
     gemini_model: str = "gemini-3.6-flash"
+    # Stale-establishment notifications
+    fcm_project_id: str | None = None
+    fcm_client_email: str | None = None
+    fcm_private_key: str | None = None
+
+    @property
+    def has_fcm_credentials(self) -> bool:
+        """Return whether every FCM service-account field is present."""
+        return all((self.fcm_project_id, self.fcm_client_email, self.fcm_private_key))
 
     def _build_deeplink(self, base: str | AnyUrl, path: str) -> str:
         base = str(base).rstrip("/")

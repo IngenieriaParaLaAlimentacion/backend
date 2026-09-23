@@ -6,12 +6,17 @@ from fastapi.responses import StreamingResponse
 from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_stream_response
 from app.api.v1.params import (
     AUTH_RESPONSES,
+    FoodMovementListingQuery,
     FoodStockListingQuery,
     PaginatedQueryParams,
 )
 from app.core.dependencies import get_food_stock_service, require_any
 from app.domain import UserActor
-from app.schemas.food_stock.food_stock_schema import FoodMovementItem, FoodStockItem
+from app.schemas.food_stock.food_stock_schema import (
+    FoodMovementDetail,
+    FoodMovementSummary,
+    FoodStockItem,
+)
 from app.schemas.pagination import PaginatedResponse
 from app.services.exporters.csv.columns import FOOD_STOCK_EXPORTER
 from app.services.food_stock.food_stock_service import FoodStockService
@@ -81,37 +86,76 @@ async def export_establishment_stock(
 
 
 @router.get(
-    "/{establishment_id}/stock/{food_id}/movements",
-    response_model=PaginatedResponse[FoodMovementItem],
-    summary="List the movements behind one food's balance",
+    "/{establishment_id}/food-movements",
+    response_model=PaginatedResponse[FoodMovementSummary],
+    summary="List an establishment's food movements",
     description=(
-        "Intakes and outflows of a single food as one sequence, newest first, "
-        "each tagged with its direction — the history that explains how the "
-        "current balance got there."
+        "Intakes and outflows merged into a single sequence, newest first, one "
+        "entry per movement. Filter with `direction`, a date range over "
+        "`occurred_at`, or `food_id` to keep only the movements carrying that "
+        "food on at least one line."
     ),
     responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "`/errors/invalid-date-range`: occurred_from is "
+            "after occurred_to"
+        },
         **AUTH_RESPONSES,
-        status.HTTP_404_NOT_FOUND: {"description": "Establishment or food not found"},
+        **_NOT_FOUND,
     },
 )
-async def list_food_movements(
+async def list_establishment_movements(
     establishment_id: UUID,
-    food_id: UUID,
+    query: FoodMovementListingQuery = Depends(),
     paginated: PaginatedQueryParams = Depends(),
     actor: UserActor = Depends(require_any),
     service: FoodStockService = Depends(get_food_stock_service),
-) -> PaginatedResponse[FoodMovementItem]:
+) -> PaginatedResponse[FoodMovementSummary]:
+    query.validate()
     result = await service.list_movements(
         establishment_id=establishment_id,
-        food_id=food_id,
         actor=actor,
         page=paginated.page,
         page_size=paginated.page_size,
+        params=query.to_domain(),
     )
-    return PaginatedResponse[FoodMovementItem](
-        items=[FoodMovementItem.model_validate(item) for item in result.items],
+    return PaginatedResponse[FoodMovementSummary](
+        items=[FoodMovementSummary.model_validate(item) for item in result.items],
         total=result.total,
         page=result.page,
         page_size=result.page_size,
         total_pages=result.total_pages,
     )
+
+
+@router.get(
+    "/{establishment_id}/food-movements/{movement_id}",
+    response_model=FoodMovementDetail,
+    summary="Get one of an establishment's food movements",
+    description=(
+        "One movement — an intake or an outflow — with all of its food lines, "
+        "each carrying the unit from the catalog, plus the movement's source "
+        "and comments. Lines are returned as recorded: a movement that lists "
+        "the same food twice comes back with both lines. A movement that "
+        "belongs to another establishment answers 404, the same as one that "
+        "does not exist."
+    ),
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Establishment or movement not found"
+        },
+    },
+)
+async def get_establishment_movement(
+    establishment_id: UUID,
+    movement_id: UUID,
+    actor: UserActor = Depends(require_any),
+    service: FoodStockService = Depends(get_food_stock_service),
+) -> FoodMovementDetail:
+    movement = await service.get_movement(
+        establishment_id=establishment_id,
+        movement_id=movement_id,
+        actor=actor,
+    )
+    return FoodMovementDetail.model_validate(movement)

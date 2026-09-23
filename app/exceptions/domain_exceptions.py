@@ -178,6 +178,19 @@ class UnauthorizedError(BaseError):
         super().__init__(title, details, extensions)
 
 
+class NotificationConfigurationError(BaseError):
+    """Raised when scheduled notifications are not fully configured."""
+
+    error_type = "notification-configuration-invalid"
+    status = status.HTTP_503_SERVICE_UNAVAILABLE
+
+    def __init__(self):
+        super().__init__(
+            "Notification configuration invalid",
+            "Stale-establishment notifications are not fully configured.",
+        )
+
+
 class ForbiddenError(BaseError, abstract=True):
     """Base exception for a request the caller is not permitted to make.
 
@@ -294,6 +307,30 @@ class UserEstablishmentNotApprovedError(ConflictError):
             extensions=(
                 {"relation_status": relation_status} if relation_status else None
             ),
+        )
+
+
+class UserEstablishmentNotWithdrawableError(ConflictError):
+    """Raised when a user tries to withdraw their own access to an
+    establishment whose relation is not currently approved or pending.
+
+    Args:
+        establishment_id (str): The establishment whose relation cannot be
+            withdrawn.
+        user_id (str): The user the relation belongs to.
+        relation_status (str): The state the relation is actually in
+            (rejected/revoked), attached as the ``relation_status`` extension.
+    """
+
+    error_type = "user-establishment-not-withdrawable"
+
+    def __init__(self, establishment_id: str, user_id: str, relation_status: str):
+        super().__init__(
+            "User establishment not withdrawable",
+            f"The establishment with id {establishment_id} is not currently "
+            f"approved or pending for the user with id {user_id}, so its "
+            "access cannot be withdrawn.",
+            extensions={"relation_status": relation_status},
         )
 
 
@@ -872,6 +909,25 @@ class FoodNotFoundError(NotFoundError):
         super().__init__(
             "Food not found",
             f"No food with id {food_id} exists.",
+        )
+
+
+class FoodMovementNotFoundError(NotFoundError):
+    """Exception raised when a food movement cannot be found in an establishment.
+
+    Also raised when the movement exists but belongs to a different
+    establishment, so the two cases are indistinguishable to the caller.
+
+    Args:
+        movement_id (str): The ID that was looked up.
+    """
+
+    error_type = "food-movement-not-found"
+
+    def __init__(self, movement_id: str):
+        super().__init__(
+            "Food movement not found",
+            f"No food movement with id {movement_id} exists in this establishment.",
         )
 
 

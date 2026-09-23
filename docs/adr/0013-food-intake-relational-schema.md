@@ -4,6 +4,9 @@
 - **Date**: 2026-09-05
 - **Deciders**: Backend team
 - **Related**: ADR-0012 (relational schema for the food catalog), ADR-0004 (offline-first response sync via client ids)
+- **Later change**: `received_at` was renamed to `occurred_at` (migration `f3b9e1a7c204`, 2026-09-19) so both
+  movement tables name the event date identically and a merged read needs no relabelling. The column's meaning,
+  nullability and indexes are unchanged; the table below records the name as originally decided.
 
 ## Context
 

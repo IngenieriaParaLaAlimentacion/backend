@@ -51,3 +51,9 @@ class Establishment(Base):
         "FoodStock",
         back_populates="establishment",
     )
+    stale_notification_cycle = relationship(
+        "StaleEstablishmentCycle",
+        back_populates="establishment",
+        uselist=False,
+        passive_deletes=True,
+    )

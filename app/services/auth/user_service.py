@@ -10,6 +10,8 @@ from app.domain.establishment import (
 from app.domain.user import ProfileDomain, UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EmptyUpdateRequestError,
+    UserEstablishmentNotFoundError,
+    UserEstablishmentNotWithdrawableError,
     UserNotFoundError,
 )
 from app.models.auth.user import User
@@ -66,30 +68,85 @@ class UserService:
             contact_phone=user.contact_phone,
         )
 
+    async def _get_status_by_establishment(
+        self, user_id: UUID
+    ) -> dict[UUID, UserEstablishmentStatus]:
+        """Return the caller's establishment ids mapped to their relation status."""
+        relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
+        return {rel.establishment_id: rel.status for rel in relations}
+
+    @staticmethod
+    def _to_establishment_status_domains(
+        ids: list[UUID],
+        info: dict[UUID, dict],
+        result_status: dict[UUID, UserEstablishmentStatus],
+    ) -> list[EstablishmentWithStatusDomain]:
+        """Zip establishment snapshots with their resulting status, in id order."""
+        return [
+            EstablishmentWithStatusDomain(
+                **info[estab_id], status=result_status[estab_id]
+            )
+            for estab_id in ids
+        ]
+
     async def _get_establishments_with_status(
         self, user_id: UUID
     ) -> list[EstablishmentWithStatusDomain]:
-        relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
-        if not relations:
+        status_by_estab = await self._get_status_by_establishment(user_id)
+        if not status_by_estab:
             return []
 
         establishments = await self.uow.establishment_repo.find_by_ids(
-            [relation.establishment_id for relation in relations]
+            list(status_by_estab.keys())
         )
         by_id = {establishment.id: establishment for establishment in establishments}
 
         result: list[EstablishmentWithStatusDomain] = []
-        for relation in relations:
-            establishment = by_id.get(relation.establishment_id)
+        for estab_id, status in status_by_estab.items():
+            establishment = by_id.get(estab_id)
             if establishment is None:
                 continue
             result.append(
                 EstablishmentWithStatusDomain(
                     **_establishment_snapshot(establishment),
-                    status=relation.status,
+                    status=status,
                 )
             )
         return result
+
+    @staticmethod
+    def _classify_for_request(
+        unique_ids: list[UUID],
+        status_by_estab: dict[UUID, UserEstablishmentStatus],
+    ) -> tuple[list[UUID], list[UUID], dict[UUID, UserEstablishmentStatus]]:
+        """Sort ids into what a request/re-request must do to each one.
+
+        Returns (to_repend, to_insert, result_status): approved/pending relations
+        are left as-is; rejected/revoked/withdrawn ones are re-pended to pending;
+        ids with no relation yet are inserted as pending. ``result_status`` holds
+        the status every id will end up with, for building the response.
+        """
+        to_repend: list[UUID] = []
+        to_insert: list[UUID] = []
+        result_status: dict[UUID, UserEstablishmentStatus] = {}
+        for estab_id in unique_ids:
+            current = status_by_estab.get(estab_id)
+            if current in (
+                UserEstablishmentStatus.APPROVED,
+                UserEstablishmentStatus.PENDING,
+            ):
+                result_status[estab_id] = current
+            elif current in (
+                UserEstablishmentStatus.REJECTED,
+                UserEstablishmentStatus.REVOKED,
+                UserEstablishmentStatus.WITHDRAWN,
+            ):
+                to_repend.append(estab_id)
+                result_status[estab_id] = UserEstablishmentStatus.PENDING
+            else:
+                to_insert.append(estab_id)
+                result_status[estab_id] = UserEstablishmentStatus.PENDING
+        return to_repend, to_insert, result_status
 
     async def get_profile(self, actor: UserActor) -> ProfileDomain:
         """Return the authenticated user's profile.
@@ -157,7 +214,8 @@ class UserService:
         self, actor: UserActor, establishment_ids: list[UUID]
     ) -> list[EstablishmentWithStatusDomain]:
         """Request (or re-request) access to establishments. Idempotent per item:
-        approved/pending stay as-is, rejected/revoked/new become pending.
+        approved/pending stay as-is, rejected/revoked/withdrawn/new become
+        pending.
 
         Raises:
             EstablishmentNotFoundError: If any establishment id does not exist.
@@ -168,28 +226,10 @@ class UserService:
         establishments = await self.uow.establishment_repo.get_all_by_ids(unique_ids)
         info = {e.id: _establishment_snapshot(e) for e in establishments}
 
-        relations = await self.uow.user_establishment_repo.get_by_user_id(user_id)
-        status_by_estab = {rel.establishment_id: rel.status for rel in relations}
-
-        to_repend: list[UUID] = []
-        to_insert: list[UUID] = []
-        result_status: dict[UUID, UserEstablishmentStatus] = {}
-        for estab_id in unique_ids:
-            current = status_by_estab.get(estab_id)
-            if current in (
-                UserEstablishmentStatus.APPROVED,
-                UserEstablishmentStatus.PENDING,
-            ):
-                result_status[estab_id] = current
-            elif current in (
-                UserEstablishmentStatus.REJECTED,
-                UserEstablishmentStatus.REVOKED,
-            ):
-                to_repend.append(estab_id)
-                result_status[estab_id] = UserEstablishmentStatus.PENDING
-            else:
-                to_insert.append(estab_id)
-                result_status[estab_id] = UserEstablishmentStatus.PENDING
+        status_by_estab = await self._get_status_by_establishment(user_id)
+        to_repend, to_insert, result_status = self._classify_for_request(
+            unique_ids, status_by_estab
+        )
 
         if to_repend:
             await self.uow.user_establishment_repo.update_status_for_ids(
@@ -199,9 +239,49 @@ class UserService:
             await self.uow.user_establishment_repo.preset_relation(user_id, estab_id)
         await self.uow.commit()
 
-        return [
-            EstablishmentWithStatusDomain(
-                **info[estab_id], status=result_status[estab_id]
-            )
-            for estab_id in unique_ids
-        ]
+        return self._to_establishment_status_domains(unique_ids, info, result_status)
+
+    async def withdraw_establishment_access(
+        self, actor: UserActor, establishment_ids: list[UUID]
+    ) -> list[EstablishmentWithStatusDomain]:
+        """Withdraw the caller's own access to one or more establishments.
+
+        Only relations currently approved or pending can be withdrawn.
+        A withdrawn establishment can be re-requested through
+        request_establishment_access exactly like a rejected or revoked one.
+
+        Raises:
+            UserEstablishmentNotFoundError: If an establishment id has no
+                relation with the caller.
+            UserEstablishmentNotWithdrawableError: If a relation exists but is
+                not currently approved or pending.
+        """
+        user_id = actor.user_id
+        unique_ids = list(dict.fromkeys(establishment_ids))
+
+        status_by_estab = await self._get_status_by_establishment(user_id)
+
+        to_withdraw: list[UUID] = []
+        for estab_id in unique_ids:
+            current = status_by_estab.get(estab_id)
+            if current is None:
+                raise UserEstablishmentNotFoundError(str(estab_id), str(user_id))
+            if current not in (
+                UserEstablishmentStatus.APPROVED,
+                UserEstablishmentStatus.PENDING,
+            ):
+                raise UserEstablishmentNotWithdrawableError(
+                    str(estab_id), str(user_id), current.value
+                )
+            to_withdraw.append(estab_id)
+
+        await self.uow.user_establishment_repo.update_status_for_ids(
+            user_id, to_withdraw, UserEstablishmentStatus.WITHDRAWN
+        )
+        await self.uow.commit()
+
+        establishments = await self.uow.establishment_repo.find_by_ids(unique_ids)
+        info = {e.id: _establishment_snapshot(e) for e in establishments}
+        result_status = dict.fromkeys(unique_ids, UserEstablishmentStatus.WITHDRAWN)
+
+        return self._to_establishment_status_domains(unique_ids, info, result_status)
