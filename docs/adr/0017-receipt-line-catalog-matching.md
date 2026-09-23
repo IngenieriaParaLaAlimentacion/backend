@@ -1,4 +1,4 @@
-# ADR-0016: Trigram-similarity catalog matching for receipt-extracted food lines
+# ADR-0017: Trigram-similarity catalog matching for receipt-extracted food lines
 
 - **Status**: Accepted
 - **Date**: 2026-09-19

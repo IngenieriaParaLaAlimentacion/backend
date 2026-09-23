@@ -1,4 +1,4 @@
-# ADR-0015: Stale-establishment push notification workflow
+# ADR-0016: Stale-establishment push notification workflow
 
 - **Status**: Accepted
 - **Date**: 2026-09-19

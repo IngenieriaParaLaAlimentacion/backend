@@ -1,4 +1,4 @@
-# ADR-0016: Field worker access to their own establishment's reads
+# ADR-0018: Field worker access to their own establishment's reads
 
 - **Status**: Accepted
 - **Date**: 2026-09-19
