@@ -259,8 +259,7 @@ class EstablishmentDashboardRepository:
     async def get_status_distribution_for_all(self) -> list[Row]:
         """Return (establishment_id, alert_type, severity, count) over each
         subject's latest measurement at each establishment, across every
-        establishment. One query for every establishment, grouped, instead of
-        one call per establishment."""
+        establishment, in a single grouped query."""
         latest = self._latest_per_subject_all()
         query = self._status_distribution_query(
             latest,
