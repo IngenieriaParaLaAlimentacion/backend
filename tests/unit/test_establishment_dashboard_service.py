@@ -408,3 +408,90 @@ class TestExportEstablishmentSubjects:
         assert len(seen) == 1
         assert seen[0].measurement_count == 3
         assert seen[0].nutritional_status is not None
+
+
+class TestBuildMapItem:
+    def test_no_rows_means_no_data(self, make_establishment):
+        establishment = make_establishment()
+        item = EstablishmentDashboardService._build_map_item(establishment, [])
+        assert item.has_data is False
+        assert item.severity is None
+        assert item.dominant_status is None
+
+    def test_reuses_the_alert_status_rollup(self, make_establishment):
+        """Same severity/dominant_status _build_alert_status would give the
+        ficha -- this is what guarantees the map and the ficha never diverge.
+        """
+        establishment = make_establishment()
+        rows = [_row(None, 1), _row(AlertType.SEVERELY_WASTED, 1)]
+        item = EstablishmentDashboardService._build_map_item(establishment, rows)
+        assert item.has_data is True
+        assert item.severity == AlertSeverity.CRITICAL
+        assert item.dominant_status == NutritionalStatus.SEVERELY_WASTED
+
+    def test_carries_identity_and_location(self, make_establishment):
+        establishment = make_establishment(name="Comedor X")
+        item = EstablishmentDashboardService._build_map_item(establishment, [])
+        assert item.id == establishment.id
+        assert item.name == "Comedor X"
+        assert item.latitude == establishment.latitude
+        assert item.longitude == establishment.longitude
+
+
+class TestGetEstablishmentsMap:
+    pytestmark = pytest.mark.asyncio
+
+    async def test_rows_are_grouped_by_establishment_not_mixed(
+        self, make_establishment
+    ):
+        est_a = make_establishment(name="A")
+        est_b = make_establishment(name="B")
+        uow = AsyncMock()
+        uow.establishment_repo.get_all = AsyncMock(return_value=[est_a, est_b])
+        uow.establishment_dashboard_repo.get_status_distribution_for_all = AsyncMock(
+            return_value=[
+                SimpleNamespace(
+                    establishment_id=est_a.id, alert_type=None, severity=None, count=2
+                ),
+                SimpleNamespace(
+                    establishment_id=est_b.id,
+                    alert_type=AlertType.OBESE,
+                    severity=AlertSeverity.MEDIUM,
+                    count=1,
+                ),
+            ]
+        )
+
+        items = await EstablishmentDashboardService(uow).get_establishments_map()
+
+        by_id = {item.id: item for item in items}
+        assert by_id[est_a.id].dominant_status == NutritionalStatus.NORMAL
+        assert by_id[est_b.id].dominant_status == NutritionalStatus.OBESE
+
+    async def test_establishment_with_no_matching_rows_still_appears(
+        self, make_establishment
+    ):
+        """A bug that iterated the grouped rows instead of every establishment
+        would silently drop this one -- exactly the CA3 failure mode."""
+        est_with_data = make_establishment(name="Con datos")
+        est_without_data = make_establishment(name="Sin datos")
+        uow = AsyncMock()
+        uow.establishment_repo.get_all = AsyncMock(
+            return_value=[est_with_data, est_without_data]
+        )
+        uow.establishment_dashboard_repo.get_status_distribution_for_all = AsyncMock(
+            return_value=[
+                SimpleNamespace(
+                    establishment_id=est_with_data.id,
+                    alert_type=None,
+                    severity=None,
+                    count=1,
+                )
+            ]
+        )
+
+        items = await EstablishmentDashboardService(uow).get_establishments_map()
+
+        by_id = {item.id: item for item in items}
+        assert len(items) == 2
+        assert by_id[est_without_data.id].has_data is False
