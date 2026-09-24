@@ -20,7 +20,6 @@ from app.core.dependencies import (
 from app.domain import UserActor
 from app.exceptions.domain_exceptions import MissingTokenError
 from app.schemas.establishments.establishment_dashboard_schema import (
-    EstablishmentMapItemResponse,
     EstablishmentMapResponse,
 )
 from app.schemas.establishments.establishment_schema import (
@@ -184,11 +183,7 @@ async def get_establishments_map(
     ),
 ) -> EstablishmentMapResponse:
     items = await service.get_establishments_map()
-    return EstablishmentMapResponse(
-        establishments=[
-            EstablishmentMapItemResponse.model_validate(item) for item in items
-        ]
-    )
+    return EstablishmentMapResponse.model_validate({"establishments": items})
 
 
 @router.get(

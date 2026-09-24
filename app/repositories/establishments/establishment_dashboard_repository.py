@@ -126,38 +126,18 @@ class EstablishmentDashboardRepository:
         )
 
     @staticmethod
-    def _latest_per_subject(establishment_id: UUID):
-        """Subquery: id of each subject's most recent measurement here.
+    def _latest_per_subject(establishment_id: UUID | None = None):
+        """Subquery: id and establishment_id of each subject's most recent
+        measurement at each establishment, or only at ``establishment_id``
+        when given.
 
         Uses Postgres DISTINCT ON, whose distinct expression must lead the
         ORDER BY; ``id`` breaks ties between measurements sharing ``measured_at``
-        so the pick is deterministic. Selecting only the id (rather than the
+        so the pick is deterministic. Selecting only the ids (rather than the
         whole entity) lets callers join it and then order the outer query
         freely, which DISTINCT ON would otherwise forbid.
         """
-        return (
-            select(Measurement.id.label("id"))
-            .where(Measurement.establishment_id == establishment_id)
-            .distinct(Measurement.subject_id)
-            .order_by(
-                Measurement.subject_id,
-                desc(Measurement.measured_at),
-                desc(Measurement.id),
-            )
-            .subquery()
-        )
-
-    @staticmethod
-    def _latest_per_subject_all():
-        """Subquery: id and establishment_id of each subject's most recent
-        measurement at each establishment, across every establishment.
-
-        Same DISTINCT ON pattern as ``_latest_per_subject``, partitioned by
-        (establishment_id, subject_id) instead of scoped to one establishment.
-        """
-        # Not scoped to one establishment, so a single query can feed the
-        # cross-establishment map instead of one call per establishment.
-        return (
+        query = (
             select(
                 Measurement.id.label("id"),
                 Measurement.establishment_id.label("establishment_id"),
@@ -169,8 +149,10 @@ class EstablishmentDashboardRepository:
                 desc(Measurement.measured_at),
                 desc(Measurement.id),
             )
-            .subquery()
         )
+        if establishment_id is not None:
+            query = query.where(Measurement.establishment_id == establishment_id)
+        return query.subquery()
 
     async def get_metrics(self, establishment_id: UUID) -> Row:
         """Return one row of aggregated metrics over each subject's latest
@@ -260,7 +242,7 @@ class EstablishmentDashboardRepository:
         """Return (establishment_id, alert_type, severity, count) over each
         subject's latest measurement at each establishment, across every
         establishment, in a single grouped query."""
-        latest = self._latest_per_subject_all()
+        latest = self._latest_per_subject()
         query = self._status_distribution_query(
             latest,
             [
