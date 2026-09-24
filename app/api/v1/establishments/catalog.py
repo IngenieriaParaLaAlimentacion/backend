@@ -10,6 +10,7 @@ from app.api.v1.params import (
     PaginatedQueryParams,
 )
 from app.core.dependencies import (
+    get_establishment_dashboard_service,
     get_establishment_service,
     get_optional_actor,
     require_admin,
@@ -18,6 +19,10 @@ from app.core.dependencies import (
 )
 from app.domain import UserActor
 from app.exceptions.domain_exceptions import MissingTokenError
+from app.schemas.establishments.establishment_dashboard_schema import (
+    EstablishmentMapItemResponse,
+    EstablishmentMapResponse,
+)
 from app.schemas.establishments.establishment_schema import (
     EstablishmentCreationRequestCreate,
     EstablishmentCreationRequestResponse,
@@ -26,6 +31,9 @@ from app.schemas.establishments.establishment_schema import (
     EstablishmentUpdateRequest,
 )
 from app.schemas.pagination import PaginatedResponse
+from app.services.establishments.establishment_dashboard_service import (
+    EstablishmentDashboardService,
+)
 from app.services.establishments.establishment_service import EstablishmentService
 from app.services.exporters.csv.columns import ESTABLISHMENT_LISTING_EXPORTER
 
@@ -153,7 +161,34 @@ async def get_establishments(
     )
 
 
-# Declared above GET /{establishment_id} so "export" is not matched as an id.
+@router.get(
+    "/map",
+    response_model=EstablishmentMapResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get every establishment's location and nutritional status for the map",
+    description=(
+        "Returns, in a single unpaginated response, the location and "
+        "rolled-up nutritional severity of every establishment. "
+        "An establishment with no measurements is returned with "
+        "has_data=false rather than omitted. Restricted to admins and "
+        "analysts."
+    ),
+    responses=AUTH_RESPONSES,
+)
+async def get_establishments_map(
+    _: UserActor = Depends(require_admin_or_analyst),
+    service: EstablishmentDashboardService = Depends(
+        get_establishment_dashboard_service
+    ),
+) -> EstablishmentMapResponse:
+    items = await service.get_establishments_map()
+    return EstablishmentMapResponse(
+        establishments=[
+            EstablishmentMapItemResponse.model_validate(item) for item in items
+        ]
+    )
+
+
 @router.get(
     "/export",
     summary="Export the establishment listing as CSV",

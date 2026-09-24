@@ -11,7 +11,7 @@ from app.schemas.establishments.establishment_schema import EstablishmentRespons
 from app.schemas.measurements.measurement_schema import (
     MeasurementSnapshotBase,
 )
-from app.schemas.types import RoundedNullableFloat
+from app.schemas.types import Latitude, Longitude, RoundedNullableFloat
 
 # -- Response --
 
@@ -91,3 +91,23 @@ class EstablishmentFieldWorkerListItem(BaseModel):
     relation_status: UserEstablishmentStatus
     measurement_count: int
     last_measured_at: datetime | None
+
+
+class EstablishmentMapItemResponse(BaseModel):
+    """One establishment's location and rolled-up nutritional severity."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    name: str
+    latitude: Latitude
+    longitude: Longitude
+    has_data: bool
+    severity: AlertSeverity | None
+    dominant_status: NutritionalStatus | None
+
+
+class EstablishmentMapResponse(BaseModel):
+    """Every establishment's location and nutritional status, for the map."""
+
+    establishments: list[EstablishmentMapItemResponse]
