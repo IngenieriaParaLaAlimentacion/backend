@@ -149,14 +149,14 @@ class EstablishmentDashboardRepository:
 
     @staticmethod
     def _latest_per_subject_all():
-        """Subquery: id of each subject's most recent measurement at each
-        establishment, across every establishment.
+        """Subquery: id and establishment_id of each subject's most recent
+        measurement at each establishment, across every establishment.
 
-        Same DISTINCT ON pattern as ``_latest_per_subject``, but partitioned
-        by (establishment_id, subject_id) instead of scoped to one
-        establishment, so a single query can feed the cross-establishment map
-        summary instead of one call per establishment.
+        Same DISTINCT ON pattern as ``_latest_per_subject``, partitioned by
+        (establishment_id, subject_id) instead of scoped to one establishment.
         """
+        # Not scoped to one establishment, so a single query can feed the
+        # cross-establishment map instead of one call per establishment.
         return (
             select(
                 Measurement.id.label("id"),

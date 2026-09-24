@@ -161,6 +161,8 @@ async def get_establishments(
     )
 
 
+# "/map" and "/export" are declared above GET /{establishment_id} so they are
+# not matched as an id.
 @router.get(
     "/map",
     response_model=EstablishmentMapResponse,

@@ -27,36 +27,6 @@ class EstablishmentRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    @staticmethod
-    def _search_condition(search: str | None):
-        """Case-insensitive name/formatted_address match for ``search``, or None.
-
-        Returns None when ``search`` is empty so callers can skip the filter.
-        """
-        if not search:
-            return None
-        return or_(
-            ilike_condition(Establishment.name, search),
-            ilike_condition(Establishment.formatted_address, search),
-        )
-
-    @staticmethod
-    def _append_ilike(conditions: list, column, value: str | None) -> None:
-        """Append a partial match condition for column to conditions, if given."""
-        if value:
-            conditions.append(ilike_condition(column, value))
-
-    @classmethod
-    def _listing_conditions(cls, params: EstablishmentListingParams) -> list:
-        """Build the search/city/province filter conditions for a listing."""
-        conditions = []
-        search_condition = cls._search_condition(params.search)
-        if search_condition is not None:
-            conditions.append(search_condition)
-        cls._append_ilike(conditions, Establishment.city, params.city)
-        cls._append_ilike(conditions, Establishment.province, params.province)
-        return conditions
-
     async def create(self, establishment: Establishment) -> Establishment:
         """Persist a new establishment.
 
@@ -117,7 +87,7 @@ class EstablishmentRepository:
 
         Raises:
             EstablishmentNotFoundError: if any of the requested establishment
-                is missing.
+            is missing.
         """
         establishments = await self.find_by_ids(ids)
         id_set = set(ids)
@@ -130,15 +100,41 @@ class EstablishmentRepository:
         return establishments
 
     async def get_all(self) -> list[Establishment]:
-        """Return every establishment, unfiltered and unpaginated.
-
-        For aggregate views (e.g. the establishment map) that must answer
-        with every establishment in one response rather than a page.
-        """
+        """Return every establishment ordered by name, unfiltered and unpaginated."""
         result = await self.db.execute(
             select(Establishment).order_by(Establishment.name)
         )
         return list(result.scalars().all())
+
+    @staticmethod
+    def _search_condition(search: str | None):
+        """Case-insensitive name/formatted_address match for ``search``, or None.
+
+        Returns None when ``search`` is empty so callers can skip the filter.
+        """
+        if not search:
+            return None
+        return or_(
+            ilike_condition(Establishment.name, search),
+            ilike_condition(Establishment.formatted_address, search),
+        )
+
+    @staticmethod
+    def _append_ilike(conditions: list, column, value: str | None) -> None:
+        """Append a partial match condition for column to conditions, if given."""
+        if value:
+            conditions.append(ilike_condition(column, value))
+
+    @classmethod
+    def _listing_conditions(cls, params: EstablishmentListingParams) -> list:
+        """Build the search/city/province filter conditions for a listing."""
+        conditions = []
+        search_condition = cls._search_condition(params.search)
+        if search_condition is not None:
+            conditions.append(search_condition)
+        cls._append_ilike(conditions, Establishment.city, params.city)
+        cls._append_ilike(conditions, Establishment.province, params.province)
+        return conditions
 
     async def get_paginated(
         self,

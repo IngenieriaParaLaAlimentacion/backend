@@ -92,13 +92,13 @@ class EstablishmentDashboardService:
         )
 
     @classmethod
-    def _build_map_item(cls, establishment, rows: list) -> EstablishmentMapItemDomain:
-        """Build one establishment's map item from its status-distribution rows.
-
-        Delegates to ``_build_alert_status`` so severity/dominant_status stay
-        identical to what the individual establishment dashboard shows.
-        """
+    def _build_map_item(
+        cls, establishment: EstablishmentDomain, rows: list
+    ) -> EstablishmentMapItemDomain:
+        """Build one establishment's map item from its status-distribution rows."""
         total = sum(row.count for row in rows)
+        # Same builder as the individual dashboard, so severity and
+        # dominant_status cannot drift from what the establishment ficha shows.
         alert_status = (
             cls._build_alert_status(rows, total)
             if total > 0
@@ -199,12 +199,13 @@ class EstablishmentDashboardService:
         """Return every establishment's location and rolled-up nutritional
         severity, for plotting on a map.
 
-        Reuses ``_build_alert_status`` so severity here always matches the
-        individual establishment dashboard's (same criterion, same dominant
-        status). An establishment with no measurements gets has_data=False
-        and no severity rather than a fabricated NORMAL.
+        An establishment with no measurements gets has_data=False and no
+        severity.
         """
-        establishments = await self.uow.establishment_repo.get_all()
+        establishments = [
+            EstablishmentDomain.from_db(establishment)
+            for establishment in await self.uow.establishment_repo.get_all()
+        ]
         rows = await (
             self.uow.establishment_dashboard_repo.get_status_distribution_for_all()
         )

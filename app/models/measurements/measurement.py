@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, func
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Index, func, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -11,6 +11,15 @@ class Measurement(Base):
     """Single anthropometric measurement session for a subject."""
 
     __tablename__ = "measurements"
+    __table_args__ = (
+        Index(
+            "ix_measurements_latest_per_subject",
+            "establishment_id",
+            "subject_id",
+            text("measured_at DESC"),
+            text("id DESC"),
+        ),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     subject_id = Column(
