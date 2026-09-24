@@ -3,14 +3,15 @@ import uuid
 from datetime import date
 from typing import Any
 
+import boto3
 import pytest
 import pytest_asyncio
 from alembic.config import Config
 from httpx import ASGITransport, AsyncClient
+from moto.server import ThreadedMotoServer
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
-from testcontainers.minio import MinioContainer
 from testcontainers.postgres import PostgresContainer
 
 from alembic import command
@@ -104,24 +105,38 @@ def postgres_url():
 
 @pytest.fixture(scope="session")
 def storage_config():
-    """Start a MinIO container for the test session and create the test bucket.
+    """Start a local moto S3 server for the test session and create the test bucket.
 
-    MinIO is a real S3-compatible server (not a mock), so it exercises the
-    same aioboto3 client code path R2 does in production -- the point of the
-    receipt-upload tests (see test_receipt_intake_confirm.py), just without
-    depending on external Cloudflare credentials in CI.
+    The moto server listens on a real HTTP port, so requests go through the same
+    aioboto3 client code path R2 does in production -- the point of the
+    receipt-upload tests (see test_receipt_intake_confirm.py), without depending
+    on external Cloudflare credentials or on pulling a container image in CI.
     """
-    image = "quay.io/minio/minio:RELEASE.2022-12-02T19-19-22Z"
-    with MinioContainer(image=image) as minio:
-        bucket = "test-bucket"
-        minio.get_client().make_bucket(bucket)
-        config = minio.get_config()
+    server = ThreadedMotoServer(ip_address="127.0.0.1", port=0, verbose=False)
+    server.start()
+    try:
+        host, port = server.get_host_and_port()
+        endpoint_url = f"http://{host}:{port}"
+        access_key, secret_key, bucket = (
+            "test-access-key",
+            "test-secret-key",
+            "test-bucket",
+        )
+        boto3.client(
+            "s3",
+            endpoint_url=endpoint_url,
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_key,
+            region_name="us-east-1",
+        ).create_bucket(Bucket=bucket)
         yield {
-            "endpoint_url": f"http://{config['endpoint']}",
+            "endpoint_url": endpoint_url,
             "bucket": bucket,
-            "access_key_id": config["access_key"],
-            "secret_access_key": config["secret_key"],
+            "access_key_id": access_key,
+            "secret_access_key": secret_key,
         }
+    finally:
+        server.stop()
 
 
 @pytest.fixture(scope="session")
