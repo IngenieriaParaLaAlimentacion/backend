@@ -11,7 +11,6 @@ from httpx import ASGITransport, AsyncClient
 from moto.server import ThreadedMotoServer
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.pool import NullPool
 from testcontainers.postgres import PostgresContainer
 
 from alembic import command
@@ -149,7 +148,7 @@ def app(postgres_url, storage_config):
     Build the FastAPI app against the test database.
 
     Patches settings.database_url temporarily so alembic/env.py picks up the
-    test container URL, then overrides the DB engine with NullPool. Does NOT
+    test container URL, then overrides the DB engine with a pooled one. Does NOT
     touch os.environ or sys.modules so unit test module references stay valid.
     """
     sync_url = postgres_url.replace("postgresql+psycopg2://", "postgresql://")
@@ -181,7 +180,7 @@ def app(postgres_url, storage_config):
     import app.db.database as db_module
     from app.main import app as fastapi_app
 
-    db_module.engine = create_async_engine(asyncpg_url, poolclass=NullPool)
+    db_module.engine = create_async_engine(asyncpg_url)
     db_module.AsyncSessionLocal = async_sessionmaker(
         db_module.engine, expire_on_commit=False, autoflush=False, autocommit=False
     )
