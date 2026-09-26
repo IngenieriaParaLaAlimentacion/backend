@@ -1,3 +1,4 @@
+from collections import defaultdict
 from collections.abc import AsyncIterator
 from uuid import UUID
 
@@ -8,6 +9,7 @@ from app.domain.establishment_dashboard import (
     EstablishmentDashboardDomain,
     EstablishmentFieldWorkerItemDomain,
     EstablishmentFieldWorkerListingParams,
+    EstablishmentMapItemDomain,
     EstablishmentMetricsDomain,
     EstablishmentSubjectItemDomain,
     EstablishmentSubjectListingParams,
@@ -87,6 +89,29 @@ class EstablishmentDashboardService:
             at_risk_count=at_risk_count,
             at_risk_percentage=round(at_risk_count * 100 / total, 2),
             distribution=distribution,
+        )
+
+    @classmethod
+    def _build_map_item(
+        cls, establishment: EstablishmentDomain, rows: list
+    ) -> EstablishmentMapItemDomain:
+        """Build one establishment's map item from its status-distribution rows."""
+        total = sum(row.count for row in rows)
+        # Same builder as the individual dashboard, so severity and
+        # dominant_status cannot drift from what the establishment ficha shows.
+        alert_status = (
+            cls._build_alert_status(rows, total)
+            if total > 0
+            else EstablishmentAlertStatusDomain.empty()
+        )
+        return EstablishmentMapItemDomain(
+            id=establishment.id,
+            name=establishment.name,
+            latitude=establishment.latitude,
+            longitude=establishment.longitude,
+            has_data=total > 0,
+            severity=alert_status.severity,
+            dominant_status=alert_status.dominant_status,
         )
 
     @staticmethod
@@ -169,6 +194,32 @@ class EstablishmentDashboardService:
             metrics=metrics,
             alert_status=alert_status,
         )
+
+    async def get_establishments_map(self) -> list[EstablishmentMapItemDomain]:
+        """Return every establishment's location and rolled-up nutritional
+        severity, for plotting on a map.
+
+        An establishment with no measurements gets has_data=False and no
+        severity.
+        """
+        establishments = [
+            EstablishmentDomain.from_db(establishment)
+            for establishment in await self.uow.establishment_repo.get_all()
+        ]
+        rows = await (
+            self.uow.establishment_dashboard_repo.get_status_distribution_for_all()
+        )
+
+        rows_by_establishment: dict[UUID, list] = defaultdict(list)
+        for row in rows:
+            rows_by_establishment[row.establishment_id].append(row)
+
+        return [
+            self._build_map_item(
+                establishment, rows_by_establishment.get(establishment.id, [])
+            )
+            for establishment in establishments
+        ]
 
     async def list_establishment_subjects(
         self,

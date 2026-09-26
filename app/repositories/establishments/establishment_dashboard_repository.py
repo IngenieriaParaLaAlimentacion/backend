@@ -126,26 +126,33 @@ class EstablishmentDashboardRepository:
         )
 
     @staticmethod
-    def _latest_per_subject(establishment_id: UUID):
-        """Subquery: id of each subject's most recent measurement here.
+    def _latest_per_subject(establishment_id: UUID | None = None):
+        """Subquery: id and establishment_id of each subject's most recent
+        measurement at each establishment, or only at ``establishment_id``
+        when given.
 
         Uses Postgres DISTINCT ON, whose distinct expression must lead the
         ORDER BY; ``id`` breaks ties between measurements sharing ``measured_at``
-        so the pick is deterministic. Selecting only the id (rather than the
+        so the pick is deterministic. Selecting only the ids (rather than the
         whole entity) lets callers join it and then order the outer query
         freely, which DISTINCT ON would otherwise forbid.
         """
-        return (
-            select(Measurement.id.label("id"))
-            .where(Measurement.establishment_id == establishment_id)
-            .distinct(Measurement.subject_id)
+        query = (
+            select(
+                Measurement.id.label("id"),
+                Measurement.establishment_id.label("establishment_id"),
+            )
+            .distinct(Measurement.establishment_id, Measurement.subject_id)
             .order_by(
+                Measurement.establishment_id,
                 Measurement.subject_id,
                 desc(Measurement.measured_at),
                 desc(Measurement.id),
             )
-            .subquery()
         )
+        if establishment_id is not None:
+            query = query.where(Measurement.establishment_id == establishment_id)
+        return query.subquery()
 
     async def get_metrics(self, establishment_id: UUID) -> Row:
         """Return one row of aggregated metrics over each subject's latest
@@ -199,26 +206,52 @@ class EstablishmentDashboardRepository:
         )
         return result.scalar_one()
 
-    async def get_status_distribution(self, establishment_id: UUID) -> list[Row]:
-        """Return (alert_type, severity, count) over each subject's latest
-        measurement at this establishment.
+    @staticmethod
+    def _status_distribution_query(latest, columns: list):
+        """Build the alert-count query shared by the single-establishment and
+        all-establishments status distributions.
+
+        ``columns`` are both selected and grouped by -- e.g. just
+        ``(alert_type, severity)`` when ``latest`` is already scoped to one
+        establishment, or ``(establishment_id, alert_type, severity)`` when
+        it spans every establishment.
 
         The join to alerts is an OUTER join on purpose: subjects whose latest
-        measurement raised no alert are the healthy ones, and a plain join would
-        drop them from the distribution entirely. They come back with a NULL
-        alert_type, which the service maps to NutritionalStatus.NORMAL.
+        measurement raised no alert are the healthy ones, and a plain join
+        would drop them from the distribution entirely. They come back with a
+        NULL alert_type, which the service maps to NutritionalStatus.NORMAL.
         """
-        latest = self._latest_per_subject(establishment_id)
-        result = await self.db.execute(
-            select(
-                MeasurementAlert.alert_type,
-                MeasurementAlert.severity,
-                func.count().label("count"),
-            )
+        return (
+            select(*columns, func.count().label("count"))
             .select_from(latest)
             .outerjoin(MeasurementAlert, MeasurementAlert.measurement_id == latest.c.id)
-            .group_by(MeasurementAlert.alert_type, MeasurementAlert.severity)
+            .group_by(*columns)
         )
+
+    async def get_status_distribution(self, establishment_id: UUID) -> list[Row]:
+        """Return (alert_type, severity, count) over each subject's latest
+        measurement at this establishment."""
+        latest = self._latest_per_subject(establishment_id)
+        query = self._status_distribution_query(
+            latest, [MeasurementAlert.alert_type, MeasurementAlert.severity]
+        )
+        result = await self.db.execute(query)
+        return list(result.all())
+
+    async def get_status_distribution_for_all(self) -> list[Row]:
+        """Return (establishment_id, alert_type, severity, count) over each
+        subject's latest measurement at each establishment, across every
+        establishment, in a single grouped query."""
+        latest = self._latest_per_subject()
+        query = self._status_distribution_query(
+            latest,
+            [
+                latest.c.establishment_id,
+                MeasurementAlert.alert_type,
+                MeasurementAlert.severity,
+            ],
+        )
+        result = await self.db.execute(query)
         return list(result.all())
 
     @classmethod

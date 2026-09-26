@@ -166,3 +166,23 @@ class EstablishmentFieldWorkerItemDomain:
     relation_status: UserEstablishmentStatus
     measurement_count: int
     last_measured_at: datetime | None
+
+
+@dataclass
+class EstablishmentMapItemDomain:
+    """One establishment's location and rolled-up nutritional severity.
+
+    Deliberately thinner than EstablishmentAlertStatusDomain: no
+    distribution, no averages, no subject counts -- just enough to place and
+    color a marker on the map. has_data=False (with severity and
+    dominant_status left None) marks an establishment with no measurements,
+    which is never conflated with a NORMAL status.
+    """
+
+    id: UUID
+    name: str
+    latitude: float
+    longitude: float
+    has_data: bool
+    severity: AlertSeverity | None
+    dominant_status: NutritionalStatus | None
