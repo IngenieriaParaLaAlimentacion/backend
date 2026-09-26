@@ -70,7 +70,6 @@ def make_service(mock_auth_service):
 
 
 class TestInviteAdmin:
-    @pytest.mark.asyncio
     async def test_raises_if_email_already_exists(self, make_uow, make_service):
         """Should raise UserAlreadyExistsError if email is taken."""
         existing = _make_user()
@@ -80,7 +79,6 @@ class TestInviteAdmin:
         with pytest.raises(UserAlreadyExistsError):
             await service.invite_user(MagicMock(email=existing.email), UserRole.ADMIN)
 
-    @pytest.mark.asyncio
     async def test_does_not_create_user_if_email_exists(self, make_uow, make_service):
         """Should not call user_repo.create if email is already registered."""
         existing = _make_user()
@@ -92,7 +90,6 @@ class TestInviteAdmin:
 
         uow.user_repo.create.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_raises_invite_pending_for_a_still_pending_invitee(
         self, make_uow, make_service
     ):
@@ -108,7 +105,6 @@ class TestInviteAdmin:
         assert exc.value.extensions == {"user_id": str(pending.id)}
         uow.user_repo.create.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_raises_already_exists_for_a_pending_field_worker(
         self, make_uow, make_service
     ):
@@ -124,7 +120,6 @@ class TestInviteAdmin:
                 MagicMock(email=field_worker.email), UserRole.ADMIN
             )
 
-    @pytest.mark.asyncio
     async def test_checks_existing_email_in_lowercase(self, make_uow, make_service):
         """Should look the email up normalized, so casing cannot bypass the check."""
         uow = make_uow()
@@ -134,7 +129,6 @@ class TestInviteAdmin:
 
         uow.user_repo.get_by_email.assert_called_once_with("new@test.com")
 
-    @pytest.mark.asyncio
     async def test_stores_email_in_lowercase(self, make_uow, make_service):
         """Should persist the normalized email, not the raw input."""
         uow = make_uow()
@@ -144,7 +138,6 @@ class TestInviteAdmin:
 
         assert uow.user_repo.create.call_args.kwargs["email"] == "new@test.com"
 
-    @pytest.mark.asyncio
     async def test_creates_user_with_admin_role_and_active_status(
         self, make_uow, make_service
     ):
@@ -162,7 +155,6 @@ class TestInviteAdmin:
             status=UserStatus.PENDING_VALIDATION,
         )
 
-    @pytest.mark.asyncio
     async def test_returns_created_user_id(self, make_uow, make_service):
         """Should return the id of the newly created user."""
         created_user = _make_user()
@@ -179,7 +171,6 @@ class TestInviteAdmin:
 
         assert result == created_user.id
 
-    @pytest.mark.asyncio
     async def test_creates_password_for_new_user(self, make_uow, make_service):
         """Should call password_repo.create with the new user's id."""
         created_user = _make_user()
@@ -192,7 +183,6 @@ class TestInviteAdmin:
         call_args = uow.password_repo.create.call_args
         assert call_args[0][0] == created_user.id
 
-    @pytest.mark.asyncio
     async def test_creates_recovery_token_for_new_user(
         self, make_uow, make_service, mock_auth_service
     ):
@@ -205,7 +195,6 @@ class TestInviteAdmin:
 
         mock_auth_service.create_recovery_token.assert_called_once_with(created_user.id)
 
-    @pytest.mark.asyncio
     async def test_sends_invite_email_with_correct_args(
         self, make_uow, make_service, mock_auth_service
     ):
@@ -238,7 +227,6 @@ class TestInviteAdmin:
                 UserRole.ADMIN,
             )
 
-    @pytest.mark.asyncio
     async def test_builds_deeplink_with_plain_token_and_role(
         self, make_uow, make_service, mock_auth_service
     ):
@@ -258,7 +246,6 @@ class TestInviteAdmin:
 
             mock_deeplink.assert_called_once_with("plain-xyz", UserRole.ADMIN)
 
-    @pytest.mark.asyncio
     async def test_does_not_commit_if_user_creation_fails(self, make_uow, make_service):
         """Should not commit if user_repo.create raises."""
         uow = make_uow()
@@ -272,7 +259,6 @@ class TestInviteAdmin:
 
 
 class TestResendInvite:
-    @pytest.mark.asyncio
     async def test_raises_if_user_not_found(self, make_uow, make_service):
         """Should raise UserNotFoundError if no user matches the id."""
         uow = make_uow()
@@ -282,7 +268,6 @@ class TestResendInvite:
         with pytest.raises(UserNotFoundError):
             await service.resend_invite(uuid.uuid4())
 
-    @pytest.mark.asyncio
     async def test_does_not_commit_if_user_not_found(self, make_uow, make_service):
         """Should not commit if the user does not exist."""
         uow = make_uow()
@@ -294,7 +279,6 @@ class TestResendInvite:
 
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_raises_if_user_already_active(self, make_uow, make_service):
         """Should raise UserNotPendingError if the user completed onboarding."""
         active_user = _make_user()  # status=ACTIVE by default
@@ -305,7 +289,6 @@ class TestResendInvite:
         with pytest.raises(UserNotPendingError):
             await service.resend_invite(active_user.id)
 
-    @pytest.mark.asyncio
     async def test_does_not_commit_if_user_already_active(self, make_uow, make_service):
         """Should not commit if the user is not pending."""
         active_user = _make_user()
@@ -318,7 +301,6 @@ class TestResendInvite:
 
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_raises_if_user_is_a_field_worker(self, make_uow, make_service):
         """Should raise InvalidUserRoleError for a pending self-registered worker.
 
@@ -336,7 +318,6 @@ class TestResendInvite:
 
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_does_not_create_new_user_or_password(self, make_uow, make_service):
         """Should not call user_repo.create or password_repo.create on resend."""
         pending_user = _make_pending_user()
@@ -356,7 +337,6 @@ class TestResendInvite:
         uow.user_repo.create.assert_not_called()
         uow.password_repo.create.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_issues_new_recovery_token_for_existing_user(
         self, make_uow, make_service, mock_auth_service
     ):
@@ -378,7 +358,6 @@ class TestResendInvite:
 
         mock_auth_service.create_recovery_token.assert_called_once_with(pending_user.id)
 
-    @pytest.mark.asyncio
     async def test_commits_before_sending_email(self, make_uow, make_service):
         """Should commit the transaction before sending the resend email."""
         pending_user = _make_pending_user()
@@ -397,7 +376,6 @@ class TestResendInvite:
 
         assert commit_order == ["commit", "email"]
 
-    @pytest.mark.asyncio
     async def test_sends_invite_email_with_correct_args(
         self, make_uow, make_service, mock_auth_service
     ):
@@ -430,7 +408,6 @@ class TestResendInvite:
                 UserRole.ADMIN,
             )
 
-    @pytest.mark.asyncio
     async def test_builds_deeplink_with_plain_token_and_user_role(
         self, make_uow, make_service, mock_auth_service
     ):

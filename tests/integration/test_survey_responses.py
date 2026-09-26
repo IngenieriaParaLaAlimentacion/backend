@@ -9,8 +9,6 @@ from sqlalchemy import func, select
 
 from app.domain.user import UserRole
 
-pytestmark = pytest.mark.asyncio
-
 SURVEYS_URL = "/api/v1/surveys"
 
 

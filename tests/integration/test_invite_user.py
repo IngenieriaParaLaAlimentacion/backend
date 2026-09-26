@@ -1,7 +1,6 @@
 import uuid
 from unittest.mock import patch
 
-import pytest
 from fastapi import status
 from sqlalchemy import func, select
 
@@ -10,8 +9,6 @@ from app.core.security import create_access_token
 from app.domain.user import UserRole, UserStatus
 from app.exceptions.domain_exceptions import EmailDeliveryError
 from app.models.auth.user import User
-
-pytestmark = pytest.mark.asyncio
 
 INVITE_ADMIN_URL = "/api/v1/admin/invite-admin"
 INVITE_ANALYST_URL = "/api/v1/admin/invite-analyst"

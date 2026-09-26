@@ -2,11 +2,8 @@ import uuid
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 
-import pytest
 import pytest_asyncio
 from fastapi import status
-
-pytestmark = pytest.mark.asyncio
 
 LISTING_URL = "/api/v1/measurements"
 EVOLUTION_URL = "/api/v1/subjects/{subject_id}/measurements/evolution"

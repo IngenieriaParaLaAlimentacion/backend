@@ -24,8 +24,6 @@ from app.schemas.food_intakes.food_intake_schema import (
 )
 from app.services.food_intakes.receipt_intake_service import ReceiptIntakeService
 
-pytestmark = pytest.mark.asyncio
-
 PNG_BYTES = b"\x89PNG\r\n\x1a\n" + b"0" * 64
 
 

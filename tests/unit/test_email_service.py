@@ -113,7 +113,6 @@ class TestBuildInviteDeeplink:
 
 
 class TestSendRecoveryEmail:
-    @pytest.mark.asyncio
     async def test_smtp_disabled_logs_and_skips_send(self, smtp_disabled):
         with patch("app.services.email_service.logger") as mock_logger:
             await send_recovery_email(
@@ -122,7 +121,6 @@ class TestSendRecoveryEmail:
 
         mock_logger.info.assert_called_once()
 
-    @pytest.mark.asyncio
     async def test_smtp_disabled_does_not_send(self, smtp_disabled):
         with patch(
             "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
@@ -133,7 +131,6 @@ class TestSendRecoveryEmail:
 
         mock_send.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_smtp_enabled_sends_to_correct_recipient(self, smtp_enabled_no_tls):
         with patch(
             "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
@@ -146,7 +143,6 @@ class TestSendRecoveryEmail:
         sent_msg = mock_send.call_args[0][0]
         assert sent_msg["To"] == "user@example.com"
 
-    @pytest.mark.asyncio
     async def test_smtp_exception_does_not_propagate(self, smtp_enabled_no_tls):
         with patch(
             "app.services.email_service.aiosmtplib.send",
@@ -159,14 +155,12 @@ class TestSendRecoveryEmail:
 
 
 class TestSendAccessGrantedEmail:
-    @pytest.mark.asyncio
     async def test_smtp_disabled_logs_and_skips_send(self, smtp_disabled):
         with patch("app.services.email_service.logger") as mock_logger:
             await send_access_granted_email("worker@test.com", ["Centro A", "Centro B"])
 
         mock_logger.info.assert_called_once()
 
-    @pytest.mark.asyncio
     async def test_smtp_disabled_does_not_send(self, smtp_disabled):
         with patch(
             "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
@@ -175,7 +169,6 @@ class TestSendAccessGrantedEmail:
 
         mock_send.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_smtp_enabled_sends_to_correct_recipient(self, smtp_enabled_no_tls):
         with patch(
             "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
@@ -186,7 +179,6 @@ class TestSendAccessGrantedEmail:
         sent_msg = mock_send.call_args[0][0]
         assert sent_msg["To"] == "worker@test.com"
 
-    @pytest.mark.asyncio
     async def test_smtp_enabled_sends_with_subject(self, smtp_enabled_no_tls):
         with patch(
             "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
@@ -196,7 +188,6 @@ class TestSendAccessGrantedEmail:
         sent_msg = mock_send.call_args[0][0]
         assert "Acceso concedido" in sent_msg["Subject"]
 
-    @pytest.mark.asyncio
     async def test_includes_establishment_names_in_body(self, smtp_enabled_no_tls):
         with patch(
             "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
@@ -209,7 +200,6 @@ class TestSendAccessGrantedEmail:
         assert "Centro A" in body
         assert "Centro B" in body
 
-    @pytest.mark.asyncio
     async def test_single_establishment_works(self, smtp_enabled_no_tls):
         with patch(
             "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
@@ -222,7 +212,6 @@ class TestSendAccessGrantedEmail:
         body = text_part.get_payload(decode=True).decode()
         assert "Centro A" in body
 
-    @pytest.mark.asyncio
     async def test_smtp_exception_does_not_propagate(self, smtp_enabled_no_tls):
         with patch(
             "app.services.email_service.aiosmtplib.send",
@@ -233,7 +222,6 @@ class TestSendAccessGrantedEmail:
 
 
 class TestSendInviteEmail:
-    @pytest.mark.asyncio
     async def test_smtp_enabled_sends_to_correct_recipient(self, smtp_enabled_no_tls):
         with patch(
             "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
@@ -245,7 +233,6 @@ class TestSendInviteEmail:
         mock_send.assert_awaited_once()
         assert mock_send.call_args[0][0]["To"] == "invited@test.com"
 
-    @pytest.mark.asyncio
     async def test_smtp_exception_raises_email_delivery_error(
         self, smtp_enabled_no_tls
     ):

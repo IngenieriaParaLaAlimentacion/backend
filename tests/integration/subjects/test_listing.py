@@ -1,7 +1,6 @@
 import uuid
 from datetime import date, datetime, timezone
 
-import pytest
 import pytest_asyncio
 from fastapi import status
 
@@ -13,8 +12,6 @@ from tests.integration.subjects.conftest import (
     _make_subject,
     _upload,
 )
-
-pytestmark = pytest.mark.asyncio
 
 
 class TestGetSubjectsPaginated:

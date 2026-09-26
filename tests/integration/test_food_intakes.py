@@ -15,8 +15,6 @@ import pytest_asyncio
 from sqlalchemy import delete
 from sqlalchemy.exc import IntegrityError
 
-pytestmark = pytest.mark.asyncio
-
 
 @dataclass
 class Foods:

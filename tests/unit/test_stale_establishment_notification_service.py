@@ -12,8 +12,6 @@ from app.services.notifications.stale_establishment_notification_service import 
     StaleEstablishmentNotificationService,
 )
 
-pytestmark = pytest.mark.asyncio
-
 NOW = datetime(2026, 9, 19, 12, tzinfo=timezone.utc)
 
 

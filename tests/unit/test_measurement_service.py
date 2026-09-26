@@ -104,7 +104,6 @@ def field_worker_actor():
 
 
 class TestRegisterValidation:
-    @pytest.mark.asyncio
     async def test_raises_if_subject_not_found(
         self, make_uow, valid_request, admin_actor
     ):
@@ -116,7 +115,6 @@ class TestRegisterValidation:
 
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_raises_if_establishment_not_found(
         self, make_uow, valid_request, admin_actor
     ):
@@ -129,7 +127,6 @@ class TestRegisterValidation:
 
 
 class TestEstablishmentAccessCheck:
-    @pytest.mark.asyncio
     async def test_field_worker_with_no_relation_is_forbidden(
         self, make_uow, valid_request, field_worker_actor
     ):
@@ -140,7 +137,6 @@ class TestEstablishmentAccessCheck:
 
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_field_worker_with_pending_relation_is_forbidden(
         self, make_uow, valid_request, field_worker_actor
     ):
@@ -151,7 +147,6 @@ class TestEstablishmentAccessCheck:
         with pytest.raises(ForbiddenError):
             await MeasurementService(uow).register(valid_request, field_worker_actor)
 
-    @pytest.mark.asyncio
     async def test_field_worker_with_approved_relation_succeeds(
         self, make_uow, valid_request, field_worker_actor
     ):
@@ -166,7 +161,6 @@ class TestEstablishmentAccessCheck:
         assert created is True
         assert isinstance(result, MeasurementDomain)
 
-    @pytest.mark.asyncio
     async def test_admin_skips_establishment_check(
         self, make_uow, valid_request, admin_actor
     ):
@@ -182,7 +176,6 @@ class TestEstablishmentAccessCheck:
 
 
 class TestRegisterPersistence:
-    @pytest.mark.asyncio
     async def test_new_measurement_with_alerts_calls_create_bulk(
         self, make_uow, make_subject, make_measurement, valid_request, admin_actor
     ):
@@ -201,7 +194,6 @@ class TestRegisterPersistence:
             measurement.id, raw_alerts
         )
 
-    @pytest.mark.asyncio
     async def test_new_measurement_without_alerts_skips_create_bulk(
         self, make_uow, make_subject, make_measurement, valid_request, admin_actor
     ):
@@ -217,13 +209,11 @@ class TestRegisterPersistence:
 
         uow.measurement_alert_repo.create_bulk.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_commits_after_create(self, make_uow, valid_request, admin_actor):
         uow = make_uow()
         await MeasurementService(uow).register(valid_request, admin_actor)
         uow.commit.assert_called_once()
 
-    @pytest.mark.asyncio
     async def test_replay_by_id_returns_existing_without_create(
         self, make_uow, make_measurement, valid_request, admin_actor
     ):
@@ -241,7 +231,6 @@ class TestRegisterPersistence:
         uow.measurement_alert_repo.create_bulk.assert_not_called()
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_id_race_on_conflict_replays_existing(
         self, make_uow, make_measurement, valid_request, admin_actor
     ):
@@ -294,8 +283,6 @@ def make_listing_measurement(make_measurement):
 
 
 class TestListMeasurements:
-    pytestmark = pytest.mark.asyncio
-
     @pytest.fixture
     def make_uow(self):
         def _make(measurements, total):
@@ -347,8 +334,6 @@ class TestListMeasurements:
 
 
 class TestGetSubjectEvolution:
-    pytestmark = pytest.mark.asyncio
-
     async def test_raises_when_subject_missing(self, make_uow):
         uow = make_uow()
         uow.subject_repo.get_by_id = AsyncMock(return_value=None)
@@ -403,7 +388,6 @@ class TestGetSubjectEvolution:
 
 
 class TestRegisterReturnValue:
-    @pytest.mark.asyncio
     async def test_returns_measurement_domain(
         self, make_uow, make_measurement, valid_request, admin_actor
     ):
@@ -425,8 +409,6 @@ class TestRegisterReturnValue:
 
 
 class TestExportMeasurementListing:
-    pytestmark = pytest.mark.asyncio
-
     async def test_streams_the_whole_filtered_set(self, make_listing_measurement):
         uow = AsyncMock()
         uow.measurement_repo.stream_for_export = MagicMock(

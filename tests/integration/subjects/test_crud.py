@@ -18,8 +18,6 @@ from tests.integration.subjects.conftest import (
     _upload_with_id,
 )
 
-pytestmark = pytest.mark.asyncio
-
 
 class TestUploadSubject:
     async def test_unauthenticated_returns_401(self, client):

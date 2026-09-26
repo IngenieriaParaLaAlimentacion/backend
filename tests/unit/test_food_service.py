@@ -9,8 +9,6 @@ from app.domain.pagination import PaginatedResult
 from app.exceptions.domain_exceptions import FoodNotFoundError
 from app.services.food_catalog.food_service import FoodService
 
-pytestmark = pytest.mark.asyncio
-
 
 @pytest.fixture
 def make_food():

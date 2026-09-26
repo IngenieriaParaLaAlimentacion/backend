@@ -266,8 +266,6 @@ class TestValidateAnswers:
 
 
 class TestSubmit:
-    pytestmark = pytest.mark.asyncio
-
     @pytest.fixture
     def request_factory(self):
         def _make(**overrides):
@@ -475,8 +473,6 @@ class TestSubmit:
 class TestResolveTarget:
     """The payload must name exactly the entity the survey targets."""
 
-    pytestmark = pytest.mark.asyncio
-
     @pytest.fixture
     def request_factory(self):
         def _make(**overrides):
@@ -564,8 +560,6 @@ class TestResolveTarget:
 class TestTargetUniqueness:
     """A subject, and an establishment, answer a given survey once. Anonymous
     surveys are unbounded."""
-
-    pytestmark = pytest.mark.asyncio
 
     @pytest.fixture
     def request_factory(self):
@@ -681,8 +675,6 @@ class TestTargetUniqueness:
 
 
 class TestGet:
-    pytestmark = pytest.mark.asyncio
-
     async def test_response_not_found(self, make_uow, admin_actor):
         uow = make_uow(existing_response=None)
         with pytest.raises(SurveyResponseNotFoundError):
@@ -725,8 +717,6 @@ class TestGet:
 
 
 class TestEdit:
-    pytestmark = pytest.mark.asyncio
-
     @pytest.fixture
     def edit_factory(self):
         def _make(**overrides):
@@ -897,8 +887,6 @@ class TestEdit:
 
 
 class TestListBySurvey:
-    pytestmark = pytest.mark.asyncio
-
     async def test_admin_gets_paginated_result(self, make_uow, admin_actor):
         survey = _make_survey_orm()
         response = _make_response(survey_id=survey.id)
@@ -1033,8 +1021,6 @@ def _make_response_with_detail(
 
 
 class TestGetDashboardDetail:
-    pytestmark = pytest.mark.asyncio
-
     async def test_admin_gets_full_detail_with_resolved_labels(
         self, make_uow, admin_actor
     ):
@@ -1138,8 +1124,6 @@ class TestGetDashboardDetail:
 
 
 class TestFiesScoring:
-    pytestmark = pytest.mark.asyncio
-
     @pytest.fixture
     def request_factory(self):
         def _make(**overrides):
@@ -1286,8 +1270,6 @@ class TestSurveyResponseListingParams:
 
 
 class TestListBySurveyFilters:
-    pytestmark = pytest.mark.asyncio
-
     async def test_passes_params_through_to_repo(self, make_uow, admin_actor):
         survey = _make_survey_orm(response_target=SurveyResponseTarget.ESTABLISHMENT)
         uow = make_uow(survey=survey)
@@ -1423,8 +1405,6 @@ class TestListBySurveyFilters:
 
 
 class TestExport:
-    pytestmark = pytest.mark.asyncio
-
     async def test_admin_can_export(self, make_uow, admin_actor):
         survey = _make_survey_orm(response_target=SurveyResponseTarget.ESTABLISHMENT)
         uow = make_uow(survey=survey)

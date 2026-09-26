@@ -36,8 +36,6 @@ def subject_item():
 
 
 class TestActorIdCoercion:
-    pytestmark = pytest.mark.asyncio
-
     async def test_coerces_str_actor_id_to_uuid(self, make_uow):
         """The real dependency chain produces a str user_id (JWT 'sub' claim);
         the repo call must always receive a UUID."""
@@ -55,8 +53,6 @@ class TestActorIdCoercion:
 
 
 class TestPaginationMath:
-    pytestmark = pytest.mark.asyncio
-
     async def test_passes_correct_offset(self, make_uow):
         uow = make_uow()
         actor = UserActor(user_id=str(uuid.uuid4()), role=UserRole.FIELD_WORKER)
@@ -94,8 +90,6 @@ class TestPaginationMath:
 
 
 class TestActivityTypeFilter:
-    pytestmark = pytest.mark.asyncio
-
     @pytest.mark.parametrize(
         "activity_types",
         [
@@ -129,8 +123,6 @@ class TestActivityTypeFilter:
 
 
 class TestGetRecentActivityReturnValue:
-    pytestmark = pytest.mark.asyncio
-
     async def test_returns_items_from_repo_unchanged(self, make_uow, subject_item):
         uow = make_uow(items=[subject_item], total=1)
         actor = UserActor(user_id=str(uuid.uuid4()), role=UserRole.FIELD_WORKER)

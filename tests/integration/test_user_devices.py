@@ -1,6 +1,5 @@
 import uuid
 
-import pytest
 from sqlalchemy import select
 
 import app.db.database as db_module
@@ -9,8 +8,6 @@ from app.domain.notifications import PushPlatform
 from app.domain.user import UserRole, UserStatus
 from app.models.auth.user import User
 from app.models.notifications.user_push_device import UserPushDevice
-
-pytestmark = pytest.mark.asyncio
 
 URL = "/api/v1/users/me/devices"
 

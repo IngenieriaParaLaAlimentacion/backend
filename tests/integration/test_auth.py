@@ -1,6 +1,5 @@
 import uuid
 
-import pytest
 import pytest_asyncio
 from fastapi import status
 from sqlalchemy import select
@@ -9,8 +8,6 @@ import app.db.database as db_module
 from app.domain.user import UserRole
 from app.models.auth.user import User
 from app.models.auth.user_establishment import UserEstablishment
-
-pytestmark = pytest.mark.asyncio
 
 LOGIN_URL = "/api/v1/auth/login"
 LOGOUT_URL = "/api/v1/auth/logout"

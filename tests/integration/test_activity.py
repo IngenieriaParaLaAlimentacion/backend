@@ -10,8 +10,6 @@ from fastapi import status
 from app.core.security import create_access_token
 from app.domain.user import UserRole
 
-pytestmark = pytest.mark.asyncio
-
 ACTIVITY_URL = "/api/v1/users/me/activity"
 SUBJECTS_URL = "/api/v1/subjects"
 MEASUREMENTS_URL = "/api/v1/measurements"

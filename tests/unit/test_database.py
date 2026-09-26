@@ -1,11 +1,8 @@
 from unittest.mock import AsyncMock, MagicMock
 
-import pytest
-
 from app.db.database import get_db
 
 
-@pytest.mark.asyncio
 async def test_get_db_yields_session(monkeypatch):
     mock_session = MagicMock()
     mock_context_manager = AsyncMock()
@@ -26,7 +23,6 @@ async def test_get_db_yields_session(monkeypatch):
     mock_context_manager.__aexit__.assert_called_once()
 
 
-@pytest.mark.asyncio
 async def test_get_db_closes_on_exception(monkeypatch):
     mock_cm = AsyncMock()
     mock_cm.__aenter__ = AsyncMock(return_value=MagicMock())

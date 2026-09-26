@@ -1,6 +1,5 @@
 import uuid
 
-import pytest
 from fastapi import status
 
 from tests.integration.admin.conftest import (
@@ -8,8 +7,6 @@ from tests.integration.admin.conftest import (
     SUBJECTS_URL,
     _subject_body,
 )
-
-pytestmark = pytest.mark.asyncio
 
 
 class TestAdminSubjectDetail:

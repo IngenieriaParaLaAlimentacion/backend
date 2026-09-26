@@ -1,12 +1,9 @@
 import uuid
 
-import pytest
 import pytest_asyncio
 
 from app.config.settings import settings
 from app.exceptions.domain_exceptions import LlmClientError
-
-pytestmark = pytest.mark.asyncio
 
 URL = "/api/v1/food-intakes/from-photo"
 PNG_BYTES = b"\x89PNG\r\n\x1a\n" + b"0" * 64

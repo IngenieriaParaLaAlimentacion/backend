@@ -20,8 +20,6 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 
-pytestmark = pytest.mark.asyncio
-
 FIRST_CHUNK = b"Nombre;Documento\r\n"
 
 

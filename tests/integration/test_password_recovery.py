@@ -4,8 +4,6 @@ from urllib.parse import parse_qs, urlparse
 import pytest
 from fastapi import status
 
-pytestmark = pytest.mark.asyncio
-
 REQUEST_URL = "/api/v1/auth/password-recovery/request"
 CONFIRM_URL = "/api/v1/auth/password-recovery/confirm"
 LOGIN_URL = "/api/v1/auth/login"

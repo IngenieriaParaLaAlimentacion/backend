@@ -113,8 +113,6 @@ async def _drain(chunks) -> bytes:
 
 
 class TestStream:
-    pytestmark = pytest.mark.asyncio
-
     @pytest.mark.parametrize("n", [0, 1, 3, 5000])
     async def test_streamed_bytes_equal_buffered_bytes(self, n):
         """The guarantee the whole migration rests on: streaming changed when

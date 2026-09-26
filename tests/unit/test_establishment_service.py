@@ -128,8 +128,6 @@ class TestEstablishmentResponse:
 
 
 class TestGetEstablishmentsPaginated:
-    pytestmark = pytest.mark.asyncio
-
     @pytest.fixture
     def make_uow(self):
         def _make(establishments, total):
@@ -247,7 +245,6 @@ class TestGetEstablishmentsPaginated:
 
 
 class TestGetAvailableEstablishments:
-    @pytest.mark.asyncio
     async def test_returns_mapped_items(self, make_establishment, make_available_uow):
         establishments = [make_establishment(), make_establishment()]
         service = EstablishmentService(uow=make_available_uow(establishments, total=2))
@@ -264,7 +261,6 @@ class TestGetAvailableEstablishments:
         assert all(isinstance(item, EstablishmentDomain) for item in result.items)
         assert result.total == 2
 
-    @pytest.mark.asyncio
     async def test_passes_user_id_offset_and_params(self, make_available_uow):
         uow = make_available_uow([], total=0)
         service = EstablishmentService(uow=uow)
@@ -281,8 +277,6 @@ class TestGetAvailableEstablishments:
 
 
 class TestCreateEstablishment:
-    pytestmark = pytest.mark.asyncio
-
     @pytest.fixture
     def make_uow(self, make_establishment):
         def _make(existing=None):
@@ -347,8 +341,6 @@ class TestCreateEstablishment:
 
 
 class TestGetEstablishmentById:
-    pytestmark = pytest.mark.asyncio
-
     @pytest.fixture
     def make_uow(self, make_establishment, stub_establishment_lookup):
         def _make(found=None):
@@ -380,8 +372,6 @@ class TestGetEstablishmentById:
 
 
 class TestUpdateEstablishment:
-    pytestmark = pytest.mark.asyncio
-
     @pytest.fixture
     def make_uow(self, make_establishment, stub_establishment_lookup):
         def _make(found=None, duplicate=None):
@@ -448,8 +438,6 @@ class TestUpdateEstablishment:
 
 
 class TestCreateEstablishmentRequest:
-    pytestmark = pytest.mark.asyncio
-
     @pytest.fixture
     def make_uow(self):
         def _make(created):
@@ -550,8 +538,6 @@ class TestCreateEstablishmentRequest:
 
 
 class TestListEstablishmentRequestsPaginated:
-    pytestmark = pytest.mark.asyncio
-
     @pytest.fixture
     def make_uow(self):
         def _make(requests, total):
@@ -652,8 +638,6 @@ class TestListEstablishmentRequestsPaginated:
 
 
 class TestApproveCreationRequest:
-    pytestmark = pytest.mark.asyncio
-
     @pytest.fixture
     def make_uow(self, make_request_review_uow, make_establishment):
         def _make(
@@ -964,8 +948,6 @@ class TestApproveCreationRequest:
 
 
 class TestRejectCreationRequest:
-    pytestmark = pytest.mark.asyncio
-
     @pytest.fixture
     def make_uow(self, make_request_review_uow):
         return make_request_review_uow
@@ -1058,8 +1040,6 @@ class TestRejectCreationRequest:
 
 
 class TestExportEstablishmentListing:
-    pytestmark = pytest.mark.asyncio
-
     async def test_streams_the_whole_filtered_set(self, make_establishment):
         uow = AsyncMock()
         uow.establishment_repo.stream_for_export = MagicMock(

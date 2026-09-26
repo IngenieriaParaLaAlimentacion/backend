@@ -25,7 +25,6 @@ def test_schedule_runs_hourly_from_08_through_22_art():
     )
 
 
-@pytest.mark.asyncio
 async def test_scheduler_starts_and_stops_on_the_running_event_loop():
     scheduler = StaleEstablishmentScheduler()
 
@@ -36,7 +35,6 @@ async def test_scheduler_starts_and_stops_on_the_running_event_loop():
     assert scheduler.scheduler.running is False
 
 
-@pytest.mark.asyncio
 async def test_run_once_executes_service_directly_without_database_lock():
     service = AsyncMock()
 
@@ -46,7 +44,6 @@ async def test_run_once_executes_service_directly_without_database_lock():
     service.run.assert_awaited_once_with()
 
 
-@pytest.mark.asyncio
 async def test_shutdown_pauses_new_runs_and_waits_for_active_run():
     scheduler = StaleEstablishmentScheduler()
     apscheduler = MagicMock()

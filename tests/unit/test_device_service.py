@@ -11,8 +11,6 @@ from app.exceptions.domain_exceptions import UserNotFoundError
 from app.schemas.notifications.device_schema import DeviceRegistrationRequest
 from app.services.notifications.device_service import DeviceService
 
-pytestmark = pytest.mark.asyncio
-
 
 def _request() -> DeviceRegistrationRequest:
     return DeviceRegistrationRequest(

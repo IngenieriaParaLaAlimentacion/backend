@@ -1,14 +1,11 @@
 import uuid
 from datetime import date
 
-import pytest
 import pytest_asyncio
 from fastapi import status
 
 from app.core.security import create_access_token
 from app.domain.user import UserRole
-
-pytestmark = pytest.mark.asyncio
 
 MEASUREMENTS_URL = "/api/v1/measurements"
 

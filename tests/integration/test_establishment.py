@@ -1,14 +1,12 @@
 import uuid
 from types import SimpleNamespace
 
-import pytest
 from fastapi import status
 
 from app.core.security import create_access_token
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.user import UserRole, UserStatus
 
-pytestmark = pytest.mark.asyncio
 ESTABLISHMENT_URL = "/api/v1/establishments"
 
 AVAILABLE_URL = "/api/v1/establishments?available=true"

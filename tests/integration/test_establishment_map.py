@@ -7,8 +7,6 @@ import pytest
 import pytest_asyncio
 from fastapi import status
 
-pytestmark = pytest.mark.asyncio
-
 MAP_URL = "/api/v1/establishments/map"
 DASHBOARD_URL = "/api/v1/establishments/{establishment_id}/dashboard"
 

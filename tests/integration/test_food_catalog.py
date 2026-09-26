@@ -1,11 +1,8 @@
 from dataclasses import dataclass
 from uuid import UUID, uuid4
 
-import pytest
 import pytest_asyncio
 from fastapi import status
-
-pytestmark = pytest.mark.asyncio
 
 FOODS_URL = "/api/v1/food-catalog/foods"
 CATEGORIES_URL = "/api/v1/food-catalog/categories"

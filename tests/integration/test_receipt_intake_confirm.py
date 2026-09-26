@@ -3,13 +3,10 @@ import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
 
-import pytest
 import pytest_asyncio
 
 from app.core.security import create_access_token
 from app.domain.user import UserRole
-
-pytestmark = pytest.mark.asyncio
 
 URL = "/api/v1/food-intakes/from-photo/confirm"
 PNG_BYTES = b"\x89PNG\r\n\x1a\n" + b"0" * 64

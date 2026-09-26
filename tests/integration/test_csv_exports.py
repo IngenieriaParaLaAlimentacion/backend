@@ -13,8 +13,6 @@ import pytest
 import pytest_asyncio
 from fastapi import status
 
-pytestmark = pytest.mark.asyncio
-
 BOM = b"\xef\xbb\xbf"
 
 

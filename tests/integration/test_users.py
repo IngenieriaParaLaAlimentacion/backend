@@ -13,8 +13,6 @@ from app.models.auth.user import User
 from app.models.auth.user_establishment import UserEstablishment
 from app.models.establishments.establishment import Establishment
 
-pytestmark = pytest.mark.asyncio
-
 ME_URL = "/api/v1/users/me"
 ME_ESTABLISHMENTS_URL = "/api/v1/users/me/establishments"
 ME_ESTABLISHMENTS_WITHDRAW_URL = "/api/v1/users/me/establishments/withdraw"

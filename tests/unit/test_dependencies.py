@@ -14,7 +14,6 @@ from app.models.auth.user import UserRole
 # --- require_admin_or_superadmin ---
 
 
-@pytest.mark.asyncio
 async def test_require_admin_or_superadmin_valid_token():
     user_id = str(uuid4())
     payload = {"sub": user_id, "role": UserRole.ADMIN}
@@ -28,7 +27,6 @@ async def test_require_admin_or_superadmin_valid_token():
     assert actor.role == UserRole.ADMIN
 
 
-@pytest.mark.asyncio
 async def test_require_admin_or_superadmin_invalid_signature_raises_401():
     with patch(
         "app.core.dependencies.jwt.get_unverified_claims",
@@ -39,7 +37,6 @@ async def test_require_admin_or_superadmin_invalid_signature_raises_401():
                 await require_admin(token="anytoken")
 
 
-@pytest.mark.asyncio
 async def test_require_admin_or_superadmin_malformed_token_raises_401():
     with patch(
         "app.core.dependencies.jwt.get_unverified_claims", side_effect=JWTError()
@@ -48,7 +45,6 @@ async def test_require_admin_or_superadmin_malformed_token_raises_401():
             await require_admin(token="notajwt")
 
 
-@pytest.mark.asyncio
 async def test_require_admin_or_superadmin_wrong_role_raises_403():
     payload = {"sub": str(uuid4()), "role": UserRole.FIELD_WORKER}
     with patch(
@@ -63,7 +59,6 @@ async def test_require_admin_or_superadmin_wrong_role_raises_403():
 # --- require_admin_analyst_or_superadmin ---
 
 
-@pytest.mark.asyncio
 async def test_require_admin_analyst_or_superadmin_valid_token():
     user_id = str(uuid4())
     payload = {"sub": user_id, "role": UserRole.ANALYST}
@@ -77,7 +72,6 @@ async def test_require_admin_analyst_or_superadmin_valid_token():
     assert actor.role == UserRole.ANALYST
 
 
-@pytest.mark.asyncio
 async def test_require_admin_analyst_or_superadmin_invalid_signature_raises_401():
     with patch(
         "app.core.dependencies.jwt.get_unverified_claims",
@@ -88,7 +82,6 @@ async def test_require_admin_analyst_or_superadmin_invalid_signature_raises_401(
                 await require_admin_or_analyst(token="anytoken")
 
 
-@pytest.mark.asyncio
 async def test_require_admin_analyst_or_superadmin_wrong_role_raises_403():
     payload = {"sub": str(uuid4()), "role": UserRole.FIELD_WORKER}
     with patch(
@@ -103,7 +96,6 @@ async def test_require_admin_analyst_or_superadmin_wrong_role_raises_403():
 # --- require_any ---
 
 
-@pytest.mark.asyncio
 async def test_require_any_valid_token_any_role():
     user_id = str(uuid4())
     payload = {"sub": user_id, "role": UserRole.FIELD_WORKER}
@@ -117,7 +109,6 @@ async def test_require_any_valid_token_any_role():
     assert actor.role == UserRole.FIELD_WORKER
 
 
-@pytest.mark.asyncio
 async def test_require_any_malformed_token_raises_401():
     with patch(
         "app.core.dependencies.jwt.get_unverified_claims", side_effect=JWTError()
@@ -126,7 +117,6 @@ async def test_require_any_malformed_token_raises_401():
             await require_any(token="notajwt")
 
 
-@pytest.mark.asyncio
 async def test_require_any_invalid_signature_raises_401():
     with patch(
         "app.core.dependencies.jwt.get_unverified_claims",

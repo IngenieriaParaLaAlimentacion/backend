@@ -5,13 +5,9 @@ unhandled 500. Each asserts the media type and that ``detail`` is a string --
 the shape the backoffice reported as ``[object Object]``.
 """
 
-import pytest
-
 from app.core.dependencies import get_auth_service
 
 LOGIN_URL = "/api/v1/auth/login"
-
-pytestmark = pytest.mark.asyncio
 
 
 def _assert_problem(response, *, status_code: int, error_type: str) -> dict:

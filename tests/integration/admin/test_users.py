@@ -1,7 +1,6 @@
 import uuid
 from unittest.mock import patch
 
-import pytest
 from fastapi import status
 
 import app.db.database as db_module
@@ -17,8 +16,6 @@ from tests.integration.admin.conftest import (
     REJECT_URL,
     _insert_user,
 )
-
-pytestmark = pytest.mark.asyncio
 
 
 class TestListUsersPagination:

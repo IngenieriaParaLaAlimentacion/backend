@@ -113,7 +113,6 @@ def valid_request():
 
 
 class TestCreateSubject:
-    @pytest.mark.asyncio
     async def test_returns_subject_domain_and_commits(
         self, make_subject, make_uow, valid_request
     ):
@@ -132,7 +131,6 @@ class TestCreateSubject:
         uow.subject_event_repo.append.assert_called_once()
         uow.commit.assert_called_once()
 
-    @pytest.mark.asyncio
     async def test_raises_if_dni_already_exists(self, make_uow, valid_request):
         uow = make_uow()
         uow.subject_repo.create = AsyncMock(
@@ -148,7 +146,6 @@ class TestCreateSubject:
         uow.subject_event_repo.append.assert_not_called()
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_event_type_is_subject_created(
         self, make_subject, make_uow, valid_request
     ):
@@ -164,7 +161,6 @@ class TestCreateSubject:
         assert kwargs["actor_id"] == actor_id
         assert kwargs["subject_id"] == subject.id
 
-    @pytest.mark.asyncio
     async def test_replay_by_id_returns_existing_without_event(
         self, make_subject, make_uow
     ):
@@ -192,7 +188,6 @@ class TestCreateSubject:
         uow.subject_event_repo.append.assert_not_called()
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_id_race_on_conflict_replays_existing(self, make_subject, make_uow):
         """A concurrent insert of the same id surfaces as a replay, not a conflict."""
         raced = make_subject()
@@ -221,7 +216,6 @@ class TestCreateSubject:
         uow.subject_event_repo.append.assert_not_called()
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_dni_conflict_carries_canonical_subject(
         self, make_subject, make_uow, valid_request
     ):
@@ -245,7 +239,6 @@ class TestCreateSubject:
 
 
 class TestGetSubject:
-    @pytest.mark.asyncio
     async def test_returns_subject_domain(self, make_subject, make_uow):
         subject = make_subject()
         uow = make_uow()
@@ -258,7 +251,6 @@ class TestGetSubject:
         assert result.id == subject.id
         assert result.dni == subject.dni
 
-    @pytest.mark.asyncio
     async def test_raises_if_not_found(self, make_uow):
         uow = make_uow()
         uow.subject_repo.get_by_id = AsyncMock(return_value=None)
@@ -267,7 +259,6 @@ class TestGetSubject:
         with pytest.raises(SubjectNotFoundError):
             await service.get_subject(uuid.uuid4())
 
-    @pytest.mark.asyncio
     async def test_never_measured_subject_has_no_status(self, make_subject, make_uow):
         subject = make_subject()
         uow = make_uow(latest_measurement=None)
@@ -279,7 +270,6 @@ class TestGetSubject:
         assert result.nutritional_status is None
         assert result.latest_measurement is None
 
-    @pytest.mark.asyncio
     async def test_measured_subject_without_alerts_is_normal(
         self, make_subject, make_uow, make_measurement
     ):
@@ -292,7 +282,6 @@ class TestGetSubject:
         assert result.nutritional_status == NutritionalStatus.NORMAL
         assert result.latest_measurement is not None
 
-    @pytest.mark.asyncio
     async def test_status_is_derived_from_the_latest_alert(
         self, make_subject, make_uow, make_measurement
     ):
@@ -313,7 +302,6 @@ class TestGetSubject:
         assert result.nutritional_status == NutritionalStatus.WASTED
         assert result.latest_measurement.alerts[0].alert_type == AlertType.WASTED
 
-    @pytest.mark.asyncio
     async def test_latest_measurement_carries_its_establishment(
         self, make_subject, make_uow, make_measurement
     ):
@@ -330,7 +318,6 @@ class TestGetSubject:
 
 
 class TestGetSubjectsPaginated:
-    @pytest.mark.asyncio
     async def test_returns_items(self, make_subject, make_uow):
         subjects = [make_subject(), make_subject()]
         service = SubjectService(uow=make_uow(listing=subjects, total=2))
@@ -345,7 +332,6 @@ class TestGetSubjectsPaginated:
         assert result.page == 1
         assert result.page_size == 20
 
-    @pytest.mark.asyncio
     async def test_calculates_total_pages(self, make_subject, make_uow):
         subjects = [make_subject() for _ in range(5)]
         service = SubjectService(uow=make_uow(listing=subjects, total=23))
@@ -356,7 +342,6 @@ class TestGetSubjectsPaginated:
 
         assert result.total_pages == ceil(23 / 5)
 
-    @pytest.mark.asyncio
     async def test_empty(self, make_uow):
         service = SubjectService(uow=make_uow([], total=0))
 
@@ -368,7 +353,6 @@ class TestGetSubjectsPaginated:
         assert result.total == 0
         assert result.total_pages == 0
 
-    @pytest.mark.asyncio
     async def test_passes_correct_offset(self, make_uow):
         uow = make_uow([], total=0)
         service = SubjectService(uow=uow)
@@ -381,7 +365,6 @@ class TestGetSubjectsPaginated:
             limit=10, offset=20, params=SubjectListingParams()
         )
 
-    @pytest.mark.asyncio
     async def test_items_are_schema_instances(self, make_subject, make_uow):
         subjects = [make_subject()]
         service = SubjectService(uow=make_uow(listing=subjects, total=1))
@@ -392,7 +375,6 @@ class TestGetSubjectsPaginated:
 
         assert all(isinstance(item, SubjectBase) for item in result.items)
 
-    @pytest.mark.asyncio
     async def test_maps_latest_measurement_by_subject_id(
         self, make_subject, make_measurement, make_uow
     ):
@@ -415,7 +397,6 @@ class TestGetSubjectsPaginated:
         assert by_id[subject_a.id].latest_measurement is None
         assert by_id[subject_b.id].latest_measurement.id == measurement_b.id
 
-    @pytest.mark.asyncio
     async def test_requests_latest_measurements_for_all_page_subject_ids(
         self, make_subject, make_uow
     ):
@@ -432,7 +413,6 @@ class TestGetSubjectsPaginated:
             [subject.id for subject in subjects]
         )
 
-    @pytest.mark.asyncio
     async def test_forwards_params_to_repo(self, make_uow):
         """The service passes the params object through to the repo untouched."""
         uow = make_uow([], total=0)
@@ -447,7 +427,6 @@ class TestGetSubjectsPaginated:
 
 
 class TestUpdateSubject:
-    @pytest.mark.asyncio
     async def test_raises_if_empty_update(self, make_uow):
         """An empty body is rejected before hitting the DB."""
         uow = make_uow()
@@ -461,7 +440,6 @@ class TestUpdateSubject:
         uow.subject_repo.get_by_id.assert_not_called()
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_raises_if_subject_not_found(self, make_uow):
         """SubjectNotFoundError is raised when the subject does not exist."""
         uow = make_uow()
@@ -473,7 +451,6 @@ class TestUpdateSubject:
                 uuid.uuid4(), SubjectUpdateRequest(name="Carlos"), actor_id=uuid.uuid4()
             )
 
-    @pytest.mark.asyncio
     async def test_raises_if_dni_conflict(self, make_subject, make_uow):
         """SubjectAlreadyExistsError is raised when the new DNI belongs
         to another subject."""
@@ -493,7 +470,6 @@ class TestUpdateSubject:
         uow.subject_event_repo.append.assert_not_called()
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_event_payload_contains_before_and_after(
         self, make_subject, make_uow
     ):
@@ -519,8 +495,6 @@ class TestUpdateSubject:
 
 
 class TestExportSubjectListing:
-    pytestmark = pytest.mark.asyncio
-
     async def test_streams_the_whole_filtered_set(self, make_uow, make_subject):
         subjects = [make_subject(), make_subject()]
         uow = make_uow()

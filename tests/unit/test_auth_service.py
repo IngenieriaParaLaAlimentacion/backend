@@ -204,7 +204,6 @@ class TestRegisterFieldWorker:
         )
         return mock_fn
 
-    @pytest.mark.asyncio
     async def test_creates_field_worker_with_correct_role_and_status(
         self, make_uow, make_establishment, valid_register_request_all_fields
     ):
@@ -225,7 +224,6 @@ class TestRegisterFieldWorker:
             is_email_verified=True,
         )
 
-    @pytest.mark.asyncio
     async def test_non_development_env_creates_unverified_email(
         self,
         make_uow,
@@ -245,7 +243,6 @@ class TestRegisterFieldWorker:
 
         assert uow.user_repo.create.call_args.kwargs["is_email_verified"] is False
 
-    @pytest.mark.asyncio
     async def test_registration_creates_password(
         self,
         make_uow,
@@ -262,7 +259,6 @@ class TestRegisterFieldWorker:
 
         uow.password_repo.create.assert_called_once_with(user.id, "hashed")
 
-    @pytest.mark.asyncio
     async def test_registration_creates_one_relation_per_establishment(
         self, make_uow, make_establishment, valid_register_request_obligatory_fields
     ):
@@ -282,7 +278,6 @@ class TestRegisterFieldWorker:
 
         assert uow.user_establishment_repo.preset_relation.call_count == 3
 
-    @pytest.mark.asyncio
     async def test_registration_without_establishments_creates_no_relation(
         self, make_uow, valid_register_request_obligatory_fields
     ):
@@ -297,7 +292,6 @@ class TestRegisterFieldWorker:
         uow.user_establishment_repo.preset_relation.assert_not_called()
         assert user.establishments == []
 
-    @pytest.mark.asyncio
     async def test_raises_if_email_already_exists(
         self, make_uow, make_user, valid_register_request_obligatory_fields
     ):
@@ -311,7 +305,6 @@ class TestRegisterFieldWorker:
         uow.user_repo.create.assert_not_called()
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_raises_if_establishment_not_found(
         self, make_uow, valid_register_request_obligatory_fields
     ):
@@ -328,7 +321,6 @@ class TestRegisterFieldWorker:
         uow.user_repo.create.assert_not_called()
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_optional_fields_are_not_required(
         self, make_uow, make_establishment, valid_register_request_obligatory_fields
     ):
@@ -352,7 +344,6 @@ class TestRegisterFieldWorker:
 
 
 class TestLoginSuccess:
-    @pytest.mark.asyncio
     async def test_returns_login_domain(
         self,
         make_uow,
@@ -368,7 +359,6 @@ class TestLoginSuccess:
 
         assert isinstance(result, LoginDomain)
 
-    @pytest.mark.asyncio
     async def test_access_token_issued(
         self,
         make_uow,
@@ -384,7 +374,6 @@ class TestLoginSuccess:
 
         assert result.access_token == f"access.{user.role}.mocked"
 
-    @pytest.mark.asyncio
     async def test_refresh_token_issued(
         self,
         make_uow,
@@ -400,7 +389,6 @@ class TestLoginSuccess:
 
         assert result.refresh_token == "raw_refresh_token"
 
-    @pytest.mark.asyncio
     async def test_token_persisted_and_committed(
         self,
         make_uow,
@@ -417,7 +405,6 @@ class TestLoginSuccess:
         uow.token_repo.create.assert_awaited_once()
         uow.commit.assert_awaited_once()
 
-    @pytest.mark.asyncio
     async def test_user_domain_fields_mapped_correctly(
         self,
         make_uow,
@@ -438,7 +425,6 @@ class TestLoginSuccess:
         assert result.user.role == user.role
         assert result.user.status == user.status
 
-    @pytest.mark.asyncio
     async def test_establishments_come_from_approved_relations_only(
         self,
         make_uow,
@@ -465,7 +451,6 @@ class TestLoginSuccess:
 
 
 class TestLoginUnknownEmail:
-    @pytest.mark.asyncio
     async def test_raises_invalid_credentials(
         self, make_uow, valid_login_request, mock_security
     ):
@@ -474,7 +459,6 @@ class TestLoginUnknownEmail:
         with pytest.raises(InvalidCredentialsError):
             await AuthService(uow).login(valid_login_request)
 
-    @pytest.mark.asyncio
     async def test_does_not_query_password(
         self, make_uow, valid_login_request, mock_security
     ):
@@ -485,7 +469,6 @@ class TestLoginUnknownEmail:
 
         uow.password_repo.get_by_user_id.assert_not_awaited()
 
-    @pytest.mark.asyncio
     async def test_does_not_commit(self, make_uow, valid_login_request, mock_security):
         uow = make_uow(login_user=None)
 
@@ -496,7 +479,6 @@ class TestLoginUnknownEmail:
 
 
 class TestLoginMissingPasswordRecord:
-    @pytest.mark.asyncio
     async def test_raises_invalid_credentials(
         self, make_uow, make_login_user, valid_login_request, mock_security
     ):
@@ -506,7 +488,6 @@ class TestLoginMissingPasswordRecord:
         with pytest.raises(InvalidCredentialsError):
             await AuthService(uow).login(valid_login_request)
 
-    @pytest.mark.asyncio
     async def test_does_not_commit(
         self, make_uow, make_login_user, valid_login_request, mock_security
     ):
@@ -520,7 +501,6 @@ class TestLoginMissingPasswordRecord:
 
 
 class TestLoginWrongPassword:
-    @pytest.mark.asyncio
     async def test_raises_invalid_credentials(
         self, make_uow, make_login_user, make_password_record, device_id, mock_security
     ):
@@ -533,7 +513,6 @@ class TestLoginWrongPassword:
         with pytest.raises(InvalidCredentialsError):
             await AuthService(uow).login(bad_request)
 
-    @pytest.mark.asyncio
     async def test_does_not_commit(
         self, make_uow, make_login_user, make_password_record, device_id, mock_security
     ):
@@ -550,7 +529,6 @@ class TestLoginWrongPassword:
 
 
 class TestLoginErrorMessageConsistency:
-    @pytest.mark.asyncio
     async def test_unknown_email_and_wrong_password_same_exception(
         self, make_uow, make_login_user, make_password_record, device_id, mock_security
     ):
@@ -578,7 +556,6 @@ class TestLoginErrorMessageConsistency:
 
 
 class TestLogoutSuccess:
-    @pytest.mark.asyncio
     async def test_revokes_token(
         self, make_uow, make_token, valid_logout_request, mock_encode_refresh_token
     ):
@@ -589,7 +566,6 @@ class TestLogoutSuccess:
 
         uow.token_repo.revoke.assert_called_once_with(token)
 
-    @pytest.mark.asyncio
     async def test_commits_after_revoke(
         self, make_uow, make_token, valid_logout_request, mock_encode_refresh_token
     ):
@@ -599,7 +575,6 @@ class TestLogoutSuccess:
 
         uow.commit.assert_awaited_once()
 
-    @pytest.mark.asyncio
     async def test_queries_with_encoded_token_and_device_id(
         self, make_uow, make_token, valid_logout_request, mock_encode_refresh_token
     ):
@@ -613,7 +588,6 @@ class TestLogoutSuccess:
 
 
 class TestLogoutInvalidToken:
-    @pytest.mark.asyncio
     async def test_raises_invalid_token_error(
         self, make_uow, valid_logout_request, mock_encode_refresh_token
     ):
@@ -622,7 +596,6 @@ class TestLogoutInvalidToken:
         with pytest.raises(InvalidRefreshTokenError):
             await AuthService(uow).logout(valid_logout_request)
 
-    @pytest.mark.asyncio
     async def test_does_not_revoke(
         self, make_uow, valid_logout_request, mock_encode_refresh_token
     ):
@@ -633,7 +606,6 @@ class TestLogoutInvalidToken:
 
         uow.token_repo.revoke.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_does_not_commit(
         self, make_uow, valid_logout_request, mock_encode_refresh_token
     ):
@@ -646,7 +618,6 @@ class TestLogoutInvalidToken:
 
 
 class TestRefreshSuccess:
-    @pytest.mark.asyncio
     async def test_returns_refresh_domain(
         self,
         make_uow,
@@ -662,7 +633,6 @@ class TestRefreshSuccess:
 
         assert isinstance(result, RefreshDomain)
 
-    @pytest.mark.asyncio
     async def test_new_access_token_issued(
         self,
         make_uow,
@@ -678,7 +648,6 @@ class TestRefreshSuccess:
 
         assert result.access_token == f"access.{UserRole.ADMIN}.mocked"
 
-    @pytest.mark.asyncio
     async def test_new_raw_refresh_token_returned(
         self,
         make_uow,
@@ -693,7 +662,6 @@ class TestRefreshSuccess:
 
         assert result.refresh_token == "raw_refresh_token"
 
-    @pytest.mark.asyncio
     async def test_old_token_revoked(
         self,
         make_uow,
@@ -709,7 +677,6 @@ class TestRefreshSuccess:
 
         uow.token_repo.revoke.assert_called_once_with(token)
 
-    @pytest.mark.asyncio
     async def test_new_token_persisted(
         self,
         make_uow,
@@ -730,7 +697,6 @@ class TestRefreshSuccess:
             role=token.role,
         )
 
-    @pytest.mark.asyncio
     async def test_commits_after_rotation(
         self,
         make_uow,
@@ -745,7 +711,6 @@ class TestRefreshSuccess:
 
         uow.commit.assert_awaited_once()
 
-    @pytest.mark.asyncio
     async def test_queries_with_encoded_token_and_device_id(
         self,
         make_uow,
@@ -764,7 +729,6 @@ class TestRefreshSuccess:
 
 
 class TestRefreshInvalidToken:
-    @pytest.mark.asyncio
     async def test_raises_invalid_refresh_token(
         self,
         make_uow,
@@ -776,7 +740,6 @@ class TestRefreshInvalidToken:
         with pytest.raises(InvalidRefreshTokenError):
             await AuthService(uow).refresh(valid_refresh_request)
 
-    @pytest.mark.asyncio
     async def test_does_not_revoke(
         self,
         make_uow,
@@ -790,7 +753,6 @@ class TestRefreshInvalidToken:
 
         uow.token_repo.revoke.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_does_not_create_new_token(
         self,
         make_uow,
@@ -804,7 +766,6 @@ class TestRefreshInvalidToken:
 
         uow.token_repo.create.assert_not_awaited()
 
-    @pytest.mark.asyncio
     async def test_does_not_commit(
         self,
         make_uow,

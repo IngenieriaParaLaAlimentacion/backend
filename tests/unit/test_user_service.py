@@ -83,7 +83,6 @@ def _actor_for(user, *, user_id=None):
 
 
 class TestGetProfile:
-    @pytest.mark.asyncio
     async def test_field_worker_with_mixed_status_establishments(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         estab_a = _make_establishment(name="Centro A", formatted_address="Calle A 123")
@@ -115,7 +114,6 @@ class TestGetProfile:
         assert second.id == estab_b.id
         assert second.status == UserEstablishmentStatus.PENDING
 
-    @pytest.mark.asyncio
     async def test_field_worker_with_no_relations_returns_empty_list(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         uow = _make_uow(user=user, relations=[])
@@ -126,7 +124,6 @@ class TestGetProfile:
         assert profile.establishments == []
         uow.establishment_repo.find_by_ids.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_analyst_has_none_establishments_and_skips_relation_query(self):
         user = _make_user(role=UserRole.ANALYST)
         uow = _make_uow(user=user)
@@ -137,7 +134,6 @@ class TestGetProfile:
         assert profile.establishments is None
         uow.user_establishment_repo.get_by_user_id.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_admin_has_none_establishments(self):
         user = _make_user(role=UserRole.ADMIN)
         uow = _make_uow(user=user)
@@ -148,7 +144,6 @@ class TestGetProfile:
         assert profile.establishments is None
         uow.user_establishment_repo.get_by_user_id.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_user_not_found_raises(self):
         uow = _make_uow(user=None)
         service = UserService(uow)
@@ -157,7 +152,6 @@ class TestGetProfile:
         with pytest.raises(UserNotFoundError):
             await service.get_profile(actor)
 
-    @pytest.mark.asyncio
     async def test_token_user_id_is_used_for_lookup(self):
         user = _make_user(role=UserRole.ANALYST)
         token_user_id = str(uuid.uuid4())
@@ -169,7 +163,6 @@ class TestGetProfile:
 
         uow.user_repo.get_by_id.assert_called_once_with(token_user_id)
 
-    @pytest.mark.asyncio
     async def test_relation_with_missing_establishment_is_skipped(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         estab_a = _make_establishment(name="Centro A", formatted_address="Calle A 123")
@@ -189,7 +182,6 @@ class TestGetProfile:
 
 
 class TestUpdateProfile:
-    @pytest.mark.asyncio
     async def test_both_fields_updated_and_committed(self):
         user = _make_user(role=UserRole.ANALYST)
         uow = _make_uow(user=user)
@@ -212,7 +204,6 @@ class TestUpdateProfile:
         assert profile.status == user.status
         assert profile.establishments is None
 
-    @pytest.mark.asyncio
     async def test_single_field_only_updates_that_field(self):
         user = _make_user(role=UserRole.ANALYST)
         uow = _make_uow(user=user)
@@ -226,7 +217,6 @@ class TestUpdateProfile:
         assert profile.name == "OnlyName"
         assert profile.last_name == user.last_name
 
-    @pytest.mark.asyncio
     async def test_empty_update_raises_and_writes_nothing(self):
         user = _make_user(role=UserRole.ANALYST)
         uow = _make_uow(user=user)
@@ -238,7 +228,6 @@ class TestUpdateProfile:
         uow.user_repo.update_profile.assert_not_called()
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_user_not_found_raises(self):
         uow = _make_uow(user=None)
         service = UserService(uow)
@@ -250,7 +239,6 @@ class TestUpdateProfile:
         uow.user_repo.update_profile.assert_not_called()
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_field_worker_response_includes_status_annotated_establishments(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         estab_a = _make_establishment(name="Centro A", formatted_address="Calle A 123")
@@ -267,7 +255,6 @@ class TestUpdateProfile:
         assert profile.establishments[0].id == estab_a.id
         assert profile.establishments[0].status == UserEstablishmentStatus.APPROVED
 
-    @pytest.mark.asyncio
     async def test_token_user_id_is_used_for_lookup(self):
         user = _make_user(role=UserRole.ANALYST)
         token_user_id = str(uuid.uuid4())
@@ -282,7 +269,6 @@ class TestUpdateProfile:
         called_id, _ = uow.user_repo.update_profile.call_args.args
         assert called_id == user.id
 
-    @pytest.mark.asyncio
     async def test_new_optional_fields_are_written_and_returned(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         uow = _make_uow(user=user)
@@ -297,7 +283,6 @@ class TestUpdateProfile:
         assert profile.contact_phone == "1134567890"
         assert profile.description is None
 
-    @pytest.mark.asyncio
     async def test_unset_optional_fields_fall_back_to_existing_values(self):
         user = _make_user(role=UserRole.ANALYST)
         user.locality = "Existing locality"
@@ -313,7 +298,6 @@ class TestUpdateProfile:
 
 
 class TestGetOwnEstablishments:
-    @pytest.mark.asyncio
     async def test_field_worker_with_mixed_status_relations(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         estab_a = _make_establishment(name="Centro A", formatted_address="Calle A")
@@ -337,7 +321,6 @@ class TestGetOwnEstablishments:
         assert by_id[estab_a.id].status == UserEstablishmentStatus.APPROVED
         assert by_id[estab_b.id].status == UserEstablishmentStatus.REJECTED
 
-    @pytest.mark.asyncio
     async def test_no_relations_returns_empty_list(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         uow = _make_uow(user=user, relations=[])
@@ -350,7 +333,6 @@ class TestGetOwnEstablishments:
 
 
 class TestRequestEstablishmentAccess:
-    @pytest.mark.asyncio
     async def test_new_ids_are_inserted_as_pending(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         estab_a = _make_establishment()
@@ -370,7 +352,6 @@ class TestRequestEstablishmentAccess:
         assert {r.id for r in result} == {estab_a.id, estab_b.id}
         assert all(r.status == UserEstablishmentStatus.PENDING for r in result)
 
-    @pytest.mark.asyncio
     async def test_rejected_id_is_re_requested(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         estab = _make_establishment()
@@ -391,7 +372,6 @@ class TestRequestEstablishmentAccess:
         uow.user_establishment_repo.preset_relation.assert_not_called()
         assert result[0].status == UserEstablishmentStatus.PENDING
 
-    @pytest.mark.asyncio
     async def test_revoked_id_is_re_requested(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         estab = _make_establishment()
@@ -412,7 +392,6 @@ class TestRequestEstablishmentAccess:
         uow.user_establishment_repo.preset_relation.assert_not_called()
         assert result[0].status == UserEstablishmentStatus.PENDING
 
-    @pytest.mark.asyncio
     async def test_withdrawn_id_is_re_requested(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         estab = _make_establishment()
@@ -433,7 +412,6 @@ class TestRequestEstablishmentAccess:
         uow.user_establishment_repo.preset_relation.assert_not_called()
         assert result[0].status == UserEstablishmentStatus.PENDING
 
-    @pytest.mark.asyncio
     async def test_approved_id_is_untouched(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         estab = _make_establishment()
@@ -449,7 +427,6 @@ class TestRequestEstablishmentAccess:
         uow.user_establishment_repo.update_status_for_ids.assert_not_called()
         assert result[0].status == UserEstablishmentStatus.APPROVED
 
-    @pytest.mark.asyncio
     async def test_pending_id_is_untouched(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         estab = _make_establishment()
@@ -465,7 +442,6 @@ class TestRequestEstablishmentAccess:
         uow.user_establishment_repo.update_status_for_ids.assert_not_called()
         assert result[0].status == UserEstablishmentStatus.PENDING
 
-    @pytest.mark.asyncio
     async def test_mixed_batch_classifies_each_id(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         approved = _make_establishment()
@@ -499,7 +475,6 @@ class TestRequestEstablishmentAccess:
         assert by_id[rejected.id].status == UserEstablishmentStatus.PENDING
         assert by_id[new.id].status == UserEstablishmentStatus.PENDING
 
-    @pytest.mark.asyncio
     async def test_duplicate_ids_are_deduplicated(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         estab = _make_establishment()
@@ -513,7 +488,6 @@ class TestRequestEstablishmentAccess:
         assert uow.user_establishment_repo.preset_relation.await_count == 1
         assert len(result) == 1
 
-    @pytest.mark.asyncio
     async def test_unknown_establishment_raises_and_writes_nothing(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         uow = _make_uow(user=user, relations=[])
@@ -531,7 +505,6 @@ class TestRequestEstablishmentAccess:
 
 
 class TestWithdrawEstablishmentAccess:
-    @pytest.mark.asyncio
     async def test_approved_id_is_withdrawn(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         estab = _make_establishment()
@@ -553,7 +526,6 @@ class TestWithdrawEstablishmentAccess:
         assert result[0].id == estab.id
         assert result[0].status == UserEstablishmentStatus.WITHDRAWN
 
-    @pytest.mark.asyncio
     async def test_pending_id_is_withdrawn(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         estab = _make_establishment()
@@ -572,7 +544,6 @@ class TestWithdrawEstablishmentAccess:
         assert new_status == UserEstablishmentStatus.WITHDRAWN
         assert result[0].status == UserEstablishmentStatus.WITHDRAWN
 
-    @pytest.mark.asyncio
     async def test_establishment_with_no_relation_raises_and_writes_nothing(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         uow = _make_uow(user=user, relations=[])
@@ -585,7 +556,6 @@ class TestWithdrawEstablishmentAccess:
         uow.user_establishment_repo.update_status_for_ids.assert_not_called()
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "status",
         [
@@ -608,7 +578,6 @@ class TestWithdrawEstablishmentAccess:
         uow.user_establishment_repo.update_status_for_ids.assert_not_called()
         uow.commit.assert_not_called()
 
-    @pytest.mark.asyncio
     async def test_partial_invalid_batch_raises_and_writes_nothing(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         approved = _make_establishment()

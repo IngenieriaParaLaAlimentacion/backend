@@ -24,8 +24,6 @@ from app.repositories.notifications import (
     UserPushDeviceRepository,
 )
 
-pytestmark = pytest.mark.asyncio
-
 UTC = timezone.utc
 ACTIVATED_AT = datetime(2026, 9, 19, 12, tzinfo=UTC)
 

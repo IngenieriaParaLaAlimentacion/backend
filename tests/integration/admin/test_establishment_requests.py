@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime
 
-import pytest
 from fastapi import status
 from sqlalchemy import select
 
@@ -18,8 +17,6 @@ from tests.integration.admin.conftest import (
     _insert_establishment_request,
     _insert_user,
 )
-
-pytestmark = pytest.mark.asyncio
 
 
 def _approve_body(**overrides):

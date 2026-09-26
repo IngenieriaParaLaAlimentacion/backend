@@ -1,6 +1,5 @@
 import uuid
 
-import pytest
 from fastapi import status
 from sqlalchemy import select
 
@@ -20,8 +19,6 @@ from tests.integration.admin.conftest import (
     REVOKE_URL,
     _insert_user,
 )
-
-pytestmark = pytest.mark.asyncio
 
 
 class TestApproveEstablishments:

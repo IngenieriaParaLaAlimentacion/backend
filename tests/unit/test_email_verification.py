@@ -175,7 +175,6 @@ class TestVerifyEmailSuccess:
         )
         self.uow.user_repo.update_email_verification = AsyncMock()
 
-    @pytest.mark.asyncio
     async def test_queries_with_encoded_token(self, valid_verify_request):
         await AuthService(self.uow).verify_email(valid_verify_request.token)
 
@@ -183,13 +182,11 @@ class TestVerifyEmailSuccess:
             "hashed_verification_token"
         )
 
-    @pytest.mark.asyncio
     async def test_marks_token_as_used(self, valid_verify_request):
         await AuthService(self.uow).verify_email(valid_verify_request.token)
 
         self.uow.email_verification_repo.mark_used.assert_awaited_once_with(self.token)
 
-    @pytest.mark.asyncio
     async def test_calls_repository_to_update_email_verification(
         self, valid_verify_request
     ):
@@ -200,7 +197,6 @@ class TestVerifyEmailSuccess:
             self.token.user_id
         )
 
-    @pytest.mark.asyncio
     async def test_commits(self, valid_verify_request):
         await AuthService(self.uow).verify_email(valid_verify_request.token)
 
@@ -213,33 +209,28 @@ class TestVerifyEmailInvalidToken:
         # No row with that hash at all -- deliberately the generic error.
         self.uow = make_uow_verification(active_verification_token=None)
 
-    @pytest.mark.asyncio
     async def test_raises_invalid_token_error(self, valid_verify_request):
         with pytest.raises(InvalidTokenError):
             await AuthService(self.uow).verify_email(valid_verify_request.token)
 
-    @pytest.mark.asyncio
     async def test_error_message_informs_user(self, valid_verify_request):
         with pytest.raises(InvalidVerificationTokenError) as exc:
             await AuthService(self.uow).verify_email(valid_verify_request.token)
 
         assert "invalid" in str(exc.value) or "expired" in str(exc.value)
 
-    @pytest.mark.asyncio
     async def test_does_not_mark_token_as_used(self, valid_verify_request):
         with pytest.raises(InvalidTokenError):
             await AuthService(self.uow).verify_email(valid_verify_request.token)
 
         self.uow.email_verification_repo.mark_used.assert_not_awaited()
 
-    @pytest.mark.asyncio
     async def test_does_not_fetch_user(self, valid_verify_request):
         with pytest.raises(InvalidTokenError):
             await AuthService(self.uow).verify_email(valid_verify_request.token)
 
         self.uow.user_repo.get_by_id.assert_not_awaited()
 
-    @pytest.mark.asyncio
     async def test_does_not_commit(self, valid_verify_request):
         with pytest.raises(InvalidTokenError):
             await AuthService(self.uow).verify_email(valid_verify_request.token)
@@ -250,7 +241,6 @@ class TestVerifyEmailInvalidToken:
 class TestVerifyEmailTokenState:
     """A consumed link and an expired one must not report the same thing."""
 
-    @pytest.mark.asyncio
     async def test_used_token_is_reported_as_used(
         self,
         make_uow_verification,
@@ -267,7 +257,6 @@ class TestVerifyEmailTokenState:
 
         uow.email_verification_repo.mark_used.assert_not_awaited()
 
-    @pytest.mark.asyncio
     async def test_expired_token_is_reported_as_expired(
         self,
         make_uow_verification,
@@ -297,7 +286,6 @@ class TestResendVerificationEmailSuccess:
             make_uow_verification, make_login_user, valid_resend_request.email
         )
 
-    @pytest.mark.asyncio
     async def test_queries_user_by_email(self, valid_resend_request):
         await AuthService(self.uow).resend_verification_email(
             valid_resend_request.email
@@ -307,7 +295,6 @@ class TestResendVerificationEmailSuccess:
             valid_resend_request.email
         )
 
-    @pytest.mark.asyncio
     async def test_revokes_old_tokens(self, valid_resend_request):
         await AuthService(self.uow).resend_verification_email(
             valid_resend_request.email
@@ -317,7 +304,6 @@ class TestResendVerificationEmailSuccess:
             self.user.id
         )
 
-    @pytest.mark.asyncio
     async def test_creates_new_token(self, valid_resend_request):
         await AuthService(self.uow).resend_verification_email(
             valid_resend_request.email
@@ -328,7 +314,6 @@ class TestResendVerificationEmailSuccess:
         assert call_args[0][0] == self.user.id
         assert call_args[0][1] == "hashed_verification_token"
 
-    @pytest.mark.asyncio
     async def test_sends_verification_email(self, valid_resend_request):
         await AuthService(self.uow).resend_verification_email(
             valid_resend_request.email
@@ -340,7 +325,6 @@ class TestResendVerificationEmailSuccess:
             self.uow.email_verification_repo.create.return_value.expires_at,
         )
 
-    @pytest.mark.asyncio
     async def test_commits(self, valid_resend_request):
         await AuthService(self.uow).resend_verification_email(
             valid_resend_request.email
@@ -359,7 +343,6 @@ class TestResendVerificationEmailAlreadyVerified:
             make_uow_verification, make_login_user, valid_resend_request.email
         )
 
-    @pytest.mark.asyncio
     async def test_does_not_revoke_tokens(self, valid_resend_request):
         await AuthService(self.uow).resend_verification_email(
             valid_resend_request.email
@@ -367,7 +350,6 @@ class TestResendVerificationEmailAlreadyVerified:
 
         self.uow.email_verification_repo.revoke_active_for_user.assert_not_awaited()
 
-    @pytest.mark.asyncio
     async def test_does_not_create_new_token(self, valid_resend_request):
         await AuthService(self.uow).resend_verification_email(
             valid_resend_request.email
@@ -375,7 +357,6 @@ class TestResendVerificationEmailAlreadyVerified:
 
         self.uow.email_verification_repo.create.assert_not_awaited()
 
-    @pytest.mark.asyncio
     async def test_does_not_send_email(self, valid_resend_request):
         await AuthService(self.uow).resend_verification_email(
             valid_resend_request.email
@@ -383,7 +364,6 @@ class TestResendVerificationEmailAlreadyVerified:
 
         self.mock_send.assert_not_awaited()
 
-    @pytest.mark.asyncio
     async def test_does_not_commit(self, valid_resend_request):
         await AuthService(self.uow).resend_verification_email(
             valid_resend_request.email
@@ -398,14 +378,12 @@ class TestResendVerificationEmailUserNotFound:
         self.uow = make_uow_verification()
         self.uow.user_repo.get_by_email = AsyncMock(return_value=None)
 
-    @pytest.mark.asyncio
     async def test_raises_user_not_found(self, valid_resend_request):
         with pytest.raises(UserNotFoundError):
             await AuthService(self.uow).resend_verification_email(
                 valid_resend_request.email
             )
 
-    @pytest.mark.asyncio
     async def test_does_not_revoke_tokens(self, valid_resend_request):
         with pytest.raises(UserNotFoundError):
             await AuthService(self.uow).resend_verification_email(
@@ -414,7 +392,6 @@ class TestResendVerificationEmailUserNotFound:
 
         self.uow.email_verification_repo.revoke_active_for_user.assert_not_awaited()
 
-    @pytest.mark.asyncio
     async def test_does_not_commit(self, valid_resend_request):
         with pytest.raises(UserNotFoundError):
             await AuthService(self.uow).resend_verification_email(
@@ -441,13 +418,11 @@ class TestRegistrationCreatesVerificationToken:
             establishments=[establishment.id],
         )
 
-    @pytest.mark.asyncio
     async def test_creates_verification_token(self):
         await AuthService(self.uow).register_field_worker(self.request)
 
         self.uow.email_verification_repo.create.assert_awaited_once()
 
-    @pytest.mark.asyncio
     async def test_token_expiration_is_24_hours(self):
         await AuthService(self.uow).register_field_worker(self.request)
 
@@ -456,13 +431,11 @@ class TestRegistrationCreatesVerificationToken:
         ]
         assert expires_delta.total_seconds() == 86400
 
-    @pytest.mark.asyncio
     async def test_sends_verification_email(self):
         await AuthService(self.uow).register_field_worker(self.request)
 
         self.mock_send.assert_awaited_once()
 
-    @pytest.mark.asyncio
     async def test_new_user_status_is_pending_validation(self):
         await AuthService(self.uow).register_field_worker(self.request)
 

@@ -31,8 +31,6 @@ from app.services.food_intakes.food_intake_service import FoodIntakeService
 from app.services.food_outflows.food_outflow_service import FoodOutflowService
 from app.services.food_stock.food_stock_service import FoodStockService
 
-pytestmark = pytest.mark.asyncio
-
 ESTABLISHMENT_ID = uuid.uuid4()
 RICE_ID = uuid.uuid4()
 

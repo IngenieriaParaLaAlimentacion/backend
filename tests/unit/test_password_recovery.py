@@ -64,7 +64,6 @@ def mock_hash_password_recovery(monkeypatch):
 
 
 class TestConfirmPasswordRecoverySuccess:
-    @pytest.mark.asyncio
     async def test_queries_with_encoded_token(
         self,
         make_uow_recovery,
@@ -88,7 +87,6 @@ class TestConfirmPasswordRecoverySuccess:
             "hashed_recovery_token"
         )
 
-    @pytest.mark.asyncio
     async def test_updates_password_hash(
         self,
         make_uow_recovery,
@@ -111,7 +109,6 @@ class TestConfirmPasswordRecoverySuccess:
 
         assert password_record.password_hashed == "hashed_newpassword123"
 
-    @pytest.mark.asyncio
     async def test_marks_token_as_used(
         self,
         make_uow_recovery,
@@ -133,7 +130,6 @@ class TestConfirmPasswordRecoverySuccess:
 
         uow.password_recovery_repo.mark_used.assert_awaited_once_with(token)
 
-    @pytest.mark.asyncio
     async def test_revokes_all_user_tokens(
         self,
         make_uow_recovery,
@@ -155,7 +151,6 @@ class TestConfirmPasswordRecoverySuccess:
 
         uow.token_repo.revoke_all_by_user_id.assert_awaited_once_with(token.user_id)
 
-    @pytest.mark.asyncio
     async def test_commits(
         self,
         make_uow_recovery,
@@ -179,7 +174,6 @@ class TestConfirmPasswordRecoverySuccess:
 
 
 class TestConfirmPasswordRecoveryInvalidToken:
-    @pytest.mark.asyncio
     async def test_raises_invalid_token_error(
         self,
         make_uow_recovery,
@@ -191,7 +185,6 @@ class TestConfirmPasswordRecoveryInvalidToken:
         with pytest.raises(InvalidTokenError):
             await AuthService(uow).confirm_password_recovery(valid_confirm_request)
 
-    @pytest.mark.asyncio
     async def test_does_not_update_password(
         self,
         make_uow_recovery,
@@ -205,7 +198,6 @@ class TestConfirmPasswordRecoveryInvalidToken:
 
         uow.password_repo.get_by_user_id.assert_not_awaited()
 
-    @pytest.mark.asyncio
     async def test_does_not_revoke_tokens(
         self,
         make_uow_recovery,
@@ -219,7 +211,6 @@ class TestConfirmPasswordRecoveryInvalidToken:
 
         uow.token_repo.revoke_all_by_user_id.assert_not_awaited()
 
-    @pytest.mark.asyncio
     async def test_does_not_commit(
         self,
         make_uow_recovery,
@@ -237,7 +228,6 @@ class TestConfirmPasswordRecoveryInvalidToken:
 class TestConfirmPasswordRecoveryTokenState:
     """A consumed link and an expired one must not report the same thing."""
 
-    @pytest.mark.asyncio
     async def test_used_token_is_reported_as_used(
         self,
         make_uow_recovery,
@@ -252,7 +242,6 @@ class TestConfirmPasswordRecoveryTokenState:
 
         uow.password_recovery_repo.mark_used.assert_not_awaited()
 
-    @pytest.mark.asyncio
     async def test_expired_token_is_reported_as_expired(
         self,
         make_uow_recovery,

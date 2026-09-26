@@ -165,8 +165,6 @@ class TestAlertStatusRollup:
 
 
 class TestGetEstablishmentDashboard:
-    pytestmark = pytest.mark.asyncio
-
     async def test_raises_when_establishment_is_unknown(self, make_dashboard_uow):
         service = EstablishmentDashboardService(make_dashboard_uow(found=False))
         with pytest.raises(EstablishmentNotFoundError):
@@ -293,8 +291,6 @@ class TestSubjectItemBuilding:
 
 
 class TestSubjectListing:
-    pytestmark = pytest.mark.asyncio
-
     async def test_raises_when_establishment_is_unknown(self, make_dashboard_uow):
         service = EstablishmentDashboardService(make_dashboard_uow(found=False))
         with pytest.raises(EstablishmentNotFoundError):
@@ -331,8 +327,6 @@ class TestSubjectListing:
 
 
 class TestExportEstablishmentSubjects:
-    pytestmark = pytest.mark.asyncio
-
     @staticmethod
     def _row(measurement_count: int = 2) -> SimpleNamespace:
         """A repo row: the subject's latest measurement plus their count here."""
@@ -439,8 +433,6 @@ class TestBuildMapItem:
 
 
 class TestGetEstablishmentsMap:
-    pytestmark = pytest.mark.asyncio
-
     async def test_rows_are_grouped_by_establishment_not_mixed(
         self, make_establishment
     ):

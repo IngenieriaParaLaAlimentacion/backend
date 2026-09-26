@@ -169,8 +169,6 @@ def field_worker_actor():
 
 
 class TestCreatePermissionsAndName:
-    pytestmark = pytest.mark.asyncio
-
     async def test_field_worker_forbidden(self, make_uow, field_worker_actor):
         uow = make_uow()
         with pytest.raises(ForbiddenError):
@@ -217,8 +215,6 @@ class TestCreatePermissionsAndName:
 
 
 class TestCreateStructureValidation:
-    pytestmark = pytest.mark.asyncio
-
     async def test_zero_questions_rejected(self, make_uow, admin_actor):
         uow = make_uow()
         with pytest.raises(InvalidSurveyStructureError):
@@ -266,8 +262,6 @@ class TestCreateResponseTarget:
     """Authoring no longer validates an audience — the target is a free choice
     among three values, and creating a survey touches no establishment."""
 
-    pytestmark = pytest.mark.asyncio
-
     @pytest.mark.parametrize("target", list(SurveyResponseTarget))
     async def test_every_target_is_accepted(self, make_uow, admin_actor, target):
         uow = make_uow()
@@ -309,8 +303,6 @@ class TestSurveyUpdateRequest:
 
 
 class TestGet:
-    pytestmark = pytest.mark.asyncio
-
     async def test_missing_raises(self, make_uow, admin_actor):
         uow = make_uow(survey=None)
         with pytest.raises(SurveyNotFoundError):
@@ -363,8 +355,6 @@ class TestGet:
 
 
 class TestList:
-    pytestmark = pytest.mark.asyncio
-
     async def test_passes_offset_and_returns_paginated(self, make_uow, make_survey):
         uow = make_uow()
         uow.survey_repo.list = AsyncMock(return_value=([(make_survey(), 3)], 1))
@@ -382,8 +372,6 @@ class TestList:
 class TestListAvailable:
     """Availability is no longer establishment-scoped, so the service must not
     consult the caller's approved establishments at all."""
-
-    pytestmark = pytest.mark.asyncio
 
     @pytest.fixture
     def uow_with_available(self, make_uow, make_survey):
@@ -413,8 +401,6 @@ class TestListAvailable:
 
 
 class TestUpdatePermissionsAndLock:
-    pytestmark = pytest.mark.asyncio
-
     async def test_null_to_false_is_effectively_unchanged_after_response(
         self, make_uow, make_survey, admin_actor
     ):
@@ -840,8 +826,6 @@ class TestUpdatePermissionsAndLock:
 
 
 class TestDuplicate:
-    pytestmark = pytest.mark.asyncio
-
     async def test_missing_raises(self, make_uow):
         uow = make_uow(survey=None)
         with pytest.raises(SurveyNotFoundError):
@@ -887,8 +871,6 @@ class TestDuplicate:
 
 
 class TestDelete:
-    pytestmark = pytest.mark.asyncio
-
     async def test_missing_raises(self, make_uow):
         uow = make_uow(survey=None)
         with pytest.raises(SurveyNotFoundError):
@@ -920,8 +902,6 @@ class TestDelete:
 
 
 class TestSetActive:
-    pytestmark = pytest.mark.asyncio
-
     async def test_toggle_bypasses_lock(self, make_uow, make_survey, admin_actor):
         survey = make_survey(response_count=99, is_active=True)
         uow = make_uow(survey=survey)
@@ -939,8 +919,6 @@ class TestSetActive:
 
 
 class TestExportSurveyListing:
-    pytestmark = pytest.mark.asyncio
-
     async def test_streams_the_whole_filtered_set(self, make_uow, make_survey):
         uow = make_uow()
         uow.survey_repo.stream_for_export = MagicMock(

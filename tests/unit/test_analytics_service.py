@@ -40,8 +40,6 @@ def field_worker_actor():
 
 
 class TestGetSurveyResponseSummary:
-    pytestmark = pytest.mark.asyncio
-
     async def test_admin_gets_summary(self, make_uow, admin_actor):
         uow = make_uow(summary=(12, 5, NOW))
 

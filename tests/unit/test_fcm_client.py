@@ -19,7 +19,6 @@ def _client() -> FcmClient:
     return client
 
 
-@pytest.mark.asyncio
 async def test_send_uses_exact_visible_cross_platform_contract():
     response = SimpleNamespace(status_code=200)
     post = AsyncMock(return_value=response)
@@ -48,7 +47,6 @@ async def test_send_uses_exact_visible_cross_platform_contract():
     assert payload["apns"]["headers"]["apns-collapse-id"] == ("stale-establishment:e1")
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize("status", [408, 429, 500, 502, 503, 504])
 async def test_retryable_statuses_are_transient(status):
     response = SimpleNamespace(status_code=status, json=lambda: {})
@@ -64,7 +62,6 @@ async def test_retryable_statuses_are_transient(status):
     assert result.outcome == FcmOutcome.TRANSIENT
 
 
-@pytest.mark.asyncio
 async def test_network_failure_is_transient():
     http_client = AsyncMock()
     http_client.post = AsyncMock(side_effect=httpx.ConnectError("down"))
@@ -78,7 +75,6 @@ async def test_network_failure_is_transient():
     assert result.outcome == FcmOutcome.TRANSIENT
 
 
-@pytest.mark.asyncio
 async def test_access_token_refreshes_expired_credentials():
     client = _client()
     credentials = SimpleNamespace(valid=False, token=None)
@@ -94,7 +90,6 @@ async def test_access_token_refreshes_expired_credentials():
     credentials.refresh.assert_called_once()
 
 
-@pytest.mark.asyncio
 async def test_credential_refresh_failure_is_transient():
     client = _client()
     client.credentials = SimpleNamespace(
@@ -108,7 +103,6 @@ async def test_credential_refresh_failure_is_transient():
     assert result.outcome == FcmOutcome.TRANSIENT
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("status", "body", "outcome"),
     [
@@ -141,7 +135,6 @@ async def test_provider_error_classification(status, body, outcome):
     assert result.outcome == outcome
 
 
-@pytest.mark.asyncio
 async def test_non_object_error_body_is_a_permanent_message_failure():
     response = SimpleNamespace(status_code=400, json=lambda: [])
     http_client = AsyncMock()
@@ -175,7 +168,6 @@ def test_only_token_specific_invalid_argument_evicts_token():
     assert FcmClient._invalid_token_field(payload_body) is False
 
 
-@pytest.mark.asyncio
 async def test_bounded_run_reuses_and_closes_one_http_client():
     response = SimpleNamespace(status_code=200)
     http_client = AsyncMock()
@@ -195,7 +187,6 @@ async def test_bounded_run_reuses_and_closes_one_http_client():
     http_client.aclose.assert_awaited_once_with()
 
 
-@pytest.mark.asyncio
 async def test_concurrent_access_token_requests_share_one_refresh():
     client = _client()
     credentials = SimpleNamespace(valid=False, token=None)
