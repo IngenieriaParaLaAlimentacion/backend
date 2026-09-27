@@ -6,12 +6,12 @@ from fastapi import status
 
 from app.domain.subject import SubjectSortOrder
 from tests.integration.subjects.conftest import (
-    SUBJECTS_URL,
     _make_establishment,
     _make_measurement,
     _make_subject,
     _upload,
 )
+from tests.integration.urls import SUBJECTS_URL
 
 
 class TestGetSubjectsPaginated:

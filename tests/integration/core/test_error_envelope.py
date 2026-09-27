@@ -6,8 +6,7 @@ the shape the backoffice reported as ``[object Object]``.
 """
 
 from app.core.dependencies import get_auth_service
-
-LOGIN_URL = "/api/v1/auth/login"
+from tests.integration.urls import LOGIN_URL
 
 
 def _assert_problem(response, *, status_code: int, error_type: str) -> dict:

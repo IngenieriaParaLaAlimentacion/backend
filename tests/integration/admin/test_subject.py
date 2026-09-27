@@ -2,11 +2,8 @@ import uuid
 
 from fastapi import status
 
-from tests.integration.admin.conftest import (
-    ADMIN_SUBJECTS_URL,
-    SUBJECTS_URL,
-    _subject_body,
-)
+from tests.integration.admin.conftest import ADMIN_SUBJECTS_URL, _subject_body
+from tests.integration.urls import SUBJECTS_URL
 
 
 class TestAdminSubjectDetail:

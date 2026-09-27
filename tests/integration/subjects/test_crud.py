@@ -9,7 +9,6 @@ from jose import jwt
 from app.domain.user import UserRole
 from tests.integration.conftest import make_token_for_role
 from tests.integration.subjects.conftest import (
-    SUBJECTS_URL,
     _make_establishment,
     _make_measurement,
     _make_subject,
@@ -17,6 +16,7 @@ from tests.integration.subjects.conftest import (
     _upload,
     _upload_with_id,
 )
+from tests.integration.urls import SUBJECTS_URL
 
 
 class TestUploadSubject:

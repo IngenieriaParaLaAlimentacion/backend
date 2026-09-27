@@ -25,10 +25,10 @@ from app.models.auth.user_password import UserPassword
 from app.models.base import Base
 from app.models.establishments.establishment import Establishment
 from app.models.subjects.subject import Sex, Subject
+from tests.integration.urls import LOGIN_URL
 
 os.environ["TESTCONTAINERS_RYUK_DISABLED"] = "true"
 
-LOGIN_URL = "/api/v1/auth/login"
 
 # --- Auth: tokens and headers ---------------------------------------------
 

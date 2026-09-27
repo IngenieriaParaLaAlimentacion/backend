@@ -6,8 +6,7 @@ from fastapi import status
 from sqlalchemy import func, select
 
 from app.domain.user import UserRole
-
-SURVEYS_URL = "/api/v1/surveys"
+from tests.integration.urls import SURVEYS_URL
 
 
 @pytest_asyncio.fixture

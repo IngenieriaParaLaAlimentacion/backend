@@ -6,7 +6,8 @@ import pytest
 import pytest_asyncio
 from fastapi import status
 
-REGISTER_URL = "/api/v1/auth/register/field-worker"
+from tests.integration.urls import REGISTER_URL
+
 VERIFY_URL = "/api/v1/auth/verify-email/confirm"
 RESEND_URL = "/api/v1/auth/verify-email/resend"
 

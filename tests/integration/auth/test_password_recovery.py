@@ -4,10 +4,10 @@ from urllib.parse import parse_qs, urlparse
 import pytest
 from fastapi import status
 
+from tests.integration.urls import LOGIN_URL, LOGOUT_URL
+
 REQUEST_URL = "/api/v1/auth/password-recovery/request"
 CONFIRM_URL = "/api/v1/auth/password-recovery/confirm"
-LOGIN_URL = "/api/v1/auth/login"
-LOGOUT_URL = "/api/v1/auth/logout"
 
 
 def _extract_token(deeplink: str | None) -> str:

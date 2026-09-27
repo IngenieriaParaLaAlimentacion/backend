@@ -30,8 +30,6 @@ REVOKE_URL = "/api/v1/admin/field-worker/{user_id}/establishments/revoke"
 APPROVE_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/approve"
 REJECT_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/reject"
 PENDING_ESTABLISHMENTS_URL = "/api/v1/admin/field-worker/establishments/pending"
-SUBJECTS_URL = "/api/v1/subjects"
-INVITE_ADMIN_URL = "/api/v1/admin/invite-admin"
 
 
 async def _make_list_request(client, *, headers=None):

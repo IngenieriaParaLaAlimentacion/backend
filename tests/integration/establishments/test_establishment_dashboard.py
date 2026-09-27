@@ -7,15 +7,13 @@ import pytest
 import pytest_asyncio
 from fastapi import status
 
-DASHBOARD_URL = "/api/v1/establishments/{establishment_id}/dashboard"
-SUBJECTS_URL = "/api/v1/establishments/{establishment_id}/subjects"
+from tests.integration.helpers import compute_bmi
+from tests.integration.urls import DASHBOARD_URL
+
+ESTABLISHMENT_SUBJECTS_URL = "/api/v1/establishments/{establishment_id}/subjects"
 FIELD_WORKERS_URL = "/api/v1/establishments/{establishment_id}/field-workers"
 
 MISSING_ID = UUID("00000000-0000-0000-0000-000000000000")
-
-
-def _bmi(weight_kg: float, height_cm: float) -> float:
-    return weight_kg / (height_cm / 100) ** 2
 
 
 @dataclass
@@ -144,7 +142,7 @@ async def scenario(app) -> Scenario:
         )
 
         def _measure(subject, establishment, responsible, weight, height, measured_at):
-            bmi = _bmi(weight, height)
+            bmi = compute_bmi(weight, height)
             measurement = Measurement(
                 subject_id=subject.id,
                 responsible_id=responsible.id,
@@ -265,14 +263,16 @@ class TestDashboardAuth:
         )
         assert response.status_code == status.HTTP_200_OK
 
-    @pytest.mark.parametrize("url", [DASHBOARD_URL, SUBJECTS_URL, FIELD_WORKERS_URL])
+    @pytest.mark.parametrize(
+        "url", [DASHBOARD_URL, ESTABLISHMENT_SUBJECTS_URL, FIELD_WORKERS_URL]
+    )
     async def test_unknown_establishment_returns_404(self, client, admin_headers, url):
         response = await client.get(
             url.format(establishment_id=MISSING_ID), headers=admin_headers
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    @pytest.mark.parametrize("url", [SUBJECTS_URL, FIELD_WORKERS_URL])
+    @pytest.mark.parametrize("url", [ESTABLISHMENT_SUBJECTS_URL, FIELD_WORKERS_URL])
     async def test_listings_forbid_field_workers(
         self, client, field_worker_headers, scenario, url
     ):
@@ -318,7 +318,13 @@ class TestMetrics:
 
     async def test_avg_bmi_matches_latest_measurements(self, body):
         expected = round(
-            (_bmi(20.0, 118.0) + _bmi(17.0, 118.0) + _bmi(10.5, 120.0)) / 3, 2
+            (
+                compute_bmi(20.0, 118.0)
+                + compute_bmi(17.0, 118.0)
+                + compute_bmi(10.5, 120.0)
+            )
+            / 3,
+            2,
         )
         assert body["metrics"]["avg_bmi"] == pytest.approx(expected, abs=0.01)
 
@@ -369,7 +375,9 @@ class TestEmptyEstablishment:
 
     async def test_subject_listing_is_empty(self, client, admin_headers, scenario):
         response = await client.get(
-            SUBJECTS_URL.format(establishment_id=scenario.establishment_empty),
+            ESTABLISHMENT_SUBJECTS_URL.format(
+                establishment_id=scenario.establishment_empty
+            ),
             headers=admin_headers,
         )
         assert response.status_code == status.HTTP_200_OK
@@ -524,7 +532,9 @@ class TestSubjectListing:
     @pytest_asyncio.fixture
     async def body(self, client, admin_headers, scenario):
         response = await client.get(
-            SUBJECTS_URL.format(establishment_id=scenario.establishment_a),
+            ESTABLISHMENT_SUBJECTS_URL.format(
+                establishment_id=scenario.establishment_a
+            ),
             headers=admin_headers,
         )
         assert response.status_code == status.HTTP_200_OK
@@ -583,7 +593,9 @@ class TestSubjectListing:
 
     async def test_search_by_name(self, client, admin_headers, scenario):
         response = await client.get(
-            SUBJECTS_URL.format(establishment_id=scenario.establishment_a),
+            ESTABLISHMENT_SUBJECTS_URL.format(
+                establishment_id=scenario.establishment_a
+            ),
             headers=admin_headers,
             params={"search": "clara"},
         )
@@ -593,7 +605,9 @@ class TestSubjectListing:
 
     async def test_search_by_dni(self, client, admin_headers, scenario):
         response = await client.get(
-            SUBJECTS_URL.format(establishment_id=scenario.establishment_a),
+            ESTABLISHMENT_SUBJECTS_URL.format(
+                establishment_id=scenario.establishment_a
+            ),
             headers=admin_headers,
             params={"search": "20000003"},
         )
@@ -605,7 +619,9 @@ class TestSubjectListing:
         self, client, admin_headers, scenario
     ):
         response = await client.get(
-            SUBJECTS_URL.format(establishment_id=scenario.establishment_a),
+            ESTABLISHMENT_SUBJECTS_URL.format(
+                establishment_id=scenario.establishment_a
+            ),
             headers=admin_headers,
             params={"search": "Elena"},
         )
@@ -628,7 +644,9 @@ class TestSubjectListing:
         self, client, admin_headers, scenario, sort_order
     ):
         response = await client.get(
-            SUBJECTS_URL.format(establishment_id=scenario.establishment_a),
+            ESTABLISHMENT_SUBJECTS_URL.format(
+                establishment_id=scenario.establishment_a
+            ),
             headers=admin_headers,
             params={"sort_order": sort_order},
         )
@@ -637,7 +655,9 @@ class TestSubjectListing:
 
     async def test_name_asc_orders_by_last_name(self, client, admin_headers, scenario):
         response = await client.get(
-            SUBJECTS_URL.format(establishment_id=scenario.establishment_a),
+            ESTABLISHMENT_SUBJECTS_URL.format(
+                establishment_id=scenario.establishment_a
+            ),
             headers=admin_headers,
             params={"sort_order": "name_asc"},
         )
@@ -646,7 +666,9 @@ class TestSubjectListing:
 
     async def test_bmi_desc_orders_by_latest_bmi(self, client, admin_headers, scenario):
         response = await client.get(
-            SUBJECTS_URL.format(establishment_id=scenario.establishment_a),
+            ESTABLISHMENT_SUBJECTS_URL.format(
+                establishment_id=scenario.establishment_a
+            ),
             headers=admin_headers,
             params={"sort_order": "bmi_desc"},
         )
@@ -655,7 +677,9 @@ class TestSubjectListing:
 
     async def test_pagination_slices_the_result(self, client, admin_headers, scenario):
         response = await client.get(
-            SUBJECTS_URL.format(establishment_id=scenario.establishment_a),
+            ESTABLISHMENT_SUBJECTS_URL.format(
+                establishment_id=scenario.establishment_a
+            ),
             headers=admin_headers,
             params={"page": 2, "page_size": 2, "sort_order": "name_asc"},
         )

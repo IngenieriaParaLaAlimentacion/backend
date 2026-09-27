@@ -11,11 +11,11 @@ from tests.integration.admin.conftest import (
     ADMIN_USERS_URL,
     APPROVE_FIELD_WORKER_URL,
     APPROVE_URL,
-    INVITE_ADMIN_URL,
     REGISTER_FIELD_WORKER_URL,
     REJECT_URL,
     _insert_user,
 )
+from tests.integration.urls import INVITE_ADMIN_URL
 
 
 class TestListUsersPagination:

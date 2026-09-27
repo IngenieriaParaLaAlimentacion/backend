@@ -6,8 +6,7 @@ from fastapi import status
 
 from app.core.security import create_access_token
 from app.domain.user import UserRole
-
-MEASUREMENTS_URL = "/api/v1/measurements"
+from tests.integration.urls import MEASUREMENTS_URL
 
 
 @pytest_asyncio.fixture

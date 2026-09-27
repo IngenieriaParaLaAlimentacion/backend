@@ -7,12 +7,10 @@ import pytest
 import pytest_asyncio
 from fastapi import status
 
+from tests.integration.helpers import compute_bmi
+from tests.integration.urls import DASHBOARD_URL
+
 MAP_URL = "/api/v1/establishments/map"
-DASHBOARD_URL = "/api/v1/establishments/{establishment_id}/dashboard"
-
-
-def _bmi(weight_kg: float, height_cm: float) -> float:
-    return weight_kg / (height_cm / 100) ** 2
 
 
 @dataclass
@@ -95,7 +93,7 @@ async def scenario(app) -> Scenario:
             (10.5, 120.0, subject_severe, datetime(2024, 6, 12)),
         ]:
             measured_at = when.replace(tzinfo=timezone.utc)
-            bmi = _bmi(weight, height)
+            bmi = compute_bmi(weight, height)
             measurement = Measurement(
                 subject_id=subject.id,
                 responsible_id=worker.id,
@@ -289,7 +287,7 @@ async def multi_reading_scenario(app) -> MultiReadingScenario:
             (same_subject_elsewhere, severely_wasted, datetime(2024, 6, 1)),
         ]:
             measured_at = when.replace(tzinfo=timezone.utc)
-            bmi = _bmi(weight, height)
+            bmi = compute_bmi(weight, height)
             measurement = Measurement(
                 subject_id=subject.id,
                 responsible_id=worker.id,

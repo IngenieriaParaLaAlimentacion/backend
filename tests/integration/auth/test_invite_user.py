@@ -9,8 +9,8 @@ from app.core.security import create_access_token
 from app.domain.user import UserRole, UserStatus
 from app.exceptions.domain_exceptions import EmailDeliveryError
 from app.models.auth.user import User
+from tests.integration.urls import INVITE_ADMIN_URL
 
-INVITE_ADMIN_URL = "/api/v1/admin/invite-admin"
 INVITE_ANALYST_URL = "/api/v1/admin/invite-analyst"
 RESEND_INVITE_URL = "/api/v1/admin/users/{user_id}/resend-invite"
 

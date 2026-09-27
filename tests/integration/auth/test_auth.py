@@ -8,11 +8,9 @@ import app.db.database as db_module
 from app.domain.user import UserRole
 from app.models.auth.user import User
 from app.models.auth.user_establishment import UserEstablishment
+from tests.integration.urls import LOGIN_URL, LOGOUT_URL, REGISTER_URL
 
-LOGIN_URL = "/api/v1/auth/login"
-LOGOUT_URL = "/api/v1/auth/logout"
 REFRESH_URL = "/api/v1/auth/refresh"
-REGISTER_URL = "/api/v1/auth/register/field-worker"
 
 
 @pytest_asyncio.fixture()

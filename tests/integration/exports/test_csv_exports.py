@@ -13,6 +13,8 @@ import pytest
 import pytest_asyncio
 from fastapi import status
 
+from tests.integration.helpers import compute_bmi
+
 BOM = b"\xef\xbb\xbf"
 
 
@@ -27,11 +29,11 @@ def fixed_export_date(monkeypatch) -> date:
     return fixed_date
 
 
-SUBJECTS_URL = "/api/v1/subjects/export"
-ESTABLISHMENTS_URL = "/api/v1/establishments/export"
-MEASUREMENTS_URL = "/api/v1/measurements/export"
-SURVEYS_URL = "/api/v1/surveys/export"
-ESTABLISHMENT_SUBJECTS_URL = "/api/v1/establishments/{id}/subjects/export"
+SUBJECTS_EXPORT_URL = "/api/v1/subjects/export"
+ESTABLISHMENTS_EXPORT_URL = "/api/v1/establishments/export"
+MEASUREMENTS_EXPORT_URL = "/api/v1/measurements/export"
+SURVEYS_EXPORT_URL = "/api/v1/surveys/export"
+ESTABLISHMENT_SUBJECTS_EXPORT_URL = "/api/v1/establishments/{id}/subjects/export"
 
 
 def _lines(response) -> list[str]:
@@ -47,10 +49,6 @@ def _data_rows(response) -> list[str]:
 def _first_cells(response) -> list[str]:
     """The first column of every data row -- enough to pin ordering."""
     return [row.split(";")[0] for row in _data_rows(response)]
-
-
-def _bmi(weight_kg: float, height_cm: float) -> float:
-    return weight_kg / (height_cm / 100) ** 2
 
 
 @dataclass
@@ -150,7 +148,7 @@ async def scenario(app) -> Scenario:
                     establishment_id=est_rosario.id,
                     weight_kg=18.5,
                     height_cm=105.25,
-                    bmi=_bmi(18.5, 105.25),
+                    bmi=compute_bmi(18.5, 105.25),
                     measured_at=datetime(2026, 3, 14, 10, 30, tzinfo=timezone.utc),
                 ),
                 Measurement(
@@ -159,7 +157,7 @@ async def scenario(app) -> Scenario:
                     establishment_id=est_cordoba.id,
                     weight_kg=22.0,
                     height_cm=112.0,
-                    bmi=_bmi(22.0, 112.0),
+                    bmi=compute_bmi(22.0, 112.0),
                     measured_at=datetime(2026, 4, 1, 10, 0, tzinfo=timezone.utc),
                 ),
             ]
@@ -195,24 +193,24 @@ class TestFileShape:
     """The properties that make the file open cleanly in Excel/Sheets."""
 
     async def test_content_type_is_csv(self, client, admin_headers, scenario):
-        response = await client.get(SUBJECTS_URL, headers=admin_headers)
+        response = await client.get(SUBJECTS_EXPORT_URL, headers=admin_headers)
         assert response.status_code == status.HTTP_200_OK
         assert response.headers["content-type"].startswith("text/csv")
 
     async def test_starts_with_the_utf8_bom(self, client, admin_headers, scenario):
-        response = await client.get(SUBJECTS_URL, headers=admin_headers)
+        response = await client.get(SUBJECTS_EXPORT_URL, headers=admin_headers)
         assert response.content.startswith(BOM)
 
     async def test_accented_names_survive_the_round_trip(
         self, client, admin_headers, scenario
     ):
-        response = await client.get(ESTABLISHMENTS_URL, headers=admin_headers)
+        response = await client.get(ESTABLISHMENTS_EXPORT_URL, headers=admin_headers)
         assert "Comedor La Unión" in response.content.decode("utf-8-sig")
 
     async def test_content_disposition_carries_complete_filename(
         self, client, admin_headers, scenario, fixed_export_date
     ):
-        response = await client.get(SUBJECTS_URL, headers=admin_headers)
+        response = await client.get(SUBJECTS_EXPORT_URL, headers=admin_headers)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.headers["content-disposition"] == (
@@ -220,18 +218,18 @@ class TestFileShape:
         )
 
     async def test_numbers_use_a_decimal_comma(self, client, admin_headers, scenario):
-        response = await client.get(MEASUREMENTS_URL, headers=admin_headers)
+        response = await client.get(MEASUREMENTS_EXPORT_URL, headers=admin_headers)
         # Weight is the first column: 18.5 kg must export as 18,50.
         assert "18,50" in response.content.decode("utf-8-sig")
 
     async def test_dates_use_argentine_order(self, client, admin_headers, scenario):
-        response = await client.get(SUBJECTS_URL, headers=admin_headers)
+        response = await client.get(SUBJECTS_EXPORT_URL, headers=admin_headers)
         assert "14/03/2015" in response.content.decode("utf-8-sig")
 
 
 class TestSubjectsExport:
     async def test_headers_match_the_ui_table(self, client, admin_headers, scenario):
-        response = await client.get(SUBJECTS_URL, headers=admin_headers)
+        response = await client.get(SUBJECTS_EXPORT_URL, headers=admin_headers)
         assert _lines(response)[0] == (
             "Nombre;Documento;Fecha de nacimiento;Último relevamiento"
         )
@@ -239,21 +237,25 @@ class TestSubjectsExport:
     async def test_exports_every_subject_when_unfiltered(
         self, client, admin_headers, scenario
     ):
-        response = await client.get(SUBJECTS_URL, headers=admin_headers)
+        response = await client.get(SUBJECTS_EXPORT_URL, headers=admin_headers)
         assert len(_data_rows(response)) == 3
 
     async def test_respects_a_filter(self, client, admin_headers, scenario):
         response = await client.get(
-            SUBJECTS_URL, params={"sex": "female"}, headers=admin_headers
+            SUBJECTS_EXPORT_URL, params={"sex": "female"}, headers=admin_headers
         )
         assert _first_cells(response) == ["Ana Alvarez"]
 
     async def test_respects_the_sort_order(self, client, admin_headers, scenario):
         ascending = await client.get(
-            SUBJECTS_URL, params={"sort_order": "name_asc"}, headers=admin_headers
+            SUBJECTS_EXPORT_URL,
+            params={"sort_order": "name_asc"},
+            headers=admin_headers,
         )
         descending = await client.get(
-            SUBJECTS_URL, params={"sort_order": "name_desc"}, headers=admin_headers
+            SUBJECTS_EXPORT_URL,
+            params={"sort_order": "name_desc"},
+            headers=admin_headers,
         )
         assert _first_cells(ascending) == list(reversed(_first_cells(descending)))
         assert _first_cells(ascending)[0] == "Ana Alvarez"
@@ -262,7 +264,7 @@ class TestSubjectsExport:
         self, client, admin_headers, scenario
     ):
         response = await client.get(
-            SUBJECTS_URL, params={"search": "Ceferino"}, headers=admin_headers
+            SUBJECTS_EXPORT_URL, params={"search": "Ceferino"}, headers=admin_headers
         )
         assert _data_rows(response) == ["Ceferino Cruz;20000003;01/01/2017;"]
 
@@ -275,7 +277,9 @@ class TestSubjectsExport:
             params={**params, "page_size": 100},
             headers=admin_headers,
         )
-        export = await client.get(SUBJECTS_URL, params=params, headers=admin_headers)
+        export = await client.get(
+            SUBJECTS_EXPORT_URL, params=params, headers=admin_headers
+        )
         expected = [
             f"{item['name']} {item['last_name']}" for item in listing.json()["items"]
         ]
@@ -284,18 +288,18 @@ class TestSubjectsExport:
 
 class TestEstablishmentsExport:
     async def test_headers_match_the_ui_table(self, client, admin_headers, scenario):
-        response = await client.get(ESTABLISHMENTS_URL, headers=admin_headers)
+        response = await client.get(ESTABLISHMENTS_EXPORT_URL, headers=admin_headers)
         assert _lines(response)[0] == "Nombre;Dirección;Ciudad;Provincia"
 
     async def test_respects_a_city_filter(self, client, admin_headers, scenario):
         response = await client.get(
-            ESTABLISHMENTS_URL, params={"city": "Rosario"}, headers=admin_headers
+            ESTABLISHMENTS_EXPORT_URL, params={"city": "Rosario"}, headers=admin_headers
         )
         assert _first_cells(response) == ["Comedor La Unión"]
 
     async def test_respects_the_sort_order(self, client, admin_headers, scenario):
         response = await client.get(
-            ESTABLISHMENTS_URL,
+            ESTABLISHMENTS_EXPORT_URL,
             params={"sort_order": "name_asc"},
             headers=admin_headers,
         )
@@ -304,7 +308,7 @@ class TestEstablishmentsExport:
 
 class TestMeasurementsExport:
     async def test_headers_match_the_ui_table(self, client, admin_headers, scenario):
-        response = await client.get(MEASUREMENTS_URL, headers=admin_headers)
+        response = await client.get(MEASUREMENTS_EXPORT_URL, headers=admin_headers)
         assert _lines(response)[0] == (
             "Peso (kg);Talla (cm);IMC;Fecha;Sujeto;Comedor;Responsable;Alertas"
         )
@@ -312,24 +316,26 @@ class TestMeasurementsExport:
     async def test_exports_every_measurement_when_unfiltered(
         self, client, admin_headers, scenario
     ):
-        response = await client.get(MEASUREMENTS_URL, headers=admin_headers)
+        response = await client.get(MEASUREMENTS_EXPORT_URL, headers=admin_headers)
         assert len(_data_rows(response)) == 2
 
     async def test_respects_a_province_filter(self, client, admin_headers, scenario):
         response = await client.get(
-            MEASUREMENTS_URL, params={"province": "Santa Fe"}, headers=admin_headers
+            MEASUREMENTS_EXPORT_URL,
+            params={"province": "Santa Fe"},
+            headers=admin_headers,
         )
         assert len(_data_rows(response)) == 1
         assert "Comedor La Unión" in _data_rows(response)[0]
 
     async def test_respects_the_sort_order(self, client, admin_headers, scenario):
         ascending = await client.get(
-            MEASUREMENTS_URL,
+            MEASUREMENTS_EXPORT_URL,
             params={"sort_order": "weight_asc"},
             headers=admin_headers,
         )
         descending = await client.get(
-            MEASUREMENTS_URL,
+            MEASUREMENTS_EXPORT_URL,
             params={"sort_order": "weight_desc"},
             headers=admin_headers,
         )
@@ -340,7 +346,7 @@ class TestMeasurementsExport:
         self, client, admin_headers, scenario
     ):
         response = await client.get(
-            MEASUREMENTS_URL,
+            MEASUREMENTS_EXPORT_URL,
             params={"measured_from": "2026-06-01", "measured_to": "2026-01-01"},
             headers=admin_headers,
         )
@@ -349,7 +355,7 @@ class TestMeasurementsExport:
 
 class TestSurveysExport:
     async def test_headers_match_the_ui_table(self, client, admin_headers, scenario):
-        response = await client.get(SURVEYS_URL, headers=admin_headers)
+        response = await client.get(SURVEYS_EXPORT_URL, headers=admin_headers)
         assert _lines(response)[0] == (
             "Nombre;Alcance;Estado;Cantidad de preguntas;Fecha de creación"
         )
@@ -357,12 +363,12 @@ class TestSurveysExport:
     async def test_exports_every_survey_when_unfiltered(
         self, client, admin_headers, scenario
     ):
-        response = await client.get(SURVEYS_URL, headers=admin_headers)
+        response = await client.get(SURVEYS_EXPORT_URL, headers=admin_headers)
         assert len(_data_rows(response)) == 2
 
     async def test_respects_an_is_active_filter(self, client, admin_headers, scenario):
         response = await client.get(
-            SURVEYS_URL, params={"is_active": "true"}, headers=admin_headers
+            SURVEYS_EXPORT_URL, params={"is_active": "true"}, headers=admin_headers
         )
         assert _first_cells(response) == ["FIES 2026"]
 
@@ -370,14 +376,14 @@ class TestSurveysExport:
         self, client, admin_headers, scenario
     ):
         response = await client.get(
-            SURVEYS_URL, params={"is_active": "true"}, headers=admin_headers
+            SURVEYS_EXPORT_URL, params={"is_active": "true"}, headers=admin_headers
         )
         assert _data_rows(response)[0].startswith("FIES 2026;Sujeto;Activa;0;")
 
 
 class TestEstablishmentSubjectsExport:
     def _url(self, establishment_id) -> str:
-        return ESTABLISHMENT_SUBJECTS_URL.format(id=establishment_id)
+        return ESTABLISHMENT_SUBJECTS_EXPORT_URL.format(id=establishment_id)
 
     async def test_headers_match_the_ui_table(self, client, admin_headers, scenario):
         response = await client.get(
@@ -414,10 +420,10 @@ class TestEmptyResult:
     @pytest.mark.parametrize(
         "url,params",
         [
-            (SUBJECTS_URL, {"search": "nadie-existe"}),
-            (ESTABLISHMENTS_URL, {"city": "Narnia"}),
-            (MEASUREMENTS_URL, {"province": "Narnia"}),
-            (SURVEYS_URL, {"search": "no-existe"}),
+            (SUBJECTS_EXPORT_URL, {"search": "nadie-existe"}),
+            (ESTABLISHMENTS_EXPORT_URL, {"city": "Narnia"}),
+            (MEASUREMENTS_EXPORT_URL, {"province": "Narnia"}),
+            (SURVEYS_EXPORT_URL, {"search": "no-existe"}),
         ],
     )
     async def test_returns_200_with_only_the_header_line(
@@ -455,12 +461,17 @@ class TestUnpaginated:
             )
             await session.commit()
 
-        response = await client.get(SUBJECTS_URL, headers=admin_headers)
+        response = await client.get(SUBJECTS_EXPORT_URL, headers=admin_headers)
         assert len(_data_rows(response)) == 150
 
 
 class TestAuthorization:
-    ALL_URLS = [SUBJECTS_URL, ESTABLISHMENTS_URL, MEASUREMENTS_URL, SURVEYS_URL]
+    ALL_URLS = [
+        SUBJECTS_EXPORT_URL,
+        ESTABLISHMENTS_EXPORT_URL,
+        MEASUREMENTS_EXPORT_URL,
+        SURVEYS_EXPORT_URL,
+    ]
 
     @pytest.mark.parametrize("url", ALL_URLS)
     async def test_analyst_is_allowed(self, client, analyst_headers, scenario, url):
@@ -485,14 +496,14 @@ class TestAuthorization:
         # GET /establishments is public; exporting the whole catalogue is not.
         listing = await client.get("/api/v1/establishments")
         assert listing.status_code == status.HTTP_200_OK
-        export = await client.get(ESTABLISHMENTS_URL)
+        export = await client.get(ESTABLISHMENTS_EXPORT_URL)
         assert export.status_code == status.HTTP_401_UNAUTHORIZED
 
     async def test_establishment_subjects_export_forbids_field_workers(
         self, client, field_worker_headers, scenario
     ):
         response = await client.get(
-            ESTABLISHMENT_SUBJECTS_URL.format(id=scenario.establishment_rosario),
+            ESTABLISHMENT_SUBJECTS_EXPORT_URL.format(id=scenario.establishment_rosario),
             headers=field_worker_headers,
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -502,14 +513,14 @@ class TestStreamingContract:
     """Properties that only exist because the export streams."""
 
     async def test_declares_the_row_count(self, client, admin_headers, scenario):
-        response = await client.get(SUBJECTS_URL, headers=admin_headers)
+        response = await client.get(SUBJECTS_EXPORT_URL, headers=admin_headers)
 
         assert response.headers["x-export-row-count"] == "3"
         assert len(_data_rows(response)) == 3
 
     async def test_row_count_tracks_the_filter(self, client, admin_headers, scenario):
         response = await client.get(
-            SUBJECTS_URL, params={"sex": "female"}, headers=admin_headers
+            SUBJECTS_EXPORT_URL, params={"sex": "female"}, headers=admin_headers
         )
 
         assert response.headers["x-export-row-count"] == "1"
@@ -519,14 +530,14 @@ class TestStreamingContract:
         self, client, admin_headers, scenario
     ):
         response = await client.get(
-            SUBJECTS_URL, params={"search": "nadie"}, headers=admin_headers
+            SUBJECTS_EXPORT_URL, params={"search": "nadie"}, headers=admin_headers
         )
 
         assert response.headers["x-export-row-count"] == "0"
         assert _data_rows(response) == []
 
     async def test_is_chunked_not_content_length(self, client, admin_headers, scenario):
-        response = await client.get(SUBJECTS_URL, headers=admin_headers)
+        response = await client.get(SUBJECTS_EXPORT_URL, headers=admin_headers)
         # A streamed body has no up-front length; that is what lets an abrupt
         # close be detectable as truncation.
         assert "content-length" not in response.headers
@@ -557,7 +568,7 @@ class TestStreamingContract:
             )
             await session.commit()
 
-        response = await client.get(SUBJECTS_URL, headers=admin_headers)
+        response = await client.get(SUBJECTS_EXPORT_URL, headers=admin_headers)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.headers["x-export-row-count"] == "2500"
@@ -568,7 +579,12 @@ class TestStreamingContract:
     ):
         # The header is only useful if it can be compared to parsed lines, which
         # requires that no cell ever carries a newline.
-        for url in (SUBJECTS_URL, ESTABLISHMENTS_URL, MEASUREMENTS_URL, SURVEYS_URL):
+        for url in (
+            SUBJECTS_EXPORT_URL,
+            ESTABLISHMENTS_EXPORT_URL,
+            MEASUREMENTS_EXPORT_URL,
+            SURVEYS_EXPORT_URL,
+        ):
             response = await client.get(url, headers=admin_headers)
             declared = int(response.headers["x-export-row-count"])
             assert len(_data_rows(response)) == declared, url
@@ -579,7 +595,8 @@ class TestPreflightOrdering:
 
     async def test_unknown_establishment_is_a_real_404(self, client, admin_headers):
         response = await client.get(
-            ESTABLISHMENT_SUBJECTS_URL.format(id=uuid.uuid4()), headers=admin_headers
+            ESTABLISHMENT_SUBJECTS_EXPORT_URL.format(id=uuid.uuid4()),
+            headers=admin_headers,
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -588,7 +605,7 @@ class TestPreflightOrdering:
 
     async def test_inverted_range_is_a_real_400(self, client, admin_headers, scenario):
         response = await client.get(
-            MEASUREMENTS_URL,
+            MEASUREMENTS_EXPORT_URL,
             params={"measured_from": "2026-06-01", "measured_to": "2026-01-01"},
             headers=admin_headers,
         )
@@ -599,7 +616,7 @@ class TestPreflightOrdering:
     async def test_forbidden_is_a_real_403(
         self, client, field_worker_headers, scenario
     ):
-        response = await client.get(SUBJECTS_URL, headers=field_worker_headers)
+        response = await client.get(SUBJECTS_EXPORT_URL, headers=field_worker_headers)
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.headers["content-type"].startswith("application/problem+json")
@@ -633,4 +650,4 @@ class TestMidStreamFailure:
         monkeypatch.setattr(CsvExporter, "stream", exploding)
 
         with pytest.raises(RuntimeError, match="boom mid-stream"):
-            await client.get(SUBJECTS_URL, headers=admin_headers)
+            await client.get(SUBJECTS_EXPORT_URL, headers=admin_headers)
