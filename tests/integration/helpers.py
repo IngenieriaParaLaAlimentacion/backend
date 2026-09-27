@@ -3,7 +3,7 @@
 from tests.integration.urls import SURVEYS_URL
 
 
-def compute_bmi(weight_kg: float, height_cm: float) -> float:
+def bmi_for(weight_kg: float, height_cm: float) -> float:
     """Body mass index for the given weight and height."""
     return weight_kg / (height_cm / 100) ** 2
 

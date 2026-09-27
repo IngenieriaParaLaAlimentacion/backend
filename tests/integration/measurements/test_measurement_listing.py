@@ -5,7 +5,7 @@ from datetime import date, datetime, timezone
 import pytest_asyncio
 from fastapi import status
 
-from tests.integration.helpers import compute_bmi
+from tests.integration.helpers import bmi_for
 
 LISTING_URL = "/api/v1/measurements"
 EVOLUTION_URL = "/api/v1/subjects/{subject_id}/measurements/evolution"
@@ -112,7 +112,7 @@ async def scenario(app) -> Scenario:
             establishment_id=est_a.id,
             weight_kg=20.0,
             height_cm=110.0,
-            bmi=compute_bmi(20.0, 110.0),
+            bmi=bmi_for(20.0, 110.0),
             measured_at=datetime(2024, 1, 1, 10, 0, tzinfo=timezone.utc),
         )
         m_old_late = Measurement(
@@ -121,7 +121,7 @@ async def scenario(app) -> Scenario:
             establishment_id=est_a.id,
             weight_kg=22.0,
             height_cm=112.0,
-            bmi=compute_bmi(22.0, 112.0),
+            bmi=bmi_for(22.0, 112.0),
             measured_at=datetime(2024, 6, 1, 10, 0, tzinfo=timezone.utc),
         )
         m_young = Measurement(
@@ -130,7 +130,7 @@ async def scenario(app) -> Scenario:
             establishment_id=est_b.id,
             weight_kg=14.0,
             height_cm=95.0,
-            bmi=compute_bmi(14.0, 95.0),
+            bmi=bmi_for(14.0, 95.0),
             measured_at=datetime(2025, 3, 1, 10, 0, tzinfo=timezone.utc),
         )
         session.add_all([m_old_early, m_old_late, m_young])
@@ -214,7 +214,7 @@ class TestListingBmiRounding:
         )
         bmi = response.json()["items"][0]["bmi"]
         # raw 14 / (0.95**2) = 15.5124... -> 15.51
-        assert bmi == round(compute_bmi(14.0, 95.0), 2)
+        assert bmi == round(bmi_for(14.0, 95.0), 2)
         assert bmi == 15.51
 
 

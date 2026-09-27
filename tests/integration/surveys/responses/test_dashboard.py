@@ -97,14 +97,6 @@ class TestGetDashboardDetail:
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    async def test_response_not_found_returns_404(self, client, admin_user):
-        headers, _ = admin_user
-        response = await client.get(
-            responses_url(uuid.uuid4()),
-            headers=headers,
-        )
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-
 
 class TestFiesScoring:
     @staticmethod

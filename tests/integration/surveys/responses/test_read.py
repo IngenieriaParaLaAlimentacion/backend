@@ -20,7 +20,10 @@ class TestGetResponse:
 
     async def test_missing_response_returns_404(self, client, admin_user):
         headers, _ = admin_user
-        response = await client.get(responses_url(uuid.uuid4()), headers=headers)
+        survey = await _create_survey(client, headers)
+        response = await client.get(
+            responses_url(survey["id"], uuid.uuid4()), headers=headers
+        )
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     async def test_owner_field_worker_can_view_own_response(

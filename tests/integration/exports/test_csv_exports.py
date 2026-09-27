@@ -13,7 +13,7 @@ import pytest
 import pytest_asyncio
 from fastapi import status
 
-from tests.integration.helpers import compute_bmi
+from tests.integration.helpers import bmi_for
 
 BOM = b"\xef\xbb\xbf"
 
@@ -148,7 +148,7 @@ async def scenario(app) -> Scenario:
                     establishment_id=est_rosario.id,
                     weight_kg=18.5,
                     height_cm=105.25,
-                    bmi=compute_bmi(18.5, 105.25),
+                    bmi=bmi_for(18.5, 105.25),
                     measured_at=datetime(2026, 3, 14, 10, 30, tzinfo=timezone.utc),
                 ),
                 Measurement(
@@ -157,7 +157,7 @@ async def scenario(app) -> Scenario:
                     establishment_id=est_cordoba.id,
                     weight_kg=22.0,
                     height_cm=112.0,
-                    bmi=compute_bmi(22.0, 112.0),
+                    bmi=bmi_for(22.0, 112.0),
                     measured_at=datetime(2026, 4, 1, 10, 0, tzinfo=timezone.utc),
                 ),
             ]

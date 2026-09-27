@@ -7,7 +7,7 @@ import pytest
 import pytest_asyncio
 from fastapi import status
 
-from tests.integration.helpers import compute_bmi
+from tests.integration.helpers import bmi_for
 from tests.integration.urls import DASHBOARD_URL
 
 ESTABLISHMENT_SUBJECTS_URL = "/api/v1/establishments/{establishment_id}/subjects"
@@ -142,7 +142,7 @@ async def scenario(app) -> Scenario:
         )
 
         def _measure(subject, establishment, responsible, weight, height, measured_at):
-            bmi = compute_bmi(weight, height)
+            bmi = bmi_for(weight, height)
             measurement = Measurement(
                 subject_id=subject.id,
                 responsible_id=responsible.id,
@@ -318,12 +318,7 @@ class TestMetrics:
 
     async def test_avg_bmi_matches_latest_measurements(self, body):
         expected = round(
-            (
-                compute_bmi(20.0, 118.0)
-                + compute_bmi(17.0, 118.0)
-                + compute_bmi(10.5, 120.0)
-            )
-            / 3,
+            (bmi_for(20.0, 118.0) + bmi_for(17.0, 118.0) + bmi_for(10.5, 120.0)) / 3,
             2,
         )
         assert body["metrics"]["avg_bmi"] == pytest.approx(expected, abs=0.01)
