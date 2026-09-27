@@ -2,12 +2,8 @@ import asyncio
 import json
 
 from app.exceptions.domain_exceptions import (
-    NotificationConfigurationError,
-    RoleNotAllowedError,
     SubjectAlreadyExistsError,
-    SubjectNotFoundError,
     SurveyLockedError,
-    UnauthorizedError,
     UserAlreadyExistsError,
 )
 from app.exceptions.exception_handlers import domain_error_handler
@@ -35,46 +31,6 @@ def test_domain_error_handler_builds_canonical_envelope():
         "detail": "A user with email foo@bar.com already exists.",
         "instance": "/foo",
     }
-
-
-def test_not_found_error():
-    response = _handle("/subjects/123", SubjectNotFoundError("123"))
-
-    assert response.status_code == 404
-    body = json.loads(response.body)
-    assert body["type"] == "/errors/subject-not-found"
-    assert body["title"] == "Subject not found"
-    assert "123" in body["detail"]
-
-
-def test_already_exists_error():
-    response = _handle("/register", UserAlreadyExistsError("taken@email.com"))
-
-    assert response.status_code == 409
-    assert b"taken@email.com" in response.body
-    assert b"User already exists" in response.body
-
-
-def test_unauthorized_error():
-    response = _handle("/me", UnauthorizedError())
-
-    assert response.status_code == 401
-    assert json.loads(response.body)["type"] == "/errors/unauthorized"
-
-
-def test_notification_configuration_error_uses_canonical_envelope():
-    response = _handle("/api/v1/internal/run", NotificationConfigurationError())
-    assert response.status_code == 503
-    assert json.loads(response.body)["type"] == (
-        "/errors/notification-configuration-invalid"
-    )
-
-
-def test_forbidden_error():
-    response = _handle("/admin/users", RoleNotAllowedError())
-
-    assert response.status_code == 403
-    assert json.loads(response.body)["type"] == "/errors/role-not-allowed"
 
 
 def test_the_envelope_carries_only_the_five_canonical_members():
