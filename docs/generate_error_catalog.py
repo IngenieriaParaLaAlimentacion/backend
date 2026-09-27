@@ -1,7 +1,7 @@
 """Generate the public error catalog from the exception registry.
 
 Run: env -u VIRTUAL_ENV poetry run python docs/generate_error_catalog.py
-Drift is guarded by tests/unit/test_error_catalog_is_current.py.
+Drift is guarded by tests/unit/core/test_error_catalog_is_current.py.
 """
 
 import inspect
