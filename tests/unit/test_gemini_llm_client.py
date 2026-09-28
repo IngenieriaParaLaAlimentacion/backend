@@ -83,3 +83,62 @@ async def test_exhausts_retries_and_raises_llm_client_error():
         await client.complete(prompt="p", response_schema={})
 
     assert client._client.aio.models.generate_content.await_count == 3
+
+
+@pytest.mark.asyncio
+async def test_falls_back_to_secondary_model_once_primary_is_exhausted(monkeypatch):
+    monkeypatch.setattr(settings, "gemini_fallback_model", "fallback-model")
+    monkeypatch.setattr(settings, "gemini_fallback_max_attempts", 2)
+    client = _client(
+        side_effect=[
+            _server_error(),
+            _server_error(),
+            _server_error(),
+            _response({"ok": True}),
+        ]
+    )
+
+    result = await client.complete(prompt="p", response_schema={})
+
+    assert result == {"ok": True}
+    calls = client._client.aio.models.generate_content.await_args_list
+    assert [call.kwargs["model"] for call in calls] == [
+        settings.gemini_model,
+        settings.gemini_model,
+        settings.gemini_model,
+        "fallback-model",
+    ]
+
+
+@pytest.mark.asyncio
+async def test_no_fallback_configured_raises_once_primary_is_exhausted():
+    assert settings.gemini_fallback_model is None
+    client = _client(side_effect=[_server_error(), _server_error(), _server_error()])
+
+    with pytest.raises(LlmClientError):
+        await client.complete(prompt="p", response_schema={})
+
+    assert client._client.aio.models.generate_content.await_count == 3
+
+
+@pytest.mark.asyncio
+async def test_permanent_error_on_primary_skips_the_fallback_model(monkeypatch):
+    monkeypatch.setattr(settings, "gemini_fallback_model", "fallback-model")
+    client = _client(side_effect=[_client_error(400)])
+
+    with pytest.raises(LlmClientError):
+        await client.complete(prompt="p", response_schema={})
+
+    assert client._client.aio.models.generate_content.await_count == 1
+
+
+@pytest.mark.asyncio
+async def test_raises_once_both_primary_and_fallback_are_exhausted(monkeypatch):
+    monkeypatch.setattr(settings, "gemini_fallback_model", "fallback-model")
+    monkeypatch.setattr(settings, "gemini_fallback_max_attempts", 2)
+    client = _client(side_effect=[_server_error()] * 5)
+
+    with pytest.raises(LlmClientError):
+        await client.complete(prompt="p", response_schema={})
+
+    assert client._client.aio.models.generate_content.await_count == 5
