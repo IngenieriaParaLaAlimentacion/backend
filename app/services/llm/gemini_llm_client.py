@@ -19,13 +19,6 @@ from app.exceptions.domain_exceptions import LlmClientError
 
 logger = structlog.get_logger()
 
-# Total attempts (first call + retries) for a transient Gemini failure.
-_MAX_ATTEMPTS = 3
-# Exponential backoff with jitter between attempts, capped so the worst case
-# (2 retries) stays well under a mobile client's request timeout.
-_BACKOFF_INITIAL_SECONDS = 1
-_BACKOFF_MAX_SECONDS = 8
-
 
 def _log_retry(retry_state: RetryCallState) -> None:
     """Log a Gemini call attempt that failed and will be retried."""
@@ -79,9 +72,10 @@ class GeminiLlmClient(ILlmClient):
         )
         try:
             async for attempt in AsyncRetrying(
-                stop=stop_after_attempt(_MAX_ATTEMPTS),
+                stop=stop_after_attempt(settings.gemini_max_attempts),
                 wait=wait_exponential_jitter(
-                    initial=_BACKOFF_INITIAL_SECONDS, max=_BACKOFF_MAX_SECONDS
+                    initial=settings.gemini_retry_backoff_initial_seconds,
+                    max=settings.gemini_retry_backoff_max_seconds,
                 ),
                 retry=retry_if_exception(self._is_retryable),
                 before_sleep=_log_retry,

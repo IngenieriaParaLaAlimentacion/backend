@@ -95,6 +95,10 @@ class Settings(BaseSettings):
     # LLM
     gemini_api_key: Optional[str] = None
     gemini_model: str = "gemini-3.6-flash"
+    # Total attempts (first call + retries)
+    gemini_max_attempts: int = 3
+    gemini_retry_backoff_initial_seconds: float = 1
+    gemini_retry_backoff_max_seconds: float = 8
     # Stale-establishment notifications
     fcm_project_id: str | None = None
     fcm_client_email: str | None = None

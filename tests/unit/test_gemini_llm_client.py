@@ -5,16 +5,16 @@ from unittest.mock import AsyncMock, Mock
 import pytest
 from google.genai.errors import ClientError, ServerError
 
+from app.config.settings import settings
 from app.exceptions.domain_exceptions import LlmClientError
-from app.services.llm import gemini_llm_client
 from app.services.llm.gemini_llm_client import GeminiLlmClient
 
 
 @pytest.fixture(autouse=True)
 def _fast_retries(monkeypatch):
     """Zero out the backoff so retry tests don't sleep for real."""
-    monkeypatch.setattr(gemini_llm_client, "_BACKOFF_INITIAL_SECONDS", 0)
-    monkeypatch.setattr(gemini_llm_client, "_BACKOFF_MAX_SECONDS", 0)
+    monkeypatch.setattr(settings, "gemini_retry_backoff_initial_seconds", 0)
+    monkeypatch.setattr(settings, "gemini_retry_backoff_max_seconds", 0)
 
 
 def _client(side_effect) -> GeminiLlmClient:
