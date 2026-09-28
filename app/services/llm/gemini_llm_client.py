@@ -4,13 +4,37 @@ from typing import Any
 import structlog
 from google import genai
 from google.genai import types
-from google.genai.errors import APIError
+from google.genai.errors import APIError, ClientError, ServerError
+from tenacity import (
+    AsyncRetrying,
+    RetryCallState,
+    retry_if_exception,
+    stop_after_attempt,
+    wait_exponential_jitter,
+)
 
 from app.config.settings import settings
 from app.core.interfaces.llm_client import ILlmClient
 from app.exceptions.domain_exceptions import LlmClientError
 
 logger = structlog.get_logger()
+
+# Total attempts (first call + retries) for a transient Gemini failure.
+_MAX_ATTEMPTS = 3
+# Exponential backoff with jitter between attempts, capped so the worst case
+# (2 retries) stays well under a mobile client's request timeout.
+_BACKOFF_INITIAL_SECONDS = 1
+_BACKOFF_MAX_SECONDS = 8
+
+
+def _log_retry(retry_state: RetryCallState) -> None:
+    """Log a Gemini call attempt that failed and will be retried."""
+    exc = retry_state.outcome.exception() if retry_state.outcome else None
+    logger.warning(
+        "gemini_llm_call_retrying",
+        attempt=retry_state.attempt_number,
+        error=str(exc),
+    )
 
 
 class GeminiLlmClient(ILlmClient):
@@ -23,6 +47,18 @@ class GeminiLlmClient(ILlmClient):
 
     def __init__(self) -> None:
         self._client = genai.Client(api_key=settings.gemini_api_key)
+
+    @staticmethod
+    def _is_retryable(exc: APIError) -> bool:
+        """Return whether ``exc`` is a transient Gemini failure worth retrying.
+
+        Server errors (5xx) and rate limiting (429) are retried; any other
+        client error (bad request, auth, not found) is not, since retrying it
+        would just delay the same failure.
+        """
+        if isinstance(exc, ServerError):
+            return True
+        return isinstance(exc, ClientError) and exc.code == 429
 
     async def complete(
         self,
@@ -42,14 +78,24 @@ class GeminiLlmClient(ILlmClient):
             "gemini_llm_call", model=settings.gemini_model, has_image=image is not None
         )
         try:
-            response = await self._client.aio.models.generate_content(
-                model=settings.gemini_model,
-                contents=contents,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    response_schema=response_schema,
+            async for attempt in AsyncRetrying(
+                stop=stop_after_attempt(_MAX_ATTEMPTS),
+                wait=wait_exponential_jitter(
+                    initial=_BACKOFF_INITIAL_SECONDS, max=_BACKOFF_MAX_SECONDS
                 ),
-            )
+                retry=retry_if_exception(self._is_retryable),
+                before_sleep=_log_retry,
+                reraise=True,
+            ):
+                with attempt:
+                    response = await self._client.aio.models.generate_content(
+                        model=settings.gemini_model,
+                        contents=contents,
+                        config=types.GenerateContentConfig(
+                            response_mime_type="application/json",
+                            response_schema=response_schema,
+                        ),
+                    )
         except APIError as exc:
             logger.warning("gemini_llm_call_failed", error=str(exc))
             raise LlmClientError(str(exc)) from exc
