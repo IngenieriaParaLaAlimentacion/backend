@@ -55,15 +55,15 @@ class GeminiLlmClient(ILlmClient):
     def _is_retryable(exc: Exception) -> bool:
         """Return whether ``exc`` is a transient Gemini failure worth retrying.
 
-        Server errors (5xx), rate limiting (429), and raw transport failures
-        (connection reset, socket timeout) are retried; any other client
-        error (bad request, auth, not found) is not, since retrying it would
-        just delay the same failure.
+        Server errors (5xx), request timeouts (408), rate limiting (429), and
+        raw transport failures (connection reset, socket timeout) are
+        retried; any other client error (bad request, auth, not found) is
+        not, since retrying it would just delay the same failure.
         """
         if isinstance(exc, ServerError):
             return True
         if isinstance(exc, ClientError):
-            return exc.code == 429
+            return exc.code in (408, 429)
         return isinstance(exc, _TRANSIENT_TRANSPORT_ERRORS)
 
     async def complete(

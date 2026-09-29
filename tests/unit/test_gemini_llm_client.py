@@ -47,12 +47,13 @@ def _client_error(code: int) -> ClientError:
     [
         _server_error(500),
         _server_error(503),
+        _client_error(408),
         _client_error(429),
         httpx.ConnectError("connection refused"),
         httpx.TimeoutException("timed out"),
     ],
 )
-def test_is_retryable_classifies_5xx_429_and_transport_errors_as_transient(exc):
+def test_is_retryable_classifies_5xx_408_429_and_transport_errors_as_transient(exc):
     assert GeminiLlmClient._is_retryable(exc) is True
 
 
