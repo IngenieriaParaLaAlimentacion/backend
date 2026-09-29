@@ -75,7 +75,7 @@ poetry run pytest --cov=app
 
 # Run a specific file or test
 poetry run pytest tests/unit/core/test_config.py
-poetry run pytest tests/unit/core/test_config.py::test_settings_defaults
+poetry run pytest tests/unit/core/test_config.py::test_build_database_url_from_parts
 ```
 
 ---
