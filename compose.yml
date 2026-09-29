@@ -11,11 +11,14 @@ services:
       - .env
     environment:
       - DATABASE_HOST=postgres   # ← sobreescribe el .env dentro del contenedor
+      - RATE_LIMIT_REDIS_URL=redis://redis:6379/0
     networks:
       - backend-net
 
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   postgres:
@@ -39,8 +42,26 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7.4-alpine
+    container_name: redis
+
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - backend-net
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   db-data:
+  redis-data:
 
 networks:
   backend-net:

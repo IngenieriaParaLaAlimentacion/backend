@@ -106,6 +106,18 @@ class Settings(BaseSettings):
     # retryable failure. Unset disables the fallback.
     gemini_fallback_model: Optional[str] = None
     gemini_fallback_max_attempts: int = Field(default=2, ge=1)
+
+    # Rate limiting - each limit is "<count>/<period>", e.g. "5/minute".
+    rate_limit_redis_url: str = "redis://localhost:6379/0"
+    rate_limit_redis_connect_timeout_seconds: float = 0.5
+    rate_limit_redis_socket_timeout_seconds: float = 0.5
+    rate_limit_login_email: str = "5/minute"
+    rate_limit_login_ip: str = "20/minute"
+    rate_limit_mail_sending_email: str = "3/hour"
+    rate_limit_mail_sending_ip: str = "10/hour"
+    rate_limit_token_ip: str = "20/minute"
+    rate_limit_register_ip: str = "5/hour"
+
     # Stale-establishment notifications
     fcm_project_id: str | None = None
     fcm_client_email: str | None = None
