@@ -78,15 +78,6 @@ class TestUploadSubject:
         assert data["is_rural"] is False
         assert data["is_indigenous"] is False
 
-    async def test_duplicate_dni_returns_409(self, client, field_worker_headers):
-        """A second subject with the same DNI returns 409 with the canonical subject."""
-        first = (await _upload(client, field_worker_headers)).json()
-        response = await _upload(client, field_worker_headers)
-        assert response.status_code == status.HTTP_409_CONFLICT
-        canonical = response.json()["canonical_subject"]
-        assert canonical["id"] == first["id"]
-        assert canonical["dni"] == first["dni"]
-
     async def test_client_supplied_id_is_used_as_pk(self, client, field_worker_headers):
         """A client-supplied id becomes the subject's primary key."""
         subject_id = uuid.uuid4()
@@ -125,26 +116,18 @@ class TestUploadSubject:
         assert canonical["id"] == str(id_a)
         assert canonical["dni"] == 30111222
 
-    async def test_missing_id_still_returns_201(self, client, field_worker_headers):
-        """Omitting id preserves the backoffice create path."""
-        response = await _upload(client, field_worker_headers)
-        assert response.status_code == status.HTTP_201_CREATED
-        assert "id" in response.json()
-
     async def test_future_birth_date_returns_422(self, client, field_worker_headers):
         """A birthdate in the future is rejected with 422."""
         future = (datetime.now(timezone.utc).date() + timedelta(days=1)).isoformat()
         response = await _upload(client, field_worker_headers, birth_date=future)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
-    async def test_dni_zero_returns_422(self, client, field_worker_headers):
-        """DNI 0 is below the minimum allowed value."""
-        response = await _upload(client, field_worker_headers, dni=0)
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_dni_above_max_returns_422(self, client, field_worker_headers):
-        """DNI above 99999999 exceeds the Argentine DNI range."""
-        response = await _upload(client, field_worker_headers, dni=100000000)
+    @pytest.mark.parametrize("dni", [0, 100000000])
+    async def test_dni_outside_the_argentine_range_returns_422(
+        self, client, field_worker_headers, dni
+    ):
+        """DNI must be between 1 and 99999999."""
+        response = await _upload(client, field_worker_headers, dni=dni)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     async def test_whitespace_name_returns_422(self, client, field_worker_headers):

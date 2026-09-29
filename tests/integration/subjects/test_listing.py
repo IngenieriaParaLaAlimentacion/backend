@@ -1,6 +1,7 @@
 import uuid
 from datetime import date, datetime, timezone
 
+import pytest
 import pytest_asyncio
 from fastapi import status
 
@@ -78,15 +79,7 @@ class TestGetSubjectsPaginated:
         assert data["page"] == 1
         assert data["page_size"] == 2
         assert data["total_pages"] == 3
-
-    async def test_page_size_limits_results(self, client, field_worker_headers):
-        """page_size controls how many items are returned."""
-        for i in range(5):
-            await _upload(client, field_worker_headers, dni=10000000 + i)
-        response = await client.get(
-            f"{SUBJECTS_URL}?page_size=3", headers=field_worker_headers
-        )
-        assert len(response.json()["items"]) == 3
+        assert len(data["items"]) == 2
 
     async def test_second_page_returns_different_items(
         self, client, field_worker_headers
@@ -115,28 +108,13 @@ class TestGetSubjectsPaginated:
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["items"] == []
 
-    async def test_invalid_page_returns_422(self, client, field_worker_headers):
-        """page=0 is invalid, minimum is 1."""
-        response = await client.get(
-            f"{SUBJECTS_URL}?page=0", headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_invalid_page_size_zero_returns_422(
-        self, client, field_worker_headers
+    @pytest.mark.parametrize("query", ["page=0", "page_size=0", "page_size=101"])
+    async def test_out_of_range_paging_returns_422(
+        self, client, field_worker_headers, query
     ):
-        """page_size=0 is invalid, minimum is 1."""
+        """page and page_size must be at least 1, and page_size at most 100."""
         response = await client.get(
-            f"{SUBJECTS_URL}?page_size=0", headers=field_worker_headers
-        )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_invalid_page_size_above_max_returns_422(
-        self, client, field_worker_headers
-    ):
-        """page_size=101 exceeds the maximum of 100."""
-        response = await client.get(
-            f"{SUBJECTS_URL}?page_size=101", headers=field_worker_headers
+            f"{SUBJECTS_URL}?{query}", headers=field_worker_headers
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
@@ -607,57 +585,23 @@ class TestGetSubjectsPaginatedSortOrder:
         names = [item["name"] for item in response.json()["items"]]
         assert names == ["Beatriz", "Ana", "Carlos"]
 
-    async def test_created_at_desc_explicit(
-        self, client, field_worker_headers, three_ordered_subjects
+    @pytest.mark.parametrize(
+        ("sort_order", "expected"),
+        [
+            (SubjectSortOrder.CREATED_AT_DESC, ["Beatriz", "Ana", "Carlos"]),
+            (SubjectSortOrder.CREATED_AT_ASC, ["Carlos", "Ana", "Beatriz"]),
+            (SubjectSortOrder.NAME_ASC, ["Ana", "Beatriz", "Carlos"]),
+            (SubjectSortOrder.NAME_DESC, ["Carlos", "Beatriz", "Ana"]),
+            # Oldest-born first is also how a frontend sorts by age descending.
+            (SubjectSortOrder.BIRTH_DATE_ASC, ["Ana", "Carlos", "Beatriz"]),
+            (SubjectSortOrder.BIRTH_DATE_DESC, ["Beatriz", "Carlos", "Ana"]),
+        ],
+    )
+    async def test_explicit_sort_order(
+        self, client, field_worker_headers, three_ordered_subjects, sort_order, expected
     ):
-        """The default behavior is also reachable as an explicit query value."""
-        names = await self._names(
-            client, field_worker_headers, SubjectSortOrder.CREATED_AT_DESC
-        )
-        assert names == ["Beatriz", "Ana", "Carlos"]
-
-    async def test_created_at_asc(
-        self, client, field_worker_headers, three_ordered_subjects
-    ):
-        """Oldest-created-first is the reverse of the default order."""
-        names = await self._names(
-            client, field_worker_headers, SubjectSortOrder.CREATED_AT_ASC
-        )
-        assert names == ["Carlos", "Ana", "Beatriz"]
-
-    async def test_name_asc(self, client, field_worker_headers, three_ordered_subjects):
-        """Alphabetical order by name, independent of creation order."""
-        names = await self._names(
-            client, field_worker_headers, SubjectSortOrder.NAME_ASC
-        )
-        assert names == ["Ana", "Beatriz", "Carlos"]
-
-    async def test_name_desc(
-        self, client, field_worker_headers, three_ordered_subjects
-    ):
-        """Reverse-alphabetical order by name."""
-        names = await self._names(
-            client, field_worker_headers, SubjectSortOrder.NAME_DESC
-        )
-        assert names == ["Carlos", "Beatriz", "Ana"]
-
-    async def test_birth_date_asc(
-        self, client, field_worker_headers, three_ordered_subjects
-    ):
-        """Oldest-born-first -- this is also how a frontend would sort by age desc."""
-        names = await self._names(
-            client, field_worker_headers, SubjectSortOrder.BIRTH_DATE_ASC
-        )
-        assert names == ["Ana", "Carlos", "Beatriz"]
-
-    async def test_birth_date_desc(
-        self, client, field_worker_headers, three_ordered_subjects
-    ):
-        """Youngest-born-first -- this is also how a frontend would sort by age asc."""
-        names = await self._names(
-            client, field_worker_headers, SubjectSortOrder.BIRTH_DATE_DESC
-        )
-        assert names == ["Beatriz", "Carlos", "Ana"]
+        names = await self._names(client, field_worker_headers, sort_order)
+        assert names == expected
 
 
 class TestGetSubjectsPaginatedValidation:

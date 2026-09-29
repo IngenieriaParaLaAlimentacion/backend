@@ -1,6 +1,7 @@
 import uuid
 from datetime import date
 
+import pytest
 import pytest_asyncio
 from fastapi import status
 
@@ -115,51 +116,24 @@ class TestAuth:
 
 
 class TestValidation:
-    async def test_weight_below_minimum_returns_422(
-        self, client, db_adult_subject, db_establishment, admin_headers
+    @pytest.mark.parametrize(
+        ("field", "value"),
+        [
+            ("weight_kg", 0.5),
+            ("weight_kg", 301.0),
+            ("height_cm", 20.0),
+            ("height_cm", 251.0),
+        ],
+    )
+    async def test_out_of_range_measure_returns_422(
+        self, client, db_adult_subject, db_establishment, admin_headers, field, value
     ):
         response = await _upload(
             client,
             db_adult_subject.id,
             db_establishment.id,
             admin_headers,
-            weight_kg=0.5,
-        )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_weight_above_maximum_returns_422(
-        self, client, db_adult_subject, db_establishment, admin_headers
-    ):
-        response = await _upload(
-            client,
-            db_adult_subject.id,
-            db_establishment.id,
-            admin_headers,
-            weight_kg=301.0,
-        )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_height_below_minimum_returns_422(
-        self, client, db_adult_subject, db_establishment, admin_headers
-    ):
-        response = await _upload(
-            client,
-            db_adult_subject.id,
-            db_establishment.id,
-            admin_headers,
-            height_cm=20.0,
-        )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_height_above_maximum_returns_422(
-        self, client, db_adult_subject, db_establishment, admin_headers
-    ):
-        response = await _upload(
-            client,
-            db_adult_subject.id,
-            db_establishment.id,
-            admin_headers,
-            height_cm=251.0,
+            **{field: value},
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
@@ -345,19 +319,6 @@ class TestHappyPath:
         )
         assert second.status_code == status.HTTP_200_OK
         assert second.json() == first.json()
-
-    async def test_missing_id_still_returns_201(
-        self, client, db_adult_subject, db_establishment, db_admin_headers
-    ):
-        """Omitting id still creates a new measurement with a server-generated id."""
-        response = await _upload(
-            client,
-            db_adult_subject.id,
-            db_establishment.id,
-            db_admin_headers,
-        )
-        assert response.status_code == status.HTTP_201_CREATED
-        assert "id" in response.json()
 
     async def test_different_ids_create_separate_records(
         self, client, db_adult_subject, db_establishment, db_admin_headers

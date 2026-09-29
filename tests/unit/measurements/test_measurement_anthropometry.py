@@ -74,106 +74,65 @@ class TestComputeBmiZScore:
 
 
 class TestChildAlerts:
-    def test_severely_wasted(self):
-        with patch(
-            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=-3.5
-        ):
-            alerts = _child_alerts(10.0, Sex.MALE, 60)
-        assert alerts[0][0] == AlertType.SEVERELY_WASTED
-        assert alerts[0][1] == AlertSeverity.CRITICAL
-
-    def test_wasted(self):
-        with patch(
-            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=-2.5
-        ):
-            alerts = _child_alerts(12.0, Sex.MALE, 60)
-        assert alerts[0][0] == AlertType.WASTED
-        assert alerts[0][1] == AlertSeverity.HIGH
-
-    def test_obese(self):
-        with patch(
-            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=3.5
-        ):
-            alerts = _child_alerts(25.0, Sex.MALE, 60)
-        assert alerts[0][0] == AlertType.OBESE
-        assert alerts[0][1] == AlertSeverity.HIGH
-
-    def test_overweight(self):
-        with patch(
-            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=2.5
-        ):
-            alerts = _child_alerts(22.0, Sex.MALE, 60)
-        assert alerts[0][0] == AlertType.OVERWEIGHT
-        assert alerts[0][1] == AlertSeverity.MEDIUM
-
-    def test_normal_range_no_alert(self):
-        with patch(
-            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=0.5
-        ):
-            assert _child_alerts(16.0, Sex.MALE, 60) == []
-
     def test_no_who_data_returns_empty(self):
         with patch(
             "app.reference_data.anthropometry.compute_bmi_z_score", return_value=None
         ):
             assert _child_alerts(16.0, Sex.MALE, 60) == []
 
-    def test_boundary_z_exactly_minus3_is_wasted_not_severely(self):
+    @pytest.mark.parametrize(
+        ("z_score", "expected"),
+        [
+            (-3.5, (AlertType.SEVERELY_WASTED, AlertSeverity.CRITICAL)),
+            # -3.0 belongs to wasted, not severely wasted.
+            (-3.0, (AlertType.WASTED, AlertSeverity.HIGH)),
+            (-2.5, (AlertType.WASTED, AlertSeverity.HIGH)),
+            (0.5, None),
+            # 2.0 is still inside the normal range.
+            (2.0, None),
+            (2.5, (AlertType.OVERWEIGHT, AlertSeverity.MEDIUM)),
+            # 3.0 belongs to overweight, not obese.
+            (3.0, (AlertType.OVERWEIGHT, AlertSeverity.MEDIUM)),
+            (3.5, (AlertType.OBESE, AlertSeverity.HIGH)),
+        ],
+    )
+    def test_z_score_maps_to_alert(self, z_score, expected):
         with patch(
-            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=-3.0
+            "app.reference_data.anthropometry.compute_bmi_z_score",
+            return_value=z_score,
         ):
-            alerts = _child_alerts(10.0, Sex.MALE, 60)
-        assert alerts[0][0] == AlertType.WASTED
+            alerts = _child_alerts(16.0, Sex.MALE, 60)
 
-    def test_boundary_z_exactly_2_is_no_alert(self):
-        with patch(
-            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=2.0
-        ):
-            assert _child_alerts(20.0, Sex.MALE, 60) == []
-
-    def test_boundary_z_exactly_3_is_overweight_not_obese(self):
-        with patch(
-            "app.reference_data.anthropometry.compute_bmi_z_score", return_value=3.0
-        ):
-            alerts = _child_alerts(24.0, Sex.MALE, 60)
-        assert alerts[0][0] == AlertType.OVERWEIGHT
+        if expected is None:
+            assert alerts == []
+        else:
+            assert (alerts[0][0], alerts[0][1]) == expected
 
 
 class TestAdultAlerts:
-    def test_severe_underweight(self):
-        alerts = _adult_alerts(15.9)
-        assert alerts[0][0] == AlertType.SEVERE_UNDERWEIGHT
-        assert alerts[0][1] == AlertSeverity.CRITICAL
+    @pytest.mark.parametrize(
+        ("bmi", "expected"),
+        [
+            (15.9, (AlertType.SEVERE_UNDERWEIGHT, AlertSeverity.CRITICAL)),
+            # 16.0 is underweight, not severe.
+            (16.0, (AlertType.UNDERWEIGHT, AlertSeverity.HIGH)),
+            (17.0, (AlertType.UNDERWEIGHT, AlertSeverity.HIGH)),
+            # 18.5 is the first normal value.
+            (18.5, None),
+            (22.0, None),
+            (25.0, (AlertType.OVERWEIGHT, AlertSeverity.MEDIUM)),
+            (27.0, (AlertType.OVERWEIGHT, AlertSeverity.MEDIUM)),
+            (30.0, (AlertType.OBESE, AlertSeverity.HIGH)),
+            (32.0, (AlertType.OBESE, AlertSeverity.HIGH)),
+        ],
+    )
+    def test_bmi_maps_to_alert(self, bmi, expected):
+        alerts = _adult_alerts(bmi)
 
-    def test_underweight(self):
-        alerts = _adult_alerts(17.0)
-        assert alerts[0][0] == AlertType.UNDERWEIGHT
-        assert alerts[0][1] == AlertSeverity.HIGH
-
-    def test_normal_no_alert(self):
-        assert _adult_alerts(22.0) == []
-
-    def test_overweight(self):
-        alerts = _adult_alerts(27.0)
-        assert alerts[0][0] == AlertType.OVERWEIGHT
-        assert alerts[0][1] == AlertSeverity.MEDIUM
-
-    def test_obese(self):
-        alerts = _adult_alerts(32.0)
-        assert alerts[0][0] == AlertType.OBESE
-        assert alerts[0][1] == AlertSeverity.HIGH
-
-    def test_boundary_bmi_16_is_underweight_not_severe(self):
-        assert _adult_alerts(16.0)[0][0] == AlertType.UNDERWEIGHT
-
-    def test_boundary_bmi_25_is_overweight(self):
-        assert _adult_alerts(25.0)[0][0] == AlertType.OVERWEIGHT
-
-    def test_boundary_bmi_30_is_obese(self):
-        assert _adult_alerts(30.0)[0][0] == AlertType.OBESE
-
-    def test_boundary_bmi_18_5_is_normal(self):
-        assert _adult_alerts(18.5) == []
+        if expected is None:
+            assert alerts == []
+        else:
+            assert (alerts[0][0], alerts[0][1]) == expected
 
 
 class TestEvaluateAlerts:

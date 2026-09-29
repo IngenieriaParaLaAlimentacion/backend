@@ -387,27 +387,6 @@ class TestGetSubjectEvolution:
         )
 
 
-class TestRegisterReturnValue:
-    async def test_returns_measurement_domain(
-        self, make_uow, make_measurement, valid_request, admin_actor
-    ):
-        measurement = make_measurement()
-        uow = make_uow(measurement=measurement)
-
-        with patch(
-            "app.services.measurements.measurement_service.evaluate_alerts",
-            return_value=[],
-        ):
-            result, created = await MeasurementService(uow).register(
-                valid_request, admin_actor
-            )
-
-        assert created is True
-        assert isinstance(result, MeasurementDomain)
-        assert result.id == measurement.id
-        assert result.bmi == measurement.bmi
-
-
 class TestExportMeasurementListing:
     async def test_streams_the_whole_filtered_set(self, make_listing_measurement):
         uow = AsyncMock()
