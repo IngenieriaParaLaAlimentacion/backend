@@ -3,7 +3,6 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.domain.auth import LoginDomain, RefreshDomain
 from app.domain.user import UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
     EstablishmentNotFoundError,
@@ -344,21 +343,6 @@ class TestRegisterFieldWorker:
 
 
 class TestLoginSuccess:
-    async def test_returns_login_domain(
-        self,
-        make_uow,
-        make_login_user,
-        make_password_record,
-        valid_login_request,
-        mock_security,
-    ):
-        user = make_login_user()
-        uow = make_uow(login_user=user, password_record=make_password_record(user))
-
-        result = await AuthService(uow).login(valid_login_request)
-
-        assert isinstance(result, LoginDomain)
-
     async def test_access_token_issued(
         self,
         make_uow,
@@ -618,21 +602,6 @@ class TestLogoutInvalidToken:
 
 
 class TestRefreshSuccess:
-    async def test_returns_refresh_domain(
-        self,
-        make_uow,
-        make_active_token,
-        valid_refresh_request,
-        mock_security,
-        mock_encode_refresh_token,
-    ):
-        token = make_active_token()
-        uow = make_uow(active_token=token)
-
-        result = await AuthService(uow).refresh(valid_refresh_request)
-
-        assert isinstance(result, RefreshDomain)
-
     async def test_new_access_token_issued(
         self,
         make_uow,

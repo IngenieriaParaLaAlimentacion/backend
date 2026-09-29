@@ -4,9 +4,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.domain.user import UserStatus
 from app.exceptions.domain_exceptions import (
-    InvalidTokenError,
     InvalidVerificationTokenError,
     UserNotFoundError,
     VerificationTokenExpiredError,
@@ -40,19 +38,6 @@ def make_verification_token():
         return t
 
     return _make
-
-
-@pytest.fixture
-def register_field_worker_request(make_establishment):
-    """A ready-to-use RegisterFieldWorkerRequest with one establishment."""
-    establishment = make_establishment()
-    return RegisterFieldWorkerRequest(
-        email="worker@test.com",
-        password="securepassword",
-        name="Juan",
-        last_name="Perez",
-        establishments=[establishment.id],
-    ), establishment
 
 
 @pytest.fixture
@@ -209,30 +194,24 @@ class TestVerifyEmailInvalidToken:
         # No row with that hash at all -- deliberately the generic error.
         self.uow = make_uow_verification(active_verification_token=None)
 
-    async def test_raises_invalid_token_error(self, valid_verify_request):
-        with pytest.raises(InvalidTokenError):
+    async def test_raises_invalid_verification_token_error(self, valid_verify_request):
+        with pytest.raises(InvalidVerificationTokenError):
             await AuthService(self.uow).verify_email(valid_verify_request.token)
-
-    async def test_error_message_informs_user(self, valid_verify_request):
-        with pytest.raises(InvalidVerificationTokenError) as exc:
-            await AuthService(self.uow).verify_email(valid_verify_request.token)
-
-        assert "invalid" in str(exc.value) or "expired" in str(exc.value)
 
     async def test_does_not_mark_token_as_used(self, valid_verify_request):
-        with pytest.raises(InvalidTokenError):
+        with pytest.raises(InvalidVerificationTokenError):
             await AuthService(self.uow).verify_email(valid_verify_request.token)
 
         self.uow.email_verification_repo.mark_used.assert_not_awaited()
 
     async def test_does_not_fetch_user(self, valid_verify_request):
-        with pytest.raises(InvalidTokenError):
+        with pytest.raises(InvalidVerificationTokenError):
             await AuthService(self.uow).verify_email(valid_verify_request.token)
 
         self.uow.user_repo.get_by_id.assert_not_awaited()
 
     async def test_does_not_commit(self, valid_verify_request):
-        with pytest.raises(InvalidTokenError):
+        with pytest.raises(InvalidVerificationTokenError):
             await AuthService(self.uow).verify_email(valid_verify_request.token)
 
         self.uow.commit.assert_not_awaited()
@@ -435,10 +414,3 @@ class TestRegistrationCreatesVerificationToken:
         await AuthService(self.uow).register_field_worker(self.request)
 
         self.mock_send.assert_awaited_once()
-
-    async def test_new_user_status_is_pending_validation(self):
-        await AuthService(self.uow).register_field_worker(self.request)
-
-        self.uow.user_repo.create.assert_called_once()
-        call_kwargs = self.uow.user_repo.create.call_args.kwargs
-        assert call_kwargs.get("status") == UserStatus.PENDING_VALIDATION

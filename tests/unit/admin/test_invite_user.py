@@ -70,17 +70,9 @@ def make_service(mock_auth_service):
 
 
 class TestInviteAdmin:
-    async def test_raises_if_email_already_exists(self, make_uow, make_service):
-        """Should raise UserAlreadyExistsError if email is taken."""
-        existing = _make_user()
-        uow = make_uow(existing_user=existing)
-        service = make_service(uow)
-
-        with pytest.raises(UserAlreadyExistsError):
-            await service.invite_user(MagicMock(email=existing.email), UserRole.ADMIN)
-
     async def test_does_not_create_user_if_email_exists(self, make_uow, make_service):
-        """Should not call user_repo.create if email is already registered."""
+        """Raises UserAlreadyExistsError without creating a user when the email
+        is already registered."""
         existing = _make_user()
         uow = make_uow(existing_user=existing)
         service = make_service(uow)
@@ -138,10 +130,10 @@ class TestInviteAdmin:
 
         assert uow.user_repo.create.call_args.kwargs["email"] == "new@test.com"
 
-    async def test_creates_user_with_admin_role_and_active_status(
+    async def test_creates_user_with_admin_role_and_pending_status(
         self, make_uow, make_service
     ):
-        """Should create user with role=ADMIN and status=ACTIVE."""
+        """Creates the invitee with role=ADMIN and status=PENDING_VALIDATION."""
         uow = make_uow()
         service = make_service(uow)
 
