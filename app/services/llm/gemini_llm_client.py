@@ -170,6 +170,9 @@ class GeminiLlmClient(ILlmClient):
                     config=types.GenerateContentConfig(
                         response_mime_type="application/json",
                         response_schema=response_schema,
+                        http_options=types.HttpOptions(
+                            timeout=int(settings.gemini_request_timeout_seconds * 1000)
+                        ),
                     ),
                 )
         return response
