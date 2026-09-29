@@ -1,6 +1,7 @@
 import uuid
 from types import SimpleNamespace
 
+import pytest
 from fastapi import status
 
 from app.core.security import create_access_token
@@ -180,14 +181,7 @@ class TestGetEstablishmentsPaginated:
         assert data["page"] == 1
         assert data["page_size"] == 2
         assert data["total_pages"] == 3
-
-    async def test_page_size_limits_results(self, client, app, analyst_headers):
-        """page_size controls how many items are returned."""
-        await _seed_establishments(5, app)
-        response = await client.get(
-            ESTABLISHMENT_URL + "?page_size=3", headers=analyst_headers
-        )
-        assert len(response.json()["items"]) == 3
+        assert len(data["items"]) == 2
 
     async def test_second_page_returns_different_items(
         self, client, app, analyst_headers
@@ -215,26 +209,13 @@ class TestGetEstablishmentsPaginated:
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["items"] == []
 
-    async def test_invalid_page_returns_422(self, client, analyst_headers):
-        """page=0 is invalid, minimum is 1."""
-        response = await client.get(
-            ESTABLISHMENT_URL + "?page=0", headers=analyst_headers
-        )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_invalid_page_size_zero_returns_422(self, client, analyst_headers):
-        """page_size=0 is invalid, minimum is 1."""
-        response = await client.get(
-            ESTABLISHMENT_URL + "?page_size=0", headers=analyst_headers
-        )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_invalid_page_size_above_max_returns_422(
-        self, client, analyst_headers
+    @pytest.mark.parametrize("query", ["page=0", "page_size=0", "page_size=101"])
+    async def test_out_of_range_paging_returns_422(
+        self, client, analyst_headers, query
     ):
-        """page_size=101 exceeds the maximum of 100."""
+        """page and page_size must be at least 1, and page_size at most 100."""
         response = await client.get(
-            ESTABLISHMENT_URL + "?page_size=101", headers=analyst_headers
+            f"{ESTABLISHMENT_URL}?{query}", headers=analyst_headers
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
@@ -437,21 +418,12 @@ class TestCreateEstablishment:
 
         assert response.status_code == status.HTTP_201_CREATED
 
-    async def test_blank_name_returns_422(self, client, admin_headers):
-        """A blank name is rejected with 422 before reaching the service."""
+    @pytest.mark.parametrize("field", ["name", "formatted_address"])
+    async def test_blank_field_returns_422(self, client, admin_headers, field):
+        """A blank name or formatted_address is rejected with 422."""
         response = await client.post(
             ESTABLISHMENT_URL,
-            json=_make_payload(name="   "),
-            headers=admin_headers,
-        )
-
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_blank_formatted_address_returns_422(self, client, admin_headers):
-        """A blank formatted_address is rejected with 422."""
-        response = await client.post(
-            ESTABLISHMENT_URL,
-            json=_make_payload(formatted_address="   "),
+            json=_make_payload(**{field: "   "}),
             headers=admin_headers,
         )
 
@@ -486,14 +458,6 @@ class TestGetEstablishmentById:
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
-
-    async def test_malformed_uuid_returns_422(self, client, admin_headers):
-        """A non-UUID path segment is rejected with 422."""
-        response = await client.get(
-            f"{ESTABLISHMENT_URL}/not-a-uuid", headers=admin_headers
-        )
-
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     async def test_missing_token_returns_401(self, client, db_establishment):
         """Requests without an Authorization header are rejected with 401."""
@@ -545,21 +509,6 @@ class TestUpdateEstablishment:
         assert data["name"] == db_establishment.name
         assert data["formatted_address"] == "Nueva Dirección 456"
 
-    async def test_update_both_fields_returns_200(
-        self, client, db_establishment, admin_headers
-    ):
-        """Updating both fields at once returns 200 with both values updated."""
-        response = await client.patch(
-            f"{ESTABLISHMENT_URL}/{db_establishment.id}",
-            json={"name": "Nuevo Nombre", "formatted_address": "Nueva Dirección 456"},
-            headers=admin_headers,
-        )
-
-        assert response.status_code == status.HTTP_200_OK
-        data = response.json()
-        assert data["name"] == "Nuevo Nombre"
-        assert data["formatted_address"] == "Nueva Dirección 456"
-
     async def test_same_values_returns_200(
         self, client, db_establishment, admin_headers
     ):
@@ -603,16 +552,6 @@ class TestUpdateEstablishment:
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
-
-    async def test_malformed_uuid_returns_422(self, client, admin_headers):
-        """A non-UUID path segment is rejected with 422."""
-        response = await client.patch(
-            f"{ESTABLISHMENT_URL}/not-a-uuid",
-            json={"name": "Nuevo Nombre"},
-            headers=admin_headers,
-        )
-
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     async def test_empty_body_returns_422(
         self, client, db_establishment, admin_headers

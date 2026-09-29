@@ -762,7 +762,7 @@ class TestFieldWorkerListing:
         last_names = {item["last_name"] for item in body["items"]}
         assert last_names == {"Gomez", "Pending", "Rejected"}
 
-    async def test_search_filters_by_email(self, client, admin_headers, scenario):
+    async def test_search_filters_by_last_name(self, client, admin_headers, scenario):
         response = await client.get(
             FIELD_WORKERS_URL.format(establishment_id=scenario.establishment_a),
             headers=admin_headers,

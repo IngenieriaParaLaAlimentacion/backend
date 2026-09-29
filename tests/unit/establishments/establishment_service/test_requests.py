@@ -96,9 +96,7 @@ class TestCreateEstablishmentRequest:
 
         return _make
 
-    async def test_delegates_to_repo_with_pending_status_and_user_id(
-        self, make_uow, make_establishment
-    ):
+    async def test_delegates_to_repo_with_pending_status_and_user_id(self, make_uow):
         """The ORM row carries the caller's user_id and PENDING status."""
         user_id = uuid.uuid4()
         created = _make_request_orm(user_id)
@@ -118,26 +116,6 @@ class TestCreateEstablishmentRequest:
         assert call_arg.status == EstablishmentRequestStatus.PENDING
         assert call_arg.name == "Comedor Esperanza"
         assert call_arg.formatted_address == "Av. Siempre Viva 742"
-
-    async def test_name_and_address_are_not_optional(self, make_uow):
-        """An empty payload still persists a request with None fields."""
-        user_id = uuid.uuid4()
-        created = _make_request_orm(user_id)
-        uow = make_uow(created)
-        service = EstablishmentService(uow=uow)
-
-        await service.create_establishment_request(
-            user_id,
-            EstablishmentCreationRequestCreate(
-                name="Comedor Esperanza", formatted_address="Av. Siempre Viva 742"
-            ),
-        )
-
-        call_arg = uow.establishment_request_repo.create.call_args[0][0]
-        assert call_arg.name is not None
-        assert call_arg.formatted_address is not None
-        assert call_arg.city is None
-        assert call_arg.province is None
 
     async def test_commits(self, make_uow):
         """The created request is committed."""
@@ -442,65 +420,23 @@ class TestApproveCreationRequest:
             user_id, existing.id
         )
 
-    async def test_reopens_a_rejected_relation_to_pending(
-        self, make_uow, make_establishment
+    @pytest.mark.parametrize(
+        "status",
+        [
+            UserEstablishmentStatus.REJECTED,
+            UserEstablishmentStatus.REVOKED,
+            UserEstablishmentStatus.WITHDRAWN,
+        ],
+    )
+    async def test_reopens_a_closed_relation_to_pending(
+        self, make_uow, make_establishment, status
     ):
-        """A field worker previously rejected for this establishment gets
-        another chance at admin review instead of staying rejected."""
+        """A field worker whose access was rejected, revoked or withdrawn gets
+        another chance at admin review instead of staying closed."""
         user_id = uuid.uuid4()
         request = _make_request_orm(user_id)
         existing = make_establishment()
-        relation = MagicMock(status=UserEstablishmentStatus.REJECTED)
-        uow = make_uow(
-            request=request,
-            existing_establishment=existing,
-            existing_relation=relation,
-        )
-        service = EstablishmentService(uow=uow)
-
-        await service.approve_creation_request(
-            request.id, _make_request(), reviewer_id=uuid.uuid4()
-        )
-
-        uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
-            user_id, [existing.id], UserEstablishmentStatus.PENDING
-        )
-        uow.user_establishment_repo.preset_relation.assert_not_called()
-
-    async def test_reopens_a_revoked_relation_to_pending(
-        self, make_uow, make_establishment
-    ):
-        """A field worker whose access was revoked for this establishment gets
-        another chance at admin review instead of staying revoked."""
-        user_id = uuid.uuid4()
-        request = _make_request_orm(user_id)
-        existing = make_establishment()
-        relation = MagicMock(status=UserEstablishmentStatus.REVOKED)
-        uow = make_uow(
-            request=request,
-            existing_establishment=existing,
-            existing_relation=relation,
-        )
-        service = EstablishmentService(uow=uow)
-
-        await service.approve_creation_request(
-            request.id, _make_request(), reviewer_id=uuid.uuid4()
-        )
-
-        uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
-            user_id, [existing.id], UserEstablishmentStatus.PENDING
-        )
-        uow.user_establishment_repo.preset_relation.assert_not_called()
-
-    async def test_reopens_a_withdrawn_relation_to_pending(
-        self, make_uow, make_establishment
-    ):
-        """A field worker who withdrew their own access to this establishment
-        gets another chance at admin review instead of staying withdrawn."""
-        user_id = uuid.uuid4()
-        request = _make_request_orm(user_id)
-        existing = make_establishment()
-        relation = MagicMock(status=UserEstablishmentStatus.WITHDRAWN)
+        relation = MagicMock(status=status)
         uow = make_uow(
             request=request,
             existing_establishment=existing,
