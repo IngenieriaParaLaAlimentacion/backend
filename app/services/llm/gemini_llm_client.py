@@ -1,6 +1,7 @@
 import json
 from typing import Any
 
+import httpx
 import structlog
 from google import genai
 from google.genai import types
@@ -18,6 +19,10 @@ from app.core.interfaces.llm_client import ILlmClient
 from app.exceptions.domain_exceptions import LlmClientError
 
 logger = structlog.get_logger()
+
+# Raw transport failures below the SDK's APIError layer (connection reset,
+# socket timeout) -- retried the same as a 5xx/429 response from the API.
+_TRANSIENT_TRANSPORT_ERRORS = (httpx.TimeoutException, httpx.ConnectError)
 
 
 def _log_retry(retry_state: RetryCallState, *, model: str) -> None:
@@ -47,16 +52,19 @@ class GeminiLlmClient(ILlmClient):
         self._client = genai.Client(api_key=settings.gemini_api_key)
 
     @staticmethod
-    def _is_retryable(exc: APIError) -> bool:
+    def _is_retryable(exc: Exception) -> bool:
         """Return whether ``exc`` is a transient Gemini failure worth retrying.
 
-        Server errors (5xx) and rate limiting (429) are retried; any other
-        client error (bad request, auth, not found) is not, since retrying it
-        would just delay the same failure.
+        Server errors (5xx), rate limiting (429), and raw transport failures
+        (connection reset, socket timeout) are retried; any other client
+        error (bad request, auth, not found) is not, since retrying it would
+        just delay the same failure.
         """
         if isinstance(exc, ServerError):
             return True
-        return isinstance(exc, ClientError) and exc.code == 429
+        if isinstance(exc, ClientError):
+            return exc.code == 429
+        return isinstance(exc, _TRANSIENT_TRANSPORT_ERRORS)
 
     async def complete(
         self,
@@ -114,7 +122,7 @@ class GeminiLlmClient(ILlmClient):
                     response_schema=response_schema,
                     max_attempts=max_attempts,
                 )
-            except APIError as exc:
+            except (APIError, *_TRANSIENT_TRANSPORT_ERRORS) as exc:
                 is_last_model = index == len(models) - 1
                 if is_last_model or not self._is_retryable(exc):
                     logger.warning(
@@ -140,7 +148,10 @@ class GeminiLlmClient(ILlmClient):
         """Call ``model`` once, retrying a transient failure up to ``max_attempts``.
 
         Raises:
-            APIError: every attempt failed, or the failure was not retryable.
+            APIError: every attempt returned an API error, or the failure was
+                not retryable.
+            httpx.TimeoutException: every attempt hit a socket timeout.
+            httpx.ConnectError: every attempt failed to connect.
         """
         async for attempt in AsyncRetrying(
             stop=stop_after_attempt(max_attempts),

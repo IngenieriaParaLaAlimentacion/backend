@@ -2,6 +2,7 @@ import json
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock
 
+import httpx
 import pytest
 from google.genai.errors import ClientError, ServerError
 
@@ -42,9 +43,16 @@ def _client_error(code: int) -> ClientError:
 
 
 @pytest.mark.parametrize(
-    "exc", [_server_error(500), _server_error(503), _client_error(429)]
+    "exc",
+    [
+        _server_error(500),
+        _server_error(503),
+        _client_error(429),
+        httpx.ConnectError("connection refused"),
+        httpx.TimeoutException("timed out"),
+    ],
 )
-def test_is_retryable_classifies_5xx_and_429_as_transient(exc):
+def test_is_retryable_classifies_5xx_429_and_transport_errors_as_transient(exc):
     assert GeminiLlmClient._is_retryable(exc) is True
 
 
@@ -57,6 +65,22 @@ def test_is_retryable_classifies_other_4xx_as_permanent(code):
 async def test_retries_transient_error_then_succeeds():
     client = _client(
         side_effect=[_server_error(), _server_error(), _response({"ok": True})]
+    )
+
+    result = await client.complete(prompt="p", response_schema={})
+
+    assert result == {"ok": True}
+    assert client._client.aio.models.generate_content.await_count == 3
+
+
+@pytest.mark.asyncio
+async def test_retries_transport_error_then_succeeds():
+    client = _client(
+        side_effect=[
+            httpx.ConnectError("connection refused"),
+            httpx.TimeoutException("timed out"),
+            _response({"ok": True}),
+        ]
     )
 
     result = await client.complete(prompt="p", response_schema={})
