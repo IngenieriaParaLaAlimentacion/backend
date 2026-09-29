@@ -10,8 +10,7 @@ from app.models.auth.user import User
 from app.models.establishments.establishment import Establishment
 from app.models.measurements.measurement import Measurement
 from app.models.subjects.subject import Subject
-
-SUBJECTS_URL = "/api/v1/subjects"
+from tests.integration.urls import SUBJECTS_URL
 
 
 @pytest_asyncio.fixture

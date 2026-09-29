@@ -1,13 +1,10 @@
 import uuid
 
-import pytest
 from fastapi import status
 from jose import jwt
 
 from app.core.security import create_access_token
 from app.domain.user import UserRole
-
-pytestmark = pytest.mark.asyncio
 
 
 class TestAdminAuth:

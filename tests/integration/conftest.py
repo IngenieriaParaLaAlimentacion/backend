@@ -25,10 +25,11 @@ from app.models.auth.user_password import UserPassword
 from app.models.base import Base
 from app.models.establishments.establishment import Establishment
 from app.models.subjects.subject import Sex, Subject
+from tests.integration.helpers import Foods
+from tests.integration.urls import LOGIN_URL
 
 os.environ["TESTCONTAINERS_RYUK_DISABLED"] = "true"
 
-LOGIN_URL = "/api/v1/auth/login"
 
 # --- Auth: tokens and headers ---------------------------------------------
 
@@ -407,3 +408,38 @@ async def db_logged_in_user(db_active_user, client):
     )
     body = response.json()
     return db_active_user, body["refresh_token"], device_id
+
+
+@pytest_asyncio.fixture()
+async def foods(app) -> Foods:
+    """Seed two catalog foods with different base units.
+
+    The catalog has no create endpoint -- it is only ever populated by the seed
+    script -- so the rows go in directly. The base units differ on purpose: a
+    line's unit must come from its own food, not from a constant.
+    """
+    from app.db.database import AsyncSessionLocal
+    from app.domain.food_catalog import MeasurementUnit
+    from app.models.food_catalog.food import Food
+    from app.models.food_catalog.food_category import FoodCategory
+
+    async with AsyncSessionLocal() as session:
+        cereals = FoodCategory(code="cereales", name="Cereales")
+        session.add(cereals)
+        await session.flush()
+
+        rice = Food(
+            code="arroz",
+            name="Arroz",
+            category_id=cereals.id,
+            base_unit=MeasurementUnit.KILOGRAMOS,
+        )
+        eggs = Food(
+            code="huevo",
+            name="Huevo",
+            category_id=cereals.id,
+            base_unit=MeasurementUnit.UNIDADES,
+        )
+        session.add_all([rice, eggs])
+        await session.commit()
+        return Foods(rice=rice.id, eggs=eggs.id)

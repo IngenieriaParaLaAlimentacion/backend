@@ -12,13 +12,11 @@ from tests.integration.admin.conftest import (
     ADMIN_USERS_URL,
     APPROVE_FIELD_WORKER_URL,
     APPROVE_URL,
-    INVITE_ADMIN_URL,
     REGISTER_FIELD_WORKER_URL,
     REJECT_URL,
     _insert_user,
 )
-
-pytestmark = pytest.mark.asyncio
+from tests.integration.urls import INVITE_ADMIN_URL
 
 
 class TestListUsersPagination:
@@ -64,16 +62,10 @@ class TestListUsersPagination:
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["page_size"] == 5
 
-    async def test_page_size_above_limit_rejected(self, client, admin_headers):
-        """Should return 422 if page_size exceeds 100."""
-        response = await client.get(
-            f"{ADMIN_USERS_URL}?page_size=200", headers=admin_headers
-        )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_page_zero_rejected(self, client, admin_headers):
-        """Should return 422 if page is less than 1."""
-        response = await client.get(f"{ADMIN_USERS_URL}?page=0", headers=admin_headers)
+    @pytest.mark.parametrize("query", ["page_size=200", "page=0"])
+    async def test_out_of_range_paging_rejected(self, client, admin_headers, query):
+        """page must be at least 1 and page_size at most 100."""
+        response = await client.get(f"{ADMIN_USERS_URL}?{query}", headers=admin_headers)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     async def test_items_have_required_fields(
@@ -408,14 +400,6 @@ class TestGetUser:
             ADMIN_USER_URL.format(user_id=uuid.uuid4()), headers=admin_headers
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
-
-    async def test_returns_200_for_existing_user(self, client, admin_headers, app):
-        """Returns 200 for an existing user."""
-        user_id = await _insert_user(UserRole.ANALYST, UserStatus.ACTIVE)
-        response = await client.get(
-            ADMIN_USER_URL.format(user_id=user_id), headers=admin_headers
-        )
-        assert response.status_code == status.HTTP_200_OK
 
     async def test_response_includes_required_fields(self, client, admin_headers, app):
         """Response includes all fields defined in FullUserAdminView."""
