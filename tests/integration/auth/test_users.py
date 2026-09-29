@@ -111,11 +111,6 @@ async def analyst_user(app):
 
 
 @pytest_asyncio.fixture
-async def admin_user(app):
-    return await _insert_user(role=UserRole.ADMIN, status=UserStatus.ACTIVE)
-
-
-@pytest_asyncio.fixture
 async def field_worker_user(app):
     return await _insert_user(role=UserRole.FIELD_WORKER, status=UserStatus.ACTIVE)
 
@@ -135,26 +130,20 @@ class TestProfileAuth:
 
 
 class TestProfileNonFieldWorker:
-    async def test_analyst_has_null_establishments(self, client, analyst_user):
-        """An analyst gets their profile with establishments = null."""
-        response = await client.get(ME_URL, headers=_headers_for(analyst_user))
+    @pytest.mark.parametrize("role", [UserRole.ANALYST, UserRole.ADMIN])
+    async def test_profile_has_null_establishments(self, client, role):
+        """An analyst or admin gets their profile with establishments = null."""
+        user = await _insert_user(role=role)
+
+        response = await client.get(ME_URL, headers=_headers_for(user))
 
         assert response.status_code == 200
         body = response.json()
-        assert body["id"] == str(analyst_user.id)
-        assert body["email"] == analyst_user.email
-        assert body["name"] == analyst_user.name
-        assert body["last_name"] == analyst_user.last_name
-        assert body["role"] == UserRole.ANALYST
-        assert body["establishments"] is None
-
-    async def test_admin_has_null_establishments(self, client, admin_user):
-        """An admin gets their profile with establishments = null."""
-        response = await client.get(ME_URL, headers=_headers_for(admin_user))
-
-        assert response.status_code == 200
-        body = response.json()
-        assert body["role"] == UserRole.ADMIN
+        assert body["id"] == str(user.id)
+        assert body["email"] == user.email
+        assert body["name"] == user.name
+        assert body["last_name"] == user.last_name
+        assert body["role"] == role
         assert body["establishments"] is None
 
 
@@ -378,33 +367,16 @@ class TestRequestEstablishmentAccess:
         assert {r.establishment_id for r in relations} == {estab_a.id, estab_b.id}
         assert all(r.status == UserEstablishmentStatus.PENDING for r in relations)
 
-    async def test_rejected_relation_is_re_requested(self, client, field_worker_user):
-        """CA5/CA6: a rejected relation can be re-requested (back to pending)."""
+    @pytest.mark.parametrize(
+        "status",
+        [UserEstablishmentStatus.REJECTED, UserEstablishmentStatus.REVOKED],
+    )
+    async def test_closed_relation_is_re_requested(
+        self, client, field_worker_user, status
+    ):
+        """CA5/CA6: a rejected or revoked relation goes back to pending."""
         estab = await _insert_establishment("Centro A", "Calle A")
-        await _insert_relation(
-            field_worker_user.id, estab.id, UserEstablishmentStatus.REJECTED
-        )
-
-        response = await client.post(
-            ME_ESTABLISHMENTS_URL,
-            json={"establishment_ids": [str(estab.id)]},
-            headers=_headers_for(field_worker_user),
-        )
-
-        assert response.status_code == 201
-        assert response.json()[0]["status"] == UserEstablishmentStatus.PENDING
-
-        relations = await _fetch_relations(field_worker_user.id)
-        assert len(relations) == 1
-        assert relations[0].status == UserEstablishmentStatus.PENDING
-
-    async def test_revoked_relation_is_re_requested(self, client, field_worker_user):
-        """A revoked relation can be re-requested (back to pending), same as
-        a rejected one."""
-        estab = await _insert_establishment("Centro A", "Calle A")
-        await _insert_relation(
-            field_worker_user.id, estab.id, UserEstablishmentStatus.REVOKED
-        )
+        await _insert_relation(field_worker_user.id, estab.id, status)
 
         response = await client.post(
             ME_ESTABLISHMENTS_URL,
@@ -487,11 +459,13 @@ class TestRequestEstablishmentAccess:
 
 
 class TestWithdrawEstablishmentAccess:
-    async def test_approved_relation_is_withdrawn(self, client, field_worker_user):
+    @pytest.mark.parametrize(
+        "status",
+        [UserEstablishmentStatus.APPROVED, UserEstablishmentStatus.PENDING],
+    )
+    async def test_open_relation_is_withdrawn(self, client, field_worker_user, status):
         estab = await _insert_establishment("Centro A", "Calle A")
-        await _insert_relation(
-            field_worker_user.id, estab.id, UserEstablishmentStatus.APPROVED
-        )
+        await _insert_relation(field_worker_user.id, estab.id, status)
 
         response = await client.patch(
             ME_ESTABLISHMENTS_WITHDRAW_URL,
@@ -504,22 +478,6 @@ class TestWithdrawEstablishmentAccess:
 
         relations = await _fetch_relations(field_worker_user.id)
         assert len(relations) == 1
-        assert relations[0].status == UserEstablishmentStatus.WITHDRAWN
-
-    async def test_pending_relation_is_withdrawn(self, client, field_worker_user):
-        estab = await _insert_establishment("Centro A", "Calle A")
-        await _insert_relation(
-            field_worker_user.id, estab.id, UserEstablishmentStatus.PENDING
-        )
-
-        response = await client.patch(
-            ME_ESTABLISHMENTS_WITHDRAW_URL,
-            json={"establishment_ids": [str(estab.id)]},
-            headers=_headers_for(field_worker_user),
-        )
-
-        assert response.status_code == 200
-        relations = await _fetch_relations(field_worker_user.id)
         assert relations[0].status == UserEstablishmentStatus.WITHDRAWN
 
     async def test_rejected_relation_returns_409_and_writes_nothing(

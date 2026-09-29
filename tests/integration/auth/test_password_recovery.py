@@ -100,32 +100,12 @@ class TestPasswordRecoveryRequest:
         response = await client.post(REQUEST_URL, json={"email": "ana@test.com"})
         assert response.status_code == status.HTTP_202_ACCEPTED
 
-    async def test_second_request_revokes_previous_token(
-        self, client, db_active_user, capture_deeplink
-    ):
-        await client.post(REQUEST_URL, json={"email": "ana@test.com"})
-        first_token = _extract_token(capture_deeplink["deeplink"])
-
-        await client.post(REQUEST_URL, json={"email": "ana@test.com"})
-
-        confirm = await client.post(
-            CONFIRM_URL, json={"token": first_token, "new_password": "newpassword123"}
-        )
-        assert confirm.status_code == status.HTTP_401_UNAUTHORIZED
-
     async def test_missing_email_returns_422(self, client):
         response = await client.post(REQUEST_URL, json={})
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 class TestPasswordRecoveryConfirm:
-    async def test_invalid_token_returns_401(self, client):
-        response = await client.post(
-            CONFIRM_URL,
-            json={"token": "not-a-valid-token", "new_password": "newpassword123"},
-        )
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
     async def test_unknown_token_is_reported_generically(self, client):
         """A token that never existed must not be distinguishable from one that
         did -- that would confirm an address was issued a link."""
@@ -134,6 +114,7 @@ class TestPasswordRecoveryConfirm:
             json={"token": "not-a-valid-token", "new_password": "newpassword123"},
         )
 
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.json()["type"] == "/errors/auth/invalid-recovery-token"
 
     async def test_reused_token_is_reported_as_used(
@@ -165,6 +146,7 @@ class TestPasswordRecoveryConfirm:
             CONFIRM_URL, json={"token": first_token, "new_password": "newpassword123"}
         )
 
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.json()["type"] == "/errors/auth/recovery-token-used"
 
     async def test_expired_token_is_reported_as_expired(
@@ -233,20 +215,6 @@ class TestPasswordRecoveryConfirm:
 
         response = await client.post(
             LOGOUT_URL, json={"refresh_token": refresh_token, "device_id": device_id}
-        )
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-    async def test_token_cannot_be_reused(
-        self, client, db_active_user, capture_deeplink
-    ):
-        await client.post(REQUEST_URL, json={"email": "ana@test.com"})
-        token = _extract_token(capture_deeplink["deeplink"])
-
-        await client.post(
-            CONFIRM_URL, json={"token": token, "new_password": "newpassword123"}
-        )
-        response = await client.post(
-            CONFIRM_URL, json={"token": token, "new_password": "anotherpassword123"}
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 

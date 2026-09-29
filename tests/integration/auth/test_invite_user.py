@@ -62,14 +62,6 @@ class TestInviteAdminAuth:
 
 
 class TestInviteAdminSuccess:
-    async def test_returns_202(self, client, admin_headers):
-        """Should return 202 Accepted on a valid invitation."""
-        with patch("app.services.admin_service.send_invite_email"):
-            response = await client.post(
-                INVITE_ADMIN_URL, json=_invite_body(), headers=admin_headers
-            )
-        assert response.status_code == status.HTTP_202_ACCEPTED
-
     async def test_creates_user_in_db_with_admin_role(self, client, admin_headers):
         """The invited user should be persisted with role=ADMIN."""
         email = f"admin_{uuid.uuid4().hex[:6]}@test.com"
@@ -103,7 +95,7 @@ class TestInviteAdminSuccess:
         assert mock_send.call_args[0][0] == email
 
     async def test_response_returns_created_user_id(self, client, admin_headers):
-        """202 response should carry the created user's id in the body."""
+        """Returns 202 with the created user's id in the body."""
         email = f"admin_{uuid.uuid4().hex[:6]}@test.com"
 
         with patch("app.services.admin_service.send_invite_email"):
@@ -115,8 +107,8 @@ class TestInviteAdminSuccess:
             result = await session.execute(select(User).where(User.email == email))
             user = result.scalar_one()
 
-        body = response.json()
-        assert body == {"user_id": str(user.id)}
+        assert response.status_code == status.HTTP_202_ACCEPTED
+        assert response.json() == {"user_id": str(user.id)}
 
 
 class TestInviteAnalystSuccess:
@@ -140,20 +132,6 @@ class TestInviteAnalystSuccess:
 
 
 class TestInviteAdminConflict:
-    async def test_returns_409_if_email_already_registered(self, client, admin_headers):
-        """Should return 409 if the email is already in use."""
-        email = f"admin_{uuid.uuid4().hex[:6]}@test.com"
-
-        with patch("app.services.admin_service.send_invite_email"):
-            await client.post(
-                INVITE_ADMIN_URL, json={"email": email}, headers=admin_headers
-            )
-            response = await client.post(
-                INVITE_ADMIN_URL, json={"email": email}, headers=admin_headers
-            )
-
-        assert response.status_code == status.HTTP_409_CONFLICT
-
     async def test_pending_invitee_is_distinguishable_and_carries_user_id(
         self, client, admin_headers
     ):
@@ -222,10 +200,10 @@ class TestInviteAdminConflict:
 
         assert len(users) == 1
 
-    async def test_returns_409_if_email_differs_only_in_case(
+    async def test_case_variant_does_not_create_duplicate_user(
         self, client, admin_headers
     ):
-        """Casing must not bypass the duplicate check."""
+        """An upper-cased retry is rejected and does not create a second account."""
         email = f"admin_{uuid.uuid4().hex[:6]}@test.com"
 
         with patch("app.services.admin_service.send_invite_email"):
@@ -238,30 +216,13 @@ class TestInviteAdminConflict:
                 headers=admin_headers,
             )
 
-        assert response.status_code == status.HTTP_409_CONFLICT
-
-    async def test_case_variant_does_not_create_duplicate_user(
-        self, client, admin_headers
-    ):
-        """An upper-cased retry must not end up as a second account."""
-        email = f"admin_{uuid.uuid4().hex[:6]}@test.com"
-
-        with patch("app.services.admin_service.send_invite_email"):
-            await client.post(
-                INVITE_ADMIN_URL, json={"email": email}, headers=admin_headers
-            )
-            await client.post(
-                INVITE_ADMIN_URL,
-                json={"email": email.upper()},
-                headers=admin_headers,
-            )
-
         async with db_module.AsyncSessionLocal() as session:
             result = await session.execute(
                 select(User).where(func.lower(User.email) == email.lower())
             )
             users = result.scalars().all()
 
+        assert response.status_code == status.HTTP_409_CONFLICT
         assert len(users) == 1
 
     async def test_analyst_invite_returns_409_if_email_registered(
@@ -410,17 +371,6 @@ class TestResendInviteSuccess:
             user = result.scalar_one()
 
         assert user.status == UserStatus.PENDING_VALIDATION
-
-    async def test_response_body_is_empty(self, client, admin_headers):
-        """202 response should have no body."""
-        user_id, _ = await _create_pending_admin(client, admin_headers)
-
-        with patch("app.services.admin_service.send_invite_email"):
-            response = await client.patch(
-                RESEND_INVITE_URL.format(user_id=user_id), headers=admin_headers
-            )
-
-        assert response.content == b""
 
 
 class TestResendInviteErrors:

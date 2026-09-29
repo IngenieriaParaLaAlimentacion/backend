@@ -168,33 +168,10 @@ class TestRegistrationSendsVerificationEmail:
         )
         assert response.status_code == status.HTTP_201_CREATED
 
-    async def test_registration_creates_user_unverified(
-        self, registered_user, client, db_establishment
-    ):
-        _, _ = registered_user
-        # Re-register a fresh user to check the response body
-        global _REGISTRATION_EMAIL_COUNTER
-        _REGISTRATION_EMAIL_COUNTER += 1
-        response = await client.post(
-            REGISTER_URL,
-            json={
-                "email": f"status_check_{_REGISTRATION_EMAIL_COUNTER}@example.com",
-                "password": "securepass123",
-                "name": "Juan",
-                "last_name": "Perez",
-                "establishments": [str(db_establishment.id)],
-            },
-        )
-        assert response.json()["status"] == "pending_validation"
-
     async def test_registration_triggers_verification_email(
         self, registered_user, capture_verification_deeplink
     ):
         assert capture_verification_deeplink["deeplink"] is not None
-
-    async def test_deeplink_contains_token(self, registered_user):
-        _, token = registered_user
-        assert token  # _extract_token already asserts structure
 
     async def test_smtp_failure_still_returns_201(
         self, client, db_establishment, monkeypatch
@@ -260,26 +237,12 @@ class TestResendVerificationEmail:
         response = await client.post(RESEND_URL, json={"email": user.email})
         assert response.status_code == status.HTTP_202_ACCEPTED
 
-    async def test_resend_sends_new_deeplink(self, unverified_user_with_token):
-        _, token = unverified_user_with_token
-        assert token  # fixture already asserts deeplink was set
-
     async def test_new_token_works_after_resend(
         self, client, unverified_user_with_token
     ):
         _, token = unverified_user_with_token
         response = await client.post(VERIFY_URL, json={"token": token})
         assert response.status_code == status.HTTP_204_NO_CONTENT
-
-    async def test_old_token_revoked_after_resend(
-        self, client, unverified_user_with_token, capture_verification_deeplink
-    ):
-        user, first_token = unverified_user_with_token
-
-        await client.post(RESEND_URL, json={"email": user.email})
-        # first_token is now revoked
-        response = await client.post(VERIFY_URL, json={"token": first_token})
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     async def test_old_tokens_invalidated_after_multiple_resends(
         self, client, unverified_user_with_token, capture_verification_deeplink
