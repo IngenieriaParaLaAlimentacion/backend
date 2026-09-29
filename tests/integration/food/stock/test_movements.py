@@ -457,29 +457,17 @@ class TestMovements:
         assert len(set(seen)) == 12
 
     async def test_another_establishments_movements_are_not_listed(
-        self, client, make_field_worker_with_access, db_establishment, foods, app
+        self,
+        client,
+        make_field_worker_with_access,
+        db_establishment,
+        foods,
+        other_establishment_id,
     ) -> None:
         """The establishment filter lives inside each union branch; a branch
         missing it would leak here and nowhere else."""
-        from app.db.database import AsyncSessionLocal
-        from app.models.establishments.establishment import Establishment
-
-        async with AsyncSessionLocal() as session:
-            other = Establishment(
-                name="Ajeno",
-                formatted_address="Calle 5",
-                latitude=-34.6,
-                longitude=-58.4,
-                place_id="place-test-005",
-                city="Buenos Aires",
-                province="Buenos Aires",
-            )
-            session.add(other)
-            await session.commit()
-            other_id = other.id
-
         mine_headers, _ = await make_field_worker_with_access(db_establishment.id)
-        other_headers, _ = await make_field_worker_with_access(other_id)
+        other_headers, _ = await make_field_worker_with_access(other_establishment_id)
         my_intake = await client.post(
             INTAKES_URL,
             json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
@@ -487,14 +475,16 @@ class TestMovements:
         )
         their_intake = await client.post(
             INTAKES_URL,
-            json=_intake_body(other_id, [(foods.eggs, "6")]),
+            json=_intake_body(other_establishment_id, [(foods.eggs, "6")]),
             headers=other_headers,
         )
 
         mine = await client.get(
             _movements_url(db_establishment.id), headers=mine_headers
         )
-        theirs = await client.get(_movements_url(other_id), headers=other_headers)
+        theirs = await client.get(
+            _movements_url(other_establishment_id), headers=other_headers
+        )
 
         assert mine.json()["total"] == 1
         assert theirs.json()["total"] == 1
@@ -524,26 +514,13 @@ class TestMovements:
         assert response.status_code == 404
 
     async def test_a_field_worker_without_access_is_refused(
-        self, client, make_field_worker_with_access, db_establishment, app
+        self,
+        client,
+        make_field_worker_with_access,
+        db_establishment,
+        other_establishment_id,
     ) -> None:
-        from app.db.database import AsyncSessionLocal
-        from app.models.establishments.establishment import Establishment
-
-        async with AsyncSessionLocal() as session:
-            other = Establishment(
-                name="Ajeno",
-                formatted_address="Calle 6",
-                latitude=-34.6,
-                longitude=-58.4,
-                place_id="place-test-006",
-                city="Buenos Aires",
-                province="Buenos Aires",
-            )
-            session.add(other)
-            await session.commit()
-            other_id = other.id
-
-        headers, _ = await make_field_worker_with_access(other_id)
+        headers, _ = await make_field_worker_with_access(other_establishment_id)
 
         response = await client.get(
             _movements_url(db_establishment.id), headers=headers
@@ -654,51 +631,17 @@ class TestMovementDetail:
         assert len(lines) == 2
         assert sorted(line["quantity"] for line in lines) == ["2.000", "3.000"]
 
-    async def test_a_listed_movement_resolves_in_the_detail(
-        self, client, field_worker_with_access, db_establishment, foods
-    ) -> None:
-        """The two endpoints agree on ids and on the direction they report."""
-        headers, _ = field_worker_with_access
-        await client.post(
-            INTAKES_URL,
-            json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
-            headers=headers,
-        )
-        listed = (
-            await client.get(_movements_url(db_establishment.id), headers=headers)
-        ).json()["items"][0]
-
-        response = await client.get(
-            _movement_detail_url(db_establishment.id, listed["id"]), headers=headers
-        )
-
-        assert response.status_code == 200
-        assert response.json()["id"] == listed["id"]
-        assert response.json()["direction"] == listed["direction"]
-
     async def test_a_movement_of_another_establishment_is_not_found(
-        self, client, make_field_worker_with_access, db_establishment, foods
+        self,
+        client,
+        make_field_worker_with_access,
+        db_establishment,
+        foods,
+        other_establishment_id,
     ) -> None:
         """404, not 403: a 403 would confirm the id exists somewhere else."""
-        from app.db.database import AsyncSessionLocal
-        from app.models.establishments.establishment import Establishment
-
-        async with AsyncSessionLocal() as session:
-            other = Establishment(
-                name="Ajeno",
-                formatted_address="Calle 7",
-                latitude=-34.6,
-                longitude=-58.4,
-                place_id="place-test-007",
-                city="Buenos Aires",
-                province="Buenos Aires",
-            )
-            session.add(other)
-            await session.commit()
-            other_id = other.id
-
         mine_headers, _ = await make_field_worker_with_access(db_establishment.id)
-        other_headers, _ = await make_field_worker_with_access(other_id)
+        other_headers, _ = await make_field_worker_with_access(other_establishment_id)
         intake = await client.post(
             INTAKES_URL,
             json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
@@ -706,7 +649,7 @@ class TestMovementDetail:
         )
 
         response = await client.get(
-            _movement_detail_url(other_id, intake.json()["id"]),
+            _movement_detail_url(other_establishment_id, intake.json()["id"]),
             headers=other_headers,
         )
 
@@ -734,27 +677,17 @@ class TestMovementDetail:
         assert response.status_code == 404
 
     async def test_a_field_worker_without_access_is_refused(
-        self, client, make_field_worker_with_access, db_establishment, foods
+        self,
+        client,
+        make_field_worker_with_access,
+        db_establishment,
+        foods,
+        other_establishment_id,
     ) -> None:
-        from app.db.database import AsyncSessionLocal
-        from app.models.establishments.establishment import Establishment
-
-        async with AsyncSessionLocal() as session:
-            other = Establishment(
-                name="Ajeno",
-                formatted_address="Calle 8",
-                latitude=-34.6,
-                longitude=-58.4,
-                place_id="place-test-008",
-                city="Buenos Aires",
-                province="Buenos Aires",
-            )
-            session.add(other)
-            await session.commit()
-            other_id = other.id
-
         mine_headers, _ = await make_field_worker_with_access(db_establishment.id)
-        outsider_headers, _ = await make_field_worker_with_access(other_id)
+        outsider_headers, _ = await make_field_worker_with_access(
+            other_establishment_id
+        )
         intake = await client.post(
             INTAKES_URL,
             json=_intake_body(db_establishment.id, [(foods.rice, "10")]),

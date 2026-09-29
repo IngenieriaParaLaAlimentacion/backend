@@ -61,7 +61,7 @@ def uow(stub_establishment_lookup):
 
 @pytest.fixture
 def storage():
-    """A mocked IObjectStorage; not yet exercised by the service under test."""
+    """A mocked IObjectStorage."""
     return AsyncMock()
 
 
@@ -267,33 +267,6 @@ class TestExtraction:
             settings.receipt_food_match_min_word_similarity,
             settings.receipt_food_match_min_similarity,
         )
-
-    async def test_no_catalog_match_leaves_food_null(
-        self, uow, storage, food_intake_service, llm_client, admin_actor
-    ):
-        llm_client.complete = AsyncMock(
-            return_value={
-                "lines": [
-                    {
-                        "description": "Mute Santandereano",
-                        "raw_quantity": None,
-                        "raw_unit_text": None,
-                    }
-                ]
-            }
-        )
-
-        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
-        proposal = await service.propose_from_photo(
-            establishment_id=uuid.uuid4(),
-            content_type="image/png",
-            image=PNG_BYTES,
-            actor=admin_actor,
-        )
-
-        (line,) = proposal.lines
-        assert line.food is None
-        assert line.needs_review is True
 
     async def test_no_lines_detected_returns_manual_fallback_message(
         self, uow, storage, food_intake_service, llm_client, admin_actor

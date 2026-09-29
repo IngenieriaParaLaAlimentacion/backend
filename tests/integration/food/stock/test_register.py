@@ -80,26 +80,14 @@ class TestRegisterIntake:
         assert response.json()["type"].endswith("food-not-found")
 
     async def test_field_worker_without_access_is_refused(
-        self, client, make_field_worker_with_access, db_establishment, foods, app
+        self,
+        client,
+        make_field_worker_with_access,
+        db_establishment,
+        foods,
+        other_establishment_id,
     ) -> None:
-        from app.db.database import AsyncSessionLocal
-        from app.models.establishments.establishment import Establishment
-
-        async with AsyncSessionLocal() as session:
-            other = Establishment(
-                name="Ajeno",
-                formatted_address="Calle 3",
-                latitude=-34.6,
-                longitude=-58.4,
-                place_id="place-test-003",
-                city="Buenos Aires",
-                province="Buenos Aires",
-            )
-            session.add(other)
-            await session.commit()
-            other_id = other.id
-
-        headers, _ = await make_field_worker_with_access(other_id)
+        headers, _ = await make_field_worker_with_access(other_establishment_id)
 
         response = await client.post(
             INTAKES_URL,

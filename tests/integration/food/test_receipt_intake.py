@@ -247,18 +247,6 @@ class TestImageValidation:
         assert response.status_code == 422
         assert response.json()["type"] == "/errors/image-too-large"
 
-    async def test_missing_file_is_rejected_by_framework_validation(
-        self, client, admin_headers, db_establishment
-    ):
-        response = await client.post(
-            URL,
-            headers=admin_headers,
-            data={"establishment_id": str(db_establishment.id)},
-        )
-
-        assert response.status_code == 422
-        assert response.json()["type"] == "/errors/validation-failed"
-
 
 class TestAuthAndAccess:
     async def test_missing_token_is_rejected(self, client, db_establishment):

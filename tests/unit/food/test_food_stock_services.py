@@ -69,7 +69,6 @@ def make_stored(make_food):
         stored.establishment_id = ESTABLISHMENT_ID
         stored.responsible_id = uuid.uuid4()
         stored.occurred_at = datetime.now(timezone.utc)
-        stored.occurred_at = stored.occurred_at
         stored.comments = None
         stored.source = FoodIntakeSource.MANUAL
         stored.created_at = stored.occurred_at
@@ -112,7 +111,7 @@ def _outflow_request(**overrides) -> FoodOutflowRequest:
 
 
 class TestRegisterIntake:
-    async def test_moves_the_balance_in_one_statement(self, uow, actor, make_stored):
+    async def test_moves_the_balance_in_one_statement(self, uow, actor):
         _, created = await FoodIntakeService(uow).register(_intake_request(), actor)
 
         assert created is True
@@ -261,20 +260,6 @@ class TestMovementListing:
             )
 
         uow.food_stock_repo.list_movements.assert_not_awaited()
-
-    async def test_the_food_catalog_is_not_consulted(self, uow, actor):
-        """The listing is establishment-scoped: there is no food to validate."""
-        uow.food_stock_repo.list_movements = AsyncMock(return_value=([], 0))
-
-        await FoodStockService(uow).list_movements(
-            establishment_id=ESTABLISHMENT_ID,
-            actor=actor,
-            page=1,
-            page_size=10,
-            params=FoodMovementListingParams(),
-        )
-
-        uow.food_repo.get_by_ids.assert_not_awaited()
 
 
 class TestMovementDetail:

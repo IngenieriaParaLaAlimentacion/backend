@@ -19,11 +19,7 @@ async def _balance(establishment_id, food_id) -> Decimal | None:
         return held.get(food_id)
 
 
-# --- HTTP: el slice vertical completo -------------------------------------
-
 INTAKES_URL = "/api/v1/food-intakes"
-
-
 OUTFLOWS_URL = "/api/v1/food-outflows"
 
 

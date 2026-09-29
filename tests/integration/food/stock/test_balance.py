@@ -150,28 +150,11 @@ class TestBalanceMovements:
         assert await _balance(db_establishment.id, foods.eggs) is None
 
     async def test_balances_are_per_establishment_and_food(
-        self, db_establishment, foods, app
+        self, db_establishment, foods, other_establishment_id
     ) -> None:
-        from app.db.database import AsyncSessionLocal
-        from app.models.establishments.establishment import Establishment
-
-        async with AsyncSessionLocal() as session:
-            other = Establishment(
-                name="Otro comedor",
-                formatted_address="Calle 2",
-                latitude=-34.6,
-                longitude=-58.4,
-                place_id="place-test-002",
-                city="Buenos Aires",
-                province="Buenos Aires",
-            )
-            session.add(other)
-            await session.commit()
-            other_id = other.id
-
         await _move(db_establishment.id, foods.rice, Decimal("10"), up=True)
 
-        assert await _balance(other_id, foods.rice) is None
+        assert await _balance(other_establishment_id, foods.rice) is None
         assert await _balance(db_establishment.id, foods.eggs) is None
 
 

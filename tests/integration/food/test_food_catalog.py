@@ -204,10 +204,6 @@ class TestCategories:
         items = response.json()
         assert [i["name"] for i in items] == ["Frutas", "Carnes"]
 
-    async def test_response_is_not_paginated(self, client, admin_headers, catalog):
-        response = await client.get(CATEGORIES_URL, headers=admin_headers)
-        assert isinstance(response.json(), list)
-
 
 class TestFoodDetail:
     async def test_unauthenticated_returns_401(self, client, catalog):

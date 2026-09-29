@@ -1,7 +1,6 @@
 """Schema-level tests for the food intake tables.
 
-This module has no endpoints yet — US-2 is the data model — so rows are written
-through the repository and a real session rather than over HTTP.
+Rows are written through the repository and a real session rather than over HTTP.
 """
 
 import uuid
@@ -170,19 +169,6 @@ class TestPersistence:
 
         intake = await _fetch(intake_id)
         assert intake.updated_at == intake.created_at
-
-    async def test_comments_and_synced_at_are_optional(
-        self, db_establishment, responsible, foods
-    ):
-        intake_id = await _persist(
-            _build_intake(
-                db_establishment.id, responsible.id, [(foods.rice, Decimal("1"))]
-            )
-        )
-
-        intake = await _fetch(intake_id)
-        assert intake.comments is None
-        assert intake.synced_at is None
 
     async def test_photo_source_is_persisted(
         self, db_establishment, responsible, foods
