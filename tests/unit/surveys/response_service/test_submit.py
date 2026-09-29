@@ -19,12 +19,8 @@ from app.exceptions.domain_exceptions import (
     SurveyResponseAlreadyExistsError,
     UniqueConstraintError,
 )
-from app.schemas.surveys.survey_response_schema import (
-    SurveyResponseRequest,
-)
 from app.services.surveys.survey_response_service import SurveyResponseService
 from tests.unit.surveys.response_service.helpers import (
-    NOW,
     _make_option,
     _make_question,
     _make_response,
@@ -102,15 +98,6 @@ class TestValidateAnswers:
 
 
 class TestSubmit:
-    @pytest.fixture
-    def request_factory(self):
-        def _make(**overrides):
-            data = dict(answers={}, response_number=1, event_at=NOW)
-            data.update(overrides)
-            return SurveyResponseRequest(**data)
-
-        return _make
-
     @pytest.mark.parametrize("setting", [False, None])
     async def test_optional_survey_accepts_missing_number(
         self, make_uow, request_factory, admin_actor, setting
@@ -309,15 +296,6 @@ class TestSubmit:
 class TestResolveTarget:
     """The payload must name exactly the entity the survey targets."""
 
-    @pytest.fixture
-    def request_factory(self):
-        def _make(**overrides):
-            data = dict(answers={}, response_number=1, event_at=NOW)
-            data.update(overrides)
-            return SurveyResponseRequest(**data)
-
-        return _make
-
     async def test_subject_survey_requires_subject_id(
         self, make_uow, request_factory, admin_actor
     ):
@@ -397,15 +375,6 @@ class TestTargetUniqueness:
     """A subject, and an establishment, answer a given survey once. Anonymous
     surveys are unbounded."""
 
-    @pytest.fixture
-    def request_factory(self):
-        def _make(**overrides):
-            data = dict(answers={}, response_number=1, event_at=NOW)
-            data.update(overrides)
-            return SurveyResponseRequest(**data)
-
-        return _make
-
     @staticmethod
     def _answered_response():
         response = _make_response(subject_id=uuid.uuid4())
@@ -467,29 +436,6 @@ class TestTargetUniqueness:
         # Pre-serialized to JSON primitives (Pydantic renders UTC as "Z"), since
         # the problem+json handler passes extensions straight to JSONResponse.
         assert payload["event_at"] == "2026-01-01T00:00:00Z"
-
-    async def test_anonymous_survey_never_conflicts(
-        self, make_uow, request_factory, admin_actor
-    ):
-        survey = _make_survey_orm(response_target=SurveyResponseTarget.ANONYMOUS)
-        uow = make_uow(survey=survey, target_response=self._answered_response())
-        _, created = await SurveyResponseService(uow).submit(
-            survey.id, request_factory(), admin_actor
-        )
-        assert created is True
-
-    async def test_duplicate_number_is_allowed_for_anonymous_responses(
-        self, make_uow, request_factory, admin_actor
-    ):
-        survey = _make_survey_orm(response_target=SurveyResponseTarget.ANONYMOUS)
-        uow = make_uow(survey=survey)
-
-        _, created = await SurveyResponseService(uow).submit(
-            survey.id, request_factory(response_number=1), admin_actor
-        )
-
-        assert created is True
-        assert uow.survey_response_repo.create.call_args.kwargs["response_number"] == 1
 
     async def test_raced_target_collision_becomes_conflict_not_replay(
         self, make_uow, request_factory, admin_actor

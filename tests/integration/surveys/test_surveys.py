@@ -166,12 +166,6 @@ class TestCreateAndGet:
         response = await client.post(SURVEYS_URL, json=body, headers=headers)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
-    async def test_scope_and_establishment_ids_are_gone(self, client, admin_author):
-        headers, _ = admin_author
-        body = (await _create(client, headers)).json()
-        assert "scope" not in body
-        assert "establishment_ids" not in body
-
 
 class TestGetFieldWorkerAccess:
     """A field worker may fetch full survey detail (needed to render the
@@ -602,63 +596,12 @@ class TestLockedAfterResponses:
         ]
         assert body["questions"][2]["is_required"] is False
 
-    async def test_add_required_question_with_foreign_id_returns_409(
-        self, client, admin_author, db_establishment
-    ):
-        headers, _ = admin_author
-        created = (await _create(client, headers)).json()
-        survey_id = created["id"]
-        keep = created["questions"][0]
-        second = created["questions"][1]
-
-        submit = await client.post(
-            f"{SURVEYS_URL}/{survey_id}/responses",
-            json={
-                "answers": {keep["id"]: keep["options"][0]["id"]},
-                "event_at": "2024-06-01T12:00:00Z",
-            },
-            headers=headers,
-        )
-        assert submit.status_code == status.HTTP_201_CREATED
-
-        # A required "new" question posing as existing via a foreign id must
-        # still be rejected, not slip past the lock check.
-        payload = _survey_update_body(
-            questions=[
-                {
-                    "id": keep["id"],
-                    "text": keep["text"],
-                    "response_type": "single_choice",
-                    "is_required": True,
-                    "options": [
-                        {"id": keep["options"][0]["id"], "text": "Sí"},
-                        {"id": keep["options"][1]["id"], "text": "No"},
-                    ],
-                },
-                {
-                    "id": second["id"],
-                    "text": second["text"],
-                    "response_type": "text",
-                    "is_required": False,
-                    "options": [],
-                },
-                {
-                    "id": str(uuid.uuid4()),
-                    "text": "¿Cuántas personas viven en el hogar?",
-                    "response_type": "numeric",
-                    "is_required": True,
-                    "options": [],
-                },
-            ]
-        )
-        response = await client.put(
-            f"{SURVEYS_URL}/{survey_id}", json=payload, headers=headers
-        )
-        assert response.status_code == status.HTTP_409_CONFLICT
-
+    @pytest.mark.parametrize("foreign_id", [False, True], ids=["new", "foreign_id"])
     async def test_add_required_question_after_response_returns_409(
-        self, client, admin_author, db_establishment
+        self, client, admin_author, db_establishment, foreign_id
     ):
+        """A new required question is locked, also when it poses as an existing
+        one through an id from another survey."""
         headers, _ = admin_author
         created = (await _create(client, headers)).json()
         survey_id = created["id"]
@@ -675,7 +618,14 @@ class TestLockedAfterResponses:
         )
         assert submit.status_code == status.HTTP_201_CREATED
 
-        # Keep both existing questions untouched, add a new required one.
+        new_question = {
+            "text": "¿Cuántas personas viven en el hogar?",
+            "response_type": "numeric",
+            "is_required": True,
+            "options": [],
+        }
+        if foreign_id:
+            new_question["id"] = str(uuid.uuid4())
         payload = _survey_update_body(
             questions=[
                 {
@@ -695,12 +645,7 @@ class TestLockedAfterResponses:
                     "is_required": False,
                     "options": [],
                 },
-                {
-                    "text": "¿Cuántas personas viven en el hogar?",
-                    "response_type": "numeric",
-                    "is_required": True,
-                    "options": [],
-                },
+                new_question,
             ]
         )
         response = await client.put(

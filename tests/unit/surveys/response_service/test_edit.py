@@ -13,9 +13,6 @@ from app.exceptions.domain_exceptions import (
     InvalidSurveyResponseError,
     SurveyResponseNotFoundError,
 )
-from app.schemas.surveys.survey_response_schema import (
-    SurveyResponseEditRequest,
-)
 from app.services.surveys.survey_response_service import SurveyResponseService
 from tests.unit.surveys.response_service.helpers import (
     NOW,
@@ -26,15 +23,6 @@ from tests.unit.surveys.response_service.helpers import (
 
 
 class TestEdit:
-    @pytest.fixture
-    def edit_factory(self):
-        def _make(**overrides):
-            data = dict(answers={}, response_number=1, event_at=NOW)
-            data.update(overrides)
-            return SurveyResponseEditRequest(**data)
-
-        return _make
-
     @pytest.mark.parametrize("setting", [False, None])
     async def test_optional_survey_edit_can_clear_number(
         self, make_uow, edit_factory, admin_actor, setting

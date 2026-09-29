@@ -4,8 +4,13 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.domain.user import UserActor, UserRole
+from app.schemas.surveys.survey_response_schema import (
+    SurveyResponseEditRequest,
+    SurveyResponseRequest,
+)
 from tests.unit.surveys.response_service.helpers import (
     _UNSET,
+    NOW,
     _apply_update_answers,
     _make_response,
 )
@@ -62,3 +67,23 @@ def analyst_actor():
 @pytest.fixture
 def field_worker_actor():
     return UserActor(user_id=uuid.uuid4(), role=UserRole.FIELD_WORKER)
+
+
+@pytest.fixture
+def request_factory():
+    def _make(**overrides):
+        data = dict(answers={}, response_number=1, event_at=NOW)
+        data.update(overrides)
+        return SurveyResponseRequest(**data)
+
+    return _make
+
+
+@pytest.fixture
+def edit_factory():
+    def _make(**overrides):
+        data = dict(answers={}, response_number=1, event_at=NOW)
+        data.update(overrides)
+        return SurveyResponseEditRequest(**data)
+
+    return _make

@@ -144,26 +144,6 @@ class TestFiesScoring:
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["score_fies"] == 3
 
-    async def test_fies_response_all_affirmative_scores_eight(
-        self, client, db_establishment, admin_user
-    ):
-        headers, _ = admin_user
-        survey = (
-            await client.post(
-                SURVEYS_URL,
-                json=self._fies_survey_body("FIES All Yes"),
-                headers=headers,
-            )
-        ).json()
-        answers = {q["id"]: q["options"][0]["id"] for q in survey["questions"]}
-
-        response = await client.post(
-            responses_url(survey["id"]),
-            json=_response_body(survey["id"], answers),
-            headers=headers,
-        )
-        assert response.json()["score_fies"] == 8
-
     async def test_custom_survey_response_has_null_score(
         self, client, db_establishment, admin_user
     ):

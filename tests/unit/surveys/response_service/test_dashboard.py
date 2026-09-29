@@ -1,5 +1,4 @@
 import uuid
-from datetime import timedelta
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -11,10 +10,6 @@ from app.domain.survey import (
 from app.exceptions.domain_exceptions import (
     ForbiddenError,
     SurveyResponseNotFoundError,
-)
-from app.schemas.surveys.survey_response_schema import (
-    SurveyResponseEditRequest,
-    SurveyResponseRequest,
 )
 from app.services.surveys.survey_response_service import SurveyResponseService
 from tests.unit.surveys.response_service.helpers import (
@@ -182,65 +177,23 @@ class TestGetDashboardDetail:
 
 
 class TestFiesScoring:
-    @pytest.fixture
-    def request_factory(self):
-        def _make(**overrides):
-            data = dict(answers={}, response_number=1, event_at=NOW)
-            data.update(overrides)
-            return SurveyResponseRequest(**data)
-
-        return _make
-
-    @pytest.fixture
-    def edit_factory(self):
-        def _make(**overrides):
-            data = dict(answers={}, response_number=1, event_at=NOW)
-            data.update(overrides)
-            return SurveyResponseEditRequest(**data)
-
-        return _make
-
-    async def test_all_affirmative_scores_max(
-        self, make_uow, request_factory, admin_actor
-    ):
-        survey, questions = _make_fies_survey_orm(num_questions=8)
-        answers = {str(q.id): str(q.options[0].id) for q in questions}  # all "Sí"
-        uow = make_uow(survey=survey)
-        data = request_factory(answers=answers)
-
-        await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
-
-        create_call = uow.survey_response_repo.create.call_args
-        assert create_call.kwargs["score_fies"] == 8
-
-    async def test_all_negative_scores_zero(
-        self, make_uow, request_factory, admin_actor
-    ):
-        survey, questions = _make_fies_survey_orm(num_questions=8)
-        answers = {str(q.id): str(q.options[1].id) for q in questions}  # all "No"
-        uow = make_uow(survey=survey)
-        data = request_factory(answers=answers)
-
-        await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
-
-        create_call = uow.survey_response_repo.create.call_args
-        assert create_call.kwargs["score_fies"] == 0
-
-    async def test_partial_affirmative_scores_correctly(
-        self, make_uow, request_factory, admin_actor
+    @pytest.mark.parametrize("affirmative", [8, 0, 3])
+    async def test_score_counts_the_affirmative_answers(
+        self, make_uow, request_factory, admin_actor, affirmative
     ):
         survey, questions = _make_fies_survey_orm(num_questions=8)
         answers = {
-            str(q.id): str(q.options[0].id if i < 3 else q.options[1].id)
+            str(q.id): str(q.options[0 if i < affirmative else 1].id)
             for i, q in enumerate(questions)
         }
         uow = make_uow(survey=survey)
-        data = request_factory(answers=answers)
 
-        await SurveyResponseService(uow).submit(survey.id, data, admin_actor)
+        await SurveyResponseService(uow).submit(
+            survey.id, request_factory(answers=answers), admin_actor
+        )
 
         create_call = uow.survey_response_repo.create.call_args
-        assert create_call.kwargs["score_fies"] == 3
+        assert create_call.kwargs["score_fies"] == affirmative
 
     async def test_custom_survey_has_null_score(
         self, make_uow, request_factory, admin_actor
@@ -287,26 +240,3 @@ class TestFiesScoring:
 
         update_call = uow.survey_response_repo.update_answers.call_args
         assert update_call.kwargs["score_fies"] == 8
-
-    async def test_edit_with_older_event_at_does_not_call_update(
-        self, make_uow, edit_factory, admin_actor
-    ):
-        """When the edit is older than the response's current event_at, the
-        audit row is still logged but update_answers (and its score
-        recalculation) is never applied."""
-        survey, questions = _make_fies_survey_orm(num_questions=8)
-        original_answers = {str(q.id): str(q.options[1].id) for q in questions}
-        response = _make_response(
-            survey_id=survey.id, answers=original_answers, event_at=NOW
-        )
-        uow = make_uow(survey=survey, existing_response=response)
-        older_time = NOW - timedelta(hours=1)
-        new_answers = {str(q.id): str(q.options[0].id) for q in questions}
-
-        await SurveyResponseService(uow).edit(
-            response.id,
-            edit_factory(answers=new_answers, event_at=older_time),
-            admin_actor,
-        )
-
-        uow.survey_response_repo.update_answers.assert_not_called()

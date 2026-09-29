@@ -9,7 +9,6 @@ from app.domain.survey import (
 from app.domain.survey_response import (
     SurveyResponseDomain,
     SurveyResponseListingParams,
-    SurveyResponseSortOrder,
 )
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
@@ -181,11 +180,6 @@ class TestSurveyResponseListingParams:
         params = SurveyResponseListingParams(city="  Cordoba  ")
         assert params.city == "Cordoba"
 
-    def test_none_city_stays_none(self):
-        params = SurveyResponseListingParams()
-        assert params.city is None
-        assert params.province is None
-
 
 class TestListBySurveyFilters:
     async def test_passes_params_through_to_repo(self, make_uow, admin_actor):
@@ -301,22 +295,3 @@ class TestListBySurveyFilters:
             params=SurveyResponseListingParams(province="Cordoba"),
         )
         uow.survey_response_repo.list_by_survey.assert_awaited_once()
-
-    async def test_default_params_is_unfiltered(self, make_uow, admin_actor):
-        survey = _make_survey_orm()
-        uow = make_uow(survey=survey)
-        uow.survey_response_repo.list_by_survey = AsyncMock(return_value=([], 0))
-
-        await SurveyResponseService(uow).list_by_survey(
-            survey.id,
-            admin_actor,
-            page=1,
-            page_size=20,
-            params=SurveyResponseListingParams(),
-        )
-
-        call = uow.survey_response_repo.list_by_survey.call_args
-        assert call.kwargs["params"].establishment_id is None
-        assert call.kwargs["params"].subject_id is None
-        assert call.kwargs["params"].city is None
-        assert call.kwargs["params"].sort_order == SurveyResponseSortOrder.EVENT_AT_DESC

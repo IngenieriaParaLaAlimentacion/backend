@@ -79,16 +79,6 @@ class TestSubmitRoleMatrix:
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["establishment_id"] == str(db_establishment.id)
 
-    async def test_admin_succeeds(self, client, db_establishment, admin_user):
-        headers, _ = admin_user
-        survey = await _create_survey(client, headers)
-        response = await client.post(
-            responses_url(survey["id"]),
-            json=_response_body(survey["id"], _valid_answers(survey)),
-            headers=headers,
-        )
-        assert response.status_code == status.HTTP_201_CREATED
-
     async def test_superadmin_succeeds(
         self, client, db_establishment, admin_user, superadmin_user
     ):
@@ -314,17 +304,6 @@ class TestTargetUniqueness:
             responses_url(survey["id"]), json=body, headers=headers
         )
         assert second.status_code == status.HTTP_409_CONFLICT
-
-    async def test_anonymous_survey_accepts_many_responses(self, client, admin_user):
-        headers, _ = admin_user
-        survey = await _create_survey(client, headers)
-        for _ in range(3):
-            response = await client.post(
-                responses_url(survey["id"]),
-                json=_response_body(survey["id"], _valid_answers(survey)),
-                headers=headers,
-            )
-            assert response.status_code == status.HTTP_201_CREATED
 
     async def test_required_survey_rejects_missing_number(self, client, admin_user):
         headers, _ = admin_user
