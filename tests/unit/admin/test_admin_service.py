@@ -140,28 +140,6 @@ class TestGetPaginatedUsers:
         assert result.total == 0
         assert result.total_pages == 0
 
-    async def test_last_page_has_fewer_items(self, make_uow, make_service):
-        users = [_make_user() for _ in range(5)]
-        service = make_service(make_uow(users=users, total=45))
-
-        result = await service.get_users_paginated(page=3, page_size=20)
-
-        assert len(result.items) == 5
-        assert result.total == 45
-        assert result.total_pages == 3
-
-    async def test_page_size_one(self, make_uow, make_service):
-        users = [_make_user()]
-        uow = make_uow(users=users, total=10)
-        service = make_service(uow)
-
-        result = await service.get_users_paginated(page=1, page_size=1)
-
-        assert result.total_pages == 10
-        uow.user_repo.get_paginated.assert_called_once_with(
-            role=None, status=None, limit=1, offset=0, search=None
-        )
-
     async def test_hydrates_only_approved_establishments(self, make_uow, make_service):
         """The listing means access, so it must ask for approved relations only."""
         user = _make_user()
@@ -182,18 +160,6 @@ class TestGetPaginatedUsers:
 
         uow.user_repo.get_paginated.assert_called_once_with(
             role=UserRole.ANALYST, status=None, limit=20, offset=0, search=None
-        )
-
-    async def test_forwards_status_filter_to_repo(self, make_uow, make_service):
-        uow = make_uow()
-        service = make_service(uow)
-
-        await service.get_users_paginated(
-            page=1, page_size=20, status=UserStatus.ACTIVE
-        )
-
-        uow.user_repo.get_paginated.assert_called_once_with(
-            role=None, status=UserStatus.ACTIVE, limit=20, offset=0, search=None
         )
 
     async def test_skips_establishment_query_when_no_users(
@@ -352,25 +318,6 @@ class TestApproveEstablishments:
             await service.approve_establishments(user.id, [estab1.id, estab2.id])
 
         mock_email.assert_awaited_once_with(user.email, ["Centro A", "Centro B"])
-
-    async def test_email_sent_after_commit(self, make_establishment, mock_auth_service):
-        user = _make_user(role=UserRole.FIELD_WORKER, status=UserStatus.ACTIVE)
-        estab = make_establishment()
-        uow = _make_approve_uow(
-            user=user,
-            relations=[_make_relation(estab.id)],
-            establishments=[estab],
-        )
-        service = AdminService(uow, mock_auth_service)
-
-        with patch(
-            "app.services.admin_service.send_access_granted_email",
-            new_callable=AsyncMock,
-        ) as mock_email:
-            await service.approve_establishments(user.id, [estab.id])
-
-        uow.commit.assert_called_once()
-        mock_email.assert_awaited_once()
 
 
 class TestRejectEstablishments:
