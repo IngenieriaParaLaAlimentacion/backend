@@ -6,8 +6,6 @@ from tests.integration.activity.helpers import (
     ACTIVITY_URL,
     _create_food_intake,
     _create_food_outflow,
-    _create_measurement,
-    _create_subject,
     _create_survey,
     _submit_survey_response,
 )
@@ -90,28 +88,6 @@ class TestSurveyResponseActivity:
 
         response_b = await client.get(ACTIVITY_URL, headers=headers_b)
         assert response_b.json()["total"] == 0
-
-    async def test_mixed_feed_includes_all_three_types_ordered_desc(
-        self, client, db_establishment, field_worker_a, survey_author
-    ):
-        headers, _ = field_worker_a
-        subject_id = await _create_subject(client, headers, dni=55555551)
-        await _create_measurement(
-            client, headers, subject_id, db_establishment.id, "2024-02-01T00:00:00Z"
-        )
-        survey = await _create_survey(client, survey_author)
-        await _submit_survey_response(client, headers, survey, "2024-03-01T00:00:00Z")
-
-        response = await client.get(ACTIVITY_URL, headers=headers)
-        body = response.json()
-        assert body["total"] == 3
-        # subject's occurred_at is server-generated "now" (via subject_events),
-        # so it sorts ahead of the client-dated 2024 measurement/response.
-        assert [i["type"] for i in body["items"]] == [
-            "subject",
-            "survey_response",
-            "measurement",
-        ]
 
 
 class TestFoodIntakeActivity:

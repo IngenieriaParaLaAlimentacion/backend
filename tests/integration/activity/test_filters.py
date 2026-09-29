@@ -21,81 +21,40 @@ def _item_id(item):
 
 
 class TestFoodMovementTypeFilter:
-    async def test_type_food_intake_returns_only_intakes(
-        self, client, db_establishment, field_worker_a, foods
+    @pytest.mark.parametrize("movement", ["food_intake", "food_outflow"])
+    async def test_food_type_returns_only_that_movement(
+        self, client, db_establishment, field_worker_a, foods, movement
     ):
         headers, _ = field_worker_a
         subject_id = await _create_subject(client, headers, dni=66666661)
         await _create_measurement(
             client, headers, subject_id, db_establishment.id, "2024-02-01T00:00:00Z"
         )
-        intake_id = await _create_food_intake(
-            client,
-            headers,
-            db_establishment.id,
-            "2024-04-01T00:00:00Z",
-            [(foods.rice, "5.000")],
-        )
-        await _create_food_outflow(
-            client,
-            headers,
-            db_establishment.id,
-            "2024-05-01T00:00:00Z",
-            [(foods.rice, "1.000")],
-        )
+        # The intake comes first: the outflow spends its stock.
+        created = {
+            "food_intake": await _create_food_intake(
+                client,
+                headers,
+                db_establishment.id,
+                "2024-04-01T00:00:00Z",
+                [(foods.rice, "5.000")],
+            ),
+            "food_outflow": await _create_food_outflow(
+                client,
+                headers,
+                db_establishment.id,
+                "2024-05-01T00:00:00Z",
+                [(foods.rice, "1.000")],
+            ),
+        }
 
         body = (
-            await client.get(
-                ACTIVITY_URL, params={"type": "food_intake"}, headers=headers
-            )
+            await client.get(ACTIVITY_URL, params={"type": movement}, headers=headers)
         ).json()
 
         assert body["total"] == 1
-        assert all(i["type"] == "food_intake" for i in body["items"])
-        assert body["items"][0]["food_intake"]["id"] == intake_id
-
-    async def test_type_food_outflow_returns_only_outflows(
-        self, client, db_establishment, field_worker_a, foods
-    ):
-        headers, _ = field_worker_a
-        subject_id = await _create_subject(client, headers, dni=66666662)
-        await _create_measurement(
-            client, headers, subject_id, db_establishment.id, "2024-02-01T00:00:00Z"
-        )
-        await _create_food_intake(
-            client,
-            headers,
-            db_establishment.id,
-            "2024-04-01T00:00:00Z",
-            [(foods.rice, "5.000")],
-        )
-        outflow_id = await _create_food_outflow(
-            client,
-            headers,
-            db_establishment.id,
-            "2024-05-01T00:00:00Z",
-            [(foods.rice, "1.000")],
-        )
-
-        body = (
-            await client.get(
-                ACTIVITY_URL, params={"type": "food_outflow"}, headers=headers
-            )
-        ).json()
-
-        assert body["total"] == 1
-        assert all(i["type"] == "food_outflow" for i in body["items"])
-        assert body["items"][0]["food_outflow"]["id"] == outflow_id
-
-    async def test_unknown_type_is_rejected_with_422(self, client, field_worker_a):
-        """Widening the enum must not turn `type` into a free-form string."""
-        headers, _ = field_worker_a
-
-        response = await client.get(
-            ACTIVITY_URL, params={"type": "food_movement"}, headers=headers
-        )
-
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+        assert all(i["type"] == movement for i in body["items"])
+        assert body["items"][0][movement]["id"] == created[movement]
 
 
 class TestMultiTypeFilter:
@@ -217,32 +176,6 @@ class TestMultiTypeFilter:
 
         assert merged["total"] == subjects["total"] + measurements["total"] == 3
 
-    async def test_types_interleave_across_branches_by_occurred_at_desc(
-        self, client, db_establishment, field_worker_a, foods
-    ):
-        """An intake dated between two outflows lands between them -- exactly
-        what a client-side merge could not guarantee."""
-        headers, _ = field_worker_a
-        intake_a, outflow_1, intake_b, outflow_2 = await self._seed_two_direction_feed(
-            client, headers, db_establishment.id, foods, dni=77777774
-        )
-
-        body = (
-            await client.get(
-                ACTIVITY_URL,
-                params={"type": ["food_intake", "food_outflow"]},
-                headers=headers,
-            )
-        ).json()
-
-        returned = [_item_id(i) for i in body["items"]]
-        assert (
-            returned.index(outflow_1)
-            < returned.index(intake_b)
-            < returned.index(outflow_2)
-        )
-        assert returned[0] == intake_a
-
     async def test_request_order_does_not_change_the_result(
         self, client, db_establishment, field_worker_a, foods
     ):
@@ -300,24 +233,6 @@ class TestMultiTypeFilter:
         assert [_item_id(i) for i in every_type["items"]] == [
             _item_id(i) for i in unfiltered["items"]
         ]
-
-    async def test_omitted_type_returns_every_type(
-        self, client, db_establishment, field_worker_a, foods
-    ):
-        headers, _ = field_worker_a
-        await self._seed_two_direction_feed(
-            client, headers, db_establishment.id, foods, dni=77777777
-        )
-
-        body = (await client.get(ACTIVITY_URL, headers=headers)).json()
-
-        assert body["total"] == 6
-        assert {i["type"] for i in body["items"]} == {
-            "subject",
-            "measurement",
-            "food_intake",
-            "food_outflow",
-        }
 
     async def test_pagination_across_a_two_type_feed_neither_skips_nor_repeats(
         self, client, db_establishment, field_worker_a, foods

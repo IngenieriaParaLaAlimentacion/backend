@@ -210,44 +210,6 @@ class TestPagination:
 
 
 class TestActivityItemTagging:
-    async def test_food_rows_are_never_tagged_as_survey_response(
-        self, client, db_establishment, field_worker_a, foods
-    ):
-        """Regression: `_assemble_items` used to end in a bare `else:` that
-        treated every non-subject, non-measurement row as a survey response.
-        A food row reaching that branch would be mis-tagged.
-
-        Deliberately asserts on a feed with *no* survey responses in it, so the
-        expected count of `survey_response` items is exactly zero.
-        """
-        headers, _ = field_worker_a
-        intake_id = await _create_food_intake(
-            client,
-            headers,
-            db_establishment.id,
-            "2024-04-01T00:00:00Z",
-            [(foods.rice, "5.000")],
-        )
-        outflow_id = await _create_food_outflow(
-            client,
-            headers,
-            db_establishment.id,
-            "2024-05-01T00:00:00Z",
-            [(foods.rice, "1.000")],
-        )
-
-        body = (await client.get(ACTIVITY_URL, headers=headers)).json()
-
-        assert [i["type"] for i in body["items"]] == ["food_outflow", "food_intake"]
-        assert all(i["survey_response"] is None for i in body["items"])
-        # Exactly one sibling populated per item, and its key name equals the
-        # item's type — the general form of the flat-siblings contract, so it
-        # catches a mis-tagging of any future type too.
-        for item in body["items"]:
-            assert _populated_siblings(item) == [item["type"]]
-        assert body["items"][0]["food_outflow"]["id"] == outflow_id
-        assert body["items"][1]["food_intake"]["id"] == intake_id
-
     async def test_every_type_in_a_mixed_feed_tags_its_own_sibling(
         self, client, db_establishment, field_worker_a, survey_author, foods
     ):

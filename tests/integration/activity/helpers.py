@@ -1,6 +1,4 @@
 import uuid
-from dataclasses import dataclass
-from uuid import UUID
 
 from fastapi import status
 
@@ -14,12 +12,6 @@ FOOD_INTAKES_URL = "/api/v1/food-intakes"
 
 
 FOOD_OUTFLOWS_URL = "/api/v1/food-outflows"
-
-
-@dataclass
-class Foods:
-    rice: UUID  # "Arroz", kilogramos
-    eggs: UUID  # "Huevo", unidades
 
 
 def _movement_body(establishment_id, lines, **overrides):

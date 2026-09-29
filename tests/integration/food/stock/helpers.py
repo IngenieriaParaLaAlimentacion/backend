@@ -1,12 +1,4 @@
-from dataclasses import dataclass
 from decimal import Decimal
-from uuid import UUID
-
-
-@dataclass
-class Foods:
-    rice: UUID  # "Arroz", kilogramos
-    eggs: UUID  # "Huevo", unidades
 
 
 async def _balance(establishment_id, food_id) -> Decimal | None:

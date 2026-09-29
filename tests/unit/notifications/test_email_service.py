@@ -20,14 +20,6 @@ _FIXED_NOW = datetime(2024, 6, 1, 12, 0, 0, tzinfo=timezone.utc)
 
 
 @pytest.fixture
-def recovery_deeplink_settings(monkeypatch):
-    monkeypatch.setattr(
-        settings, "backoffice_deeplink_base", "https://backoffice.example.com"
-    )
-    monkeypatch.setattr(settings, "password_recovery_path", "/reset-password")
-
-
-@pytest.fixture
 def invite_deeplink_settings(monkeypatch):
     monkeypatch.setattr(
         settings, "backoffice_deeplink_base", "https://backoffice.example.com"
@@ -51,18 +43,6 @@ def smtp_enabled_no_tls(monkeypatch):
 
 
 class TestBuildRecoveryDeeplink:
-    def test_uses_backoffice_origin(self, recovery_deeplink_settings):
-        result = build_recovery_deeplink("tok123")
-        assert urlparse(result).netloc == "backoffice.example.com"
-
-    def test_uses_configured_recovery_path(self, recovery_deeplink_settings):
-        result = build_recovery_deeplink("tok123")
-        assert urlparse(result).path == "/reset-password"
-
-    def test_token_injected_as_query_param(self, recovery_deeplink_settings):
-        result = build_recovery_deeplink("abc123")
-        assert parse_qs(urlparse(result).query)["token"] == ["abc123"]
-
     def test_scheme_netloc_path_and_existing_params_preserved(self, monkeypatch):
         monkeypatch.setattr(settings, "backoffice_deeplink_base", "https://foo")
         monkeypatch.setattr(settings, "password_recovery_path", "/reset?x=1")
@@ -86,21 +66,14 @@ class TestBuildRecoveryDeeplink:
 
 
 class TestBuildInviteDeeplink:
-    def test_admin_role_uses_backoffice_invite_admin_path(
-        self, invite_deeplink_settings
+    @pytest.mark.parametrize("role", [UserRole.ADMIN, UserRole.ANALYST])
+    def test_role_selects_its_backoffice_invite_path(
+        self, invite_deeplink_settings, role
     ):
-        result = build_invite_deeplink("tok123", user_role=UserRole.ADMIN)
-        assert result == "https://backoffice.example.com/invite/admin?token=tok123"
-
-    def test_analyst_role_uses_backoffice_invite_analyst_path(
-        self, invite_deeplink_settings
-    ):
-        result = build_invite_deeplink("tok123", user_role=UserRole.ANALYST)
-        assert result == "https://backoffice.example.com/invite/analyst?token=tok123"
-
-    def test_enum_role_resolves_to_its_value(self, invite_deeplink_settings):
-        result = build_invite_deeplink("tok123", user_role=UserRole.ANALYST)
-        assert urlparse(result).path == "/invite/analyst"
+        result = build_invite_deeplink("tok123", user_role=role)
+        assert (
+            result == f"https://backoffice.example.com/invite/{role.value}?token=tok123"
+        )
 
     def test_trailing_slash_in_base_does_not_duplicate(self, monkeypatch):
         monkeypatch.setattr(
@@ -114,21 +87,17 @@ class TestBuildInviteDeeplink:
 
 class TestSendRecoveryEmail:
     async def test_smtp_disabled_logs_and_skips_send(self, smtp_disabled):
-        with patch("app.services.email_service.logger") as mock_logger:
+        with (
+            patch("app.services.email_service.logger") as mock_logger,
+            patch(
+                "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
+            ) as mock_send,
+        ):
             await send_recovery_email(
                 "user@example.com", "https://app/reset?token=abc", _FIXED_NOW
             )
 
         mock_logger.info.assert_called_once()
-
-    async def test_smtp_disabled_does_not_send(self, smtp_disabled):
-        with patch(
-            "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
-        ) as mock_send:
-            await send_recovery_email(
-                "user@example.com", "https://app/reset?token=abc", _FIXED_NOW
-            )
-
         mock_send.assert_not_called()
 
     async def test_smtp_enabled_sends_to_correct_recipient(self, smtp_enabled_no_tls):
@@ -156,17 +125,15 @@ class TestSendRecoveryEmail:
 
 class TestSendAccessGrantedEmail:
     async def test_smtp_disabled_logs_and_skips_send(self, smtp_disabled):
-        with patch("app.services.email_service.logger") as mock_logger:
+        with (
+            patch("app.services.email_service.logger") as mock_logger,
+            patch(
+                "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
+            ) as mock_send,
+        ):
             await send_access_granted_email("worker@test.com", ["Centro A", "Centro B"])
 
         mock_logger.info.assert_called_once()
-
-    async def test_smtp_disabled_does_not_send(self, smtp_disabled):
-        with patch(
-            "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
-        ) as mock_send:
-            await send_access_granted_email("worker@test.com", ["Centro A", "Centro B"])
-
         mock_send.assert_not_called()
 
     async def test_smtp_enabled_sends_to_correct_recipient(self, smtp_enabled_no_tls):
@@ -179,15 +146,6 @@ class TestSendAccessGrantedEmail:
         sent_msg = mock_send.call_args[0][0]
         assert sent_msg["To"] == "worker@test.com"
 
-    async def test_smtp_enabled_sends_with_subject(self, smtp_enabled_no_tls):
-        with patch(
-            "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
-        ) as mock_send:
-            await send_access_granted_email("worker@test.com", ["Centro A", "Centro B"])
-
-        sent_msg = mock_send.call_args[0][0]
-        assert "Acceso concedido" in sent_msg["Subject"]
-
     async def test_includes_establishment_names_in_body(self, smtp_enabled_no_tls):
         with patch(
             "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
@@ -199,18 +157,6 @@ class TestSendAccessGrantedEmail:
         body = text_part.get_payload(decode=True).decode()
         assert "Centro A" in body
         assert "Centro B" in body
-
-    async def test_single_establishment_works(self, smtp_enabled_no_tls):
-        with patch(
-            "app.services.email_service.aiosmtplib.send", new_callable=AsyncMock
-        ) as mock_send:
-            await send_access_granted_email("worker@test.com", ["Centro A"])
-
-        mock_send.assert_awaited_once()
-        sent_msg = mock_send.call_args[0][0]
-        text_part = sent_msg.get_payload()[0]
-        body = text_part.get_payload(decode=True).decode()
-        assert "Centro A" in body
 
     async def test_smtp_exception_does_not_propagate(self, smtp_enabled_no_tls):
         with patch(

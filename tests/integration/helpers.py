@@ -1,6 +1,15 @@
 """Helpers shared by several integration test modules."""
 
+from dataclasses import dataclass
+from uuid import UUID
+
 from tests.integration.urls import SURVEYS_URL
+
+
+@dataclass
+class Foods:
+    rice: UUID  # "Arroz", kilogramos
+    eggs: UUID  # "Huevo", unidades
 
 
 def bmi_for(weight_kg: float, height_cm: float) -> float:
