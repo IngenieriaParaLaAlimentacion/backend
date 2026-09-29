@@ -112,17 +112,6 @@ class TestXlsxSurveyResponseExporter:
         assert exporter.file_extension == "xlsx"
         assert "spreadsheetml" in exporter.content_type
 
-    def test_export_produces_readable_workbook(self):
-        survey = _survey_domain()
-        responses = [_detail_response(survey)]
-        exporter = XlsxSurveyResponseExporter()
-
-        file_bytes = exporter.export(survey, responses)
-
-        workbook = load_workbook(BytesIO(file_bytes))
-        assert "Respuestas" in workbook.sheetnames
-        assert "Resumen" in workbook.sheetnames
-
     def test_data_sheet_has_one_row_per_response(self):
         survey = _survey_domain()
         responses = [_detail_response(survey), _detail_response(survey)]
@@ -228,8 +217,11 @@ class TestSubjectIdentityColumns:
         assert row[0] == responses[0].response_number
         assert row[1:4] == [subject.name, subject.last_name, subject.dni]
 
-    def test_anonymous_export_has_no_identity_columns(self):
-        survey = _survey_domain(response_target=SurveyResponseTarget.ANONYMOUS)
+    @pytest.mark.parametrize(
+        "target", [SurveyResponseTarget.ANONYMOUS, SurveyResponseTarget.ESTABLISHMENT]
+    )
+    def test_non_subject_export_has_no_identity_columns(self, target):
+        survey = _survey_domain(response_target=target)
         responses = [_detail_response(survey)]
         exporter = XlsxSurveyResponseExporter()
 
@@ -238,16 +230,6 @@ class TestSubjectIdentityColumns:
         assert header[0] == "N° de respuesta"
         assert header[1] == "Completado por"
         assert "DNI" not in header
-
-    def test_establishment_targeted_export_has_no_identity_columns(self):
-        survey = _survey_domain(response_target=SurveyResponseTarget.ESTABLISHMENT)
-        responses = [_detail_response(survey)]
-        exporter = XlsxSurveyResponseExporter()
-
-        workbook = load_workbook(BytesIO(exporter.export(survey, responses)))
-        header = [c.value for c in workbook["Respuestas"][1]]
-        assert header[0] == "N° de respuesta"
-        assert header[1] == "Completado por"
 
     def test_missing_subject_writes_blanks_rather_than_raising(self):
         survey = _survey_domain(response_target=SurveyResponseTarget.SUBJECT)

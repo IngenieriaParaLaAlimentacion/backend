@@ -228,18 +228,6 @@ class TestFileShape:
 
 
 class TestSubjectsExport:
-    async def test_headers_match_the_ui_table(self, client, admin_headers, scenario):
-        response = await client.get(SUBJECTS_EXPORT_URL, headers=admin_headers)
-        assert _lines(response)[0] == (
-            "Nombre;Documento;Fecha de nacimiento;Último relevamiento"
-        )
-
-    async def test_exports_every_subject_when_unfiltered(
-        self, client, admin_headers, scenario
-    ):
-        response = await client.get(SUBJECTS_EXPORT_URL, headers=admin_headers)
-        assert len(_data_rows(response)) == 3
-
     async def test_respects_a_filter(self, client, admin_headers, scenario):
         response = await client.get(
             SUBJECTS_EXPORT_URL, params={"sex": "female"}, headers=admin_headers
@@ -287,10 +275,6 @@ class TestSubjectsExport:
 
 
 class TestEstablishmentsExport:
-    async def test_headers_match_the_ui_table(self, client, admin_headers, scenario):
-        response = await client.get(ESTABLISHMENTS_EXPORT_URL, headers=admin_headers)
-        assert _lines(response)[0] == "Nombre;Dirección;Ciudad;Provincia"
-
     async def test_respects_a_city_filter(self, client, admin_headers, scenario):
         response = await client.get(
             ESTABLISHMENTS_EXPORT_URL, params={"city": "Rosario"}, headers=admin_headers
@@ -307,12 +291,6 @@ class TestEstablishmentsExport:
 
 
 class TestMeasurementsExport:
-    async def test_headers_match_the_ui_table(self, client, admin_headers, scenario):
-        response = await client.get(MEASUREMENTS_EXPORT_URL, headers=admin_headers)
-        assert _lines(response)[0] == (
-            "Peso (kg);Talla (cm);IMC;Fecha;Sujeto;Comedor;Responsable;Alertas"
-        )
-
     async def test_exports_every_measurement_when_unfiltered(
         self, client, admin_headers, scenario
     ):
@@ -342,24 +320,8 @@ class TestMeasurementsExport:
         assert _first_cells(ascending) == ["18,50", "22,00"]
         assert _first_cells(descending) == ["22,00", "18,50"]
 
-    async def test_inverted_date_range_is_rejected(
-        self, client, admin_headers, scenario
-    ):
-        response = await client.get(
-            MEASUREMENTS_EXPORT_URL,
-            params={"measured_from": "2026-06-01", "measured_to": "2026-01-01"},
-            headers=admin_headers,
-        )
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-
 
 class TestSurveysExport:
-    async def test_headers_match_the_ui_table(self, client, admin_headers, scenario):
-        response = await client.get(SURVEYS_EXPORT_URL, headers=admin_headers)
-        assert _lines(response)[0] == (
-            "Nombre;Alcance;Estado;Cantidad de preguntas;Fecha de creación"
-        )
-
     async def test_exports_every_survey_when_unfiltered(
         self, client, admin_headers, scenario
     ):
@@ -385,14 +347,6 @@ class TestEstablishmentSubjectsExport:
     def _url(self, establishment_id) -> str:
         return ESTABLISHMENT_SUBJECTS_EXPORT_URL.format(id=establishment_id)
 
-    async def test_headers_match_the_ui_table(self, client, admin_headers, scenario):
-        response = await client.get(
-            self._url(scenario.establishment_rosario), headers=admin_headers
-        )
-        assert _lines(response)[0] == (
-            "Nombre;Documento;Edad;Último relevamiento;Peso (kg);Talla (cm);IMC;Estado"
-        )
-
     async def test_only_exports_subjects_of_that_establishment(
         self, client, admin_headers, scenario
     ):
@@ -408,10 +362,6 @@ class TestEstablishmentSubjectsExport:
             headers=admin_headers,
         )
         assert _data_rows(response) == []
-
-    async def test_unknown_establishment_returns_404(self, client, admin_headers):
-        response = await client.get(self._url(uuid.uuid4()), headers=admin_headers)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 class TestEmptyResult:

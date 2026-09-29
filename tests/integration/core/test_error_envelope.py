@@ -5,6 +5,8 @@ unhandled 500. Each asserts the media type and that ``detail`` is a string --
 the shape the backoffice reported as ``[object Object]``.
 """
 
+import pytest
+
 from app.core.dependencies import get_auth_service
 from tests.integration.urls import LOGIN_URL
 
@@ -129,22 +131,19 @@ async def _post_login_with_failing_dependency(raw_client, app, error: Exception)
         app.dependency_overrides.pop(get_auth_service, None)
 
 
-async def test_deadlock_is_a_retryable_503(raw_client, app):
-    """40P01 rolled everything back, so the client should just try again."""
+@pytest.mark.parametrize(
+    "sqlstate", ["40P01", "40001"], ids=["deadlock", "serialization"]
+)
+async def test_transaction_rollback_errors_are_a_retryable_503(
+    raw_client, app, sqlstate
+):
+    """Class 40 rolled everything back, so the client should just try again."""
     response = await _post_login_with_failing_dependency(
-        raw_client, app, _dbapi_error("40P01")
+        raw_client, app, _dbapi_error(sqlstate)
     )
 
     _assert_problem(response, status_code=503, error_type="concurrent-update")
     assert response.headers["retry-after"] == "1"
-
-
-async def test_serialization_failure_is_a_retryable_503(raw_client, app):
-    response = await _post_login_with_failing_dependency(
-        raw_client, app, _dbapi_error("40001")
-    )
-
-    _assert_problem(response, status_code=503, error_type="concurrent-update")
 
 
 async def test_other_database_errors_stay_500(raw_client, app):

@@ -45,17 +45,10 @@ class TestCsvExporter:
         file_bytes = _exporter().export([_Row("Ana", "18,52")])
         assert _text(file_bytes) == "Nombre;Monto\r\nAna;18,52\r\n"
 
-    def test_header_order_matches_the_spec(self):
-        assert _exporter().headers == ("Nombre", "Monto")
-
     def test_empty_rows_still_emit_the_header_line(self):
         # An export that matched nothing is a successful export with no data
         # rows -- the file must still open.
         assert _text(_exporter().export([])) == "Nombre;Monto\r\n"
-
-    def test_one_line_per_row(self):
-        file_bytes = _exporter().export([_Row("Ana", "1"), _Row("Beto", "2")])
-        assert _text(file_bytes).count("\r\n") == 3  # header + 2 rows
 
     def test_quotes_values_containing_the_delimiter(self):
         file_bytes = _exporter().export([_Row("Pérez; Ana", "1")])
@@ -71,27 +64,23 @@ class TestCsvExporter:
         assert _text(_exporter().export(rows)).count("\r\n") == 4
 
 
+@pytest.fixture
+def fixed_today(monkeypatch):
+    monkeypatch.setattr(
+        "app.services.exporters.csv.csv_exporter.today_in_argentina",
+        lambda: date(2026, 8, 24),
+    )
+
+
 class TestFilename:
-    def test_carries_entity_and_export_date(self, monkeypatch):
-        monkeypatch.setattr(
-            "app.services.exporters.csv.csv_exporter.today_in_argentina",
-            lambda: date(2026, 8, 24),
-        )
+    def test_carries_entity_and_export_date(self, fixed_today):
         assert _exporter("mediciones").filename() == "mediciones_2026-08-24.csv"
 
-    def test_scope_is_slugged_into_the_middle(self, monkeypatch):
-        monkeypatch.setattr(
-            "app.services.exporters.csv.csv_exporter.today_in_argentina",
-            lambda: date(2026, 8, 24),
-        )
+    def test_scope_is_slugged_into_the_middle(self, fixed_today):
         filename = _exporter("sujetos").filename(scope="Comedor La Unión")
         assert filename == "sujetos_comedor-la-union_2026-08-24.csv"
 
-    def test_scope_that_slugs_to_nothing_is_dropped(self, monkeypatch):
-        monkeypatch.setattr(
-            "app.services.exporters.csv.csv_exporter.today_in_argentina",
-            lambda: date(2026, 8, 24),
-        )
+    def test_scope_that_slugs_to_nothing_is_dropped(self, fixed_today):
         assert _exporter().filename(scope="!!!") == "sujetos_2026-08-24.csv"
 
 

@@ -11,117 +11,56 @@ from app.exceptions.domain_exceptions import (
 )
 from app.models.auth.user import UserRole
 
-# --- require_admin_or_superadmin ---
 
-
-async def test_require_admin_or_superadmin_valid_token():
-    user_id = str(uuid4())
-    payload = {"sub": user_id, "role": UserRole.ADMIN}
-    with patch(
+def _claims(role: UserRole, *, valid_signature: bool = True):
+    """Patch token decoding to yield the given role, or to fail verification."""
+    payload = {"sub": str(uuid4()), "role": role} if valid_signature else None
+    unverified = patch(
         "app.core.dependencies.jwt.get_unverified_claims",
-        return_value={"role": UserRole.ADMIN},
-    ):
-        with patch("app.core.dependencies.decode_token", return_value=payload):
-            actor = await require_admin(token="anytoken")
-    assert str(actor.user_id) == user_id
-    assert actor.role == UserRole.ADMIN
+        return_value={"role": role},
+    )
+    decoded = patch("app.core.dependencies.decode_token", return_value=payload)
+    return payload, unverified, decoded
 
 
-async def test_require_admin_or_superadmin_invalid_signature_raises_401():
-    with patch(
-        "app.core.dependencies.jwt.get_unverified_claims",
-        return_value={"role": UserRole.ADMIN},
-    ):
-        with patch("app.core.dependencies.decode_token", return_value=None):
-            with pytest.raises(UnauthorizedError):
-                await require_admin(token="anytoken")
+@pytest.mark.parametrize(
+    ("dependency", "role"),
+    [
+        (require_admin, UserRole.ADMIN),
+        (require_admin_or_analyst, UserRole.ANALYST),
+        (require_any, UserRole.FIELD_WORKER),
+    ],
+)
+async def test_valid_token_returns_the_actor(dependency, role):
+    payload, unverified, decoded = _claims(role)
+    with unverified, decoded:
+        actor = await dependency(token="anytoken")
+    assert str(actor.user_id) == payload["sub"]
+    assert actor.role == role
 
 
-async def test_require_admin_or_superadmin_malformed_token_raises_401():
+@pytest.mark.parametrize(
+    "dependency", [require_admin, require_admin_or_analyst, require_any]
+)
+async def test_invalid_signature_raises_401(dependency):
+    _, unverified, decoded = _claims(UserRole.ADMIN, valid_signature=False)
+    with unverified, decoded:
+        with pytest.raises(UnauthorizedError):
+            await dependency(token="anytoken")
+
+
+@pytest.mark.parametrize("dependency", [require_admin, require_any])
+async def test_malformed_token_raises_401(dependency):
     with patch(
         "app.core.dependencies.jwt.get_unverified_claims", side_effect=JWTError()
     ):
         with pytest.raises(UnauthorizedError):
-            await require_admin(token="notajwt")
+            await dependency(token="notajwt")
 
 
-async def test_require_admin_or_superadmin_wrong_role_raises_403():
-    payload = {"sub": str(uuid4()), "role": UserRole.FIELD_WORKER}
-    with patch(
-        "app.core.dependencies.jwt.get_unverified_claims",
-        return_value={"role": UserRole.FIELD_WORKER},
-    ):
-        with patch("app.core.dependencies.decode_token", return_value=payload):
-            with pytest.raises(ForbiddenError):
-                await require_admin(token="anytoken")
-
-
-# --- require_admin_analyst_or_superadmin ---
-
-
-async def test_require_admin_analyst_or_superadmin_valid_token():
-    user_id = str(uuid4())
-    payload = {"sub": user_id, "role": UserRole.ANALYST}
-    with patch(
-        "app.core.dependencies.jwt.get_unverified_claims",
-        return_value={"role": UserRole.ANALYST},
-    ):
-        with patch("app.core.dependencies.decode_token", return_value=payload):
-            actor = await require_admin_or_analyst(token="anytoken")
-    assert str(actor.user_id) == user_id
-    assert actor.role == UserRole.ANALYST
-
-
-async def test_require_admin_analyst_or_superadmin_invalid_signature_raises_401():
-    with patch(
-        "app.core.dependencies.jwt.get_unverified_claims",
-        return_value={"role": UserRole.ANALYST},
-    ):
-        with patch("app.core.dependencies.decode_token", return_value=None):
-            with pytest.raises(UnauthorizedError):
-                await require_admin_or_analyst(token="anytoken")
-
-
-async def test_require_admin_analyst_or_superadmin_wrong_role_raises_403():
-    payload = {"sub": str(uuid4()), "role": UserRole.FIELD_WORKER}
-    with patch(
-        "app.core.dependencies.jwt.get_unverified_claims",
-        return_value={"role": UserRole.FIELD_WORKER},
-    ):
-        with patch("app.core.dependencies.decode_token", return_value=payload):
-            with pytest.raises(ForbiddenError):
-                await require_admin_or_analyst(token="anytoken")
-
-
-# --- require_any ---
-
-
-async def test_require_any_valid_token_any_role():
-    user_id = str(uuid4())
-    payload = {"sub": user_id, "role": UserRole.FIELD_WORKER}
-    with patch(
-        "app.core.dependencies.jwt.get_unverified_claims",
-        return_value={"role": UserRole.FIELD_WORKER},
-    ):
-        with patch("app.core.dependencies.decode_token", return_value=payload):
-            actor = await require_any(token="anytoken")
-    assert str(actor.user_id) == user_id
-    assert actor.role == UserRole.FIELD_WORKER
-
-
-async def test_require_any_malformed_token_raises_401():
-    with patch(
-        "app.core.dependencies.jwt.get_unverified_claims", side_effect=JWTError()
-    ):
-        with pytest.raises(UnauthorizedError):
-            await require_any(token="notajwt")
-
-
-async def test_require_any_invalid_signature_raises_401():
-    with patch(
-        "app.core.dependencies.jwt.get_unverified_claims",
-        return_value={"role": UserRole.ADMIN},
-    ):
-        with patch("app.core.dependencies.decode_token", return_value=None):
-            with pytest.raises(UnauthorizedError):
-                await require_any(token="anytoken")
+@pytest.mark.parametrize("dependency", [require_admin, require_admin_or_analyst])
+async def test_wrong_role_raises_403(dependency):
+    _, unverified, decoded = _claims(UserRole.FIELD_WORKER)
+    with unverified, decoded:
+        with pytest.raises(ForbiddenError):
+            await dependency(token="anytoken")
