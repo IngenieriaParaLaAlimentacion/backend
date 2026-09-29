@@ -6,6 +6,7 @@ import pytest
 
 from app.exceptions.domain_exceptions import (
     InvalidTokenError,
+    PasswordNotFoundError,
     RecoveryTokenExpiredError,
     RecoveryTokenUsedError,
 )
@@ -256,4 +257,25 @@ class TestConfirmPasswordRecoveryTokenState:
         with pytest.raises(RecoveryTokenExpiredError):
             await AuthService(uow).confirm_password_recovery(valid_confirm_request)
 
+        uow.commit.assert_not_awaited()
+
+
+class TestConfirmPasswordRecoveryWithoutStoredPassword:
+    """A user with no password row has nothing to reset."""
+
+    async def test_raises_and_leaves_the_token_untouched(
+        self,
+        make_uow_recovery,
+        make_recovery_token,
+        valid_confirm_request,
+        mock_encode_recovery_token,
+    ):
+        token = make_recovery_token()
+        uow = make_uow_recovery(active_recovery_token=token, password_record=None)
+
+        with pytest.raises(PasswordNotFoundError):
+            await AuthService(uow).confirm_password_recovery(valid_confirm_request)
+
+        uow.password_recovery_repo.mark_used.assert_not_awaited()
+        uow.token_repo.revoke_all_by_user_id.assert_not_awaited()
         uow.commit.assert_not_awaited()
