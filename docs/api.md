@@ -79,6 +79,22 @@ Some errors carry extra JSON members alongside the canonical five (RFC 7807
 extensions) — for example `canonical_subject` on a duplicate-DNI 409. They are
 documented per error in [`errors.md`](errors.md).
 
+### Rate limit responses
+
+Rate limited endpoints answer `429` with type `/errors/rate-limited` when a limit is exceeded. The
+response carries:
+
+| Where | Field | Description |
+|---|---|---|
+| Header | `Retry-After` | Seconds to wait before retrying. |
+| Header | `X-RateLimit-Limit` | Requests allowed in the window that was exceeded. |
+| Header | `X-RateLimit-Remaining` | Always `0` on a 429. |
+| Header | `X-RateLimit-Reset` | Epoch seconds at which the caller may retry. |
+| Body | `retry_after` | Same value as `Retry-After`, in seconds. |
+
+These headers appear only on the 429. Which endpoints are limited, and how, is described in
+[`auth.md`](auth.md#rate-limiting).
+
 ## Pagination
 
 Use pagination on all list endpoints that may return unbounded results. Choose the strategy based on the use case:

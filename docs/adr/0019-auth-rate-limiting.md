@@ -225,12 +225,16 @@ Integration tests run against a real Redis through testcontainers:
 Tests lower the limits through a fixture that mutates `settings`; the rest of the suite runs with
 high defaults.
 
-Before this ADR moves to Accepted, a prototype must confirm:
+The following were confirmed by the implementation and its integration tests:
 
 - two limits with different keys stack on one endpoint, and two `shared_limit` calls with distinct
-  scopes work;
-- degraded mode works with that stacking and with the shared bucket;
-- slowapi's logs reach structlog;
-- `Retry-After` reflects the real reset under `moving-window`;
+  scopes work, including the bucket shared by recovery and resend;
+- degraded mode works with that stacking and with the shared bucket, and the limiter returns to
+  Redis when it recovers;
+- slowapi's logs reach the backend's structlog output;
+- `Retry-After` reflects the real reset under `moving-window`.
+
+Still pending before this ADR moves to Accepted:
+
 - on the Railway deploy, `X-Real-IP` carries the caller's address and a forged `X-Real-IP` in the
   request is overwritten.

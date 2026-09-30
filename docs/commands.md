@@ -6,6 +6,7 @@
 - [Poetry 2.0+](https://python-poetry.org/docs/#installation)
 - Docker (required for running tests)
 - A running PostgreSQL instance (for local dev without Docker)
+- A running Redis instance for rate limiting (for local dev without Docker; `docker compose up redis`)
 
 ---
 
@@ -61,7 +62,7 @@ poetry run alembic current
 
 ## Testing
 
-Tests use [Testcontainers](https://testcontainers.com/) to spin up a real PostgreSQL instance. **Docker must be running.**
+Tests use [Testcontainers](https://testcontainers.com/) to spin up a real PostgreSQL instance, and a Redis for the rate-limit tests. **Docker must be running.**
 
 ```bash
 # Run all tests

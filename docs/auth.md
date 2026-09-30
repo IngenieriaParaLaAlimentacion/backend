@@ -45,6 +45,52 @@ Authorization has two levels:
 
 ---
 
+## Rate limiting
+
+The public authentication endpoints are rate limited per origin (IP) and, where the request
+carries an email, per account. Every request counts against a limit, successful or not. Decision
+and alternatives: [ADR-0019](adr/0019-auth-rate-limiting.md).
+
+| Endpoint | Per email | Per IP |
+|---|---|---|
+| `POST /auth/login` | `RATE_LIMIT_LOGIN_EMAIL` | `RATE_LIMIT_LOGIN_IP` |
+| `POST /auth/password-recovery/request` | `RATE_LIMIT_MAIL_SENDING_EMAIL` (shared) | `RATE_LIMIT_MAIL_SENDING_IP` |
+| `POST /auth/verify-email/resend` | `RATE_LIMIT_MAIL_SENDING_EMAIL` (shared) | `RATE_LIMIT_MAIL_SENDING_IP` |
+| `POST /auth/register/field-worker` | — | `RATE_LIMIT_REGISTER_IP` |
+| `POST /auth/refresh` | — | `RATE_LIMIT_TOKEN_IP` |
+| `POST /auth/password-recovery/confirm` | — | `RATE_LIMIT_TOKEN_IP` |
+| `POST /auth/verify-email/confirm` | — | `RATE_LIMIT_TOKEN_IP` |
+
+- Each endpoint has its own counters. The only shared one is the per-email counter of password
+  recovery and email verification resend, since both send mail to the same person.
+- Limits are written `<count>/<period>` (`5/minute`, `3/hour`) and read from the environment on every
+  request. Defaults are in `app/config/settings.py` and `.env.example`.
+- The email is lowercased and trimmed before counting. IPv4 addresses count individually and IPv6
+  addresses by their /64 network.
+- The caller's IP is the `X-Real-IP` header set by the Railway edge proxy; without it (local runs)
+  the socket address is used.
+- Going over a limit returns `429` with `Retry-After`; see [Rate limit responses](api.md#rate-limit-responses).
+
+### Counter storage
+
+Counters live in Redis (`RATE_LIMIT_REDIS_URL`), so they survive restarts and agree across
+instances. Locally, `docker compose up redis` starts one. On Railway, add a Redis service and set
+`RATE_LIMIT_REDIS_URL` on the backend to its connection URL.
+
+If Redis becomes unreachable the backend keeps limiting with per-instance in-memory counters and logs
+`Rate limit storage unreachable - falling back to in-memory storage`. It returns to Redis on its own
+and logs `Rate limit storage recovered`. While degraded, the effective limit is multiplied by the
+number of instances.
+
+### Adding a limited endpoint
+
+Stack the decorators below the route decorator, per-IP one closest to the function so it is
+checked first, and add `request: Request` to the handler. An endpoint limited by email also needs
+`dependencies=[Depends(remember_email(<RequestModel>))]`, and both should declare
+`**RATE_LIMITED_RESPONSE` in `responses`. See `app/api/v1/auth.py`.
+
+---
+
 ## Roles
 
 | Role | Description                                                                |

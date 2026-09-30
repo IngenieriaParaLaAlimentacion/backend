@@ -75,6 +75,7 @@ alembic/
 ## Data storage
 
 - **PostgreSQL**: primary database for all structured data.
+- **Redis**: counters for authentication rate limiting. It holds no other data, and losing it degrades the limits to per-instance counting rather than stopping the service.
 - **Alembic**: handles all schema migrations. Never modify the DB schema manually.
 - **External storage** (S3-compatible, TBD): stores binary files — informed consent PDFs and images uploaded via `nutrir` and `valores_de_hierro`.
 
