@@ -1,9 +1,11 @@
 from uuid import UUID
 
 from sqlalchemy import delete, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.establishment import UserEstablishmentStatus
+from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.auth.user_establishment import UserEstablishment
 
 
@@ -33,6 +35,10 @@ class UserEstablishmentRepository:
         Creates the relation as approved if none exists yet; if one already
         exists (e.g. a pending relation from registration), flips it to
         approved instead of creating a duplicate row.
+
+        Raises:
+            UniqueConstraintError: If a concurrent request inserted the same
+                relation between the lookup and the insert.
         """
         relation = await self.get_relation(user_id, establishment_id)
         if relation is None:
@@ -41,7 +47,16 @@ class UserEstablishmentRepository:
                 establishment_id=establishment_id,
                 status=UserEstablishmentStatus.APPROVED,
             )
-            self.db.add(relation)
+            # Flushed in a savepoint so a raced insert surfaces here, not as a
+            # 500 at commit.
+            try:
+                async with self.db.begin_nested():
+                    self.db.add(relation)
+                    await self.db.flush()
+            except IntegrityError:
+                raise UniqueConstraintError(
+                    "user_establishment", (user_id, establishment_id)
+                )
         else:
             relation.status = UserEstablishmentStatus.APPROVED
         return relation

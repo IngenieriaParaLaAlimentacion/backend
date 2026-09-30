@@ -27,9 +27,7 @@ router = APIRouter()
             "description": "Target user's account is not active"
         },
         **AUTH_RESPONSES,
-        status.HTTP_404_NOT_FOUND: {
-            "description": "Field worker or establishment not found"
-        },
+        status.HTTP_404_NOT_FOUND: {"description": "User or establishment not found"},
     },
 )
 async def approve_establishments(
@@ -50,13 +48,8 @@ async def approve_establishments(
     "analyst. Does not affect the user's account status. Accessible by admins "
     "only.",
     responses={
-        status.HTTP_400_BAD_REQUEST: {
-            "description": "Target user is not a field worker"
-        },
         **AUTH_RESPONSES,
-        status.HTTP_404_NOT_FOUND: {
-            "description": "Field worker or establishment not found"
-        },
+        status.HTTP_404_NOT_FOUND: {"description": "User or establishment not found"},
     },
 )
 async def reject_establishments(
@@ -170,9 +163,7 @@ async def get_pending_establishment_requests(
             "description": "Target user is neither a field worker nor an analyst"
         },
         **AUTH_RESPONSES,
-        status.HTTP_404_NOT_FOUND: {
-            "description": "Field worker or establishment not found"
-        },
+        status.HTTP_404_NOT_FOUND: {"description": "User or establishment not found"},
         status.HTTP_409_CONFLICT: {
             "description": "An establishment is not currently approved for "
             "this field worker"

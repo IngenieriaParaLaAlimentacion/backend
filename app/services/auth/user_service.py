@@ -12,6 +12,7 @@ from app.exceptions.domain_exceptions import (
     EmptyUpdateRequestError,
     EstablishmentAlreadySubscribedError,
     RoleNotAllowedError,
+    UniqueConstraintError,
     UserEstablishmentNotFoundError,
     UserEstablishmentNotWithdrawableError,
     UserNotFoundError,
@@ -311,9 +312,16 @@ class UserService:
                 str(establishment_id), str(actor.user_id)
             )
 
-        await self.uow.user_establishment_repo.create_or_approve_relation(
-            actor.user_id, establishment_id
-        )
+        try:
+            await self.uow.user_establishment_repo.create_or_approve_relation(
+                actor.user_id, establishment_id
+            )
+        except UniqueConstraintError:
+            # A concurrent subscribe won the insert; only subscribing creates
+            # an admin's relation, so it is already approved.
+            raise EstablishmentAlreadySubscribedError(
+                str(establishment_id), str(actor.user_id)
+            )
         await self.uow.commit()
 
         return EstablishmentWithStatusDomain(

@@ -322,7 +322,7 @@
       "type": "/errors/user-is-not-a-field-worker",
       "status": 400,
       "exception": "UserNotFieldWorkerError",
-      "description": "Raised when an operation requires the target user to be a field worker."
+      "description": "Raised when the target user's role is not one the operation accepts: a field worker, or also an analyst for establishment access revocation."
     },
     {
       "type": "/errors/user-is-not-active",

@@ -13,6 +13,7 @@ from app.exceptions.domain_exceptions import (
     EstablishmentAlreadySubscribedError,
     EstablishmentNotFoundError,
     RoleNotAllowedError,
+    UniqueConstraintError,
     UserEstablishmentNotFoundError,
     UserEstablishmentNotWithdrawableError,
     UserNotFoundError,
@@ -601,6 +602,22 @@ class TestSubscribeToEstablishment:
             await service.subscribe_to_establishment(_actor_for(user), estab.id)
 
         uow.user_establishment_repo.create_or_approve_relation.assert_not_called()
+        uow.commit.assert_not_called()
+
+    async def test_raced_insert_raises_already_subscribed(self):
+        """A concurrent subscribe that wins the insert yields a conflict."""
+        user = _make_user(role=UserRole.ADMIN)
+        estab = _make_establishment()
+        uow = _make_uow(user=user)
+        uow.establishment_repo.get_by_id_or_raise = AsyncMock(return_value=estab)
+        uow.user_establishment_repo.create_or_approve_relation.side_effect = (
+            UniqueConstraintError("user_establishment", (user.id, estab.id))
+        )
+        service = UserService(uow)
+
+        with pytest.raises(EstablishmentAlreadySubscribedError):
+            await service.subscribe_to_establishment(_actor_for(user), estab.id)
+
         uow.commit.assert_not_called()
 
     async def test_unknown_establishment_raises_and_writes_nothing(self):

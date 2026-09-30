@@ -539,8 +539,11 @@ class FilterNotApplicableError(InvalidListingFilterError):
 
 
 class UserNotFieldWorkerError(BadRequestError):
-    """Raised when an operation requires the target user to be a field worker."""
+    """Raised when the target user's role is not one the operation accepts: a
+    field worker, or also an analyst for establishment access revocation."""
 
+    # Name and type predate analyst review and are kept so clients that branch
+    # on the type don't break.
     error_type = "user-is-not-a-field-worker"
 
     def __init__(self, detail: str):
