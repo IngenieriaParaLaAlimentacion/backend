@@ -148,6 +148,12 @@ messages slowapi emits must reach the backend's structlog pipeline.
 The accepted cost is precision: with N replicas the effective limit becomes N times the configured
 one, and in-memory counters are lost when an instance restarts.
 
+There is a second cost, in latency. slowapi's Redis client is synchronous, so waiting on an
+unresponsive Redis blocks the instance's event loop. Measured against a frozen Redis with 0.5 s
+timeouts: the first request of an outage takes about 1 s (the failed hit and the failed check), the
+following ones about 5 ms, and every recheck of the storage, on a delay that doubles up to 32 s,
+stalls the instance for about 0.5 s. The short timeouts are what bound this.
+
 ## Consequences
 
 *Positives*
