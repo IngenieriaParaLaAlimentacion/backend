@@ -3,11 +3,19 @@
 from types import SimpleNamespace
 
 import pytest
+import structlog
 from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
 from slowapi import Limiter
 
-from app.core.rate_limit import email_key, ip_bucket, ip_key, normalize_email
+from app.config.settings import settings
+from app.core.rate_limit import (
+    client_ip,
+    email_key,
+    ip_bucket,
+    ip_key,
+    normalize_email,
+)
 from app.exceptions.exception_handlers import register_exception_handlers
 
 
@@ -53,6 +61,19 @@ def test_ip_bucket_groups_ipv6_by_its_64_network(ip, bucket):
 def test_ip_key_falls_back_to_the_socket_peer_without_the_header():
     """Local runs and tests have no proxy, so the peer address is used."""
     assert ip_key(_request()) == "ip:10.0.0.1"
+
+
+@pytest.mark.parametrize(("require_header", "warns"), [(True, True), (False, False)])
+def test_missing_x_real_ip_warns_only_where_a_proxy_is_expected(
+    monkeypatch, require_header, warns
+):
+    """A local run stays quiet; a deploy behind the proxy is told it lost the header."""
+    monkeypatch.setattr(settings, "rate_limit_require_x_real_ip", require_header)
+
+    with structlog.testing.capture_logs() as logs:
+        client_ip(_request())
+
+    assert bool(logs) is warns
 
 
 def test_email_key_uses_the_email_stored_on_the_request():

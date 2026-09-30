@@ -109,6 +109,7 @@ class Settings(BaseSettings):
 
     # Rate limiting - each limit is "<count>/<period>", e.g. "5/minute".
     rate_limit_redis_url: str = "redis://localhost:6379/0"
+    rate_limit_require_x_real_ip: bool = False
     rate_limit_redis_connect_timeout_seconds: float = 0.5
     rate_limit_redis_socket_timeout_seconds: float = 0.5
     rate_limit_login_email: str = "5/minute"

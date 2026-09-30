@@ -76,8 +76,10 @@ The IP comes from the `X-Real-IP` header, not from `request.client.host` and not
   uvicorn's `--forwarded-allow-ips`, cannot be configured. Reading the header directly in the
   `key_func` makes the source of the IP explicit.
 - When the header is absent (local development, tests) the key falls back to
-  `request.client.host`. In production that should not happen, so the fallback is logged as a
-  warning rather than taken silently.
+  `request.client.host`. Where the backend runs behind the proxy that should not happen, so the
+  fallback is logged as a warning rather than taken silently. Those deployments say so with
+  `RATE_LIMIT_REQUIRE_X_REAL_IP=true` (Railway dev and prod). The environment name is not used:
+  a local run and the Railway dev environment are both `development`, and only one has a proxy.
 
 This trust rests on a platform guarantee. Moving off Railway means revisiting this decision.
 

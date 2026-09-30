@@ -68,7 +68,8 @@ and alternatives: [ADR-0019](adr/0019-auth-rate-limiting.md).
 - The email is lowercased and trimmed before counting. IPv4 addresses count individually and IPv6
   addresses by their /64 network.
 - The caller's IP is the `X-Real-IP` header set by the Railway edge proxy; without it (local runs)
-  the socket address is used.
+  the socket address is used. Set `RATE_LIMIT_REQUIRE_X_REAL_IP=true` wherever the backend runs
+  behind Railway, so a request without the header is logged as a warning.
 - Going over a limit returns `429` with `Retry-After`; see [Rate limit responses](api.md#rate-limit-responses).
 
 ### Counter storage
