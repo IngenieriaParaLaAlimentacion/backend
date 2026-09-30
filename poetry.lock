@@ -427,7 +427,7 @@ version = "5.0.1"
 description = "Timeout context manager for asyncio programs"
 optional = false
 python-versions = ">=3.8"
-groups = ["main"]
+groups = ["main", "dev"]
 markers = "python_full_version < \"3.11.3\""
 files = [
     {file = "async_timeout-5.0.1-py3-none-any.whl", hash = "sha256:39e3809566ff85354557ec2398b55e096c8364bacac9405a7a1fa429e77fe76c"},
@@ -3099,7 +3099,7 @@ version = "8.1.0"
 description = "Python client for Redis database and key-value store"
 optional = false
 python-versions = ">=3.10"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "redis-8.1.0-py3-none-any.whl", hash = "sha256:a4fe1aac3d3b3cc791d4b3d5931c5a956045dc951ee74d1c913ee3ac4d2ee9fb"},
     {file = "redis-8.1.0.tar.gz", hash = "sha256:6e1a19beef9225c83efd689c7e6b7da2d5215b1f42cd13b7fc3714d0a09c7b25"},
@@ -3425,6 +3425,7 @@ files = [
 [package.dependencies]
 docker = "*"
 python-dotenv = "*"
+redis = {version = ">=7", optional = true, markers = "extra == \"redis\""}
 typing-extensions = "*"
 urllib3 = "*"
 wrapt = "*"
@@ -3943,4 +3944,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "0d51653ae517a5caca116e6fc033eeda666576b5880f1fa83fead1f1d6b249c9"
+content-hash = "20b414ba6d723e0120dfbca6566bb712ff332756d64f7cca988259a51b3ceecf"

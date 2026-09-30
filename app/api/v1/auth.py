@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, Request, Response, status
 
+from app.config.settings import settings
 from app.core.dependencies import get_auth_service
+from app.core.rate_limit import RATE_LIMITED_RESPONSE, ip_key, limiter
 from app.schemas.auth.auth_schema import (
     LoginRequest,
     LogoutRequest,
@@ -30,10 +32,16 @@ router = APIRouter(prefix="/auth")
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid data"},
         status.HTTP_409_CONFLICT: {"description": "User already exists"},
         status.HTTP_404_NOT_FOUND: {"description": "Establishments not found"},
+        **RATE_LIMITED_RESPONSE,
     },
 )
+@limiter.shared_limit(
+    lambda: settings.rate_limit_register_ip, scope="register", key_func=ip_key
+)
 async def register_field_worker(
-    data: RegisterFieldWorkerRequest, service: AuthService = Depends(get_auth_service)
+    request: Request,
+    data: RegisterFieldWorkerRequest,
+    service: AuthService = Depends(get_auth_service),
 ) -> RegistrationResponse:
     user = await service.register_field_worker(data)
     return RegistrationResponse.model_validate(user)
@@ -97,10 +105,16 @@ async def logout(
             "description": "Invalid or expired refresh token"
         },
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid request payload"},
+        **RATE_LIMITED_RESPONSE,
     },
 )
+@limiter.shared_limit(
+    lambda: settings.rate_limit_token_ip, scope="refresh", key_func=ip_key
+)
 async def refresh(
-    data: RefreshRequest, service: AuthService = Depends(get_auth_service)
+    request: Request,
+    data: RefreshRequest,
+    service: AuthService = Depends(get_auth_service),
 ) -> RefreshResponse:
     result = await service.refresh(data)
     return RefreshResponse.model_validate(result)
@@ -141,9 +155,16 @@ async def request_password_recovery(
             "description": "Invalid or expired recovery token"
         },
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid request payload"},
+        **RATE_LIMITED_RESPONSE,
     },
 )
+@limiter.shared_limit(
+    lambda: settings.rate_limit_token_ip,
+    scope="password-recovery-confirm",
+    key_func=ip_key,
+)
 async def confirm_password_recovery(
+    request: Request,
     data: PasswordRecoveryConfirmRequest,
     service: AuthService = Depends(get_auth_service),
 ) -> Response:
@@ -165,9 +186,14 @@ async def confirm_password_recovery(
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Invalid or expired verification token"
         },
+        **RATE_LIMITED_RESPONSE,
     },
 )
+@limiter.shared_limit(
+    lambda: settings.rate_limit_token_ip, scope="verify-email-confirm", key_func=ip_key
+)
 async def verify_email(
+    request: Request,
     data: VerifyEmailRequest,
     service: AuthService = Depends(get_auth_service),
 ) -> Response:
