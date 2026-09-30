@@ -16,6 +16,8 @@ from app.models.establishments.establishment import Establishment
 ME_URL = "/api/v1/users/me"
 ME_ESTABLISHMENTS_URL = "/api/v1/users/me/establishments"
 ME_ESTABLISHMENTS_WITHDRAW_URL = "/api/v1/users/me/establishments/withdraw"
+ME_SUBSCRIPTION_URL = "/api/v1/users/me/establishments/{establishment_id}/subscription"
+AVAILABLE_ESTABLISHMENTS_URL = "/api/v1/establishments?available=true"
 
 
 async def _insert_user(
@@ -115,6 +117,20 @@ async def field_worker_user(app):
     return await _insert_user(role=UserRole.FIELD_WORKER, status=UserStatus.ACTIVE)
 
 
+@pytest_asyncio.fixture
+async def admin_user(app):
+    return await _insert_user(role=UserRole.ADMIN, status=UserStatus.ACTIVE)
+
+
+async def _available_ids(client, user: SimpleNamespace) -> set[str]:
+    """Return the ids the user can still request, from the catalog listing."""
+    response = await client.get(
+        AVAILABLE_ESTABLISHMENTS_URL, headers=_headers_for(user)
+    )
+    assert response.status_code == 200
+    return {item["id"] for item in response.json()["items"]}
+
+
 class TestProfileAuth:
     async def test_no_token_returns_401(self, client):
         """Should return 401 when no access token is provided."""
@@ -131,9 +147,11 @@ class TestProfileAuth:
 
 class TestProfileNonFieldWorker:
     @pytest.mark.parametrize("role", [UserRole.ANALYST, UserRole.ADMIN])
-    async def test_profile_has_null_establishments(self, client, role):
-        """An analyst or admin gets their profile with establishments = null."""
+    async def test_profile_lists_own_establishments(self, client, role):
+        """An analyst or admin gets their profile with their establishments."""
         user = await _insert_user(role=role)
+        estab = await _insert_establishment("Centro A", "Calle A 123")
+        await _insert_relation(user.id, estab.id, UserEstablishmentStatus.APPROVED)
 
         response = await client.get(ME_URL, headers=_headers_for(user))
 
@@ -144,7 +162,9 @@ class TestProfileNonFieldWorker:
         assert body["name"] == user.name
         assert body["last_name"] == user.last_name
         assert body["role"] == role
-        assert body["establishments"] is None
+        assert [(e["id"], e["status"]) for e in body["establishments"]] == [
+            (str(estab.id), UserEstablishmentStatus.APPROVED)
+        ]
 
 
 class TestProfileFieldWorker:
@@ -438,6 +458,19 @@ class TestRequestEstablishmentAccess:
         assert len(relations) == 1
         assert relations[0].status == UserEstablishmentStatus.PENDING
 
+    async def test_admin_returns_403_and_writes_nothing(self, client, admin_user):
+        """An admin cannot open a request for review; they subscribe instead."""
+        estab = await _insert_establishment("Centro A", "Calle A")
+
+        response = await client.post(
+            ME_ESTABLISHMENTS_URL,
+            json={"establishment_ids": [str(estab.id)]},
+            headers=_headers_for(admin_user),
+        )
+
+        assert response.status_code == 403
+        assert await _fetch_relations(admin_user.id) == []
+
     async def test_unknown_establishment_returns_404_and_writes_nothing(
         self, client, field_worker_user
     ):
@@ -516,3 +549,104 @@ class TestWithdrawEstablishmentAccess:
             json={"establishment_ids": [str(uuid.uuid4())]},
         )
         assert response.status_code == 401
+
+
+class TestSubscribeToEstablishment:
+    async def test_admin_subscribes_with_approved_access(self, client, admin_user):
+        """The subscription is approved at once and shows up as the admin's."""
+        estab = await _insert_establishment("Centro A", "Calle A")
+
+        response = await client.post(
+            ME_SUBSCRIPTION_URL.format(establishment_id=estab.id),
+            headers=_headers_for(admin_user),
+        )
+
+        assert response.status_code == 201
+        assert response.json()["status"] == UserEstablishmentStatus.APPROVED
+        mine = await client.get(ME_ESTABLISHMENTS_URL, headers=_headers_for(admin_user))
+        assert [(e["id"], e["status"]) for e in mine.json()] == [
+            (str(estab.id), UserEstablishmentStatus.APPROVED)
+        ]
+        # CA4: a linked establishment is no longer offered as available.
+        assert str(estab.id) not in await _available_ids(client, admin_user)
+
+    async def test_already_subscribed_returns_409(self, client, admin_user):
+        """Subscribing twice to the same establishment is rejected."""
+        estab = await _insert_establishment("Centro A", "Calle A")
+        await _insert_relation(
+            admin_user.id, estab.id, UserEstablishmentStatus.APPROVED
+        )
+
+        response = await client.post(
+            ME_SUBSCRIPTION_URL.format(establishment_id=estab.id),
+            headers=_headers_for(admin_user),
+        )
+
+        assert response.status_code == 409
+        assert len(await _fetch_relations(admin_user.id)) == 1
+
+    async def test_unknown_establishment_returns_404(self, client, admin_user):
+        response = await client.post(
+            ME_SUBSCRIPTION_URL.format(establishment_id=uuid.uuid4()),
+            headers=_headers_for(admin_user),
+        )
+
+        assert response.status_code == 404
+        assert await _fetch_relations(admin_user.id) == []
+
+    @pytest.mark.parametrize("role", [UserRole.ANALYST, UserRole.FIELD_WORKER])
+    async def test_non_admin_returns_403_and_writes_nothing(self, client, role):
+        """Only an admin can subscribe without approval."""
+        user = await _insert_user(role=role)
+        estab = await _insert_establishment("Centro A", "Calle A")
+
+        response = await client.post(
+            ME_SUBSCRIPTION_URL.format(establishment_id=estab.id),
+            headers=_headers_for(user),
+        )
+
+        assert response.status_code == 403
+        assert await _fetch_relations(user.id) == []
+
+
+class TestUnsubscribeFromEstablishment:
+    async def test_admin_unsubscribes_and_can_resubscribe(self, client, admin_user):
+        """The relation row is deleted, the establishment is available
+        again, and the admin can subscribe to it once more."""
+        estab = await _insert_establishment("Centro A", "Calle A")
+        await _insert_relation(
+            admin_user.id, estab.id, UserEstablishmentStatus.APPROVED
+        )
+        url = ME_SUBSCRIPTION_URL.format(establishment_id=estab.id)
+
+        response = await client.delete(url, headers=_headers_for(admin_user))
+
+        assert response.status_code == 204
+        assert await _fetch_relations(admin_user.id) == []
+        assert str(estab.id) in await _available_ids(client, admin_user)
+
+        resubscribe = await client.post(url, headers=_headers_for(admin_user))
+        assert resubscribe.status_code == 201
+
+    async def test_no_relation_returns_404(self, client, admin_user):
+        response = await client.delete(
+            ME_SUBSCRIPTION_URL.format(establishment_id=uuid.uuid4()),
+            headers=_headers_for(admin_user),
+        )
+
+        assert response.status_code == 404
+
+    @pytest.mark.parametrize("role", [UserRole.ANALYST, UserRole.FIELD_WORKER])
+    async def test_non_admin_returns_403_and_keeps_relation(self, client, role):
+        """Analysts and field workers withdraw instead of deleting the row."""
+        user = await _insert_user(role=role)
+        estab = await _insert_establishment("Centro A", "Calle A")
+        await _insert_relation(user.id, estab.id, UserEstablishmentStatus.APPROVED)
+
+        response = await client.delete(
+            ME_SUBSCRIPTION_URL.format(establishment_id=estab.id),
+            headers=_headers_for(user),
+        )
+
+        assert response.status_code == 403
+        assert len(await _fetch_relations(user.id)) == 1

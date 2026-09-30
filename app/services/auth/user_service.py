@@ -10,6 +10,8 @@ from app.domain.establishment import (
 from app.domain.user import ProfileDomain, UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EmptyUpdateRequestError,
+    EstablishmentAlreadySubscribedError,
+    RoleNotAllowedError,
     UserEstablishmentNotFoundError,
     UserEstablishmentNotWithdrawableError,
     UserNotFoundError,
@@ -18,6 +20,8 @@ from app.models.auth.user import User
 from app.schemas.auth.user_schema import ProfileUpdateRequest
 
 _ESTABLISHMENT_FIELDS = tuple(f.name for f in fields(EstablishmentDomain))
+# Roles that subscribe directly instead of requesting access for review.
+_SUBSCRIBER_ROLES = {UserRole.ADMIN, UserRole.SUPERADMIN}
 
 
 def _establishment_snapshot(establishment) -> dict:
@@ -47,13 +51,8 @@ class UserService:
         return user
 
     async def _build_profile(self, user: User) -> ProfileDomain:
-        """Assemble a ProfileDomain from a loaded user.
-
-        Establishments are included only for field workers.
-        """
-        establishments = None
-        if user.role == UserRole.FIELD_WORKER:
-            establishments = await self._get_establishments_with_status(user.id)
+        """Assemble a ProfileDomain from a loaded user."""
+        establishments = await self._get_establishments_with_status(user.id)
         return ProfileDomain(
             id=user.id,
             email=user.email,
@@ -151,9 +150,6 @@ class UserService:
     async def get_profile(self, actor: UserActor) -> ProfileDomain:
         """Return the authenticated user's profile.
 
-        Establishments are included only for field workers; for other
-        roles the field is None (no establishments section).
-
         Raises:
             UserNotFoundError: If the token's user no longer exists.
         """
@@ -186,9 +182,7 @@ class UserService:
         await self.uow.user_repo.update_profile(user.id, values)
         await self.uow.commit()
 
-        establishments = None
-        if role == UserRole.FIELD_WORKER:
-            establishments = await self._get_establishments_with_status(user.id)
+        establishments = await self._get_establishments_with_status(user.id)
 
         return ProfileDomain(
             id=user.id,
@@ -218,8 +212,13 @@ class UserService:
         pending.
 
         Raises:
+            RoleNotAllowedError: If the caller is an admin, who subscribes instead.
             EstablishmentNotFoundError: If any establishment id does not exist.
         """
+        if actor.role in _SUBSCRIBER_ROLES:
+            raise RoleNotAllowedError(
+                "Admins subscribe to establishments instead of requesting access."
+            )
         user_id = actor.user_id
         unique_ids = list(dict.fromkeys(establishment_ids))
 
@@ -285,3 +284,56 @@ class UserService:
         result_status = dict.fromkeys(unique_ids, UserEstablishmentStatus.WITHDRAWN)
 
         return self._to_establishment_status_domains(unique_ids, info, result_status)
+
+    async def subscribe_to_establishment(
+        self, actor: UserActor, establishment_id: UUID
+    ) -> EstablishmentWithStatusDomain:
+        """Grant the caller approved access to an establishment, with no review.
+
+        A relation left in any other status (e.g. from before a promotion to
+        admin) is flipped to approved rather than duplicated.
+
+        Raises:
+            EstablishmentNotFoundError: If the establishment does not exist.
+            EstablishmentAlreadySubscribedError: If the caller already has
+                approved access to it.
+        """
+        establishment = await self.uow.establishment_repo.get_by_id_or_raise(
+            establishment_id
+        )
+        info = _establishment_snapshot(establishment)
+
+        relation = await self.uow.user_establishment_repo.get_relation(
+            actor.user_id, establishment_id
+        )
+        if relation is not None and relation.status == UserEstablishmentStatus.APPROVED:
+            raise EstablishmentAlreadySubscribedError(
+                str(establishment_id), str(actor.user_id)
+            )
+
+        await self.uow.user_establishment_repo.create_or_approve_relation(
+            actor.user_id, establishment_id
+        )
+        await self.uow.commit()
+
+        return EstablishmentWithStatusDomain(
+            **info, status=UserEstablishmentStatus.APPROVED
+        )
+
+    async def unsubscribe_from_establishment(
+        self, actor: UserActor, establishment_id: UUID
+    ) -> None:
+        """Delete the caller's relation to an establishment.
+
+        Raises:
+            UserEstablishmentNotFoundError: If the caller has no relation with
+                the establishment.
+        """
+        deleted = await self.uow.user_establishment_repo.delete_relation(
+            actor.user_id, establishment_id
+        )
+        if not deleted:
+            raise UserEstablishmentNotFoundError(
+                str(establishment_id), str(actor.user_id)
+            )
+        await self.uow.commit()

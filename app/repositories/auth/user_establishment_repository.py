@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.establishment import UserEstablishmentStatus
@@ -95,6 +95,16 @@ class UserEstablishmentRepository:
             )
         )
         return result.scalar_one_or_none()
+
+    async def delete_relation(self, user_id: UUID, establishment_id: UUID) -> bool:
+        """Delete the user-establishment relation. Return whether a row existed."""
+        result = await self.db.execute(
+            delete(UserEstablishment).where(
+                UserEstablishment.user_id == user_id,
+                UserEstablishment.establishment_id == establishment_id,
+            )
+        )
+        return result.rowcount > 0
 
     async def update_status_for_ids(
         self,

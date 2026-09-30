@@ -78,7 +78,7 @@ class UserWithEstablishmentsDomain(BaseUserDomain):
 
 @dataclass
 class ProfileDomain(BaseUserDomain):
-    """Current user's profile. ``establishments`` is None for non-field-workers,
-    and a (possibly empty) list for field workers."""
+    """Current user's profile, with every establishment relation the user holds
+    (a possibly empty list) annotated with its status."""
 
     establishments: list[EstablishmentWithStatusDomain] | None = None

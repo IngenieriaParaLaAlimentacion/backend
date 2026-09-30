@@ -334,6 +334,25 @@ class UserEstablishmentNotWithdrawableError(ConflictError):
         )
 
 
+class EstablishmentAlreadySubscribedError(ConflictError):
+    """Raised when an admin subscribes to an establishment they already have
+    approved access to.
+
+    Args:
+        establishment_id (str): The establishment already subscribed to.
+        user_id (str): The admin the relation belongs to.
+    """
+
+    error_type = "establishment-already-subscribed"
+
+    def __init__(self, establishment_id: str, user_id: str):
+        super().__init__(
+            "Establishment already subscribed",
+            f"The user with id {user_id} is already subscribed to the "
+            f"establishment with id {establishment_id}.",
+        )
+
+
 class EstablishmentRequestNotFoundError(NotFoundError):
     """Exception raised when an establishment request does not exist.
 
