@@ -6,7 +6,6 @@ import pytest
 
 from app.exceptions.domain_exceptions import (
     InvalidVerificationTokenError,
-    UserNotFoundError,
     VerificationTokenExpiredError,
     VerificationTokenUsedError,
 )
@@ -357,26 +356,16 @@ class TestResendVerificationEmailUserNotFound:
         self.uow = make_uow_verification()
         self.uow.user_repo.get_by_email = AsyncMock(return_value=None)
 
-    async def test_raises_user_not_found(self, valid_resend_request):
-        with pytest.raises(UserNotFoundError):
-            await AuthService(self.uow).resend_verification_email(
-                valid_resend_request.email
-            )
-
-    async def test_does_not_revoke_tokens(self, valid_resend_request):
-        with pytest.raises(UserNotFoundError):
-            await AuthService(self.uow).resend_verification_email(
-                valid_resend_request.email
-            )
+    async def test_unknown_email_returns_without_error_or_side_effects(
+        self, valid_resend_request
+    ):
+        # Answering like a known email keeps the endpoint from revealing
+        # which addresses are registered.
+        await AuthService(self.uow).resend_verification_email(
+            valid_resend_request.email
+        )
 
         self.uow.email_verification_repo.revoke_active_for_user.assert_not_awaited()
-
-    async def test_does_not_commit(self, valid_resend_request):
-        with pytest.raises(UserNotFoundError):
-            await AuthService(self.uow).resend_verification_email(
-                valid_resend_request.email
-            )
-
         self.uow.commit.assert_not_awaited()
 
 

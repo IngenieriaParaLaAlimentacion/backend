@@ -228,7 +228,6 @@ async def verify_email(
             "description": "Verification email resent if the user exists "
             "and email is not already verified"
         },
-        status.HTTP_404_NOT_FOUND: {"description": "User not found"},
         **RATE_LIMITED_RESPONSES,
     },
 )

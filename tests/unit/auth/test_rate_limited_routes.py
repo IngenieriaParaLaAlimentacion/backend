@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
 import pytest
+from fastapi.routing import APIRoute
 from fastapi.testclient import TestClient
 
 from app.config.settings import settings
@@ -100,3 +101,34 @@ def test_exhausting_one_endpoint_does_not_block_the_others(client):
 
     others = [name for name in IP_ONLY_ENDPOINTS if name != "refresh"]
     assert [_post(client, name).status_code for name in others] == [401] * 3
+
+
+def test_a_payload_that_fails_validation_still_counts_against_the_ip_limit(client):
+    """Invalid bodies cannot be used to probe an endpoint without limit."""
+    url, _, body = IP_ONLY_ENDPOINTS["refresh"]
+    for _ in range(2):
+        assert (
+            client.post(url, json={}, headers={"X-Real-IP": "1.1.1.1"}).status_code
+            == 422
+        )
+
+    assert _post(client, "refresh").status_code == 429
+
+
+def test_email_limited_routes_name_their_body_parameter_like_the_limit():
+    """The email limit reads the body the route already parses.
+
+    A route whose body parameter has another name would make FastAPI expect two
+    bodies and answer every request with a 422.
+    """
+    checked = 0
+    for route in app.routes:
+        if not isinstance(route, APIRoute):
+            continue
+        for dep in route.dependant.dependencies:
+            if dep.call.__qualname__.startswith("limit_by_email"):
+                checked += 1
+                route_bodies = {f.name for f in route.dependant.body_params}
+                assert {f.name for f in dep.body_params} <= route_bodies, route.path
+
+    assert checked == 3
