@@ -5,10 +5,12 @@ import pytest_asyncio
 from fastapi import status
 from sqlalchemy import func, select
 
+from app.domain.establishment import UserEstablishmentStatus
 from app.domain.user import UserRole
 from tests.integration.helpers import responses_url
 from tests.integration.surveys.responses.helpers import (
     _create_survey,
+    _link_user,
     _make_establishment,
     _make_subject,
     _response_body,
@@ -30,13 +32,61 @@ class TestSubmitAuth:
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_analyst_forbidden(self, client, db_establishment, analyst_user):
-        headers, _ = analyst_user
-        response = await client.post(
-            responses_url(uuid.uuid4()),
-            json=_response_body(uuid.uuid4(), {}),
-            headers=headers,
+
+class TestSubmitAnalyst:
+    """An analyst answers surveys only where their link is approved."""
+
+    async def _submit(self, client, admin_user, analyst_user, establishment_id):
+        admin_headers, _ = admin_user
+        analyst_headers, _ = analyst_user
+        survey = await _create_survey(
+            client, admin_headers, response_target="establishment"
         )
+        return await client.post(
+            responses_url(survey["id"]),
+            json=_response_body(
+                survey["id"],
+                _valid_answers(survey),
+                establishment_id=str(establishment_id),
+            ),
+            headers=analyst_headers,
+        )
+
+    async def test_approved_analyst_succeeds(
+        self, client, db_establishment, admin_user, analyst_user
+    ):
+        _, analyst_id = analyst_user
+        await _link_user(
+            analyst_id, db_establishment.id, UserEstablishmentStatus.APPROVED
+        )
+
+        response = await self._submit(
+            client, admin_user, analyst_user, db_establishment.id
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.json()["submitted_by_id"] == str(analyst_id)
+
+    @pytest.mark.parametrize(
+        "relation_status",
+        [
+            None,
+            UserEstablishmentStatus.PENDING,
+            UserEstablishmentStatus.REJECTED,
+            UserEstablishmentStatus.WITHDRAWN,
+        ],
+    )
+    async def test_analyst_without_approved_link_returns_403(
+        self, client, db_establishment, admin_user, analyst_user, relation_status
+    ):
+        _, analyst_id = analyst_user
+        if relation_status is not None:
+            await _link_user(analyst_id, db_establishment.id, relation_status)
+
+        response = await self._submit(
+            client, admin_user, analyst_user, db_establishment.id
+        )
+
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
 

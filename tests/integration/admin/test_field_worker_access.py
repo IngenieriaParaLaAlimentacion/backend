@@ -18,6 +18,7 @@ from tests.integration.admin.conftest import (
     REJECT_FIELD_WORKER_URL,
     REJECT_URL,
     REVOKE_URL,
+    _insert_relation,
     _insert_user,
 )
 
@@ -237,11 +238,12 @@ class TestRevokeEstablishments:
         assert by_establishment[db_establishment.id] == "approved"
         assert by_establishment[db_establishment_2.id] == "pending"
 
-    async def test_user_is_not_a_field_worker(
+    async def test_user_outside_reviewed_roles_returns_400(
         self, client, admin_headers, non_field_worker_user_id
     ):
         """Unlike approve/reject, revoke explicitly checks the target is a
-        field worker before looking at establishments, so this is a 400."""
+        field worker or analyst before looking at establishments, so this is
+        a 400."""
         url = REVOKE_URL.format(user_id=non_field_worker_user_id)
         response = await client.patch(
             url,
@@ -249,6 +251,50 @@ class TestRevokeEstablishments:
             headers=admin_headers,
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+class TestAnalystEstablishmentReview:
+    """An admin reviews an analyst's establishment access like a field
+    worker's."""
+
+    @pytest.mark.parametrize(
+        ("current", "url", "expected"),
+        [
+            (
+                UserEstablishmentStatus.PENDING,
+                APPROVE_URL,
+                UserEstablishmentStatus.APPROVED,
+            ),
+            (
+                UserEstablishmentStatus.PENDING,
+                REJECT_URL,
+                UserEstablishmentStatus.REJECTED,
+            ),
+            (
+                UserEstablishmentStatus.APPROVED,
+                REVOKE_URL,
+                UserEstablishmentStatus.REVOKED,
+            ),
+        ],
+    )
+    async def test_admin_resolves_analyst_relation(
+        self, client, admin_headers, db_establishment, current, url, expected
+    ):
+        analyst_id = await _insert_user(UserRole.ANALYST, UserStatus.ACTIVE)
+        await _insert_relation(analyst_id, db_establishment.id, current)
+
+        response = await client.patch(
+            url.format(user_id=analyst_id),
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        async with db_module.AsyncSessionLocal() as session:
+            relation = await session.scalar(
+                select(UserEstablishment).where(UserEstablishment.user_id == analyst_id)
+            )
+        assert relation.status == expected
 
 
 class TestEstablishmentAccessValidation:
@@ -553,6 +599,24 @@ class TestListPendingEstablishments:
         assert item["id"] == accepted_field_worker["id"]
         assert item["status"] == UserStatus.ACTIVE.value
         assert [e["id"] for e in item["establishments"]] == [str(db_establishment.id)]
+
+    async def test_lists_analyst_with_pending_access(
+        self, client, admin_headers, db_establishment
+    ):
+        """An analyst's pending request reaches the admin's review list."""
+        analyst_id = await _insert_user(UserRole.ANALYST, UserStatus.ACTIVE)
+        await _insert_relation(
+            analyst_id, db_establishment.id, UserEstablishmentStatus.PENDING
+        )
+
+        response = await client.get(PENDING_ESTABLISHMENTS_URL, headers=admin_headers)
+
+        body = response.json()
+        assert body["total_pending_establishments"] == 1
+        assert [item["id"] for item in body["items"]] == [str(analyst_id)]
+        assert [e["id"] for e in body["items"][0]["establishments"]] == [
+            str(db_establishment.id)
+        ]
 
     async def test_excludes_accounts_still_awaiting_approval(
         self, client, admin_headers, registered_field_worker

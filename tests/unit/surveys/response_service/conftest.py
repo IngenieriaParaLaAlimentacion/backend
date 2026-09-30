@@ -22,6 +22,7 @@ def make_uow(stub_establishment_lookup):
         survey=None,
         establishment=_UNSET,
         relation=None,
+        approved_ids=frozenset(),
         existing_response=None,
         created_response=None,
         existing_edit=None,
@@ -37,6 +38,9 @@ def make_uow(stub_establishment_lookup):
             return_value=MagicMock() if subject is _UNSET else subject
         )
         uow.user_establishment_repo.get_relation = AsyncMock(return_value=relation)
+        uow.user_establishment_repo.get_approved_establishment_ids = AsyncMock(
+            return_value=set(approved_ids)
+        )
         uow.survey_response_repo.get_by_target = AsyncMock(return_value=target_response)
         uow.survey_response_repo.get_by_id = AsyncMock(return_value=existing_response)
         uow.survey_response_repo.create = AsyncMock(

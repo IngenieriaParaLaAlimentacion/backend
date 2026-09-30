@@ -3,10 +3,12 @@ import uuid
 from fastapi import status
 from sqlalchemy import func, select
 
+from app.domain.establishment import UserEstablishmentStatus
 from tests.integration.helpers import responses_url
 from tests.integration.surveys.responses.helpers import (
     NOW,
     _create_survey,
+    _link_user,
     _response_body,
     _valid_answers,
 )
@@ -276,3 +278,51 @@ class TestEdit:
                 select(func.count()).select_from(SurveyResponseEdit)
             )
             assert count.scalar_one() == 1
+
+
+class TestEditAnalyst:
+    async def test_analyst_loses_edit_once_link_is_withdrawn(
+        self, client, db_establishment, admin_user, analyst_user
+    ):
+        """An approved analyst edits their own response like a field
+        worker, and stops being able to once the link is withdrawn."""
+        from app.db.database import AsyncSessionLocal
+        from app.models.auth.user_establishment import UserEstablishment
+
+        admin_headers, _ = admin_user
+        analyst_headers, analyst_id = analyst_user
+        await _link_user(
+            analyst_id, db_establishment.id, UserEstablishmentStatus.APPROVED
+        )
+        survey = await _create_survey(
+            client, admin_headers, response_target="establishment"
+        )
+        body = _response_body(
+            survey["id"],
+            _valid_answers(survey),
+            establishment_id=str(db_establishment.id),
+        )
+        created = (
+            await client.post(
+                responses_url(survey["id"]), json=body, headers=analyst_headers
+            )
+        ).json()
+        edit_url = responses_url(survey["id"], created["id"])
+        edit_body = {
+            "answers": _valid_answers(survey),
+            "response_number": 1,
+            "event_at": NOW,
+        }
+
+        edited = await client.put(edit_url, json=edit_body, headers=analyst_headers)
+        assert edited.status_code == status.HTTP_200_OK
+
+        async with AsyncSessionLocal() as session:
+            relation = await session.scalar(
+                select(UserEstablishment).where(UserEstablishment.user_id == analyst_id)
+            )
+            relation.status = UserEstablishmentStatus.WITHDRAWN
+            await session.commit()
+
+        denied = await client.put(edit_url, json=edit_body, headers=analyst_headers)
+        assert denied.status_code == status.HTTP_403_FORBIDDEN

@@ -35,10 +35,17 @@ from app.schemas.surveys.survey_response_schema import (
     SurveyResponseRequest,
     UserRefResponse,
 )
+from app.services.access import check_field_work_access
 from app.services.exporters.base import SurveyResponseExporter
 
-# Roles allowed to submit a response.
-_SUBMITTER_ROLES = {UserRole.FIELD_WORKER, UserRole.ADMIN, UserRole.SUPERADMIN}
+# Roles allowed to submit a response. Analysts are further scoped by
+# check_field_work_access.
+_SUBMITTER_ROLES = {
+    UserRole.FIELD_WORKER,
+    UserRole.ANALYST,
+    UserRole.ADMIN,
+    UserRole.SUPERADMIN,
+}
 # Roles allowed to edit any response regardless of authorship.
 _ADMIN_ROLES = {UserRole.ADMIN, UserRole.SUPERADMIN}
 # Roles allowed to fetch and see responses
@@ -274,6 +281,9 @@ class SurveyResponseService:
 
         Raises:
             RoleNotAllowedError: role can't submit.
+            EstablishmentAccessDeniedError: analyst without approved access to
+                the response's establishment, or to any establishment when the
+                response names none.
             SurveyNotFoundError / EstablishmentNotFoundError / SubjectNotFoundError.
             InvalidSurveyResponseError: payload names an entity that does not
                 match the survey's response target, answers fail validation, or
@@ -285,12 +295,16 @@ class SurveyResponseService:
         if data.id is not None:
             existing = await self.uow.survey_response_repo.get_by_id(data.id)
             if existing is not None:
+                await check_field_work_access(
+                    self.uow, actor, existing.establishment_id
+                )
                 return self._replayed(existing, survey_id), False
 
         survey = await self._get_survey_or_raise(survey_id)
         subject_id, establishment_id = self._resolve_target(survey, data)
         if establishment_id is not None:
             await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
+        await check_field_work_access(self.uow, actor, establishment_id)
         if subject_id is not None:
             await self._get_subject_or_raise(subject_id)
         await self._raise_if_target_answered(survey_id, subject_id, establishment_id)
@@ -343,11 +357,13 @@ class SurveyResponseService:
 
         Raises:
             SurveyResponseNotFoundError, NotResourceOwnerError (not the
-            submitter/admin),
+            submitter/admin), EstablishmentAccessDeniedError (analyst without
+            the approved access that submitting requires),
             InvalidSurveyResponseError (answers fail validation).
         """
         response = await self._get_response_or_raise(response_id)
         self._assert_owner_or_admin(actor, response)
+        await check_field_work_access(self.uow, actor, response.establishment_id)
 
         if data.id is not None:
             existing_edit = await self.uow.survey_response_edit_repo.get_by_id(data.id)

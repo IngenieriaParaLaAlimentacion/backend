@@ -95,3 +95,17 @@ def _response_body(survey_id, answers, response_number: int = 1, **overrides) ->
     }
     body.update(overrides)
     return body
+
+
+async def _link_user(user_id, establishment_id, status):
+    """Insert a user-establishment relation in the given status."""
+    from app.db.database import AsyncSessionLocal
+    from app.models.auth.user_establishment import UserEstablishment
+
+    async with AsyncSessionLocal() as session:
+        session.add(
+            UserEstablishment(
+                user_id=user_id, establishment_id=establishment_id, status=status
+            )
+        )
+        await session.commit()

@@ -17,6 +17,9 @@ class UserRole(StrEnum):
 BACKOFFICE_ROLES = frozenset({UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.ANALYST})
 """Roles that operate from the backoffice and can be invited by an admin."""
 
+REVIEWED_ACCESS_ROLES = frozenset({UserRole.FIELD_WORKER, UserRole.ANALYST})
+"""Roles whose establishment access goes through admin review."""
+
 
 class UserStatus(str, Enum):
     """Lifecycle states a user account can be in."""
