@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.notifications import PushPlatform
-from app.domain.user import UserRole, UserStatus
+from app.domain.user import UserStatus
 from app.models.auth.user import User
 from app.models.auth.user_establishment import UserEstablishment
 from app.models.notifications.user_push_device import UserPushDevice
@@ -84,7 +84,8 @@ class UserPushDeviceRepository:
     async def list_eligible_for_establishment(
         self, establishment_id: UUID
     ) -> list[UserPushDevice]:
-        """Return all devices of currently eligible field-worker recipients."""
+        """Return all devices of active users with approved access to the
+        establishment, whatever their role."""
         result = await self.db.execute(
             select(UserPushDevice)
             .join(User, User.id == UserPushDevice.user_id)
@@ -92,7 +93,6 @@ class UserPushDeviceRepository:
             .where(
                 UserEstablishment.establishment_id == establishment_id,
                 UserEstablishment.status == UserEstablishmentStatus.APPROVED,
-                User.role == UserRole.FIELD_WORKER,
                 User.status == UserStatus.ACTIVE,
             )
             .order_by(UserPushDevice.id)
