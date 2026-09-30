@@ -2,10 +2,12 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from opentelemetry import trace
+from slowapi.errors import RateLimitExceeded
 from sqlalchemy.exc import DBAPIError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.exceptions.domain_exceptions import BaseError
+from app.core.rate_limit import exceeded_window
+from app.exceptions.domain_exceptions import BaseError, RateLimitedError
 from app.utils.db import sqlstate
 
 
@@ -50,11 +52,9 @@ async def domain_error_handler(request: Request, exc: BaseError) -> JSONResponse
         trace.get_current_span().record_exception(exc)
     # RFC 7235 requires a challenge on every 401. FastAPI attached it to the
     # auto-401 it no longer raises, so we re-attach it here.
-    headers = (
-        {"WWW-Authenticate": "Bearer"}
-        if exc.status == status.HTTP_401_UNAUTHORIZED
-        else None
-    )
+    headers = dict(exc.headers)
+    if exc.status == status.HTTP_401_UNAUTHORIZED:
+        headers["WWW-Authenticate"] = "Bearer"
     return _problem_response(
         request,
         status_code=exc.status,
@@ -62,8 +62,16 @@ async def domain_error_handler(request: Request, exc: BaseError) -> JSONResponse
         title=exc.title,
         detail=exc.details,
         extensions=exc.extensions,
-        headers=headers,
+        headers=headers or None,
     )
+
+
+async def rate_limit_exceeded_handler(
+    request: Request, exc: RateLimitExceeded
+) -> JSONResponse:
+    """Render an exceeded rate limit as a 429 with the wait time to retry."""
+    limit, reset_at = exceeded_window(request)
+    return await domain_error_handler(request, RateLimitedError(limit, reset_at))
 
 
 async def validation_error_handler(
@@ -161,6 +169,7 @@ async def unhandled_error_handler(request: Request, exc: Exception) -> JSONRespo
 def register_exception_handlers(app: FastAPI) -> None:
     """Register exception handlers with the FastAPI app."""
     app.add_exception_handler(BaseError, domain_error_handler)
+    app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
     app.add_exception_handler(RequestValidationError, validation_error_handler)
     app.add_exception_handler(StarletteHTTPException, http_error_handler)
     app.add_exception_handler(DBAPIError, database_error_handler)

@@ -10,6 +10,7 @@ from app.config.logging import setup_logging
 from app.config.settings import settings
 from app.config.telemetry import setup_telemetry
 from app.core.openapi import configure_openapi
+from app.core.rate_limit import limiter
 from app.db.database import engine
 from app.exceptions.exception_handlers import register_exception_handlers
 from app.services.notifications.stale_establishment_scheduler import (
@@ -51,6 +52,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Ingenieria para la Alimentación", version="1.0.0", lifespan=lifespan
 )
+app.state.limiter = limiter
 register_exception_handlers(app)
 
 app.include_router(api_router)

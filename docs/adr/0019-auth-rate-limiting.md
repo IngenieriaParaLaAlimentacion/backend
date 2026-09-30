@@ -43,15 +43,15 @@ email. The buckets are independent. Keys are `{scope}:ip:{ip}` and `{scope}:emai
 | Endpoint | Per email | Per IP | Scope |
 | --- | --- | --- | --- |
 | `POST` login | yes | yes | `login` |
-| `POST` password-recovery/request | yes | yes | `mail-sending` |
-| `POST` verify-email/resend | yes | yes | `mail-sending` |
+| `POST` password-recovery/request | yes | yes | `mail-sending` (email), own scope (IP) |
+| `POST` verify-email/resend | yes | yes | `mail-sending` (email), own scope (IP) |
 | `POST` register/field-worker | — | yes | `register` |
 | `POST` refresh | — | yes | `refresh` |
 | `POST` password-recovery/confirm | — | yes | `password-recovery-confirm` |
 | `POST` verify-email/confirm | — | yes | `verify-email-confirm` |
 
 Recovery request and verification resend share one bucket per email (`scope="mail-sending"`, via
-`shared_limit`). Both send mail to the same person, so separate buckets would let an attacker
+`shared_limit`). Their per-IP buckets stay separate, one per endpoint, like every other scope. Both send mail to the same person, so separate buckets would let an attacker
 multiply the mail sent to a victim by alternating between the two endpoints.
 
 There are **no generic limits**, per IP or per email, across the API:
@@ -86,13 +86,25 @@ The email is normalised (lowercased, trimmed) before it becomes part of a key, s
 
 ### The email key
 
-The per-email key is computed from `data.email`, the already validated request model, and applied
-by an explicit call to `limiter.limiter.hit(...)` (or an equivalent dependency) inside the route,
-alongside the per-IP decorator. It is not read from `request._body`.
+The per-email limit is a second `shared_limit` decorator on the route, with its own `key_func`. That
+function reads the normalised email from `request.state`, where a route dependency stored it. The
+dependency declares the same `data` body parameter as the route, so FastAPI parses the body once
+and the email is the validated `data.email`, not raw JSON.
 
-`request._body` is a private Starlette attribute. If it changes, a `key_func` built on it falls back
-to the IP without any error, and the per-email limit silently disappears. Reading a validated field
-costs more code and has no such failure mode.
+Every request counts against the limits, successful or not: slowapi does not distinguish, and
+counting only failures would need the login result to feed back into the counter. When one endpoint
+has two limits and the second fails, the first has already counted that request.
+
+Two alternatives were rejected:
+
+- Reading `request._body` in the `key_func`. It is a private Starlette attribute; if it changes,
+  the key falls back to the IP without any error and the per-email limit silently disappears.
+- Calling `limiter.limiter.hit(...)` from inside the route. slowapi detects a dead storage, and
+  notices its recovery, only for limits it evaluates itself. A manual `hit` would bypass that, so
+  the degraded mode below would not cover the email limit.
+
+If a route forgets the dependency, `email_key` logs an error and degrades to the IP key. It does not
+raise: an exception inside a `key_func` makes slowapi treat the storage as down.
 
 ### Thresholds
 
@@ -112,8 +124,9 @@ changed in tests.
 
 ### The 429 response
 
-- `application/problem+json` (RFC 7807), built with the same `_problem_response` helper as every
-  other backend error, with its own error `type`. The catalog in `docs/errors.json` is regenerated.
+- `application/problem+json` (RFC 7807), raised as a domain exception like every other backend
+  error: `RateLimitedError`, `type` `/errors/rate-limited`, registered in the error catalog. The
+  body carries a `retry_after` extension member, in seconds, next to the header.
 - `Retry-After` carries the real reset of the window as slowapi computes it, not a
   `period / capacity` estimate.
 - `X-RateLimit-*` headers appear on 429 responses only. slowapi's `headers_enabled` adds them to
@@ -150,8 +163,13 @@ one, and in-memory counters are lost when an instance restarts.
   damage small.
 - The origin IP depends on a Railway guarantee and on a header the platform documents, not on
   anything the backend controls.
-- The email limit is applied by explicit calls inside routes instead of a pure decorator, so each
-  new limited endpoint has to remember to do it.
+- A route with a per-email limit needs the `remember_email` dependency next to its decorators. If it
+  is forgotten the limit degrades to the IP key and an error is logged.
+- Emails are stored in Redis in plain text, as part of the counter keys, for the length of the
+  window. That is deliberate: it shows which accounts are being targeted. Redis holds personal data
+  and is treated accordingly.
+- An IPv6 client can rotate addresses inside its /64 and dodge the per-IP limit. Grouping IPv6
+  addresses by /64 is planned as a last step of this work.
 
 *Neutral*
 
