@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 
 from app.config.settings import settings
 from app.core.dependencies import get_auth_service
-from app.core.rate_limit import limiter
+from app.core.rate_limit import reset_limiter
 from app.exceptions.domain_exceptions import UnauthorizedError
 from app.main import app
 
@@ -62,10 +62,10 @@ def client(monkeypatch):
     app.dependency_overrides[get_auth_service] = lambda: service
     for _, setting, _ in IP_ONLY_ENDPOINTS.values():
         monkeypatch.setattr(settings, setting, "2/minute")
-    limiter.reset()
+    reset_limiter()
     yield TestClient(app)
     app.dependency_overrides.pop(get_auth_service)
-    limiter.reset()
+    reset_limiter()
 
 
 def _post(client, name, ip="1.1.1.1"):

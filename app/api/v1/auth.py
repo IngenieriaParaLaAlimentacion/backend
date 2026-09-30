@@ -1,14 +1,8 @@
-from fastapi import APIRouter, Depends, Request, Response, status
+from fastapi import APIRouter, Depends, Response, status
 
 from app.api.v1.params import RATE_LIMITED_RESPONSES
-from app.config.settings import settings
 from app.core.dependencies import get_auth_service
-from app.core.rate_limit import (
-    email_key,
-    ip_key,
-    limiter,
-    remember_email,
-)
+from app.core.rate_limit import MAIL_SENDING_SCOPE, limit_by_email, limit_by_ip
 from app.schemas.auth.auth_schema import (
     LoginRequest,
     LogoutRequest,
@@ -29,6 +23,7 @@ router = APIRouter(prefix="/auth")
 
 @router.post(
     "/register/field-worker",
+    dependencies=[limit_by_ip("rate_limit_register_ip", scope="register")],
     response_model=RegistrationResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Register field worker",
@@ -41,11 +36,7 @@ router = APIRouter(prefix="/auth")
         **RATE_LIMITED_RESPONSES,
     },
 )
-@limiter.shared_limit(
-    lambda: settings.rate_limit_register_ip, scope="register", key_func=ip_key
-)
 async def register_field_worker(
-    request: Request,
     data: RegisterFieldWorkerRequest,
     service: AuthService = Depends(get_auth_service),
 ) -> RegistrationResponse:
@@ -55,7 +46,12 @@ async def register_field_worker(
 
 @router.post(
     "/login",
-    dependencies=[Depends(remember_email(LoginRequest))],
+    dependencies=[
+        # The IP limit comes first: a request an origin is already blocked for
+        # must not use up the account's counter.
+        limit_by_ip("rate_limit_login_ip", scope="login"),
+        limit_by_email(LoginRequest, "rate_limit_login_email", scope="login"),
+    ],
     response_model=TokenResponse,
     summary="Login user",
     description="Authenticates a user and returns a JWT token. Blocks pending users.",
@@ -66,16 +62,7 @@ async def register_field_worker(
         **RATE_LIMITED_RESPONSES,
     },
 )
-# The IP limit sits closest to the function so it is checked first: a request
-# an origin is already blocked for must not use up the account's counter.
-@limiter.shared_limit(
-    lambda: settings.rate_limit_login_email, scope="login", key_func=email_key
-)
-@limiter.shared_limit(
-    lambda: settings.rate_limit_login_ip, scope="login", key_func=ip_key
-)
 async def login(
-    request: Request,
     data: LoginRequest,
     service: AuthService = Depends(get_auth_service),
 ) -> TokenResponse:
@@ -113,6 +100,7 @@ async def logout(
 
 @router.post(
     "/refresh",
+    dependencies=[limit_by_ip("rate_limit_token_ip", scope="refresh")],
     response_model=RefreshResponse,
     status_code=status.HTTP_200_OK,
     summary="Refresh authentication tokens",
@@ -126,11 +114,7 @@ async def logout(
         **RATE_LIMITED_RESPONSES,
     },
 )
-@limiter.shared_limit(
-    lambda: settings.rate_limit_token_ip, scope="refresh", key_func=ip_key
-)
 async def refresh(
-    request: Request,
     data: RefreshRequest,
     service: AuthService = Depends(get_auth_service),
 ) -> RefreshResponse:
@@ -140,7 +124,14 @@ async def refresh(
 
 @router.post(
     "/password-recovery/request",
-    dependencies=[Depends(remember_email(PasswordRecoveryRequest))],
+    dependencies=[
+        limit_by_ip("rate_limit_mail_sending_ip", scope="password-recovery-request"),
+        limit_by_email(
+            PasswordRecoveryRequest,
+            "rate_limit_mail_sending_email",
+            scope=MAIL_SENDING_SCOPE,
+        ),
+    ],
     status_code=status.HTTP_202_ACCEPTED,
     response_class=Response,
     summary="Request password recovery",
@@ -155,18 +146,7 @@ async def refresh(
         **RATE_LIMITED_RESPONSES,
     },
 )
-@limiter.shared_limit(
-    lambda: settings.rate_limit_mail_sending_email,
-    scope="mail-sending",
-    key_func=email_key,
-)
-@limiter.shared_limit(
-    lambda: settings.rate_limit_mail_sending_ip,
-    scope="password-recovery-request",
-    key_func=ip_key,
-)
 async def request_password_recovery(
-    request: Request,
     data: PasswordRecoveryRequest,
     service: AuthService = Depends(get_auth_service),
 ) -> Response:
@@ -177,6 +157,9 @@ async def request_password_recovery(
 
 @router.post(
     "/password-recovery/confirm",
+    dependencies=[
+        limit_by_ip("rate_limit_token_ip", scope="password-recovery-confirm")
+    ],
     status_code=status.HTTP_204_NO_CONTENT,
     response_class=Response,
     summary="Confirm password recovery",
@@ -190,13 +173,7 @@ async def request_password_recovery(
         **RATE_LIMITED_RESPONSES,
     },
 )
-@limiter.shared_limit(
-    lambda: settings.rate_limit_token_ip,
-    scope="password-recovery-confirm",
-    key_func=ip_key,
-)
 async def confirm_password_recovery(
-    request: Request,
     data: PasswordRecoveryConfirmRequest,
     service: AuthService = Depends(get_auth_service),
 ) -> Response:
@@ -208,6 +185,7 @@ async def confirm_password_recovery(
 
 @router.post(
     "/verify-email/confirm",
+    dependencies=[limit_by_ip("rate_limit_token_ip", scope="verify-email-confirm")],
     status_code=status.HTTP_204_NO_CONTENT,
     response_class=Response,
     summary="Confirm email verification",
@@ -221,11 +199,7 @@ async def confirm_password_recovery(
         **RATE_LIMITED_RESPONSES,
     },
 )
-@limiter.shared_limit(
-    lambda: settings.rate_limit_token_ip, scope="verify-email-confirm", key_func=ip_key
-)
 async def verify_email(
-    request: Request,
     data: VerifyEmailRequest,
     service: AuthService = Depends(get_auth_service),
 ) -> Response:
@@ -236,7 +210,14 @@ async def verify_email(
 
 @router.post(
     "/verify-email/resend",
-    dependencies=[Depends(remember_email(ResendVerificationRequest))],
+    dependencies=[
+        limit_by_ip("rate_limit_mail_sending_ip", scope="verify-email-resend"),
+        limit_by_email(
+            ResendVerificationRequest,
+            "rate_limit_mail_sending_email",
+            scope=MAIL_SENDING_SCOPE,
+        ),
+    ],
     status_code=status.HTTP_202_ACCEPTED,
     response_class=Response,
     summary="Resend verification email",
@@ -251,18 +232,7 @@ async def verify_email(
         **RATE_LIMITED_RESPONSES,
     },
 )
-@limiter.shared_limit(
-    lambda: settings.rate_limit_mail_sending_email,
-    scope="mail-sending",
-    key_func=email_key,
-)
-@limiter.shared_limit(
-    lambda: settings.rate_limit_mail_sending_ip,
-    scope="verify-email-resend",
-    key_func=ip_key,
-)
 async def resend_verification_email(
-    request: Request,
     data: ResendVerificationRequest,
     service: AuthService = Depends(get_auth_service),
 ) -> Response:

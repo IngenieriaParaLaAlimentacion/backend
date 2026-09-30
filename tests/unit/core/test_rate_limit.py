@@ -4,9 +4,9 @@ from types import SimpleNamespace
 
 import pytest
 import structlog
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from slowapi import Limiter
+from pydantic import BaseModel
 
 from app.config.settings import settings
 from app.core.rate_limit import (
@@ -14,7 +14,10 @@ from app.core.rate_limit import (
     email_key,
     ip_bucket,
     ip_key,
+    limit_by_email,
+    limit_by_ip,
     normalize_email,
+    reset_limiter,
 )
 from app.exceptions.exception_handlers import register_exception_handlers
 
@@ -93,34 +96,36 @@ def test_missing_x_real_ip_warns_only_where_a_proxy_is_expected(
     assert bool(logs) is warns
 
 
-def test_email_key_uses_the_email_stored_on_the_request():
-    """The per-email key carries the normalized email, not the IP."""
-    request = _request()
-    request.state.rate_limit_email = "juan@x.com"
-
-    assert email_key(request) == "email:juan@x.com"
+def test_email_key_carries_the_normalized_email():
+    """The per-email key is built from the canonical email, not the IP."""
+    assert email_key(" Juan@X.com ") == "email:juan@x.com"
 
 
-def test_email_key_degrades_to_the_ip_key_when_no_email_was_stored():
-    """A route that forgot the dependency is still limited, by IP."""
-    assert email_key(_request({"x-real-ip": "200.1.2.3"})) == "ip:200.1.2.3"
+class _Body(BaseModel):
+    email: str
 
 
 @pytest.fixture
-def limited_client():
-    limiter = Limiter(
-        key_func=ip_key, strategy="moving-window", storage_uri="memory://"
-    )
+def limited_client(monkeypatch):
+    monkeypatch.setattr(settings, "rate_limit_login_ip", "1/minute")
+    monkeypatch.setattr(settings, "rate_limit_login_email", "1/minute")
+    reset_limiter()
     app = FastAPI()
-    app.state.limiter = limiter
     register_exception_handlers(app)
 
-    @app.post("/limited")
-    @limiter.limit("1/minute")
-    async def limited(request: Request):
+    @app.post("/limited", dependencies=[limit_by_ip("rate_limit_login_ip", "test")])
+    async def limited():
         return {"ok": True}
 
-    return TestClient(app)
+    @app.post(
+        "/by-email",
+        dependencies=[limit_by_email(_Body, "rate_limit_login_email", "test-email")],
+    )
+    async def by_email(data: _Body):
+        return {"ok": True}
+
+    yield TestClient(app)
+    reset_limiter()
 
 
 def test_exceeding_the_limit_returns_429_problem_with_the_wait_time(limited_client):
@@ -147,3 +152,24 @@ def test_rate_limit_headers_appear_only_on_the_429(limited_client):
     assert not [h for h in ok.headers if h.lower().startswith("x-ratelimit")]
     assert blocked.headers["X-RateLimit-Limit"] == "1"
     assert blocked.headers["X-RateLimit-Remaining"] == "0"
+
+
+def test_a_body_that_fails_validation_never_reaches_the_email_counter(limited_client):
+    """An invalid payload is answered by validation, not counted against an account."""
+    for _ in range(3):
+        assert limited_client.post("/by-email", json={}).status_code == 422
+
+    assert (
+        limited_client.post("/by-email", json={"email": "a@x.com"}).status_code == 200
+    )
+
+
+def test_the_email_limit_counts_variants_of_one_address_together(limited_client):
+    """Case and whitespace do not open a fresh counter."""
+    assert (
+        limited_client.post("/by-email", json={"email": "A@x.com"}).status_code == 200
+    )
+
+    response = limited_client.post("/by-email", json={"email": " a@X.com "})
+
+    assert response.status_code == 429

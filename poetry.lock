@@ -3232,24 +3232,6 @@ files = [
 ]
 
 [[package]]
-name = "slowapi"
-version = "0.1.10"
-description = "A rate limiting extension for Starlette and Fastapi"
-optional = false
-python-versions = "<4.0,>=3.7"
-groups = ["main"]
-files = [
-    {file = "slowapi-0.1.10-py3-none-any.whl", hash = "sha256:3acb61561dc9d687e3d3669362ff6a439de9ba44e2fed3a9c165da26b4b83e28"},
-    {file = "slowapi-0.1.10.tar.gz", hash = "sha256:d320d5bc04d9f171a77fb16700faf3036d85b00f420f22924c8a225f95bd14f9"},
-]
-
-[package.dependencies]
-limits = ">=2.3"
-
-[package.extras]
-redis = ["redis (>=3.4.1,<4.0.0)"]
-
-[[package]]
 name = "sniffio"
 version = "1.3.1"
 description = "Sniff out which async library your code is running under"
@@ -3944,4 +3926,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "20b414ba6d723e0120dfbca6566bb712ff332756d64f7cca988259a51b3ceecf"
+content-hash = "3babc96def0199d14e093875f60842c19a162c35bf0d92a2223f4c094b8168b2"

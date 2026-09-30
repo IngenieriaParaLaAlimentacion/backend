@@ -1,18 +1,23 @@
 """Rate limiter shared by the public authentication endpoints."""
 
+import functools
 import ipaddress
-import time
-from collections.abc import Awaitable, Callable
 
 import structlog
-from fastapi import Request
-from slowapi import Limiter
+from fastapi import Depends, Request
+from fastapi.params import Depends as DependsParam
+from limits import RateLimitItem, parse
+from limits.aio.strategies import MovingWindowRateLimiter
+from limits.storage import storage_from_string
 
 from app.config.settings import settings
+from app.exceptions.domain_exceptions import RateLimitedError
 
 logger = structlog.get_logger()
 
-_EMAIL_STATE_ATTR = "rate_limit_email"
+# Recovery and resend send mail to the same person, so both count against one
+# per-email counter.
+MAIL_SENDING_SCOPE = "mail-sending"
 
 
 def normalize_email(email: str) -> str:
@@ -74,58 +79,70 @@ def ip_key(request: Request) -> str:
     return f"ip:{ip_bucket(client_ip(request))}"
 
 
-def email_key(request: Request) -> str:
-    """Return the rate-limit key for the email captured by ``remember_email``."""
-    email = getattr(request.state, _EMAIL_STATE_ATTR, None)
-    if email is None:
-        # Raising here would make slowapi treat the counter storage as down and
-        # switch to its in-memory fallback, so degrade to the IP key instead.
-        logger.error("rate_limit.email_missing", path=request.url.path)
-        return ip_key(request)
-    return f"email:{email}"
+def email_key(email: str) -> str:
+    """Return the rate-limit key for an account's email."""
+    return f"email:{normalize_email(email)}"
 
 
-def remember_email(body_type: type) -> Callable[..., Awaitable[None]]:
-    """Build a dependency that stores the request body's normalized email.
+@functools.cache
+def _parse_limit(value: str) -> RateLimitItem:
+    return parse(value)
 
-    The dependency shares the ``data`` body parameter with the route, so the
-    body is parsed once and the email is the validated one. ``email_key`` reads
-    the stored value when the limit is evaluated.
+
+_limiter: MovingWindowRateLimiter | None = None
+
+
+def get_limiter() -> MovingWindowRateLimiter:
+    """Return the process-wide limiter, creating it on first use."""
+    global _limiter
+    if _limiter is None:
+        storage = storage_from_string(
+            f"async+{settings.rate_limit_redis_url}",
+            implementation="redispy",
+            socket_connect_timeout=settings.rate_limit_redis_connect_timeout_seconds,
+            socket_timeout=settings.rate_limit_redis_socket_timeout_seconds,
+        )
+        _limiter = MovingWindowRateLimiter(storage)
+    return _limiter
+
+
+def reset_limiter() -> None:
+    """Drop the limiter so the next request builds a fresh one with empty counters."""
+    global _limiter
+    _limiter = None
+
+
+async def _enforce(setting: str, scope: str, key: str) -> None:
+    """Count a request against a limit and raise ``RateLimitedError`` past it."""
+    limit = _parse_limit(getattr(settings, setting))
+    limiter = get_limiter()
+    if await limiter.hit(limit, scope, key):
+        return
+    stats = await limiter.get_window_stats(limit, scope, key)
+    raise RateLimitedError(limit.amount, stats.reset_time)
+
+
+def limit_by_ip(setting: str, scope: str) -> DependsParam:
+    """Build a route dependency that limits the caller's IP address.
+
+    ``setting`` names the settings attribute holding the limit. The counter is
+    private to ``scope``.
     """
 
-    async def dependency(request: Request, data: body_type) -> None:  # type: ignore[valid-type]
-        setattr(request.state, _EMAIL_STATE_ATTR, normalize_email(str(data.email)))
+    async def dependency(request: Request) -> None:
+        await _enforce(setting, scope, ip_key(request))
 
-    return dependency
+    return Depends(dependency)
 
 
-def exceeded_window(request: Request) -> tuple[int, float]:
-    """Return the size of the limit just exceeded and when the caller may retry.
+def limit_by_email(body_type: type, setting: str, scope: str) -> DependsParam:
+    """Build a route dependency that limits the account named in the body.
 
-    The retry time is epoch seconds: the moment the oldest counted request
-    leaves the window.
+    The dependency shares the ``data`` body parameter with the route, so the body
+    is parsed once and the email is the validated one.
     """
-    limit, identifiers = request.state.view_rate_limit
-    try:
-        stats = request.app.state.limiter.limiter.get_window_stats(limit, *identifiers)
-        return limit.amount, stats.reset_time
-    except Exception as exc:
-        # The counter storage failed between the hit and this lookup; a whole
-        # window is the longest the caller can be asked to wait.
-        # No traceback: under attack every rejected request would log one.
-        logger.warning("rate_limit.window_lookup_failed", error=repr(exc))
-        return limit.amount, time.time() + limit.get_expiry()
 
+    async def dependency(data: body_type) -> None:  # type: ignore[valid-type]
+        await _enforce(setting, scope, email_key(str(data.email)))
 
-limiter = Limiter(
-    key_func=ip_key,
-    strategy="moving-window",
-    storage_uri=settings.rate_limit_redis_url,
-    storage_options={
-        "socket_connect_timeout": settings.rate_limit_redis_connect_timeout_seconds,
-        "socket_timeout": settings.rate_limit_redis_socket_timeout_seconds,
-    },
-    # When the counter storage is unreachable, keep counting in memory per
-    # instance rather than disabling the limit or refusing every request.
-    in_memory_fallback_enabled=True,
-)
+    return Depends(dependency)
