@@ -1,6 +1,6 @@
 # ADR-0019: Rate limiting on public authentication endpoints
 
-- **Status**: Proposed
+- **Status**: Accepted
 - **Date**: 2026-09-29
 - **Deciders**: Backend team
 - **Related**: Issue #162 (Rate Limiting en auth endpoints)
@@ -236,7 +236,10 @@ The following were confirmed by the implementation and its integration tests:
 - slowapi's logs reach the backend's structlog output;
 - `Retry-After` reflects the real reset under `moving-window`.
 
-Still pending before this ADR moves to Accepted:
+Not yet confirmed, to be checked on the first deploy behind Railway:
 
-- on the Railway deploy, `X-Real-IP` carries the caller's address and a forged `X-Real-IP` in the
-  request is overwritten.
+- `X-Real-IP` carries the caller's address, and a forged `X-Real-IP` in the request is overwritten.
+  Send 21 requests to a limited endpoint (limit 20 per minute), each with a different forged
+  `X-Real-IP`: the last one must be a 429. A client on another network must not be blocked at the
+  same time. If a forged header gets through, the per-IP limit can be evaded and this decision has
+  to be revisited.
