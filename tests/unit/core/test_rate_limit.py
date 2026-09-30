@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
 from slowapi import Limiter
 
-from app.core.rate_limit import email_key, ip_key, normalize_email
+from app.core.rate_limit import email_key, ip_bucket, ip_key, normalize_email
 from app.exceptions.exception_handlers import register_exception_handlers
 
 
@@ -33,6 +33,21 @@ def test_ip_key_uses_the_edge_proxy_header_over_the_socket_peer():
     request = _request({"x-real-ip": "200.1.2.3"}, client_host="10.0.0.1")
 
     assert ip_key(request) == "ip:200.1.2.3"
+
+
+@pytest.mark.parametrize(
+    ("ip", "bucket"),
+    [
+        ("200.1.2.3", "200.1.2.3"),
+        ("2001:db8:1:2:aaaa:bbbb:cccc:dddd", "2001:db8:1:2::/64"),
+        ("2001:db8:1:2:1111:2222:3333:4444", "2001:db8:1:2::/64"),
+        ("2001:db8:1:3::1", "2001:db8:1:3::/64"),
+        ("::ffff:200.1.2.3", "200.1.2.3"),
+    ],
+)
+def test_ip_bucket_groups_ipv6_by_its_64_network(ip, bucket):
+    """Addresses of one IPv6 subscriber share a counter; IPv4 ones do not."""
+    assert ip_bucket(ip) == bucket
 
 
 def test_ip_key_falls_back_to_the_socket_peer_without_the_header():

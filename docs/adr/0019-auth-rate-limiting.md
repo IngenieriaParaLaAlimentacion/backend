@@ -81,6 +81,10 @@ The IP comes from the `X-Real-IP` header, not from `request.client.host` and not
 
 This trust rests on a platform guarantee. Moving off Railway means revisiting this decision.
 
+IPv4 addresses are counted individually. IPv6 addresses are counted by their /64 network, because
+a single subscriber controls a whole /64 and could otherwise rotate addresses to get around the
+limit; IPv4-mapped IPv6 addresses count as the IPv4 address.
+
 The email is normalised (lowercased, trimmed) before it becomes part of a key, so `Juan@x.com` and
 `juan@x.com ` count as one account.
 
@@ -176,8 +180,9 @@ stalls the instance for about 0.5 s. The short timeouts are what bound this.
 - Emails are stored in Redis in plain text, as part of the counter keys, for the length of the
   window. That is deliberate: it shows which accounts are being targeted. Redis holds personal data
   and is treated accordingly.
-- An IPv6 client can rotate addresses inside its /64 and dodge the per-IP limit. Grouping IPv6
-  addresses by /64 is planned as a last step of this work.
+- IPv6 addresses are counted by their /64 network, since one subscriber controls the whole /64.
+  Two unrelated clients that share a /64 (some mobile carriers and hosting providers) share a
+  counter.
 
 *Neutral*
 

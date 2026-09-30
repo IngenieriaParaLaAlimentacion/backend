@@ -1,5 +1,6 @@
 """Rate limiter shared by the public authentication endpoints."""
 
+import ipaddress
 import time
 from collections.abc import Awaitable, Callable
 
@@ -41,9 +42,28 @@ def client_ip(request: Request) -> str:
     return request.client.host if request.client else "unknown"
 
 
+def ip_bucket(ip: str) -> str:
+    """Return the address a rate-limit counter is shared by.
+
+    IPv4 addresses count individually and IPv6 addresses by their /64 network.
+    A value that is not an IP address is returned unchanged.
+    """
+    try:
+        address = ipaddress.ip_address(ip)
+    except ValueError:
+        return ip
+    if address.version == 6:
+        if address.ipv4_mapped:
+            return str(address.ipv4_mapped)
+        # A single IPv6 subscriber controls a whole /64, so counting each
+        # address on its own would let one client rotate around the limit.
+        return str(ipaddress.ip_network(f"{address}/64", strict=False))
+    return str(address)
+
+
 def ip_key(request: Request) -> str:
     """Return the rate-limit key for the caller's IP address."""
-    return f"ip:{client_ip(request)}"
+    return f"ip:{ip_bucket(client_ip(request))}"
 
 
 def email_key(request: Request) -> str:
