@@ -24,18 +24,29 @@ def client_ip(request: Request) -> str:
     """Return the caller's IP address.
 
     Reads the ``X-Real-IP`` header set by the platform's edge proxy and falls
-    back to the socket peer when the header is absent, logging a warning when
-    ``RATE_LIMIT_REQUIRE_X_REAL_IP`` is set.
+    back to the socket peer when the header is absent or is not an IP address,
+    logging a warning when ``RATE_LIMIT_REQUIRE_X_REAL_IP`` is set or the header
+    is malformed.
     """
     real_ip = request.headers.get("x-real-ip")
     if real_ip:
-        return real_ip.strip()
+        try:
+            return str(ipaddress.ip_address(real_ip.strip()))
+        except ValueError:
+            # The value becomes part of a Redis key, so an arbitrary string
+            # would let a caller mint a new counter on every request.
+            logger.warning("rate_limit.x_real_ip_invalid", path=request.url.path)
+            return _peer_host(request)
 
     # Where the backend runs behind the proxy, a request without the header did
     # not come through it, so the peer address is not the caller's and the deploy
     # has changed. The environment name cannot tell this apart from a local run.
     if settings.rate_limit_require_x_real_ip:
         logger.warning("rate_limit.x_real_ip_missing", path=request.url.path)
+    return _peer_host(request)
+
+
+def _peer_host(request: Request) -> str:
     return request.client.host if request.client else "unknown"
 
 
@@ -98,10 +109,11 @@ def exceeded_window(request: Request) -> tuple[int, float]:
     try:
         stats = request.app.state.limiter.limiter.get_window_stats(limit, *identifiers)
         return limit.amount, stats.reset_time
-    except Exception:
+    except Exception as exc:
         # The counter storage failed between the hit and this lookup; a whole
         # window is the longest the caller can be asked to wait.
-        logger.exception("rate_limit.window_lookup_failed")
+        # No traceback: under attack every rejected request would log one.
+        logger.warning("rate_limit.window_lookup_failed", error=repr(exc))
         return limit.amount, time.time() + limit.get_expiry()
 
 

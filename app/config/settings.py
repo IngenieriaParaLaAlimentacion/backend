@@ -1,7 +1,8 @@
 import enum
 from typing import Optional
 
-from pydantic import AnyUrl, EmailStr, Field, model_validator
+from limits import parse as parse_limit
+from pydantic import AnyUrl, EmailStr, Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.domain.user import UserRole
@@ -154,6 +155,25 @@ class Settings(BaseSettings):
         return self._build_deeplink(
             self.backoffice_deeplink_base, f"{self.invite_path}/{role}"
         )
+
+    @field_validator(
+        "rate_limit_login_email",
+        "rate_limit_login_ip",
+        "rate_limit_mail_sending_email",
+        "rate_limit_mail_sending_ip",
+        "rate_limit_token_ip",
+        "rate_limit_register_ip",
+    )
+    @classmethod
+    def validate_rate_limit(cls, value: str) -> str:
+        """Reject a rate limit that is not written as ``<count>/<period>``."""
+        # The limit is otherwise only parsed on the first request that uses it,
+        # so a typo would let the service start with the endpoint unprotected.
+        try:
+            parse_limit(value)
+        except ValueError as exc:
+            raise ValueError(f"invalid rate limit {value!r}: {exc}") from exc
+        return value
 
     @model_validator(mode="after")
     def build_database_url(self) -> "Settings":

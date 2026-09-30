@@ -63,6 +63,23 @@ def test_ip_key_falls_back_to_the_socket_peer_without_the_header():
     assert ip_key(_request()) == "ip:10.0.0.1"
 
 
+@pytest.mark.parametrize(
+    "value", ["not-an-ip", "1.2.3.4, 5.6.7.8", "a" * 5000, "1.2.3.4:80"]
+)
+def test_a_malformed_x_real_ip_is_ignored_and_logged(value):
+    """A header that is not an IP address cannot mint its own counter."""
+    with structlog.testing.capture_logs() as logs:
+        key = ip_key(_request({"x-real-ip": value}, client_host="10.0.0.1"))
+
+    assert key == "ip:10.0.0.1"
+    assert [log["event"] for log in logs] == ["rate_limit.x_real_ip_invalid"]
+
+
+def test_x_real_ip_is_trimmed_and_normalized():
+    """Surrounding whitespace and spelling variants map to one counter."""
+    assert client_ip(_request({"x-real-ip": " 2001:DB8::1 "})) == "2001:db8::1"
+
+
 @pytest.mark.parametrize(("require_header", "warns"), [(True, True), (False, False)])
 def test_missing_x_real_ip_warns_only_where_a_proxy_is_expected(
     monkeypatch, require_header, warns
