@@ -78,17 +78,19 @@ Counters live in Redis (`RATE_LIMIT_REDIS_URL`), so they survive restarts and ag
 instances. Locally, `docker compose up redis` starts one. On Railway, add a Redis service and set
 `RATE_LIMIT_REDIS_URL` on the backend to its connection URL.
 
-If Redis becomes unreachable the backend keeps limiting with per-instance in-memory counters and logs
-`Rate limit storage unreachable - falling back to in-memory storage`. It returns to Redis on its own
-and logs `Rate limit storage recovered`. While degraded, the effective limit is multiplied by the
-number of instances.
+If Redis becomes unreachable the backend keeps limiting with in-memory counters and logs
+`rate_limit.storage_unreachable`. It checks for Redis again after 1 s, then at doubling intervals up
+to 30 s, and returns to it on its own, logging `rate_limit.storage_recovered`. The memory counters
+are exact while the backend is a single instance; with several instances the effective limit would
+be multiplied by their number.
 
 ### Adding a limited endpoint
 
-Stack the decorators below the route decorator, per-IP one closest to the function so it is
-checked first, and add `request: Request` to the handler. An endpoint limited by email also needs
-`dependencies=[Depends(remember_email(<RequestModel>))]`, and both should declare
-`**RATE_LIMITED_RESPONSES` (from `app/api/v1/params.py`) in `responses`. See `app/api/v1/auth.py`.
+Add the limits to the route's `dependencies`, per-IP first so it is checked first:
+`limit_by_ip("<setting>", scope="<scope>")` and, for an endpoint that carries an email,
+`limit_by_email(<RequestModel>, "<setting>", scope="<scope>")`. The route's body parameter must be
+named `data`. Declare `**RATE_LIMITED_RESPONSES` (from `app/api/v1/params.py`) in `responses`. See
+`app/api/v1/auth.py`.
 
 ---
 

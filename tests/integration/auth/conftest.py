@@ -37,7 +37,7 @@ async def connect_limiter_to_redis(redis_url, monkeypatch):
         reset_limiter()
         return get_limiter()
 
-    await connect().storage.reset()
+    await connect().primary.storage.reset()
     yield connect
     reset_limiter()
 
