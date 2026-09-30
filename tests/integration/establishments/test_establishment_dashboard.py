@@ -332,7 +332,7 @@ class TestMetrics:
 
 
 class TestEmptyEstablishment:
-    """CA 6: an establishment with no data must read as absent, not as zero."""
+    """An establishment with no data must read as absent, not as zero."""
 
     @pytest_asyncio.fixture
     async def body(self, client, admin_headers, scenario):
@@ -384,7 +384,7 @@ class TestEmptyEstablishment:
 
 
 class TestFoodMovementDates:
-    """CA 5: the last intake and outflow dates, independent of measurements."""
+    """The last intake and outflow dates, independent of measurements."""
 
     @pytest_asyncio.fixture
     async def rice(self, app) -> UUID:

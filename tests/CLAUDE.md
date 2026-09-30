@@ -58,6 +58,7 @@ Avoid:
 - Test our rules, not what the framework already guarantees (Pydantic defaults, FastAPI path or query validation, message wording).
 - Do not repeat at integration level what a unit test already pins, unless it is the HTTP contract or the wiring.
 - Docstrings say what the test checks. The reason behind a non-obvious assertion goes in an inline `#` comment, as in the rest of the codebase (`docs/conventions.md`).
+- Docstrings and comments describe the test itself, never where it came from: no acceptance-criterion labels (`CA1:`, `CA 2 / CA 4:`), user story or issue references. They go stale when the story changes and mean nothing to a reader without it.
 
 ## Running
 
