@@ -5,7 +5,7 @@ import time
 from collections.abc import Awaitable, Callable
 
 import structlog
-from fastapi import Request, status
+from fastapi import Request
 from slowapi import Limiter
 
 from app.config.settings import settings
@@ -13,11 +13,6 @@ from app.config.settings import settings
 logger = structlog.get_logger()
 
 _EMAIL_STATE_ATTR = "rate_limit_email"
-
-# Merge into a limited route's ``responses`` so the 429 appears in OpenAPI.
-RATE_LIMITED_RESPONSE = {
-    status.HTTP_429_TOO_MANY_REQUESTS: {"description": "Too many requests"}
-}
 
 
 def normalize_email(email: str) -> str:

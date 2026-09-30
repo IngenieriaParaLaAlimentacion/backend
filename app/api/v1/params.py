@@ -60,6 +60,10 @@ AUTH_RESPONSES: dict[int | str, dict[str, str]] = {
     status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
 }
 
+RATE_LIMITED_RESPONSES: dict[int | str, dict[str, str]] = {
+    status.HTTP_429_TOO_MANY_REQUESTS: {"description": "Too many requests"},
+}
+
 
 def _validate_date_range(
     start: date | None, end: date | None, field_prefix: str

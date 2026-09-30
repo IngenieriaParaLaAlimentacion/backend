@@ -87,7 +87,7 @@ number of instances.
 Stack the decorators below the route decorator, per-IP one closest to the function so it is
 checked first, and add `request: Request` to the handler. An endpoint limited by email also needs
 `dependencies=[Depends(remember_email(<RequestModel>))]`, and both should declare
-`**RATE_LIMITED_RESPONSE` in `responses`. See `app/api/v1/auth.py`.
+`**RATE_LIMITED_RESPONSES` (from `app/api/v1/params.py`) in `responses`. See `app/api/v1/auth.py`.
 
 ---
 

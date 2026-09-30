@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, Request, Response, status
 
+from app.api.v1.params import RATE_LIMITED_RESPONSES
 from app.config.settings import settings
 from app.core.dependencies import get_auth_service
 from app.core.rate_limit import (
-    RATE_LIMITED_RESPONSE,
     email_key,
     ip_key,
     limiter,
@@ -38,7 +38,7 @@ router = APIRouter(prefix="/auth")
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid data"},
         status.HTTP_409_CONFLICT: {"description": "User already exists"},
         status.HTTP_404_NOT_FOUND: {"description": "Establishments not found"},
-        **RATE_LIMITED_RESPONSE,
+        **RATE_LIMITED_RESPONSES,
     },
 )
 @limiter.shared_limit(
@@ -63,7 +63,7 @@ async def register_field_worker(
         status.HTTP_200_OK: {"description": "Successful login"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Invalid credentials"},
         status.HTTP_403_FORBIDDEN: {"description": "Account pending validation"},
-        **RATE_LIMITED_RESPONSE,
+        **RATE_LIMITED_RESPONSES,
     },
 )
 # The IP limit sits closest to the function so it is checked first: a request
@@ -123,7 +123,7 @@ async def logout(
             "description": "Invalid or expired refresh token"
         },
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid request payload"},
-        **RATE_LIMITED_RESPONSE,
+        **RATE_LIMITED_RESPONSES,
     },
 )
 @limiter.shared_limit(
@@ -152,7 +152,7 @@ async def refresh(
             )
         },
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid request payload"},
-        **RATE_LIMITED_RESPONSE,
+        **RATE_LIMITED_RESPONSES,
     },
 )
 @limiter.shared_limit(
@@ -187,7 +187,7 @@ async def request_password_recovery(
             "description": "Invalid or expired recovery token"
         },
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid request payload"},
-        **RATE_LIMITED_RESPONSE,
+        **RATE_LIMITED_RESPONSES,
     },
 )
 @limiter.shared_limit(
@@ -218,7 +218,7 @@ async def confirm_password_recovery(
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Invalid or expired verification token"
         },
-        **RATE_LIMITED_RESPONSE,
+        **RATE_LIMITED_RESPONSES,
     },
 )
 @limiter.shared_limit(
@@ -248,7 +248,7 @@ async def verify_email(
             "and email is not already verified"
         },
         status.HTTP_404_NOT_FOUND: {"description": "User not found"},
-        **RATE_LIMITED_RESPONSE,
+        **RATE_LIMITED_RESPONSES,
     },
 )
 @limiter.shared_limit(
