@@ -92,8 +92,10 @@ dependency declares the same `data` body parameter as the route, so FastAPI pars
 and the email is the validated `data.email`, not raw JSON.
 
 Every request counts against the limits, successful or not: slowapi does not distinguish, and
-counting only failures would need the login result to feed back into the counter. When one endpoint
-has two limits and the second fails, the first has already counted that request.
+counting only failures would need the login result to feed back into the counter. The per-IP limit
+is checked first: a request blocked by IP never reaches the account's counter, so an origin that is
+already blocked cannot use up a victim's attempts. A request blocked by the account's counter has
+already counted against the IP.
 
 Two alternatives were rejected:
 

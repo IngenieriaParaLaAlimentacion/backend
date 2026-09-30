@@ -2,7 +2,13 @@ from fastapi import APIRouter, Depends, Request, Response, status
 
 from app.config.settings import settings
 from app.core.dependencies import get_auth_service
-from app.core.rate_limit import RATE_LIMITED_RESPONSE, ip_key, limiter
+from app.core.rate_limit import (
+    RATE_LIMITED_RESPONSE,
+    email_key,
+    ip_key,
+    limiter,
+    remember_email,
+)
 from app.schemas.auth.auth_schema import (
     LoginRequest,
     LogoutRequest,
@@ -49,6 +55,7 @@ async def register_field_worker(
 
 @router.post(
     "/login",
+    dependencies=[Depends(remember_email(LoginRequest))],
     response_model=TokenResponse,
     summary="Login user",
     description="Authenticates a user and returns a JWT token. Blocks pending users.",
@@ -56,10 +63,21 @@ async def register_field_worker(
         status.HTTP_200_OK: {"description": "Successful login"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Invalid credentials"},
         status.HTTP_403_FORBIDDEN: {"description": "Account pending validation"},
+        **RATE_LIMITED_RESPONSE,
     },
 )
+# The IP limit sits closest to the function so it is checked first: a request
+# an origin is already blocked for must not use up the account's counter.
+@limiter.shared_limit(
+    lambda: settings.rate_limit_login_email, scope="login", key_func=email_key
+)
+@limiter.shared_limit(
+    lambda: settings.rate_limit_login_ip, scope="login", key_func=ip_key
+)
 async def login(
-    data: LoginRequest, service: AuthService = Depends(get_auth_service)
+    request: Request,
+    data: LoginRequest,
+    service: AuthService = Depends(get_auth_service),
 ) -> TokenResponse:
     result = await service.login(data)
     return TokenResponse.model_validate(result)
@@ -122,6 +140,7 @@ async def refresh(
 
 @router.post(
     "/password-recovery/request",
+    dependencies=[Depends(remember_email(PasswordRecoveryRequest))],
     status_code=status.HTTP_202_ACCEPTED,
     response_class=Response,
     summary="Request password recovery",
@@ -133,10 +152,23 @@ async def refresh(
             )
         },
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid request payload"},
+        **RATE_LIMITED_RESPONSE,
     },
 )
+@limiter.shared_limit(
+    lambda: settings.rate_limit_mail_sending_email,
+    scope="mail-sending",
+    key_func=email_key,
+)
+@limiter.shared_limit(
+    lambda: settings.rate_limit_mail_sending_ip,
+    scope="password-recovery-request",
+    key_func=ip_key,
+)
 async def request_password_recovery(
-    data: PasswordRecoveryRequest, service: AuthService = Depends(get_auth_service)
+    request: Request,
+    data: PasswordRecoveryRequest,
+    service: AuthService = Depends(get_auth_service),
 ) -> Response:
     """Request password recovery for a user email."""
     await service.request_password_recovery(data)
@@ -204,6 +236,7 @@ async def verify_email(
 
 @router.post(
     "/verify-email/resend",
+    dependencies=[Depends(remember_email(ResendVerificationRequest))],
     status_code=status.HTTP_202_ACCEPTED,
     response_class=Response,
     summary="Resend verification email",
@@ -215,9 +248,21 @@ async def verify_email(
             "and email is not already verified"
         },
         status.HTTP_404_NOT_FOUND: {"description": "User not found"},
+        **RATE_LIMITED_RESPONSE,
     },
 )
+@limiter.shared_limit(
+    lambda: settings.rate_limit_mail_sending_email,
+    scope="mail-sending",
+    key_func=email_key,
+)
+@limiter.shared_limit(
+    lambda: settings.rate_limit_mail_sending_ip,
+    scope="verify-email-resend",
+    key_func=ip_key,
+)
 async def resend_verification_email(
+    request: Request,
     data: ResendVerificationRequest,
     service: AuthService = Depends(get_auth_service),
 ) -> Response:
