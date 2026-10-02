@@ -10,6 +10,7 @@ from app.domain.subject import SubjectDomain
 from app.domain.subject_event import SubjectEventRecord
 from app.domain.user import (
     BACKOFFICE_ROLES,
+    REVIEWED_ACCESS_ROLES,
     UserRole,
     UserStatus,
     UserWithEstablishmentsDomain,
@@ -244,15 +245,15 @@ class AdminService:
         search: str | None = None,
         establishment_id: UUID | None = None,
     ) -> tuple[PaginatedResult[UserWithEstablishmentsDomain], int]:
-        """Return active field workers awaiting establishment access.
+        """Return active field workers and analysts awaiting establishment access.
 
         Each user carries only their pending establishments. ``search`` matches
         case-insensitively against email, name, and last_name; whitespace-only
         values are treated as no filter. ``establishment_id`` keeps only the
-        workers pending on that establishment.
+        users pending on that establishment.
 
         The second tuple element is the total number of pending establishment
-        relations across every matching field worker, not just this page.
+        relations across every matching user, not just this page.
         """
         offset = (page - 1) * page_size
         search = search.strip() or None if search else None
@@ -329,20 +330,22 @@ class AdminService:
         self, user_id: UUID, establishment_ids: list[UUID]
     ) -> None:
         """Revoke previously approved access to the given establishments.
-        Does not change the field worker's account status.
+        Does not change the user's account status.
 
         Raises:
             UserNotFoundError: If the user does not exist.
-            UserNotFieldWorkerError: If the user is not a field worker.
+            UserNotFieldWorkerError: If the user is neither a field worker nor
+                an analyst.
             UserEstablishmentNotFoundError: If an establishment has no relation
                 with this user.
             UserEstablishmentNotApprovedError: If an establishment has a
                 relation with this user, but it isn't currently approved.
         """
         user, relations = await self._get_field_worker_relations(user_id)
-        self._require_field_worker(
-            user, "Only field workers can have establishment access revoked."
-        )
+        if user.role not in REVIEWED_ACCESS_ROLES:
+            raise UserNotFieldWorkerError(
+                "Only field workers and analysts can have establishment access revoked."
+            )
 
         relations_by_estab_id = self._match_relations(
             user_id, establishment_ids, relations

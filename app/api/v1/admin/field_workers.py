@@ -18,17 +18,16 @@ router = APIRouter()
 @router.patch(
     "/field-worker/{user_id}/establishments/approve",
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Approve establishment access for a field worker",
-    description="Approves the given establishments for an active field worker. "
+    summary="Approve establishment access for a field worker or analyst",
+    description="Approves the given establishments for an active field worker "
+    "or analyst. "
     "Accessible by admins only.",
     responses={
         status.HTTP_400_BAD_REQUEST: {
             "description": "Target user's account is not active"
         },
         **AUTH_RESPONSES,
-        status.HTTP_404_NOT_FOUND: {
-            "description": "Field worker or establishment not found"
-        },
+        status.HTTP_404_NOT_FOUND: {"description": "User or establishment not found"},
     },
 )
 async def approve_establishments(
@@ -44,17 +43,13 @@ async def approve_establishments(
 @router.patch(
     "/field-worker/{user_id}/establishments/reject",
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Reject establishment access for a field worker",
-    description="Rejects the given establishments for the field worker. "
-    "Does not affect the field worker's account status. Accessible by admins only.",
+    summary="Reject establishment access for a field worker or analyst",
+    description="Rejects the given establishments for the field worker or "
+    "analyst. Does not affect the user's account status. Accessible by admins "
+    "only.",
     responses={
-        status.HTTP_400_BAD_REQUEST: {
-            "description": "Target user is not a field worker"
-        },
         **AUTH_RESPONSES,
-        status.HTTP_404_NOT_FOUND: {
-            "description": "Field worker or establishment not found"
-        },
+        status.HTTP_404_NOT_FOUND: {"description": "User or establishment not found"},
     },
 )
 async def reject_establishments(
@@ -122,11 +117,12 @@ async def reject_field_worker(
     "/field-worker/establishments/pending",
     response_model=PendingEstablishmentsResponse,
     status_code=status.HTTP_200_OK,
-    summary="List field workers with pending establishment access",
-    description="Returns a paginated list of active field workers that have at "
+    summary="List field workers and analysts with pending establishment access",
+    description="Returns a paginated list of active field workers and analysts "
+    "that have at "
     "least one establishment request awaiting review, optionally searched by "
     "name, last name or email, or filtered to a single establishment. Each item "
-    "carries only that worker's pending establishments, alongside the total "
+    "carries only that user's pending establishments, alongside the total "
     "number of pending requests matching the same filters. "
     "Accessible by admins only.",
     responses=AUTH_RESPONSES,
@@ -136,11 +132,11 @@ async def get_pending_establishment_requests(
     search: str | None = Query(
         default=None,
         max_length=100,
-        description="Search by field worker name, last name or email.",
+        description="Search by user name, last name or email.",
     ),
     establishment_id: UUID | None = Query(
         default=None,
-        description="Keep only field workers pending on this establishment.",
+        description="Keep only users pending on this establishment.",
     ),
     _admin: UserActor = Depends(require_admin),
     service: AdminService = Depends(get_admin_service),
@@ -157,19 +153,17 @@ async def get_pending_establishment_requests(
 @router.patch(
     "/field-worker/{user_id}/establishments/revoke",
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Revoke establishment access for a field worker",
+    summary="Revoke establishment access for a field worker or analyst",
     description="Revokes previously approved access to the given establishments "
-    "for the field worker. All of them must currently be approved for this "
-    "worker; if any isn't, the request is rejected and none are revoked. Does "
-    "not affect the field worker's account status. Accessible by admins only.",
+    "for the field worker or analyst. All of them must currently be approved "
+    "for this user; if any isn't, the request is rejected and none are revoked. "
+    "Does not affect the user's account status. Accessible by admins only.",
     responses={
         status.HTTP_400_BAD_REQUEST: {
-            "description": "Target user is not a field worker"
+            "description": "Target user is neither a field worker nor an analyst"
         },
         **AUTH_RESPONSES,
-        status.HTTP_404_NOT_FOUND: {
-            "description": "Field worker or establishment not found"
-        },
+        status.HTTP_404_NOT_FOUND: {"description": "User or establishment not found"},
         status.HTTP_409_CONFLICT: {
             "description": "An establishment is not currently approved for "
             "this field worker"

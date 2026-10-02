@@ -10,7 +10,10 @@ from app.domain.establishment import (
 from app.domain.user import ProfileDomain, UserActor, UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
     EmptyUpdateRequestError,
+    EstablishmentAlreadySubscribedError,
     EstablishmentNotFoundError,
+    RoleNotAllowedError,
+    UniqueConstraintError,
     UserEstablishmentNotFoundError,
     UserEstablishmentNotWithdrawableError,
     UserNotFoundError,
@@ -68,6 +71,9 @@ def _make_uow(
     )
     uow.user_establishment_repo.preset_relation = AsyncMock()
     uow.user_establishment_repo.update_status_for_ids = AsyncMock()
+    uow.user_establishment_repo.get_relation = AsyncMock(return_value=None)
+    uow.user_establishment_repo.create_or_approve_relation = AsyncMock()
+    uow.user_establishment_repo.delete_relation = AsyncMock(return_value=True)
     uow.establishment_repo.find_by_ids = AsyncMock(return_value=establishments or [])
     uow.establishment_repo.get_all_by_ids = AsyncMock(
         return_value=establishments_by_ids or []
@@ -125,17 +131,19 @@ class TestGetProfile:
         uow.establishment_repo.find_by_ids.assert_not_called()
 
     @pytest.mark.parametrize("role", [UserRole.ANALYST, UserRole.ADMIN])
-    async def test_non_field_worker_has_none_establishments_and_skips_relation_query(
-        self, role
-    ):
+    async def test_non_field_worker_lists_own_establishments(self, role):
+        """An admin or analyst linked to an establishment sees it in the profile."""
         user = _make_user(role=role)
-        uow = _make_uow(user=user)
+        estab = _make_establishment()
+        relations = [_make_relation(estab.id, UserEstablishmentStatus.APPROVED)]
+        uow = _make_uow(user=user, relations=relations, establishments=[estab])
         service = UserService(uow)
 
         profile = await service.get_profile(_actor_for(user))
 
-        assert profile.establishments is None
-        uow.user_establishment_repo.get_by_user_id.assert_not_called()
+        assert [(e.id, e.status) for e in profile.establishments] == [
+            (estab.id, UserEstablishmentStatus.APPROVED)
+        ]
 
     async def test_user_not_found_raises(self):
         uow = _make_uow(user=None)
@@ -195,7 +203,7 @@ class TestUpdateProfile:
         assert profile.email == user.email
         assert profile.role == user.role
         assert profile.status == user.status
-        assert profile.establishments is None
+        assert profile.establishments == []
 
     async def test_single_field_only_updates_that_field(self):
         user = _make_user(role=UserRole.ANALYST)
@@ -438,6 +446,20 @@ class TestRequestEstablishmentAccess:
         assert uow.user_establishment_repo.preset_relation.await_count == 1
         assert len(result) == 1
 
+    @pytest.mark.parametrize("role", [UserRole.ADMIN, UserRole.SUPERADMIN])
+    async def test_admin_is_rejected_and_writes_nothing(self, role):
+        """An admin subscribes instead of requesting access for review."""
+        user = _make_user(role=role)
+        estab = _make_establishment()
+        uow = _make_uow(user=user, relations=[], establishments_by_ids=[estab])
+        service = UserService(uow)
+
+        with pytest.raises(RoleNotAllowedError):
+            await service.request_establishment_access(_actor_for(user), [estab.id])
+
+        uow.user_establishment_repo.preset_relation.assert_not_called()
+        uow.commit.assert_not_called()
+
     async def test_unknown_establishment_raises_and_writes_nothing(self):
         user = _make_user(role=UserRole.FIELD_WORKER)
         uow = _make_uow(user=user, relations=[])
@@ -531,4 +553,109 @@ class TestWithdrawEstablishmentAccess:
             )
 
         uow.user_establishment_repo.update_status_for_ids.assert_not_called()
+        uow.commit.assert_not_called()
+
+
+class TestSubscribeToEstablishment:
+    @pytest.mark.parametrize(
+        "status",
+        [
+            None,
+            UserEstablishmentStatus.PENDING,
+            UserEstablishmentStatus.REJECTED,
+            UserEstablishmentStatus.REVOKED,
+            UserEstablishmentStatus.WITHDRAWN,
+        ],
+    )
+    async def test_relation_is_approved_and_committed(self, status):
+        """A missing or non-approved relation ends up approved, with no review."""
+        user = _make_user(role=UserRole.ADMIN)
+        estab = _make_establishment()
+        uow = _make_uow(user=user)
+        uow.establishment_repo.get_by_id_or_raise = AsyncMock(return_value=estab)
+        if status is not None:
+            uow.user_establishment_repo.get_relation.return_value = _make_relation(
+                estab.id, status
+            )
+        service = UserService(uow)
+
+        result = await service.subscribe_to_establishment(_actor_for(user), estab.id)
+
+        uow.user_establishment_repo.create_or_approve_relation.assert_awaited_once_with(
+            user.id, estab.id
+        )
+        uow.commit.assert_awaited_once()
+        assert result.id == estab.id
+        assert result.status == UserEstablishmentStatus.APPROVED
+
+    async def test_already_approved_raises_and_writes_nothing(self):
+        user = _make_user(role=UserRole.ADMIN)
+        estab = _make_establishment()
+        uow = _make_uow(user=user)
+        uow.establishment_repo.get_by_id_or_raise = AsyncMock(return_value=estab)
+        uow.user_establishment_repo.get_relation.return_value = _make_relation(
+            estab.id, UserEstablishmentStatus.APPROVED
+        )
+        service = UserService(uow)
+
+        with pytest.raises(EstablishmentAlreadySubscribedError):
+            await service.subscribe_to_establishment(_actor_for(user), estab.id)
+
+        uow.user_establishment_repo.create_or_approve_relation.assert_not_called()
+        uow.commit.assert_not_called()
+
+    async def test_raced_insert_raises_already_subscribed(self):
+        """A concurrent subscribe that wins the insert yields a conflict."""
+        user = _make_user(role=UserRole.ADMIN)
+        estab = _make_establishment()
+        uow = _make_uow(user=user)
+        uow.establishment_repo.get_by_id_or_raise = AsyncMock(return_value=estab)
+        uow.user_establishment_repo.create_or_approve_relation.side_effect = (
+            UniqueConstraintError("user_establishment", (user.id, estab.id))
+        )
+        service = UserService(uow)
+
+        with pytest.raises(EstablishmentAlreadySubscribedError):
+            await service.subscribe_to_establishment(_actor_for(user), estab.id)
+
+        uow.commit.assert_not_called()
+
+    async def test_unknown_establishment_raises_and_writes_nothing(self):
+        user = _make_user(role=UserRole.ADMIN)
+        uow = _make_uow(user=user)
+        uow.establishment_repo.get_by_id_or_raise = AsyncMock(
+            side_effect=EstablishmentNotFoundError(str(uuid.uuid4()))
+        )
+        service = UserService(uow)
+
+        with pytest.raises(EstablishmentNotFoundError):
+            await service.subscribe_to_establishment(_actor_for(user), uuid.uuid4())
+
+        uow.user_establishment_repo.create_or_approve_relation.assert_not_called()
+        uow.commit.assert_not_called()
+
+
+class TestUnsubscribeFromEstablishment:
+    async def test_relation_is_deleted_and_committed(self):
+        user = _make_user(role=UserRole.ADMIN)
+        estab_id = uuid.uuid4()
+        uow = _make_uow(user=user)
+        service = UserService(uow)
+
+        await service.unsubscribe_from_establishment(_actor_for(user), estab_id)
+
+        uow.user_establishment_repo.delete_relation.assert_awaited_once_with(
+            user.id, estab_id
+        )
+        uow.commit.assert_awaited_once()
+
+    async def test_missing_relation_raises_and_commits_nothing(self):
+        user = _make_user(role=UserRole.ADMIN)
+        uow = _make_uow(user=user)
+        uow.user_establishment_repo.delete_relation.return_value = False
+        service = UserService(uow)
+
+        with pytest.raises(UserEstablishmentNotFoundError):
+            await service.unsubscribe_from_establishment(_actor_for(user), uuid.uuid4())
+
         uow.commit.assert_not_called()

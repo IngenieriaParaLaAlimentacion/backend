@@ -76,5 +76,26 @@ There is **no middleware**. A service that touches establishment-scoped data cal
 4. For a field worker, the helper queries `user_establishments` and requires an `APPROVED` relation.
 5. Otherwise it raises `EstablishmentAccessDeniedError`, which surfaces as `403 Forbidden`.
 
+Field work that only field workers get by role — today, submitting and editing survey
+responses — also lets in an analyst who is linked like a field worker. It goes through
+`check_field_work_access(uow, actor, establishment_id)` in the same module:
+
+1. Every role except `analyst` returns immediately.
+2. An analyst needs an `APPROVED` relation to `establishment_id`, or to any establishment
+   when the work names none (subject or anonymous surveys).
+3. Otherwise it raises `EstablishmentAccessDeniedError` (`403`).
+
 Endpoints that are already caller-scoped by construction — such as `GET /api/v1/users/me/activity`,
 which only ever returns rows the caller produced — need no establishment check at all.
+
+### Linking to an establishment
+
+Any role can hold `user_establishments` rows. How a row is created depends on the role:
+
+| Role | Link | Unlink |
+|---|---|---|
+| `field_worker`, `analyst` | `POST /users/me/establishments` opens a `PENDING` request for an admin to review | `PATCH /users/me/establishments/withdraw` sets the row to `WITHDRAWN` |
+| `admin`, `superadmin` | `POST /users/me/establishments/{id}/subscription` creates the row as `APPROVED`, with no review | `DELETE /users/me/establishments/{id}/subscription` deletes the row |
+
+Admins are rejected on the request endpoint (`403`), and only admins can use the subscription endpoints.
+`GET /users/me` and `GET /users/me/establishments` list the caller's rows for every role.

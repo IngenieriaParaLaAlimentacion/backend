@@ -167,12 +167,12 @@ class TestMapContent:
         )
 
     async def test_returns_every_establishment_without_pagination(self, body):
-        """CA 2: no pagination envelope, every seeded establishment in one shot."""
+        """No pagination envelope, every seeded establishment in one shot."""
         assert body.keys() == {"establishments"}
         assert len(body["establishments"]) == 2
 
     async def test_item_shape_is_minimal(self, body, scenario):
-        """CA 5: only what a map marker needs -- no ficha detail fields."""
+        """Only what a map marker needs -- no ficha detail fields."""
         item = self._item(body, scenario.establishment_with_data)
         assert item.keys() == {
             "id",
@@ -185,7 +185,7 @@ class TestMapContent:
         }
 
     async def test_reports_identity_and_location(self, body, scenario):
-        """CA 1: location travels alongside the status."""
+        """Location travels alongside the status."""
         item = self._item(body, scenario.establishment_with_data)
         assert item["name"] == "Comedor Con Datos"
         assert item["latitude"] == pytest.approx(-34.9)
@@ -194,7 +194,7 @@ class TestMapContent:
     async def test_establishment_without_measurements_is_present_not_omitted(
         self, body, scenario
     ):
-        """CA 3: no data is explicit, never absent and never a fake normal."""
+        """No data is explicit, never absent and never a fake normal."""
         item = self._item(body, scenario.establishment_without_data)
         assert item["has_data"] is False
         assert item["severity"] is None
@@ -203,7 +203,7 @@ class TestMapContent:
     async def test_severity_matches_the_individual_dashboard(
         self, client, admin_headers, body, scenario
     ):
-        """CA 1 / CA 4: same severity criterion as the establishment ficha."""
+        """Same severity criterion as the establishment ficha."""
         dashboard_response = await client.get(
             DASHBOARD_URL.format(establishment_id=scenario.establishment_with_data),
             headers=admin_headers,

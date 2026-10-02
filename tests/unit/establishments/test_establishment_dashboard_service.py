@@ -464,7 +464,7 @@ class TestGetEstablishmentsMap:
         self, make_establishment
     ):
         """A bug that iterated the grouped rows instead of every establishment
-        would silently drop this one -- exactly the CA3 failure mode."""
+        would silently drop this one."""
         est_with_data = make_establishment(name="Con datos")
         est_without_data = make_establishment(name="Sin datos")
         uow = AsyncMock()

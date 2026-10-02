@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from app.domain.establishment import UserEstablishmentStatus
 from app.domain.survey import (
     ResponseType,
     SurveyResponseTarget,
@@ -11,6 +12,7 @@ from app.domain.survey_response import (
     SurveyResponseDomain,
 )
 from app.exceptions.domain_exceptions import (
+    EstablishmentAccessDeniedError,
     EstablishmentNotFoundError,
     ForbiddenError,
     InvalidSurveyResponseError,
@@ -130,13 +132,31 @@ class TestSubmit:
         uow.survey_response_repo.create.assert_not_called()
         uow.commit.assert_not_called()
 
-    async def test_analyst_forbidden(self, make_uow, request_factory, analyst_actor):
+    async def test_analyst_without_approved_access_forbidden(
+        self, make_uow, request_factory, analyst_actor
+    ):
+        """An analyst acts as a field worker only once linked."""
         survey = _make_survey_orm()
         uow = make_uow(survey=survey)
         data = request_factory()
-        with pytest.raises(ForbiddenError):
+        with pytest.raises(EstablishmentAccessDeniedError):
             await SurveyResponseService(uow).submit(survey.id, data, analyst_actor)
+        uow.survey_response_repo.create.assert_not_called()
         uow.commit.assert_not_called()
+
+    async def test_analyst_approved_on_the_establishment_allowed(
+        self, make_uow, request_factory, analyst_actor
+    ):
+        """An approved analyst answers for that establishment."""
+        survey = _make_survey_orm(response_target=SurveyResponseTarget.ESTABLISHMENT)
+        relation = MagicMock(status=UserEstablishmentStatus.APPROVED)
+        uow = make_uow(survey=survey, relation=relation)
+        data = request_factory(establishment_id=uuid.uuid4())
+        _, created = await SurveyResponseService(uow).submit(
+            survey.id, data, analyst_actor
+        )
+        assert created is True
+        uow.commit.assert_called_once()
 
     async def test_field_worker_without_establishment_access_allowed(
         self, make_uow, request_factory, field_worker_actor
@@ -229,7 +249,7 @@ class TestSubmit:
         uow.survey_response_repo.create.assert_not_called()
         uow.commit.assert_not_called()
 
-    async def test_replayed_id_still_forbidden_for_disallowed_role(
+    async def test_replayed_id_still_forbidden_for_analyst_without_access(
         self, make_uow, request_factory, analyst_actor
     ):
         existing = _make_response()

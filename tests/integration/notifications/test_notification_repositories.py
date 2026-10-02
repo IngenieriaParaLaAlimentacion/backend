@@ -269,85 +269,59 @@ async def test_registration_reassignment_uniqueness_and_owner_scoped_delete(app)
 
 
 async def test_recipient_listing_applies_every_current_eligibility_predicate(app):
+    """Only active users approved on the establishment are listed, whatever
+    their role."""
     from app.db.database import AsyncSessionLocal
+
+    # Each case departs from an active field worker approved on the target.
+    cases = {
+        "field-worker": {},
+        "analyst": {"role": UserRole.ANALYST},
+        "admin": {"role": UserRole.ADMIN},
+        "inactive": {"status": UserStatus.INACTIVE},
+        "pending": {"relation": UserEstablishmentStatus.PENDING},
+        "pending-analyst": {
+            "role": UserRole.ANALYST,
+            "relation": UserEstablishmentStatus.PENDING,
+        },
+        "revoked": {"relation": UserEstablishmentStatus.REVOKED},
+        "other-only": {"on_other": True},
+    }
+    eligible = {"field-worker", "analyst", "admin"}
 
     async with AsyncSessionLocal() as session:
         target = _establishment("Target")
         other = _establishment("Other")
-        included = _user("included")
-        inactive = _user("inactive", status=UserStatus.INACTIVE)
-        analyst = _user("analyst", role=UserRole.ANALYST)
-        pending = _user("pending")
-        revoked = _user("revoked")
-        other_only = _user("other-only")
-        session.add_all(
-            [
-                target,
-                other,
-                included,
-                inactive,
-                analyst,
-                pending,
-                revoked,
-                other_only,
-            ]
-        )
+        session.add_all([target, other])
         await session.flush()
-        session.add_all(
-            [
+
+        expected = set()
+        for label, case in cases.items():
+            user = _user(
+                label,
+                role=case.get("role", UserRole.FIELD_WORKER),
+                status=case.get("status", UserStatus.ACTIVE),
+            )
+            session.add(user)
+            await session.flush()
+            session.add(
                 UserEstablishment(
-                    user_id=included.id,
-                    establishment_id=target.id,
-                    status=UserEstablishmentStatus.APPROVED,
-                ),
-                UserEstablishment(
-                    user_id=inactive.id,
-                    establishment_id=target.id,
-                    status=UserEstablishmentStatus.APPROVED,
-                ),
-                UserEstablishment(
-                    user_id=analyst.id,
-                    establishment_id=target.id,
-                    status=UserEstablishmentStatus.APPROVED,
-                ),
-                UserEstablishment(
-                    user_id=pending.id,
-                    establishment_id=target.id,
-                    status=UserEstablishmentStatus.PENDING,
-                ),
-                UserEstablishment(
-                    user_id=revoked.id,
-                    establishment_id=target.id,
-                    status=UserEstablishmentStatus.REVOKED,
-                ),
-                UserEstablishment(
-                    user_id=other_only.id,
-                    establishment_id=other.id,
-                    status=UserEstablishmentStatus.APPROVED,
-                ),
-            ]
-        )
-        await session.flush()
-        included_devices = [
-            await _create_device(session, included.id, "included-1"),
-            await _create_device(session, included.id, "included-2"),
-        ]
-        for user, label in [
-            (inactive, "inactive"),
-            (analyst, "analyst"),
-            (pending, "pending"),
-            (revoked, "revoked"),
-            (other_only, "other"),
-        ]:
-            await _create_device(session, user.id, label)
+                    user_id=user.id,
+                    establishment_id=(other if case.get("on_other") else target).id,
+                    status=case.get("relation", UserEstablishmentStatus.APPROVED),
+                )
+            )
+            devices = [await _create_device(session, user.id, label)]
+            if label in eligible:
+                # Every device of an eligible user is listed, not just one.
+                devices.append(await _create_device(session, user.id, f"{label}-2"))
+                expected.update(device.id for device in devices)
         await session.commit()
 
-        devices = await UserPushDeviceRepository(
+        listed = await UserPushDeviceRepository(
             session
         ).list_eligible_for_establishment(target.id)
-        assert {device.id for device in devices} == {
-            device.id for device in included_devices
-        }
+        assert {device.id for device in listed} == expected
 
 
 async def test_due_cycle_locks_skip_concurrent_runner_and_rollback_is_atomic(app):

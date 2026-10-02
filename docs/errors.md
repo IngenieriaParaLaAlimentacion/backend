@@ -34,6 +34,7 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/email-delivery-failed` | 502 | `EmailDeliveryError` | Raised when an outbound email cannot be delivered to the SMTP server. |
 | `/errors/establishment-access-denied` | 403 | `EstablishmentAccessDeniedError` | Raised when a field worker acts on an establishment they have no approved relation with. |
 | `/errors/establishment-already-exists` | 409 | `EstablishmentAlreadyExistsError` | Raised when an establishment with the given place_id already exists. |
+| `/errors/establishment-already-subscribed` | 409 | `EstablishmentAlreadySubscribedError` | Raised when an admin subscribes to an establishment they already have approved access to. |
 | `/errors/establishment-not-found` | 404 | `EstablishmentNotFoundError` | Exception raised when an establishment is not found. |
 | `/errors/establishment-request-already-reviewed` | 409 | `EstablishmentRequestAlreadyReviewedError` | Raised when approving/rejecting a request that is no longer pending. |
 | `/errors/establishment-request-not-found` | 404 | `EstablishmentRequestNotFoundError` | Exception raised when an establishment request does not exist. |
@@ -73,7 +74,7 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/user-establishment-not-approved` | 409 | `UserEstablishmentNotApprovedError` | Raised when revoking access to an establishment that isn't currently approved for the given user. |
 | `/errors/user-establishment-not-found` | 404 | `UserEstablishmentNotFoundError` | Exception raised when a user-establishment relation does not exist. |
 | `/errors/user-establishment-not-withdrawable` | 409 | `UserEstablishmentNotWithdrawableError` | Raised when a user tries to withdraw their own access to an establishment whose relation is not currently approved or pending. |
-| `/errors/user-is-not-a-field-worker` | 400 | `UserNotFieldWorkerError` | Raised when an operation requires the target user to be a field worker. |
+| `/errors/user-is-not-a-field-worker` | 400 | `UserNotFieldWorkerError` | Raised when the target user's role is not one the operation accepts: a field worker, or also an analyst for establishment access revocation. |
 | `/errors/user-is-not-active` | 400 | `UserNotActiveError` | Raised when an operation requires the target user to be active. |
 | `/errors/user-is-not-pending` | 400 | `UserNotPendingError` | Raised when a user has no pending invitation. |
 | `/errors/user-not-found` | 404 | `UserNotFoundError` | Exception raised when a user is not found. |

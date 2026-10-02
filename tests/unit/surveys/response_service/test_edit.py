@@ -9,6 +9,7 @@ from app.domain.survey_response import (
 )
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
+    EstablishmentAccessDeniedError,
     ForbiddenError,
     InvalidSurveyResponseError,
     SurveyResponseNotFoundError,
@@ -92,6 +93,22 @@ class TestEdit:
         )
         assert isinstance(result, SurveyResponseDomain)
         uow.commit.assert_called_once()
+
+    async def test_owner_analyst_without_approved_access_forbidden(
+        self, make_uow, edit_factory, analyst_actor
+    ):
+        """An analyst whose link was withdrawn cannot keep editing."""
+        response = _make_response(
+            submitted_by_id=analyst_actor.user_id, establishment_id=uuid.uuid4()
+        )
+        survey = _make_survey_orm()
+        response.survey_id = survey.id
+        uow = make_uow(survey=survey, existing_response=response, relation=None)
+        with pytest.raises(EstablishmentAccessDeniedError):
+            await SurveyResponseService(uow).edit(
+                response.id, edit_factory(), analyst_actor
+            )
+        uow.survey_response_edit_repo.create.assert_not_called()
 
     async def test_admin_override_allowed(self, make_uow, edit_factory, admin_actor):
         response = _make_response(submitted_by_id=uuid.uuid4())

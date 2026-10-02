@@ -99,7 +99,7 @@ class TestPersistence:
     async def test_item_unit_comes_from_the_catalog(
         self, db_establishment, responsible, foods
     ):
-        """CA 2: the line carries no unit — it is the food's base_unit."""
+        """The line carries no unit — it is the food's base_unit."""
         from app.domain.food_catalog import MeasurementUnit
 
         intake_id = await _persist(
@@ -175,7 +175,7 @@ class TestRetroactiveLoad:
     async def test_occurred_at_is_independent_of_created_at(
         self, db_establishment, responsible, foods
     ):
-        """CA 3: an intake loaded days after the delivery keeps both dates."""
+        """An intake loaded days after the delivery keeps both dates."""
         occurred_at = datetime.now(timezone.utc) - timedelta(days=5)
 
         intake_id = await _persist(
@@ -215,7 +215,7 @@ class TestConstraints:
     async def test_deleting_an_intake_deletes_its_items_only(
         self, db_establishment, responsible, foods
     ):
-        """CA 2: items cascade; the referenced catalog foods survive."""
+        """Items cascade; the referenced catalog foods survive."""
         from sqlalchemy import func, select
 
         from app.db.database import AsyncSessionLocal

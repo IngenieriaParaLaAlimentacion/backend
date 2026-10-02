@@ -334,6 +334,25 @@ class UserEstablishmentNotWithdrawableError(ConflictError):
         )
 
 
+class EstablishmentAlreadySubscribedError(ConflictError):
+    """Raised when an admin subscribes to an establishment they already have
+    approved access to.
+
+    Args:
+        establishment_id (str): The establishment already subscribed to.
+        user_id (str): The admin the relation belongs to.
+    """
+
+    error_type = "establishment-already-subscribed"
+
+    def __init__(self, establishment_id: str, user_id: str):
+        super().__init__(
+            "Establishment already subscribed",
+            f"The user with id {user_id} is already subscribed to the "
+            f"establishment with id {establishment_id}.",
+        )
+
+
 class EstablishmentRequestNotFoundError(NotFoundError):
     """Exception raised when an establishment request does not exist.
 
@@ -520,8 +539,11 @@ class FilterNotApplicableError(InvalidListingFilterError):
 
 
 class UserNotFieldWorkerError(BadRequestError):
-    """Raised when an operation requires the target user to be a field worker."""
+    """Raised when the target user's role is not one the operation accepts: a
+    field worker, or also an analyst for establishment access revocation."""
 
+    # Name and type predate analyst review and are kept so clients that branch
+    # on the type don't break.
     error_type = "user-is-not-a-field-worker"
 
     def __init__(self, detail: str):

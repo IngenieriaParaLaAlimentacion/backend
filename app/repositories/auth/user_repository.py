@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 
 from app.domain.establishment import UserEstablishmentStatus
+from app.domain.user import REVIEWED_ACCESS_ROLES
 from app.exceptions.domain_exceptions import UserAlreadyExistsError
 from app.models.auth.user import User, UserRole, UserStatus
 from app.models.auth.user_establishment import UserEstablishment
@@ -29,9 +30,10 @@ class UserRepository:
     def _pending_access_conditions(
         self, search: str | None, establishment_id: UUID | None
     ) -> tuple:
-        """Conditions selecting active field workers awaiting establishment access.
+        """Conditions selecting active field workers and analysts awaiting
+        establishment access.
 
-        ``establishment_id`` narrows the population to workers pending on that
+        ``establishment_id`` narrows the population to users pending on that
         establishment; ``search`` matches their identity. Both are conditions on
         ``User``, so the listing and its count can share them.
         """
@@ -46,7 +48,7 @@ class UserRepository:
             pending_relation.append(relation.establishment_id == establishment_id)
 
         conditions = [
-            User.role == UserRole.FIELD_WORKER,
+            User.role.in_(REVIEWED_ACCESS_ROLES),
             User.status == UserStatus.ACTIVE,
             exists(select(1).where(*pending_relation)),
         ]
@@ -162,8 +164,8 @@ class UserRepository:
         search: str | None = None,
         establishment_id: UUID | None = None,
     ) -> tuple[list[User], int]:
-        """Return a paginated list of active field workers that have at least
-        one pending establishment relation, and the total matching count.
+        """Return a paginated list of active field workers and analysts that
+        have at least one pending establishment relation, and the total matching count.
 
         ``search`` matches their email, name, or last_name; ``establishment_id``
         keeps only those pending on that establishment.

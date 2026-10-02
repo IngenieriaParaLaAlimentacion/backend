@@ -1,4 +1,5 @@
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, Path, Response, status
 
@@ -7,6 +8,7 @@ from app.core.dependencies import (
     get_activity_service,
     get_device_service,
     get_user_service,
+    require_admin,
     require_any,
 )
 from app.domain.user import UserActor
@@ -34,8 +36,8 @@ router = APIRouter(prefix="/users")
     response_model=ProfileResponse,
     status_code=status.HTTP_200_OK,
     summary="Get own profile",
-    description="Returns the authenticated user's profile. Field workers "
-    "also receive their associated establishments, each with its approval status.",
+    description="Returns the authenticated user's profile, including their "
+    "associated establishments, each with its approval status.",
     responses={
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Missing or invalid authentication token"
@@ -106,9 +108,12 @@ async def list_my_establishments(
     summary="Request establishment access",
     description="Requests access to one or more establishments. Idempotent: "
     "already-approved/pending stay unchanged, rejected ones are re-requested "
-    "(set to pending). Accessible by all authenticated roles.",
+    "(set to pending). Admins subscribe instead and are rejected here.",
     responses={
         **AUTH_RESPONSES,
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Insufficient permissions (admins subscribe instead)"
+        },
         status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
     },
 )
@@ -229,3 +234,49 @@ async def withdraw_establishment_access(
         actor, data.establishment_ids
     )
     return [EstablishmentWithStatusResponse.model_validate(r) for r in relations]
+
+
+@router.post(
+    "/me/establishments/{establishment_id}/subscription",
+    response_model=EstablishmentWithStatusResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Subscribe to an establishment",
+    description="Grants the calling admin approved access to an establishment "
+    "straight away, with no review. Accessible by admins only.",
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
+        status.HTTP_409_CONFLICT: {
+            "description": "Already subscribed to this establishment"
+        },
+    },
+)
+async def subscribe_to_establishment(
+    establishment_id: UUID,
+    actor: UserActor = Depends(require_admin),
+    service: UserService = Depends(get_user_service),
+) -> EstablishmentWithStatusResponse:
+    relation = await service.subscribe_to_establishment(actor, establishment_id)
+    return EstablishmentWithStatusResponse.model_validate(relation)
+
+
+@router.delete(
+    "/me/establishments/{establishment_id}/subscription",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Unsubscribe from an establishment",
+    description="Deletes the calling admin's relation to an establishment. "
+    "Accessible by admins only.",
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Establishment not associated with the caller"
+        },
+    },
+)
+async def unsubscribe_from_establishment(
+    establishment_id: UUID,
+    actor: UserActor = Depends(require_admin),
+    service: UserService = Depends(get_user_service),
+) -> Response:
+    await service.unsubscribe_from_establishment(actor, establishment_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
