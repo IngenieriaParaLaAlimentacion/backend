@@ -139,7 +139,6 @@ class GeminiLlmClient(ILlmClient):
                     next_model=models[index + 1][0],
                     error=str(exc),
                 )
-        raise AssertionError("unreachable: the loop above always returns or raises")
 
     async def _generate_with_retry(
         self,
