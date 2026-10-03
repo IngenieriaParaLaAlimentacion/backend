@@ -49,7 +49,11 @@ class GeminiLlmClient(ILlmClient):
     """
 
     def __init__(self) -> None:
-        self._client = genai.Client(api_key=settings.gemini_api_key)
+        async_client = httpx.AsyncClient()
+        self._client = genai.Client(
+            api_key=settings.gemini_api_key,
+            http_options=types.HttpOptions(httpx_async_client=async_client),
+        )
 
     @staticmethod
     def _is_retryable(exc: Exception) -> bool:
