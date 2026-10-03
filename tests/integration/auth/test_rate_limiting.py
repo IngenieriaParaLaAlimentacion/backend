@@ -88,7 +88,7 @@ async def test_counters_survive_a_backend_restart(
     for _ in range(2):
         await _post(client, "refresh")
 
-    connect_limiter_to_redis()
+    await connect_limiter_to_redis()
 
     assert (await _post(client, "refresh")).status_code == 429
 

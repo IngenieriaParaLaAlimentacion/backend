@@ -62,6 +62,6 @@ async def test_redis_is_used_again_after_the_outage(
     await _refresh(client)
     await _refresh(client)
     # A new connection sees only what was counted in Redis, not in memory.
-    connect_limiter_to_redis()
+    await connect_limiter_to_redis()
 
     assert (await _refresh(client)).status_code == 429

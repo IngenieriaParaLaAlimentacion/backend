@@ -63,13 +63,18 @@ and alternatives: [ADR-0019](adr/0019-auth-rate-limiting.md).
 
 - Each endpoint has its own counters. The only shared one is the per-email counter of password
   recovery and email verification resend, since both send mail to the same person.
-- Limits are written `<count>/<period>` (`5/minute`, `3/hour`) and read from the environment on every
-  request. Defaults are in `app/config/settings.py` and `.env.example`.
+- Limits are written `<count>/<period>` (`5/minute`, `3/hour`) and read from `settings` on every
+  request. A value that is not written that way stops the backend at startup. Defaults are in
+  `app/config/settings.py` and `.env.example`.
 - The email is lowercased and trimmed before counting. IPv4 addresses count individually and IPv6
   addresses by their /64 network.
-- The caller's IP is the `X-Real-IP` header set by the Railway edge proxy; without it (local runs)
-  the socket address is used. Set `RATE_LIMIT_REQUIRE_X_REAL_IP=true` wherever the backend runs
-  behind Railway, so a request without the header is logged as a warning.
+- The caller's IP is the `X-Real-IP` header set by the Railway edge proxy; without it (local runs),
+  or when it is not an IP address, the socket address is used. Set
+  `RATE_LIMIT_REQUIRE_X_REAL_IP=true` wherever the backend runs behind Railway, so a request without
+  the header is logged as a warning. A header that is present but not an IP address is always logged.
+- Requests that fail validation still count against the per-IP limit but never reach the per-email
+  one. `POST /auth/verify-email/resend` counts per email whether or not the account exists, so the
+  limit does not reveal which emails are registered.
 - Going over a limit returns `429` with `Retry-After`; see [Rate limit responses](api.md#rate-limit-responses).
 
 ### Counter storage
@@ -82,7 +87,10 @@ If Redis becomes unreachable the backend keeps limiting with in-memory counters 
 `rate_limit.storage_unreachable`. It checks for Redis again after 1 s, then at doubling intervals up
 to 30 s, and returns to it on its own, logging `rate_limit.storage_recovered`. The memory counters
 are exact while the backend is a single instance; with several instances the effective limit would
-be multiplied by their number.
+be multiplied by their number. What was counted in memory is not carried over to Redis when it
+returns, and it is lost if the backend restarts during the outage.
+
+The Redis connections are closed when the backend shuts down.
 
 ### Adding a limited endpoint
 

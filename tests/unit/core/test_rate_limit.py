@@ -1,4 +1,4 @@
-"""Tests for the rate-limit key rules."""
+"""Tests for the rate-limit keys and the limit dependencies of a route."""
 
 from types import SimpleNamespace
 
@@ -9,15 +9,13 @@ from fastapi.testclient import TestClient
 from pydantic import BaseModel
 
 from app.config.settings import settings
-from app.core.rate_limit import (
+from app.core.rate_limit import close_limiter, limit_by_email, limit_by_ip
+from app.core.rate_limit_keys import (
     client_ip,
     email_key,
     ip_bucket,
     ip_key,
-    limit_by_email,
-    limit_by_ip,
     normalize_email,
-    reset_limiter,
 )
 from app.exceptions.exception_handlers import register_exception_handlers
 
@@ -106,10 +104,10 @@ class _Body(BaseModel):
 
 
 @pytest.fixture
-def limited_client(monkeypatch):
+async def limited_client(monkeypatch):
     monkeypatch.setattr(settings, "rate_limit_login_ip", "1/minute")
     monkeypatch.setattr(settings, "rate_limit_login_email", "1/minute")
-    reset_limiter()
+    await close_limiter()
     app = FastAPI()
     register_exception_handlers(app)
 
@@ -125,7 +123,7 @@ def limited_client(monkeypatch):
         return {"ok": True}
 
     yield TestClient(app)
-    reset_limiter()
+    await close_limiter()
 
 
 def test_exceeding_the_limit_returns_429_problem_with_the_wait_time(limited_client):

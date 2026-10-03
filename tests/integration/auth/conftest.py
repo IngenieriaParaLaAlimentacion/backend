@@ -6,7 +6,7 @@ import pytest
 from testcontainers.redis import RedisContainer
 
 from app.config.settings import settings
-from app.core.rate_limit import get_limiter, reset_limiter
+from app.core.rate_limit import close_limiter, get_limiter
 
 
 @pytest.fixture(scope="session")
@@ -24,22 +24,23 @@ def redis_url(redis_container):
 
 
 @pytest.fixture
-async def connect_limiter_to_redis(redis_url, monkeypatch):
+async def connect_limiter_to_redis(redis_container, redis_url, monkeypatch):
     """Return a function that points the app's limiter at the test Redis.
 
-    The limiter is built on first use from ``RATE_LIMIT_REDIS_URL``. Calling the
-    function again drops it, so the next request opens a fresh connection to the
+    The limiter is built on first use from ``RATE_LIMIT_REDIS_URL``. Awaiting the
+    function again closes it, so the next request opens a fresh connection to the
     same Redis, as a restarted backend would.
     """
     monkeypatch.setattr(settings, "rate_limit_redis_url", redis_url)
 
-    def connect():
-        reset_limiter()
+    async def connect():
+        await close_limiter()
         return get_limiter()
 
-    await connect().primary.storage.reset()
+    redis_container.get_client().flushdb()
+    await connect()
     yield connect
-    reset_limiter()
+    await close_limiter()
 
 
 @pytest.fixture

@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 
 from app.config.settings import settings
 from app.core.dependencies import get_auth_service
-from app.core.rate_limit import reset_limiter
+from app.core.rate_limit import close_limiter
 from app.exceptions.domain_exceptions import UnauthorizedError
 from app.main import app
 
@@ -46,7 +46,7 @@ IP_ONLY_ENDPOINTS = {
 
 
 @pytest.fixture
-def client(monkeypatch):
+async def client(monkeypatch):
     """Client over the real routes with a service that rejects every call.
 
     A rejected call still counts against the limit, and it keeps the routes from
@@ -63,10 +63,10 @@ def client(monkeypatch):
     app.dependency_overrides[get_auth_service] = lambda: service
     for _, setting, _ in IP_ONLY_ENDPOINTS.values():
         monkeypatch.setattr(settings, setting, "2/minute")
-    reset_limiter()
+    await close_limiter()
     yield TestClient(app)
     app.dependency_overrides.pop(get_auth_service)
-    reset_limiter()
+    await close_limiter()
 
 
 def _post(client, name, ip="1.1.1.1"):
