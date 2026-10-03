@@ -10,6 +10,7 @@ from app.core.interfaces.llm_client import ILlmClient
 from app.core.interfaces.object_storage import IObjectStorage
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.food_intake import FoodIntakeDomain
+from app.domain.unit_conversion import convert_to_base_unit
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
     ImageContentMismatchError,
@@ -152,19 +153,38 @@ class ReceiptIntakeService:
         except InvalidOperation:
             return None
 
-    async def _match_food(self, description: str) -> IdentifierRefSchema | None:
-        """Return the catalog food that best matches ``description``, if any.
+    async def _build_line(self, raw: dict[str, Any]) -> ProposedFoodLine:
+        """Build one proposed line from an extracted receipt item.
 
-        Delegates the confidence decision entirely to
-        ``FoodRepository.find_best_match`` (trigram similarity, ADR-0016) --
-        this only shapes the result for ``ProposedFoodLine.food``.
+        The catalog match is delegated entirely to
+        ``FoodRepository.find_best_match`` (trigram similarity, ADR-0016).
+        For a matched line, ``unit`` is the food's base unit and ``quantity``
+        is the printed quantity converted to it, left None when the printed
+        unit cannot be converted safely (see ``convert_to_base_unit``).
         """
+        raw_quantity = self._to_decimal(raw.get("raw_quantity"))
+        raw_unit_text = raw.get("raw_unit_text")
         food = await self.uow.food_repo.find_best_match(
-            description,
+            raw["description"],
             settings.receipt_food_match_min_word_similarity,
             settings.receipt_food_match_min_similarity,
         )
-        return IdentifierRefSchema.model_validate(food) if food is not None else None
+
+        quantity = None
+        unit = None
+        if food is not None:
+            unit = food.base_unit
+            quantity = convert_to_base_unit(raw_quantity, raw_unit_text, unit)
+
+        return ProposedFoodLine(
+            description=raw["description"],
+            food=IdentifierRefSchema.model_validate(food) if food is not None else None,
+            quantity=quantity,
+            unit=unit,
+            raw_quantity=raw_quantity,
+            raw_unit_text=raw_unit_text,
+            needs_review=True,
+        )
 
     @staticmethod
     def _build_photo_key(establishment_id: UUID, content_type: str) -> str:
@@ -195,7 +215,9 @@ class ReceiptIntakeService:
 
         Each line is matched against the food catalog by name similarity
         (ADR-0016); ``food`` is set when a confident match is found, and left
-        ``None`` otherwise. ``needs_review`` is always ``True`` regardless --
+        ``None`` otherwise. On a match, ``unit`` and ``quantity`` are
+        prefilled from the printed quantity when it converts to the food's
+        base unit. ``needs_review`` is always ``True`` regardless --
         matching never marks a line as resolved, since the last validation
         before this data hits establishment stock is always the user's. When
         the extractor finds nothing, or the LLM call itself fails, the
@@ -235,16 +257,7 @@ class ReceiptIntakeService:
                 message=self._MANUAL_FALLBACK_MESSAGE,
             )
 
-        lines = [
-            ProposedFoodLine(
-                description=raw["description"],
-                food=await self._match_food(raw["description"]),
-                raw_quantity=self._to_decimal(raw.get("raw_quantity")),
-                raw_unit_text=raw.get("raw_unit_text"),
-                needs_review=True,
-            )
-            for raw in result["lines"]
-        ]
+        lines = [await self._build_line(raw) for raw in result["lines"]]
         if not lines:
             logger.info(
                 "receipt_intake_no_lines_found",
