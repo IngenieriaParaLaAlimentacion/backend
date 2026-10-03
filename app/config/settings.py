@@ -1,7 +1,7 @@
 import enum
 from typing import Optional
 
-from pydantic import AnyUrl, EmailStr, model_validator
+from pydantic import AnyUrl, EmailStr, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.domain.user import UserRole
@@ -95,6 +95,17 @@ class Settings(BaseSettings):
     # LLM
     gemini_api_key: Optional[str] = None
     gemini_model: str = "gemini-3.6-flash"
+    # Total attempts (first call + retries)
+    gemini_max_attempts: int = Field(default=3, ge=1)
+    gemini_retry_backoff_initial_seconds: float = 1
+    gemini_retry_backoff_max_seconds: float = 8
+    # Per-request HTTP timeout, so a stalled connection fails fast instead of
+    # hanging forever and never reaching the retry/fallback logic.
+    gemini_request_timeout_seconds: float = 30
+    # Secondary model tried after the primary exhausts its attempts on a
+    # retryable failure. Unset disables the fallback.
+    gemini_fallback_model: Optional[str] = None
+    gemini_fallback_max_attempts: int = Field(default=2, ge=1)
     # Stale-establishment notifications
     fcm_project_id: str | None = None
     fcm_client_email: str | None = None
