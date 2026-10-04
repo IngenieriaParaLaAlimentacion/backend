@@ -10,6 +10,7 @@ from app.config.logging import setup_logging
 from app.config.settings import settings
 from app.config.telemetry import setup_telemetry
 from app.core.openapi import configure_openapi
+from app.core.rate_limit import close_limiter
 from app.db.database import engine
 from app.exceptions.exception_handlers import register_exception_handlers
 from app.services.notifications.stale_establishment_scheduler import (
@@ -44,6 +45,11 @@ async def lifespan(app: FastAPI):
             _shutdown_provider("meter_provider", telemetry.meter_provider),
             _shutdown_provider("logger_provider", telemetry.logger_provider),
         )
+
+        try:
+            await close_limiter()
+        except Exception:
+            logger.exception("Failed to close the rate limiter")
 
         await engine.dispose()
 

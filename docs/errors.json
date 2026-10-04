@@ -223,6 +223,12 @@
       "description": "Exception raised when a user's password record is not found."
     },
     {
+      "type": "/errors/rate-limited",
+      "status": 429,
+      "exception": "RateLimitedError",
+      "description": "Raised when a caller exceeds the rate limit of a public endpoint."
+    },
+    {
       "type": "/errors/receipt-photo-storage-failed",
       "status": 502,
       "exception": "ReceiptPhotoStorageError",

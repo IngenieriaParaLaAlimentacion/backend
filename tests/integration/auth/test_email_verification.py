@@ -274,9 +274,15 @@ class TestResendVerificationEmail:
         await client.post(RESEND_URL, json={"email": email})
         assert capture_verification_deeplink["deeplink"] is None
 
-    async def test_unknown_email_returns_404(self, client):
+    async def test_unknown_email_returns_202_and_sends_nothing(
+        self, client, capture_verification_deeplink
+    ):
+        capture_verification_deeplink["deeplink"] = None
+
         response = await client.post(RESEND_URL, json={"email": "ghost@example.com"})
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+        assert response.status_code == status.HTTP_202_ACCEPTED
+        assert capture_verification_deeplink["deeplink"] is None
 
     async def test_missing_email_returns_422(self, client):
         response = await client.post(RESEND_URL, json={})

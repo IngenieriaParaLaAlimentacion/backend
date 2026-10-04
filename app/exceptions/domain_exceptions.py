@@ -1,6 +1,8 @@
 """This module defines custom domain exceptions for the application."""
 
+import math
 import re
+import time
 from typing import ClassVar
 
 from fastapi import status
@@ -33,6 +35,7 @@ class BaseError(Exception):
             the ``problem+json`` body. Values must be JSON-primitive: the handler
             passes them straight to ``JSONResponse``, which cannot encode a raw
             ``UUID`` or ``datetime``.
+        headers (dict | None): Optional HTTP headers sent with the response.
     """
 
     error_type: ClassVar[str]
@@ -72,10 +75,12 @@ class BaseError(Exception):
         title: str,
         details: str,
         extensions: dict | None = None,
+        headers: dict[str, str] | None = None,
     ):
         self.title = title
         self.details = details
         self.extensions = extensions or {}
+        self.headers = headers or {}
         super().__init__(f"{title}: {details}")
 
 
@@ -176,6 +181,32 @@ class UnauthorizedError(BaseError):
         extensions: dict | None = None,
     ):
         super().__init__(title, details, extensions)
+
+
+class RateLimitedError(BaseError):
+    """Raised when a caller exceeds the rate limit of a public endpoint.
+
+    Args:
+        limit (int): The number of requests the exceeded limit allows per window.
+        reset_at (float): Epoch seconds at which the caller may retry.
+    """
+
+    error_type = "rate-limited"
+    status = status.HTTP_429_TOO_MANY_REQUESTS
+
+    def __init__(self, limit: int, reset_at: float):
+        retry_after = max(1, math.ceil(reset_at - time.time()))
+        super().__init__(
+            "Too many requests",
+            f"Too many attempts. Try again in {retry_after} seconds.",
+            {"retry_after": retry_after},
+            {
+                "Retry-After": str(retry_after),
+                "X-RateLimit-Limit": str(limit),
+                "X-RateLimit-Remaining": "0",
+                "X-RateLimit-Reset": str(math.ceil(reset_at)),
+            },
+        )
 
 
 class NotificationConfigurationError(BaseError):
