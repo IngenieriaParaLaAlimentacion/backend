@@ -68,6 +68,7 @@ def _make_response_with_detail(
     r.event_at = NOW
     r.answers = answers
     r.survey = survey
+    r.survey_id = survey.id
     r.establishment = establishment
     r.submitted_by = submitter
     return r
@@ -97,7 +98,7 @@ class TestGetDashboardDetail:
         uow.survey_response_repo.get_with_relations = AsyncMock(return_value=response)
 
         result = await SurveyResponseService(uow).get_response_detail(
-            response.id, admin_actor
+            response.survey_id, response.id, admin_actor
         )
 
         assert [a.question_id for a in result.answers] == [
@@ -125,7 +126,7 @@ class TestGetDashboardDetail:
         uow.survey_response_repo.get_with_relations = AsyncMock(return_value=response)
 
         result = await SurveyResponseService(uow).get_response_detail(
-            response.id, admin_actor
+            response.survey_id, response.id, admin_actor
         )
 
         assert result.answers[0].value_label == ["Verduras", "Frutas"]
@@ -139,7 +140,7 @@ class TestGetDashboardDetail:
         uow.survey_response_repo.get_with_relations = AsyncMock(return_value=response)
 
         result = await SurveyResponseService(uow).get_response_detail(
-            response.id, admin_actor
+            response.survey_id, response.id, admin_actor
         )
 
         assert result.answers[0].value is None
@@ -152,7 +153,7 @@ class TestGetDashboardDetail:
         uow.survey_response_repo.get_with_relations = AsyncMock(return_value=response)
 
         result = await SurveyResponseService(uow).get_response_detail(
-            response.id, analyst_actor
+            response.survey_id, response.id, analyst_actor
         )
         assert result.id == response.id
 
@@ -162,7 +163,7 @@ class TestGetDashboardDetail:
 
         with pytest.raises(ForbiddenError):
             await SurveyResponseService(uow).get_response_detail(
-                uuid.uuid4(), field_worker_actor
+                uuid.uuid4(), uuid.uuid4(), field_worker_actor
             )
         uow.survey_response_repo.get_with_relations.assert_not_awaited()
 
@@ -172,7 +173,7 @@ class TestGetDashboardDetail:
 
         with pytest.raises(SurveyResponseNotFoundError):
             await SurveyResponseService(uow).get_response_detail(
-                uuid.uuid4(), admin_actor
+                uuid.uuid4(), uuid.uuid4(), admin_actor
             )
 
 
@@ -235,7 +236,10 @@ class TestFiesScoring:
 
         new_answers = {str(q.id): str(q.options[0].id) for q in questions}  # all "Sí"
         await SurveyResponseService(uow).edit(
-            response.id, edit_factory(answers=new_answers, event_at=NOW), admin_actor
+            response.survey_id,
+            response.id,
+            edit_factory(answers=new_answers, event_at=NOW),
+            admin_actor,
         )
 
         update_call = uow.survey_response_repo.update_answers.call_args

@@ -90,6 +90,32 @@ class TestEdit:
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
+    async def test_response_of_another_survey_returns_404(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        other_survey = await _create_survey(client, headers, name="Encuesta B")
+        created = (
+            await client.post(
+                responses_url(survey["id"]),
+                json=_response_body(survey["id"], _valid_answers(survey)),
+                headers=headers,
+            )
+        ).json()
+
+        response = await client.put(
+            responses_url(other_survey["id"], created["id"]),
+            json={
+                "answers": _valid_answers(survey),
+                "response_number": 1,
+                "event_at": NOW,
+            },
+            headers=headers,
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
     async def test_non_owner_field_worker_forbidden(
         self, client, db_establishment, admin_user, field_worker_with_access
     ):

@@ -194,9 +194,13 @@ class SurveyResponseService:
             raise SurveyNotFoundError(str(survey_id))
         return SurveyDomain.from_db(survey)
 
-    async def _get_response_or_raise(self, response_id: UUID) -> SurveyResponse:
+    async def _get_response_or_raise(
+        self, survey_id: UUID, response_id: UUID
+    ) -> SurveyResponse:
         response = await self.uow.survey_response_repo.get_by_id(response_id)
-        if response is None:
+        # A response of another survey is reported as missing, so the URL of one
+        # survey never confirms that an id exists in a different one.
+        if response is None or response.survey_id != survey_id:
             raise SurveyResponseNotFoundError(str(response_id))
         return response
 
@@ -255,8 +259,10 @@ class SurveyResponseService:
             )
         return SurveyResponseDomain.from_db(existing)
 
-    async def get(self, response_id: UUID, actor: UserActor) -> SurveyResponseDomain:
-        """Return a response's full detail, including its answers.
+    async def get(
+        self, survey_id: UUID, response_id: UUID, actor: UserActor
+    ) -> SurveyResponseDomain:
+        """Return a response of the given survey, including its answers.
 
         Does not re-check establishment access, so a submitter keeps read access
         to their own response even after losing access to its establishment.
@@ -265,7 +271,7 @@ class SurveyResponseService:
             SurveyResponseNotFoundError.
             NotResourceOwnerError: not the submitter and not admin/superadmin.
         """
-        response = await self._get_response_or_raise(response_id)
+        response = await self._get_response_or_raise(survey_id, response_id)
         self._assert_owner_or_admin(actor, response)
         return SurveyResponseDomain.from_db(response)
 
@@ -346,7 +352,11 @@ class SurveyResponseService:
         return SurveyResponseDomain.from_db(response), True
 
     async def edit(
-        self, response_id: UUID, data: SurveyResponseEditRequest, actor: UserActor
+        self,
+        survey_id: UUID,
+        response_id: UUID,
+        data: SurveyResponseEditRequest,
+        actor: UserActor,
     ) -> SurveyResponseDomain:
         """Full-replace edit of a response's answers and response number.
 
@@ -361,7 +371,7 @@ class SurveyResponseService:
             the approved access that submitting requires),
             InvalidSurveyResponseError (answers fail validation).
         """
-        response = await self._get_response_or_raise(response_id)
+        response = await self._get_response_or_raise(survey_id, response_id)
         self._assert_owner_or_admin(actor, response)
         await check_field_work_access(self.uow, actor, response.establishment_id)
 
@@ -443,7 +453,7 @@ class SurveyResponseService:
         )
 
     async def get_response_detail(
-        self, response_id: UUID, actor: UserActor
+        self, survey_id: UUID, response_id: UUID, actor: UserActor
     ) -> SurveyResponseDetailDomain:
         """Return one user's full response detail for the dashboard: every
         question in the survey and the value that user registered for it.
@@ -454,7 +464,7 @@ class SurveyResponseService:
         """
         self._assert_dashboard_reader(actor)
         response = await self.uow.survey_response_repo.get_with_relations(response_id)
-        if response is None:
+        if response is None or response.survey_id != survey_id:
             raise SurveyResponseNotFoundError(str(response_id))
         return SurveyResponseDetailDomain.from_db(response)
 
