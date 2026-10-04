@@ -29,6 +29,7 @@ from app.exceptions.domain_exceptions import (
 )
 from app.models.subjects.subject import Subject
 from app.models.surveys.survey_response import SurveyResponse
+from app.models.surveys.survey_response_edit import SurveyResponseEdit
 from app.schemas.surveys.survey_response_schema import (
     ExistingResponseRef,
     SurveyResponseEditRequest,
@@ -259,6 +260,17 @@ class SurveyResponseService:
             )
         return SurveyResponseDomain.from_db(existing)
 
+    @staticmethod
+    def _replayed_edit(
+        existing_edit: SurveyResponseEdit, response: SurveyResponse
+    ) -> SurveyResponseDomain:
+        """Return a replayed edit's response, rejecting an id of another response."""
+        if existing_edit.response_id != response.id:
+            raise InvalidSurveyResponseError(
+                "This edit id already belongs to a different response.",
+            )
+        return SurveyResponseDomain.from_db(response)
+
     async def get(
         self, survey_id: UUID, response_id: UUID, actor: UserActor
     ) -> SurveyResponseDomain:
@@ -378,7 +390,7 @@ class SurveyResponseService:
         if data.id is not None:
             existing_edit = await self.uow.survey_response_edit_repo.get_by_id(data.id)
             if existing_edit is not None:
-                return SurveyResponseDomain.from_db(response)
+                return self._replayed_edit(existing_edit, response)
 
         survey = await self._get_survey_or_raise(response.survey_id)
         response_number = self._validate_response_number(survey, data.response_number)
@@ -398,7 +410,7 @@ class SurveyResponseService:
             if data.id is not None:
                 raced = await self.uow.survey_response_edit_repo.get_by_id(data.id)
                 if raced is not None:
-                    return SurveyResponseDomain.from_db(response)
+                    return self._replayed_edit(raced, response)
             raise
 
         if data.event_at >= response.event_at:

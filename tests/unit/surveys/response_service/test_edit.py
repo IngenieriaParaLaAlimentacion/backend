@@ -130,12 +130,28 @@ class TestEdit:
         self, make_uow, edit_factory, admin_actor
     ):
         response = _make_response()
-        existing_edit = MagicMock()
+        existing_edit = MagicMock(response_id=response.id)
         uow = make_uow(existing_response=response, existing_edit=existing_edit)
         result = await SurveyResponseService(uow).edit(
             response.survey_id, response.id, edit_factory(id=uuid.uuid4()), admin_actor
         )
         assert result.id == response.id
+        uow.survey_response_edit_repo.create.assert_not_called()
+        uow.commit.assert_not_called()
+
+    async def test_edit_id_of_another_response_is_rejected(
+        self, make_uow, edit_factory, admin_actor
+    ):
+        response = _make_response()
+        existing_edit = MagicMock(response_id=uuid.uuid4())
+        uow = make_uow(existing_response=response, existing_edit=existing_edit)
+        with pytest.raises(InvalidSurveyResponseError):
+            await SurveyResponseService(uow).edit(
+                response.survey_id,
+                response.id,
+                edit_factory(id=uuid.uuid4()),
+                admin_actor,
+            )
         uow.survey_response_edit_repo.create.assert_not_called()
         uow.commit.assert_not_called()
 
