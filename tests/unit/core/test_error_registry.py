@@ -19,7 +19,6 @@ EXPECTED: dict[str, int] = {
     "email-delivery-failed": status.HTTP_502_BAD_GATEWAY,
     "establishment-access-denied": status.HTTP_403_FORBIDDEN,
     "establishment-already-exists": status.HTTP_409_CONFLICT,
-    "establishment-already-subscribed": status.HTTP_409_CONFLICT,
     "establishment-not-found": status.HTTP_404_NOT_FOUND,
     "establishment-request-already-reviewed": status.HTTP_409_CONFLICT,
     "establishment-request-not-found": status.HTTP_404_NOT_FOUND,
