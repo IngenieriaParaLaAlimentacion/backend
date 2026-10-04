@@ -252,12 +252,16 @@ class SurveyResponseService:
             raise self._conflict_error(existing)
 
     @staticmethod
-    def _replayed(existing: SurveyResponse, survey_id: UUID) -> SurveyResponseDomain:
-        """Return a replayed response, rejecting an id reused across surveys."""
+    def _replayed(
+        existing: SurveyResponse, survey_id: UUID, actor: UserActor
+    ) -> SurveyResponseDomain:
+        """Return a replayed response, rejecting an id reused across surveys or
+        replayed by someone other than its submitter or an admin."""
         if existing.survey_id != survey_id:
             raise InvalidSurveyResponseError(
                 "This response id already belongs to a different survey.",
             )
+        SurveyResponseService._assert_owner_or_admin(actor, existing)
         return SurveyResponseDomain.from_db(existing)
 
     @staticmethod
@@ -306,6 +310,8 @@ class SurveyResponseService:
             InvalidSurveyResponseError: payload names an entity that does not
                 match the survey's response target, answers fail validation, or
                 the replayed id belongs to a different survey.
+            NotResourceOwnerError: replayed id belongs to a response submitted
+                by someone else and the actor is not admin/superadmin.
             SurveyResponseAlreadyExistsError: target conflict.
         """
         self._assert_can_submit(actor)
@@ -313,10 +319,11 @@ class SurveyResponseService:
         if data.id is not None:
             existing = await self.uow.survey_response_repo.get_by_id(data.id)
             if existing is not None:
+                replayed = self._replayed(existing, survey_id, actor)
                 await check_field_work_access(
                     self.uow, actor, existing.establishment_id
                 )
-                return self._replayed(existing, survey_id), False
+                return replayed, False
 
         survey = await self._get_survey_or_raise(survey_id)
         subject_id, establishment_id = self._resolve_target(survey, data)
@@ -356,7 +363,7 @@ class SurveyResponseService:
             if data.id is not None:
                 raced = await self.uow.survey_response_repo.get_by_id(data.id)
                 if raced is not None:
-                    return self._replayed(raced, survey_id), False
+                    return self._replayed(raced, survey_id, actor), False
             raise
 
         await self.uow.survey_repo.increment_response_count(survey.id)

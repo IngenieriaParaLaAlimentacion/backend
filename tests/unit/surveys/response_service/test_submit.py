@@ -14,8 +14,8 @@ from app.domain.survey_response import (
 from app.exceptions.domain_exceptions import (
     EstablishmentAccessDeniedError,
     EstablishmentNotFoundError,
-    ForbiddenError,
     InvalidSurveyResponseError,
+    NotResourceOwnerError,
     SubjectNotFoundError,
     SurveyNotFoundError,
     SurveyResponseAlreadyExistsError,
@@ -252,14 +252,27 @@ class TestSubmit:
     async def test_replayed_id_still_forbidden_for_analyst_without_access(
         self, make_uow, request_factory, analyst_actor
     ):
-        existing = _make_response()
+        existing = _make_response(submitted_by_id=analyst_actor.user_id)
         uow = make_uow(existing_response=existing)
         data = request_factory(id=existing.id)
-        with pytest.raises(ForbiddenError):
+        with pytest.raises(EstablishmentAccessDeniedError):
             await SurveyResponseService(uow).submit(
                 existing.survey_id, data, analyst_actor
             )
         uow.survey_response_repo.create.assert_not_called()
+
+    async def test_replayed_id_of_another_submitter_rejected(
+        self, make_uow, request_factory, field_worker_actor
+    ):
+        existing = _make_response(submitted_by_id=uuid.uuid4())
+        uow = make_uow(existing_response=existing)
+        data = request_factory(id=existing.id)
+        with pytest.raises(NotResourceOwnerError):
+            await SurveyResponseService(uow).submit(
+                existing.survey_id, data, field_worker_actor
+            )
+        uow.survey_response_repo.create.assert_not_called()
+        uow.commit.assert_not_called()
 
     async def test_replayed_id_under_a_different_survey_rejected(
         self, make_uow, request_factory, admin_actor
@@ -280,7 +293,7 @@ class TestSubmit:
         """Id-first ordering: a retried sync must short-circuit before the
         target's uniqueness rule, or a device would be told someone else
         already answered when it was itself, seconds earlier."""
-        existing = _make_response()
+        existing = _make_response(submitted_by_id=field_worker_actor.user_id)
         uow = make_uow(existing_response=existing)
         data = request_factory(id=existing.id)
         response, created = await SurveyResponseService(uow).submit(
