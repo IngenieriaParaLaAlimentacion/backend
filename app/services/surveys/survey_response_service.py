@@ -199,8 +199,6 @@ class SurveyResponseService:
         self, survey_id: UUID, response_id: UUID
     ) -> SurveyResponse:
         response = await self.uow.survey_response_repo.get_by_id(response_id)
-        # A response of another survey is reported as missing, so the URL of one
-        # survey never confirms that an id exists in a different one.
         if response is None or response.survey_id != survey_id:
             raise SurveyResponseNotFoundError(str(response_id))
         return response
