@@ -97,6 +97,27 @@ class TestGetDashboardDetail:
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
+    async def test_response_of_another_survey_returns_404(
+        self, client, db_establishment, admin_user
+    ):
+        headers, _ = admin_user
+        survey = await _create_survey(client, headers)
+        other_survey = await _create_survey(client, headers, name="Encuesta B")
+        created = (
+            await client.post(
+                responses_url(survey["id"]),
+                json=_response_body(survey["id"], _valid_answers(survey)),
+                headers=headers,
+            )
+        ).json()
+
+        response = await client.get(
+            responses_url(other_survey["id"], created["id"], "detail"),
+            headers=headers,
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
 
 class TestFiesScoring:
     @staticmethod
