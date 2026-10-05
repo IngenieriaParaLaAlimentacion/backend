@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Path, Response, status
+from fastapi import APIRouter, Depends, Path, Query, Response, status
 
 from app.api.v1.params import AUTH_RESPONSES, ActivityListingQuery, PaginatedQueryParams
 from app.core.dependencies import (
@@ -214,9 +214,12 @@ async def unregister_my_device(
     summary="Withdraw establishment access",
     description="Withdraws the caller's own access to one or more "
     "establishments. Only relations currently approved or pending can be "
-    "withdrawn. Accessible by all authenticated roles.",
+    "withdrawn. Admins unsubscribe instead and are rejected here.",
     responses={
         **AUTH_RESPONSES,
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Insufficient permissions (admins unsubscribe instead)"
+        },
         status.HTTP_404_NOT_FOUND: {
             "description": "Establishment not associated with the caller"
         },
@@ -237,46 +240,41 @@ async def withdraw_establishment_access(
 
 
 @router.post(
-    "/me/establishments/{establishment_id}/subscription",
-    response_model=EstablishmentWithStatusResponse,
+    "/me/establishments/subscriptions",
+    response_model=list[EstablishmentWithStatusResponse],
     status_code=status.HTTP_201_CREATED,
-    summary="Subscribe to an establishment",
-    description="Grants the calling admin approved access to an establishment "
-    "straight away, with no review. Accessible by admins only.",
+    summary="Subscribe to establishments",
+    description="Grants the calling admin approved access to one or more "
+    "establishments straight away, with no review. Idempotent: already-subscribed "
+    "establishments stay unchanged. All-or-nothing: an unknown id fails the whole "
+    "request. Accessible by admins only.",
     responses={
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
-        status.HTTP_409_CONFLICT: {
-            "description": "Already subscribed to this establishment"
-        },
     },
 )
-async def subscribe_to_establishment(
-    establishment_id: UUID,
+async def subscribe_to_establishments(
+    data: EstablishmentIdsRequest,
     actor: UserActor = Depends(require_admin),
     service: UserService = Depends(get_user_service),
-) -> EstablishmentWithStatusResponse:
-    relation = await service.subscribe_to_establishment(actor, establishment_id)
-    return EstablishmentWithStatusResponse.model_validate(relation)
+) -> list[EstablishmentWithStatusResponse]:
+    relations = await service.subscribe_to_establishments(actor, data.establishment_ids)
+    return [EstablishmentWithStatusResponse.model_validate(r) for r in relations]
 
 
 @router.delete(
-    "/me/establishments/{establishment_id}/subscription",
+    "/me/establishments/subscriptions",
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Unsubscribe from an establishment",
-    description="Deletes the calling admin's relation to an establishment. "
-    "Accessible by admins only.",
-    responses={
-        **AUTH_RESPONSES,
-        status.HTTP_404_NOT_FOUND: {
-            "description": "Establishment not associated with the caller"
-        },
-    },
+    summary="Unsubscribe from establishments",
+    description="Deletes the calling admin's relations to one or more "
+    "establishments. Idempotent: ids with no relation are skipped. Accessible "
+    "by admins only.",
+    responses=AUTH_RESPONSES,
 )
-async def unsubscribe_from_establishment(
-    establishment_id: UUID,
+async def unsubscribe_from_establishments(
+    establishment_ids: Annotated[list[UUID], Query(min_length=1)],
     actor: UserActor = Depends(require_admin),
     service: UserService = Depends(get_user_service),
 ) -> Response:
-    await service.unsubscribe_from_establishment(actor, establishment_id)
+    await service.unsubscribe_from_establishments(actor, establishment_ids)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

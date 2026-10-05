@@ -152,7 +152,7 @@ Any role can hold `user_establishments` rows. How a row is created depends on th
 | Role | Link | Unlink |
 |---|---|---|
 | `field_worker`, `analyst` | `POST /users/me/establishments` opens a `PENDING` request for an admin to review | `PATCH /users/me/establishments/withdraw` sets the row to `WITHDRAWN` |
-| `admin`, `superadmin` | `POST /users/me/establishments/{id}/subscription` creates the row as `APPROVED`, with no review | `DELETE /users/me/establishments/{id}/subscription` deletes the row |
+| `admin`, `superadmin` | `POST /users/me/establishments/subscriptions` creates the rows as `APPROVED`, with no review | `DELETE /users/me/establishments/subscriptions?establishment_ids=...` deletes the rows |
 
-Admins are rejected on the request endpoint (`403`), and only admins can use the subscription endpoints.
+Admins are rejected on the request and withdraw endpoints (`403`), and only admins can use the subscription endpoints.
 `GET /users/me` and `GET /users/me/establishments` list the caller's rows for every role.

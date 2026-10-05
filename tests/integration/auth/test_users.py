@@ -16,7 +16,7 @@ from app.models.establishments.establishment import Establishment
 ME_URL = "/api/v1/users/me"
 ME_ESTABLISHMENTS_URL = "/api/v1/users/me/establishments"
 ME_ESTABLISHMENTS_WITHDRAW_URL = "/api/v1/users/me/establishments/withdraw"
-ME_SUBSCRIPTION_URL = "/api/v1/users/me/establishments/{establishment_id}/subscription"
+ME_SUBSCRIPTIONS_URL = "/api/v1/users/me/establishments/subscriptions"
 AVAILABLE_ESTABLISHMENTS_URL = "/api/v1/establishments?available=true"
 
 
@@ -543,6 +543,23 @@ class TestWithdrawEstablishmentAccess:
         assert response.status_code == 404
         assert await _fetch_relations(field_worker_user.id) == []
 
+    async def test_admin_returns_403_and_keeps_relation(self, client, admin_user):
+        """An admin cannot withdraw; they unsubscribe instead."""
+        estab = await _insert_establishment("Centro A", "Calle A")
+        await _insert_relation(
+            admin_user.id, estab.id, UserEstablishmentStatus.APPROVED
+        )
+
+        response = await client.patch(
+            ME_ESTABLISHMENTS_WITHDRAW_URL,
+            json={"establishment_ids": [str(estab.id)]},
+            headers=_headers_for(admin_user),
+        )
+
+        assert response.status_code == 403
+        relations = await _fetch_relations(admin_user.id)
+        assert [r.status for r in relations] == [UserEstablishmentStatus.APPROVED]
+
     async def test_no_token_returns_401(self, client):
         response = await client.patch(
             ME_ESTABLISHMENTS_WITHDRAW_URL,
@@ -551,43 +568,69 @@ class TestWithdrawEstablishmentAccess:
         assert response.status_code == 401
 
 
-class TestSubscribeToEstablishment:
+class TestSubscribeToEstablishments:
     async def test_admin_subscribes_with_approved_access(self, client, admin_user):
-        """The subscription is approved at once and shows up as the admin's."""
-        estab = await _insert_establishment("Centro A", "Calle A")
+        """The subscriptions are approved at once and show up as the admin's."""
+        estab_a = await _insert_establishment("Centro A", "Calle A")
+        estab_b = await _insert_establishment("Centro B", "Calle B")
 
         response = await client.post(
-            ME_SUBSCRIPTION_URL.format(establishment_id=estab.id),
+            ME_SUBSCRIPTIONS_URL,
+            json={"establishment_ids": [str(estab_a.id), str(estab_b.id)]},
             headers=_headers_for(admin_user),
         )
 
         assert response.status_code == 201
-        assert response.json()["status"] == UserEstablishmentStatus.APPROVED
-        mine = await client.get(ME_ESTABLISHMENTS_URL, headers=_headers_for(admin_user))
-        assert [(e["id"], e["status"]) for e in mine.json()] == [
-            (str(estab.id), UserEstablishmentStatus.APPROVED)
+        assert [(e["id"], e["status"]) for e in response.json()] == [
+            (str(estab_a.id), UserEstablishmentStatus.APPROVED),
+            (str(estab_b.id), UserEstablishmentStatus.APPROVED),
         ]
+        mine = await client.get(ME_ESTABLISHMENTS_URL, headers=_headers_for(admin_user))
+        assert {(e["id"], e["status"]) for e in mine.json()} == {
+            (str(estab_a.id), UserEstablishmentStatus.APPROVED),
+            (str(estab_b.id), UserEstablishmentStatus.APPROVED),
+        }
         # A linked establishment is no longer offered as available.
-        assert str(estab.id) not in await _available_ids(client, admin_user)
+        available = await _available_ids(client, admin_user)
+        assert {str(estab_a.id), str(estab_b.id)}.isdisjoint(available)
 
-    async def test_already_subscribed_returns_409(self, client, admin_user):
-        """Subscribing twice to the same establishment is rejected."""
+    @pytest.mark.parametrize(
+        "status",
+        [
+            UserEstablishmentStatus.APPROVED,
+            UserEstablishmentStatus.PENDING,
+            UserEstablishmentStatus.REJECTED,
+            UserEstablishmentStatus.REVOKED,
+            UserEstablishmentStatus.WITHDRAWN,
+        ],
+    )
+    async def test_existing_relation_ends_up_approved_without_duplicate(
+        self, client, admin_user, status
+    ):
+        """Subscribing again, or over a relation left from another role, is not
+        an error and never duplicates the row."""
         estab = await _insert_establishment("Centro A", "Calle A")
-        await _insert_relation(
-            admin_user.id, estab.id, UserEstablishmentStatus.APPROVED
-        )
+        await _insert_relation(admin_user.id, estab.id, status)
 
         response = await client.post(
-            ME_SUBSCRIPTION_URL.format(establishment_id=estab.id),
+            ME_SUBSCRIPTIONS_URL,
+            json={"establishment_ids": [str(estab.id)]},
             headers=_headers_for(admin_user),
         )
 
-        assert response.status_code == 409
-        assert len(await _fetch_relations(admin_user.id)) == 1
+        assert response.status_code == 201
+        relations = await _fetch_relations(admin_user.id)
+        assert [r.status for r in relations] == [UserEstablishmentStatus.APPROVED]
 
-    async def test_unknown_establishment_returns_404(self, client, admin_user):
+    async def test_unknown_establishment_returns_404_and_writes_nothing(
+        self, client, admin_user
+    ):
+        """One unknown id fails the whole request, valid ids included."""
+        estab = await _insert_establishment("Centro A", "Calle A")
+
         response = await client.post(
-            ME_SUBSCRIPTION_URL.format(establishment_id=uuid.uuid4()),
+            ME_SUBSCRIPTIONS_URL,
+            json={"establishment_ids": [str(estab.id), str(uuid.uuid4())]},
             headers=_headers_for(admin_user),
         )
 
@@ -601,7 +644,8 @@ class TestSubscribeToEstablishment:
         estab = await _insert_establishment("Centro A", "Calle A")
 
         response = await client.post(
-            ME_SUBSCRIPTION_URL.format(establishment_id=estab.id),
+            ME_SUBSCRIPTIONS_URL,
+            json={"establishment_ids": [str(estab.id)]},
             headers=_headers_for(user),
         )
 
@@ -609,32 +653,50 @@ class TestSubscribeToEstablishment:
         assert await _fetch_relations(user.id) == []
 
 
-class TestUnsubscribeFromEstablishment:
+class TestUnsubscribeFromEstablishments:
     async def test_admin_unsubscribes_and_can_resubscribe(self, client, admin_user):
-        """The relation row is deleted, the establishment is available
-        again, and the admin can subscribe to it once more."""
+        """The relation rows are deleted, the establishments are available
+        again, and the admin can subscribe to them once more."""
+        estab_a = await _insert_establishment("Centro A", "Calle A")
+        estab_b = await _insert_establishment("Centro B", "Calle B")
+        for estab in (estab_a, estab_b):
+            await _insert_relation(
+                admin_user.id, estab.id, UserEstablishmentStatus.APPROVED
+            )
+        ids = [str(estab_a.id), str(estab_b.id)]
+
+        response = await client.delete(
+            ME_SUBSCRIPTIONS_URL,
+            params={"establishment_ids": ids},
+            headers=_headers_for(admin_user),
+        )
+
+        assert response.status_code == 204
+        assert await _fetch_relations(admin_user.id) == []
+        assert set(ids) <= await _available_ids(client, admin_user)
+
+        resubscribe = await client.post(
+            ME_SUBSCRIPTIONS_URL,
+            json={"establishment_ids": ids},
+            headers=_headers_for(admin_user),
+        )
+        assert resubscribe.status_code == 201
+
+    async def test_ids_without_relation_are_skipped(self, client, admin_user):
+        """Unsubscribing is idempotent: unknown or unlinked ids are not an error."""
         estab = await _insert_establishment("Centro A", "Calle A")
         await _insert_relation(
             admin_user.id, estab.id, UserEstablishmentStatus.APPROVED
         )
-        url = ME_SUBSCRIPTION_URL.format(establishment_id=estab.id)
 
-        response = await client.delete(url, headers=_headers_for(admin_user))
-
-        assert response.status_code == 204
-        assert await _fetch_relations(admin_user.id) == []
-        assert str(estab.id) in await _available_ids(client, admin_user)
-
-        resubscribe = await client.post(url, headers=_headers_for(admin_user))
-        assert resubscribe.status_code == 201
-
-    async def test_no_relation_returns_404(self, client, admin_user):
         response = await client.delete(
-            ME_SUBSCRIPTION_URL.format(establishment_id=uuid.uuid4()),
+            ME_SUBSCRIPTIONS_URL,
+            params={"establishment_ids": [str(estab.id), str(uuid.uuid4())]},
             headers=_headers_for(admin_user),
         )
 
-        assert response.status_code == 404
+        assert response.status_code == 204
+        assert await _fetch_relations(admin_user.id) == []
 
     @pytest.mark.parametrize("role", [UserRole.ANALYST, UserRole.FIELD_WORKER])
     async def test_non_admin_returns_403_and_keeps_relation(self, client, role):
@@ -644,7 +706,8 @@ class TestUnsubscribeFromEstablishment:
         await _insert_relation(user.id, estab.id, UserEstablishmentStatus.APPROVED)
 
         response = await client.delete(
-            ME_SUBSCRIPTION_URL.format(establishment_id=estab.id),
+            ME_SUBSCRIPTIONS_URL,
+            params={"establishment_ids": [str(estab.id)]},
             headers=_headers_for(user),
         )
 

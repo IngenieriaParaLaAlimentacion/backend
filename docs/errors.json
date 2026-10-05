@@ -79,12 +79,6 @@
       "description": "Raised when an establishment with the given place_id already exists."
     },
     {
-      "type": "/errors/establishment-already-subscribed",
-      "status": 409,
-      "exception": "EstablishmentAlreadySubscribedError",
-      "description": "Raised when an admin subscribes to an establishment they already have approved access to."
-    },
-    {
       "type": "/errors/establishment-not-found",
       "status": 404,
       "exception": "EstablishmentNotFoundError",

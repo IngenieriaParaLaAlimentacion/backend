@@ -34,7 +34,6 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/email-delivery-failed` | 502 | `EmailDeliveryError` | Raised when an outbound email cannot be delivered to the SMTP server. |
 | `/errors/establishment-access-denied` | 403 | `EstablishmentAccessDeniedError` | Raised when a field worker acts on an establishment they have no approved relation with. |
 | `/errors/establishment-already-exists` | 409 | `EstablishmentAlreadyExistsError` | Raised when an establishment with the given place_id already exists. |
-| `/errors/establishment-already-subscribed` | 409 | `EstablishmentAlreadySubscribedError` | Raised when an admin subscribes to an establishment they already have approved access to. |
 | `/errors/establishment-not-found` | 404 | `EstablishmentNotFoundError` | Exception raised when an establishment is not found. |
 | `/errors/establishment-request-already-reviewed` | 409 | `EstablishmentRequestAlreadyReviewedError` | Raised when approving/rejecting a request that is no longer pending. |
 | `/errors/establishment-request-not-found` | 404 | `EstablishmentRequestNotFoundError` | Exception raised when an establishment request does not exist. |
