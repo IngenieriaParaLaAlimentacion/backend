@@ -67,8 +67,10 @@ class Settings(BaseSettings):
     smtp_use_tls: bool = False
     smtp_sender_email: EmailStr = "no-reply@tpp.com"
 
-    # Base URL used by every frontend deeplink (all links target the backoffice).
-    backoffice_deeplink_base: AnyUrl = "http://i_need_deeplink.com"
+    # Origin of the backoffice web app. Every emailed link is built on it
+    # (verify email, reset password, invite). The default is the local
+    # backoffice; each deployed environment sets its own https origin.
+    backoffice_deeplink_base: AnyUrl = "http://localhost:3001"
 
     password_recovery_path: str = "/reset-password"
     email_verification_path: str = "/verify-email"
