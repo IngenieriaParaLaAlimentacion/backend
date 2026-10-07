@@ -209,6 +209,10 @@ class UserRepository:
             update(User).where(User.id == user_id).values(status=status)
         )
 
+    async def update_role(self, user_id: UUID, role: UserRole) -> None:
+        """Update the role of a user."""
+        await self.db.execute(update(User).where(User.id == user_id).values(role=role))
+
     async def update_profile(self, user_id: UUID, values: dict[str, str]) -> None:
         """Update the given mutable profile columns for a user.
 

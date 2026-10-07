@@ -188,3 +188,58 @@ POST   /api/v1/talla-y-peso/measurements
 GET    /api/v1/talla-y-peso/measurements/{measurement_id}
 DELETE /api/v1/talla-y-peso/measurements/{measurement_id}
 ```
+
+---
+
+## Admin: change a user's role
+
+```
+PATCH /api/v1/admin/users/{user_id}/role
+```
+
+Restricted to `admin` and `superadmin`. Changes only `users.role`: status, profile
+data and establishment relations are untouched. On a real change the user's refresh
+tokens are revoked (they must log in again) and they get an email with the old and new
+role. Requesting the role the user already has is a no-op: `200`, no email, sessions
+kept.
+
+Request:
+
+```json
+{ "role": "analyst" }
+```
+
+`role` is one of `field_worker`, `analyst`, `admin`. `superadmin` is never assignable.
+
+Response `200` — same shape as `GET /api/v1/admin/users/{user_id}`:
+
+```json
+{
+  "id": "6b1f...",
+  "email": "ana@example.com",
+  "name": "Ana",
+  "last_name": "Pérez",
+  "role": "analyst",
+  "status": "active",
+  "locality": null,
+  "description": null,
+  "contact_phone": null,
+  "establishments": []
+}
+```
+
+Who may change whom (see `docs/auth.md`):
+
+| Actor | May change users with role | To |
+|---|---|---|
+| `admin` | `field_worker`, `analyst` | `field_worker`, `analyst`, `admin` |
+| `superadmin` | `field_worker`, `analyst`, `admin` | `field_worker`, `analyst`, `admin` |
+
+Nobody may change a `superadmin` or their own role.
+
+| Status | `type` | When |
+|---|---|---|
+| `400` | `/errors/user-is-not-active` | The user is pending (invitation not accepted, field worker not validated) or inactive. |
+| `403` | `/errors/role-not-allowed` | Target is a `superadmin`, the actor themselves, or an `admin` changed by an `admin`. Also returned when the caller is not an admin. |
+| `404` | `/errors/user-not-found` | No user with that id. |
+| `422` | `/errors/validation-failed` | `role` missing or not one of the allowed values (including `superadmin`). |

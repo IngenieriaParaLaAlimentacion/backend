@@ -106,11 +106,30 @@ named `data`. Declare `**RATE_LIMITED_RESPONSES` (from `app/api/v1/params.py`) i
 
 | Role | Description                                                                |
 |---|----------------------------------------------------------------------------|
+| `superadmin` | Same as `admin`, and can also change the role of admins. Never assignable through the API. |
 | `admin` | Full access to all data and all establishments. Can manage users.          |
 | `analyst` | Can view data across all establishments, including dashboards and reports. |
 | `field_worker` | Can only load and view data for their assigned establishments.             |
 
-Role is stored in the `users` table and included in the access token payload. It does not change between token refreshes without a new login.
+Role is stored in the `users` table and included in the access token payload. A token
+refresh reissues the access token with the role snapshotted in `user_tokens`, so a role
+only changes for a session through a new login.
+
+### Changing a user's role
+
+`PATCH /api/v1/admin/users/{user_id}/role` (contract in `docs/api.md`). The rule lives in
+`AdminService` (`_ROLE_CHANGE_SOURCES`):
+
+| Actor | May change users with role | To |
+|---|---|---|
+| `admin` | `field_worker`, `analyst` | `field_worker`, `analyst`, `admin` |
+| `superadmin` | `field_worker`, `analyst`, `admin` | `field_worker`, `analyst`, `admin` |
+
+- Nobody may change a `superadmin` or their own role.
+- Only `active` users can change role: a pending invitation's link depends on the role.
+- The change revokes all of the user's refresh tokens in the same transaction, forcing a
+  new login. The access token already issued keeps the old role until it expires
+  (≤ 15 min); this window is accepted.
 
 ---
 
