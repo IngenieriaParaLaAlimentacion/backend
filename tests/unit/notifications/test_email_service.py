@@ -11,6 +11,7 @@ from app.exceptions.domain_exceptions import EmailDeliveryError
 from app.services.email_service import (
     build_invite_deeplink,
     build_recovery_deeplink,
+    build_verification_deeplink,
     send_access_granted_email,
     send_invite_email,
     send_recovery_email,
@@ -83,6 +84,21 @@ class TestBuildInviteDeeplink:
 
         result = build_invite_deeplink("tok123", user_role=UserRole.ANALYST)
         assert urlparse(result).path == "/invite/analyst"
+
+
+class TestBuildVerificationDeeplink:
+    def test_link_is_the_backoffice_verify_email_route_with_the_token(
+        self, monkeypatch
+    ):
+        monkeypatch.setattr(
+            settings, "backoffice_deeplink_base", "https://backoffice.example.com"
+        )
+
+        result = build_verification_deeplink("tok123")
+
+        # The path and the parameter name are not overridden here: the backoffice
+        # route and the Android App Link filter match them literally.
+        assert result == "https://backoffice.example.com/verify-email?token=tok123"
 
 
 class TestSendRecoveryEmail:
