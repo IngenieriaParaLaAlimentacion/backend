@@ -11,7 +11,7 @@ from httpx import ASGITransport, AsyncClient
 from moto.server import ThreadedMotoServer
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from testcontainers.postgres import PostgresContainer
+from testcontainers.community.postgres import PostgresContainer
 
 from alembic import command
 from app.core.dependencies import get_llm_client
