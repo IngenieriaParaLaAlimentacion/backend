@@ -3,7 +3,7 @@
 - **Status**: Accepted
 - **Date**: 2026-09-29
 - **Deciders**: Backend team
-- **Related**: Issue #162 (Rate Limiting en auth endpoints)
+- **Related**: Issue #162 (Rate Limiting en auth endpoints), Issue #174 (Acceso del backoffice: límite por IP real)
 
 ## Context
 
@@ -15,8 +15,18 @@ cost of a compromised account.
 There is no API gateway in front of the backend, so this service is the only place a limit can be
 enforced, both per origin (IP) and per account (email).
 
-The backend runs on Railway behind an edge proxy. Behind it, `request.client.host` is the proxy's
-address, not the caller's: a per-IP limit keyed on it would put every user in one bucket.
+At the time of this decision the backend runs on Railway, behind its edge proxy. Behind a proxy,
+`request.client.host` is the proxy's address, not the caller's: a per-IP limit keyed on it would put
+every user in one bucket.
+
+There are two kinds of caller:
+
+- **The mobile app** connects to the backend directly, over the public network.
+- **The backoffice** runs in the browser, but every call goes to the backoffice's own origin and its
+  Next.js server forwards it to the backend, over either Railway's public or private network. The
+  backend cannot count on seeing the user's address: what it sees is the Next.js server's, so every
+  backoffice user would share one per-IP counter and one person guessing passwords could lock all of
+  them out.
 
 ## Decision
 
@@ -65,16 +75,53 @@ Per-IP limits are looser because field workers at one establishment share an IP.
 
 ### Identifying the caller
 
-- **IP**: the `X-Real-IP` header. Railway's edge proxy sets it to the client address and overwrites
-  any value the client sends, and the container is only reachable through that proxy. When the
-  header is missing or is not an IP address, the socket address is used. Deployments behind the
-  proxy set `RATE_LIMIT_REQUIRE_X_REAL_IP=true`, so a missing header is logged as a warning. The
-  environment name cannot tell them apart: a local run and the Railway dev environment are both
-  `development`.
-- **IPv6** addresses count by their /64 network, because one subscriber controls a whole /64 and
-  could otherwise rotate addresses to get around the limit. IPv4-mapped IPv6 addresses count as
-  the IPv4 address.
-- **Email** is lowercased and trimmed, so `Juan@x.com` and `juan@x.com ` are one account.
+**IP.** Every request is limited. What varies is which address it is counted against, taken from
+the first of these that applies. Two headers can carry it, and they differ in who writes them:
+
+- `X-Real-IP` is written by the edge proxy, from the address the connection came from, replacing
+  any value the client sent. A caller cannot choose it.
+- `X-Client-IP` is written by whoever calls, and the proxy leaves it untouched. A caller can set it
+  to anything, so it is believed only together with the service credential.
+
+1. **A request forwarded by the backoffice.** The backoffice's Next.js server sets two headers on
+   every call, replacing any value sent by the browser: a shared service credential in
+   `X-Internal-Token` and the user's address in `X-Client-IP`. When the credential matches
+   `INTERNAL_SERVICE_TOKEN` (compared in constant time), the request is counted against the address
+   in `X-Client-IP`. Only the backoffice knows the credential, so only it can say whose address that
+   is. Without a matching credential `X-Client-IP` is ignored, and the request is not rejected: it
+   falls to step 2. Otherwise a caller could send a different address on each attempt to avoid the
+   limit, or send someone else's to block them. Trust rests on the credential, not on the network,
+   so the backoffice can use either the public or the private URL. If `INTERNAL_SERVICE_TOKEN` is
+   not set, this step is skipped.
+2. **Any other caller**, such as the mobile app, or a request that failed step 1. The request is
+   counted against the address in the header named by `RATE_LIMIT_CLIENT_IP_HEADER` (default
+   `X-Real-IP`), which is the address the edge proxy saw. When that header is missing or is not an
+   IP address, the socket address is used. Deployments behind the proxy set
+   `RATE_LIMIT_REQUIRE_X_REAL_IP=true`, so a missing header is logged as a warning. It is an
+   explicit setting because the environment name cannot tell a local run from the Railway dev
+   deployment: both are `development`.
+
+If a request carries the credential but `X-Client-IP` is missing or is not an IP address, it falls
+to step 2 and a warning is logged: the backoffice is misconfigured, and without the warning its
+users would share one counter unnoticed.
+
+**IPv6** addresses count by their /64 network, because one subscriber controls a whole /64 and
+could otherwise rotate addresses to get around the limit. IPv4-mapped IPv6 addresses count as the
+IPv4 address.
+
+**Email** is lowercased and trimmed, so `Juan@x.com` and `juan@x.com ` are one account.
+
+### Where the deployment must hold
+
+Moving to another host needs no code change, only these to remain true:
+
+- The edge proxy sets the header named by `RATE_LIMIT_CLIENT_IP_HEADER` and overwrites any value
+  the client sent. Check it by sending a forged value and confirming the counter ignores it.
+- The backend cannot be reached bypassing that proxy, except by the backoffice's server.
+- The backoffice's server reads the user's address from the equivalent header of its own edge
+  proxy, and both services hold the same `INTERNAL_SERVICE_TOKEN`. Rotating it means changing it
+  on both; in between, the backoffice's requests are counted against its server's address and
+  nothing is rejected.
 
 ### In the routes
 
@@ -110,14 +157,20 @@ its own and the effective limit becomes N times the configured one; this has to 
 *Positives*
 
 - Protection per account and per origin, from the same service.
+- Each caller is counted against their own address, whether they come through the backoffice or
+  directly from the mobile app.
 - Thresholds change through configuration, with no code change.
 - Protection survives a Redis outage.
+- The backend's trust in the backoffice does not depend on the hosting or on the private network.
 
 *Negatives*
 
 - Redis becomes an infrastructure dependency, in compose and in the deploy.
-- The origin IP depends on a Railway guarantee, not on anything the backend controls. Moving off
-  Railway means revisiting this decision.
+- The address of direct callers depends on the edge proxy overwriting the client's header, which the
+  backend does not control.
+- The backoffice's users depend on the backoffice forwarding their address. If it stops, they share
+  a counter and only the warning shows it.
+- `INTERNAL_SERVICE_TOKEN` is one more secret to keep in both services.
 - The per-email limit lets an attacker temporarily block a victim's login. A short window keeps the
   damage small.
 - A route with a per-email limit must name its body parameter `data`.
@@ -152,3 +205,14 @@ appends to whatever the client sent in `X-Forwarded-For`, so it can be forged, a
 publish proxy addresses to build an allow-list.
 
 **Generic per-IP or per-email limits across the API** — rejected; see *What is limited*.
+
+**Trusting the private network for backoffice calls** — rejected. Correctness would depend on how
+the platform routes traffic and on the backoffice keeping to that network, and it would break on a
+host without one. The private network may still be used; nothing depends on it.
+
+**Accepting the backoffice's address header without a credential** — rejected. The backend is also
+reachable through its public URL, where anyone could send it and choose the counter they count
+against.
+
+**Exempting backoffice traffic from the per-IP limit** — rejected. The caller cannot be recognised
+reliably on the public URL, and the backoffice login would lose its per-IP protection.
