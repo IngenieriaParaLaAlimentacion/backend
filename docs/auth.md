@@ -45,6 +45,30 @@ Authorization has two levels:
 
 ---
 
+## Email links
+
+Every link the backend emails is built on one base, `BACKOFFICE_DEEPLINK_BASE`, the origin of the
+backoffice web app. The backend does not know which client a user signed up from and sends the
+same link to every role.
+
+| Email | Link | Opened by |
+|---|---|---|
+| Email verification | `{BACKOFFICE_DEEPLINK_BASE}/verify-email?token={token}` | Backoffice page; Android app when installed (App Link) |
+| Password reset | `{BACKOFFICE_DEEPLINK_BASE}/reset-password?token={token}` | Backoffice page |
+| Invitation | `{BACKOFFICE_DEEPLINK_BASE}/invite/{role}?token={token}` | Backoffice page |
+
+- Whoever opens the verification link sends the token to `POST /api/v1/auth/verify-email/confirm`
+  as `{"token": "..."}`. The token is single use and expires after
+  `EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES`.
+- The path `/verify-email` and the query parameter `token` are matched by the backoffice route and
+  by the intent filter of the Android app. Changing either one means changing all three
+  repositories together.
+- The default base is the local backoffice. Each deployed environment must set
+  `BACKOFFICE_DEEPLINK_BASE` to the https origin of its own backoffice, with no path. That host is
+  also the one the Android app declares and the one that serves `/.well-known/assetlinks.json`.
+
+---
+
 ## Roles
 
 | Role | Description                                                                |
