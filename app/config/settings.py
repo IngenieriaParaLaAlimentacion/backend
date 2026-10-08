@@ -2,7 +2,14 @@ import enum
 from typing import Optional
 
 from limits import parse as parse_limit
-from pydantic import AnyUrl, EmailStr, Field, field_validator, model_validator
+from pydantic import (
+    AnyUrl,
+    EmailStr,
+    Field,
+    SecretStr,
+    field_validator,
+    model_validator,
+)
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.domain.user import UserRole
@@ -110,7 +117,6 @@ class Settings(BaseSettings):
 
     # Rate limiting - each limit is "<count>/<period>", e.g. "5/minute".
     rate_limit_redis_url: str = "redis://localhost:6379/0"
-    rate_limit_require_x_real_ip: bool = False
     rate_limit_redis_connect_timeout_seconds: float = 0.2
     rate_limit_redis_socket_timeout_seconds: float = 0.2
     rate_limit_login_email: str = "5/minute"
@@ -119,6 +125,11 @@ class Settings(BaseSettings):
     rate_limit_mail_sending_ip: str = "10/hour"
     rate_limit_token_ip: str = "20/minute"
     rate_limit_register_ip: str = "5/hour"
+    # Header where the edge proxy writes the address the connection came from.
+    rate_limit_client_ip_header: str = "x-real-ip"
+    # Shared with the backoffice, which reports its users' addresses. Unset
+    # disables trusting those reports.
+    internal_service_token: SecretStr | None = None
 
     # Stale-establishment notifications
     fcm_project_id: str | None = None
@@ -155,6 +166,16 @@ class Settings(BaseSettings):
         return self._build_deeplink(
             self.backoffice_deeplink_base, f"{self.invite_path}/{role}"
         )
+
+    @field_validator("internal_service_token")
+    @classmethod
+    def treat_empty_service_token_as_unset(cls, value: SecretStr | None):
+        """Return ``None`` for an empty service token."""
+        # An empty token would match an empty header, so a blank variable in the
+        # deploy must disable the feature rather than trust every request.
+        if value is not None and not value.get_secret_value():
+            return None
+        return value
 
     @field_validator(
         "rate_limit_login_email",

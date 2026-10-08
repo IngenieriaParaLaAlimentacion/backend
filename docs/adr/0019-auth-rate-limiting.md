@@ -96,10 +96,9 @@ the first of these that applies. Two headers can carry it, and they differ in wh
 2. **Any other caller**, such as the mobile app, or a request that failed step 1. The request is
    counted against the address in the header named by `RATE_LIMIT_CLIENT_IP_HEADER` (default
    `X-Real-IP`), which is the address the edge proxy saw. When that header is missing or is not an
-   IP address, the socket address is used. Deployments behind the proxy set
-   `RATE_LIMIT_REQUIRE_X_REAL_IP=true`, so a missing header is logged as a warning. It is an
-   explicit setting because the environment name cannot tell a local run from the Railway dev
-   deployment: both are `development`.
+   IP address, the socket address is used and a warning is logged. Behind the proxy a missing
+   header means the deployment changed, and the socket address is then the proxy's, so every user
+   would share one counter without any visible failure.
 
 If a request carries the credential but `X-Client-IP` is missing or is not an IP address, it falls
 to step 2 and a warning is logged: the backoffice is misconfigured, and without the warning its
