@@ -21,7 +21,9 @@ def _body(**overrides):
 
 @pytest.mark.parametrize("category", list(FoodOutflowCategory))
 def test_accepts_each_category(category):
-    assert FoodOutflowRequest.model_validate(_body(category=category)).category == category
+    assert (
+        FoodOutflowRequest.model_validate(_body(category=category)).category == category
+    )
 
 
 def test_missing_category_temporarily_means_other():
