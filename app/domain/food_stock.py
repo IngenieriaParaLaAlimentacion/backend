@@ -7,6 +7,7 @@ from uuid import UUID
 from app.domain.common_domains import IdentifierRefDomain
 from app.domain.food_catalog import MeasurementUnit
 from app.domain.food_intake import FoodLineDomain
+from app.domain.food_outflow import FoodOutflowCategory
 from app.domain.measurement import ResponsibleRefDomain
 
 
@@ -80,6 +81,7 @@ class FoodMovementSummaryDomain:
     occurred_at: datetime
     responsible: ResponsibleRefDomain
     food_count: int
+    category: FoodOutflowCategory | None
 
     @classmethod
     def from_rows(cls, page_row, summary_row) -> "FoodMovementSummaryDomain":
@@ -94,6 +96,7 @@ class FoodMovementSummaryDomain:
                 last_name=summary_row.responsible_last_name,
             ),
             food_count=summary_row.food_count,
+            category=summary_row.category,
         )
 
 
@@ -114,6 +117,7 @@ class FoodMovementDetailDomain:
     source: str
     responsible: ResponsibleRefDomain
     items: list[FoodLineDomain]
+    category: FoodOutflowCategory | None
 
     @classmethod
     def from_db(
@@ -129,4 +133,7 @@ class FoodMovementDetailDomain:
             source=movement.source,
             responsible=ResponsibleRefDomain.from_db(movement.responsible),
             items=[FoodLineDomain.from_db(item) for item in movement.items],
+            category=(
+                movement.category if direction == FoodMovementDirection.OUT else None
+            ),
         )

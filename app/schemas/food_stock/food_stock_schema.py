@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict
 
 from app.domain.food_catalog import MeasurementUnit
 from app.domain.food_intake import FoodIntakeSource
+from app.domain.food_outflow import FoodOutflowCategory
 from app.domain.food_stock import FoodMovementDirection
 from app.schemas.common import IdentifierRefSchema
 from app.schemas.food_intakes.food_intake_schema import FoodLineResponse
@@ -39,6 +40,7 @@ class FoodMovementSummary(BaseModel):
     occurred_at: datetime
     responsible: ResponsibleRefResponse
     food_count: int
+    category: FoodOutflowCategory | None
 
 
 class FoodMovementDetail(BaseModel):
@@ -60,3 +62,4 @@ class FoodMovementDetail(BaseModel):
     comments: str | None
     responsible: ResponsibleRefResponse
     items: list[FoodLineResponse]
+    category: FoodOutflowCategory | None
