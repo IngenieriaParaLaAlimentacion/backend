@@ -360,16 +360,22 @@ class FoodStockRepository:
     async def _summaries_by_id(
         self, direction: FoodMovementDirection, movement_ids: list[UUID]
     ) -> dict[UUID, Row]:
-        """Fetch responsible and distinct-food count for one direction's ids."""
+        """Fetch responsible, category and distinct-food count for one direction."""
         if not movement_ids:
             return {}
         source = self._MOVEMENT_SOURCES[direction]
+        category = (
+            source.model.category
+            if direction == FoodMovementDirection.OUT
+            else literal(None, type_=source.model.comments.type)
+        )
         result = await self.db.execute(
             select(
                 source.model.id.label("id"),
                 User.id.label("responsible_id"),
                 User.name.label("responsible_name"),
                 User.last_name.label("responsible_last_name"),
+                category.label("category"),
                 func.count(distinct(source.item_model.food_id)).label("food_count"),
             )
             .join(User, User.id == source.model.responsible_id)

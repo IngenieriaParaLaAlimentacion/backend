@@ -5,7 +5,7 @@ from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from app.domain.food_outflow import FoodOutflowSource
+from app.domain.food_outflow import FoodOutflowCategory, FoodOutflowSource
 
 from ..base import Base
 
@@ -42,6 +42,16 @@ class FoodOutflow(Base):
     )
     occurred_at = Column(DateTime(timezone=True), nullable=False)
     comments = Column(String, nullable=True)
+    category = Column(
+        SAEnum(
+            FoodOutflowCategory,
+            values_callable=lambda x: [e.value for e in x],
+            name="foodoutflowcategory",
+        ),
+        nullable=False,
+        default=FoodOutflowCategory.OTHER,
+        server_default="other",
+    )
     source = Column(
         SAEnum(FoodOutflowSource, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
