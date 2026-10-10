@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
-from app.domain.food_intake import FoodIntakeSource
+from app.domain.food_intake import FoodIntakeOriginType, FoodIntakeSource
 from app.schemas.food_intakes.food_intake_schema import FoodLineResponse
 from app.schemas.measurements.measurement_schema import EstablishmentRefResponse
 
@@ -28,5 +28,7 @@ class FoodMovementListItem(BaseModel):
     occurred_at: datetime
     establishment: EstablishmentRefResponse
     source: FoodIntakeSource
+    origin_type: FoodIntakeOriginType | None
+    is_recurring: bool | None
     comments: str | None
     items: list[FoodLineResponse]

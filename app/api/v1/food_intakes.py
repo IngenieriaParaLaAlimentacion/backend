@@ -48,6 +48,9 @@ def _parse_intake_data(data: str = Form(...)) -> FoodIntakeRequest:
         "one transaction. Send a client-generated `id` to make the submission "
         "idempotent: a replay of an id that already exists answers 200 and leaves "
         "the stock untouched, so a retried offline sync cannot inflate it.\n\n"
+        "`origin_type` (one of the documented donor categories) and boolean "
+        "`is_recurring` are required for manual and photo-confirmed intakes. "
+        "`source` only identifies manual versus photo capture. "
         "Each line's unit is not sent — it is the referenced catalog food's "
         "`base_unit`."
     ),
@@ -57,6 +60,10 @@ def _parse_intake_data(data: str = Form(...)) -> FoodIntakeRequest:
         },
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Establishment or food not found"},
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {
+            "description": "Invalid intake data, including missing or invalid "
+            "origin_type or is_recurring"
+        },
     },
 )
 async def register_food_intake(
@@ -116,8 +123,9 @@ async def propose_food_intake_from_photo(
     summary="Confirm a food intake reviewed from a receipt photo",
     description=(
         "Uploads the receipt image again alongside the reviewed intake data "
-        "(the same shape `POST /food-intakes` takes, JSON-encoded in the `data` "
-        "field) and, only if every check passes, saves the photo and registers "
+        "(the same shape `POST /food-intakes` takes, including required "
+        "`origin_type` and boolean `is_recurring`, JSON-encoded in the `data` field) "
+        "and, only if every check passes, saves the photo and registers "
         "the intake in one step. Used both when the photo yielded lines the user "
         "confirmed (`source=photo`) and when it did not and the user fell back to "
         "manual entry but kept the photo (`source=manual`).\n\n"
@@ -134,7 +142,8 @@ async def propose_food_intake_from_photo(
         status.HTTP_404_NOT_FOUND: {"description": "Establishment or food not found"},
         status.HTTP_422_UNPROCESSABLE_CONTENT: {
             "description": "Unsupported image type, file over the size limit, "
-            "file content does not match the declared type, or malformed `data`"
+            "file content does not match the declared type, or invalid `data` "
+            "(including missing or invalid origin_type or is_recurring)"
         },
     },
 )

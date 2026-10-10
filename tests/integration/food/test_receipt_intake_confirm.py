@@ -69,6 +69,8 @@ def _confirm_payload(establishment_id, food_id, **overrides) -> dict:
         "establishment_id": str(establishment_id),
         "occurred_at": datetime.now(timezone.utc).isoformat(),
         "source": "photo",
+        "origin_type": "other",
+        "is_recurring": False,
         "items": [{"food_id": str(food_id), "quantity": "2.5"}],
         **overrides,
     }
@@ -95,6 +97,8 @@ class TestConfirmFromPhoto:
         assert response.status_code == 201
         body = response.json()
         assert body["source"] == "photo"
+        assert body["origin_type"] == "other"
+        assert body["is_recurring"] is False
         assert body["photo_key"].startswith(
             f"food-intake-receipts/{db_establishment.id}/"
         )
@@ -119,6 +123,8 @@ class TestConfirmFromPhoto:
         # now orphaned, copy under a fresh key.
         assert first.json()["photo_key"] == second.json()["photo_key"]
         assert first.json()["id"] == second.json()["id"]
+        assert first.json()["origin_type"] == second.json()["origin_type"] == "other"
+        assert first.json()["is_recurring"] is second.json()["is_recurring"] is False
 
     async def test_unknown_establishment_returns_404(self, client, admin_headers):
         payload = _confirm_payload(uuid.uuid4(), uuid.uuid4())
@@ -148,3 +154,15 @@ class TestConfirmFromPhoto:
 
         assert response.status_code == 422
         assert response.json()["type"] == "/errors/validation-failed"
+
+    async def test_missing_metadata_in_data_field_is_rejected_with_422(
+        self, client, admin_headers, db_establishment, rice_food_id
+    ):
+        valid = _confirm_payload(db_establishment.id, rice_food_id)
+        for missing in ("origin_type", "is_recurring"):
+            payload = {key: value for key, value in valid.items() if key != missing}
+            response = await client.post(
+                URL, headers=admin_headers, **_multipart(payload)
+            )
+            assert response.status_code == 422
+            assert response.json()["type"] == "/errors/validation-failed"

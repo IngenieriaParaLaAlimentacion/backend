@@ -19,6 +19,8 @@ def _intake_body(establishment_id, items, **overrides) -> dict:
     body = {
         "establishment_id": str(establishment_id),
         "occurred_at": "2026-09-01T10:00:00Z",
+        "origin_type": "other",
+        "is_recurring": False,
         "items": [
             {"food_id": str(food_id), "quantity": str(quantity)}
             for food_id, quantity in items
