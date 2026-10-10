@@ -16,6 +16,19 @@ class FoodIntakeSource(str, Enum):
     PHOTO = "photo"
 
 
+class FoodIntakeOriginType(str, Enum):
+    """The organization type that supplied an intake."""
+
+    NATIONAL_GOVERNMENT = "national_government"
+    PROVINCIAL_GOVERNMENT = "provincial_government"
+    MUNICIPAL_GOVERNMENT = "municipal_government"
+    PRIVATE_COMPANY = "private_company"
+    FOUNDATION = "foundation"
+    SOCIAL_ORGANIZATION = "social_organization"
+    CHURCH = "church"
+    OTHER = "other"
+
+
 @dataclass
 class FoodLineDomain:
     """One food line of a movement, with the unit resolved from the catalog."""
@@ -44,6 +57,8 @@ class FoodIntakeDomain:
     occurred_at: datetime
     comments: str | None
     source: FoodIntakeSource
+    origin_type: FoodIntakeOriginType
+    is_recurring: bool
     photo_key: str | None
     created_at: datetime
     items: list[FoodLineDomain]
@@ -58,6 +73,8 @@ class FoodIntakeDomain:
             occurred_at=intake.occurred_at,
             comments=intake.comments,
             source=intake.source,
+            origin_type=intake.origin_type,
+            is_recurring=intake.is_recurring,
             photo_key=intake.photo_key,
             created_at=intake.created_at,
             items=[FoodLineDomain.from_db(item) for item in intake.items],
@@ -72,6 +89,8 @@ class FoodMovementListItemDomain:
     occurred_at: datetime
     comments: str | None
     source: str
+    origin_type: FoodIntakeOriginType | None
+    is_recurring: bool | None
     establishment: EstablishmentRefDomain
     items: list[FoodLineDomain]
 
@@ -84,6 +103,8 @@ class FoodMovementListItemDomain:
             occurred_at=movement.occurred_at,
             comments=movement.comments,
             source=movement.source,
+            origin_type=getattr(movement, "origin_type", None),
+            is_recurring=getattr(movement, "is_recurring", None),
             establishment=EstablishmentRefDomain.from_db(movement.establishment),
             items=[FoodLineDomain.from_db(item) for item in movement.items],
         )

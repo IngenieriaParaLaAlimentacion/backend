@@ -1,10 +1,10 @@
 import uuid
 
-from sqlalchemy import UUID, Column, DateTime, ForeignKey, Index, String, func
+from sqlalchemy import UUID, Boolean, Column, DateTime, ForeignKey, Index, String, func
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import relationship
 
-from app.domain.food_intake import FoodIntakeSource
+from app.domain.food_intake import FoodIntakeOriginType, FoodIntakeSource
 
 from ..base import Base
 
@@ -47,6 +47,11 @@ class FoodIntake(Base):
         SAEnum(FoodIntakeSource, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
     )
+    origin_type = Column(
+        SAEnum(FoodIntakeOriginType, values_callable=lambda x: [e.value for e in x]),
+        nullable=False,
+    )
+    is_recurring = Column(Boolean, nullable=False)
     photo_key = Column(String, nullable=True)
     synced_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(
