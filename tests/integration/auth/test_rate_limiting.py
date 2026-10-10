@@ -7,6 +7,7 @@ import asyncio
 from uuid import uuid4
 
 import pytest
+from pydantic import SecretStr
 
 from app.config.settings import settings
 
@@ -239,3 +240,62 @@ async def test_a_request_blocked_by_ip_does_not_use_the_account_counter(
 
     assert blocked.status_code == 429
     assert other_origin.status_code != 429
+
+
+# -- Requests forwarded by the backoffice -------------------------------------
+
+
+@pytest.fixture
+def service_token(monkeypatch):
+    monkeypatch.setattr(settings, "internal_service_token", SecretStr("s3cret"))
+
+
+async def _login_with(client, email, headers):
+    url, body = EMAIL_ENDPOINTS["login"]
+    return await client.post(url, json=body(email), headers=headers)
+
+
+def _from_backoffice(user_ip):
+    # The edge proxy sees the backoffice's server, whichever user is behind it.
+    return {
+        "X-Real-IP": "52.0.0.1",
+        "X-Internal-Token": "s3cret",
+        "X-Client-IP": user_ip,
+    }
+
+
+async def test_backoffice_users_are_limited_independently(
+    client, monkeypatch, service_token, connect_limiter_to_redis
+):
+    """One user over the limit does not block the others behind the same server."""
+    _set_limits(monkeypatch, login_ip="2/minute")
+    for i in range(2):
+        await _login_with(client, f"a{i}@x.com", _from_backoffice("200.1.1.1"))
+
+    blocked = await _login_with(client, "a3@x.com", _from_backoffice("200.1.1.1"))
+    other_user = await _login_with(client, "b@x.com", _from_backoffice("200.2.2.2"))
+
+    assert blocked.status_code == 429
+    assert blocked.json()["type"] == "/errors/rate-limited"
+    assert other_user.status_code != 429
+
+
+async def test_a_public_caller_cannot_choose_the_address_it_is_counted_against(
+    client, monkeypatch, service_token, connect_limiter_to_redis
+):
+    """Without the service token, a reported address does not open a fresh counter."""
+    _set_limits(monkeypatch, login_ip="2/minute")
+
+    statuses = [
+        (
+            await _login_with(
+                client,
+                f"u{i}@x.com",
+                {"X-Real-IP": "7.7.7.7", "X-Client-IP": f"200.9.9.{i}"},
+            )
+        ).status_code
+        for i in range(3)
+    ]
+
+    assert 429 not in statuses[:2]
+    assert statuses[2] == 429

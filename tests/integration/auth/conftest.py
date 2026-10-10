@@ -3,7 +3,7 @@
 from types import SimpleNamespace
 
 import pytest
-from testcontainers.redis import RedisContainer
+from testcontainers.community.redis import RedisContainer
 
 from app.config.settings import settings
 from app.core.rate_limit import close_limiter, get_limiter

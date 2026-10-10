@@ -6,7 +6,7 @@ import pytest
 import structlog
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from pydantic import BaseModel
+from pydantic import BaseModel, SecretStr
 
 from app.config.settings import settings
 from app.core.rate_limit import close_limiter, limit_by_email, limit_by_ip
@@ -73,7 +73,7 @@ def test_a_malformed_x_real_ip_is_ignored_and_logged(value):
         key = ip_key(_request({"x-real-ip": value}, client_host="10.0.0.1"))
 
     assert key == "ip:10.0.0.1"
-    assert [log["event"] for log in logs] == ["rate_limit.x_real_ip_invalid"]
+    assert [log["event"] for log in logs] == ["rate_limit.client_ip_header_invalid"]
 
 
 def test_x_real_ip_is_trimmed_and_normalized():
@@ -81,17 +81,71 @@ def test_x_real_ip_is_trimmed_and_normalized():
     assert client_ip(_request({"x-real-ip": " 2001:DB8::1 "})) == "2001:db8::1"
 
 
-@pytest.mark.parametrize(("require_header", "warns"), [(True, True), (False, False)])
-def test_missing_x_real_ip_warns_only_where_a_proxy_is_expected(
-    monkeypatch, require_header, warns
-):
-    """A local run stays quiet; a deploy behind the proxy is told it lost the header."""
-    monkeypatch.setattr(settings, "rate_limit_require_x_real_ip", require_header)
-
+def test_a_missing_client_ip_header_falls_back_to_the_peer_and_logs():
+    """Behind the proxy a missing header means the deploy changed."""
     with structlog.testing.capture_logs() as logs:
-        client_ip(_request())
+        key = ip_key(_request(client_host="10.0.0.1"))
 
-    assert bool(logs) is warns
+    assert key == "ip:10.0.0.1"
+    assert [log["event"] for log in logs] == ["rate_limit.client_ip_header_missing"]
+
+
+def test_the_client_ip_header_is_the_one_configured(monkeypatch):
+    """A host whose proxy writes another header only changes configuration."""
+    monkeypatch.setattr(settings, "rate_limit_client_ip_header", "cf-connecting-ip")
+    request = _request({"cf-connecting-ip": "200.1.2.3", "x-real-ip": "9.9.9.9"})
+
+    assert client_ip(request) == "200.1.2.3"
+
+
+@pytest.fixture
+def service_token(monkeypatch):
+    monkeypatch.setattr(settings, "internal_service_token", SecretStr("s3cret"))
+
+
+def _backoffice_request(token: str | None, reported: str | None):
+    headers = {"x-real-ip": "52.0.0.1"}
+    if token is not None:
+        headers["x-internal-token"] = token
+    if reported is not None:
+        headers["x-client-ip"] = reported
+    return _request(headers)
+
+
+def test_a_backoffice_request_counts_against_the_user_it_reports(service_token):
+    """Two users behind the same backoffice server get their own counters."""
+    first = ip_key(_backoffice_request("s3cret", "200.1.1.1"))
+    second = ip_key(_backoffice_request("s3cret", "200.2.2.2"))
+
+    assert (first, second) == ("ip:200.1.1.1", "ip:200.2.2.2")
+
+
+@pytest.mark.parametrize("token", [None, "wrong", ""])
+def test_a_reported_ip_without_the_service_token_is_ignored(service_token, token):
+    """A public caller cannot choose the address it is counted against."""
+    with structlog.testing.capture_logs() as logs:
+        key = ip_key(_backoffice_request(token, "200.1.1.1"))
+
+    assert key == "ip:52.0.0.1"
+    assert logs == []
+
+
+def test_a_reported_ip_is_ignored_when_no_service_token_is_configured(monkeypatch):
+    monkeypatch.setattr(settings, "internal_service_token", None)
+
+    assert ip_key(_backoffice_request("s3cret", "200.1.1.1")) == "ip:52.0.0.1"
+
+
+@pytest.mark.parametrize("reported", [None, "not-an-ip", "1.2.3.4, 5.6.7.8", ""])
+def test_an_unusable_reported_ip_is_counted_against_the_edge_address(
+    service_token, reported
+):
+    """A misconfigured backoffice is logged instead of going unnoticed."""
+    with structlog.testing.capture_logs() as logs:
+        key = ip_key(_backoffice_request("s3cret", reported))
+
+    assert key == "ip:52.0.0.1"
+    assert [log["event"] for log in logs] == ["rate_limit.service_client_ip_invalid"]
 
 
 def test_email_key_carries_the_normalized_email():

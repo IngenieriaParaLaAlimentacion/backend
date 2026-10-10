@@ -68,10 +68,15 @@ and alternatives: [ADR-0019](adr/0019-auth-rate-limiting.md).
   `app/config/settings.py` and `.env.example`.
 - The email is lowercased and trimmed before counting. IPv4 addresses count individually and IPv6
   addresses by their /64 network.
-- The caller's IP is the `X-Real-IP` header set by the Railway edge proxy; without it (local runs),
-  or when it is not an IP address, the socket address is used. Set
-  `RATE_LIMIT_REQUIRE_X_REAL_IP=true` wherever the backend runs behind Railway, so a request without
-  the header is logged as a warning. A header that is present but not an IP address is always logged.
+- The address a request is counted against comes from the first of these that applies:
+  1. A request forwarded by the backoffice that carries `X-Internal-Token` equal to
+     `INTERNAL_SERVICE_TOKEN` is counted against the user address in `X-Client-IP`. Without a
+     matching token the header is ignored, so a public caller cannot choose its counter. If the
+     token matches but the address is missing or is not an IP address, a warning is logged and the
+     request goes to the next rule. With `INTERNAL_SERVICE_TOKEN` unset this rule is skipped.
+  2. Any other request is counted against the header named by `RATE_LIMIT_CLIENT_IP_HEADER`
+     (`X-Real-IP`, set by the Railway edge proxy). When it is missing or is not an IP address, the
+     socket address is used and a warning is logged.
 - Requests that fail validation still count against the per-IP limit but never reach the per-email
   one. `POST /auth/verify-email/resend` counts per email whether or not the account exists, so the
   limit does not reveal which emails are registered.
