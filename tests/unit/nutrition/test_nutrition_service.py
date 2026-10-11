@@ -9,6 +9,7 @@ import pytest
 from app.domain.food_catalog import FoodNutrientRow
 from app.domain.nutrition import (
     FoodQuantity,
+    GapaGroup,
     MealType,
     PrioritizedNutrient,
     RecipeRequest,
@@ -20,9 +21,10 @@ from app.exceptions.domain_exceptions import (
 )
 from app.reference_data.nutrition_references import NINO_7_9
 from app.services.nutrition import NutritionService
-from app.services.nutrition.nutrition_service import month_bounds
+from app.utils.dates import month_bounds
 
 ESTABLISHMENT_ID = uuid.uuid4()
+FOOD_ID = uuid.uuid4()
 ADMIN = UserActor(user_id=uuid.uuid4(), role=UserRole.ADMIN)
 
 
@@ -41,11 +43,11 @@ class GramsPerUnit:
         raise NotImplementedError
 
 
-def food_with(food_id, per_100g: dict[str, float]):
+def food_with(food_id, per_100g: dict[str, float], gapa_code: str | None = None):
     """A loaded Food, as the repository returns it."""
     food = MagicMock()
     food.id = food_id
-    food.gapa_category = None
+    food.gapa_category = MagicMock(code=gapa_code) if gapa_code else None
     food.nutrient_values = [
         MagicMock(nutrient=MagicMock(code=code), amount_per_100g=Decimal(str(amount)))
         for code, amount in per_100g.items()
@@ -271,3 +273,39 @@ async def test_recipe_target_follows_the_profile_the_service_was_given():
     )
 
     assert result.target_energy_kcal == pytest.approx(10 * 1000 * 0.35)
+
+
+@pytest.mark.parametrize(
+    ("food_ids", "stock"),
+    [
+        pytest.param([], {}, id="no-foods-asked"),
+        pytest.param(
+            [uuid.UUID(int=1)], {uuid.UUID(int=1): Decimal("0")}, id="no-stock"
+        ),
+    ],
+)
+async def test_recipe_without_usable_stock_has_no_data(food_ids, stock):
+    uow = make_uow(
+        foods=[food_with(food_id, {"valor_energetico": 100}) for food_id in food_ids],
+        stock=stock,
+    )
+    request = RecipeRequest(food_ids, children_count=5, meal_type=MealType.LUNCH)
+
+    result = await NutritionService(uow, GramsPerUnit()).maximize_recipe(
+        ESTABLISHMENT_ID, request, ADMIN
+    )
+
+    assert not result.has_data
+
+
+async def test_the_gapa_group_of_a_food_counts_in_its_energy_share():
+    milk_id = uuid.uuid4()
+    uow = make_uow(
+        foods=[food_with(milk_id, {"valor_energetico": 60}, "leche_yogur_y_quesos")]
+    )
+
+    result = await NutritionService(uow, GramsPerUnit()).calculate_indicators(
+        [FoodQuantity(milk_id, 200)]
+    )
+
+    assert result.gapa_energy_share[GapaGroup.DAIRY] == pytest.approx(1)

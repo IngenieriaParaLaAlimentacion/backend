@@ -153,3 +153,18 @@ def test_food_missing_from_the_catalog_is_ignored_and_reported():
 
     assert result.energy_kcal == pytest.approx(100)
     assert any("not found" in warning for warning in result.warnings)
+
+
+def test_the_same_food_listed_twice_counts_as_the_sum_of_its_grams():
+    rice = composition({"valor_energetico": 100, "calcio": 20})
+    compositions = {rice.food_id: rice}
+    twice = [FoodQuantity(rice.food_id, 100), FoodQuantity(rice.food_id, 50)]
+    once = [FoodQuantity(rice.food_id, 150)]
+
+    split = calculate_indicators(twice, compositions)
+    whole = calculate_indicators(once, compositions)
+
+    assert split.energy_kcal == pytest.approx(whole.energy_kcal)
+    assert adequacy_of(split, PrioritizedNutrient.CALCIUM).adequacy_uncapped == (
+        pytest.approx(adequacy_of(whole, PrioritizedNutrient.CALCIUM).adequacy_uncapped)
+    )

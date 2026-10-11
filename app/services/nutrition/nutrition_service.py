@@ -1,6 +1,5 @@
 import asyncio
 from collections.abc import Mapping
-from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
 
@@ -31,7 +30,7 @@ from app.services.nutrition.intake_analysis import (
     top_sources,
 )
 from app.services.nutrition.optimizer import maximize_recipe as solve_recipe
-from app.utils.dates import ARGENTINA_TZ
+from app.utils.dates import month_bounds
 
 
 def composition_from_food(food: Food) -> FoodComposition:
@@ -45,17 +44,6 @@ def composition_from_food(food: Food) -> FoodComposition:
             for value in food.nutrient_values
         },
     )
-
-
-def month_bounds(year: int, month: int) -> tuple[datetime, datetime]:
-    """Return the start of the month and of the next one, in Buenos Aires time."""
-    start = datetime(year, month, 1, tzinfo=ARGENTINA_TZ)
-    end = (
-        datetime(year + 1, 1, 1, tzinfo=ARGENTINA_TZ)
-        if month == 12
-        else datetime(year, month + 1, 1, tzinfo=ARGENTINA_TZ)
-    )
-    return start, end
 
 
 class NutritionService:

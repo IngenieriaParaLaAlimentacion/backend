@@ -107,8 +107,8 @@ def top_sources(
         amount = prioritized_amount_per_100g(nutrient, composition.per_100g)
         if (
             energy <= 0
-            or not amount
-            or amount < 0
+            or amount is None
+            or amount <= 0
             or composition.gapa_group in (None, GapaGroup.OPTIONAL)
         ):
             continue

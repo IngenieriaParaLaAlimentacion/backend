@@ -44,6 +44,7 @@ EXPECTED: dict[str, int] = {
     "nutrition/invalid-children-count": status.HTTP_422_UNPROCESSABLE_CONTENT,
     "password-not-found": status.HTTP_404_NOT_FOUND,
     "rate-limited": status.HTTP_429_TOO_MANY_REQUESTS,
+    "nutrition/recipe-optimization-failed": status.HTTP_500_INTERNAL_SERVER_ERROR,
     "receipt-photo-storage-failed": status.HTTP_502_BAD_GATEWAY,
     "role-not-allowed": status.HTTP_403_FORBIDDEN,
     "subject-already-exists": status.HTTP_409_CONFLICT,

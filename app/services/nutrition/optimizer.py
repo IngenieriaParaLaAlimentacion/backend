@@ -8,6 +8,7 @@ from app.domain.nutrition import (
     UnmetConstraint,
     UnmetConstraintKind,
 )
+from app.exceptions.domain_exceptions import RecipeOptimizationError
 from app.reference_data.nutrition_references import NINO_7_9, ReferenceProfile
 from app.services.nutrition.indicators import (
     ENERGY,
@@ -165,11 +166,10 @@ def _solve_per_1000_kcal(
     ) - DEVIATION_PENALTY * pulp.lpSum(penalty)
 
     model.solve(pulp.PULP_CBC_CMD(msg=False))
-    if pulp.LpStatus[model.status] != "Optimal":
+    solver_status = pulp.LpStatus[model.status]
+    if solver_status != "Optimal":
         # The stock check makes the program feasible, so this is a solver failure.
-        raise RuntimeError(
-            f"Recipe optimization ended as {pulp.LpStatus[model.status]}"
-        )
+        raise RecipeOptimizationError(solver_status)
 
     return (
         [v.value() or 0.0 for v in y],

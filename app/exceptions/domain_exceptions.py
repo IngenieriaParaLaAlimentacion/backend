@@ -1075,3 +1075,24 @@ class InvalidChildrenCountError(UnprocessableEntityError):
             f"A recipe needs at least one child, got {children_count}.",
             extensions={"children_count": children_count},
         )
+
+
+class RecipeOptimizationError(BaseError):
+    """Raised when the solver cannot return an optimal recipe.
+
+    The stock check makes the program feasible, so this means the solver itself
+    failed rather than that the request cannot be met.
+
+    Args:
+        solver_status (str): The status the solver ended with.
+    """
+
+    error_type = "nutrition/recipe-optimization-failed"
+    status = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+    def __init__(self, solver_status: str):
+        super().__init__(
+            "Recipe optimization failed",
+            f"The solver ended as {solver_status!r} instead of finding a recipe.",
+            extensions={"solver_status": solver_status},
+        )

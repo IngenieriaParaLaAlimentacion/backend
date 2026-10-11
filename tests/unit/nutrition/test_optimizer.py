@@ -6,7 +6,9 @@ from app.domain.nutrition import (
     StockedFood,
     UnmetConstraintKind,
 )
+from app.exceptions.domain_exceptions import RecipeOptimizationError
 from app.reference_data.nutrition_references import NINO_7_9
+from app.services.nutrition import optimizer
 from app.services.nutrition.optimizer import maximize_recipe
 from tests.unit.nutrition.helpers import composition
 
@@ -160,3 +162,34 @@ def test_a_food_rich_in_a_nutrient_is_used_when_it_costs_nothing_else():
     assert used.get(calcium.composition.food_id, 0) > used.get(
         plain.composition.food_id, 0
     )
+
+
+def test_stock_exactly_matching_the_target_is_enough():
+    # 2,000 g at 100 kcal/100 g hold exactly the 2,000 kcal asked for.
+    rice = stocked({"valor_energetico": 100}, stock=2000)
+
+    result = maximize_recipe([rice], target_energy_kcal=2000)
+
+    assert result.energy_kcal == pytest.approx(2000)
+    assert not any(
+        c.kind == UnmetConstraintKind.STOCK_INSUFFICIENT
+        for c in result.unmet_constraints
+    )
+
+
+def test_foods_without_energy_do_not_change_the_energy_of_the_recipe():
+    rice = stocked({"valor_energetico": 100})
+    salt = stocked({"valor_energetico": 0, "sodio": 40000})
+
+    result = maximize_recipe([rice, salt], 2000)
+
+    assert result.energy_kcal == pytest.approx(2000)
+    assert result.indicators.energy_kcal == pytest.approx(2000, rel=1e-6)
+
+
+def test_a_solver_that_does_not_finish_optimal_raises_a_domain_error(monkeypatch):
+    # 1 is the status of an optimal solve; pretend the solver ended otherwise.
+    monkeypatch.setattr(optimizer.pulp, "LpStatus", {1: "Infeasible"})
+
+    with pytest.raises(RecipeOptimizationError):
+        maximize_recipe([stocked({"valor_energetico": 100})], 2000)
