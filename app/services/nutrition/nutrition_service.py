@@ -5,9 +5,7 @@ from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.nutrition import (
-    FoodComposition,
     FoodQuantity,
-    GapaGroup,
     MonthlyIntakeAnalysis,
     NutritionIndicators,
     RecipeRequest,
@@ -16,9 +14,12 @@ from app.domain.nutrition import (
 )
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import InvalidChildrenCountError
-from app.models.food_catalog.food import Food
 from app.reference_data.nutrition_references import NINO_7_9, ReferenceProfile
 from app.services.access import check_establishment_access
+from app.services.nutrition.compositions import (
+    composition_from_food,
+    compositions_from_rows,
+)
 from app.services.nutrition.grams import GramsConverter
 from app.services.nutrition.indicators import (
     calculate_indicators,
@@ -26,24 +27,10 @@ from app.services.nutrition.indicators import (
 )
 from app.services.nutrition.intake_analysis import (
     analyze_intake,
-    compositions_from_rows,
     top_sources,
 )
 from app.services.nutrition.optimizer import maximize_recipe as solve_recipe
 from app.utils.dates import month_bounds
-
-
-def composition_from_food(food: Food) -> FoodComposition:
-    """Build a FoodComposition from a Food with its group and nutrient values loaded."""
-    group = GapaGroup(food.gapa_category.code) if food.gapa_category else None
-    return FoodComposition(
-        food_id=food.id,
-        gapa_group=group,
-        per_100g={
-            value.nutrient.code: float(value.amount_per_100g)
-            for value in food.nutrient_values
-        },
-    )
 
 
 class NutritionService:

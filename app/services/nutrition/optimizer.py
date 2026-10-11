@@ -146,6 +146,8 @@ def _solve_per_1000_kcal(
 
     for group in profile.gapa_portions:
         minimum = profile.gapa_minimum_per_1000_kcal(group)
+        if minimum <= 0:
+            continue
         short = model.add_variable(f"s_{group.value}", 0)
         members = [
             v

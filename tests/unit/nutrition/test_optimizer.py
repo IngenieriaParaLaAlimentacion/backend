@@ -1,3 +1,5 @@
+from dataclasses import replace
+
 import pytest
 
 from app.domain.nutrition import (
@@ -7,7 +9,7 @@ from app.domain.nutrition import (
     UnmetConstraintKind,
 )
 from app.exceptions.domain_exceptions import RecipeOptimizationError
-from app.reference_data.nutrition_references import NINO_7_9
+from app.reference_data.nutrition_references import NINO_7_9, GapaPortion
 from app.services.nutrition import optimizer
 from app.services.nutrition.optimizer import maximize_recipe
 from tests.unit.nutrition.helpers import composition
@@ -193,3 +195,19 @@ def test_a_solver_that_does_not_finish_optimal_raises_a_domain_error(monkeypatch
 
     with pytest.raises(RecipeOptimizationError):
         maximize_recipe([stocked({"valor_energetico": 100})], 2000)
+
+
+def test_a_group_without_minimum_in_the_profile_is_not_required():
+    profile = replace(
+        NINO_7_9,
+        gapa_portions={
+            **NINO_7_9.gapa_portions,
+            GapaGroup.DAIRY: GapaPortion(0, 200),
+        },
+    )
+    pantry = balanced_pantry()
+    del pantry["milk"]
+
+    result = maximize_recipe(list(pantry.values()), 2000, profile)
+
+    assert GapaGroup.DAIRY.value not in {c.subject for c in result.unmet_constraints}

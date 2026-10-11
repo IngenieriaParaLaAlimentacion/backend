@@ -43,6 +43,15 @@ class Macronutrient(StrEnum):
     CARBOHYDRATES = "carbohidratos"
 
 
+class LimitedNutrient(StrEnum):
+    """Nutrients reported against a limit; values are their catalog codes."""
+
+    FIBER = "fibra_alimentaria"
+    SODIUM = "sodio"
+    SATURATED_FAT = "saturados"
+    ADDED_SUGAR = "azucar_agregado"
+
+
 class UnmetConstraintKind(StrEnum):
     """Rule a suggested recipe could not satisfy."""
 

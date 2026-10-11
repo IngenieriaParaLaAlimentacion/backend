@@ -43,7 +43,7 @@ def required_nutrient_codes(profile: ReferenceProfile = NINO_7_9) -> set[str]:
     """Return every catalog nutrient code the indicators read."""
     codes = {ENERGY, VITAMIN_A_RAE, RETINOL, *_DIRECT_NUTRIENT_CODES.values()}
     codes.update(code for code, _ in MACRO_NUTRIENT_CODES.values())
-    codes.update(profile.limits)
+    codes.update(limit.value for limit in profile.limits)
     return codes
 
 
@@ -170,9 +170,10 @@ def calculate_indicators(
         },
         limit_indicators=[
             LimitIndicator(
-                code=code, amount_per_1000_kcal=totals.get(code, 0.0) / energy * 1000
+                code=limit.value,
+                amount_per_1000_kcal=totals.get(limit.value, 0.0) / energy * 1000,
             )
-            for code in profile.limits
+            for limit in profile.limits
         ],
         warnings=warnings,
     )

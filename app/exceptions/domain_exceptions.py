@@ -1096,3 +1096,22 @@ class RecipeOptimizationError(BaseError):
             f"The solver ended as {solver_status!r} instead of finding a recipe.",
             extensions={"solver_status": solver_status},
         )
+
+
+class UnknownGapaGroupError(BaseError):
+    """Raised when the catalog holds a GAPA group the application does not know.
+
+    Args:
+        code (str): The code of the unknown group.
+    """
+
+    error_type = "nutrition/unknown-gapa-group"
+    status = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+    def __init__(self, code: str):
+        super().__init__(
+            "Unknown GAPA group",
+            f"The catalog has a GAPA group with code {code!r}, which is not one of "
+            "the six the service knows.",
+            extensions={"code": code},
+        )

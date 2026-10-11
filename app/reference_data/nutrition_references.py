@@ -21,6 +21,7 @@ from typing import Literal
 
 from app.domain.nutrition import (
     GapaGroup,
+    LimitedNutrient,
     Macronutrient,
     MealType,
     PrioritizedNutrient,
@@ -70,7 +71,7 @@ class ReferenceProfile:
     energy_kcal: float
     nutrients: dict[PrioritizedNutrient, NutrientReference]
     macro_ranges: dict[Macronutrient, MacroRange]
-    limits: dict[str, LimitReference]
+    limits: dict[LimitedNutrient, LimitReference]
     gapa_portions: dict[GapaGroup, GapaPortion]
     meal_energy_fractions: dict[MealType, float]
 
@@ -109,10 +110,10 @@ NINO_7_9 = ReferenceProfile(
     limits={
         # The fiber floor is a nutritionist's criterion, not published, to validate
         # with the project's nutritionists. The rest are TRS 916 Table 6.
-        "fibra_alimentaria": LimitReference("min", 14),
-        "sodio": LimitReference("max", 2000 / 1770 * 1000),  # 2 g a day
-        "saturados": LimitReference("max", 0.10 * 1000 / 9),
-        "azucar_agregado": LimitReference("max", 0.10 * 1000 / 4),
+        LimitedNutrient.FIBER: LimitReference("min", 14),
+        LimitedNutrient.SODIUM: LimitReference("max", 2000 / 1770 * 1000),  # 2 g a day
+        LimitedNutrient.SATURATED_FAT: LimitReference("max", 0.10 * 1000 / 9),
+        LimitedNutrient.ADDED_SUGAR: LimitReference("max", 0.10 * 1000 / 4),
     },
     # Portions are the manual's, for the general population. Only group 2 (60 g) and
     # dairy (200 g) have grams in the manual; groups 1, 4 and 5 are provisional.

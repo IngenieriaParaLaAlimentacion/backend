@@ -223,6 +223,12 @@
       "description": "Raised when the solver cannot return an optimal recipe."
     },
     {
+      "type": "/errors/nutrition/unknown-gapa-group",
+      "status": 500,
+      "exception": "UnknownGapaGroupError",
+      "description": "Raised when the catalog holds a GAPA group the application does not know."
+    },
+    {
       "type": "/errors/password-not-found",
       "status": 404,
       "exception": "PasswordNotFoundError",

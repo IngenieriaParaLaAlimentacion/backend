@@ -1,7 +1,6 @@
 from collections.abc import Iterable, Mapping
 from uuid import UUID
 
-from app.domain.food_catalog import FoodNutrientRow
 from app.domain.nutrition import (
     FoodComposition,
     FoodQuantity,
@@ -29,23 +28,6 @@ RISK_ADEQUACY_THRESHOLD = 2 / 3
 
 # How many foods are suggested for each nutrient at risk.
 TOP_SOURCES_COUNT = 5
-
-
-def compositions_from_rows(
-    rows: Iterable[FoodNutrientRow],
-) -> dict[UUID, FoodComposition]:
-    """Group (food, nutrient) rows into one composition per food."""
-    compositions: dict[UUID, FoodComposition] = {}
-    for row in rows:
-        composition = compositions.get(row.food_id)
-        if composition is None:
-            group = (
-                GapaGroup(row.gapa_category_code) if row.gapa_category_code else None
-            )
-            composition = FoodComposition(row.food_id, group, {})
-            compositions[row.food_id] = composition
-        composition.per_100g[row.nutrient_code] = float(row.amount_per_100g)
-    return compositions
 
 
 def analyze_intake(
