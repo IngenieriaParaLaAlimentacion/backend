@@ -8,19 +8,28 @@ Values: ReferenceProfile with the daily energy, the daily need of each
 
 Sources (7 to 9 years):
   Micronutrients: FAO/WHO (2001), Human Vitamin and Mineral Requirements.
+    https://www.fao.org/4/y2809e/y2809e00.htm
     Calcium Table 31 (700 mg); vitamin A Table 18 (500 µg RE); folate Table 13
     (300 µg DFE); vitamin B12 Table 14 (1.8 µg); vitamin C Table 15 (35 mg);
     iron Table 40 (8.9 mg at 10% bioavailability, rounded to 9); zinc Table 56
     (5.6 mg at moderate bioavailability).
-  Energy: FAO/WHO/UNU (2004), Human Energy Requirements, Tables 4.2 and 4.3. No
-    table lists 1,770 kcal; it matches the mean of boys and girls aged 8-9 with
-    moderate activity (1,830 and 1,698 kcal), which is our reading, not a quote.
-  Protein 10-15% and fat 15-30% of the energy: WHO/FAO (2003), TRS 916, Table 6.
-    That table gives 55-75% for carbohydrates; the 40-65% used here comes from
-    US #169 and its source is still unconfirmed.
-  Fiber and limits: PAHO nutrient profile / Law 27.642, to validate: values were
-    proposed and have not been confirmed with nutritionists yet. PAHO speaks of
-    free sugars while the catalog only has added sugar.
+  Energy: FAO/WHO/UNU (2004), Human Energy Requirements, Tables 4.2 and 4.3.
+    https://www.fao.org/4/y5686e/y5686e06.htm
+    No table lists 1,770 kcal; it matches the mean of boys and girls aged 8-9 with
+    moderate activity (1,830 and 1,698 kcal). That reading is ours, not a quote.
+  Macronutrients: WHO/FAO (2003), TRS 916, Table 6.
+    https://www.fao.org/4/ac911e/ac911e07.htm
+    Protein 10-15% and fat 15-30% of the energy match. The table gives 55-75%
+    for carbohydrates, not the 40-65% used here, which has no confirmed source.
+  Sodium, saturated fat, added sugar: PAHO Nutrient Profile Model (2016).
+    https://iris.paho.org/handle/10665.2/18622
+    Sodium 1 mg per kcal, saturated fat 10% and free sugars 10% of the energy.
+    The model flags products with an excess; it does not set intake limits. It
+    speaks of free sugars while the catalog only has added sugar.
+  Fiber: Institute of Medicine (2005), Dietary Reference Intakes for Energy,
+    Carbohydrate, Fiber, Fat, Fatty Acids, Cholesterol, Protein, and Amino Acids.
+    https://www.nationalacademies.org/publications/10490
+    The 14 g per 1,000 kcal figure was not found on that page; to validate.
 """
 
 from dataclasses import dataclass
