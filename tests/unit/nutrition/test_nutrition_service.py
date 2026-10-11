@@ -1,4 +1,5 @@
 import uuid
+from dataclasses import replace
 from datetime import datetime, timezone
 from decimal import Decimal
 from unittest.mock import AsyncMock, MagicMock
@@ -17,6 +18,7 @@ from app.exceptions.domain_exceptions import (
     EstablishmentAccessDeniedError,
     InvalidChildrenCountError,
 )
+from app.reference_data.nutrition_references import NINO_7_9
 from app.services.nutrition import NutritionService
 from app.services.nutrition.nutrition_service import month_bounds
 
@@ -253,3 +255,19 @@ async def test_field_worker_without_approved_access_cannot_build_a_recipe():
         )
 
     uow.food_stock_repo.get_many.assert_not_awaited()
+
+
+async def test_recipe_target_follows_the_profile_the_service_was_given():
+    rice_id = uuid.uuid4()
+    uow = make_uow(
+        foods=[food_with(rice_id, {"valor_energetico": 100})],
+        stock={rice_id: Decimal("1000")},
+    )
+    profile = replace(NINO_7_9, energy_kcal=1000)
+    request = RecipeRequest([rice_id], children_count=10, meal_type=MealType.LUNCH)
+
+    result = await NutritionService(uow, GramsPerUnit(), profile).maximize_recipe(
+        ESTABLISHMENT_ID, request, ADMIN
+    )
+
+    assert result.target_energy_kcal == pytest.approx(10 * 1000 * 0.35)

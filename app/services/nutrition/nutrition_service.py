@@ -17,7 +17,7 @@ from app.domain.nutrition import (
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import InvalidChildrenCountError
 from app.models.food_catalog.food import Food
-from app.reference_data.nutrition_references import NINO_7_9
+from app.reference_data.nutrition_references import NINO_7_9, ReferenceProfile
 from app.services.access import check_establishment_access
 from app.services.nutrition.grams import GramsConverter
 from app.services.nutrition.indicators import (
@@ -61,9 +61,15 @@ def month_bounds(year: int, month: int) -> tuple[datetime, datetime]:
 class NutritionService:
     """Nutritional balance of food combinations, recipes and monthly intakes."""
 
-    def __init__(self, uow: IUnitOfWork, grams: GramsConverter) -> None:
+    def __init__(
+        self,
+        uow: IUnitOfWork,
+        grams: GramsConverter,
+        profile: ReferenceProfile = NINO_7_9,
+    ) -> None:
         self.uow = uow
         self.grams = grams
+        self.profile = profile
 
     async def _resolve_establishment(
         self, establishment_id: UUID, actor: UserActor
@@ -101,7 +107,7 @@ class NutritionService:
             {item.food_id for item in items}
         )
         compositions = {food.id: composition_from_food(food) for food in foods}
-        return calculate_indicators(items, compositions)
+        return calculate_indicators(items, compositions, self.profile)
 
     async def maximize_recipe(
         self, establishment_id: UUID, request: RecipeRequest, actor: UserActor
@@ -131,14 +137,13 @@ class NutritionService:
             if food.id in stock_grams
         ]
 
-        profile = NINO_7_9
         target = (
             request.children_count
-            * profile.energy_kcal
-            * profile.meal_energy_fractions[request.meal_type]
+            * self.profile.energy_kcal
+            * self.profile.meal_energy_fractions[request.meal_type]
         )
         # CBC runs for a while, so it stays off the event loop.
-        solution = await asyncio.to_thread(solve_recipe, stocked, target, profile)
+        solution = await asyncio.to_thread(solve_recipe, stocked, target, self.profile)
         if warning:
             solution.warnings.append(warning)
         return solution
@@ -165,12 +170,14 @@ class NutritionService:
             [item.food_id for item in items]
         )
         analysis = analyze_intake(
-            items, {food.id: composition_from_food(food) for food in foods}
+            items,
+            {food.id: composition_from_food(food) for food in foods},
+            self.profile,
         )
         if analysis.nutrients_at_risk:
             # The whole catalog is only read when there is a shortfall to cover.
             rows = await self.uow.food_repo.list_all_with_nutrients(
-                required_nutrient_codes()
+                required_nutrient_codes(self.profile)
             )
             catalog = compositions_from_rows(rows)
             analysis.top_sources = {
