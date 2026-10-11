@@ -42,6 +42,7 @@ EXPECTED: dict[str, int] = {
     "no-fields-to-update": status.HTTP_400_BAD_REQUEST,
     "not-resource-owner": status.HTTP_403_FORBIDDEN,
     "notification-configuration-invalid": status.HTTP_503_SERVICE_UNAVAILABLE,
+    "nutrition/invalid-children-count": status.HTTP_422_UNPROCESSABLE_CONTENT,
     "password-not-found": status.HTTP_404_NOT_FOUND,
     "rate-limited": status.HTTP_429_TOO_MANY_REQUESTS,
     "receipt-photo-storage-failed": status.HTTP_502_BAD_GATEWAY,

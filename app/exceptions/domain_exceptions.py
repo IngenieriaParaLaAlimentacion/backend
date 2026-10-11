@@ -1077,3 +1077,20 @@ class ImageContentMismatchError(UnprocessableEntityError):
             f"{content_type!r}.",
             extensions={"content_type": content_type},
         )
+
+
+class InvalidChildrenCountError(UnprocessableEntityError):
+    """Raised when a recipe is requested for no children or a negative number.
+
+    Args:
+        children_count (int): The rejected number of children.
+    """
+
+    error_type = "nutrition/invalid-children-count"
+
+    def __init__(self, children_count: int):
+        super().__init__(
+            "Invalid number of children",
+            f"A recipe needs at least one child, got {children_count}.",
+            extensions={"children_count": children_count},
+        )

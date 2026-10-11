@@ -13,6 +13,7 @@ from app.domain.nutrition import (
     RecipeSolution,
 )
 from app.domain.user import UserActor
+from app.exceptions.domain_exceptions import InvalidChildrenCountError
 from app.models.food_catalog.food import Food
 from app.reference_data.nutrition_references import NINO_7_9
 from app.services.access import check_establishment_access
@@ -83,10 +84,10 @@ class NutritionService:
         Raises:
             EstablishmentNotFoundError: establishment_id does not exist.
             EstablishmentAccessDeniedError: field worker lacks approved access.
-            ValueError: children_count is not positive.
+            InvalidChildrenCountError: children_count is not positive.
         """
         if request.children_count <= 0:
-            raise ValueError("children_count must be positive")
+            raise InvalidChildrenCountError(request.children_count)
         await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
         await check_establishment_access(self.uow, actor, establishment_id)
 
