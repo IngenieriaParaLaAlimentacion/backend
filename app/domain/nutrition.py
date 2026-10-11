@@ -106,10 +106,13 @@ class NutritionIndicators:
 
 @dataclass
 class RecipeRequest:
-    """What the caller asks a recipe to be built from."""
+    """What the caller asks a recipe to be built from.
+
+    ``children_count`` is how many children the recipe has to feed.
+    """
 
     food_ids: list[UUID]
-    children: int
+    children_count: int
     meal_type: MealType
 
 
