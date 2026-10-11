@@ -11,10 +11,7 @@ from app.domain.nutrition import (
 )
 from app.reference_data.nutrition_references import NINO_7_9
 from app.services.nutrition.indicators import calculate_indicators
-
-
-def food(per_100g: dict[str, float], group: GapaGroup | None = None):
-    return FoodComposition(food_id=uuid.uuid4(), gapa_group=group, per_100g=per_100g)
+from tests.unit.nutrition.helpers import composition
 
 
 def indicators_of(*foods_and_grams: tuple[FoodComposition, float]):
@@ -29,7 +26,7 @@ def adequacy_of(result, nutrient: PrioritizedNutrient):
 
 def test_energy_and_macro_shares_come_from_the_grams_eaten():
     # 100 g give 100 kcal: 5 g protein (20 kcal), 3 g fat (27), 13.25 g carbs (53).
-    base = food(
+    base = composition(
         {
             "valor_energetico": 100,
             "proteinas": 5,
@@ -53,7 +50,7 @@ def test_energy_and_macro_shares_come_from_the_grams_eaten():
 
 def test_adequacy_is_amount_per_1000_kcal_over_the_reference():
     # 200 g give 200 kcal and 400 mg of calcium: 2,000 mg per 1,000 kcal.
-    milk = food({"valor_energetico": 100, "calcio": 200})
+    milk = composition({"valor_energetico": 100, "calcio": 200})
 
     calcium = adequacy_of(indicators_of((milk, 200)), PrioritizedNutrient.CALCIUM)
 
@@ -63,7 +60,7 @@ def test_adequacy_is_amount_per_1000_kcal_over_the_reference():
 
 
 def test_excess_of_one_nutrient_does_not_make_up_for_a_deficit_of_another():
-    milk = food({"valor_energetico": 100, "calcio": 200})
+    milk = composition({"valor_energetico": 100, "calcio": 200})
 
     result = indicators_of((milk, 100))
 
@@ -75,7 +72,7 @@ def test_excess_of_one_nutrient_does_not_make_up_for_a_deficit_of_another():
 
 def test_vitamin_a_counts_in_retinol_equivalents():
     # RE = 2 x RAE - retinol = 160 per 100 g; 200 g give 320 RE over 200 kcal.
-    liver = food({"valor_energetico": 100, "vitamina_a_rae": 100, "retinol": 40})
+    liver = composition({"valor_energetico": 100, "vitamina_a_rae": 100, "retinol": 40})
 
     result = indicators_of((liver, 200))
 
@@ -85,7 +82,7 @@ def test_vitamin_a_counts_in_retinol_equivalents():
 
 
 def test_missing_retinol_counts_as_zero_and_is_reported():
-    carrot = food({"valor_energetico": 100, "vitamina_a_rae": 100})
+    carrot = composition({"valor_energetico": 100, "vitamina_a_rae": 100})
 
     result = indicators_of((carrot, 100))
 
@@ -95,7 +92,7 @@ def test_missing_retinol_counts_as_zero_and_is_reported():
 
 
 def test_nutrient_without_reading_counts_as_zero_and_is_reported():
-    rice = food({"valor_energetico": 130})
+    rice = composition({"valor_energetico": 130})
 
     result = indicators_of((rice, 100))
 
@@ -104,10 +101,10 @@ def test_nutrient_without_reading_counts_as_zero_and_is_reported():
 
 
 def test_energy_share_by_group_ignores_foods_without_group():
-    veg = food({"valor_energetico": 50}, GapaGroup.FRUITS_AND_VEGETABLES)
-    meat = food({"valor_energetico": 150}, GapaGroup.MEAT_AND_EGGS)
-    salt = food({"valor_energetico": 0})
-    plain = food({"valor_energetico": 100})
+    veg = composition({"valor_energetico": 50}, GapaGroup.FRUITS_AND_VEGETABLES)
+    meat = composition({"valor_energetico": 150}, GapaGroup.MEAT_AND_EGGS)
+    salt = composition({"valor_energetico": 0})
+    plain = composition({"valor_energetico": 100})
 
     result = indicators_of((veg, 100), (meat, 100), (salt, 100), (plain, 100))
 
@@ -120,7 +117,7 @@ def test_energy_share_by_group_ignores_foods_without_group():
 
 
 def test_limit_indicators_are_reported_per_1000_kcal():
-    snack = food({"valor_energetico": 500, "sodio": 800, "fibra_alimentaria": 2})
+    snack = composition({"valor_energetico": 500, "sodio": 800, "fibra_alimentaria": 2})
 
     result = indicators_of((snack, 100))
 
@@ -134,8 +131,10 @@ def test_limit_indicators_are_reported_per_1000_kcal():
     "build",
     [
         pytest.param(lambda: [], id="empty-list"),
-        pytest.param(lambda: [(food({"valor_energetico": 0}), 100)], id="no-energy"),
-        pytest.param(lambda: [(food({}), 100)], id="no-readings"),
+        pytest.param(
+            lambda: [(composition({"valor_energetico": 0}), 100)], id="no-energy"
+        ),
+        pytest.param(lambda: [(composition({}), 100)], id="no-readings"),
     ],
 )
 def test_foods_without_energy_give_no_data_instead_of_dividing_by_zero(build):
@@ -147,7 +146,7 @@ def test_foods_without_energy_give_no_data_instead_of_dividing_by_zero(build):
 
 
 def test_food_missing_from_the_catalog_is_ignored_and_reported():
-    rice = food({"valor_energetico": 100})
+    rice = composition({"valor_energetico": 100})
     items = [FoodQuantity(rice.food_id, 100), FoodQuantity(uuid.uuid4(), 100)]
 
     result = calculate_indicators(items, {rice.food_id: rice})

@@ -1,4 +1,5 @@
 from collections.abc import Iterable, Mapping
+from dataclasses import dataclass, field
 from uuid import UUID
 
 from app.domain.nutrition import (
@@ -69,6 +70,70 @@ def prioritized_amount_per_100g(
     return per_100g.get(_DIRECT_NUTRIENT_CODES[nutrient])
 
 
+@dataclass
+class _Sums:
+    """What adding up the foods leaves: totals and the gaps found on the way."""
+
+    totals: dict[str, float] = field(default_factory=dict)
+    energy_by_group: dict[GapaGroup, float] = field(default_factory=dict)
+    missing: dict[str, int] = field(default_factory=dict)
+    unknown_foods: set[UUID] = field(default_factory=set)
+    retinol_assumed: int = 0
+
+
+def _sum_foods(
+    items: Iterable[FoodQuantity],
+    compositions: Mapping[UUID, FoodComposition],
+    profile: ReferenceProfile,
+) -> _Sums:
+    """Add up every nutrient of the foods and the energy of each GAPA group."""
+    sums = _Sums()
+    codes = required_nutrient_codes(profile) - {VITAMIN_A_RAE, RETINOL}
+    for item in items:
+        composition = compositions.get(item.food_id)
+        if composition is None:
+            sums.unknown_foods.add(item.food_id)
+            continue
+        factor = item.grams / 100
+        per_100g = dict(composition.per_100g)
+        re = vitamin_a_re(per_100g)
+        if re is not None and RETINOL not in per_100g:
+            sums.retinol_assumed += 1
+        if re is not None:
+            per_100g[VITAMIN_A_RE_KEY] = re
+        for code in codes | {VITAMIN_A_RE_KEY}:
+            amount = per_100g.get(code)
+            if amount is None:
+                sums.missing[code] = sums.missing.get(code, 0) + 1
+                continue
+            sums.totals[code] = sums.totals.get(code, 0.0) + factor * amount
+        if composition.gapa_group is not None:
+            sums.energy_by_group[composition.gapa_group] = sums.energy_by_group.get(
+                composition.gapa_group, 0.0
+            ) + factor * per_100g.get(ENERGY, 0.0)
+    return sums
+
+
+def _adequacies(
+    totals: Mapping[str, float], energy: float, profile: ReferenceProfile
+) -> list[NutrientAdequacy]:
+    """Return how much of each prioritized nutrient the foods cover."""
+    adequacies = []
+    for nutrient in PrioritizedNutrient:
+        code = _DIRECT_NUTRIENT_CODES.get(nutrient, VITAMIN_A_RE_KEY)
+        per_1000_kcal = totals.get(code, 0.0) / energy * 1000
+        adequacy = per_1000_kcal / profile.nutrient_per_1000_kcal(nutrient)
+        adequacies.append(
+            NutrientAdequacy(
+                nutrient=nutrient,
+                amount_per_1000_kcal=per_1000_kcal,
+                adequacy_uncapped=adequacy,
+                adequacy_capped=min(1.0, adequacy),
+            )
+        )
+    return adequacies
+
+
 def calculate_indicators(
     items: Iterable[FoodQuantity],
     compositions: Mapping[UUID, FoodComposition],
@@ -80,56 +145,14 @@ def calculate_indicators(
     reading for counts as zero and is reported once in ``warnings``. When the
     foods carry no energy the result has ``has_data`` false and nothing else.
     """
-    totals: dict[str, float] = {}
-    energy_by_group: dict[GapaGroup, float] = {}
-    missing: dict[str, int] = {}
-    unknown_foods: set[UUID] = set()
-    retinol_assumed = 0
-
-    codes = required_nutrient_codes(profile) - {VITAMIN_A_RAE, RETINOL}
-    for item in items:
-        composition = compositions.get(item.food_id)
-        if composition is None:
-            unknown_foods.add(item.food_id)
-            continue
-        factor = item.grams / 100
-        per_100g = dict(composition.per_100g)
-        re = vitamin_a_re(per_100g)
-        if re is not None and RETINOL not in per_100g:
-            retinol_assumed += 1
-        if re is not None:
-            per_100g[VITAMIN_A_RE_KEY] = re
-        for code in codes | {VITAMIN_A_RE_KEY}:
-            amount = per_100g.get(code)
-            if amount is None:
-                missing[code] = missing.get(code, 0) + 1
-                continue
-            totals[code] = totals.get(code, 0.0) + factor * amount
-        food_energy = factor * per_100g.get(ENERGY, 0.0)
-        if composition.gapa_group is not None:
-            energy_by_group[composition.gapa_group] = (
-                energy_by_group.get(composition.gapa_group, 0.0) + food_energy
-            )
-
-    warnings = _warnings(missing, unknown_foods, retinol_assumed)
+    sums = _sum_foods(items, compositions, profile)
+    totals = sums.totals
+    warnings = _warnings(sums.missing, sums.unknown_foods, sums.retinol_assumed)
     energy = totals.get(ENERGY, 0.0)
     if energy <= 0:
         return NutritionIndicators(has_data=False, warnings=warnings)
 
-    nutrients = []
-    for nutrient in PrioritizedNutrient:
-        code = _DIRECT_NUTRIENT_CODES.get(nutrient, VITAMIN_A_RE_KEY)
-        per_1000_kcal = totals.get(code, 0.0) / energy * 1000
-        adequacy = per_1000_kcal / profile.nutrient_per_1000_kcal(nutrient)
-        nutrients.append(
-            NutrientAdequacy(
-                nutrient=nutrient,
-                amount_per_1000_kcal=per_1000_kcal,
-                adequacy_uncapped=adequacy,
-                adequacy_capped=min(1.0, adequacy),
-            )
-        )
-
+    nutrients = _adequacies(totals, energy, profile)
     # The mean adequacy ratio (MAR) averages each nutrient's adequacy ratio, capped at 1
     # so that a nutrient in excess does not mask one in deficit (INDDEX Data4Diets):
     # https://www.anh-academy.org/data4diets/indicator/mean-adequacy-ratio-mar
@@ -143,7 +166,7 @@ def calculate_indicators(
             for macro, (code, kcal_per_gram) in MACRO_NUTRIENT_CODES.items()
         },
         gapa_energy_share={
-            group: energy_by_group.get(group, 0.0) / energy for group in GapaGroup
+            group: sums.energy_by_group.get(group, 0.0) / energy for group in GapaGroup
         },
         limit_indicators=[
             LimitIndicator(
