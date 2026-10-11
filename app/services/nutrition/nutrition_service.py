@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 from uuid import UUID
 from zoneinfo import ZoneInfo
@@ -14,6 +15,7 @@ from app.domain.nutrition import (
 )
 from app.domain.user import UserActor
 from app.models.food_catalog.food import Food
+from app.reference_data.nutrition_references import NINO_7_9
 from app.services.access import check_establishment_access
 from app.services.nutrition.grams import GramsConverter
 from app.services.nutrition.indicators import (
@@ -25,6 +27,8 @@ from app.services.nutrition.intake_analysis import (
     compositions_from_rows,
     top_sources,
 )
+from app.services.nutrition.optimizer import StockedFood
+from app.services.nutrition.optimizer import maximize_recipe as solve_recipe
 
 # Intakes are counted in calendar months of the places the platform serves.
 _TIMEZONE = ZoneInfo("America/Argentina/Buenos_Aires")
@@ -76,11 +80,47 @@ class NutritionService:
     ) -> RecipeSolution:
         """Return the quantities that make the most balanced recipe the stock allows.
 
+        The recipe feeds ``children_count`` children one ``meal_type`` of the daily
+        energy. Only foods the establishment holds are used.
+
         Raises:
             EstablishmentNotFoundError: establishment_id does not exist.
             EstablishmentAccessDeniedError: field worker lacks approved access.
+            ValueError: children_count is not positive.
         """
-        raise NotImplementedError
+        if request.children_count <= 0:
+            raise ValueError("children_count must be positive")
+        await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
+        await check_establishment_access(self.uow, actor, establishment_id)
+
+        foods = await self.uow.food_repo.get_with_nutrients_by_ids(request.food_ids)
+        stock = await self.uow.food_stock_repo.get_many(
+            establishment_id, [food.id for food in foods]
+        )
+        stocked, without_conversion = [], 0
+        for food in foods:
+            if food.id not in stock:
+                continue
+            grams = self.grams.to_grams(food.id, stock[food.id])
+            if grams is None:
+                without_conversion += 1
+            else:
+                stocked.append(StockedFood(composition_from_food(food), grams))
+
+        profile = NINO_7_9
+        target = (
+            request.children_count
+            * profile.energy_kcal
+            * profile.meal_energy_fractions[request.meal_type]
+        )
+        # CBC runs for a while, so it stays off the event loop.
+        solution = await asyncio.to_thread(solve_recipe, stocked, target, profile)
+        if without_conversion:
+            solution.warnings.append(
+                f"{without_conversion} food(s) have no conversion to grams and "
+                "were left out"
+            )
+        return solution
 
     async def analyze_monthly_intake(
         self, establishment_id: UUID, year: int, month: int, actor: UserActor
