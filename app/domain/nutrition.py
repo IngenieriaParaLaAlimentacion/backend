@@ -53,6 +53,20 @@ class UnmetConstraintKind(StrEnum):
 
 
 @dataclass
+class FoodComposition:
+    """What the calculation needs to know about one catalog food.
+
+    ``per_100g`` maps a catalog nutrient code to its amount per 100 g; a nutrient
+    the catalog has no reading for is absent. ``gapa_group`` is None when the food
+    belongs to no group.
+    """
+
+    food_id: UUID
+    gapa_group: GapaGroup | None
+    per_100g: dict[str, float]
+
+
+@dataclass
 class FoodQuantity:
     """An amount of one catalog food, in grams."""
 
