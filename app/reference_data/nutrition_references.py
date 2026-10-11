@@ -28,6 +28,13 @@ Sources (7 to 9 years):
     Sodium 1 mg per kcal, saturated fat 10% and free sugars 10% of the energy.
     The model flags products with an excess; it does not set intake limits. It
     speaks of free sugars while the catalog only has added sugar.
+  GAPA portions: Ministerio de Salud de la Nación, Manual para la aplicación de las
+    Guías Alimentarias para la Población Argentina.
+    https://www.argentina.gob.ar/sites/default/files/bancos/2020-08/guias-alimentarias-para-la-poblacion-argentina_manual-de-aplicacion_0.pdf
+    The manual gives the daily portions of groups 1 to 4 and the size of a portion
+    in household measures, and in grams only for group 2 (60 g of bread or 125 g
+    of cooked legumes, cereals or pasta) and for yogurt (200 g). The grams of the
+    other portions are marked next to the constants.
   Fiber: 14 g per 1,000 kcal, suggested by a consulted nutritionist, to validate
     with the project's nutritionists. For comparison, the Institute of Medicine
     (2005) Dietary Reference Intakes report covers fiber; the figure was not
@@ -38,7 +45,12 @@ Sources (7 to 9 years):
 from dataclasses import dataclass
 from typing import Literal
 
-from app.domain.nutrition import Macronutrient, PrioritizedNutrient
+from app.domain.nutrition import (
+    GapaGroup,
+    Macronutrient,
+    MealType,
+    PrioritizedNutrient,
+)
 
 
 @dataclass(frozen=True)
@@ -70,6 +82,14 @@ class LimitReference:
 
 
 @dataclass(frozen=True)
+class GapaPortion:
+    """Daily portions of a GAPA group and the grams one portion weighs."""
+
+    daily_portions: float
+    grams_per_portion: float
+
+
+@dataclass(frozen=True)
 class ReferenceProfile:
     """Everything a food combination is compared against for one kind of eater."""
 
@@ -77,6 +97,15 @@ class ReferenceProfile:
     nutrients: dict[PrioritizedNutrient, NutrientReference]
     macro_ranges: dict[Macronutrient, MacroRange]
     limits: dict[str, LimitReference]
+    gapa_portions: dict[GapaGroup, GapaPortion]
+    meal_energy_fractions: dict[MealType, float]
+
+    def gapa_minimum_per_1000_kcal(self, group: GapaGroup) -> float:
+        """Return the grams of a GAPA group that 1,000 kcal of food should hold."""
+        portion = self.gapa_portions[group]
+        return (
+            portion.daily_portions * portion.grams_per_portion / self.energy_kcal * 1000
+        )
 
     def nutrient_per_1000_kcal(self, nutrient: PrioritizedNutrient) -> float:
         """Return how much of the nutrient 1,000 kcal of food should provide."""
@@ -113,6 +142,28 @@ NINO_7_9 = ReferenceProfile(
         "sodio": LimitReference("max", 1000),
         "saturados": LimitReference("max", 0.10 * 1000 / 9),
         "azucar_agregado": LimitReference("max", 0.10 * 1000 / 4),
+    },
+    # Daily portions are the manual's for the general population, not specific to
+    # children of 7 to 9 years. Grams are of the food as the catalog weighs it, so
+    # group 2 uses the 60 g of bread, not the 125 g of cooked cereal, which is
+    # mostly water. Groups 1, 4 and 5 have no gram figure in the manual and are
+    # provisional: 80 g for fruit or vegetables (WHO/FAO 2003 asks for 400 g a day,
+    # in 5 portions), 100 g of meat (a portion is the palm of the hand) and 10 g of
+    # oil (a tablespoon). Group 3 uses the 200 g of a glass of milk or a yogurt.
+    gapa_portions={
+        GapaGroup.FRUITS_AND_VEGETABLES: GapaPortion(5, 80),
+        GapaGroup.LEGUMES_CEREALS_BREAD_PASTA: GapaPortion(4, 60),
+        GapaGroup.DAIRY: GapaPortion(3, 200),
+        GapaGroup.MEAT_AND_EGGS: GapaPortion(1, 100),
+        GapaGroup.OILS_NUTS_AND_SEEDS: GapaPortion(2, 10),
+    },
+    # Provisional: no official Argentine source found for the share of the daily
+    # energy each meal covers. Within the ranges of generic school meal guides.
+    meal_energy_fractions={
+        MealType.BREAKFAST: 0.20,
+        MealType.LUNCH: 0.35,
+        MealType.SNACK: 0.15,
+        MealType.DINNER: 0.30,
     },
 )
 
