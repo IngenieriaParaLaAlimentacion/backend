@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.config.settings import settings
+from app.domain.food_catalog import MeasurementUnit
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentAccessDeniedError,
@@ -235,7 +236,9 @@ class TestExtraction:
     async def test_confident_catalog_match_populates_food_but_still_needs_review(
         self, uow, storage, food_intake_service, llm_client, admin_actor
     ):
-        matched_food = SimpleNamespace(id=uuid.uuid4(), name="Arroz")
+        matched_food = SimpleNamespace(
+            id=uuid.uuid4(), name="Arroz", base_unit=MeasurementUnit.KILOGRAMOS
+        )
         uow.food_repo.find_best_match = AsyncMock(return_value=matched_food)
         llm_client.complete = AsyncMock(
             return_value={
@@ -267,6 +270,101 @@ class TestExtraction:
             settings.receipt_food_match_min_word_similarity,
             settings.receipt_food_match_min_similarity,
         )
+
+    async def test_matched_line_prefills_unit_and_converted_quantity(
+        self, uow, storage, food_intake_service, llm_client, admin_actor
+    ):
+        uow.food_repo.find_best_match = AsyncMock(
+            return_value=SimpleNamespace(
+                id=uuid.uuid4(), name="Arroz", base_unit=MeasurementUnit.KILOGRAMOS
+            )
+        )
+        llm_client.complete = AsyncMock(
+            return_value={
+                "lines": [
+                    {
+                        "description": "Arroz 500g",
+                        "raw_quantity": 500,
+                        "raw_unit_text": "g",
+                    }
+                ]
+            }
+        )
+
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+        proposal = await service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        )
+
+        (line,) = proposal.lines
+        assert line.unit == MeasurementUnit.KILOGRAMOS
+        assert line.quantity == Decimal("0.5")
+
+    async def test_matched_line_with_incompatible_unit_prefills_only_the_unit(
+        self, uow, storage, food_intake_service, llm_client, admin_actor
+    ):
+        uow.food_repo.find_best_match = AsyncMock(
+            return_value=SimpleNamespace(
+                id=uuid.uuid4(), name="Huevo", base_unit=MeasurementUnit.UNIDADES
+            )
+        )
+        llm_client.complete = AsyncMock(
+            return_value={
+                "lines": [
+                    {
+                        "description": "Huevos 1kg",
+                        "raw_quantity": 1,
+                        "raw_unit_text": "kg",
+                    }
+                ]
+            }
+        )
+
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+        proposal = await service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        )
+
+        (line,) = proposal.lines
+        assert line.unit == MeasurementUnit.UNIDADES
+        assert line.quantity is None
+        # the printed values are still passed through for the user to read
+        assert line.raw_quantity == Decimal("1")
+        assert line.raw_unit_text == "kg"
+
+    async def test_unmatched_line_has_no_quantity_or_unit(
+        self, uow, storage, food_intake_service, llm_client, admin_actor
+    ):
+        llm_client.complete = AsyncMock(
+            return_value={
+                "lines": [
+                    {
+                        "description": "Cosa rara 1kg",
+                        "raw_quantity": 1,
+                        "raw_unit_text": "kg",
+                    }
+                ]
+            }
+        )
+
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+        proposal = await service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        )
+
+        (line,) = proposal.lines
+        assert line.food is None
+        assert line.quantity is None
+        assert line.unit is None
 
     async def test_no_lines_detected_returns_manual_fallback_message(
         self, uow, storage, food_intake_service, llm_client, admin_actor
