@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.domain.food_catalog import FoodNutrientRow
-from app.domain.nutrition import FoodQuantity
+from app.domain.nutrition import FoodQuantity, PrioritizedNutrient
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import EstablishmentAccessDeniedError
 from app.services.nutrition import NutritionService
@@ -142,3 +142,45 @@ async def test_calculate_indicators_loads_the_foods_and_computes_them():
     )
 
     assert result.energy_kcal == pytest.approx(260)
+
+
+async def test_catalog_is_only_read_when_a_nutrient_is_at_risk():
+    rice_id = uuid.uuid4()
+    # 100 kcal per 100 g and no calcium: calcium is at risk, so it is read.
+    uow = make_uow(
+        received={rice_id: Decimal("1")},
+        foods=[food_with(rice_id, {"valor_energetico": 100})],
+        rows=[],
+    )
+    await NutritionService(uow, GramsPerUnit()).analyze_monthly_intake(
+        ESTABLISHMENT_ID, 2026, 3, ADMIN
+    )
+    uow.food_repo.list_all_with_nutrients.assert_awaited_once()
+
+    empty = make_uow()
+    await NutritionService(empty, GramsPerUnit()).analyze_monthly_intake(
+        ESTABLISHMENT_ID, 2026, 3, ADMIN
+    )
+    empty.food_repo.list_all_with_nutrients.assert_not_awaited()
+
+
+async def test_each_nutrient_at_risk_gets_its_best_sources_from_the_catalog():
+    bread_id, milk_id = uuid.uuid4(), uuid.uuid4()
+    uow = make_uow(
+        received={bread_id: Decimal("1")},
+        foods=[food_with(bread_id, {"valor_energetico": 100})],
+        rows=[
+            FoodNutrientRow(
+                milk_id, "leche_yogur_y_quesos", "valor_energetico", Decimal("60")
+            ),
+            FoodNutrientRow(milk_id, "leche_yogur_y_quesos", "calcio", Decimal("120")),
+        ],
+    )
+
+    result = await NutritionService(uow, GramsPerUnit()).analyze_monthly_intake(
+        ESTABLISHMENT_ID, 2026, 3, ADMIN
+    )
+
+    best = result.top_sources[PrioritizedNutrient.CALCIUM][0]
+    assert best.food_id == milk_id
+    assert best.amount_per_100_kcal == pytest.approx(200)
