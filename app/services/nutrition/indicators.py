@@ -31,7 +31,7 @@ _DIRECT_NUTRIENT_CODES = {
 }
 
 # Catalog nutrient code and kcal per gram of each macronutrient.
-_MACRO_CODES = {
+MACRO_NUTRIENT_CODES = {
     Macronutrient.PROTEIN: ("proteinas", 4),
     Macronutrient.LIPIDS: ("lipidos_totales", 9),
     Macronutrient.CARBOHYDRATES: ("carbohidratos_disponibles", 4),
@@ -41,7 +41,7 @@ _MACRO_CODES = {
 def required_nutrient_codes(profile: ReferenceProfile = NINO_7_9) -> set[str]:
     """Return every catalog nutrient code the indicators read."""
     codes = {ENERGY, VITAMIN_A_RAE, RETINOL, *_DIRECT_NUTRIENT_CODES.values()}
-    codes.update(code for code, _ in _MACRO_CODES.values())
+    codes.update(code for code, _ in MACRO_NUTRIENT_CODES.values())
     codes.update(profile.limits)
     return codes
 
@@ -140,7 +140,7 @@ def calculate_indicators(
         mean_adequacy_ratio=sum(n.adequacy_capped for n in nutrients) / len(nutrients),
         macro_energy_share={
             macro: totals.get(code, 0.0) * kcal_per_gram / energy
-            for macro, (code, kcal_per_gram) in _MACRO_CODES.items()
+            for macro, (code, kcal_per_gram) in MACRO_NUTRIENT_CODES.items()
         },
         gapa_energy_share={
             group: energy_by_group.get(group, 0.0) / energy for group in GapaGroup
