@@ -18,10 +18,10 @@ def food(per_100g: dict[str, float], group: GapaGroup | None = GapaGroup.DAIRY):
     return FoodComposition(food_id=uuid.uuid4(), gapa_group=group, per_100g=per_100g)
 
 
-def analyze(received, catalog=()):
+def analyze(received):
     items = [FoodQuantity(f.food_id, grams) for f, grams in received]
     compositions = {f.food_id: f for f, _ in received}
-    return analyze_intake(items, compositions, {f.food_id: f for f in catalog})
+    return analyze_intake(items, compositions)
 
 
 # The calcium reference is 395 mg per 1,000 kcal, so two thirds of it is 264.
@@ -99,14 +99,13 @@ def test_sources_skip_optional_ungrouped_and_energyless_foods():
     assert [s.food_id for s in ranked] == [good.food_id]
 
 
-def test_sources_are_computed_for_each_nutrient_at_risk():
-    bread = food({"valor_energetico": 100})
-    milk = food({"valor_energetico": 60, "calcio": 120})
+def test_warnings_of_the_analysis_do_not_alias_those_of_the_indicators():
+    rice = food({"valor_energetico": 100})
 
-    result = analyze([(bread, 500)], catalog=[milk])
+    result = analyze([(rice, 100)])
+    result.warnings.append("added later")
 
-    assert result.top_sources[CALCIUM][0].food_id == milk.food_id
-    assert result.top_sources[CALCIUM][0].amount_per_100_kcal == pytest.approx(200)
+    assert "added later" not in result.indicators.warnings
 
 
 def catalog_by_id(foods):

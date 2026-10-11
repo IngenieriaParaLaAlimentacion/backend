@@ -13,6 +13,7 @@ from app.domain.nutrition import (
     RecipeSolution,
 )
 from app.domain.user import UserActor
+from app.models.food_catalog.food import Food
 from app.services.access import check_establishment_access
 from app.services.nutrition.grams import GramsConverter
 from app.services.nutrition.indicators import (
@@ -22,13 +23,14 @@ from app.services.nutrition.indicators import (
 from app.services.nutrition.intake_analysis import (
     analyze_intake,
     compositions_from_rows,
+    top_sources,
 )
 
 # Intakes are counted in calendar months of the places the platform serves.
 _TIMEZONE = ZoneInfo("America/Argentina/Buenos_Aires")
 
 
-def composition_from_food(food) -> FoodComposition:
+def composition_from_food(food: Food) -> FoodComposition:
     """Build a FoodComposition from a Food with its group and nutrient values loaded."""
     group = GapaGroup(food.gapa_category.code) if food.gapa_category else None
     return FoodComposition(
@@ -107,14 +109,19 @@ class NutritionService:
         foods = await self.uow.food_repo.get_with_nutrients_by_ids(
             [item.food_id for item in items]
         )
-        rows = await self.uow.food_repo.list_all_with_nutrients(
-            required_nutrient_codes()
-        )
         analysis = analyze_intake(
-            items,
-            {food.id: composition_from_food(food) for food in foods},
-            compositions_from_rows(rows),
+            items, {food.id: composition_from_food(food) for food in foods}
         )
+        if analysis.nutrients_at_risk:
+            # The whole catalog is only read when there is a shortfall to cover.
+            rows = await self.uow.food_repo.list_all_with_nutrients(
+                required_nutrient_codes()
+            )
+            catalog = compositions_from_rows(rows)
+            analysis.top_sources = {
+                nutrient: top_sources(nutrient, catalog)
+                for nutrient in analysis.nutrients_at_risk
+            }
         if without_conversion:
             analysis.warnings.append(
                 f"{without_conversion} food(s) have no conversion to grams and "

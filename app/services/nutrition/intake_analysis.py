@@ -51,18 +51,17 @@ def compositions_from_rows(
 def analyze_intake(
     items: Iterable[FoodQuantity],
     compositions: Mapping[UUID, FoodComposition],
-    catalog: Mapping[UUID, FoodComposition],
     profile: ReferenceProfile = NINO_7_9,
 ) -> MonthlyIntakeAnalysis:
     """Judge what an establishment received, in grams, against the profile.
 
-    ``compositions`` holds the foods in ``items`` and ``catalog`` every food that
-    could be suggested to cover a shortfall. With no energy there is nothing to
-    judge, so no shortfall is reported.
+    ``compositions`` holds the foods in ``items``. With no energy there is nothing
+    to judge, so no shortfall is reported. ``top_sources`` is left empty: the
+    caller fills it with ``top_sources`` once it has loaded the catalog.
     """
     indicators = calculate_indicators(items, compositions, profile)
     if not indicators.has_data:
-        return MonthlyIntakeAnalysis(has_data=False, warnings=indicators.warnings)
+        return MonthlyIntakeAnalysis(has_data=False, warnings=list(indicators.warnings))
 
     at_risk = [
         n.nutrient
@@ -88,8 +87,7 @@ def analyze_intake(
         nutrients_at_risk=at_risk,
         macros_out_of_range=macros_out_of_range,
         missing_gapa_groups=missing_groups,
-        top_sources={n: top_sources(n, catalog) for n in at_risk},
-        warnings=indicators.warnings,
+        warnings=list(indicators.warnings),
     )
 
 
