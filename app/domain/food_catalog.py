@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from decimal import Decimal
 from enum import Enum, StrEnum
+from typing import NamedTuple
 from uuid import UUID
 
 from app.domain.common_domains import IdentifierRefDomain, normalize_optional_str
@@ -104,6 +105,15 @@ class FoodNutrientValueDomain:
             nutrient=NutrientRefDomain.from_db(value.nutrient),
             amount_per_100g=value.amount_per_100g,
         )
+
+
+class FoodNutrientRow(NamedTuple):
+    """One (food, nutrient) reading with the food's GAPA group, no relations."""
+
+    food_id: UUID
+    gapa_category_code: str | None
+    nutrient_code: str
+    amount_per_100g: Decimal
 
 
 # SARA 2's own table split: macronutrients (fatty acids as their sub-list)

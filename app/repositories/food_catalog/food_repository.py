@@ -1,15 +1,21 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Collection, Iterable
 from uuid import UUID
 
 from sqlalchemy import asc, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.domain.food_catalog import FoodListingParams, FoodSortOrder
+from app.domain.food_catalog import (
+    FoodListingParams,
+    FoodNutrientRow,
+    FoodSortOrder,
+)
 from app.models.food_catalog.food import Food
 from app.models.food_catalog.food_nutrient_value import FoodNutrientValue
+from app.models.food_catalog.gapa_food_category import GapaFoodCategory
+from app.models.food_catalog.nutrient import Nutrient
 from app.utils.db import execute_paginated, unaccent_ilike_condition, unaccent_lower
 
 # Maps each FoodSortOrder value to its SQLAlchemy order clause.
@@ -157,6 +163,52 @@ class FoodRepository:
             return []
         result = await self.db.execute(select(Food).where(Food.id.in_(ids)))
         return list(result.scalars().all())
+
+    async def get_with_nutrients_by_ids(self, food_ids: Iterable[UUID]) -> list[Food]:
+        """Return the foods among ``food_ids`` that exist, each with its GAPA
+        group (``gapa_category``) and nutrient composition (``nutrient_values``,
+        each with its ``nutrient``) loaded.
+        """
+        ids = list(food_ids)
+        if not ids:
+            return []
+        result = await self.db.execute(
+            select(Food)
+            .where(Food.id.in_(ids))
+            .options(
+                selectinload(Food.gapa_category),
+                selectinload(Food.nutrient_values).selectinload(
+                    FoodNutrientValue.nutrient
+                ),
+            )
+        )
+        return list(result.scalars().all())
+
+    async def list_all_with_nutrients(
+        self, nutrient_codes: Collection[str]
+    ) -> list[FoodNutrientRow]:
+        """Return one row per (food, nutrient) for the given nutrient codes.
+
+        Plain tuples instead of entities: the whole catalog is read, so no
+        ORM objects are built. A food with none of these nutrients, or a nutrient
+        missing for a food, yields no row; a food without a GAPA group
+        has ``gapa_category_code`` None.
+        """
+        if not nutrient_codes:
+            return []
+        result = await self.db.execute(
+            select(
+                Food.id,
+                GapaFoodCategory.code,
+                Nutrient.code,
+                FoodNutrientValue.amount_per_100g,
+            )
+            .join(FoodNutrientValue, FoodNutrientValue.food_id == Food.id)
+            .join(Nutrient, Nutrient.id == FoodNutrientValue.nutrient_id)
+            .outerjoin(GapaFoodCategory, GapaFoodCategory.id == Food.gapa_category_id)
+            .where(Nutrient.code.in_(nutrient_codes))
+        )
+        return [FoodNutrientRow(*row) for row in result.all()]
 
     async def get_all(self) -> list[Food]:
         """Return every food.
