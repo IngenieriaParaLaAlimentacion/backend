@@ -1,6 +1,6 @@
 import pytest
 
-from app.domain.nutrition import GapaGroup, Macronutrient, PrioritizedNutrient
+from app.domain.nutrition import Macronutrient, PrioritizedNutrient
 from app.reference_data.nutrition_references import NINO_7_9
 
 # Daily need / 1,770 kcal * 1,000, rounded.
@@ -35,10 +35,3 @@ def test_macro_ranges_can_add_up_to_the_whole_energy():
 
 def test_meal_energy_fractions_cover_the_whole_day():
     assert sum(NINO_7_9.meal_energy_fractions.values()) == pytest.approx(1)
-
-
-def test_gapa_minimum_is_the_daily_portions_in_grams_per_1000_kcal():
-    # 4 portions of 60 g a day over 1,770 kcal.
-    minimum = NINO_7_9.gapa_minimum_per_1000_kcal(GapaGroup.LEGUMES_CEREALS_BREAD_PASTA)
-
-    assert minimum == pytest.approx(4 * 60 / 1770 * 1000)

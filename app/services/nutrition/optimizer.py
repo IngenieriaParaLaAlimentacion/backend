@@ -20,8 +20,7 @@ from app.services.nutrition.indicators import (
 )
 
 # Weight of a deviation from a macro range or a GAPA minimum against the gain in
-# nutritional quality. A 1% deviation costs as much as the whole quality scale, so
-# smaller deviations may still be traded for quality.
+# quality: a 1% deviation costs as much as the whole quality scale.
 DEVIATION_PENALTY = 100
 
 # A slack below this is solver noise, not an unmet rule.
@@ -29,7 +28,6 @@ _SLACK_TOLERANCE = 1e-4
 # A quantity below this many grams is not part of the recipe.
 _QUANTITY_TOLERANCE = 1e-6
 
-# The optional group has no minimum to cover.
 _GROUPS_WITH_MINIMUM = [group for group in GapaGroup if group != GapaGroup.OPTIONAL]
 
 
@@ -121,7 +119,6 @@ def _solve_per_1000_kcal(
         """Sum of a nutrient over the recipe, per 1,000 kcal."""
         return pulp.lpSum(c * v / 100 for c, v in zip(coefficients, y, strict=True))
 
-    # The energy of the recipe is exactly 1,000 kcal per 1,000 kcal.
     model += total(per_100g(ENERGY)) == 1000
 
     adequacy = {}
@@ -165,8 +162,6 @@ def _solve_per_1000_kcal(
         adequacy
     ) - DEVIATION_PENALTY * pulp.lpSum(penalty)
 
-    # CBC comes bundled with PuLP 3.x. PuLP 4 needs Python 3.12 and moves CBC to an
-    # extra, so this changes when the image does.
     model.solve(pulp.PULP_CBC_CMD(msg=False))
     if pulp.LpStatus[model.status] != "Optimal":
         # The stock check makes the program feasible, so this is a solver failure.
