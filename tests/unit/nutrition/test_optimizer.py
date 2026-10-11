@@ -39,14 +39,14 @@ def balanced_pantry():
             {
                 "valor_energetico": 60,
                 "proteinas": 3.2,
-                "lipidos_totales": 3,
+                "lipidos_totales": 1.5,
                 "carbohidratos_disponibles": 4.7,
                 "calcio": 120,
             },
             GapaGroup.DAIRY,
         ),
         "meat": stocked(
-            {"valor_energetico": 200, "proteinas": 17, "lipidos_totales": 14},
+            {"valor_energetico": 150, "proteinas": 17, "lipidos_totales": 8},
             GapaGroup.MEAT_AND_EGGS,
         ),
         "oil": stocked(
