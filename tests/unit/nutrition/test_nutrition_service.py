@@ -309,3 +309,25 @@ async def test_the_gapa_group_of_a_food_counts_in_its_energy_share():
     )
 
     assert result.gapa_energy_share[GapaGroup.DAIRY] == pytest.approx(1)
+
+
+async def test_recipe_reports_the_foods_left_out_for_having_no_conversion():
+    rice_id, mystery_id = uuid.uuid4(), uuid.uuid4()
+    uow = make_uow(
+        foods=[
+            food_with(rice_id, {"valor_energetico": 100}),
+            food_with(mystery_id, {"valor_energetico": 100}),
+        ],
+        stock={rice_id: Decimal("1000"), mystery_id: Decimal("5")},
+    )
+    request = RecipeRequest(
+        [rice_id, mystery_id], children_count=5, meal_type=MealType.LUNCH
+    )
+    grams = GramsPerUnit(unknown=frozenset({mystery_id}))
+
+    result = await NutritionService(uow, grams).maximize_recipe(
+        ESTABLISHMENT_ID, request, ADMIN
+    )
+
+    assert [q.food_id for q in result.quantities] == [rice_id]
+    assert any("conversion" in warning for warning in result.warnings)

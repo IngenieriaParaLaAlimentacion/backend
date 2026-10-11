@@ -68,10 +68,11 @@ async def test_get_with_nutrients_by_ids_loads_group_and_composition(catalog):
     from app.repositories.food_catalog.food_repository import FoodRepository
 
     async with AsyncSessionLocal() as session:
-        foods = await FoodRepository(session).get_with_nutrients_by_ids(
-            [catalog["milk"], catalog["salt"]]
-        )
+        repo = FoodRepository(session)
+        foods = await repo.get_with_nutrients_by_ids([catalog["milk"], catalog["salt"]])
+        no_foods = await repo.get_with_nutrients_by_ids([])
 
+    assert no_foods == []
     by_id = {food.id: food for food in foods}
     milk, salt = by_id[catalog["milk"]], by_id[catalog["salt"]]
     assert milk.gapa_category.code == "leche_yogur_y_quesos"
@@ -87,8 +88,11 @@ async def test_list_all_with_nutrients_returns_only_requested_nutrients(catalog)
     from app.repositories.food_catalog.food_repository import FoodRepository
 
     async with AsyncSessionLocal() as session:
-        rows = await FoodRepository(session).list_all_with_nutrients(["calcio"])
+        repo = FoodRepository(session)
+        rows = await repo.list_all_with_nutrients(["calcio"])
+        no_rows = await repo.list_all_with_nutrients([])
 
+    assert no_rows == []
     assert {
         (row.food_id, row.gapa_category_code, row.nutrient_code): row.amount_per_100g
         for row in rows

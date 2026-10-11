@@ -37,11 +37,11 @@ def analyze_intake(
 ) -> MonthlyIntakeAnalysis:
     """Judge what an establishment received, in grams, against the profile.
 
-    ``compositions`` holds the foods in ``items``. With no energy there is nothing
-    to judge, so no shortfall is reported. ``top_sources`` is left empty: the
-    caller fills it with ``top_sources`` once it has loaded the catalog.
+    ``compositions`` holds the foods in ``items``. ``top_sources`` is left empty:
+    the caller fills it with ``top_sources`` once it has loaded the catalog.
     """
     indicators = calculate_indicators(items, compositions, profile)
+    # With no energy there is nothing to judge, so no shortfall is reported.
     if not indicators.has_data:
         return MonthlyIntakeAnalysis(has_data=False, warnings=list(indicators.warnings))
 

@@ -202,7 +202,9 @@ class FoodSource:
 class MonthlyIntakeAnalysis:
     """Balance of everything an establishment received in a calendar month.
 
-    ``has_data`` is false when the month has no intakes with energy.
+    ``has_data`` is false when the month has no intakes with energy. A nutrient a
+    food has no reading for counts as 0, so it can be in ``nutrients_at_risk``
+    because of a gap in the catalog; the matching entry of ``warnings`` says so.
     """
 
     has_data: bool
