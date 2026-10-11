@@ -9,7 +9,6 @@ Sources (7 to 9 years):
     https://www.fao.org/4/y5686e/y5686e06.htm
   WHO/FAO (2003), Diet, Nutrition and the Prevention of Chronic Diseases, TRS 916,
     Table 6. https://www.fao.org/4/ac911e/ac911e07.htm
-  PAHO (2016), Nutrient Profile Model. https://iris.paho.org/handle/10665.2/18622
   Ministerio de Salud de la Nación, Manual para la aplicación de las Guías
     Alimentarias para la Población Argentina.
     https://www.argentina.gob.ar/sites/default/files/bancos/2020-08/guias-alimentarias-para-la-poblacion-argentina_manual-de-aplicacion_0.pdf
@@ -87,8 +86,6 @@ class ReferenceProfile:
         return self.nutrients[nutrient].amount_per_day / self.energy_kcal * 1000
 
 
-# Limits are keyed by catalog nutrient code. Saturated fat and added sugar are
-# 10% of the energy, converted to grams with 9 and 4 kcal per gram.
 NINO_7_9 = ReferenceProfile(
     energy_kcal=1770,
     nutrients={
@@ -105,28 +102,20 @@ NINO_7_9 = ReferenceProfile(
         ),
     },
     macro_ranges={
-        # Protein and fat ranges already leave carbohydrates between 55% and 75%
-        # of the energy, so only the 65% ceiling of carbohydrates can bind. The
-        # 40-65% is a nutritionist's criterion, not published (TRS 916: 55-75%).
         Macronutrient.PROTEIN: MacroRange(0.10, 0.15),
         Macronutrient.LIPIDS: MacroRange(0.15, 0.30),
-        Macronutrient.CARBOHYDRATES: MacroRange(0.40, 0.65),
+        Macronutrient.CARBOHYDRATES: MacroRange(0.55, 0.75),
     },
     limits={
-        # The fiber floor is a nutritionist's criterion, not published. Both it and
-        # the PAHO limits are to validate with the project's nutritionists.
+        # The fiber floor is a nutritionist's criterion, not published, to validate
+        # with the project's nutritionists. The rest are TRS 916 Table 6.
         "fibra_alimentaria": LimitReference("min", 14),
-        "sodio": LimitReference("max", 1000),
+        "sodio": LimitReference("max", 2000 / 1770 * 1000),  # 2 g a day
         "saturados": LimitReference("max", 0.10 * 1000 / 9),
         "azucar_agregado": LimitReference("max", 0.10 * 1000 / 4),
     },
-    # Daily portions are the manual's for the general population, not specific to
-    # children of 7 to 9 years. Grams are of the food as the catalog weighs it, so
-    # group 2 uses the 60 g of bread, not the 125 g of cooked cereal, which is
-    # mostly water. Groups 1, 4 and 5 have no gram figure in the manual and are
-    # provisional: 80 g for fruit or vegetables (WHO/FAO 2003 asks for 400 g a day,
-    # in 5 portions), 100 g of meat (a portion is the palm of the hand) and 10 g of
-    # oil (a tablespoon). Group 3 uses the 200 g of a glass of milk or a yogurt.
+    # Portions are the manual's, for the general population. Only group 2 (60 g) and
+    # dairy (200 g) have grams in the manual; groups 1, 4 and 5 are provisional.
     gapa_portions={
         GapaGroup.FRUITS_AND_VEGETABLES: GapaPortion(5, 80),
         GapaGroup.LEGUMES_CEREALS_BREAD_PASTA: GapaPortion(4, 60),

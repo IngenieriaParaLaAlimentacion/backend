@@ -43,10 +43,9 @@ daily need and the energy, never hard-coded. Another age is a new profile; the s
 | --- | --- | --- |
 | Micronutrient needs, 7 to 9 years | calcium 700 mg, vitamin A 500 µg RE, folate 300 µg DFE, B12 1.8 µg, vitamin C 35 mg, iron 9 mg at 10% bioavailability, zinc 5.6 mg at moderate bioavailability | FAO/WHO (2001), *Human Vitamin and Mineral Requirements* |
 | Energy | 1,770 kcal/day | FAO/WHO/UNU (2004), *Human Energy Requirements*: mean of the six values for ages 7-8, 8-9 and 9-10, boys and girls |
-| Protein 10-15%, fat 15-30% of the energy | as stated | WHO/FAO (2003), TRS 916, Table 6 |
-| Carbohydrates 40-65% of the energy | as stated | **Criterion of a consulted nutritionist.** TRS 916 gives 55-75%. Only the 65% ceiling can bind, because the protein and fat ranges already force carbohydrates to at least 55% |
+| Protein 10-15%, fat 15-30%, carbohydrates 55-75% of the energy | as stated | WHO/FAO (2003), TRS 916, Table 6 |
 | Fiber at least 14 g per 1,000 kcal | as stated | **Criterion of a consulted nutritionist**, not checked against a published source |
-| Sodium at most 1 mg/kcal, saturated fat and added sugar at most 10% of the energy | as stated | PAHO Nutrient Profile Model (2016). The model flags products with an excess; it does not set intake limits |
+| Saturated fat at most 10% of the energy, sugar at most 10% of the energy, sodium at most 2 g a day (about 1,130 mg per 1,000 kcal) | as stated | WHO/FAO (2003), TRS 916, Table 6. The table speaks of free sugars while the catalog only has added sugar |
 | Risk of inadequacy | uncapped adequacy below 2/3 | Traditional fixed cutoff, National Research Council (1986), *Nutrient Adequacy: Assessment Using Food Consumption Surveys* |
 | Composite indicator | mean of the seven adequacy ratios, each capped at 1 | INDDEX Data4Diets, mean adequacy ratio |
 
@@ -65,8 +64,8 @@ Exact URLs are in the module docstrings and next to the constants that use them.
 - A change to a reference value or a food's group is a one-line edit reviewed in a PR, with no migration.
 - Reference values cannot be edited at runtime. If someone needs that, they move to a table behind the same
   interface.
-- Two values rest on one nutritionist's criterion and not on a publication (carbohydrate range, fiber floor).
-  They are labeled as such and have to be validated with the project's nutritionists.
+- One value rests on a nutritionist's criterion and not on a publication: the fiber floor.
+  It is labeled as such and has to be validated with the project's nutritionists.
 - The 2/3 cutoff marks a risk; it does not estimate how many people are inadequate. Current practice uses the
   estimated average requirement with a probabilistic method. Moving to it means adding that reference per
   nutrient.
