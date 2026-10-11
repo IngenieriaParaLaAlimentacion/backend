@@ -18,8 +18,13 @@ from app.services.nutrition.indicators import (
     prioritized_amount_per_100g,
 )
 
-# A nutrient covering less than this share of its reference is at risk.
+# A nutrient whose uncapped adequacy ratio (intake / reference, the NAR of INDDEX
+# Data4Diets) falls below this is at risk of inadequacy. The cutoff comes from the
+# project's requirements; the INDDEX page defines the ratio but sets no cutoff:
+# https://www.anh-academy.org/data4diets/indicator/mean-adequacy-ratio-mar
 RISK_ADEQUACY_THRESHOLD = 2 / 3
+
+# How many foods are suggested for each nutrient at risk.
 TOP_SOURCES_COUNT = 5
 
 
