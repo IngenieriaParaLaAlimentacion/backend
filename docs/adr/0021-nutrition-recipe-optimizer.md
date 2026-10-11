@@ -95,10 +95,15 @@ feasible, so any other solver outcome is an error, not a result to explain.
 
 ### Solver
 
-**PuLP 3.x with its bundled CBC**, called from a worker thread so the event loop is not blocked. PuLP 4 needs
-Python 3.12 and the image runs 3.11, so the dependency is `pulp@^3.3`. Its calls for CBC and for creating
-variables are deprecated in PuLP 4; variables are created with `add_variable`, and the CBC call is the one that
-changes with the image.
+**PuLP with HiGHS** (`highspy`), called from a worker thread so the event loop is not blocked, with a time
+limit of 10 seconds. HiGHS runs inside the Python process: it starts no subprocess and writes no temporary files
+per request.
+
+PuLP reports a solve cut by the time limit as "Optimal", so the solution status is checked too: anything that is
+not a proven optimum raises `RecipeOptimizationError`.
+
+The dependency is `pulp@^3.3` because PuLP 4 needs Python 3.12 and the image runs 3.11; `highspy` has wheels for
+3.11 on Linux x86_64. Variables are created with `add_variable`, the call PuLP 4 expects.
 
 ### Data the program needs
 
@@ -117,12 +122,16 @@ portion of groups 1, 4 and 5 and the meal shares are provisional.
   cooked portion of the manual. The minimum is lower than the cooked one, on purpose.
 - Everything is in grams. Converting from each food's `base_unit` is #155 and enters through the
   `GramsConverter`; a food with no conversion is left out and reported.
-- The solver runs one CBC process per request.
+- The solver is CPU-bound and runs in the request's process, in a worker thread, so a slow solve occupies a
+  thread but not the event loop.
 
 ## Alternatives considered
 
 - **`scipy.optimize.linprog`.** Rejected: constraints are written as matrices by index, which is easy to get
   wrong, and slacks cannot be read by name.
+- **CBC, the solver bundled with PuLP 3.** Not chosen: on the same recipes (60 instances of 20 to 400 foods) it
+  returned the same solutions as HiGHS, about four times slower, and it runs as a separate process with temporary
+  files. PuLP 4 stops bundling it and deprecates its call, so it would stop being the zero-install option.
 - **A greedy heuristic.** Rejected: it does not guarantee the optimum and cannot explain what a recipe could not
   satisfy.
 - **Binary variables to require that each group appears.** Rejected: a minimum in grams expresses the same rule

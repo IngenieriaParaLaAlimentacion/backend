@@ -117,7 +117,7 @@ class NutritionService:
             * self.profile.energy_kcal
             * self.profile.meal_energy_fractions[request.meal_type]
         )
-        # CBC runs for a while, so it stays off the event loop.
+        # The solver is CPU-bound, so it stays off the event loop.
         solution = await asyncio.to_thread(solve_recipe, stocked, target, self.profile)
         if warning:
             solution.warnings.append(warning)

@@ -37,6 +37,7 @@ tenacity = "^9.1.4"
 redis = "^8.1.0"
 limits = "^5.8.0"
 pulp = "^3.3"
+highspy = "^1.15"
 
 [tool.poetry.group.dev.dependencies]
 ruff = ">=0.15.8,<0.16.0"
@@ -73,9 +74,6 @@ quote-style = "double"
 asyncio_mode = "auto"
 asyncio_default_test_loop_scope = "session"
 asyncio_default_fixture_loop_scope = "session"
-filterwarnings = [
-    "ignore:PULP_CBC_CMD is deprecated:DeprecationWarning",
-]
 
 [tool.coverage.run]
 omit = [

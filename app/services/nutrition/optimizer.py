@@ -21,6 +21,10 @@ from app.services.nutrition.indicators import (
 # quality: a 1% deviation costs as much as the whole quality scale.
 DEVIATION_PENALTY = 100
 
+# Seconds the solver may take. A recipe model takes a few milliseconds, so reaching
+# this means something is wrong with the solver, not that the model is large.
+_SOLVER_TIME_LIMIT_SECONDS = 10
+
 # A slack below this is solver noise, not an unmet rule.
 _SLACK_TOLERANCE = 1e-4
 # A quantity below this many grams is not part of the recipe.
@@ -167,8 +171,12 @@ def _solve_per_1000_kcal(
         adequacy
     ) - DEVIATION_PENALTY * pulp.lpSum(penalty)
 
-    model.solve(pulp.PULP_CBC_CMD(msg=False))
+    model.solve(pulp.HiGHS(msg=False, timeLimit=_SOLVER_TIME_LIMIT_SECONDS))
     solver_status = pulp.LpStatus[model.status]
+    # PuLP reports "Optimal" even when the time limit cut the solve short;
+    # sol_status tells a proven optimum from a merely feasible solution.
+    if solver_status == "Optimal" and model.sol_status != pulp.LpSolutionOptimal:
+        solver_status = "Feasible, not proven optimal"
     if solver_status != "Optimal":
         # The stock check makes the program feasible, so this is a solver failure.
         raise RecipeOptimizationError(solver_status)

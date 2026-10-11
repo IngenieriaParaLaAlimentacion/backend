@@ -5,6 +5,7 @@ import pytest
 from app.domain.nutrition import (
     GapaGroup,
     Macronutrient,
+    PrioritizedNutrient,
     StockedFood,
     UnmetConstraintKind,
 )
@@ -153,17 +154,20 @@ def test_gapa_shortfall_is_reported_in_grams_of_the_recipe():
     assert (gap.amount, gap.unit) == (pytest.approx(minimum * 2), "g")
 
 
-def test_a_food_rich_in_a_nutrient_is_used_when_it_costs_nothing_else():
-    # Two identical foods but one carries calcium: quality prefers it.
+def test_a_nutrient_is_fully_covered_when_a_food_can_supply_it():
+    # Two foods with the same energy, only one carries calcium. Once calcium is
+    # covered any mix is optimal, so the split between them is not asserted.
     plain = stocked({"valor_energetico": 100})
     calcium = stocked({"valor_energetico": 100, "calcio": 200})
 
     result = maximize_recipe([plain, calcium], 500)
 
-    used = grams_by_food(result)
-    assert used.get(calcium.composition.food_id, 0) > used.get(
-        plain.composition.food_id, 0
+    covered = next(
+        n
+        for n in result.indicators.nutrients
+        if n.nutrient == PrioritizedNutrient.CALCIUM
     )
+    assert covered.adequacy_capped == pytest.approx(1)
 
 
 def test_stock_exactly_matching_the_target_is_enough():
@@ -211,3 +215,12 @@ def test_a_group_without_minimum_in_the_profile_is_not_required():
     result = maximize_recipe(list(pantry.values()), 2000, profile)
 
     assert GapaGroup.DAIRY.value not in {c.subject for c in result.unmet_constraints}
+
+
+def test_a_solution_not_proven_optimal_raises_a_domain_error(monkeypatch):
+    # A solve cut by the time limit still says "Optimal"; the solution status
+    # tells it apart, so pretend the proven-optimal status is a different one.
+    monkeypatch.setattr(optimizer.pulp, "LpSolutionOptimal", 99)
+
+    with pytest.raises(RecipeOptimizationError):
+        maximize_recipe([stocked({"valor_energetico": 100})], 2000)
