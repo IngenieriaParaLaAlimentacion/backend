@@ -4,8 +4,6 @@ from uuid import UUID
 
 import pytest_asyncio
 
-from tests.integration.conftest import _insert_user_with_role
-
 
 @pytest_asyncio.fixture
 async def catalog(app):
@@ -101,7 +99,7 @@ async def test_list_all_with_nutrients_returns_only_requested_nutrients(catalog)
 
 
 async def test_sum_quantities_by_food_adds_intakes_inside_the_window(
-    foods, db_establishment
+    foods, db_establishment, make_user_with_role
 ):
     from app.db.database import AsyncSessionLocal
     from app.domain.food_intake import FoodIntakeSource
@@ -112,7 +110,7 @@ async def test_sum_quantities_by_food_adds_intakes_inside_the_window(
         FoodIntakeRepository,
     )
 
-    responsible_id = await _insert_user_with_role(UserRole.FIELD_WORKER)
+    _, responsible_id = await make_user_with_role(UserRole.FIELD_WORKER)
 
     def intake(when: datetime, items: list[tuple[UUID, str]]) -> FoodIntake:
         return FoodIntake(
