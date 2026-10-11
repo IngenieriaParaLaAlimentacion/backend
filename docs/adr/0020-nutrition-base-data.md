@@ -16,8 +16,9 @@ Argentine food guidelines (GAPA). That needs two kinds of data the catalog did n
   match GAPA: `carnes` holds cold cuts that GAPA places in the optional group, and the cereals category mixes
   legumes, bread and pasta with cookies and pastries.
 
-Some of these values are published and some are the criterion of a nutritionist consulted by the team. A reader
-of the code must be able to tell which is which.
+Most of these values are published. The fiber floor is the criterion of a nutritionist consulted by the team, and
+some GAPA portion weights and the meal energy shares are provisional. A reader of the code must be able to tell
+which is which.
 
 ## Decision
 
@@ -41,15 +42,16 @@ daily need and the energy, never hard-coded. Another age is a new profile; the s
 
 | Datum | Value | Source |
 | --- | --- | --- |
-| Micronutrient needs, 7 to 9 years | calcium 700 mg, vitamin A 500 µg RE, folate 300 µg DFE, B12 1.8 µg, vitamin C 35 mg, iron 9 mg at 10% bioavailability, zinc 5.6 mg at moderate bioavailability | FAO/WHO (2001), *Human Vitamin and Mineral Requirements* |
-| Energy | 1,770 kcal/day | FAO/WHO/UNU (2004), *Human Energy Requirements*: mean of the six values for ages 7-8, 8-9 and 9-10, boys and girls |
-| Protein 10-15%, fat 15-30%, carbohydrates 55-75% of the energy | as stated | WHO/FAO (2003), TRS 916, Table 6 |
+| Micronutrient needs, 7 to 9 years | calcium 700 mg, vitamin A 500 µg RE, folate 300 µg DFE, B12 1.8 µg, vitamin C 35 mg, iron 9 mg at 10% bioavailability, zinc 5.6 mg at moderate bioavailability | FAO/WHO (2001), [*Human Vitamin and Mineral Requirements*](https://www.fao.org/4/y2809e/y2809e00.htm), Tables 13, 14, 15, 18, 31, 40 and 56 |
+| Energy | 1,770 kcal/day | FAO/WHO/UNU (2004), [*Human Energy Requirements*](https://www.fao.org/4/y5686e/y5686e06.htm), Tables 4.2 and 4.3: mean of the six values for ages 7-8, 8-9 and 9-10, boys and girls |
+| Protein 10-15%, fat 15-30%, carbohydrates 55-75% of the energy | as stated | WHO/FAO (2003), [*Diet, Nutrition and the Prevention of Chronic Diseases*](https://www.fao.org/4/ac911e/ac911e07.htm), TRS 916, Table 6 |
 | Fiber at least 14 g per 1,000 kcal | as stated | **Criterion of a consulted nutritionist**, not checked against a published source |
-| Saturated fat at most 10% of the energy, sugar at most 10% of the energy, sodium at most 2 g a day (about 1,130 mg per 1,000 kcal) | as stated | WHO/FAO (2003), TRS 916, Table 6. The table speaks of free sugars while the catalog only has added sugar |
-| Risk of inadequacy | uncapped adequacy below 2/3 | Traditional fixed cutoff, National Research Council (1986), *Nutrient Adequacy: Assessment Using Food Consumption Surveys* |
-| Composite indicator | mean of the seven adequacy ratios, each capped at 1 | INDDEX Data4Diets, mean adequacy ratio |
-
-Exact URLs are in the module docstrings and next to the constants that use them.
+| Saturated fat at most 10% of the energy, sugar at most 10% of the energy, sodium at most 2 g a day (about 1,130 mg per 1,000 kcal) | as stated | Same table of TRS 916 ([Table 6](https://www.fao.org/4/ac911e/ac911e07.htm)). It speaks of free sugars while the catalog only has added sugar |
+| Daily portions of the GAPA groups | groups 1 to 5: 5, 4, 3, 1 and 2 | Ministerio de Salud de la Nación, [*Manual para la aplicación de las Guías Alimentarias para la Población Argentina*](https://www.argentina.gob.ar/sites/default/files/bancos/2020-08/guias-alimentarias-para-la-poblacion-argentina_manual-de-aplicacion_0.pdf). For the general population, not specific to 7 to 9 years |
+| Grams of a GAPA portion | group 2: 60 g, dairy: 200 g; groups 1, 4 and 5: 80 g, 100 g and 10 g | Group 2 and dairy are from the same manual. Groups 1, 4 and 5 are provisional: the manual gives household measures only (the 400 g a day of fruit and vegetables is in TRS 916, Table 6) |
+| Share of the daily energy per meal | breakfast 20%, lunch 35%, snack 15%, dinner 30% | Provisional: no official Argentine source found |
+| Risk of inadequacy | uncapped adequacy below 2/3 | Traditional fixed cutoff, National Research Council (1986), [*Nutrient Adequacy: Assessment Using Food Consumption Surveys*](https://www.nationalacademies.org/read/618/chapter/2) |
+| Composite indicator | mean of the seven adequacy ratios, each capped at 1 | INDDEX Data4Diets, [mean adequacy ratio](https://www.anh-academy.org/data4diets/indicator/mean-adequacy-ratio-mar) |
 
 ### Calculation rules that follow from the data
 
