@@ -18,7 +18,7 @@ need, and must say what it could not satisfy instead of failing.
 
 - Variables are the grams `y_i` of each food **per 1,000 kcal of recipe**, plus the capped adequacy `u_n` of
   each prioritized nutrient and slacks for the soft rules. The recipe is `y` scaled by `energy / 1000`, in code.
-- **Hard**: the energy of the recipe is exactly 1,000 kcal per 1,000 kcal, and each food stays within its stock.
+- **Hard**: the model recipe has exactly 1,000 kcal, and each food stays within its stock.
 - **Soft**, with a slack that is penalized and reported: each macronutrient's energy share range and one minimum
   in grams per GAPA group 1 to 5. A group with no food in stock keeps its slack and is reported the same way.
 - **Objective**: maximize the mean of the seven `u_n` (each at most its adequacy and at most 1) minus
@@ -28,6 +28,63 @@ need, and must say what it could not satisfy instead of failing.
 - There is no cap per food. A very nutritious food can take a large share; whoever reads the recipe corrects it.
 - The result is not required to be deterministic. Any optimal recipe is valid, so tests check properties
   (energy, stock, reported shortfalls) and not exact grams.
+
+### The model
+
+Data, all per the food as the catalog weighs it:
+
+| Symbol | Meaning |
+| --- | --- |
+| `i` | A food with stock, `S_i` its grams in stock |
+| `e_i` | kcal per 100 g of food `i` |
+| `c_in` | Amount of nutrient `n` per 100 g of food `i` (vitamin A in retinol equivalents, `2 × RAE − retinol`) |
+| `q_im`, `k_m` | Grams of macronutrient `m` per 100 g of food `i`, and its kcal per gram (protein 4, fat 9, carbohydrates 4) |
+| `R_n` | What 1,000 kcal of food should hold of nutrient `n` (ADR-0020) |
+| `[α_m, β_m]` | Range of the energy share of macronutrient `m` |
+| `D_g` | Minimum grams of GAPA group `g` per 1,000 kcal: daily portions × grams per portion / 1,770 × 1,000 |
+| `G_g` | The foods of group `g` (groups 1 to 5; the optional group has no minimum) |
+| `E` | Energy of the recipe: `min(target, Σ e_i S_i / 100)` |
+| `λ` | `DEVIATION_PENALTY`, 100 |
+
+Variables, all non-negative:
+
+- `y_i`: grams of food `i` per 1,000 kcal of recipe, at most `S_i × 1,000 / E`.
+- `u_n`: coverage of nutrient `n`, at most 1.
+- `s_m⁻`, `s_m⁺`: kcal that macronutrient `m` falls below or goes over its range, per 1,000 kcal.
+- `s_g`: grams that group `g` falls short of its minimum, per 1,000 kcal.
+
+Constraints:
+
+```
+(1) Σ_i e_i y_i / 100 = 1000                        the model recipe has 1,000 kcal
+(2) u_n ≤ Σ_i c_in y_i / (100 R_n)                   coverage ≤ amount held / amount needed
+(3) k_m Σ_i q_im y_i / 100 + s_m⁻ ≥ 1000 α_m        macro share at least its floor
+(4) k_m Σ_i q_im y_i / 100 − s_m⁺ ≤ 1000 β_m        macro share at most its ceiling
+(5) Σ_{i ∈ G_g} y_i + s_g ≥ D_g                     group at least its minimum
+```
+
+Objective:
+
+```
+maximize   (1/7) Σ_n u_n  −  λ ( Σ_m (s_m⁻ + s_m⁺) / 1000  +  Σ_g s_g / D_g )
+```
+
+Reading it:
+
+- The objective rises with each `u_n`, and (2) only caps it, so at the optimum `u_n = min(1, amount held /
+  amount needed)`: the capped adequacy ratio, without writing a `min`, which is not linear.
+- Dividing macro slacks by 1,000 makes them a fraction of the energy, and dividing group slacks by `D_g` makes
+  them a fraction of the minimum, so both weigh on the same scale: missing half of a minimum costs `λ / 2`.
+- A slack is above zero only when the rule cannot be met with the stock: the program prefers any recipe that
+  meets a rule over one that gains coverage by breaking it, as far as `λ` allows.
+
+Afterwards, in code:
+
+- The recipe is `x_i = y_i × E / 1,000` grams of each food, dropping those below a microgram.
+- Each slack above a small tolerance becomes an unmet constraint, scaled the same way (`s × E / 1,000`), in kcal
+  for macros and grams for groups.
+- Foods with no energy (salt, for example) have `e_i = 0`: they do not enter (1), so the model may take any
+  amount of them up to their stock if they raise a coverage.
 
 ### Energy and stock are checked outside the program
 
@@ -60,8 +117,7 @@ portion of groups 1, 4 and 5 and the meal shares are provisional.
   cooked portion of the manual. The minimum is lower than the cooked one, on purpose.
 - Everything is in grams. Converting from each food's `base_unit` is #155 and enters through the
   `GramsConverter`; a food with no conversion is left out and reported.
-- The solver runs one CBC process per request. At the catalog sizes involved (tens of foods in stock) it takes
-  milliseconds, but it is the part to watch if the number of foods grows.
+- The solver runs one CBC process per request.
 
 ## Alternatives considered
 
