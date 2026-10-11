@@ -58,6 +58,17 @@ def vitamin_a_re(per_100g: Mapping[str, float]) -> float | None:
     return 2 * rae - per_100g.get(RETINOL, 0.0)
 
 
+def prioritized_amount_per_100g(
+    nutrient: PrioritizedNutrient, per_100g: Mapping[str, float]
+) -> float | None:
+    """Return a food's amount of a prioritized nutrient per 100 g, or None if the
+    catalog has no reading. Vitamin A is in retinol equivalents.
+    """
+    if nutrient == PrioritizedNutrient.VITAMIN_A:
+        return vitamin_a_re(per_100g)
+    return per_100g.get(_DIRECT_NUTRIENT_CODES[nutrient])
+
+
 def calculate_indicators(
     items: Iterable[FoodQuantity],
     compositions: Mapping[UUID, FoodComposition],
