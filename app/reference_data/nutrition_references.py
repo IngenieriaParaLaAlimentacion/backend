@@ -20,16 +20,19 @@ Sources (7 to 9 years):
   Macronutrients: WHO/FAO (2003), TRS 916, Table 6.
     https://www.fao.org/4/ac911e/ac911e07.htm
     Protein 10-15% and fat 15-30% of the energy match. The table gives 55-75%
-    for carbohydrates, not the 40-65% used here, which has no confirmed source.
+    for carbohydrates; the 40-65% used here is the criterion of a consulted
+    nutritionist, not a published reference, to validate with the project's
+    nutritionists.
   Sodium, saturated fat, added sugar: PAHO Nutrient Profile Model (2016).
     https://iris.paho.org/handle/10665.2/18622
     Sodium 1 mg per kcal, saturated fat 10% and free sugars 10% of the energy.
     The model flags products with an excess; it does not set intake limits. It
     speaks of free sugars while the catalog only has added sugar.
-  Fiber: Institute of Medicine (2005), Dietary Reference Intakes for Energy,
-    Carbohydrate, Fiber, Fat, Fatty Acids, Cholesterol, Protein, and Amino Acids.
+  Fiber: 14 g per 1,000 kcal, suggested by a consulted nutritionist, to validate
+    with the project's nutritionists. For comparison, the Institute of Medicine
+    (2005) Dietary Reference Intakes report covers fiber; the figure was not
+    checked on its page.
     https://www.nationalacademies.org/publications/10490
-    The 14 g per 1,000 kcal figure was not found on that page; to validate.
 """
 
 from dataclasses import dataclass
@@ -98,6 +101,8 @@ NINO_7_9 = ReferenceProfile(
         ),
     },
     macro_ranges={
+        # Protein and fat ranges already leave carbohydrates between 55% and 75%
+        # of the energy, so only the 65% ceiling of carbohydrates can bind.
         Macronutrient.PROTEIN: MacroRange(0.10, 0.15),
         Macronutrient.LIPIDS: MacroRange(0.15, 0.30),
         Macronutrient.CARBOHYDRATES: MacroRange(0.40, 0.65),
