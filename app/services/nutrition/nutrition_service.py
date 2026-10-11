@@ -13,6 +13,7 @@ from app.domain.nutrition import (
     NutritionIndicators,
     RecipeRequest,
     RecipeSolution,
+    StockedFood,
 )
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import InvalidChildrenCountError
@@ -29,7 +30,6 @@ from app.services.nutrition.intake_analysis import (
     compositions_from_rows,
     top_sources,
 )
-from app.services.nutrition.optimizer import StockedFood
 from app.services.nutrition.optimizer import maximize_recipe as solve_recipe
 from app.utils.dates import ARGENTINA_TZ
 

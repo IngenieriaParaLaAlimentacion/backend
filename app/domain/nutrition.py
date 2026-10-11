@@ -67,6 +67,14 @@ class FoodComposition:
 
 
 @dataclass
+class StockedFood:
+    """A food a recipe may use and the grams of it available."""
+
+    composition: FoodComposition
+    stock_grams: float
+
+
+@dataclass
 class FoodQuantity:
     """An amount of one catalog food, in grams."""
 

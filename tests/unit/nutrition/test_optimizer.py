@@ -3,10 +3,11 @@ import pytest
 from app.domain.nutrition import (
     GapaGroup,
     Macronutrient,
+    StockedFood,
     UnmetConstraintKind,
 )
 from app.reference_data.nutrition_references import NINO_7_9
-from app.services.nutrition.optimizer import StockedFood, maximize_recipe
+from app.services.nutrition.optimizer import maximize_recipe
 from tests.unit.nutrition.helpers import composition
 
 PLENTY = 1_000_000  # grams, never the limit
