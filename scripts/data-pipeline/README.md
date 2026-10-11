@@ -46,6 +46,10 @@ python generate_food_nutrient_values.py    # raw/ -> app/reference_data/food_nut
 then hand-copy the columns the schema actually uses (`code,name,category,base_unit,source_page`)
 into `app/reference_data/foods.csv` (drop the audit-only `override_applied` column).
 
+`foods.csv` also has a `gapa_category` column (the `code` of a row in
+`app/reference_data/gapa_food_categories.csv`, empty for no group). It does not come
+from the draft: it is curated by hand in `foods.csv`, so keep it when copying columns.
+
 **`raw/` is not something to blindly regenerate.** Re-running `extract_raw.py`
 reproduces the mechanical extraction, but a substantial number of entries in
 `raw/` were corrected by hand afterwards — reconstructed word order, ligature
