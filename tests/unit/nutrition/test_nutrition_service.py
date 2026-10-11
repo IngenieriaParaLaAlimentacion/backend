@@ -6,7 +6,12 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.domain.food_catalog import FoodNutrientRow
-from app.domain.nutrition import FoodQuantity, PrioritizedNutrient
+from app.domain.nutrition import (
+    FoodQuantity,
+    MealType,
+    PrioritizedNutrient,
+    RecipeRequest,
+)
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import EstablishmentAccessDeniedError
 from app.services.nutrition import NutritionService
@@ -43,11 +48,12 @@ def food_with(food_id, per_100g: dict[str, float]):
     return food
 
 
-def make_uow(received=None, foods=(), rows=()):
+def make_uow(received=None, foods=(), rows=(), stock=None):
     uow = AsyncMock()
     uow.food_intake_repo.sum_quantities_by_food = AsyncMock(return_value=received or {})
     uow.food_repo.get_with_nutrients_by_ids = AsyncMock(return_value=list(foods))
     uow.food_repo.list_all_with_nutrients = AsyncMock(return_value=list(rows))
+    uow.food_stock_repo.get_many = AsyncMock(return_value=stock or {})
     return uow
 
 
@@ -184,3 +190,63 @@ async def test_each_nutrient_at_risk_gets_its_best_sources_from_the_catalog():
     best = result.top_sources[PrioritizedNutrient.CALCIUM][0]
     assert best.food_id == milk_id
     assert best.amount_per_100_kcal == pytest.approx(200)
+
+
+async def test_recipe_target_is_the_meal_share_of_the_energy_of_every_child():
+    rice_id = uuid.uuid4()
+    uow = make_uow(
+        foods=[food_with(rice_id, {"valor_energetico": 100})],
+        stock={rice_id: Decimal("1000")},  # 1,000 kg: never the limit
+    )
+    request = RecipeRequest([rice_id], children_count=10, meal_type=MealType.LUNCH)
+
+    result = await NutritionService(uow, GramsPerUnit()).maximize_recipe(
+        ESTABLISHMENT_ID, request, ADMIN
+    )
+
+    assert result.target_energy_kcal == pytest.approx(10 * 1770 * 0.35)
+    assert result.energy_kcal == pytest.approx(10 * 1770 * 0.35)
+
+
+async def test_recipe_only_uses_foods_the_establishment_holds_in_grams():
+    rice_id, absent_id = uuid.uuid4(), uuid.uuid4()
+    uow = make_uow(
+        foods=[
+            food_with(rice_id, {"valor_energetico": 100}),
+            food_with(absent_id, {"valor_energetico": 100}),
+        ],
+        stock={rice_id: Decimal("2")},  # 2 kg: 2,000 g hold 2,000 kcal
+    )
+    request = RecipeRequest(
+        [rice_id, absent_id], children_count=100, meal_type=MealType.LUNCH
+    )
+
+    result = await NutritionService(uow, GramsPerUnit()).maximize_recipe(
+        ESTABLISHMENT_ID, request, ADMIN
+    )
+
+    assert [q.food_id for q in result.quantities] == [rice_id]
+    assert result.energy_kcal == pytest.approx(2000)
+
+
+async def test_recipe_without_children_is_rejected():
+    request = RecipeRequest([uuid.uuid4()], children_count=0, meal_type=MealType.LUNCH)
+
+    with pytest.raises(ValueError):
+        await NutritionService(make_uow(), GramsPerUnit()).maximize_recipe(
+            ESTABLISHMENT_ID, request, ADMIN
+        )
+
+
+async def test_field_worker_without_approved_access_cannot_build_a_recipe():
+    uow = make_uow()
+    uow.user_establishment_repo.get_relation = AsyncMock(return_value=None)
+    worker = UserActor(user_id=uuid.uuid4(), role=UserRole.FIELD_WORKER)
+    request = RecipeRequest([uuid.uuid4()], children_count=5, meal_type=MealType.LUNCH)
+
+    with pytest.raises(EstablishmentAccessDeniedError):
+        await NutritionService(uow, GramsPerUnit()).maximize_recipe(
+            ESTABLISHMENT_ID, request, worker
+        )
+
+    uow.food_stock_repo.get_many.assert_not_awaited()
