@@ -10,6 +10,7 @@ from .establishments.establishment_request import EstablishmentRequest
 from .food_catalog.food import Food
 from .food_catalog.food_category import FoodCategory
 from .food_catalog.food_nutrient_value import FoodNutrientValue
+from .food_catalog.gapa_food_category import GapaFoodCategory
 from .food_catalog.nutrient import Nutrient
 from .food_intakes.food_intake import FoodIntake
 from .food_intakes.food_intake_item import FoodIntakeItem
@@ -53,6 +54,7 @@ __all__ = [
     "Food",
     "Nutrient",
     "FoodNutrientValue",
+    "GapaFoodCategory",
     "FoodIntake",
     "FoodIntakeItem",
     "FoodOutflow",
