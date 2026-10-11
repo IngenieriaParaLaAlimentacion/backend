@@ -189,13 +189,13 @@ class FoodRepository:
     ) -> list[FoodNutrientRow]:
         """Return one row per (food, nutrient) for the given nutrient codes.
 
-        Plain tuples instead of entities: the whole catalog is read, so no
-        ORM objects are built. A food with none of these nutrients, or a nutrient
-        missing for a food, yields no row; a food without a GAPA group
-        has ``gapa_category_code`` None.
+        A food with none of these nutrients, or a nutrient missing for a food,
+        yields no row; a food without a GAPA group has ``gapa_category_code`` None.
         """
         if not nutrient_codes:
             return []
+        # Plain tuples instead of entities: the whole catalog is read, so no ORM
+        # objects are built.
         result = await self.db.execute(
             select(
                 Food.id,

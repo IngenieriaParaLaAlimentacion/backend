@@ -13,9 +13,6 @@ from app.domain.nutrition import (
 )
 from app.reference_data.nutrition_references import NINO_7_9, ReferenceProfile
 
-# The mean adequacy ratio (MAR) averages each nutrient's adequacy ratio, capped at 1
-# so that a nutrient in excess does not mask one in deficit (INDDEX Data4Diets):
-# https://www.anh-academy.org/data4diets/indicator/mean-adequacy-ratio-mar
 ENERGY = "valor_energetico"
 VITAMIN_A_RAE = "vitamina_a_rae"
 RETINOL = "retinol"
@@ -133,6 +130,9 @@ def calculate_indicators(
             )
         )
 
+    # The mean adequacy ratio (MAR) averages each nutrient's adequacy ratio, capped at 1
+    # so that a nutrient in excess does not mask one in deficit (INDDEX Data4Diets):
+    # https://www.anh-academy.org/data4diets/indicator/mean-adequacy-ratio-mar
     return NutritionIndicators(
         has_data=True,
         energy_kcal=energy,
