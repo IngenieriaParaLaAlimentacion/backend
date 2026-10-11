@@ -43,13 +43,6 @@ class Macronutrient(StrEnum):
     CARBOHYDRATES = "carbohidratos"
 
 
-class ResultStatus(StrEnum):
-    """Whether a calculation had enough energy to produce figures."""
-
-    OK = "ok"
-    NO_DATA = "no_data"
-
-
 class UnmetConstraintKind(StrEnum):
     """Rule a suggested recipe could not satisfy."""
 
@@ -96,11 +89,12 @@ class LimitIndicator:
 class NutritionIndicators:
     """Balance indicators of a food combination.
 
-    Everything but ``status`` and ``warnings`` is empty when ``status`` is
-    ``NO_DATA``. Macro and group shares are fractions of the energy (0 to 1).
+    Everything but ``has_data`` and ``warnings`` is empty when ``has_data`` is
+    false, which happens when the foods carry no energy. Macro and group shares
+    are fractions of the energy (0 to 1).
     """
 
-    status: ResultStatus
+    has_data: bool
     energy_kcal: float | None = None
     nutrients: list[NutrientAdequacy] = field(default_factory=list)
     mean_adequacy_ratio: float | None = None
@@ -140,10 +134,10 @@ class RecipeSolution:
 
     ``quantities`` are grams for the whole recipe. ``target_energy_kcal`` is the
     energy asked for; ``energy_kcal`` is the energy actually planned, lower when
-    the stock falls short.
+    the stock falls short. ``has_data`` is false when the stock carries no energy.
     """
 
-    status: ResultStatus
+    has_data: bool
     quantities: list[FoodQuantity] = field(default_factory=list)
     target_energy_kcal: float | None = None
     energy_kcal: float | None = None
@@ -172,9 +166,12 @@ class FoodSource:
 
 @dataclass
 class MonthlyIntakeAnalysis:
-    """Balance of everything an establishment received in a calendar month."""
+    """Balance of everything an establishment received in a calendar month.
 
-    status: ResultStatus
+    ``has_data`` is false when the month has no intakes with energy.
+    """
+
+    has_data: bool
     indicators: NutritionIndicators | None = None
     nutrients_at_risk: list[PrioritizedNutrient] = field(default_factory=list)
     macros_out_of_range: list[MacroOutOfRange] = field(default_factory=list)
