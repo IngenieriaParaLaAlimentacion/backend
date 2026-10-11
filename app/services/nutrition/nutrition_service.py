@@ -1,7 +1,6 @@
 import asyncio
 from datetime import datetime
 from uuid import UUID
-from zoneinfo import ZoneInfo
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.nutrition import (
@@ -29,9 +28,7 @@ from app.services.nutrition.intake_analysis import (
 )
 from app.services.nutrition.optimizer import StockedFood
 from app.services.nutrition.optimizer import maximize_recipe as solve_recipe
-
-# Intakes are counted in calendar months of the places the platform serves.
-_TIMEZONE = ZoneInfo("America/Argentina/Buenos_Aires")
+from app.utils.dates import ARGENTINA_TZ
 
 
 def composition_from_food(food: Food) -> FoodComposition:
@@ -49,11 +46,11 @@ def composition_from_food(food: Food) -> FoodComposition:
 
 def month_bounds(year: int, month: int) -> tuple[datetime, datetime]:
     """Return the start of the month and of the next one, in Buenos Aires time."""
-    start = datetime(year, month, 1, tzinfo=_TIMEZONE)
+    start = datetime(year, month, 1, tzinfo=ARGENTINA_TZ)
     end = (
-        datetime(year + 1, 1, 1, tzinfo=_TIMEZONE)
+        datetime(year + 1, 1, 1, tzinfo=ARGENTINA_TZ)
         if month == 12
-        else datetime(year, month + 1, 1, tzinfo=_TIMEZONE)
+        else datetime(year, month + 1, 1, tzinfo=ARGENTINA_TZ)
     )
     return start, end
 
