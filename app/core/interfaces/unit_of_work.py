@@ -29,6 +29,9 @@ from app.repositories.food_catalog.food_nutrient_value_repository import (
     FoodNutrientValueRepository,
 )
 from app.repositories.food_catalog.food_repository import FoodRepository
+from app.repositories.food_catalog.gapa_food_category_repository import (
+    GapaFoodCategoryRepository,
+)
 from app.repositories.food_catalog.nutrient_repository import NutrientRepository
 from app.repositories.food_intakes.food_intake_repository import FoodIntakeRepository
 from app.repositories.food_outflows.food_outflow_repository import (
@@ -72,6 +75,7 @@ class IUnitOfWork(ABC):
     survey_response_edit_repo: SurveyResponseEditRepository
     establishment_dashboard_repo: EstablishmentDashboardRepository
     food_category_repo: FoodCategoryRepository
+    gapa_food_category_repo: GapaFoodCategoryRepository
     nutrient_repo: NutrientRepository
     food_repo: FoodRepository
     food_nutrient_value_repo: FoodNutrientValueRepository
