@@ -3,7 +3,7 @@ import pytest
 from app.domain.nutrition import Macronutrient, PrioritizedNutrient
 from app.reference_data.nutrition_references import NINO_7_9
 
-# Per 1,000 kcal, as listed in docs/plans/prog-lineal.md.
+# Daily need / 1,770 kcal * 1,000, rounded.
 EXPECTED_PER_1000_KCAL = {
     PrioritizedNutrient.CALCIUM: 395.5,
     PrioritizedNutrient.VITAMIN_A: 282.5,
