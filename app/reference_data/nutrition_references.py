@@ -6,11 +6,21 @@ Values: ReferenceProfile with the daily energy, the daily need of each
         prioritized nutrient, the energy share range of each macronutrient and
         the limits of fiber, sodium, saturated fat and added sugar.
 
-Sources:
-  Energy, micronutrients and macronutrient ranges: FAO/WHO references for the
-  reference child, as given by US #169 (CA 1).
-  Fiber and limits: PAHO nutrient profile / Law 27.642. Marked "to validate":
-  the values were proposed and have not been confirmed with nutritionists yet.
+Sources (7 to 9 years):
+  Micronutrients: FAO/WHO (2001), Human Vitamin and Mineral Requirements.
+    Calcium Table 31 (700 mg); vitamin A Table 18 (500 µg RE); folate Table 13
+    (300 µg DFE); vitamin B12 Table 14 (1.8 µg); vitamin C Table 15 (35 mg);
+    iron Table 40 (8.9 mg at 10% bioavailability, rounded to 9); zinc Table 56
+    (5.6 mg at moderate bioavailability).
+  Energy: FAO/WHO/UNU (2004), Human Energy Requirements, Tables 4.2 and 4.3. No
+    table lists 1,770 kcal; it matches the mean of boys and girls aged 8-9 with
+    moderate activity (1,830 and 1,698 kcal), which is our reading, not a quote.
+  Protein 10-15% and fat 15-30% of the energy: WHO/FAO (2003), TRS 916, Table 6.
+    That table gives 55-75% for carbohydrates; the 40-65% used here comes from
+    US #169 and its source is still unconfirmed.
+  Fiber and limits: PAHO nutrient profile / Law 27.642, to validate: values were
+    proposed and have not been confirmed with nutritionists yet. PAHO speaks of
+    free sugars while the catalog only has added sugar.
 """
 
 from dataclasses import dataclass
