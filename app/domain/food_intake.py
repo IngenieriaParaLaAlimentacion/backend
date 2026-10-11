@@ -95,16 +95,33 @@ class FoodMovementListItemDomain:
     items: list[FoodLineDomain]
 
     @classmethod
-    def from_db(cls, movement) -> "FoodMovementListItemDomain":
-        """Build from an intake or outflow row with ``establishment`` and
-        ``items`` (each with its ``food``) loaded."""
+    def from_intake(cls, intake) -> "FoodMovementListItemDomain":
+        """Build from an intake row with ``establishment`` and ``items`` (each
+        with its ``food``) loaded, carrying its origin and recurrence."""
+        return cls._build(
+            intake, origin_type=intake.origin_type, is_recurring=intake.is_recurring
+        )
+
+    @classmethod
+    def from_outflow(cls, outflow) -> "FoodMovementListItemDomain":
+        """Build from an outflow row with ``establishment`` and ``items`` (each
+        with its ``food``) loaded; origin and recurrence are null."""
+        return cls._build(outflow, origin_type=None, is_recurring=None)
+
+    @classmethod
+    def _build(
+        cls,
+        movement,
+        origin_type: FoodIntakeOriginType | None,
+        is_recurring: bool | None,
+    ) -> "FoodMovementListItemDomain":
         return cls(
             id=movement.id,
             occurred_at=movement.occurred_at,
             comments=movement.comments,
             source=movement.source,
-            origin_type=getattr(movement, "origin_type", None),
-            is_recurring=getattr(movement, "is_recurring", None),
+            origin_type=origin_type,
+            is_recurring=is_recurring,
             establishment=EstablishmentRefDomain.from_db(movement.establishment),
             items=[FoodLineDomain.from_db(item) for item in movement.items],
         )

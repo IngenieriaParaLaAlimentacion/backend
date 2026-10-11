@@ -48,7 +48,11 @@ class FoodIntake(Base):
         nullable=False,
     )
     origin_type = Column(
-        SAEnum(FoodIntakeOriginType, values_callable=lambda x: [e.value for e in x]),
+        SAEnum(
+            FoodIntakeOriginType,
+            values_callable=lambda x: [e.value for e in x],
+            name="foodintakeorigintype",
+        ),
         nullable=False,
     )
     is_recurring = Column(Boolean, nullable=False)
