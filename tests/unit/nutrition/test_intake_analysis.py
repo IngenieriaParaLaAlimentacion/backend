@@ -1,21 +1,15 @@
-import uuid
-
 import pytest
 
 from app.domain.nutrition import (
-    FoodComposition,
     FoodQuantity,
     GapaGroup,
     Macronutrient,
     PrioritizedNutrient,
 )
 from app.services.nutrition.intake_analysis import analyze_intake, top_sources
+from tests.unit.nutrition.helpers import composition
 
 CALCIUM = PrioritizedNutrient.CALCIUM
-
-
-def food(per_100g: dict[str, float], group: GapaGroup | None = GapaGroup.DAIRY):
-    return FoodComposition(food_id=uuid.uuid4(), gapa_group=group, per_100g=per_100g)
 
 
 def analyze(received):
@@ -32,7 +26,7 @@ def analyze(received):
 def test_nutrient_below_two_thirds_of_its_reference_is_at_risk(
     calcium_per_100_kcal, at_risk
 ):
-    bread = food({"valor_energetico": 100, "calcio": calcium_per_100_kcal})
+    bread = composition({"valor_energetico": 100, "calcio": calcium_per_100_kcal})
 
     result = analyze([(bread, 500)])
 
@@ -50,7 +44,7 @@ def test_no_intake_gives_no_data_instead_of_flagging_every_deficit():
 def test_macro_outside_its_range_is_reported():
     # 100 kcal that are 100% carbohydrates: above the 65% ceiling, and with no
     # protein or fat, below their floors.
-    rice = food({"valor_energetico": 100, "carbohidratos_disponibles": 25})
+    rice = composition({"valor_energetico": 100, "carbohidratos_disponibles": 25})
 
     result = analyze([(rice, 100)])
 
@@ -65,7 +59,7 @@ def test_macro_outside_its_range_is_reported():
 
 
 def test_absent_groups_are_reported_except_the_optional_one():
-    veg = food({"valor_energetico": 50}, GapaGroup.FRUITS_AND_VEGETABLES)
+    veg = composition({"valor_energetico": 50}, GapaGroup.FRUITS_AND_VEGETABLES)
 
     result = analyze([(veg, 100)])
 
@@ -77,7 +71,10 @@ def test_absent_groups_are_reported_except_the_optional_one():
 
 
 def test_sources_are_ranked_by_amount_per_100_kcal_and_limited_to_the_count():
-    catalog = [food({"valor_energetico": 100, "calcio": c}) for c in range(10, 100, 10)]
+    catalog = [
+        composition({"valor_energetico": 100, "calcio": c}, GapaGroup.DAIRY)
+        for c in range(10, 100, 10)
+    ]
 
     ranked = top_sources(CALCIUM, catalog_by_id(catalog), count=3)
 
@@ -85,13 +82,13 @@ def test_sources_are_ranked_by_amount_per_100_kcal_and_limited_to_the_count():
 
 
 def test_sources_skip_optional_ungrouped_and_energyless_foods():
-    good = food({"valor_energetico": 100, "calcio": 10})
+    good = composition({"valor_energetico": 100, "calcio": 10}, GapaGroup.DAIRY)
     candidates = [
         good,
-        food({"valor_energetico": 100, "calcio": 500}, GapaGroup.OPTIONAL),
-        food({"valor_energetico": 100, "calcio": 500}, None),
-        food({"valor_energetico": 0, "calcio": 500}),
-        food({"valor_energetico": 100}),
+        composition({"valor_energetico": 100, "calcio": 500}, GapaGroup.OPTIONAL),
+        composition({"valor_energetico": 100, "calcio": 500}, None),
+        composition({"valor_energetico": 0, "calcio": 500}, GapaGroup.DAIRY),
+        composition({"valor_energetico": 100}, GapaGroup.DAIRY),
     ]
 
     ranked = top_sources(CALCIUM, catalog_by_id(candidates))
@@ -100,7 +97,7 @@ def test_sources_skip_optional_ungrouped_and_energyless_foods():
 
 
 def test_warnings_of_the_analysis_do_not_alias_those_of_the_indicators():
-    rice = food({"valor_energetico": 100})
+    rice = composition({"valor_energetico": 100})
 
     result = analyze([(rice, 100)])
     result.warnings.append("added later")

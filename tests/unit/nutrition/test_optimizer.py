@@ -1,22 +1,19 @@
-import uuid
-
 import pytest
 
 from app.domain.nutrition import (
-    FoodComposition,
     GapaGroup,
     Macronutrient,
     UnmetConstraintKind,
 )
 from app.reference_data.nutrition_references import NINO_7_9
 from app.services.nutrition.optimizer import StockedFood, maximize_recipe
+from tests.unit.nutrition.helpers import composition
 
 PLENTY = 1_000_000  # grams, never the limit
 
 
 def stocked(per_100g, group=None, stock=PLENTY):
-    composition = FoodComposition(uuid.uuid4(), group, per_100g)
-    return StockedFood(composition, stock)
+    return StockedFood(composition(per_100g, group), stock)
 
 
 def balanced_pantry():

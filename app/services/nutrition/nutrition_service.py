@@ -1,5 +1,7 @@
 import asyncio
+from collections.abc import Mapping
 from datetime import datetime
+from decimal import Decimal
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
@@ -63,6 +65,34 @@ class NutritionService:
         self.uow = uow
         self.grams = grams
 
+    async def _resolve_establishment(
+        self, establishment_id: UUID, actor: UserActor
+    ) -> None:
+        """Confirm the establishment exists and the actor may look at it."""
+        await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
+        await check_establishment_access(self.uow, actor, establishment_id)
+
+    def _to_grams(
+        self, quantities: Mapping[UUID, Decimal]
+    ) -> tuple[dict[UUID, float], str | None]:
+        """Convert quantities in each food's base unit to grams.
+
+        Returns the grams per food and a warning naming how many foods were left
+        out for having no known conversion, or None when every food converted.
+        """
+        grams: dict[UUID, float] = {}
+        for food_id, quantity in quantities.items():
+            converted = self.grams.to_grams(food_id, quantity)
+            if converted is not None:
+                grams[food_id] = converted
+        left_out = len(quantities) - len(grams)
+        warning = (
+            f"{left_out} food(s) have no conversion to grams and were left out"
+            if left_out
+            else None
+        )
+        return grams, warning
+
     async def calculate_indicators(
         self, items: list[FoodQuantity]
     ) -> NutritionIndicators:
@@ -88,22 +118,18 @@ class NutritionService:
         """
         if request.children_count <= 0:
             raise InvalidChildrenCountError(request.children_count)
-        await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
-        await check_establishment_access(self.uow, actor, establishment_id)
+        await self._resolve_establishment(establishment_id, actor)
 
         foods = await self.uow.food_repo.get_with_nutrients_by_ids(request.food_ids)
         stock = await self.uow.food_stock_repo.get_many(
             establishment_id, [food.id for food in foods]
         )
-        stocked, without_conversion = [], 0
-        for food in foods:
-            if food.id not in stock:
-                continue
-            grams = self.grams.to_grams(food.id, stock[food.id])
-            if grams is None:
-                without_conversion += 1
-            else:
-                stocked.append(StockedFood(composition_from_food(food), grams))
+        stock_grams, warning = self._to_grams(stock)
+        stocked = [
+            StockedFood(composition_from_food(food), stock_grams[food.id])
+            for food in foods
+            if food.id in stock_grams
+        ]
 
         profile = NINO_7_9
         target = (
@@ -113,11 +139,8 @@ class NutritionService:
         )
         # CBC runs for a while, so it stays off the event loop.
         solution = await asyncio.to_thread(solve_recipe, stocked, target, profile)
-        if without_conversion:
-            solution.warnings.append(
-                f"{without_conversion} food(s) have no conversion to grams and "
-                "were left out"
-            )
+        if warning:
+            solution.warnings.append(warning)
         return solution
 
     async def analyze_monthly_intake(
@@ -129,20 +152,14 @@ class NutritionService:
             EstablishmentNotFoundError: establishment_id does not exist.
             EstablishmentAccessDeniedError: field worker lacks approved access.
         """
-        await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
-        await check_establishment_access(self.uow, actor, establishment_id)
+        await self._resolve_establishment(establishment_id, actor)
 
         start, end = month_bounds(year, month)
         received = await self.uow.food_intake_repo.sum_quantities_by_food(
             establishment_id, start, end
         )
-        items, without_conversion = [], 0
-        for food_id, quantity in received.items():
-            grams = self.grams.to_grams(food_id, quantity)
-            if grams is None:
-                without_conversion += 1
-            else:
-                items.append(FoodQuantity(food_id, grams))
+        grams, warning = self._to_grams(received)
+        items = [FoodQuantity(food_id, amount) for food_id, amount in grams.items()]
 
         foods = await self.uow.food_repo.get_with_nutrients_by_ids(
             [item.food_id for item in items]
@@ -160,9 +177,6 @@ class NutritionService:
                 nutrient: top_sources(nutrient, catalog)
                 for nutrient in analysis.nutrients_at_risk
             }
-        if without_conversion:
-            analysis.warnings.append(
-                f"{without_conversion} food(s) have no conversion to grams and "
-                "were left out"
-            )
+        if warning:
+            analysis.warnings.append(warning)
         return analysis
