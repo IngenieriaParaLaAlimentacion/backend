@@ -13,7 +13,10 @@ from app.domain.nutrition import (
     RecipeRequest,
 )
 from app.domain.user import UserActor, UserRole
-from app.exceptions.domain_exceptions import EstablishmentAccessDeniedError
+from app.exceptions.domain_exceptions import (
+    EstablishmentAccessDeniedError,
+    InvalidChildrenCountError,
+)
 from app.services.nutrition import NutritionService
 from app.services.nutrition.nutrition_service import month_bounds
 
@@ -232,7 +235,7 @@ async def test_recipe_only_uses_foods_the_establishment_holds_in_grams():
 async def test_recipe_without_children_is_rejected():
     request = RecipeRequest([uuid.uuid4()], children_count=0, meal_type=MealType.LUNCH)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidChildrenCountError):
         await NutritionService(make_uow(), GramsPerUnit()).maximize_recipe(
             ESTABLISHMENT_ID, request, ADMIN
         )

@@ -56,6 +56,7 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/no-fields-to-update` | 400 | `EmptyUpdateRequestError` | Exception raised when an update has no attributes to be updated. |
 | `/errors/not-resource-owner` | 403 | `NotResourceOwnerError` | Raised when a non-admin acts on a resource somebody else created. |
 | `/errors/notification-configuration-invalid` | 503 | `NotificationConfigurationError` | Raised when scheduled notifications are not fully configured. |
+| `/errors/nutrition/invalid-children-count` | 422 | `InvalidChildrenCountError` | Raised when a recipe is requested for no children or a negative number. |
 | `/errors/password-not-found` | 404 | `PasswordNotFoundError` | Exception raised when a user's password record is not found. |
 | `/errors/rate-limited` | 429 | `RateLimitedError` | Raised when a caller exceeds the rate limit of a public endpoint. |
 | `/errors/receipt-photo-storage-failed` | 502 | `ReceiptPhotoStorageError` | Raised when a receipt photo cannot be persisted to object storage. |
