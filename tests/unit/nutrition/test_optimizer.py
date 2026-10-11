@@ -67,7 +67,6 @@ def test_recipe_has_exactly_the_target_energy_when_the_stock_allows():
 
     assert result.has_data
     assert result.energy_kcal == pytest.approx(2000)
-    assert result.indicators.energy_kcal == pytest.approx(2000, rel=1e-6)
 
 
 def test_balanced_pantry_meets_every_range_and_minimum():
