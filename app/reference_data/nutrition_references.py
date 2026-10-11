@@ -15,8 +15,8 @@ Sources (7 to 9 years):
     (5.6 mg at moderate bioavailability).
   Energy: FAO/WHO/UNU (2004), Human Energy Requirements, Tables 4.2 and 4.3.
     https://www.fao.org/4/y5686e/y5686e06.htm
-    No table lists 1,770 kcal; it matches the mean of boys and girls aged 8-9 with
-    moderate activity (1,830 and 1,698 kcal). That reading is ours, not a quote.
+    1,770 is the mean of the six values for ages 7-8, 8-9 and 9-10, boys (1,692,
+    1,830, 1,978 kcal) and girls (1,554, 1,698, 1,854 kcal): 1,768, rounded.
   Macronutrients: WHO/FAO (2003), TRS 916, Table 6.
     https://www.fao.org/4/ac911e/ac911e07.htm
     Protein 10-15% and fat 15-30% of the energy match. The table gives 55-75%
