@@ -1,45 +1,20 @@
 """
-Nutritional reference profiles used to judge a food combination.
-
-Keys:   profile code (e.g. "nino_7_9")
-Values: ReferenceProfile with the daily energy, the daily need of each
-        prioritized nutrient, the energy share range of each macronutrient and
-        the limits of fiber, sodium, saturated fat and added sugar.
+Nutritional reference profiles used to judge a food combination, keyed by profile
+code (e.g. "nino_7_9").
 
 Sources (7 to 9 years):
-  Micronutrients: FAO/WHO (2001), Human Vitamin and Mineral Requirements.
-    https://www.fao.org/4/y2809e/y2809e00.htm
-    Calcium Table 31 (700 mg); vitamin A Table 18 (500 µg RE); folate Table 13
-    (300 µg DFE); vitamin B12 Table 14 (1.8 µg); vitamin C Table 15 (35 mg);
-    iron Table 40 (8.9 mg at 10% bioavailability, rounded to 9); zinc Table 56
-    (5.6 mg at moderate bioavailability).
-  Energy: FAO/WHO/UNU (2004), Human Energy Requirements, Tables 4.2 and 4.3.
+  FAO/WHO (2001), Human Vitamin and Mineral Requirements, Tables 13, 14, 15, 18,
+    31, 40 and 56. https://www.fao.org/4/y2809e/y2809e00.htm
+  FAO/WHO/UNU (2004), Human Energy Requirements, Tables 4.2 and 4.3.
     https://www.fao.org/4/y5686e/y5686e06.htm
-    1,770 is the mean of the six values for ages 7-8, 8-9 and 9-10, boys (1,692,
-    1,830, 1,978 kcal) and girls (1,554, 1,698, 1,854 kcal): 1,768, rounded.
-  Macronutrients: WHO/FAO (2003), TRS 916, Table 6.
-    https://www.fao.org/4/ac911e/ac911e07.htm
-    Protein 10-15% and fat 15-30% of the energy match. The table gives 55-75%
-    for carbohydrates; the 40-65% used here is the criterion of a consulted
-    nutritionist, not a published reference, to validate with the project's
-    nutritionists.
-  Sodium, saturated fat, added sugar: PAHO Nutrient Profile Model (2016).
-    https://iris.paho.org/handle/10665.2/18622
-    Sodium 1 mg per kcal, saturated fat 10% and free sugars 10% of the energy.
-    The model flags products with an excess; it does not set intake limits. It
-    speaks of free sugars while the catalog only has added sugar.
-  GAPA portions: Ministerio de Salud de la Nación, Manual para la aplicación de las
-    Guías Alimentarias para la Población Argentina.
+  WHO/FAO (2003), Diet, Nutrition and the Prevention of Chronic Diseases, TRS 916,
+    Table 6. https://www.fao.org/4/ac911e/ac911e07.htm
+  PAHO (2016), Nutrient Profile Model. https://iris.paho.org/handle/10665.2/18622
+  Ministerio de Salud de la Nación, Manual para la aplicación de las Guías
+    Alimentarias para la Población Argentina.
     https://www.argentina.gob.ar/sites/default/files/bancos/2020-08/guias-alimentarias-para-la-poblacion-argentina_manual-de-aplicacion_0.pdf
-    The manual gives the daily portions of groups 1 to 4 and the size of a portion
-    in household measures, and in grams only for group 2 (60 g of bread or 125 g
-    of cooked legumes, cereals or pasta) and for yogurt (200 g). The grams of the
-    other portions are marked next to the constants.
-  Fiber: 14 g per 1,000 kcal, suggested by a consulted nutritionist, to validate
-    with the project's nutritionists. For comparison, the Institute of Medicine
-    (2005) Dietary Reference Intakes report covers fiber; the figure was not
-    checked on its page.
-    https://www.nationalacademies.org/publications/10490
+
+How each value was chosen: docs/adr/0020-nutrition-base-data.md
 """
 
 from dataclasses import dataclass
@@ -131,13 +106,15 @@ NINO_7_9 = ReferenceProfile(
     },
     macro_ranges={
         # Protein and fat ranges already leave carbohydrates between 55% and 75%
-        # of the energy, so only the 65% ceiling of carbohydrates can bind.
+        # of the energy, so only the 65% ceiling of carbohydrates can bind. The
+        # 40-65% is a nutritionist's criterion, not published (TRS 916: 55-75%).
         Macronutrient.PROTEIN: MacroRange(0.10, 0.15),
         Macronutrient.LIPIDS: MacroRange(0.15, 0.30),
         Macronutrient.CARBOHYDRATES: MacroRange(0.40, 0.65),
     },
     limits={
-        # To validate with nutritionists.
+        # The fiber floor is a nutritionist's criterion, not published. Both it and
+        # the PAHO limits are to validate with the project's nutritionists.
         "fibra_alimentaria": LimitReference("min", 14),
         "sodio": LimitReference("max", 1000),
         "saturados": LimitReference("max", 0.10 * 1000 / 9),
