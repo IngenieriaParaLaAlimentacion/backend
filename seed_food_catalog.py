@@ -6,6 +6,7 @@ from decimal import Decimal
 from pathlib import Path
 from uuid import UUID
 
+from app.config.logging import setup_logging
 from app.db.unit_of_work import UnitOfWork
 from app.domain.food_catalog import MeasurementUnit, NutrientGroup
 from app.models.food_catalog.food import Food
@@ -14,7 +15,7 @@ from app.models.food_catalog.food_nutrient_value import FoodNutrientValue
 from app.models.food_catalog.gapa_food_category import GapaFoodCategory
 from app.models.food_catalog.nutrient import Nutrient
 
-logging.basicConfig(level="INFO")
+setup_logging()
 logger = logging.getLogger(__name__)
 
 REFERENCE_DATA = Path(__file__).parent / "app" / "reference_data"

@@ -189,23 +189,24 @@ def mask_structlog_event(logger: Any, method_name: str, event_dict: dict) -> dic
 
 
 class MaskingLogRecordProcessor(LogRecordProcessor):
-    """OpenTelemetry log processor that masks the body and attributes in place.
-
-    Register it before the exporting processor, because processors run in
-    registration order and the batch processor copies the record it receives.
-    """
+    """OpenTelemetry log processor that masks the body and attributes in place."""
 
     def on_emit(self, log_record: ReadWriteLogRecord) -> None:
+        """Mask the body and the attributes of the record."""
         record = log_record.log_record
         if record.body is not None:
             record.body = _mask_value(record.body)
         if record.attributes:
+            # BoundedAttributes is immutable, so the attributes are replaced
+            # with a masked copy instead of being edited.
             record.attributes = mask_event_dict(dict(record.attributes))
 
     def shutdown(self) -> None:
+        """Do nothing: the processor holds no resources."""
         return None
 
     def force_flush(self, timeout_millis: int = 30000) -> bool:
+        """Return True: the processor buffers nothing."""
         return True
 
 
