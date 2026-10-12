@@ -28,11 +28,17 @@ class ProposedFoodLine(BaseModel):
         default=None,
         max_digits=10,
         decimal_places=3,
-        description="Detected quantity in the matched food's base unit, if any.",
+        description=(
+            "Quantity prefilled from the receipt, in the matched food's base "
+            "unit. Null whenever unit is null."
+        ),
     )
     unit: MeasurementUnit | None = Field(
         default=None,
-        description="Base unit of the matched catalog food; null when unmatched.",
+        description=(
+            "Base unit of the matched catalog food. Null when the line is "
+            "unmatched or the printed quantity could not be prefilled as-is."
+        ),
     )
     raw_quantity: Decimal | None = Field(
         default=None,
