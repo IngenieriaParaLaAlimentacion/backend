@@ -132,6 +132,44 @@ score's. May be revisited alongside a broader per-line resolution model once uni
 unit text, a dimension mismatch, an unrecognized unit string) consistently, which is real design work
 deferred to its own iteration rather than bundled into the matching decision this ADR is scoped to.
 
+## Amendment (2026-10-12): `quantity`/`unit` are prefilled when the printed unit is already the food's base unit
+
+The "Unit conversion is explicitly out of scope" section above no longer holds in full: a matched line can now
+carry a prefilled `quantity`/`unit`. Conversion itself is still out of scope, and the "attempt unit conversion
+now" alternative stays rejected — the prefill only happens when no conversion is needed.
+
+**The prefill rule** (`app/domain/printed_unit.py::prefill_from_printed`):
+
+- The extracted `raw_unit_text` is normalized to one of `g`, `kg`, `ml`, `cl`, `l`, `unidad`. Case, surrounding
+  whitespace and a trailing dot are ignored, and a variants table covers the common spellings (`gr`/`grs`/
+  `gramos`, `cc`, `lt`/`lts`/`litro`, `u`/`un`/`unid`, …). Anything else — `cucharada`, `taza`, unknown text —
+  does not normalize.
+- A matched line is prefilled only when the normalized unit is exactly the matched food's `base_unit`:
+  `kg` for a `kilogramos` food, `l` for `litros`, `unidad` for `unidades`. The quantity is taken as printed.
+- `g`, `ml` and `cl` are recognised but never prefilled, since reaching a kilograms or litres `base_unit` would
+  be a conversion. A line printed as `500 g` against a kilograms food stays empty until unit conversion is
+  designed.
+- Every other case leaves **both** `quantity` and `unit` `null`: no catalog match, an unsupported or
+  unrecognised unit, no unit text at all (a bare count is not assumed to be units), a dimension mismatch
+  (`1 kg` against a `unidades` food), or an unusable quantity. The two fields are always null or set
+  together, so `unit` is no longer set merely because a food matched.
+- `raw_quantity`/`raw_unit_text` always pass through, so the user can see what was printed whether or not it
+  was used.
+
+**Quantity parsing** (`app/domain/printed_quantity.py::parse_printed_quantity`): `raw_quantity` is accepted
+with either `,` or `.` as the decimal separator and rounded half up to three decimals, the precision a
+proposed line can hold. It is `null` when the value is not a single plain number (including a grouped
+`1.000,5`, which is ambiguous), is not finite, is zero or negative, or exceeds `9999999.999` — typically a
+barcode or a price read as the quantity. Such a value used to fail the response validation and discard the
+whole proposal; now only that line loses its quantity.
+
+`needs_review` is unchanged: the user still confirms every line, and nothing is saved automatically. The
+variants table is a starting list meant to grow from the spellings seen on real receipts.
+
+**Consequence**: lines printed in `g`, `ml` or `cl` — common on receipts — still need the quantity entered by
+hand. This is the cost of not converting, and it goes away once unit conversion and per-food equivalences
+are designed.
+
 ## Amendment (2026-09-19): whole-string `similarity()` under-matched real receipt lines
 
 Testing the original decision (plain `similarity()`, threshold `0.3`) against real receipt photos surfaced a
