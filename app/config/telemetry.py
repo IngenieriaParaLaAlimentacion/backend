@@ -15,6 +15,7 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
+from app.config.log_masking import MaskingLogRecordProcessor, server_request_hook
 from app.config.settings import settings
 
 
@@ -49,6 +50,9 @@ def setup_telemetry(app) -> Telemetry:
 
     log_exporter = OTLPLogExporter()
     logger_provider = LoggerProvider(resource=resource)
+    # Registration order is execution order: the masking processor must run
+    # before the batch processor copies the record for export.
+    logger_provider.add_log_record_processor(MaskingLogRecordProcessor())
     logger_provider.add_log_record_processor(BatchLogRecordProcessor(log_exporter))
     _logs.set_logger_provider(logger_provider)
 
@@ -56,7 +60,12 @@ def setup_telemetry(app) -> Telemetry:
         level=logging.NOTSET, logger_provider=logger_provider
     )
 
-    FastAPIInstrumentor.instrument_app(app)
+    FastAPIInstrumentor.instrument_app(
+        app,
+        tracer_provider=tracer_provider,
+        meter_provider=meter_provider,
+        server_request_hook=server_request_hook,
+    )
 
     return Telemetry(
         logging_handler=otel_log_handler,
