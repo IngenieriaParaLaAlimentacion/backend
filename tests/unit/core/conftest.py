@@ -50,10 +50,14 @@ def stdout_logs(monkeypatch, otel_logs):
     root = logging.getLogger()
     named = [logging.getLogger(name) for name in _UVICORN_LOGGERS]
     saved_root = (list(root.handlers), root.level)
-    saved_named = [(log, list(log.handlers), log.propagate) for log in named]
+    saved_named = [(log, list(log.handlers), log.propagate, log.level) for log in named]
     saved_structlog = structlog.get_config()
 
     setup_logging(otel_handler=otel_logs.handler)
+    # A test that starts a real uvicorn server leaves these loggers at CRITICAL for
+    # the rest of the process, while a running service has them at INFO.
+    for log in named:
+        log.setLevel(logging.INFO)
 
     def read() -> list[dict]:
         lines = buffer.getvalue().splitlines()
@@ -64,6 +68,7 @@ def stdout_logs(monkeypatch, otel_logs):
     yield read
 
     root.handlers[:], root.level = saved_root[0], saved_root[1]
-    for log, handlers, propagate in saved_named:
+    for log, handlers, propagate, level in saved_named:
         log.handlers[:], log.propagate = handlers, propagate
+        log.setLevel(level)
     structlog.configure(**saved_structlog)
