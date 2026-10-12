@@ -1,5 +1,4 @@
 import uuid
-from decimal import Decimal, InvalidOperation
 from typing import Any
 from uuid import UUID
 
@@ -10,6 +9,7 @@ from app.core.interfaces.llm_client import ILlmClient
 from app.core.interfaces.object_storage import IObjectStorage
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.food_intake import FoodIntakeDomain
+from app.domain.printed_quantity import parse_printed_quantity
 from app.domain.printed_unit import prefill_from_printed
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
@@ -137,22 +137,6 @@ class ReceiptIntakeService:
         if not self._validate_magic_bytes(data, content_type):
             raise ImageContentMismatchError(content_type)
 
-    @staticmethod
-    def _to_decimal(value: Any) -> Decimal | None:
-        """Convert an LLM-returned number to Decimal, via its string form to
-        avoid binary float artifacts (e.g. ``0.1`` -> ``Decimal("0.1")``).
-
-        Returns None for a missing/null value or one the model returned in
-        an unparsable shape, rather than letting a malformed extraction
-        break the whole proposal.
-        """
-        if value is None:
-            return None
-        try:
-            return Decimal(str(value))
-        except InvalidOperation:
-            return None
-
     async def _build_line(self, raw: dict[str, Any]) -> ProposedFoodLine:
         """Build one proposed line from an extracted receipt item.
 
@@ -162,7 +146,7 @@ class ReceiptIntakeService:
         from the printed quantity when its unit is exactly the food's base
         unit (see ``prefill_from_printed``), and both stay None otherwise.
         """
-        raw_quantity = self._to_decimal(raw.get("raw_quantity"))
+        raw_quantity = parse_printed_quantity(raw.get("raw_quantity"))
         raw_unit_text = raw.get("raw_unit_text")
         food = await self.uow.food_repo.find_best_match(
             raw["description"],

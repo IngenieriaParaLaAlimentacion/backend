@@ -233,6 +233,39 @@ class TestExtraction:
         assert yerba.raw_quantity is None
         assert yerba.raw_unit_text is None
 
+    async def test_unusable_quantity_is_dropped_without_losing_the_other_lines(
+        self, uow, storage, food_intake_service, llm_client, admin_actor
+    ):
+        llm_client.complete = AsyncMock(
+            return_value={
+                "lines": [
+                    # a barcode read as the quantity does not fit a proposed line
+                    {
+                        "description": "Fideos",
+                        "raw_quantity": 7791234567890,
+                        "raw_unit_text": "un",
+                    },
+                    {
+                        "description": "Arroz 1kg",
+                        "raw_quantity": "1,5",
+                        "raw_unit_text": "kg",
+                    },
+                ]
+            }
+        )
+
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+        proposal = await service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        )
+
+        noodles, rice = proposal.lines
+        assert noodles.raw_quantity is None
+        assert rice.raw_quantity == Decimal("1.5")
+
     async def test_confident_catalog_match_populates_food_but_still_needs_review(
         self, uow, storage, food_intake_service, llm_client, admin_actor
     ):
