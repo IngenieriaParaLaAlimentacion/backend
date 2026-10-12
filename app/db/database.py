@@ -4,7 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from app.config.settings import settings
 
-engine = create_async_engine(settings.database_url)
+# hide_parameters=True keeps bound values (DNI, emails, tokens) out of the text of
+# database errors.
+engine = create_async_engine(settings.database_url, hide_parameters=True)
 AsyncSessionLocal = async_sessionmaker(
     engine, expire_on_commit=False, autoflush=False, autocommit=False
 )
