@@ -146,9 +146,8 @@ class TestRegisterOutflow:
         assert response.json()["category"] == "other"
         assert response.json()["comments"] == "Legacy detail"
 
-    @pytest.mark.parametrize("comments", [None, "", "unexpected"])
-    async def test_non_other_rejects_any_comments_key_without_spending(
-        self, client, field_worker_with_access, db_establishment, foods, comments
+    async def test_non_other_stores_comments_and_spends_stock(
+        self, client, field_worker_with_access, db_establishment, foods
     ) -> None:
         headers, _ = field_worker_with_access
         await client.post(
@@ -162,15 +161,15 @@ class TestRegisterOutflow:
             json=_outflow_body(
                 db_establishment.id,
                 [(foods.rice, "4")],
-                category="kitchen",
-                comments=comments,
+                category="family_delivery",
+                comments="Familia Gonzales",
             ),
             headers=headers,
         )
 
-        assert response.status_code == 422
-        assert response.json()["type"] == "/errors/validation-failed"
-        assert await _balance(db_establishment.id, foods.rice) == Decimal("10.000")
+        assert response.status_code == 201
+        assert response.json()["comments"] == "Familia Gonzales"
+        assert await _balance(db_establishment.id, foods.rice) == Decimal("6.000")
 
     @pytest.mark.parametrize("category", [None, "unknown"])
     async def test_invalid_category_is_rejected_without_spending(

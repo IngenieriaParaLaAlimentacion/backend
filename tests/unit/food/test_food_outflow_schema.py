@@ -32,15 +32,11 @@ def test_missing_category_temporarily_means_other():
     assert request.comments == "Legacy detail"
 
 
-@pytest.mark.parametrize("comments", [None, "", "unexpected"])
-def test_non_other_rejects_any_present_comments_key(comments):
-    with pytest.raises(ValidationError):
-        FoodOutflowRequest.model_validate(_body(category="kitchen", comments=comments))
-
-
-def test_non_other_accepts_omitted_comments_key():
-    request = FoodOutflowRequest.model_validate(_body(category="discard"))
-    assert request.comments is None
+def test_non_other_accepts_comments():
+    request = FoodOutflowRequest.model_validate(
+        _body(category="family_delivery", comments="Familia Gonzales")
+    )
+    assert request.comments == "Familia Gonzales"
 
 
 @pytest.mark.parametrize("category", [None, "unknown"])
