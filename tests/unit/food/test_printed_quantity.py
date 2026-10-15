@@ -17,6 +17,12 @@ from app.domain.printed_quantity import parse_printed_quantity
         ("1.5", "1.5"),
         ("1,5", "1.5"),
         (" 2,25 ", "2.25"),
+        # dots as thousands separators, with or without a decimal part
+        ("1.000,5", "1000.5"),
+        ("1.234.567,891", "1234567.891"),
+        ("1.000.000", "1000000"),
+        # a lone dot followed by three digits stays a decimal point
+        ("1.000", "1"),
         # more than three decimals are rounded half up
         ("1.2344", "1.234"),
         ("1.2345", "1.235"),
@@ -37,9 +43,10 @@ def test_parse_printed_quantity_accepts_valid_quantities(value, expected):
         "",
         "abc",
         "1 kg",
-        # ambiguous grouping: not read as a number
-        "1.000,5",
+        # malformed grouping: not read as a number
         "1,000.5",
+        "1.00.000",
+        "1.0000,5",
         # not finite
         "nan",
         float("inf"),
