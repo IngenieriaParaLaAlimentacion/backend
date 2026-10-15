@@ -74,15 +74,22 @@ order:
    `[REDACTED]`. Alone, these keys name establishments, surveys or foods and are kept.
 4. **Anything else**: the key is kept and its value is cleaned recursively.
 
+The value is then handled by its type. Numbers, booleans, `None` and UUIDs pass through. Strings are
+masked as text (below), and dicts, lists and tuples recursively (a namedtuple comes out as a plain
+tuple). Any other type (exceptions, bytes, sets, plain objects) is replaced by its masked `str()`, since
+that is the text the renderers would write for it; only the text patterns apply to it, so a sensitive
+key inside such an object is not recognized.
+
 What `rules.py` holds:
 
 | Group | Match | Entries |
 | --- | --- | --- |
-| Key fragments | the normalized key contains it | Identity: `dni`, `cuil`, `cuit`, `documento`, `apellido`, `lastname`, `firstname`, `email`, `phone`, `telefono`, `celular`, `address`, `direccion`, `domicilio`, `birth`, `nacimiento`. Health: `weight`, `peso`, `height`, `talla`, `hemoglob`, `zscore`, `percentil`. Secrets: `password`, `secret`, `apikey`, `privatekey`, `accesstoken`, `refreshtoken`, `databaseurl`, `redisurl`. |
-| Exact keys | the normalized key equals it | `token`, `token_hash`, `authorization`, `cookie`, `x-internal-token`, `fcm_token`, `installation_id`, `internal_service_token`, `requester_name`, `bmi`, `avg_bmi`, `imc`, `answers`, `payload`, `description`, `comments`, `reason` |
+| Key fragments | the normalized key contains it | Identity: `dni`, `cuil`, `cuit`, `documento`, `apellido`, `lastname`, `firstname`, `email`, `phone`, `telefono`, `celular`, `address`, `direccion`, `domicilio`, `birth`, `nacimiento`. Health: `weight`, `peso`, `height`, `talla`, `hemoglob`, `zscore`, `percentil`. Secrets: `password`, `secret`, `apikey`, `privatekey`, `databaseurl`, `redisurl`, `token`, `authorization`, `jwt`, `sessionid`, `setcookie`. |
+| Exact keys | the normalized key equals it | `cookie`, `installation_id`, `requester_name`, `bmi`, `avg_bmi`, `imc`, `answers`, `payload`, `description`, `comments`, `reason` |
 
-Fragments match by containment, so they also catch keys nobody meant (`client_address` contains
-`address`). That is accepted: a missed key leaks personal data, an extra one only hides a debugging
+Fragments match by containment, so they also catch keys nobody meant: `client_address` contains
+`address`, and `token` also hides counters such as `prompt_tokens` or `max_tokens`. `authorization`
+as a fragment is what covers `proxy-authorization`. That is accepted: a missed key leaks personal data, an extra one only hides a debugging
 value. A short word that also appears inside unrelated words goes in the exact keys instead (`bmi`
 would match `submitted_by`).
 
@@ -103,8 +110,8 @@ in this order:
 
 CUIL and IPv4 run before DNI so the DNI pattern does not consume their digit groups.
 
-**The DNI pattern masks too much on purpose.** Any standalone number of 7 or 8 digits is masked,
-whether or not it is a document: a byte count, a duration in milliseconds, a compact date. The cost of
+**The DNI pattern masks too much on purpose.** Any standalone number of 7 or 8 digits inside text is
+masked, whether or not it is a document: a byte count, a duration in milliseconds, a compact date. The cost of
 a false positive is a hidden debugging value; the cost of a miss is the document of a child or a
 guardian in a log kept by a third party. The pattern is bounded so it does not cut into larger
 identifiers. A match cannot touch a letter, digit or hyphen on either side, and cannot be part of a
@@ -116,8 +123,9 @@ dotted number (a decimal, a version). So:
   fractional seconds. Compact dates (`20240101`) are masked.
 - A period at the end of a sentence does not prevent a match (`DNI 30123456.` is masked).
 
-Database ids are UUIDs in every model, so they are not affected by the 7-to-8-digit rule. Logs keep
-ids, trace id, level, route and status code.
+The rule applies only to text: a numeric value (`int` or `float`) is never inspected, so a DNI logged as
+a number under a non-sensitive key is not masked. Database ids are UUIDs in every model, so they are
+not affected by the 7-to-8-digit rule. Logs keep ids, trace id, level, route and status code.
 
 ### Where it is applied
 
@@ -130,10 +138,13 @@ ids, trace id, level, route and status code.
    processor may modify the record in `OnEmit` and processors run in registration order. It masks
    body and attributes, including the `exception.*` attributes the handler rebuilds from `exc_info`,
    and is the only place that covers library records on the OpenTelemetry path.
-3. **`server_request_hook`** on `FastAPIInstrumentor`, which masks `http.url`, `url.full` and
-   `url.query` on the server span (including credentials in the URL userinfo) from the raw ASGI query
-   string. Polar's backend passes a hook with the same name to its FastAPI instrumentation to sanitize
-   the same attributes
+3. **`server_request_hook`** on `FastAPIInstrumentor`, which masks `http.url`, `url.full`,
+   `http.target` and `url.query` on the server span (including credentials in the URL userinfo)
+   from the raw ASGI query string. A path-only `http.target` stays path-only. It also replaces the
+   client address attributes (`net.peer.ip`, `client.address`, `net.sock.peer.addr`) by
+   `[REDACTED]`, so the IP is masked in text and in span attributes. Telling clients apart to detect
+   abuse is the job of rate limiting (ADR-0019), not of telemetry. Polar's backend
+   passes a hook with the same name to its FastAPI instrumentation to sanitize the same attributes
    ([`http_telemetry.py`](https://github.com/polarsource/polar/blob/3b3040adc55b8c52eacccabf6d71d7b7a6348e7e/server/polar/observability/http_telemetry.py));
    it is stricter, since it drops the whole query and replaces the path with the route template.
 4. **`hide_parameters=True`** on the SQLAlchemy engine, so error messages do not include parameter
@@ -154,11 +165,22 @@ The three adapters fail closed and never raise. If the core raises:
   `_record` and `_from_structlog` keys that `ProcessorFormatter` deletes right after the chain and
   needs in order not to drop the line);
 - the log record processor sets the body to `[masking error]` and clears the attributes;
-- the span hook sets `http.url`, `url.full` and `url.query` to `[masking error]`.
+- the span hook sets the URL attributes (`http.url`, `url.full`, `http.target`, `url.query`) and the
+  client address attributes to `[masking error]`.
 
 The adapters do not log the failure, to avoid recursion through the same handlers. The hook must not
 raise because an exception inside an instrumentation hook can turn the response into a 500
 ([opentelemetry-python-contrib#3642](https://github.com/open-telemetry/opentelemetry-python-contrib/issues/3642)).
+
+### Conditions of this decision
+
+**HTTP header capture in the instrumentation must stay disabled** (the
+`OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_*` variables are not set, which is the default). Behind
+Railway the socket address is the proxy's, and the real client address travels in the `x-real-ip` and
+`X-Client-IP` headers (ADR-0019). If those headers were captured, the instrumentation would add them to
+the server span as `http.request.header.*` attributes, and the span hook would not mask them: it only
+replaces the fixed list of URL and client address attributes named above. Enabling header capture
+therefore requires extending that list first, with a test against the real `FastAPIInstrumentor`.
 
 ### What is not covered (stated explicitly)
 
@@ -171,7 +193,8 @@ raise because an exception inside an instrumentation hook can turn the response 
   exception events. `hide_parameters` hides SQLAlchemy parameters only, not the driver `DETAIL` text.
 - **Values with no recognizable shape under a non-sensitive key.** A first name inside a message, or
   under a key with no sensitive sibling, is not masked. Documents other than 7 to 8 digit DNIs, a CUIL
-  written without hyphens and IPv6 addresses are not recognized either.
+  written without hyphens and IPv6 addresses are not recognized either, and neither is a number
+  (`int` or `float`) under a non-sensitive key.
 - Out of scope: cost and volume reduction, the choice of telemetry destination, and moving the
   `search` filter out of the query string (it would change the contract with the backoffice and mobile
   app).
@@ -193,7 +216,7 @@ raise because an exception inside an instrumentation hook can turn the response 
 *Negatives*
 
 - Over-masking is part of the design: fragments hide unrelated keys that contain them, standalone
-  numbers of 7 to 8 digits are masked even when they are not documents, IPs are masked inside URLs
+  numbers of 7 to 8 digits in text are masked even when they are not documents, IPs are masked inside URLs
   (including internal addresses in `url.full`) and a non-string value under a key containing `email` is
   fully masked.
 - Masked logs are harder to debug: a `description`, `reason` or `payload` shows only `[REDACTED]`, and
