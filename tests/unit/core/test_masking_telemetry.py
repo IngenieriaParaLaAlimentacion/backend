@@ -157,3 +157,24 @@ def test_span_hook_does_not_raise_when_the_span_cannot_be_written(monkeypatch):
     )
 
     server_request_hook(span, {})
+
+
+@pytest.mark.parametrize(
+    ("attributes", "expected"),
+    [
+        (
+            {"http.url": "http://h/items?search=Tom&Jerry&page=2"},
+            {"http.url": "http://h/items?search=[REDACTED]&page=2"},
+        ),
+        (
+            {"url.query": "search=x&page=2"},
+            {"url.query": "search=[REDACTED]&page=2"},
+        ),
+    ],
+)
+def test_server_request_hook_masks_url_attributes(attributes, expected):
+    span = FakeSpan(attributes)
+
+    server_request_hook(span, {"query_string": b"search=Tom%26Jerry&page=2"})
+
+    assert span.attributes == expected

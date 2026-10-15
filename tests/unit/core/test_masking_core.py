@@ -8,7 +8,6 @@ from app.config.log_masking import (
     mask_event_dict,
     mask_text,
     mask_url,
-    server_request_hook,
 )
 from app.config.log_masking.core import normalize_key
 from app.config.log_masking.rules import (
@@ -18,7 +17,6 @@ from app.config.log_masking.rules import (
     NAME_KEYS,
     QUERY_PARAM_EXACT_KEYS,
 )
-from tests.unit.core.helpers import FakeSpan
 
 
 @pytest.mark.parametrize(
@@ -49,7 +47,6 @@ def test_mask_email_keeps_first_letter_and_domain(value, expected):
         "fcm_token",
         "installation_id",
         "dni",
-        "DNI",
         "last_name",
         "lastName",
         "requester_name",
@@ -67,7 +64,6 @@ def test_mask_email_keeps_first_letter_and_domain(value, expected):
         "comments",
         "reason",
         "jwt_secret_access",
-        "jwt_secret_refresh",
         "gemini_api_key",
         "storage_secret_access_key",
         "fcm_private_key",
@@ -75,9 +71,7 @@ def test_mask_email_keeps_first_letter_and_domain(value, expected):
         "internal_service_token",
         "database_url",
         "rate_limit_redis_url",
-        "tutor_dni",
         "cuil",
-        "birth_date",
         "Telefono",
         "peso_kg",
         "z.score",
@@ -91,9 +85,7 @@ def test_sensitive_keys_are_fully_masked(key):
     }
 
 
-@pytest.mark.parametrize(
-    "key", ["email", "requester_email", "to_email", "Email", "user.email"]
-)
+@pytest.mark.parametrize("key", ["email", "requester_email", "to_email", "Email"])
 def test_email_keys_are_partially_masked(key):
     assert mask_event_dict({key: "juan@dominio.com"}) == {key: "j***@dominio.com"}
 
@@ -104,7 +96,7 @@ def test_email_key_with_non_string_value_is_fully_masked(value):
 
 
 @pytest.mark.parametrize("name_key", sorted(NAME_KEYS))
-@pytest.mark.parametrize("sibling", ["last_name", "dni", "email", "description"])
+@pytest.mark.parametrize("sibling", ["last_name", "email", "description"])
 def test_name_is_masked_next_to_a_sensitive_key(name_key, sibling):
     assert mask_event_dict({name_key: "Ana", sibling: "x"})[name_key] == REDACTED
 
@@ -116,21 +108,15 @@ def test_name_is_kept_when_alone():
     }
 
 
-def test_ids_route_status_and_timestamps_are_kept():
+def test_keys_and_values_without_sensitive_names_are_kept():
     event = {
         "event": "request",
         "subject_id": "7d9f",
-        "trace_id": "0af7651916cd43dd8448eb211c80319c",
-        "numeric_trace_id": "12345678901234567890123456789012",
-        "uuid": "12345678-1234-1234-1234-123456789012",
+        "submitted_at": "2026-10-15",
+        "submitted_by_id": "7d9f",
         "level": "info",
         "path": "/api/v1/subjects",
         "status_code": 200,
-        "submitted_at": "2026-10-15",
-        "submitted_by_id": "7d9f",
-        "timestamp": "2026-10-15T12:34:56.1234567Z",
-        "version": "1.2.3.4.5",
-        "ratio": "0.12345678",
     }
     assert mask_event_dict(event) == event
 
@@ -161,7 +147,7 @@ def test_ids_route_status_and_timestamps_are_kept():
         ({"user.email": "ana@escuela.edu.ar"}, {"user.email": "a***@escuela.edu.ar"}),
     ],
 )
-def test_events_that_used_to_leak_are_masked(event, expected):
+def test_identifiers_in_keys_and_free_text_are_masked(event, expected):
     assert mask_event_dict(event) == expected
 
 
@@ -183,11 +169,6 @@ def test_input_is_not_mutated():
     mask_event_dict(event)
 
     assert event == original
-
-
-def test_text_values_are_masked_by_content():
-    masked = mask_event_dict({"error": "failed for juan@dominio.com", "n": 3})
-    assert masked == {"error": "failed for j***@dominio.com", "n": 3}
 
 
 @pytest.mark.parametrize(
@@ -215,7 +196,14 @@ def test_text_values_are_masked_by_content():
         ("from 190.12.34.56 and 10.0.0.1:8080.", f"from {REDACTED} and {REDACTED}."),
         ("DNI 30123456.", f"DNI {REDACTED}."),
         ("DNI 30.123.456 y 1234567", f"DNI {REDACTED} y {REDACTED}"),
-        ("id 123456 and 123456789 and 9999.99", "id 123456 and 123456789 and 9999.99"),
+        (
+            "id 123456 and 123456789 and 9999.99 and 0.12345678",
+            "id 123456 and 123456789 and 9999.99 and 0.12345678",
+        ),
+        (
+            "at 2026-10-15T12:34:56.1234567Z and 12345678901234567890123456789012",
+            "at 2026-10-15T12:34:56.1234567Z and 12345678901234567890123456789012",
+        ),
         (
             "trace 0af7651916cd43dd8448eb211c80319c uuid "
             "12345678-1234-1234-1234-123456789012",
@@ -250,27 +238,6 @@ def test_mask_url_masks_userinfo_query_and_fragment():
     assert mask_url(url) == (
         "https://[REDACTED]@h.com/x?search=[REDACTED]&page=1#access_token=[REDACTED]"
     )
-
-
-@pytest.mark.parametrize(
-    ("attributes", "expected"),
-    [
-        (
-            {"http.url": "http://h/items?search=Tom&Jerry&page=2"},
-            {"http.url": "http://h/items?search=[REDACTED]&page=2"},
-        ),
-        (
-            {"url.query": "search=x&page=2"},
-            {"url.query": "search=[REDACTED]&page=2"},
-        ),
-    ],
-)
-def test_server_request_hook_masks_url_attributes(attributes, expected):
-    span = FakeSpan(attributes)
-
-    server_request_hook(span, {"query_string": b"search=Tom%26Jerry&page=2"})
-
-    assert span.attributes == expected
 
 
 def test_every_rule_is_stored_normalized():

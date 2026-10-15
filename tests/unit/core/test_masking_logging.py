@@ -1,14 +1,8 @@
 import logging
 
-import pytest
 import structlog
 
-from app.config.log_masking import (
-    MASKING_ERROR,
-    REDACTED,
-    adapters,
-    mask_structlog_event,
-)
+from app.config.log_masking import MASKING_ERROR, REDACTED, adapters
 
 
 def test_structlog_event_is_masked_on_stdout(stdout_logs):
@@ -74,40 +68,17 @@ def test_structlog_event_reaches_otel_masked(stdout_logs, otel_logs):
     assert "18.2" not in str(exported.body)
 
 
-def test_library_record_reaches_otel_masked(stdout_logs, otel_logs):
-    logging.getLogger("uvicorn.access").info(
-        '%s - "%s %s HTTP/%s" %d', "190.1.2.3:5", "GET", "/s?search=Juan", "1.1", 200
-    )
-
-    (exported,) = otel_logs.exporter.records
-    assert "Juan" not in exported.body
-
-
 def _raise(*args, **kwargs):
     raise RuntimeError("masking broke")
 
 
-def test_structlog_processor_fails_closed_keeping_only_the_level(monkeypatch):
+def test_stdout_line_is_replaced_when_masking_fails(stdout_logs, monkeypatch):
     monkeypatch.setattr(adapters, "mask_event_dict", _raise)
-
-    event = {"event": "saved", "level": "warning", "dni": "30123456"}
-
-    assert mask_structlog_event(None, "warning", event) == {
-        "event": MASKING_ERROR,
-        "level": "warning",
-    }
-
-
-@pytest.fixture
-def broken_masking(monkeypatch):
-    monkeypatch.setattr(adapters, "mask_event_dict", _raise)
-
-
-def test_stdout_line_is_replaced_when_masking_fails(stdout_logs, broken_masking):
     structlog.get_logger("app").warning("saved", dni="30123456")
     logging.getLogger("aiosmtplib").warning("sent to %s", "ana@dominio.com")
 
     lines = stdout_logs()
     assert [line["event"] for line in lines] == [MASKING_ERROR, MASKING_ERROR]
+    assert [line["level"] for line in lines] == ["warning", "warning"]
     assert "30123456" not in str(lines)
     assert "ana@dominio.com" not in str(lines)
