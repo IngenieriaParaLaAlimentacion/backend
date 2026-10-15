@@ -92,8 +92,9 @@ async def export_establishment_stock(
     description=(
         "Intakes and outflows merged into a single sequence, newest first, one "
         "entry per movement. Intake entries include `origin_type` and "
-        "`is_recurring`; outflow entries return null for these intake-only "
-        "properties. Filter with `direction`, a date range over "
+        "`is_recurring`; outflows return null for these fields. Outflows include "
+        "their disposition category; intakes have null category. Filter with "
+        "`direction`, a date range over "
         "`occurred_at`, or `food_id` to keep only the movements carrying that "
         "food on at least one line."
     ),
@@ -138,8 +139,9 @@ async def list_establishment_movements(
         "One movement — an intake or an outflow — with all of its food lines, "
         "each carrying the unit from the catalog, plus the movement's source "
         "and comments. Intake entries include `origin_type` and `is_recurring`; "
-        "outflow entries return null for these intake-only properties. Lines "
-        "are returned as recorded: a movement that lists "
+        "outflows return null for these fields. Outflows include a category; "
+        "intakes have null category. Lines are returned as recorded: a movement "
+        "that lists "
         "the same food twice comes back with both lines. A movement that "
         "belongs to another establishment answers 404, the same as one that "
         "does not exist."

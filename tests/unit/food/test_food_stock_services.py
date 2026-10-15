@@ -9,7 +9,7 @@ import pytest
 
 from app.domain.food_catalog import MeasurementUnit
 from app.domain.food_intake import FoodIntakeOriginType, FoodIntakeSource
-from app.domain.food_outflow import FoodOutflowSource
+from app.domain.food_outflow import FoodOutflowCategory, FoodOutflowSource
 from app.domain.food_stock import (
     FoodMovementDirection,
     FoodMovementListingParams,
@@ -70,6 +70,7 @@ def make_stored(make_food):
         stored.responsible_id = uuid.uuid4()
         stored.occurred_at = datetime.now(timezone.utc)
         stored.comments = None
+        stored.category = FoodOutflowCategory.OTHER
         stored.source = FoodIntakeSource.MANUAL
         stored.origin_type = FoodIntakeOriginType.OTHER
         stored.is_recurring = False
@@ -105,13 +106,15 @@ def _intake_request(**overrides) -> FoodIntakeRequest:
 
 
 def _outflow_request(**overrides) -> FoodOutflowRequest:
-    return FoodOutflowRequest(
-        establishment_id=ESTABLISHMENT_ID,
-        occurred_at=datetime(2026, 9, 1, tzinfo=timezone.utc),
-        items=[FoodLineRequest(food_id=RICE_ID, quantity=Decimal("4"))],
-        source=FoodOutflowSource.MANUAL,
+    data = {
+        "establishment_id": ESTABLISHMENT_ID,
+        "occurred_at": datetime(2026, 9, 1, tzinfo=timezone.utc),
+        "items": [FoodLineRequest(food_id=RICE_ID, quantity=Decimal("4"))],
+        "category": FoodOutflowCategory.KITCHEN,
+        "source": FoodOutflowSource.MANUAL,
         **overrides,
-    )
+    }
+    return FoodOutflowRequest(**data)
 
 
 class TestRegisterIntake:
@@ -164,6 +167,28 @@ class TestRegisterOutflow:
         uow.food_stock_repo.decrease_many.assert_awaited_once_with(
             ESTABLISHMENT_ID, {RICE_ID: Decimal("4")}
         )
+        assert (
+            uow.food_outflow_repo.create.await_args.args[0].category
+            is FoodOutflowCategory.KITCHEN
+        )
+
+    async def test_replay_returns_stored_category_without_spending(
+        self, uow, actor, make_stored
+    ):
+        uow.food_outflow_repo.get_by_id = AsyncMock(
+            return_value=make_stored(category=FoodOutflowCategory.OTHER)
+        )
+
+        result, created = await FoodOutflowService(uow).register(
+            _outflow_request(id=uuid.uuid4(), category=FoodOutflowCategory.DISCARD),
+            actor,
+        )
+
+        assert created is False
+        assert result.category is FoodOutflowCategory.OTHER
+        uow.food_stock_repo.decrease_many.assert_not_awaited()
+        uow.food_outflow_repo.create.assert_not_awaited()
+        uow.commit.assert_not_awaited()
 
     async def test_insufficient_stock_reports_what_is_held(self, uow, actor):
         uow.food_outflow_repo.get_by_id = AsyncMock(return_value=None)

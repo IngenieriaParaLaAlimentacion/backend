@@ -11,6 +11,7 @@ from app.domain.subject_event import SubjectEventRecord
 from app.domain.user import (
     BACKOFFICE_ROLES,
     REVIEWED_ACCESS_ROLES,
+    UserActor,
     UserRole,
     UserStatus,
     UserWithEstablishmentsDomain,
@@ -19,6 +20,7 @@ from app.exceptions.domain_exceptions import (
     FieldWorkerNotPendingError,
     InvalidUserRoleError,
     InvitePendingError,
+    RoleNotAllowedError,
     SubjectNotFoundError,
     UserAlreadyExistsError,
     UserEstablishmentNotApprovedError,
@@ -35,7 +37,17 @@ from app.services.email_service import (
     build_invite_deeplink,
     send_access_granted_email,
     send_invite_email,
+    send_role_changed_email,
 )
+
+# Actor role -> roles of the users it may change. The schema already limits the
+# destination role to field_worker, analyst or admin.
+_ROLE_CHANGE_SOURCES: dict[UserRole, frozenset[UserRole]] = {
+    UserRole.ADMIN: frozenset({UserRole.FIELD_WORKER, UserRole.ANALYST}),
+    UserRole.SUPERADMIN: frozenset(
+        {UserRole.FIELD_WORKER, UserRole.ANALYST, UserRole.ADMIN}
+    ),
+}
 
 
 class AdminService:
@@ -288,6 +300,42 @@ class AdminService:
         return UserWithEstablishmentsDomain.from_db(
             user, establishments_per_user.get(user.id, [])
         )
+
+    async def change_user_role(
+        self, actor: UserActor, user_id: UUID, new_role: UserRole
+    ) -> UserWithEstablishmentsDomain:
+        """Change a user's role, revoke their refresh tokens and notify them by
+        email. Requesting the role the user already has is a no-op.
+
+        Returns:
+            The user with their approved establishments, as get_user_info.
+
+        Raises:
+            UserNotFoundError: If no user with user_id exists.
+            RoleNotAllowedError: If the actor targets themselves or a user whose
+                role they are not allowed to change.
+            UserNotActiveError: If the user's account is not active.
+        """
+        user = await self._get_user(user_id)
+        if actor.user_id == user_id or user.role not in _ROLE_CHANGE_SOURCES.get(
+            actor.role, frozenset()
+        ):
+            raise RoleNotAllowedError("You are not allowed to change this user's role.")
+        # The invite link depends on the role, so pending users keep theirs.
+        if user.status != UserStatus.ACTIVE:
+            raise UserNotActiveError("Only active users can have their role changed.")
+        if user.role == new_role:
+            return await self.get_user_info(user_id)
+
+        old_role = user.role
+        await self.uow.user_repo.update_role(user_id, new_role)
+        # Refresh reissues access tokens with the stored role, so old sessions
+        # must go for the new role to take effect.
+        await self.uow.token_repo.revoke_all_by_user_id(user_id)
+        await self.uow.commit()
+
+        await send_role_changed_email(user.email, old_role, new_role)
+        return await self.get_user_info(user_id)
 
     async def approve_establishments(
         self, user_id: UUID, establishment_ids: list[UUID]

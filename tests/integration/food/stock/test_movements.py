@@ -76,7 +76,9 @@ class TestMovements:
         await client.post(
             OUTFLOWS_URL,
             json=_outflow_body(
-                db_establishment.id, [(foods.rice, "4"), (foods.eggs, "2")]
+                db_establishment.id,
+                [(foods.rice, "4"), (foods.eggs, "2")],
+                category="kitchen",
             ),
             headers=headers,
         )
@@ -88,6 +90,7 @@ class TestMovements:
         )
 
         assert response.json()["items"][0]["food_count"] == 2
+        assert response.json()["items"][0]["category"] == "kitchen"
 
     async def test_each_movement_counts_only_its_own_foods(
         self, client, field_worker_with_access, db_establishment, foods
@@ -184,8 +187,8 @@ class TestMovements:
     async def test_an_entry_is_the_summary_shape(
         self, client, field_worker_with_access, db_establishment, foods
     ) -> None:
-        """A listing row carries intake facts but no establishment, lines, source
-        or comments."""
+        """A listing row carries direction-specific facts but no establishment,
+        lines, source or comments."""
         headers, user_id = field_worker_with_access
         # Posted with comments so the key set proves they are withheld.
         await client.post(
@@ -213,9 +216,11 @@ class TestMovements:
             "food_count",
             "origin_type",
             "is_recurring",
+            "category",
         }
         assert item["origin_type"] == "foundation"
         assert item["is_recurring"] is True
+        assert item["category"] is None
         assert set(item["responsible"]) == {"id", "name", "last_name"}
         assert item["responsible"]["id"] == str(user_id)
         # `occurred_at` as sent: the event date, not when the row was written.
@@ -578,8 +583,10 @@ class TestMovementDetail:
             "comments",
             "responsible",
             "items",
+            "category",
         }
         assert body["direction"] == "in"
+        assert body["category"] is None
         assert body["source"] == "manual"
         assert body["origin_type"] == "other"
         assert body["is_recurring"] is False
@@ -624,7 +631,34 @@ class TestMovementDetail:
         assert body["origin_type"] is None
         assert body["is_recurring"] is None
         assert body["comments"] == "Almuerzo"
+        assert body["category"] == "other"
         assert [line["quantity"] for line in body["items"]] == ["4.000"]
+
+    async def test_kitchen_outflow_detail_has_category_without_comments(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        headers, _ = field_worker_with_access
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
+            headers=headers,
+        )
+        outflow = await client.post(
+            OUTFLOWS_URL,
+            json=_outflow_body(
+                db_establishment.id, [(foods.rice, "4")], category="kitchen"
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            _movement_detail_url(db_establishment.id, outflow.json()["id"]),
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        assert response.json()["category"] == "kitchen"
+        assert response.json()["comments"] is None
 
     async def test_repeated_food_lines_are_returned_as_recorded(
         self, client, field_worker_with_access, db_establishment, foods

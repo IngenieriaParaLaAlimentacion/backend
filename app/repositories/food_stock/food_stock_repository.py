@@ -360,7 +360,7 @@ class FoodStockRepository:
     async def _summaries_by_id(
         self, direction: FoodMovementDirection, movement_ids: list[UUID]
     ) -> dict[UUID, Row]:
-        """Fetch responsible, food count, and intake-only facts for one direction."""
+        """Fetch responsible, food count, and direction-specific facts."""
         if not movement_ids:
             return {}
         source = self._MOVEMENT_SOURCES[direction]
@@ -374,12 +374,18 @@ class FoodStockRepository:
             if direction == FoodMovementDirection.IN
             else literal(None)
         )
+        category = (
+            source.model.category
+            if direction == FoodMovementDirection.OUT
+            else literal(None, type_=source.model.comments.type)
+        )
         result = await self.db.execute(
             select(
                 source.model.id.label("id"),
                 User.id.label("responsible_id"),
                 User.name.label("responsible_name"),
                 User.last_name.label("responsible_last_name"),
+                category.label("category"),
                 func.count(distinct(source.item_model.food_id)).label("food_count"),
                 origin_type.label("origin_type"),
                 is_recurring.label("is_recurring"),

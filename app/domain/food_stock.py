@@ -7,6 +7,7 @@ from uuid import UUID
 from app.domain.common_domains import IdentifierRefDomain
 from app.domain.food_catalog import MeasurementUnit
 from app.domain.food_intake import FoodIntakeOriginType, FoodLineDomain
+from app.domain.food_outflow import FoodOutflowCategory
 from app.domain.measurement import ResponsibleRefDomain
 
 
@@ -82,6 +83,7 @@ class FoodMovementSummaryDomain:
     food_count: int
     origin_type: FoodIntakeOriginType | None
     is_recurring: bool | None
+    category: FoodOutflowCategory | None
 
     @classmethod
     def from_rows(cls, page_row, summary_row) -> "FoodMovementSummaryDomain":
@@ -98,6 +100,7 @@ class FoodMovementSummaryDomain:
             food_count=summary_row.food_count,
             origin_type=getattr(summary_row, "origin_type", None),
             is_recurring=getattr(summary_row, "is_recurring", None),
+            category=summary_row.category,
         )
 
 
@@ -120,6 +123,7 @@ class FoodMovementDetailDomain:
     is_recurring: bool | None
     responsible: ResponsibleRefDomain
     items: list[FoodLineDomain]
+    category: FoodOutflowCategory | None
 
     @classmethod
     def from_db(
@@ -141,4 +145,7 @@ class FoodMovementDetailDomain:
             ),
             responsible=ResponsibleRefDomain.from_db(movement.responsible),
             items=[FoodLineDomain.from_db(item) for item in movement.items],
+            category=(
+                movement.category if direction == FoodMovementDirection.OUT else None
+            ),
         )
