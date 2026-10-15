@@ -4,12 +4,13 @@ from app.domain.nutrition import (
     FoodQuantity,
     PrioritizedNutrient,
     RecipeSolution,
+    ReferenceProfile,
     StockedFood,
     UnmetConstraint,
     UnmetConstraintKind,
 )
 from app.exceptions.domain_exceptions import RecipeOptimizationError
-from app.reference_data.nutrition_references import NINO_7_9, ReferenceProfile
+from app.reference_data.nutrition_references import NINO_7_9
 from app.services.nutrition.indicators import (
     ENERGY,
     MACRO_NUTRIENT_CODES,

@@ -4,13 +4,14 @@ import pytest
 
 from app.domain.nutrition import (
     GapaGroup,
+    GapaPortion,
     Macronutrient,
     PrioritizedNutrient,
     StockedFood,
     UnmetConstraintKind,
 )
 from app.exceptions.domain_exceptions import RecipeOptimizationError
-from app.reference_data.nutrition_references import NINO_7_9, GapaPortion
+from app.reference_data.nutrition_references import NINO_7_9
 from app.services.nutrition import optimizer
 from app.services.nutrition.optimizer import maximize_recipe
 from tests.unit.nutrition.helpers import composition

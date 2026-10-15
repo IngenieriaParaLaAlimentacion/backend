@@ -11,8 +11,9 @@ from app.domain.nutrition import (
     NutrientAdequacy,
     NutritionIndicators,
     PrioritizedNutrient,
+    ReferenceProfile,
 )
-from app.reference_data.nutrition_references import NINO_7_9, ReferenceProfile
+from app.reference_data.nutrition_references import NINO_7_9
 
 ENERGY = "valor_energetico"
 VITAMIN_A_RAE = "vitamina_a_rae"

@@ -61,6 +61,13 @@ class UnmetConstraintKind(StrEnum):
     STOCK_INSUFFICIENT = "stock_insufficient"
 
 
+class LimitKind(StrEnum):
+    """Whether a limit is a floor or a ceiling."""
+
+    MIN = "min"
+    MAX = "max"
+
+
 @dataclass
 class FoodComposition:
     """What the calculation needs to know about one catalog food.
@@ -117,22 +124,31 @@ class LimitIndicator:
 
 
 @dataclass
-class NutritionIndicators:
-    """Balance indicators of a food combination.
+class NutritionResult:
+    """What a nutrition calculation returns.
 
     Everything but ``has_data`` and ``warnings`` is empty when ``has_data`` is
-    false, which happens when the foods carry no energy. Macro and group shares
-    are fractions of the energy (0 to 1).
+    false, which happens when there is no energy to judge. ``warnings`` lists the
+    data gaps found along the way.
     """
 
     has_data: bool
+    warnings: list[str] = field(default_factory=list)
+
+
+@dataclass
+class NutritionIndicators(NutritionResult):
+    """Balance indicators of a food combination.
+
+    Macro and group shares are fractions of the energy (0 to 1).
+    """
+
     energy_kcal: float | None = None
     nutrients: list[NutrientAdequacy] = field(default_factory=list)
     mean_adequacy_ratio: float | None = None
     macro_energy_share: dict[Macronutrient, float] = field(default_factory=dict)
     gapa_energy_share: dict[GapaGroup, float] = field(default_factory=dict)
     limit_indicators: list[LimitIndicator] = field(default_factory=list)
-    warnings: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -163,21 +179,19 @@ class UnmetConstraint:
 
 
 @dataclass
-class RecipeSolution:
+class RecipeSolution(NutritionResult):
     """The quantities chosen for a recipe and how balanced they are.
 
     ``quantities`` are grams for the whole recipe. ``target_energy_kcal`` is the
     energy asked for; ``energy_kcal`` is the energy actually planned, lower when
-    the stock falls short. ``has_data`` is false when the stock carries no energy.
+    the stock falls short.
     """
 
-    has_data: bool
     quantities: list[FoodQuantity] = field(default_factory=list)
     target_energy_kcal: float | None = None
     energy_kcal: float | None = None
     indicators: NutritionIndicators | None = None
     unmet_constraints: list[UnmetConstraint] = field(default_factory=list)
-    warnings: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -199,15 +213,14 @@ class FoodSource:
 
 
 @dataclass
-class MonthlyIntakeAnalysis:
+class MonthlyIntakeAnalysis(NutritionResult):
     """Balance of everything an establishment received in a calendar month.
 
-    ``has_data`` is false when the month has no intakes with energy. A nutrient a
-    food has no reading for counts as 0, so it can be in ``nutrients_at_risk``
-    because of a gap in the catalog; the matching entry of ``warnings`` says so.
+    A nutrient a food has no reading for counts as 0, so it can be in
+    ``nutrients_at_risk`` because of a gap in the catalog; the matching entry of
+    ``warnings`` says so.
     """
 
-    has_data: bool
     indicators: NutritionIndicators | None = None
     nutrients_at_risk: list[PrioritizedNutrient] = field(default_factory=list)
     macros_out_of_range: list[MacroOutOfRange] = field(default_factory=list)
@@ -215,4 +228,62 @@ class MonthlyIntakeAnalysis:
     top_sources: dict[PrioritizedNutrient, list[FoodSource]] = field(
         default_factory=dict
     )
-    warnings: list[str] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class NutrientReference:
+    """Daily need of a nutrient, in ``unit``."""
+
+    amount_per_day: float
+    unit: str
+    bioavailability_note: str | None = None
+
+
+@dataclass(frozen=True)
+class MacroRange:
+    """Range of the energy share a macronutrient should provide (0 to 1)."""
+
+    min_share: float
+    max_share: float
+
+
+@dataclass(frozen=True)
+class LimitReference:
+    """Bound on a nutrient, per 1,000 kcal, in the nutrient's catalog unit.
+
+    ``kind`` says whether ``amount_per_1000_kcal`` is a floor or a ceiling.
+    """
+
+    kind: LimitKind
+    amount_per_1000_kcal: float
+
+
+@dataclass(frozen=True)
+class GapaPortion:
+    """Daily portions of a GAPA group and the grams one portion weighs."""
+
+    daily_portions: float
+    grams_per_portion: float
+
+
+@dataclass(frozen=True)
+class ReferenceProfile:
+    """Everything a food combination is compared against for one kind of eater."""
+
+    energy_kcal: float
+    nutrients: dict[PrioritizedNutrient, NutrientReference]
+    macro_ranges: dict[Macronutrient, MacroRange]
+    limits: dict[LimitedNutrient, LimitReference]
+    gapa_portions: dict[GapaGroup, GapaPortion]
+    meal_energy_fractions: dict[MealType, float]
+
+    def gapa_minimum_per_1000_kcal(self, group: GapaGroup) -> float:
+        """Return the grams of a GAPA group that 1,000 kcal of food should hold."""
+        portion = self.gapa_portions[group]
+        return (
+            portion.daily_portions * portion.grams_per_portion / self.energy_kcal * 1000
+        )
+
+    def nutrient_per_1000_kcal(self, nutrient: PrioritizedNutrient) -> float:
+        """Return how much of the nutrient 1,000 kcal of food should provide."""
+        return self.nutrients[nutrient].amount_per_day / self.energy_kcal * 1000

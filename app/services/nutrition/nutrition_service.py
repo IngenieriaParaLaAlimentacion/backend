@@ -10,11 +10,12 @@ from app.domain.nutrition import (
     NutritionIndicators,
     RecipeRequest,
     RecipeSolution,
+    ReferenceProfile,
     StockedFood,
 )
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import InvalidChildrenCountError
-from app.reference_data.nutrition_references import NINO_7_9, ReferenceProfile
+from app.reference_data.nutrition_references import NINO_7_9
 from app.services.access import check_establishment_access
 from app.services.nutrition.compositions import (
     composition_from_food,

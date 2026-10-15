@@ -9,8 +9,9 @@ from app.domain.nutrition import (
     MacroOutOfRange,
     MonthlyIntakeAnalysis,
     PrioritizedNutrient,
+    ReferenceProfile,
 )
-from app.reference_data.nutrition_references import NINO_7_9, ReferenceProfile
+from app.reference_data.nutrition_references import NINO_7_9
 from app.services.nutrition.indicators import (
     ENERGY,
     calculate_indicators,

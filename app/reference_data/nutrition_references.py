@@ -16,76 +16,19 @@ Sources (7 to 9 years):
 How each value was chosen: docs/adr/0020-nutrition-base-data.md
 """
 
-from dataclasses import dataclass
-from typing import Literal
-
 from app.domain.nutrition import (
     GapaGroup,
+    GapaPortion,
     LimitedNutrient,
+    LimitKind,
+    LimitReference,
     Macronutrient,
+    MacroRange,
     MealType,
+    NutrientReference,
     PrioritizedNutrient,
+    ReferenceProfile,
 )
-
-
-@dataclass(frozen=True)
-class NutrientReference:
-    """Daily need of a nutrient, in ``unit``."""
-
-    amount_per_day: float
-    unit: str
-    bioavailability_note: str | None = None
-
-
-@dataclass(frozen=True)
-class MacroRange:
-    """Range of the energy share a macronutrient should provide (0 to 1)."""
-
-    min_share: float
-    max_share: float
-
-
-@dataclass(frozen=True)
-class LimitReference:
-    """Bound on a nutrient, per 1,000 kcal, in the nutrient's catalog unit.
-
-    ``kind`` says whether ``amount_per_1000_kcal`` is a floor or a ceiling.
-    """
-
-    kind: Literal["min", "max"]
-    amount_per_1000_kcal: float
-
-
-@dataclass(frozen=True)
-class GapaPortion:
-    """Daily portions of a GAPA group and the grams one portion weighs."""
-
-    daily_portions: float
-    grams_per_portion: float
-
-
-@dataclass(frozen=True)
-class ReferenceProfile:
-    """Everything a food combination is compared against for one kind of eater."""
-
-    energy_kcal: float
-    nutrients: dict[PrioritizedNutrient, NutrientReference]
-    macro_ranges: dict[Macronutrient, MacroRange]
-    limits: dict[LimitedNutrient, LimitReference]
-    gapa_portions: dict[GapaGroup, GapaPortion]
-    meal_energy_fractions: dict[MealType, float]
-
-    def gapa_minimum_per_1000_kcal(self, group: GapaGroup) -> float:
-        """Return the grams of a GAPA group that 1,000 kcal of food should hold."""
-        portion = self.gapa_portions[group]
-        return (
-            portion.daily_portions * portion.grams_per_portion / self.energy_kcal * 1000
-        )
-
-    def nutrient_per_1000_kcal(self, nutrient: PrioritizedNutrient) -> float:
-        """Return how much of the nutrient 1,000 kcal of food should provide."""
-        return self.nutrients[nutrient].amount_per_day / self.energy_kcal * 1000
-
 
 NINO_7_9 = ReferenceProfile(
     energy_kcal=1770,
@@ -110,10 +53,11 @@ NINO_7_9 = ReferenceProfile(
     limits={
         # The fiber floor is a nutritionist's criterion, not published, to validate
         # with the project's nutritionists. The rest are TRS 916 Table 6.
-        LimitedNutrient.FIBER: LimitReference("min", 14),
-        LimitedNutrient.SODIUM: LimitReference("max", 2000 / 1770 * 1000),  # 2 g a day
-        LimitedNutrient.SATURATED_FAT: LimitReference("max", 0.10 * 1000 / 9),
-        LimitedNutrient.ADDED_SUGAR: LimitReference("max", 0.10 * 1000 / 4),
+        LimitedNutrient.FIBER: LimitReference(LimitKind.MIN, 14),
+        # Sodium: at most 2 g a day.
+        LimitedNutrient.SODIUM: LimitReference(LimitKind.MAX, 2000 / 1770 * 1000),
+        LimitedNutrient.SATURATED_FAT: LimitReference(LimitKind.MAX, 0.10 * 1000 / 9),
+        LimitedNutrient.ADDED_SUGAR: LimitReference(LimitKind.MAX, 0.10 * 1000 / 4),
     },
     # Portions are the manual's, for the general population. Only group 2 (60 g) and
     # dairy (200 g) have grams in the manual; groups 1, 4 and 5 are provisional.
