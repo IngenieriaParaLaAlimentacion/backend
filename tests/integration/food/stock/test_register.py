@@ -1,6 +1,8 @@
 import uuid
 from decimal import Decimal
 
+import pytest
+
 from tests.integration.food.stock.helpers import (
     INTAKES_URL,
     OUTFLOWS_URL,
@@ -99,6 +101,128 @@ class TestRegisterIntake:
 
 
 class TestRegisterOutflow:
+    @pytest.mark.parametrize(
+        "category", ["family_delivery", "kitchen", "discard", "other"]
+    )
+    async def test_each_category_is_stored_and_returned(
+        self, client, field_worker_with_access, db_establishment, foods, category
+    ) -> None:
+        headers, _ = field_worker_with_access
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
+            headers=headers,
+        )
+
+        response = await client.post(
+            OUTFLOWS_URL,
+            json=_outflow_body(
+                db_establishment.id, [(foods.rice, "4")], category=category
+            ),
+            headers=headers,
+        )
+
+        assert response.status_code == 201
+        assert response.json()["category"] == category
+        assert await _balance(db_establishment.id, foods.rice) == Decimal("6.000")
+
+    async def test_legacy_omission_records_other_and_keeps_comments(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        headers, _ = field_worker_with_access
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
+            headers=headers,
+        )
+        body = _outflow_body(
+            db_establishment.id, [(foods.rice, "1")], comments="Legacy detail"
+        )
+        del body["category"]
+
+        response = await client.post(OUTFLOWS_URL, json=body, headers=headers)
+
+        assert response.status_code == 201
+        assert response.json()["category"] == "other"
+        assert response.json()["comments"] == "Legacy detail"
+
+    async def test_non_other_stores_comments_and_spends_stock(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        headers, _ = field_worker_with_access
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
+            headers=headers,
+        )
+
+        response = await client.post(
+            OUTFLOWS_URL,
+            json=_outflow_body(
+                db_establishment.id,
+                [(foods.rice, "4")],
+                category="family_delivery",
+                comments="Familia Gonzales",
+            ),
+            headers=headers,
+        )
+
+        assert response.status_code == 201
+        assert response.json()["comments"] == "Familia Gonzales"
+        assert await _balance(db_establishment.id, foods.rice) == Decimal("6.000")
+
+    @pytest.mark.parametrize("category", [None, "unknown"])
+    async def test_invalid_category_is_rejected_without_spending(
+        self, client, field_worker_with_access, db_establishment, foods, category
+    ) -> None:
+        headers, _ = field_worker_with_access
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
+            headers=headers,
+        )
+
+        response = await client.post(
+            OUTFLOWS_URL,
+            json=_outflow_body(
+                db_establishment.id, [(foods.rice, "4")], category=category
+            ),
+            headers=headers,
+        )
+
+        assert response.status_code == 422
+        assert response.json()["type"] == "/errors/validation-failed"
+        assert await _balance(db_establishment.id, foods.rice) == Decimal("10.000")
+
+    async def test_replay_keeps_original_category_and_balance(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        headers, _ = field_worker_with_access
+        await client.post(
+            INTAKES_URL,
+            json=_intake_body(db_establishment.id, [(foods.rice, "10")]),
+            headers=headers,
+        )
+        outflow_id = str(uuid.uuid4())
+        original = _outflow_body(
+            db_establishment.id,
+            [(foods.rice, "4")],
+            id=outflow_id,
+            category="kitchen",
+        )
+
+        first = await client.post(OUTFLOWS_URL, json=original, headers=headers)
+        retry = await client.post(
+            OUTFLOWS_URL,
+            json={**original, "category": "discard"},
+            headers=headers,
+        )
+
+        assert first.status_code == 201
+        assert retry.status_code == 200
+        assert retry.json()["category"] == "kitchen"
+        assert await _balance(db_establishment.id, foods.rice) == Decimal("6.000")
+
     async def test_outflow_subtracts_from_the_stock(
         self, client, field_worker_with_access, db_establishment, foods
     ) -> None:

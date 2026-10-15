@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from app.domain.food_outflow import FoodOutflowSource
+from app.domain.food_outflow import FoodOutflowCategory, FoodOutflowSource
 from app.schemas.food_intakes.food_intake_schema import (
     FoodLineRequest,
     FoodLineResponse,
@@ -21,6 +21,12 @@ class FoodOutflowRequest(BaseModel):
         description="When the food left. May predate the load for retroactive entries."
     )
     comments: str | None = Field(default=None, max_length=500)
+    category: FoodOutflowCategory = Field(
+        default=FoodOutflowCategory.OTHER,
+        description=(
+            "Why food left stock. Omission temporarily maps legacy clients to 'other'."
+        ),
+    )
     source: FoodOutflowSource = FoodOutflowSource.MANUAL
     items: list[FoodLineRequest] = Field(min_length=1)
 
@@ -38,6 +44,7 @@ class FoodOutflowResponse(BaseModel):
     responsible_id: UUID
     occurred_at: datetime
     comments: str | None
+    category: FoodOutflowCategory
     source: FoodOutflowSource
     created_at: datetime
     items: list[FoodLineResponse]
