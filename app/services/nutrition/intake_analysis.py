@@ -94,6 +94,8 @@ def top_sources(
             or composition.gapa_group in (None, GapaGroup.OPTIONAL)
         ):
             continue
-        sources.append(FoodSource(food_id, amount / energy * 100))
+        sources.append(
+            FoodSource(food_id=food_id, amount_per_100_kcal=(amount / energy * 100))
+        )
     sources.sort(key=lambda s: s.amount_per_100_kcal, reverse=True)
     return sources[:count]
