@@ -55,7 +55,6 @@ def test_parse_printed_quantity_accepts_valid_quantities(value, expected):
         "0",
         -1,
         "0.0004",
-        True,
         # too large to store, e.g. a barcode or a price read as the quantity
         "10000000",
         "7791234567890",

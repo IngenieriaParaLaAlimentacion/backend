@@ -41,7 +41,7 @@ def parse_printed_quantity(value: Any) -> Decimal | None:
     (``"1 kg"``, ``"1,000.5"``), a non-finite value, a value that is zero or
     negative (also after rounding), or one too large to store.
     """
-    if value is None or isinstance(value, bool):
+    if value is None:
         return None
 
     try:
