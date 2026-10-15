@@ -3,8 +3,10 @@
 import re
 from collections.abc import Mapping
 from typing import Any
+from uuid import UUID
 
 from app.config.log_masking.rules import (
+    CLIENT_IP_ATTRIBUTES,
     EMAIL_KEY_FRAGMENTS,
     EXACT_KEYS,
     KEY_FRAGMENTS,
@@ -131,36 +133,56 @@ def mask_url(url: str) -> str:
     )
 
 
-def mask_span_url_attributes(
+def mask_span_attributes(
     attributes: Mapping[str, Any], raw_query: str
 ) -> dict[str, str]:
-    """Return the masked values of the URL attributes present on a server span.
-
-    The query comes from the raw ASGI value because the instrumentation
-    URL-decodes the attributes, which makes parameter boundaries ambiguous.
-    """
+    """Return the masked values of the URL and client address attributes of a span."""
+    # The query comes from the raw ASGI value because the instrumentation
+    # URL-decodes the attributes, which makes parameter boundaries ambiguous.
     query = mask_query_string(raw_query)
     masked = {}
     for key in URL_ATTRIBUTES:
         value = attributes.get(key)
         if isinstance(value, str):
-            base = mask_text(value.partition("?")[0])
-            masked[key] = f"{base}?{query}" if query else base
+            path, question, _ = value.partition("?")
+            base = mask_text(path)
+            # `http.target` can carry only the path: the query is not added to it.
+            masked[key] = f"{base}?{query}" if question and query else base
     if URL_QUERY_ATTRIBUTE in attributes:
         masked[URL_QUERY_ATTRIBUTE] = query
+    for key in CLIENT_IP_ATTRIBUTES:
+        if key in attributes:
+            masked[key] = REDACTED
     return masked
 
 
 def mask_value(value: Any, depth: int = 0) -> Any:
+    """Return the value with sensitive data masked.
+
+    Numbers, booleans, ``None`` and UUIDs pass through. Strings are masked as text,
+    dicts, lists and tuples recursively, and any other type by its ``str()``.
+    """
+    if value is None or isinstance(value, (bool, int, float, UUID)):
+        return value
     if isinstance(value, str):
         return mask_text(value)
+    if isinstance(value, Mapping):
+        return REDACTED if depth >= _MAX_DEPTH else _mask_mapping(value, depth)
+    if isinstance(value, list):
+        return _mask_items(value, depth, list)
+    if isinstance(value, tuple):
+        return _mask_items(value, depth, tuple)
+    # Exceptions, bytes, sets and plain objects reach the renderers through their
+    # repr or str, so they are masked as the text they would be written as.
+    return mask_text(str(value))
+
+
+def _mask_items(items: Any, depth: int, container: type) -> Any:
     if depth >= _MAX_DEPTH:
         return REDACTED
-    if isinstance(value, Mapping):
-        return _mask_mapping(value, depth)
-    if isinstance(value, (list, tuple)):
-        return type(value)(mask_value(item, depth + 1) for item in value)
-    return value
+    # The container is built explicitly: a namedtuple cannot be rebuilt from a
+    # generator, and its field names are not needed in a log line.
+    return container(mask_value(item, depth + 1) for item in items)
 
 
 def _mask_mapping(mapping: Mapping, depth: int) -> dict:

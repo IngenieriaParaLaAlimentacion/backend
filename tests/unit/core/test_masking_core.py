@@ -1,4 +1,6 @@
 import copy
+import uuid
+from collections import namedtuple
 
 import pytest
 
@@ -41,8 +43,14 @@ def test_mask_email_keeps_first_letter_and_domain(value, expected):
         "refresh_token",
         "token",
         "token_hash",
+        "reset_token",
+        "invite_token",
         "Authorization",
+        "Proxy-Authorization",
+        "jwt",
+        "session_id",
         "cookie",
+        "Set-Cookie",
         "X-Internal-Token",
         "fcm_token",
         "installation_id",
@@ -162,6 +170,49 @@ def test_nested_dicts_and_lists_are_masked():
     }
 
 
+def test_numbers_booleans_none_and_uuids_pass_through():
+    event = {"n": 3, "ratio": 1.5, "ok": True, "missing": None, "id": uuid.uuid4()}
+
+    assert mask_event_dict(event) == event
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        (
+            Exception("DETAIL: Key (dni)=(30123456) already exists"),
+            f"DETAIL:  {REDACTED}",
+        ),
+        (OSError("refused for ana@dominio.com"), "refused for a***@dominio.com"),
+        (b"dni 30123456", f"b'dni {REDACTED}'"),
+    ],
+)
+def test_values_of_other_types_are_masked_as_text(value, expected):
+    assert mask_event_dict({"error": value}) == {"error": expected}
+
+
+def test_namedtuple_is_masked_as_a_plain_tuple():
+    Row = namedtuple("Row", ["label", "contact"])
+
+    masked = mask_event_dict({"rows": [Row("a", "ana@dominio.com")]})
+
+    assert masked == {"rows": [("a", "a***@dominio.com")]}
+
+
+def test_nesting_deeper_than_the_limit_is_redacted():
+    event = {}
+    node = event
+    for _ in range(25):
+        node["n"] = {}
+        node = node["n"]
+
+    masked = mask_event_dict(event)
+
+    for _ in range(19):
+        masked = masked["n"]
+    assert masked == {"n": REDACTED}
+
+
 def test_input_is_not_mutated():
     event = {"dni": "123", "nested": {"password": "p"}, "items": [{"email": "a@b.com"}]}
     original = copy.deepcopy(event)
@@ -181,6 +232,10 @@ def test_input_is_not_mutated():
         (
             "/users?page=1&Email=a@b.com&name=Ana&last_name=P",
             "/users?page=1&Email=[REDACTED]&name=[REDACTED]&last_name=[REDACTED]",
+        ),
+        (
+            "GET /auth/reset?reset_token=abc123&page=1&invite_token=x",
+            "GET /auth/reset?reset_token=[REDACTED]&page=1&invite_token=[REDACTED]",
         ),
         ("contact juan@dominio.com now", "contact j***@dominio.com now"),
         ("Authorization: Bearer abc.def-123_x==", "Authorization: Bearer [REDACTED]"),

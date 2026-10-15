@@ -37,23 +37,22 @@ KEY_FRAGMENTS = frozenset(
         "secret",
         "apikey",
         "privatekey",
-        "accesstoken",
-        "refreshtoken",
         "databaseurl",
         "redisurl",
+        # `token` also hides counters such as `prompt_tokens`; `authorization`
+        # also covers `proxy-authorization`.
+        "token",
+        "authorization",
+        "jwt",
+        "sessionid",
+        "setcookie",
     }
 )
 
 EXACT_KEYS = frozenset(
     {
-        "token",
-        "tokenhash",
-        "authorization",
         "cookie",
-        "xinternaltoken",
-        "fcmtoken",
         "installationid",
-        "internalservicetoken",
         # Too short to be fragments: `bmi` would match `submitted_by`.
         "bmi",
         "avgbmi",
@@ -76,5 +75,8 @@ EMAIL_KEY_FRAGMENTS = frozenset({"email"})
 # Query parameters are sensitive when they match a fragment or one of these.
 QUERY_PARAM_EXACT_KEYS = EXACT_KEYS | NAME_KEYS | frozenset({"search", "q"})
 
-URL_ATTRIBUTES = ("http.url", "url.full")
+URL_ATTRIBUTES = ("http.url", "url.full", "http.target")
 URL_QUERY_ATTRIBUTE = "url.query"
+
+# Span attributes that hold the address of the client or of the proxy.
+CLIENT_IP_ATTRIBUTES = ("net.peer.ip", "client.address", "net.sock.peer.addr")

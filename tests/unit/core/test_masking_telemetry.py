@@ -113,13 +113,15 @@ def test_server_span_url_masks_query_values_and_response_is_unchanged(
 ):
     app, _, _, spans = wired_telemetry
 
-    response = TestClient(app).get("/items?search=12345678&page=2")
+    response = TestClient(app).get("/items?search=Juan&page=2")
 
-    assert response.json() == {"search": "12345678", "page": 2}
+    assert response.json() == {"search": "Juan", "page": 2}
     (server_span,) = [s for s in spans.get_finished_spans() if s.kind.name == "SERVER"]
     assert server_span.attributes["http.url"].endswith(
         "/items?search=[REDACTED]&page=2"
     )
+    assert "Juan" not in str(dict(server_span.attributes))
+    assert server_span.attributes["net.peer.ip"] == REDACTED
 
 
 def _raise(*args, **kwargs):
@@ -137,7 +139,7 @@ def test_log_processor_fails_closed_clearing_body_and_attributes(monkeypatch):
 
 
 def test_span_hook_replaces_url_attributes_when_masking_fails(monkeypatch):
-    monkeypatch.setattr(adapters, "mask_span_url_attributes", _raise)
+    monkeypatch.setattr(adapters, "mask_span_attributes", _raise)
     span = FakeSpan({"http.url": "http://h/items?search=Tom", "http.method": "GET"})
 
     server_request_hook(span, {"query_string": b"search=Tom"})
@@ -145,13 +147,17 @@ def test_span_hook_replaces_url_attributes_when_masking_fails(monkeypatch):
     assert span.attributes == {
         "http.url": MASKING_ERROR,
         "url.full": MASKING_ERROR,
+        "http.target": MASKING_ERROR,
         "url.query": MASKING_ERROR,
+        "net.peer.ip": MASKING_ERROR,
+        "client.address": MASKING_ERROR,
+        "net.sock.peer.addr": MASKING_ERROR,
         "http.method": "GET",
     }
 
 
 def test_span_hook_does_not_raise_when_the_span_cannot_be_written(monkeypatch):
-    monkeypatch.setattr(adapters, "mask_span_url_attributes", _raise)
+    monkeypatch.setattr(adapters, "mask_span_attributes", _raise)
     span = SimpleNamespace(
         is_recording=lambda: True, attributes={}, set_attribute=_raise
     )
@@ -165,6 +171,16 @@ def test_span_hook_does_not_raise_when_the_span_cannot_be_written(monkeypatch):
         (
             {"http.url": "http://h/items?search=Tom&Jerry&page=2"},
             {"http.url": "http://h/items?search=[REDACTED]&page=2"},
+        ),
+        (
+            {"http.target": "/items?search=Tom&Jerry&page=2"},
+            {"http.target": "/items?search=[REDACTED]&page=2"},
+        ),
+        # Instrumentations that report only the path keep it as is.
+        ({"http.target": "/items"}, {"http.target": "/items"}),
+        (
+            {"net.peer.ip": "190.1.2.3", "client.address": "190.1.2.3"},
+            {"net.peer.ip": REDACTED, "client.address": REDACTED},
         ),
         (
             {"url.query": "search=x&page=2"},

@@ -12,10 +12,14 @@ from opentelemetry.trace import Span
 from app.config.log_masking.core import (
     MASKING_ERROR,
     mask_event_dict,
-    mask_span_url_attributes,
+    mask_span_attributes,
     mask_value,
 )
-from app.config.log_masking.rules import URL_ATTRIBUTES, URL_QUERY_ATTRIBUTE
+from app.config.log_masking.rules import (
+    CLIENT_IP_ATTRIBUTES,
+    URL_ATTRIBUTES,
+    URL_QUERY_ATTRIBUTE,
+)
 
 # structlog's ProcessorFormatter deletes these keys right after the processor
 # chain and raises KeyError if they are missing, which would drop the log line.
@@ -61,21 +65,21 @@ class MaskingLogRecordProcessor(LogRecordProcessor):
 
 
 def server_request_hook(span: Span, scope: dict) -> None:
-    """Mask the query string and userinfo in the URL attributes of a server span."""
+    """Mask the URL attributes and the client address attributes of a server span."""
     try:
         if not span.is_recording():
             return
         raw_query = scope.get("query_string", b"").decode("latin-1")
-        masked = mask_span_url_attributes(span.attributes or {}, raw_query)
+        masked = mask_span_attributes(span.attributes or {}, raw_query)
         for key, value in masked.items():
             span.set_attribute(key, value)
     except Exception:
-        _redact_url_attributes(span)
+        _redact_span_attributes(span)
 
 
-def _redact_url_attributes(span: Span) -> None:
+def _redact_span_attributes(span: Span) -> None:
     try:
-        for key in (*URL_ATTRIBUTES, URL_QUERY_ATTRIBUTE):
+        for key in (*URL_ATTRIBUTES, URL_QUERY_ATTRIBUTE, *CLIENT_IP_ATTRIBUTES):
             span.set_attribute(key, MASKING_ERROR)
     except Exception:
         # Nothing is left to do, and the hook must never break the request.
