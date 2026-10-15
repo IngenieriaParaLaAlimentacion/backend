@@ -77,6 +77,10 @@ def calculate_indicators(
         return NutritionIndicators(has_data=False, warnings=warnings)
 
     nutrients = _adequacies(prioritized_readings, energy, profile)
+    limit_amounts = {
+        limit: catalog_readings[limit.value].total / energy * 1000
+        for limit in profile.limits
+    }
     # Capped ratios, so an excess of one nutrient does not hide a deficit (ADR-0020).
     mean_adequacy_ratio = sum(n.adequacy_capped for n in nutrients) / len(nutrients)
     energy_by_group = _energy_by_group(portions)
@@ -93,13 +97,8 @@ def calculate_indicators(
             group: energy_by_group.get(group, 0.0) / energy for group in GapaGroup
         },
         limit_indicators=[
-            LimitIndicator(
-                code=limit.value,
-                amount_per_1000_kcal=catalog_readings[limit.value].total
-                / energy
-                * 1000,
-            )
-            for limit in profile.limits
+            LimitIndicator(code=limit.value, amount_per_1000_kcal=amount)
+            for limit, amount in limit_amounts.items()
         ],
         warnings=warnings,
     )
@@ -189,7 +188,7 @@ def _read_nutrient(portions: list[_Portion], nutrient: PrioritizedNutrient) -> _
 
 
 def _energy_by_group(portions: list[_Portion]) -> dict[GapaGroup, float]:
-    """Add up the energy of the portions by GAPA group, leaving out foods with none."""
+    """Add up the energy of the portions by GAPA group, ignoring foods with no group."""
     energy_by_group: dict[GapaGroup, float] = {}
     for composition, hundreds_of_grams in portions:
         group = composition.gapa_group

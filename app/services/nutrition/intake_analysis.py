@@ -18,13 +18,8 @@ from app.services.nutrition.indicators import (
     prioritized_amount_per_100g,
 )
 
-# A nutrient whose uncapped adequacy ratio (intake / reference, the NAR of INDDEX
-# Data4Diets) falls below this is at risk of inadequacy. Two thirds of the
-# reference is a traditional fixed cutoff for inadequate intake in food
-# consumption surveys, next to one half and three fourths (National Research
-# Council, 1986, Nutrient Adequacy: Assessment Using Food Consumption Surveys):
-# https://www.nationalacademies.org/read/618/chapter/2
-# It flags a risk, it does not estimate how many people are inadequate.
+# A nutrient whose uncapped adequacy ratio falls below this is at risk of
+# inadequacy; it flags a risk, it does not estimate how many people are inadequate.
 RISK_ADEQUACY_THRESHOLD = 2 / 3
 
 # How many foods are suggested for each nutrient at risk.

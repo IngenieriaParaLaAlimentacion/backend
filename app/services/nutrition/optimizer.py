@@ -1,3 +1,5 @@
+from typing import NamedTuple
+
 import pulp
 
 from app.domain.nutrition import (
@@ -32,6 +34,22 @@ _SLACK_TOLERANCE = 1e-4
 _QUANTITY_TOLERANCE = 1e-6
 
 
+class _Slack(NamedTuple):
+    """How far the recipe may fall short of a soft rule, as a solver variable."""
+
+    kind: UnmetConstraintKind
+    subject: str
+    variable: pulp.LpVariable
+    unit: str
+
+
+class _SoftRules(NamedTuple):
+    """The slacks of a group of soft rules and what each costs in the objective."""
+
+    slacks: list[_Slack]
+    penalties: list[pulp.LpAffineExpression]
+
+
 def maximize_recipe(
     foods: list[StockedFood],
     target_energy_kcal: float,
@@ -46,6 +64,7 @@ def maximize_recipe(
     there is nothing to build and ``has_data`` is false.
     """
     usable = [f for f in foods if f.stock_grams > 0]
+    # kcal in stock: kcal per 100 g x grams / 100, added up over the foods.
     energy_in_stock = sum(
         f.composition.per_100g.get(ENERGY, 0.0) * f.stock_grams / 100 for f in usable
     )
@@ -53,6 +72,7 @@ def maximize_recipe(
         return RecipeSolution(has_data=False, target_energy_kcal=target_energy_kcal)
 
     unmet: list[UnmetConstraint] = []
+    # The recipe cannot hold more energy than the stock does.
     energy = min(target_energy_kcal, energy_in_stock)
     if energy < target_energy_kcal:
         unmet.append(
@@ -64,20 +84,23 @@ def maximize_recipe(
             )
         )
 
-    # The model is per 1,000 kcal of recipe: y are grams per 1,000 kcal, and the
-    # recipe quantities are y scaled by energy / 1000.
-    y, slacks = _solve_per_1000_kcal(usable, energy, profile)
+    # The model is per 1,000 kcal of recipe: it finds the grams per 1,000 kcal of
+    # each food, and the recipe quantities are those scaled by energy / 1000.
+    grams_per_1000_kcal, unmet_per_1000_kcal = _solve_per_1000_kcal(
+        usable, energy, profile
+    )
 
+    # From grams per 1,000 kcal to grams of the whole recipe.
     scale = energy / 1000
     quantities = [
         FoodQuantity(food.composition.food_id, grams * scale)
-        for food, grams in zip(usable, y, strict=True)
+        for food, grams in zip(usable, grams_per_1000_kcal, strict=True)
         if grams * scale > _QUANTITY_TOLERANCE
     ]
     unmet.extend(
-        UnmetConstraint(kind, subject, amount * scale, unit)
-        for kind, subject, amount, unit in slacks
-        if amount > _SLACK_TOLERANCE
+        UnmetConstraint(rule.kind, rule.subject, rule.amount * scale, rule.unit)
+        for rule in unmet_per_1000_kcal
+        if rule.amount > _SLACK_TOLERANCE
     )
     indicators = calculate_indicators(
         quantities, {f.composition.food_id: f.composition for f in usable}, profile
@@ -95,60 +118,125 @@ def maximize_recipe(
 
 def _solve_per_1000_kcal(
     foods: list[StockedFood], energy: float, profile: ReferenceProfile
-) -> tuple[list[float], list[tuple[UnmetConstraintKind, str, float, str]]]:
+) -> tuple[list[float], list[UnmetConstraint]]:
     """Solve the linear program and return the grams per 1,000 kcal of each food
-    and every slack as ``(kind, subject, amount, unit)``.
+    and the soft rules it left unmet, also per 1,000 kcal.
     """
     model = pulp.LpProblem("recipe", pulp.LpMaximize)
-    # y[i]: grams of food i per 1,000 kcal, from 0 up to what the stock allows.
-    y = [
+    y = _add_quantities(model, foods, energy)
+    _add_energy_rule(model, foods, y)
+    adequacy = _add_adequacy(model, foods, y, profile)
+    macro_rules = _add_macro_ranges(model, foods, y, profile)
+    gapa_rules = _add_gapa_minimums(model, foods, y, profile)
+    slacks = macro_rules.slacks + gapa_rules.slacks
+    penalties = macro_rules.penalties + gapa_rules.penalties
+
+    # Maximize the mean adequacy (0 to 1) minus the weighted deviations, which are
+    # also on a 0 to 1 scale, so DEVIATION_PENALTY sets how much each one matters.
+    model += pulp.lpSum(adequacy.values()) / len(
+        adequacy
+    ) - DEVIATION_PENALTY * pulp.lpSum(penalties)
+
+    _solve(model)
+    return (
+        [v.value() or 0.0 for v in y],
+        [
+            UnmetConstraint(
+                slack.kind, slack.subject, slack.variable.value() or 0.0, slack.unit
+            )
+            for slack in slacks
+        ],
+    )
+
+
+def _add_quantities(
+    model: pulp.LpProblem, foods: list[StockedFood], energy: float
+) -> list[pulp.LpVariable]:
+    """Add the grams of each food per 1,000 kcal, from 0 up to what the stock allows."""
+    # The recipe is y scaled by energy / 1000, so the stock, in y units, is the
+    # stock grams scaled the other way: stock_grams * 1000 / energy.
+    return [
         model.add_variable(f"y_{i}", 0, f.stock_grams * 1000 / energy)
         for i, f in enumerate(foods)
     ]
 
-    def per_100g(code: str) -> list[float]:
-        """Amount of a nutrient per 100 g of each food, in the order of ``foods``."""
-        return [f.composition.per_100g.get(code, 0.0) for f in foods]
 
-    def total(coefficients: list[float]):
-        """Sum of a nutrient over the recipe, per 1,000 kcal."""
-        return pulp.lpSum(c * v / 100 for c, v in zip(coefficients, y, strict=True))
+def _add_energy_rule(
+    model: pulp.LpProblem, foods: list[StockedFood], y: list[pulp.LpVariable]
+) -> None:
+    """Add the hard rule: this model recipe has exactly 1,000 kcal (scaled up later)."""
+    # Energy of the recipe: kcal per 100 g of each food x its grams / 100, added up.
+    model += _total(y, _amounts_per_100g(foods, ENERGY)) == 1000
 
-    # Hard rule: this model recipe has exactly 1,000 kcal (scaled up afterwards).
-    model += total(per_100g(ENERGY)) == 1000
 
-    # adequacy[n]: how much of nutrient n the recipe covers, capped at 100%.
+def _add_adequacy(
+    model: pulp.LpProblem,
+    foods: list[StockedFood],
+    y: list[pulp.LpVariable],
+    profile: ReferenceProfile,
+) -> dict[PrioritizedNutrient, pulp.LpVariable]:
+    """Add how much of each prioritized nutrient the recipe covers, capped at 100%."""
     adequacy = {}
     for nutrient in PrioritizedNutrient:
         adequacy[nutrient] = model.add_variable(f"u_{nutrient.value}", 0, 1)
         # Amount of the nutrient per 100 g of each food (vitamin A in RE).
-        coefficients = [
+        amounts = [
             prioritized_amount_per_100g(nutrient, f.composition.per_100g) or 0.0
             for f in foods
         ]
         # What 1,000 kcal of food should hold of this nutrient.
         reference = profile.nutrient_per_1000_kcal(nutrient)
-        # Coverage is at most what the recipe holds divided by what is needed.
-        model += adequacy[nutrient] <= total(coefficients) / reference
+        # Coverage is at most what the recipe holds divided by what is needed. It is
+        # also at most 1 (the variable's bound), which caps the adequacy at 100%.
+        model += adequacy[nutrient] <= _total(y, amounts) / reference
+    return adequacy
 
-    # Soft rules carry a slack: how far the recipe falls short of the rule.
-    # Each slack is penalized in the objective and reported if it ends above zero.
-    penalty = []
+
+def _add_macro_ranges(
+    model: pulp.LpProblem,
+    foods: list[StockedFood],
+    y: list[pulp.LpVariable],
+    profile: ReferenceProfile,
+) -> _SoftRules:
+    """Add the soft range of the energy share of each macronutrient.
+
+    Each rule carries a slack for how far the recipe falls short of it.
+    """
     slacks = []
+    penalties = []
     for macro, (code, kcal_per_gram) in MACRO_NUTRIENT_CODES.items():
         below = model.add_variable(f"s_{macro.value}_below", 0)
         above = model.add_variable(f"s_{macro.value}_above", 0)
-        # Energy this macro gives per 1,000 kcal of recipe.
-        kcal = kcal_per_gram * total(per_100g(code))
+        # Energy this macro gives per 1,000 kcal of recipe: its grams x kcal per gram.
+        kcal = kcal_per_gram * _total(y, _amounts_per_100g(foods, code))
         allowed = profile.macro_ranges[macro]
+        # The share of the energy is kcal / 1,000, so its range is scaled by 1,000.
         # Keep the share in its range: below fills a shortfall, above an excess.
         model += kcal + below >= allowed.min_share * 1000
         model += kcal - above <= allowed.max_share * 1000
         # Over 1,000 kcal, so 10 kcal out of range weigh 0.01.
-        penalty.append((below + above) / 1000)
-        slacks.append((UnmetConstraintKind.MACRO_BELOW_MIN, macro.value, below, "kcal"))
-        slacks.append((UnmetConstraintKind.MACRO_ABOVE_MAX, macro.value, above, "kcal"))
+        penalties.append((below + above) / 1000)
+        slacks.append(
+            _Slack(UnmetConstraintKind.MACRO_BELOW_MIN, macro.value, below, "kcal")
+        )
+        slacks.append(
+            _Slack(UnmetConstraintKind.MACRO_ABOVE_MAX, macro.value, above, "kcal")
+        )
+    return _SoftRules(slacks, penalties)
 
+
+def _add_gapa_minimums(
+    model: pulp.LpProblem,
+    foods: list[StockedFood],
+    y: list[pulp.LpVariable],
+    profile: ReferenceProfile,
+) -> _SoftRules:
+    """Add the soft minimum grams of each GAPA group the profile asks for.
+
+    Each rule carries a slack for how far the recipe falls short of it.
+    """
+    slacks = []
+    penalties = []
     for group in profile.gapa_portions:
         minimum = profile.gapa_minimum_per_1000_kcal(group)
         if minimum <= 0:
@@ -162,16 +250,15 @@ def _solve_per_1000_kcal(
         # The foods of the group must add up to its minimum grams; short fills the gap.
         model += pulp.lpSum(members) + short >= minimum
         # Over the minimum, so missing half of it weighs 0.5 whatever the group.
-        penalty.append(short / minimum)
+        penalties.append(short / minimum)
         slacks.append(
-            (UnmetConstraintKind.GAPA_GROUP_BELOW_MIN, group.value, short, "g")
+            _Slack(UnmetConstraintKind.GAPA_GROUP_BELOW_MIN, group.value, short, "g")
         )
+    return _SoftRules(slacks, penalties)
 
-    # Maximize the mean adequacy minus the weighted deviations.
-    model += pulp.lpSum(adequacy.values()) / len(
-        adequacy
-    ) - DEVIATION_PENALTY * pulp.lpSum(penalty)
 
+def _solve(model: pulp.LpProblem) -> None:
+    """Solve the model, raising unless the solver proves an optimum."""
     model.solve(pulp.HiGHS(msg=False, timeLimit=_SOLVER_TIME_LIMIT_SECONDS))
     solver_status = pulp.LpStatus[model.status]
     # PuLP reports "Optimal" even when the time limit cut the solve short;
@@ -182,10 +269,15 @@ def _solve_per_1000_kcal(
         # The stock check makes the program feasible, so this is a solver failure.
         raise RecipeOptimizationError(solver_status)
 
-    return (
-        [v.value() or 0.0 for v in y],
-        [
-            (kind, subject, var.value() or 0.0, unit)
-            for kind, subject, var, unit in slacks
-        ],
-    )
+
+def _amounts_per_100g(foods: list[StockedFood], code: str) -> list[float]:
+    """Return the amount of a catalog nutrient per 100 g of each food."""
+    return [f.composition.per_100g.get(code, 0.0) for f in foods]
+
+
+def _total(
+    y: list[pulp.LpVariable], amounts_per_100g: list[float]
+) -> pulp.LpAffineExpression:
+    """Sum of a nutrient over the recipe, per 1,000 kcal."""
+    # Each term is the amount per 100 g x the grams eaten / 100.
+    return pulp.lpSum(a * v / 100 for a, v in zip(amounts_per_100g, y, strict=True))
