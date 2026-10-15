@@ -10,6 +10,14 @@ from app.config.log_masking import (
     mask_url,
     server_request_hook,
 )
+from app.config.log_masking.core import normalize_key
+from app.config.log_masking.rules import (
+    EMAIL_KEY_FRAGMENTS,
+    EXACT_KEYS,
+    KEY_FRAGMENTS,
+    NAME_KEYS,
+    QUERY_PARAM_EXACT_KEYS,
+)
 from tests.unit.core.helpers import FakeSpan
 
 
@@ -30,6 +38,7 @@ def test_mask_email_keeps_first_letter_and_domain(value, expected):
     [
         "password",
         "new_password",
+        "password_hashed",
         "access_token",
         "refresh_token",
         "token",
@@ -49,6 +58,8 @@ def test_mask_email_keeps_first_letter_and_domain(value, expected):
         "weight_kg",
         "height_cm",
         "bmi",
+        "avg_bmi",
+        "IMC",
         "hemoglobin",
         "answers",
         "payload",
@@ -64,6 +75,13 @@ def test_mask_email_keeps_first_letter_and_domain(value, expected):
         "internal_service_token",
         "database_url",
         "rate_limit_redis_url",
+        "tutor_dni",
+        "cuil",
+        "birth_date",
+        "Telefono",
+        "peso_kg",
+        "z.score",
+        "percentil",
     ],
 )
 def test_sensitive_keys_are_fully_masked(key):
@@ -73,7 +91,9 @@ def test_sensitive_keys_are_fully_masked(key):
     }
 
 
-@pytest.mark.parametrize("key", ["email", "requester_email", "to_email", "Email"])
+@pytest.mark.parametrize(
+    "key", ["email", "requester_email", "to_email", "Email", "user.email"]
+)
 def test_email_keys_are_partially_masked(key):
     assert mask_event_dict({key: "juan@dominio.com"}) == {key: "j***@dominio.com"}
 
@@ -83,9 +103,10 @@ def test_email_key_with_non_string_value_is_fully_masked(value):
     assert mask_event_dict({"email": value}) == {"email": REDACTED}
 
 
-@pytest.mark.parametrize("sibling", ["last_name", "dni", "email"])
-def test_name_is_masked_next_to_a_personal_identifier(sibling):
-    assert mask_event_dict({"name": "Ana", sibling: "x"})["name"] == REDACTED
+@pytest.mark.parametrize("name_key", sorted(NAME_KEYS))
+@pytest.mark.parametrize("sibling", ["last_name", "dni", "email", "description"])
+def test_name_is_masked_next_to_a_sensitive_key(name_key, sibling):
+    assert mask_event_dict({name_key: "Ana", sibling: "x"})[name_key] == REDACTED
 
 
 def test_name_is_kept_when_alone():
@@ -95,18 +116,53 @@ def test_name_is_kept_when_alone():
     }
 
 
-def test_ids_route_status_and_birth_date_are_kept():
+def test_ids_route_status_and_timestamps_are_kept():
     event = {
         "event": "request",
         "subject_id": "7d9f",
         "trace_id": "0af7651916cd43dd8448eb211c80319c",
+        "numeric_trace_id": "12345678901234567890123456789012",
+        "uuid": "12345678-1234-1234-1234-123456789012",
         "level": "info",
         "path": "/api/v1/subjects",
         "status_code": 200,
-        "birth_date": "2015-03-01",
-        "client_ip": "190.1.2.3",
+        "submitted_at": "2026-10-15",
+        "submitted_by_id": "7d9f",
+        "timestamp": "2026-10-15T12:34:56.1234567Z",
+        "version": "1.2.3.4.5",
+        "ratio": "0.12345678",
     }
     assert mask_event_dict(event) == event
+
+
+@pytest.mark.parametrize(
+    ("event", "expected"),
+    [
+        ({"tutor_dni": "30123456"}, {"tutor_dni": REDACTED}),
+        (
+            {"name": "Juan", "birth_date": "2021-03-04"},
+            {"name": REDACTED, "birth_date": REDACTED},
+        ),
+        (
+            {"event": "Error guardando DNI 30123456"},
+            {"event": f"Error guardando DNI {REDACTED}"},
+        ),
+        (
+            {
+                "event": '190.12.34.56:51234 - "GET /children/48213?nombre=Juan '
+                'HTTP/1.1" 200'
+            },
+            {
+                "event": f'{REDACTED} - "GET /children/48213?nombre={REDACTED} '
+                'HTTP/1.1" 200'
+            },
+        ),
+        # The team decided to keep the partial email mask (first letter and domain).
+        ({"user.email": "ana@escuela.edu.ar"}, {"user.email": "a***@escuela.edu.ar"}),
+    ],
+)
+def test_events_that_used_to_leak_are_masked(event, expected):
+    assert mask_event_dict(event) == expected
 
 
 def test_nested_dicts_and_lists_are_masked():
@@ -155,6 +211,18 @@ def test_text_values_are_masked_by_content():
             "postgresql+asyncpg://user:pa55@db.internal:5432/app",
             "postgresql+asyncpg://[REDACTED]@db.internal:5432/app",
         ),
+        ("CUIL 20-30123456-7 registrado", f"CUIL {REDACTED} registrado"),
+        ("from 190.12.34.56 and 10.0.0.1:8080.", f"from {REDACTED} and {REDACTED}."),
+        ("DNI 30123456.", f"DNI {REDACTED}."),
+        ("DNI 30.123.456 y 1234567", f"DNI {REDACTED} y {REDACTED}"),
+        ("id 123456 and 123456789 and 9999.99", "id 123456 and 123456789 and 9999.99"),
+        (
+            "trace 0af7651916cd43dd8448eb211c80319c uuid "
+            "12345678-1234-1234-1234-123456789012",
+            "trace 0af7651916cd43dd8448eb211c80319c uuid "
+            "12345678-1234-1234-1234-123456789012",
+        ),
+        ("version 1.2.3.4.5 and 1.2.3.456", "version 1.2.3.4.5 and 1.2.3.456"),
         (
             "duplicate key\nDETAIL:  Key (dni)=(12345678) already exists.\n[SQL: x]",
             "duplicate key\nDETAIL:  [REDACTED]\n[SQL: x]",
@@ -171,9 +239,10 @@ def test_mask_text(text, expected):
     assert mask_text(text) == expected
 
 
-def test_mask_text_is_linear_on_long_unbroken_strings():
+@pytest.mark.parametrize("char", ["a", "1"])
+def test_mask_text_is_linear_on_long_unbroken_strings(char):
     # A quadratic scan would take seconds on this input.
-    assert mask_text("a" * 200_000) == "a" * 200_000
+    assert mask_text(char * 200_000) == char * 200_000
 
 
 def test_mask_url_masks_userinfo_query_and_fragment():
@@ -202,3 +271,8 @@ def test_server_request_hook_masks_url_attributes(attributes, expected):
     server_request_hook(span, {"query_string": b"search=Tom%26Jerry&page=2"})
 
     assert span.attributes == expected
+
+
+def test_every_rule_is_stored_normalized():
+    rules = KEY_FRAGMENTS | EXACT_KEYS | NAME_KEYS | EMAIL_KEY_FRAGMENTS
+    assert all(rule == normalize_key(rule) for rule in rules | QUERY_PARAM_EXACT_KEYS)

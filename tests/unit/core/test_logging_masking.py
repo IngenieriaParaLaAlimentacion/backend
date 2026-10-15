@@ -1,8 +1,14 @@
 import logging
 
+import pytest
 import structlog
 
-from app.config.log_masking import REDACTED
+from app.config.log_masking import (
+    MASKING_ERROR,
+    REDACTED,
+    adapters,
+    mask_structlog_event,
+)
 
 
 def test_structlog_event_is_masked_on_stdout(stdout_logs):
@@ -56,7 +62,7 @@ def test_uvicorn_access_line_masks_query_values_on_stdout(stdout_logs):
 
     (line,) = stdout_logs()
     assert line["event"] == (
-        '190.1.2.3:5000 - "GET /api/v1/subjects?search=[REDACTED]&page=2 HTTP/1.1" 200'
+        '[REDACTED] - "GET /api/v1/subjects?search=[REDACTED]&page=2 HTTP/1.1" 200'
     )
 
 
@@ -75,3 +81,33 @@ def test_library_record_reaches_otel_masked(stdout_logs, otel_logs):
 
     (exported,) = otel_logs.exporter.records
     assert "Juan" not in exported.body
+
+
+def _raise(*args, **kwargs):
+    raise RuntimeError("masking broke")
+
+
+def test_structlog_processor_fails_closed_keeping_only_the_level(monkeypatch):
+    monkeypatch.setattr(adapters, "mask_event_dict", _raise)
+
+    event = {"event": "saved", "level": "warning", "dni": "30123456"}
+
+    assert mask_structlog_event(None, "warning", event) == {
+        "event": MASKING_ERROR,
+        "level": "warning",
+    }
+
+
+@pytest.fixture
+def broken_masking(monkeypatch):
+    monkeypatch.setattr(adapters, "mask_event_dict", _raise)
+
+
+def test_stdout_line_is_replaced_when_masking_fails(stdout_logs, broken_masking):
+    structlog.get_logger("app").warning("saved", dni="30123456")
+    logging.getLogger("aiosmtplib").warning("sent to %s", "ana@dominio.com")
+
+    lines = stdout_logs()
+    assert [line["event"] for line in lines] == [MASKING_ERROR, MASKING_ERROR]
+    assert "30123456" not in str(lines)
+    assert "ana@dominio.com" not in str(lines)

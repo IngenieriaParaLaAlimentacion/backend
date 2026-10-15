@@ -1,4 +1,5 @@
 import logging
+from types import SimpleNamespace
 
 import pytest
 from fastapi import FastAPI
@@ -12,8 +13,14 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
 )
 
 from app.config import telemetry
-from app.config.log_masking import REDACTED
-from tests.unit.core.helpers import SnapshotLogExporter
+from app.config.log_masking import (
+    MASKING_ERROR,
+    REDACTED,
+    MaskingLogRecordProcessor,
+    adapters,
+    server_request_hook,
+)
+from tests.unit.core.helpers import FakeSpan, SnapshotLogExporter
 
 
 def _emit_library_error(logger: logging.Logger, secret_email: str) -> None:
@@ -113,3 +120,40 @@ def test_server_span_url_masks_query_values_and_response_is_unchanged(
     assert server_span.attributes["http.url"].endswith(
         "/items?search=[REDACTED]&page=2"
     )
+
+
+def _raise(*args, **kwargs):
+    raise RuntimeError("masking broke")
+
+
+def test_log_processor_fails_closed_clearing_body_and_attributes(monkeypatch):
+    monkeypatch.setattr(adapters, "mask_event_dict", _raise)
+    record = SimpleNamespace(body="dni 30123456", attributes={"dni": "30123456"})
+
+    MaskingLogRecordProcessor().on_emit(SimpleNamespace(log_record=record))
+
+    assert record.body == MASKING_ERROR
+    assert record.attributes == {}
+
+
+def test_span_hook_replaces_url_attributes_when_masking_fails(monkeypatch):
+    monkeypatch.setattr(adapters, "mask_span_url_attributes", _raise)
+    span = FakeSpan({"http.url": "http://h/items?search=Tom", "http.method": "GET"})
+
+    server_request_hook(span, {"query_string": b"search=Tom"})
+
+    assert span.attributes == {
+        "http.url": MASKING_ERROR,
+        "url.full": MASKING_ERROR,
+        "url.query": MASKING_ERROR,
+        "http.method": "GET",
+    }
+
+
+def test_span_hook_does_not_raise_when_the_span_cannot_be_written(monkeypatch):
+    monkeypatch.setattr(adapters, "mask_span_url_attributes", _raise)
+    span = SimpleNamespace(
+        is_recording=lambda: True, attributes={}, set_attribute=_raise
+    )
+
+    server_request_hook(span, {})
