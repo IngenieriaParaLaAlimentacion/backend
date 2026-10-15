@@ -179,18 +179,26 @@ class TestMovements:
             outflow.json()["id"],
             intake.json()["id"],
         ]
+        assert items[0]["origin_type"] is None
+        assert items[0]["is_recurring"] is None
+        assert items[1]["origin_type"] == "other"
+        assert items[1]["is_recurring"] is False
 
     async def test_an_entry_is_the_summary_shape(
         self, client, field_worker_with_access, db_establishment, foods
     ) -> None:
-        """A listing row carries category but no establishment, lines, source
-        or comments."""
+        """A listing row carries direction-specific facts but no establishment,
+        lines, source or comments."""
         headers, user_id = field_worker_with_access
         # Posted with comments so the key set proves they are withheld.
         await client.post(
             INTAKES_URL,
             json=_intake_body(
-                db_establishment.id, [(foods.rice, "10")], comments="Donación"
+                db_establishment.id,
+                [(foods.rice, "10")],
+                comments="Donación",
+                origin_type="foundation",
+                is_recurring=True,
             ),
             headers=headers,
         )
@@ -206,8 +214,12 @@ class TestMovements:
             "occurred_at",
             "responsible",
             "food_count",
+            "origin_type",
+            "is_recurring",
             "category",
         }
+        assert item["origin_type"] == "foundation"
+        assert item["is_recurring"] is True
         assert item["category"] is None
         assert set(item["responsible"]) == {"id", "name", "last_name"}
         assert item["responsible"]["id"] == str(user_id)
@@ -566,6 +578,8 @@ class TestMovementDetail:
             "direction",
             "occurred_at",
             "source",
+            "origin_type",
+            "is_recurring",
             "comments",
             "responsible",
             "items",
@@ -574,6 +588,8 @@ class TestMovementDetail:
         assert body["direction"] == "in"
         assert body["category"] is None
         assert body["source"] == "manual"
+        assert body["origin_type"] == "other"
+        assert body["is_recurring"] is False
         assert body["comments"] == "Donación"
         assert body["responsible"]["id"] == str(user_id)
         assert set(body["responsible"]) == {"id", "name", "last_name"}
@@ -612,6 +628,8 @@ class TestMovementDetail:
         body = response.json()
         assert body["direction"] == "out"
         assert body["source"] == "manual"
+        assert body["origin_type"] is None
+        assert body["is_recurring"] is None
         assert body["comments"] == "Almuerzo"
         assert body["category"] == "other"
         assert [line["quantity"] for line in body["items"]] == ["4.000"]

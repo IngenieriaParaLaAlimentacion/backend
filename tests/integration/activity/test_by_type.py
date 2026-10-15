@@ -15,6 +15,8 @@ MOVEMENT_PAYLOAD_KEYS = {
     "occurred_at",
     "establishment",
     "source",
+    "origin_type",
+    "is_recurring",
     "comments",
     "items",
 }
@@ -111,6 +113,8 @@ class TestFoodIntakeActivity:
         item = body["items"][0]
         assert item["type"] == "food_intake"
         assert item["food_intake"]["id"] == intake_id
+        assert item["food_intake"]["origin_type"] == "other"
+        assert item["food_intake"]["is_recurring"] is False
         # Additive contract: the opposite direction stays null.
         assert item["food_outflow"] is None
 
@@ -124,6 +128,8 @@ class TestFoodIntakeActivity:
             db_establishment.id,
             "2024-04-01T00:00:00Z",
             [(foods.rice, "2.500"), (foods.eggs, "12")],
+            origin_type="church",
+            is_recurring=True,
         )
 
         body = (await client.get(ACTIVITY_URL, headers=headers)).json()
@@ -136,6 +142,8 @@ class TestFoodIntakeActivity:
         assert payload["establishment"]["id"] == str(db_establishment.id)
         assert payload["establishment"]["name"] == db_establishment.name
         assert payload["source"] == "manual"
+        assert payload["origin_type"] == "church"
+        assert payload["is_recurring"] is True
         assert payload["comments"] is None
 
         lines = payload["items"]
@@ -245,6 +253,8 @@ class TestFoodOutflowActivity:
         item = body["items"][0]
         assert item["type"] == "food_outflow"
         assert item["food_outflow"]["id"] == outflow_id
+        assert item["food_outflow"]["origin_type"] is None
+        assert item["food_outflow"]["is_recurring"] is None
         assert item["food_intake"] is None
 
     async def test_outflow_payload_normalizes_occurred_at(

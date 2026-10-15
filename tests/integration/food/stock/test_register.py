@@ -28,6 +28,8 @@ class TestRegisterIntake:
 
         assert response.status_code == 201
         body = response.json()
+        assert body["origin_type"] == "other"
+        assert body["is_recurring"] is False
         assert len(body["items"]) == 2
         units = {item["food"]["name"]: item["unit"] for item in body["items"]}
         assert units == {"Arroz": "kilogramos", "Huevo": "unidades"}
@@ -39,7 +41,11 @@ class TestRegisterIntake:
         """The whole point of the replay short-circuit."""
         headers, _ = field_worker_with_access
         body = _intake_body(
-            db_establishment.id, [(foods.rice, "10")], id=str(uuid.uuid4())
+            db_establishment.id,
+            [(foods.rice, "10")],
+            id=str(uuid.uuid4()),
+            origin_type="foundation",
+            is_recurring=True,
         )
 
         first = await client.post(INTAKES_URL, json=body, headers=headers)
@@ -47,7 +53,28 @@ class TestRegisterIntake:
 
         assert first.status_code == 201
         assert second.status_code == 200
+        assert first.json()["origin_type"] == "foundation"
+        assert second.json()["origin_type"] == "foundation"
+        assert first.json()["is_recurring"] is second.json()["is_recurring"] is True
         assert await _balance(db_establishment.id, foods.rice) == Decimal("10.000")
+
+    async def test_missing_or_invalid_metadata_returns_canonical_422(
+        self, client, field_worker_with_access, db_establishment, foods
+    ) -> None:
+        headers, _ = field_worker_with_access
+        valid = _intake_body(db_establishment.id, [(foods.rice, "1")])
+        invalid = (
+            {key: value for key, value in valid.items() if key != "origin_type"},
+            {key: value for key, value in valid.items() if key != "is_recurring"},
+            {**valid, "origin_type": "unknown"},
+            {**valid, "is_recurring": "true"},
+            {**valid, "is_recurring": 1},
+        )
+        for body in invalid:
+            response = await client.post(INTAKES_URL, json=body, headers=headers)
+            assert response.status_code == 422
+            assert response.json()["type"] == "/errors/validation-failed"
+        assert await _balance(db_establishment.id, foods.rice) is None
 
     async def test_repeated_lines_of_one_food_add_up(
         self, client, field_worker_with_access, db_establishment, foods

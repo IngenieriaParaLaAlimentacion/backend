@@ -421,6 +421,8 @@ class TestFoodMovementDates:
             json={
                 "establishment_id": str(scenario.establishment_empty),
                 "occurred_at": "2026-09-01T10:00:00Z",
+                "origin_type": "other",
+                "is_recurring": False,
                 "items": [{"food_id": str(rice), "quantity": "10"}],
             },
             headers=headers,
@@ -430,6 +432,8 @@ class TestFoodMovementDates:
             json={
                 "establishment_id": str(scenario.establishment_empty),
                 "occurred_at": "2026-09-05T10:00:00Z",
+                "origin_type": "other",
+                "is_recurring": False,
                 "items": [{"food_id": str(rice), "quantity": "5"}],
             },
             headers=headers,

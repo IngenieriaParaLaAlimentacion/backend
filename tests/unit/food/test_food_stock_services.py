@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.domain.food_catalog import MeasurementUnit
-from app.domain.food_intake import FoodIntakeSource
+from app.domain.food_intake import FoodIntakeOriginType, FoodIntakeSource
 from app.domain.food_outflow import FoodOutflowCategory, FoodOutflowSource
 from app.domain.food_stock import (
     FoodMovementDirection,
@@ -72,6 +72,8 @@ def make_stored(make_food):
         stored.comments = None
         stored.category = FoodOutflowCategory.OTHER
         stored.source = FoodIntakeSource.MANUAL
+        stored.origin_type = FoodIntakeOriginType.OTHER
+        stored.is_recurring = False
         stored.created_at = stored.occurred_at
         stored.items = [item]
         for key, value in overrides.items():
@@ -97,6 +99,8 @@ def _intake_request(**overrides) -> FoodIntakeRequest:
         occurred_at=datetime(2026, 9, 1, tzinfo=timezone.utc),
         items=[FoodLineRequest(food_id=RICE_ID, quantity=Decimal("10"))],
         source=FoodIntakeSource.MANUAL,
+        origin_type=FoodIntakeOriginType.OTHER,
+        is_recurring=False,
         **overrides,
     )
 
@@ -123,15 +127,25 @@ class TestRegisterIntake:
         )
         uow.commit.assert_awaited_once()
 
+    async def test_persists_selected_metadata(self, uow, actor):
+        request = _intake_request()
+        await FoodIntakeService(uow).register(request, actor)
+
+        intake = uow.food_intake_repo.create.await_args.args[0]
+        assert intake.origin_type == FoodIntakeOriginType.OTHER
+        assert intake.is_recurring is False
+
     async def test_replay_leaves_the_balance_alone(self, uow, actor, make_stored):
         """Re-applying a re-sent intake would silently inflate the stock."""
         uow.food_intake_repo.get_by_id = AsyncMock(return_value=make_stored())
 
-        _, created = await FoodIntakeService(uow).register(
+        intake, created = await FoodIntakeService(uow).register(
             _intake_request(id=uuid.uuid4()), actor
         )
 
         assert created is False
+        assert intake.origin_type == FoodIntakeOriginType.OTHER
+        assert intake.is_recurring is False
         uow.food_stock_repo.increase_batch.assert_not_awaited()
         uow.commit.assert_not_awaited()
 

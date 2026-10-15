@@ -360,10 +360,20 @@ class FoodStockRepository:
     async def _summaries_by_id(
         self, direction: FoodMovementDirection, movement_ids: list[UUID]
     ) -> dict[UUID, Row]:
-        """Fetch responsible, category and distinct-food count for one direction."""
+        """Fetch responsible, food count, and direction-specific facts."""
         if not movement_ids:
             return {}
         source = self._MOVEMENT_SOURCES[direction]
+        origin_type = (
+            FoodIntake.origin_type
+            if direction == FoodMovementDirection.IN
+            else literal(None)
+        )
+        is_recurring = (
+            FoodIntake.is_recurring
+            if direction == FoodMovementDirection.IN
+            else literal(None)
+        )
         category = (
             source.model.category
             if direction == FoodMovementDirection.OUT
@@ -377,6 +387,8 @@ class FoodStockRepository:
                 User.last_name.label("responsible_last_name"),
                 category.label("category"),
                 func.count(distinct(source.item_model.food_id)).label("food_count"),
+                origin_type.label("origin_type"),
+                is_recurring.label("is_recurring"),
             )
             .join(User, User.id == source.model.responsible_id)
             # Outer: a movement with no lines counts 0 instead of vanishing.

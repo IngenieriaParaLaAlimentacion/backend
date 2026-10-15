@@ -238,11 +238,11 @@ class ActivityRepository:
         ),
         ActivityType.FOOD_INTAKE: (
             "food_intake",
-            FoodMovementListItemDomain.from_db,
+            FoodMovementListItemDomain.from_intake,
         ),
         ActivityType.FOOD_OUTFLOW: (
             "food_outflow",
-            FoodMovementListItemDomain.from_db,
+            FoodMovementListItemDomain.from_outflow,
         ),
     }
 

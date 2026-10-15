@@ -31,7 +31,13 @@ def _movement_body(establishment_id, lines, **overrides):
 async def _create_food_intake(
     client, headers, establishment_id, occurred_at, lines, **overrides
 ):
-    body = _movement_body(establishment_id, lines, occurred_at=occurred_at, **overrides)
+    intake_fields = {"origin_type": "other", "is_recurring": False, **overrides}
+    body = _movement_body(
+        establishment_id,
+        lines,
+        occurred_at=occurred_at,
+        **intake_fields,
+    )
     response = await client.post(FOOD_INTAKES_URL, json=body, headers=headers)
     assert response.status_code == status.HTTP_201_CREATED
     return response.json()["id"]

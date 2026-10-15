@@ -72,6 +72,8 @@ class FoodIntakeService:
             occurred_at=data.occurred_at,
             comments=data.comments,
             source=data.source,
+            origin_type=data.origin_type,
+            is_recurring=data.is_recurring,
             photo_key=photo_key,
         )
         intake.items = [
