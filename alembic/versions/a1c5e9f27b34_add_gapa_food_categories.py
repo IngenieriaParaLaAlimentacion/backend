@@ -1,7 +1,7 @@
 """add gapa food categories
 
 Revision ID: a1c5e9f27b34
-Revises: 7d3e9a1b5c24
+Revises: e0499c75e66a
 Create Date: 2026-10-10 00:00:00.000000
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 from alembic import op
 
 revision: str = "a1c5e9f27b34"
-down_revision: Union[str, Sequence[str], None] = "7d3e9a1b5c24"
+down_revision: Union[str, Sequence[str], None] = "e0499c75e66a"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
