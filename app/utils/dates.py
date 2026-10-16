@@ -28,3 +28,14 @@ def validate_not_future_date(v: date | None) -> date | None:
     if v is not None and v > today_in_argentina():
         raise ValueError("cannot be in the future")
     return v
+
+
+def month_bounds(year: int, month: int) -> tuple[datetime, datetime]:
+    """Return the start of a month and of the next one, in Argentina time."""
+    start = datetime(year, month, 1, tzinfo=ARGENTINA_TZ)
+    end = (
+        datetime(year + 1, 1, 1, tzinfo=ARGENTINA_TZ)
+        if month == 12
+        else datetime(year, month + 1, 1, tzinfo=ARGENTINA_TZ)
+    )
+    return start, end

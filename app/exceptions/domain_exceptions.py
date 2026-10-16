@@ -1058,3 +1058,60 @@ class ImageContentMismatchError(UnprocessableEntityError):
             f"{content_type!r}.",
             extensions={"content_type": content_type},
         )
+
+
+class InvalidChildrenCountError(UnprocessableEntityError):
+    """Raised when a recipe is requested for no children or a negative number.
+
+    Args:
+        children_count (int): The rejected number of children.
+    """
+
+    error_type = "nutrition/invalid-children-count"
+
+    def __init__(self, children_count: int):
+        super().__init__(
+            "Invalid number of children",
+            f"A recipe needs at least one child, got {children_count}.",
+            extensions={"children_count": children_count},
+        )
+
+
+class RecipeOptimizationError(BaseError):
+    """Raised when the solver cannot return an optimal recipe.
+
+    The stock check makes the program feasible, so this means the solver itself
+    failed rather than that the request cannot be met.
+
+    Args:
+        solver_status (str): The status the solver ended with.
+    """
+
+    error_type = "nutrition/recipe-optimization-failed"
+    status = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+    def __init__(self, solver_status: str):
+        super().__init__(
+            "Recipe optimization failed",
+            f"The solver ended as {solver_status!r} instead of finding a recipe.",
+            extensions={"solver_status": solver_status},
+        )
+
+
+class UnknownGapaGroupError(BaseError):
+    """Raised when the catalog holds a GAPA group the application does not know.
+
+    Args:
+        code (str): The code of the unknown group.
+    """
+
+    error_type = "nutrition/unknown-gapa-group"
+    status = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+    def __init__(self, code: str):
+        super().__init__(
+            "Unknown GAPA group",
+            f"The catalog has a GAPA group with code {code!r}, which is not one of "
+            "the six the service knows.",
+            extensions={"code": code},
+        )
