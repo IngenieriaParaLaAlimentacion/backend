@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.config.settings import settings
+from app.domain.food_catalog import MeasurementUnit
 from app.domain.food_intake import FoodIntakeOriginType
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
@@ -235,10 +236,45 @@ class TestExtraction:
         assert yerba.raw_quantity is None
         assert yerba.raw_unit_text is None
 
+    async def test_unusable_quantity_is_dropped_without_losing_the_other_lines(
+        self, uow, storage, food_intake_service, llm_client, admin_actor
+    ):
+        llm_client.complete = AsyncMock(
+            return_value={
+                "lines": [
+                    # a barcode read as the quantity does not fit a proposed line
+                    {
+                        "description": "Fideos",
+                        "raw_quantity": 7791234567890,
+                        "raw_unit_text": "un",
+                    },
+                    {
+                        "description": "Arroz 1kg",
+                        "raw_quantity": "1,5",
+                        "raw_unit_text": "kg",
+                    },
+                ]
+            }
+        )
+
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+        proposal = await service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        )
+
+        noodles, rice = proposal.lines
+        assert noodles.raw_quantity is None
+        assert rice.raw_quantity == Decimal("1.5")
+
     async def test_confident_catalog_match_populates_food_but_still_needs_review(
         self, uow, storage, food_intake_service, llm_client, admin_actor
     ):
-        matched_food = SimpleNamespace(id=uuid.uuid4(), name="Arroz")
+        matched_food = SimpleNamespace(
+            id=uuid.uuid4(), name="Arroz", base_unit=MeasurementUnit.KILOGRAMOS
+        )
         uow.food_repo.find_best_match = AsyncMock(return_value=matched_food)
         llm_client.complete = AsyncMock(
             return_value={
@@ -270,6 +306,90 @@ class TestExtraction:
             settings.receipt_food_match_min_word_similarity,
             settings.receipt_food_match_min_similarity,
         )
+
+    @pytest.mark.parametrize(
+        ("base_unit", "raw_quantity", "raw_unit_text", "quantity", "unit"),
+        [
+            # printed in the food's own base unit
+            (MeasurementUnit.KILOGRAMOS, 1, "kg", Decimal("1"), "kilogramos"),
+            # recognised, but reaching the base unit would need a conversion
+            (MeasurementUnit.KILOGRAMOS, 500, "g", None, None),
+            # a different dimension than the food's base unit
+            (MeasurementUnit.UNIDADES, 1, "kg", None, None),
+        ],
+    )
+    async def test_matched_line_is_prefilled_only_when_printed_in_base_unit(
+        self,
+        uow,
+        storage,
+        food_intake_service,
+        llm_client,
+        admin_actor,
+        base_unit,
+        raw_quantity,
+        raw_unit_text,
+        quantity,
+        unit,
+    ):
+        uow.food_repo.find_best_match = AsyncMock(
+            return_value=SimpleNamespace(
+                id=uuid.uuid4(), name="Arroz", base_unit=base_unit
+            )
+        )
+        llm_client.complete = AsyncMock(
+            return_value={
+                "lines": [
+                    {
+                        "description": "Arroz",
+                        "raw_quantity": raw_quantity,
+                        "raw_unit_text": raw_unit_text,
+                    }
+                ]
+            }
+        )
+
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+        proposal = await service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        )
+
+        (line,) = proposal.lines
+        assert line.quantity == quantity
+        assert line.unit == unit
+        # the printed values are passed through whether or not they were used
+        assert line.raw_quantity == Decimal(raw_quantity)
+        assert line.raw_unit_text == raw_unit_text
+
+    async def test_unmatched_line_has_no_quantity_or_unit(
+        self, uow, storage, food_intake_service, llm_client, admin_actor
+    ):
+        llm_client.complete = AsyncMock(
+            return_value={
+                "lines": [
+                    {
+                        "description": "Cosa rara 1kg",
+                        "raw_quantity": 1,
+                        "raw_unit_text": "kg",
+                    }
+                ]
+            }
+        )
+
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+        proposal = await service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        )
+
+        (line,) = proposal.lines
+        assert line.food is None
+        assert line.quantity is None
+        assert line.unit is None
 
     async def test_no_lines_detected_returns_manual_fallback_message(
         self, uow, storage, food_intake_service, llm_client, admin_actor

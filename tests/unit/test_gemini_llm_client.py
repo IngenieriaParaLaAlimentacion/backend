@@ -13,9 +13,12 @@ from app.services.llm.gemini_llm_client import GeminiLlmClient
 
 @pytest.fixture(autouse=True)
 def _fast_retries(monkeypatch):
-    """Zero out the backoff so retry tests don't sleep for real."""
+    """Zero out the backoff so retry tests don't sleep for real, and pin the
+    retry/fallback settings so a developer's .env cannot change the call count."""
     monkeypatch.setattr(settings, "gemini_retry_backoff_initial_seconds", 0)
     monkeypatch.setattr(settings, "gemini_retry_backoff_max_seconds", 0)
+    monkeypatch.setattr(settings, "gemini_max_attempts", 3)
+    monkeypatch.setattr(settings, "gemini_fallback_model", None)
 
 
 def _client(side_effect) -> GeminiLlmClient:
