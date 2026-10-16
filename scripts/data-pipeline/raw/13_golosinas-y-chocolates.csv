@@ -1,0 +1,2068 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,Fibra alimentaria,"3,7"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,Fibra alimentaria,"1,3"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,Fibra alimentaria,"2,7"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,Fibra alimentaria,"1,7"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,Fibra alimentaria,"3,0"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,Fibra alimentaria,"1,2"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,Fibra alimentaria,"1,6"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,Fibra alimentaria,"1,0"
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,Fibra alimentaria,0
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,Fibra alimentaria,"3,2"
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,Fibra alimentaria,"3,0"
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,Fibra alimentaria,0
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,Fibra alimentaria,"0,8"
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,Fibra alimentaria,"1,9"
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,Fibra alimentaria,"1,6"
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,Fibra alimentaria,"37,0"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,Fibra alimentaria,"3,7"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,Fibra alimentaria,"6,4"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,Fibra alimentaria,0
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,Fibra alimentaria,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,Azúcar agregado,"20,5"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,Azúcar agregado,"35,0"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,Azúcar agregado,"35,4"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,Azúcar agregado,"42,4"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,Azúcar agregado,"42,4"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,Azúcar agregado,"29,0"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,Azúcar agregado,"32,2"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,Azúcar agregado,"13,0"
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,Azúcar agregado,"60,0"
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,Azúcar agregado,"48,0"
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,Azúcar agregado,"20,5"
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,Azúcar agregado,"39,0"
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,Azúcar agregado,"62,3"
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,Azúcar agregado,"42,0"
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,Azúcar agregado,"40,0"
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,Azúcar agregado,0
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,Azúcar agregado,"65,6"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,Azúcar agregado,"71,0"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,Azúcar agregado,"62,9"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,Azúcar agregado,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,Azúcar total,"20,5"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,Azúcar total,"35,0"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,Azúcar total,"35,4"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,Azúcar total,"42,4"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,Azúcar total,"42,4"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,Azúcar total,"31,1"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,Azúcar total,"32,5"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,Azúcar total,"13,0"
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,Azúcar total,"60,0"
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,Azúcar total,"48,0"
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,Azúcar total,"20,5"
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,Azúcar total,"52,0"
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,Azúcar total,"62,3"
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,Azúcar total,"42,0"
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,Azúcar total,"80,7"
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,Azúcar total,"1,8"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,Azúcar total,"65,6"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,Azúcar total,"71,0"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,Azúcar total,"62,9"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,Azúcar total,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,Carbohidratos totales,"58,2"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,Carbohidratos totales,"66,4"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,Carbohidratos totales,"60,5"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,Carbohidratos totales,"70,2"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,Carbohidratos totales,"77,5"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,Carbohidratos totales,"71,7"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,Carbohidratos totales,"63,6"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,Carbohidratos totales,"46,7"
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,Carbohidratos totales,"69,3"
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,Carbohidratos totales,"53,2"
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,Carbohidratos totales,"63,0"
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,Carbohidratos totales,"52,0"
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,Carbohidratos totales,"73,0"
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,Carbohidratos totales,"49,9"
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,Carbohidratos totales,"82,7"
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,Carbohidratos totales,"57,9"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,Carbohidratos totales,"83,7"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,Carbohidratos totales,"85,0"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,Carbohidratos totales,"98,0"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,Carbohidratos totales,"98,6"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,Carbohidratos disponibles,"54,5"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,Carbohidratos disponibles,"64,6"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,Carbohidratos disponibles,"57,8"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,Carbohidratos disponibles,"68,5"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,Carbohidratos disponibles,"74,5"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,Carbohidratos disponibles,"64,9"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,Carbohidratos disponibles,"60,9"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,Carbohidratos disponibles,"45,7"
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,Carbohidratos disponibles,"69,3"
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,Carbohidratos disponibles,"50,0"
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,Carbohidratos disponibles,"60,0"
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,Carbohidratos disponibles,"52,0"
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,Carbohidratos disponibles,"72,2"
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,Carbohidratos disponibles,"48,0"
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,Carbohidratos disponibles,"81,1"
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,Carbohidratos disponibles,"20,9"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,Carbohidratos disponibles,"80,0"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,Carbohidratos disponibles,"78,6"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,Carbohidratos disponibles,"98,0"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,Carbohidratos disponibles,"98,6"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,20:4 Araquidónico,"0,005"
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,18:3 cis Alfa linolénico (ALA),"0,050"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,18:3 cis Alfa linolénico (ALA),"0,126"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,18:3 cis Alfa linolénico (ALA),"0,115"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,18:3 cis Alfa linolénico (ALA),"0,035"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,18:3 cis Alfa linolénico (ALA),"0,056"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,18:3 cis Alfa linolénico (ALA),"0,050"
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,18:3 cis Alfa linolénico (ALA),"0,160"
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,18:3 cis Alfa linolénico (ALA),"0,050"
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,18:3 cis Alfa linolénico (ALA),"0,047"
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,18:3 cis Alfa linolénico (ALA),"0,086"
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,18:3 cis Alfa linolénico (ALA),"0,003"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,18:2 cis Linoléico,"0,95"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,18:2 cis Linoléico,"0,75"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,18:2 cis Linoléico,"2,19"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,18:2 cis Linoléico,"0,67"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,18:2 cis Linoléico,"0,00"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,18:2 cis Linoléico,"1,26"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,18:2 cis Linoléico,"0,50"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,18:2 cis Linoléico,"0,95"
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,18:2 cis Linoléico,"0,48"
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,18:2 cis Linoléico,"2,09"
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,18:2 cis Linoléico,"0,48"
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,18:2 cis Linoléico,"0,45"
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,18:2 cis Linoléico,"2,93"
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,18:2 cis Linoléico,"4,21"
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,18:2 cis Linoléico,"0,00"
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,18:2 cis Linoléico,"0,44"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,18:2 cis Linoléico,"0,11"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,18:2 cis Linoléico,"0,00"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,18:2 cis Linoléico,"0,00"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,18:2 cis Linoléico,"0,00"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,Trans,"0,30"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,Trans,"0,60"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,Trans,"0,10"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,Trans,"0,20"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,Trans,"0,90"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,Trans,"0,09"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,Trans,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,Trans,0
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,Trans,0
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,Trans,"1,00"
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,Trans,0
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,Trans,0
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,Trans,0
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,Trans,0
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,Trans,0
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,Trans,0
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,Trans,0
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,Trans,0
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,Trans,0
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,Trans,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,Poliinsaturados,"1,00"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,Poliinsaturados,"0,90"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,Poliinsaturados,"2,30"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,Poliinsaturados,"0,70"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,Poliinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,Poliinsaturados,"1,40"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,Poliinsaturados,"0,61"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,Poliinsaturados,"1,00"
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,Poliinsaturados,"0,50"
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,Poliinsaturados,"2,25"
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,Poliinsaturados,"0,50"
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,Poliinsaturados,"0,50"
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,Poliinsaturados,"3,00"
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,Poliinsaturados,"4,30"
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,Poliinsaturados,"0,02"
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,Poliinsaturados,"0,44"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,Poliinsaturados,"0,11"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,Poliinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,Poliinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,Poliinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,Monoinsaturados,"7,50"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,Monoinsaturados,"6,40"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,Monoinsaturados,"9,80"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,Monoinsaturados,"4,67"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,Monoinsaturados,"3,32"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,Monoinsaturados,"4,37"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,Monoinsaturados,"1,26"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,Monoinsaturados,"4,00"
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,Monoinsaturados,"3,00"
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,Monoinsaturados,"13,50"
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,Monoinsaturados,"7,00"
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,Monoinsaturados,"11,00"
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,Monoinsaturados,"2,84"
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,Monoinsaturados,"13,00"
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,Monoinsaturados,"0,01"
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,Monoinsaturados,"4,57"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,Monoinsaturados,"1,33"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,Monoinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,Monoinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,Monoinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,Saturados,"17,70"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,Saturados,"7,80"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,Saturados,"24,60"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,Saturados,"3,90"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,Saturados,"3,70"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,Saturados,"6,30"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,Saturados,"1,06"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,Saturados,"4,00"
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,Saturados,"6,40"
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,Saturados,"20,00"
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,Saturados,"16,50"
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,Saturados,"22,00"
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,Saturados,"6,16"
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,Saturados,"18,00"
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,Saturados,"0,01"
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,Saturados,"8,07"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,Saturados,"2,38"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,Saturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,Saturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,Saturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,Colesterol,"9,5"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,Colesterol,16
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,Colesterol,13
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,Colesterol,40
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,Colesterol,127
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,Colesterol,"10,0"
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,Colesterol,"5,0"
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,Colesterol,"0,2"
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,Colesterol,30
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,Colesterol,11
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,Colesterol,"2,8"
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,Lípidos totales,"26,8"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,Lípidos totales,"14,1"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,Lípidos totales,"31,0"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,Lípidos totales,"8,9"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,Lípidos totales,"8,9"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,Lípidos totales,"13,4"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,Lípidos totales,"3,2"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,Lípidos totales,"10,0"
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,Lípidos totales,"10,0"
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,Lípidos totales,"37,0"
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,Lípidos totales,"24,5"
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,Lípidos totales,"34,0"
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,Lípidos totales,"13,1"
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,Lípidos totales,"36,0"
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,Lípidos totales,"0,1"
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,Lípidos totales,"13,7"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,Lípidos totales,"4,0"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,Lípidos totales,"0,0"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,Lípidos totales,"0,2"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,Lípidos totales,"0,0"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,Proteínas,"6,8"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,Proteínas,"6,3"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,Proteínas,"7,4"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,Proteínas,"6,6"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,Proteínas,"2,2"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,Proteínas,"6,3"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,Proteínas,"7,6"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,Proteínas,"6,7"
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,Proteínas,"2,9"
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,Proteínas,"7,8"
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,Proteínas,"10,0"
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,Proteínas,"9,6"
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,Proteínas,"5,3"
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,Proteínas,"10,0"
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,Proteínas,"0,3"
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,Proteínas,"19,6"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,Proteínas,"6,7"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,Proteínas,"5,4"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,Proteínas,"0,0"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,Proteínas,"0,0"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,Agua,"8,2"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,Agua,"13,2"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,Agua,"1,1"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,Agua,"14,3"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,Agua,"11,4"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,Agua,"8,0"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,Agua,"24,6"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,Agua,"36,6"
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,Agua,"17,8"
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,Agua,"0,8"
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,Agua,"2,5"
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,Agua,"4,4"
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,Agua,"6,9"
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,Agua,"4,1"
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,Agua,"16,7"
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,Agua,"3,0"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,Agua,"1,5"
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,Agua,"9,6"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,Agua,"1,3"
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,Agua,"1,4"
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de arroz,Valor energético,486
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate,Valor energético,411
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de chocolate con relleno tipo mousse,Valor energético,540
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de dulce de leche,Valor energético,381
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de fruta,Valor energético,387
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de maicena,Valor energético,405
+13,Golosinas y chocolates,macronutrientes,105,Alfajor de miel,Valor energético,303
+13,Golosinas y chocolates,macronutrientes,105,Alfajor light,Valor energético,300
+13,Golosinas y chocolates,macronutrientes,105,Bananita con cobertura de chocolate,Valor energético,379
+13,Golosinas y chocolates,macronutrientes,105,Baño de repostería para cubrir tortas,Valor energético,564
+13,Golosinas y chocolates,macronutrientes,105,Barra de arroz rellena bañada,Valor energético,501
+13,Golosinas y chocolates,macronutrientes,105,Barra de chocolate tipo Kinder,Valor energético,552
+13,Golosinas y chocolates,macronutrientes,105,Bocadito con dulce de leche tipo Cabsha,Valor energético,427
+13,Golosinas y chocolates,macronutrientes,105,Bombón tipo Bon O Bon,Valor energético,556
+13,Golosinas y chocolates,macronutrientes,105,Bombones de fruta,Valor energético,327
+13,Golosinas y chocolates,macronutrientes,105,Cacao amargo*,Valor energético,285
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo sin fortificar*,Valor energético,383
+13,Golosinas y chocolates,macronutrientes,105,Cacao en polvo tipo Nesquick*,Valor energético,336
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros,Valor energético,394
+13,Golosinas y chocolates,macronutrientes,105,Caramelos duros light,Valor energético,236
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Vitamina D,"0,06"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Vitamina D,"0,52"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Vitamina D,"0,17"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Vitamina C,"0,7"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Vitamina C,"0,8"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Vitamina C,"0,7"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Vitamina C,"0,3"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Vitamina C,"0,2"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Vitamina C,"0,2"
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Vitamina B-12,"0,10"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Vitamina B-12,"0,11"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Vitamina B-12,"0,03"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Vitamina B-12,"0,20"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Vitamina B-12,"0,20"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Vitamina B-12,"0,10"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Vitamina B-12,"1,07"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Vitamina B-12,"0,40"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Vitamina B-12,"0,35"
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Riboflavina,"0,045"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Riboflavina,"0,275"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Riboflavina,"0,060"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Riboflavina,"0,287"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Riboflavina,"0,202"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Riboflavina,"0,202"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Riboflavina,"0,202"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Riboflavina,"0,275"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Riboflavina,
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Riboflavina,"0,090"
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Riboflavina,"0,045"
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Riboflavina,"0,398"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Riboflavina,"0,266"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Riboflavina,"0,030"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Riboflavina,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Riboflavina,"0,241"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Riboflavina,"0,565"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Riboflavina,"0,565"
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Riboflavina,"0,003"
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Riboflavina,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Tiamina,"0,154"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Tiamina,"0,178"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Tiamina,"0,247"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Tiamina,"0,195"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Tiamina,"0,199"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Tiamina,"0,124"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Tiamina,"0,349"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Tiamina,"0,178"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Tiamina,
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Tiamina,"0,055"
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Tiamina,"0,154"
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Tiamina,"0,093"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Tiamina,"0,105"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Tiamina,"0,023"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Tiamina,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Tiamina,"0,078"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Tiamina,"0,096"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Tiamina,"1,290"
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Tiamina,"0,004"
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Tiamina,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Retinol,18
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Retinol,20
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Retinol,32
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Retinol,36
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Retinol,18
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Retinol,83
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Retinol,22
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Retinol,1
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Retinol,1
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,"Vitamina A, RAE",19
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,"Vitamina A, RAE",20
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,"Vitamina A, RAE",32
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,"Vitamina A, RAE",37
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,"Vitamina A, RAE",19
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,"Vitamina A, RAE",85
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,"Vitamina A, RAE",23
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,"Vitamina A, RAE",1
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,"Vitamina A, RAE",1
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,"Vitamina A, RAE",1
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Ácido fólico,40
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Ácido fólico,66
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Ácido fólico,48
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Ácido fólico,49
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Ácido fólico,23
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Ácido fólico,89
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Ácido fólico,40
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Folato EFD,4
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Folato EFD,81
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Folato EFD,122
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Folato EFD,93
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Folato EFD,95
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Folato EFD,49
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Folato EFD,179
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Folato EFD,81
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Folato EFD,
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Folato EFD,13
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Folato EFD,4
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Folato EFD,12
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Folato EFD,6
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Folato EFD,15
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Folato EFD,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Folato EFD,32
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Folato EFD,6
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Folato EFD,6
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Folato EFD,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Folato EFD,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Niacina,"2,93"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Niacina,"1,74"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Niacina,"0,81"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Niacina,"1,94"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Niacina,"1,94"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Niacina,"0,49"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Niacina,"1,11"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Niacina,"1,74"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Niacina,
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Niacina,"0,43"
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Niacina,"2,93"
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Niacina,"0,21"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Niacina,"0,20"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Niacina,"2,15"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Niacina,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Niacina,"2,19"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Niacina,"0,59"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Niacina,"0,59"
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Niacina,"0,01"
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Niacina,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Zinc,"1,01"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Zinc,"0,9"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Zinc,"0,2"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Zinc,1
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Zinc,"0,37"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Zinc,"0,5"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Zinc,"0,5"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Zinc,"0,9"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Zinc,
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Zinc,"1,62"
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Zinc,"1,01"
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Zinc,"1,09"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Zinc,"0,87"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Zinc,"0,42"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Zinc,"0,05"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Zinc,"6,81"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Zinc,"1,46"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Zinc,"7,5"
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Zinc,"0,01"
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Zinc,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Magnesio,55
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Magnesio,48
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Magnesio,7
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Magnesio,16
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Magnesio,11
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Magnesio,14
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Magnesio,11
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Magnesio,48
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Magnesio,
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Magnesio,115
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Magnesio,55
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Magnesio,28
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Magnesio,28
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Magnesio,27
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Magnesio,4
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Magnesio,499
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Magnesio,83
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Magnesio,83
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Magnesio,3
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Magnesio,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Hierro,"0,58"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Hierro,"2,27"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Hierro,"1,25"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Hierro,"1,60"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Hierro,"1,67"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Hierro,"1,23"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Hierro,"2,45"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Hierro,"2,27"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Hierro,
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Hierro,"3,13"
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Hierro,"0,58"
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Hierro,"0,18"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Hierro,"0,65"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Hierro,"0,24"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Hierro,"0,17"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Hierro,"13,86"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Hierro,"1,19"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Hierro,"15,00"
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Hierro,"0,30"
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Hierro,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Fósforo,140
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Fósforo,134
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Fósforo,39
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Fósforo,108
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Fósforo,67
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Fósforo,95
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Fósforo,155
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Fósforo,134
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Fósforo,
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Fósforo,132
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Fósforo,140
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Fósforo,251
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Fósforo,136
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Fósforo,54
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Fósforo,5
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Fósforo,734
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Fósforo,315
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Fósforo,193
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Fósforo,3
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Fósforo,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Cobre,"0,151"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Cobre,"0,3"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Cobre,"0,043"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Cobre,"0,09"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Cobre,"0,12"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Cobre,"0,1"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Cobre,"0,07"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Cobre,"0,3"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Cobre,
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Cobre,"0,7"
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Cobre,"0,151"
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Cobre,"0,0264"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Cobre,"0,127"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Cobre,"0,0642"
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Cobre,"0,029"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Cobre,"3,788"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Cobre,"0,286"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Cobre,"0,286"
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Cobre,"0,029"
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Cobre,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Calcio,5
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Calcio,92
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Calcio,3
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Calcio,92
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Calcio,29
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Calcio,78
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Calcio,53
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Calcio,92
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Calcio,
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Calcio,32
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Calcio,5
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Calcio,271
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Calcio,150
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Calcio,9
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Calcio,18
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Calcio,128
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Calcio,133
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Calcio,400
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Calcio,3
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Calcio,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Potasio,125
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Potasio,221
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Potasio,160
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Potasio,127
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Potasio,77
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Potasio,127
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Potasio,99
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Potasio,221
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Potasio,
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Potasio,365
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Potasio,125
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Potasio,404
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Potasio,250
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Potasio,95
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Potasio,56
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Potasio,1524
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Potasio,712
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Potasio,800
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Potasio,5
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Potasio,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Sodio,56
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Sodio,146
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Sodio,80
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Sodio,162
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Sodio,111
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Sodio,161
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Sodio,78
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Sodio,122
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Sodio,22
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Sodio,54
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Sodio,100
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Sodio,140
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Sodio,207
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Sodio,122
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Sodio,98
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Sodio,21
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Sodio,504
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Sodio,164
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Sodio,38
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Sodio,0
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de arroz,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de chocolate con relleno tipo mousse,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de dulce de leche,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de fruta,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de maicena,Cenizas,"0,7"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor de miel,Cenizas,"1,0"
+13,Golosinas y chocolates,vitaminas_minerales,106,Alfajor light,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,106,Bananita con cobertura de chocolate,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,106,Baño de repostería para cubrir tortas,Cenizas,"1,2"
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de arroz rellena bañada,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,106,Barra de chocolate tipo Kinder,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,106,Bocadito con dulce de leche tipo Cabsha,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombón tipo Bon O Bon,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,106,Bombones de fruta,Cenizas,"0,14"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao amargo*,Cenizas,"5,8"
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo sin fortificar*,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,106,Cacao en polvo tipo Nesquick*,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros,Cenizas,"0,5"
+13,Golosinas y chocolates,vitaminas_minerales,106,Caramelos duros light,Cenizas,0
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Chicles,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,Fibra alimentaria,0
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,Fibra alimentaria,0
+13,Golosinas y chocolates,macronutrientes,107,Chicles,Fibra alimentaria,"2,4"
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,Fibra alimentaria,"2,4"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,Fibra alimentaria,"8,0"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,Fibra alimentaria,"16,6"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,Fibra alimentaria,"0,2"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,Fibra alimentaria,"6,2"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,Fibra alimentaria,"3,8"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,Fibra alimentaria,"0,6"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,Fibra alimentaria,"5,9"
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,Fibra alimentaria,"3,4"
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,Fibra alimentaria,0
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,Fibra alimentaria,"2,5"
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,Fibra alimentaria,0
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,Fibra alimentaria,"4,1"
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,Fibra alimentaria,"0,2"
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,Fibra alimentaria,0
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,Fibra alimentaria,"2,2"
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,Fibra alimentaria,"4,7"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,Azúcar agregado,"54,5"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,Azúcar agregado,"62,9"
+13,Golosinas y chocolates,macronutrientes,107,Chicles,Azúcar agregado,"66,1"
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,Azúcar agregado,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,Azúcar agregado,"36,7"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,Azúcar agregado,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,Azúcar agregado,"59,0"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,Azúcar agregado,"43,9"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,Azúcar agregado,"47,2"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,Azúcar agregado,"7,1"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,Azúcar agregado,"54,5"
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,Azúcar agregado,"44,0"
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,Azúcar agregado,"62,9"
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,Azúcar agregado,"43,6"
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,Azúcar agregado,"38,9"
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,Azúcar agregado,"42,2"
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,Azúcar agregado,"70,0"
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,Azúcar agregado,"37,0"
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,Azúcar agregado,"69,0"
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,Azúcar agregado,"37,6"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,Azúcar total,"54,5"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,Azúcar total,"62,9"
+13,Golosinas y chocolates,macronutrientes,107,Chicles,Azúcar total,"66,1"
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,Azúcar total,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,Azúcar total,"36,7"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,Azúcar total,"0,9"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,Azúcar total,"59,0"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,Azúcar total,"43,9"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,Azúcar total,"47,2"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,Azúcar total,"7,1"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,Azúcar total,"54,5"
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,Azúcar total,"51,5"
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,Azúcar total,"62,9"
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,Azúcar total,"46,2"
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,Azúcar total,"38,9"
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,Azúcar total,"42,2"
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,Azúcar total,"70,0"
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,Azúcar total,"50,0"
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,Azúcar total,"69,0"
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,Azúcar total,"37,6"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,Carbohidratos totales,"85,1"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,Carbohidratos totales,"98,0"
+13,Golosinas y chocolates,macronutrientes,107,Chicles,Carbohidratos totales,"96,7"
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,Carbohidratos totales,"63,0"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,Carbohidratos totales,"52,4"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,Carbohidratos totales,"28,4"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,Carbohidratos totales,"59,2"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,Carbohidratos totales,"53,4"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,Carbohidratos totales,"54,3"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,Carbohidratos totales,"50,6"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,Carbohidratos totales,"63,9"
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,Carbohidratos totales,"59,4"
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,Carbohidratos totales,"98,0"
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,Carbohidratos totales,"62,2"
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,Carbohidratos totales,"71,0"
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,Carbohidratos totales,"47,4"
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,Carbohidratos totales,"93,6"
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,Carbohidratos totales,"50,0"
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,Carbohidratos totales,"73,2"
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,Carbohidratos totales,"49,7"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,Carbohidratos disponibles,"85,1"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,Carbohidratos disponibles,"98,0"
+13,Golosinas y chocolates,macronutrientes,107,Chicles,Carbohidratos disponibles,"94,3"
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,Carbohidratos disponibles,"63,0"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,Carbohidratos disponibles,"44,4"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,Carbohidratos disponibles,"11,8"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,Carbohidratos disponibles,"59,0"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,Carbohidratos disponibles,"47,2"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,Carbohidratos disponibles,"50,5"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,Carbohidratos disponibles,"50,6"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,Carbohidratos disponibles,"58,0"
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,Carbohidratos disponibles,"56,0"
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,Carbohidratos disponibles,"98,0"
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,Carbohidratos disponibles,"59,5"
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,Carbohidratos disponibles,"71,0"
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,Carbohidratos disponibles,"43,3"
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,Carbohidratos disponibles,"93,4"
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,Carbohidratos disponibles,"50,0"
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,Carbohidratos disponibles,"71,0"
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,Carbohidratos disponibles,"45,0"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Chicles,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Chicles,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Chicles,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,18:3 cis Alfa linolénico (ALA),"0,010"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,107,Chicles,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,18:3 cis Alfa linolénico (ALA),"0,088"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,18:3 cis Alfa linolénico (ALA),"0,117"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,18:3 cis Alfa linolénico (ALA),"0,103"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,18:3 cis Alfa linolénico (ALA),"0,082"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,18:3 cis Alfa linolénico (ALA),"0,001"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,18:3 cis Alfa linolénico (ALA),"0,040"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,18:3 cis Alfa linolénico (ALA),"0,068"
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,18:3 cis Alfa linolénico (ALA),"0,122"
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,18:3 cis Alfa linolénico (ALA),"0,064"
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,18:3 cis Alfa linolénico (ALA),"0,002"
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,18:3 cis Alfa linolénico (ALA),"0,050"
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,18:3 cis Alfa linolénico (ALA),"0,030"
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,18:3 cis Alfa linolénico (ALA),"0,040"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,18:2 cis Linoléico,"0,38"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,18:2 cis Linoléico,"0,00"
+13,Golosinas y chocolates,macronutrientes,107,Chicles,18:2 cis Linoléico,"0,00"
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,18:2 cis Linoléico,"0,00"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,18:2 cis Linoléico,"1,09"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,18:2 cis Linoléico,"1,43"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,18:2 cis Linoléico,"0,91"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,18:2 cis Linoléico,"2,94"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,18:2 cis Linoléico,"4,37"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,18:2 cis Linoléico,"0,76"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,18:2 cis Linoléico,"0,90"
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,18:2 cis Linoléico,"1,25"
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,18:2 cis Linoléico,"0,00"
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,18:2 cis Linoléico,"0,92"
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,18:2 cis Linoléico,"0,48"
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,18:2 cis Linoléico,"10,65"
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,18:2 cis Linoléico,"0,00"
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,18:2 cis Linoléico,"0,45"
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,18:2 cis Linoléico,"0,57"
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,18:2 cis Linoléico,"4,22"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,Trans,"0,01"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,Trans,0
+13,Golosinas y chocolates,macronutrientes,107,Chicles,Trans,0
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,Trans,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,Trans,"0,08"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,Trans,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,Trans,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,Trans,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,Trans,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,Trans,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,Trans,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,Trans,"0,30"
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,Trans,0
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,Trans,"0,15"
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,Trans,0
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,Trans,0
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,Trans,0
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,Trans,0
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,Trans,"0,10"
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,Trans,0
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,Poliinsaturados,"0,39"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,Poliinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,107,Chicles,Poliinsaturados,"0,14"
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,Poliinsaturados,"0,23"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,Poliinsaturados,"1,22"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,Poliinsaturados,"1,55"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,Poliinsaturados,"1,01"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,Poliinsaturados,"3,02"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,Poliinsaturados,"4,37"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,Poliinsaturados,"0,80"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,Poliinsaturados,"0,97"
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,Poliinsaturados,"1,38"
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,Poliinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,Poliinsaturados,"1,06"
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,Poliinsaturados,"0,50"
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,Poliinsaturados,"10,65"
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,Poliinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,Poliinsaturados,"0,50"
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,Poliinsaturados,"0,60"
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,Poliinsaturados,"4,33"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,Monoinsaturados,"1,72"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,Monoinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,107,Chicles,Monoinsaturados,"0,08"
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,Monoinsaturados,"0,09"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,Monoinsaturados,"11,52"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,Monoinsaturados,"16,07"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,Monoinsaturados,"9,10"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,Monoinsaturados,"11,96"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,Monoinsaturados,"8,20"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,Monoinsaturados,"12,50"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,Monoinsaturados,"9,97"
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,Monoinsaturados,"7,19"
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,Monoinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,Monoinsaturados,"5,95"
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,Monoinsaturados,"8,00"
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,Monoinsaturados,"16,72"
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,Monoinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,Monoinsaturados,"11,00"
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,Monoinsaturados,"6,50"
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,Monoinsaturados,"12,92"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,Saturados,"3,57"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,Saturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,107,Chicles,Saturados,"0,04"
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,Saturados,"0,06"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,Saturados,"22,03"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,Saturados,"32,28"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,Saturados,"19,41"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,Saturados,"17,70"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,Saturados,"14,13"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,Saturados,"21,20"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,Saturados,"17,75"
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,Saturados,"18,51"
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,Saturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,Saturados,"9,43"
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,Saturados,"13,50"
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,Saturados,"4,68"
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,Saturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,Saturados,"22,50"
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,Saturados,"12,00"
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,Saturados,"14,60"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,107,Chicles,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,Colesterol,"6,0"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,Colesterol,2
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,Colesterol,21
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,Colesterol,19
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,Colesterol,"10,0"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,Colesterol,23
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,Colesterol,13
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,Colesterol,29
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,Colesterol,"7,8"
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,Colesterol,"9,0"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,Lípidos totales,"6,0"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,Lípidos totales,"0,2"
+13,Golosinas y chocolates,macronutrientes,107,Chicles,Lípidos totales,"0,3"
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,Lípidos totales,"0,4"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,Lípidos totales,"38,3"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,Lípidos totales,"52,3"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,Lípidos totales,"32,1"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,Lípidos totales,"34,4"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,Lípidos totales,"33,2"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,Lípidos totales,"35,9"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,Lípidos totales,"30,0"
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,Lípidos totales,"29,7"
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,Lípidos totales,"0,2"
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,Lípidos totales,"17,1"
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,Lípidos totales,"22,2"
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,Lípidos totales,"33,7"
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,Lípidos totales,"0,1"
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,Lípidos totales,"34,0"
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,Lípidos totales,"20,0"
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,Lípidos totales,"33,5"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,Proteínas,"0,9"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,Proteínas,"0,0"
+13,Golosinas y chocolates,macronutrientes,107,Chicles,Proteínas,"0,0"
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,Proteínas,"0,0"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,Proteínas,"6,1"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,Proteínas,"14,3"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,Proteínas,"5,9"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,Proteínas,"9,0"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,Proteínas,"10,2"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,Proteínas,"10,0"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,Proteínas,"4,2"
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,Proteínas,"7,7"
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,Proteínas,"0,0"
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,Proteínas,"5,4"
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,Proteínas,"5,6"
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,Proteínas,"15,5"
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,Proteínas,"0,0"
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,Proteínas,"8,0"
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,Proteínas,"5,2"
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,Proteínas,"13,1"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,Agua,"3,8"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,Agua,"1,3"
+13,Golosinas y chocolates,macronutrientes,107,Chicles,Agua,"2,6"
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,Agua,"3,5"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,Agua,"1,3"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,Agua,"1,3"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,Agua,"1,3"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,Agua,"1,5"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,Agua,"0,5"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,Agua,"3,5"
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,Agua,"0,7"
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,Agua,"1,5"
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,Agua,"1,3"
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,Agua,"14,2"
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,Agua,"1,2"
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,Agua,"1,6"
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,Agua,"6,3"
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,Agua,"8,0"
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,Agua,"1,6"
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,Agua,"1,9"
+13,Golosinas y chocolates,macronutrientes,107,Caramelos masticables,Valor energético,398
+13,Golosinas y chocolates,macronutrientes,107,Caramelos rellenos,Valor energético,394
+13,Golosinas y chocolates,macronutrientes,107,Chicles,Valor energético,380
+13,Golosinas y chocolates,macronutrientes,107,Chicles sin azúcar,Valor energético,256
+13,Golosinas y chocolates,macronutrientes,107,Chocolate 60% cacao o más,Valor energético,547
+13,Golosinas y chocolates,macronutrientes,107,Chocolate amargo,Valor energético,575
+13,Golosinas y chocolates,macronutrientes,107,Chocolate blanco,Valor energético,548
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con almendras,Valor energético,534
+13,Golosinas y chocolates,macronutrientes,107,Chocolate con maní,Valor energético,542
+13,Golosinas y chocolates,macronutrientes,107,Chocolate light,Valor energético,566
+13,Golosinas y chocolates,macronutrientes,107,Chocolate para taza,Valor energético,519
+13,Golosinas y chocolates,macronutrientes,107,Chocolatín / chocolate con leche,Valor energético,522
+13,Golosinas y chocolates,macronutrientes,107,Chupetín,Valor energético,394
+13,Golosinas y chocolates,macronutrientes,107,Conito de dulce de leche envasado,Valor energético,413
+13,Golosinas y chocolates,macronutrientes,107,Cubanito relleno,Valor energético,506
+13,Golosinas y chocolates,macronutrientes,107,Garrapiñada de maní,Valor energético,539
+13,Golosinas y chocolates,macronutrientes,107,Gomitas de gelatina,Valor energético,374
+13,Golosinas y chocolates,macronutrientes,107,Huevo de chocolate tipo Kinder,Valor energético,538
+13,Golosinas y chocolates,macronutrientes,107,Lentejas de chocolate,Valor energético,485
+13,Golosinas y chocolates,macronutrientes,107,Maní con chocolate,Valor energético,534
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Vitamina D,"0,11"
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Vitamina D,"0,16"
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Vitamina C,"0,5"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Vitamina C,"0,2"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Vitamina C,"0,9"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Vitamina C,"1,2"
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Vitamina B-12,"0,18"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Vitamina B-12,"0,56"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Vitamina B-12,"0,67"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Vitamina B-12,"0,33"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Vitamina B-12,"0,75"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Vitamina B-12,"0,14"
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Vitamina B-12,"0,99"
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Vitamina B-12,"0,53"
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Riboflavina,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Riboflavina,"0,003"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Riboflavina,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Riboflavina,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Riboflavina,"0,049"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Riboflavina,"0,100"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Riboflavina,"0,282"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Riboflavina,"0,435"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Riboflavina,"0,140"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Riboflavina,"0,090"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Riboflavina,"0,090"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Riboflavina,"0,298"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Riboflavina,"0,003"
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Riboflavina,"0,233"
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Riboflavina,"0,060"
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Riboflavina,"0,140"
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Riboflavina,"0,011"
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Riboflavina,"0,366"
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Riboflavina,"0,045"
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Riboflavina,"0,174"
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Tiamina,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Tiamina,"0,004"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Tiamina,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Tiamina,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Tiamina,"0,032"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Tiamina,"0,147"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Tiamina,"0,063"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Tiamina,"0,060"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Tiamina,"0,140"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Tiamina,"0,055"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Tiamina,"0,055"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Tiamina,"0,112"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Tiamina,"0,004"
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Tiamina,"0,104"
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Tiamina,"0,247"
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Tiamina,"0,100"
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Tiamina,"0,004"
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Tiamina,"0,082"
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Tiamina,"0,028"
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Tiamina,"0,116"
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Retinol,9
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Retinol,52
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Retinol,35
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Retinol,59
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Retinol,33
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Retinol,81
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Retinol,41
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,"Vitamina A, RAE",13
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,"Vitamina A, RAE",3
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,"Vitamina A, RAE",9
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,"Vitamina A, RAE",52
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,"Vitamina A, RAE",35
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,"Vitamina A, RAE",59
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,"Vitamina A, RAE",33
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,"Vitamina A, RAE",83
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,"Vitamina A, RAE",41
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Ácido fólico,21
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Ácido fólico,66
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Folato EFD,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Folato EFD,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Folato EFD,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Folato EFD,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Folato EFD,12
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Folato EFD,28
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Folato EFD,7
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Folato EFD,13
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Folato EFD,38
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Folato EFD,13
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Folato EFD,13
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Folato EFD,11
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Folato EFD,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Folato EFD,48
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Folato EFD,122
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Folato EFD,75
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Folato EFD,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Folato EFD,9
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Folato EFD,7
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Folato EFD,51
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Niacina,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Niacina,"0,01"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Niacina,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Niacina,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Niacina,"0,84"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Niacina,"1,36"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Niacina,"0,75"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Niacina,"0,74"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Niacina,"3,44"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Niacina,"0,43"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Niacina,"0,43"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Niacina,"0,39"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Niacina,"0,01"
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Niacina,"0,50"
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Niacina,"0,81"
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Niacina,"7,92"
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Niacina,"0,01"
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Niacina,"0,20"
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Niacina,"0,21"
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Niacina,"4,25"
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Zinc,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Zinc,"0,01"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Zinc,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Zinc,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Zinc,"2,65"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Zinc,"9,63"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Zinc,"0,74"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Zinc,"1,34"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Zinc,"0,93"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Zinc,"1,62"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Zinc,"1,62"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Zinc,"2,3"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Zinc,"0,01"
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Zinc,"0,9"
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Zinc,"0,21"
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Zinc,"3,94"
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Zinc,"0,05"
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Zinc,"1,06"
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Zinc,"0,81"
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Zinc,"2,6"
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Magnesio,2
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Magnesio,3
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Magnesio,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Magnesio,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Magnesio,176
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Magnesio,327
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Magnesio,12
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Magnesio,90
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Magnesio,47
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Magnesio,115
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Magnesio,115
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Magnesio,63
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Magnesio,3
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Magnesio,52
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Magnesio,7
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Magnesio,110
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Magnesio,2
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Magnesio,27
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Magnesio,58
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Magnesio,96
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Hierro,"0,10"
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Hierro,"0,30"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Hierro,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Hierro,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Hierro,"6,32"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Hierro,"17,40"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Hierro,"0,24"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Hierro,"1,63"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Hierro,"1,39"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Hierro,"3,13"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Hierro,"3,13"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Hierro,"2,35"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Hierro,"0,30"
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Hierro,"1,66"
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Hierro,"1,25"
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Hierro,"0,97"
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Hierro,"0,13"
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Hierro,"0,17"
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Hierro,"1,57"
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Hierro,"1,31"
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Fósforo,4
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Fósforo,3
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Fósforo,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Fósforo,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Fósforo,260
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Fósforo,400
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Fósforo,176
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Fósforo,264
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Fósforo,163
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Fósforo,132
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Fósforo,132
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Fósforo,208
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Fósforo,3
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Fósforo,138
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Fósforo,39
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Fósforo,308
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Fósforo,4
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Fósforo,244
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Fósforo,66
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Fósforo,212
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Cobre,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Cobre,"0,029"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Cobre,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Cobre,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Cobre,"1,248"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Cobre,"3,233"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Cobre,"0,06"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Cobre,"0,422"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Cobre,"0,17"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Cobre,"0,7"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Cobre,"0,7"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Cobre,"0,491"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Cobre,"0,029"
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Cobre,"0,3"
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Cobre,"0,0432"
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Cobre,"0,774"
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Cobre,"0,028"
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Cobre,"0,0256"
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Cobre,"0,35"
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Cobre,"0,544"
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Calcio,3
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Calcio,3
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Calcio,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Calcio,20
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Calcio,62
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Calcio,101
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Calcio,199
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Calcio,224
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Calcio,110
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Calcio,32
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Calcio,32
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Calcio,189
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Calcio,3
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Calcio,126
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Calcio,3
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Calcio,78
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Calcio,3
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Calcio,263
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Calcio,16
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Calcio,104
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Potasio,10
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Potasio,5
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Potasio,2
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Potasio,0
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Potasio,567
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Potasio,830
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Potasio,286
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Potasio,444
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Potasio,394
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Potasio,365
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Potasio,365
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Potasio,372
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Potasio,5
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Potasio,262
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Potasio,48
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Potasio,407
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Potasio,37
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Potasio,392
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Potasio,183
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Potasio,502
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Sodio,30
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Sodio,38
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Sodio,1
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Sodio,7
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Sodio,10
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Sodio,24
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Sodio,90
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Sodio,74
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Sodio,41
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Sodio,88
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Sodio,11
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Sodio,79
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Sodio,38
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Sodio,86
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Sodio,139
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Sodio,156
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Sodio,50
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Sodio,125
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Sodio,79
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Sodio,41
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos masticables,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,108,Caramelos rellenos,Cenizas,"0,5"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles,Cenizas,"0,4"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chicles sin azúcar,Cenizas,"1,3"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate 60% cacao o más,Cenizas,"1,9"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate amargo,Cenizas,"3,6"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate blanco,Cenizas,"1,5"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con almendras,Cenizas,"1,7"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate con maní,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate light,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolate para taza,Cenizas,"1,2"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chocolatín / chocolate con leche,Cenizas,"1,78"
+13,Golosinas y chocolates,vitaminas_minerales,108,Chupetín,Cenizas,"0,5"
+13,Golosinas y chocolates,vitaminas_minerales,108,Conito de dulce de leche envasado,Cenizas,"1,1"
+13,Golosinas y chocolates,vitaminas_minerales,108,Cubanito relleno,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,108,Garrapiñada de maní,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,108,Gomitas de gelatina,Cenizas,"0,1"
+13,Golosinas y chocolates,vitaminas_minerales,108,Huevo de chocolate tipo Kinder,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,108,Lentejas de chocolate,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,108,Maní con chocolate,Cenizas,"1,8"
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",Alcohol,0
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,109,Tita,Alcohol,0
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,Fibra alimentaria,"1,9"
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,Fibra alimentaria,0
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,Fibra alimentaria,"1,5"
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,Fibra alimentaria,"1,0"
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,Fibra alimentaria,"1,0"
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,Fibra alimentaria,"3,1"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,Fibra alimentaria,0
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,Fibra alimentaria,0
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",Fibra alimentaria,"5,0"
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,Fibra alimentaria,"3,3"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,Fibra alimentaria,0
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,Fibra alimentaria,0
+13,Golosinas y chocolates,macronutrientes,109,Tita,Fibra alimentaria,0
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,Azúcar agregado,"59,0"
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,Azúcar agregado,"80,4"
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,Azúcar agregado,"36,0"
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,Azúcar agregado,"48,7"
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,Azúcar agregado,"48,7"
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,Azúcar agregado,"31,0"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,Azúcar agregado,"84,0"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,Azúcar agregado,0
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",Azúcar agregado,"45,0"
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,Azúcar agregado,"46,6"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,Azúcar agregado,"60,0"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,Azúcar agregado,"68,0"
+13,Golosinas y chocolates,macronutrientes,109,Tita,Azúcar agregado,"37,0"
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,Azúcar total,"59,0"
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,Azúcar total,"80,4"
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,Azúcar total,"36,0"
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,Azúcar total,"48,7"
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,Azúcar total,"48,7"
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,Azúcar total,"62,2"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,Azúcar total,"84,0"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,Azúcar total,0
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",Azúcar total,"45,0"
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,Azúcar total,"46,6"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,Azúcar total,"65,2"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,Azúcar total,"73,2"
+13,Golosinas y chocolates,macronutrientes,109,Tita,Azúcar total,"37,0"
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,Carbohidratos totales,"79,5"
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,Carbohidratos totales,"80,8"
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,Carbohidratos totales,"56,5"
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,Carbohidratos totales,"64,6"
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,Carbohidratos totales,"64,6"
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,Carbohidratos totales,"68,4"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,Carbohidratos totales,"84,0"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,Carbohidratos totales,"95,0"
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",Carbohidratos totales,"51,0"
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,Carbohidratos totales,"63,2"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,Carbohidratos totales,"65,2"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,Carbohidratos totales,"73,2"
+13,Golosinas y chocolates,macronutrientes,109,Tita,Carbohidratos totales,"66,7"
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,Carbohidratos disponibles,"77,1"
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,Carbohidratos disponibles,"80,8"
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,Carbohidratos disponibles,"55,0"
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,Carbohidratos disponibles,"63,6"
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,Carbohidratos disponibles,"63,6"
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,Carbohidratos disponibles,"65,3"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,Carbohidratos disponibles,"84,0"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,Carbohidratos disponibles,"95,0"
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",Carbohidratos disponibles,"46,0"
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,Carbohidratos disponibles,"59,9"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,Carbohidratos disponibles,"65,2"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,Carbohidratos disponibles,"73,2"
+13,Golosinas y chocolates,macronutrientes,109,Tita,Carbohidratos disponibles,"66,7"
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,109,Tita,22:6 n-3 Docosahexaenoico (DHA),0
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,109,Tita,20:5 n-3 Eicosapentaenoico (EPA),0
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,20:4 Araquidónico,"0,008"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,109,Tita,20:4 Araquidónico,0
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,18:3 cis Alfa linolénico (ALA),"0,045"
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,18:3 cis Alfa linolénico (ALA),"0,090"
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,18:3 cis Alfa linolénico (ALA),"0,075"
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,18:3 cis Alfa linolénico (ALA),"0,075"
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,18:3 cis Alfa linolénico (ALA),"0,037"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",18:3 cis Alfa linolénico (ALA),"0,070"
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,18:3 cis Alfa linolénico (ALA),"0,167"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,18:3 cis Alfa linolénico (ALA),"0,045"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,18:3 cis Alfa linolénico (ALA),0
+13,Golosinas y chocolates,macronutrientes,109,Tita,18:3 cis Alfa linolénico (ALA),"0,060"
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,18:2 cis Linoléico,"0,86"
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,18:2 cis Linoléico,"0,00"
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,18:2 cis Linoléico,"2,91"
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,18:2 cis Linoléico,"0,82"
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,18:2 cis Linoléico,"0,82"
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,18:2 cis Linoléico,"0,53"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,18:2 cis Linoléico,"0,00"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,18:2 cis Linoléico,"0,00"
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",18:2 cis Linoléico,"3,43"
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,18:2 cis Linoléico,"3,16"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,18:2 cis Linoléico,"0,12"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,18:2 cis Linoléico,"0,00"
+13,Golosinas y chocolates,macronutrientes,109,Tita,18:2 cis Linoléico,"1,14"
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,Trans,0
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,Trans,0
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,Trans,"0,65"
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,Trans,"0,10"
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,Trans,"0,10"
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,Trans,0
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,Trans,0
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,Trans,0
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",Trans,0
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,Trans,0
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,Trans,"0,33"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,Trans,0
+13,Golosinas y chocolates,macronutrientes,109,Tita,Trans,0
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,Poliinsaturados,"0,90"
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,Poliinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,Poliinsaturados,"3,00"
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,Poliinsaturados,"0,90"
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,Poliinsaturados,"0,90"
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,Poliinsaturados,"0,57"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,Poliinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,Poliinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",Poliinsaturados,"3,50"
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,Poliinsaturados,"3,33"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,Poliinsaturados,"0,34"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,Poliinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,109,Tita,Poliinsaturados,"1,20"
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,Monoinsaturados,"8,00"
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,Monoinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,Monoinsaturados,"6,50"
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,Monoinsaturados,"5,84"
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,Monoinsaturados,"5,84"
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,Monoinsaturados,"3,13"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,Monoinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,Monoinsaturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",Monoinsaturados,"21,50"
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,Monoinsaturados,"9,00"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,Monoinsaturados,"1,92"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,Monoinsaturados,"0,15"
+13,Golosinas y chocolates,macronutrientes,109,Tita,Monoinsaturados,"8,90"
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,Saturados,"15,00"
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,Saturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,Saturados,"9,50"
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,Saturados,"17,95"
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,Saturados,"17,95"
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,Saturados,"10,27"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,Saturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,Saturados,"0,00"
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",Saturados,"7,00"
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,Saturados,"15,60"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,Saturados,"4,07"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,Saturados,"0,30"
+13,Golosinas y chocolates,macronutrientes,109,Tita,Saturados,"12,00"
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,Colesterol,"6,0"
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,Colesterol,21
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,Colesterol,11
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,Colesterol,11
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,Colesterol,"3,0"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",Colesterol,0
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,Colesterol,"0,7"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,Colesterol,29
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,Colesterol,0
+13,Golosinas y chocolates,macronutrientes,109,Tita,Colesterol,15
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,Lípidos totales,"24,0"
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,Lípidos totales,"0,1"
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,Lípidos totales,"17,0"
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,Lípidos totales,"26,0"
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,Lípidos totales,"26,0"
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,Lípidos totales,"14,8"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,Lípidos totales,"0,0"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,Lípidos totales,"0,0"
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",Lípidos totales,"32,0"
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,Lípidos totales,"29,3"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,Lípidos totales,"6,0"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,Lípidos totales,"0,0"
+13,Golosinas y chocolates,macronutrientes,109,Tita,Lípidos totales,"24,0"
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,Proteínas,"5,0"
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,Proteínas,"5,8"
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,Proteínas,"7,6"
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,Proteínas,"6,5"
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,Proteínas,"6,5"
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,Proteínas,"4,1"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,Proteínas,"0,0"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,Proteínas,"0,0"
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",Proteínas,"13,5"
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,Proteínas,"4,0"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,Proteínas,"6,0"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,Proteínas,"5,9"
+13,Golosinas y chocolates,macronutrientes,109,Tita,Proteínas,"5,7"
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,Agua,"6,3"
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,Agua,"12,5"
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,Agua,"18,9"
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,Agua,"1,6"
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,Agua,"1,6"
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,Agua,"11,2"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,Agua,"16,0"
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,Agua,"5,0"
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",Agua,"2,7"
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,Agua,"3,5"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,Agua,"21,3"
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,Agua,"19,4"
+13,Golosinas y chocolates,macronutrientes,109,Tita,Agua,"3,6"
+13,Golosinas y chocolates,macronutrientes,109,Medallón de menta y chocolate,Valor energético,545
+13,Golosinas y chocolates,macronutrientes,109,Merengues / merenguitos,Valor energético,347
+13,Golosinas y chocolates,macronutrientes,109,Minitorta bañada,Valor energético,403
+13,Golosinas y chocolates,macronutrientes,109,Oblea bañada tipo Kit Kat,Valor energético,514
+13,Golosinas y chocolates,macronutrientes,109,Obleas bañadas tipo Nugaton,Valor energético,514
+13,Golosinas y chocolates,macronutrientes,109,Pasas de uva con chocolate,Valor energético,411
+13,Golosinas y chocolates,macronutrientes,109,Pastillas,Valor energético,336
+13,Golosinas y chocolates,macronutrientes,109,Pastillas sin azúcar,Valor energético,380
+13,Golosinas y chocolates,macronutrientes,109,"Postre a base de pasta de maní, tipo Mantecol",Valor energético,526
+13,Golosinas y chocolates,macronutrientes,109,Rhodesia,Valor energético,519
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche,Valor energético,339
+13,Golosinas y chocolates,macronutrientes,109,Tableta de dulce de leche light,Valor energético,316
+13,Golosinas y chocolates,macronutrientes,109,Tita,Valor energético,506
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Vitamina D,"0,09"
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Vitamina D,"0,24"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Vitamina D,"0,24"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Vitamina D,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Vitamina C,"0,2"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Vitamina C,"0,3"
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Vitamina C,"2,6"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Vitamina C,"2,6"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Vitamina C,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Vitamina B-12,"0,04"
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Vitamina B-12,"0,11"
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Vitamina B-12,"0,56"
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Vitamina B-12,"0,56"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Vitamina B-12,"0,37"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Vitamina B-12,"0,20"
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Vitamina B-12,"0,31"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Vitamina B-12,"0,31"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Vitamina B-12,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Riboflavina,"0,010"
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Riboflavina,"0,236"
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Riboflavina,"0,287"
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Riboflavina,"0,210"
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Riboflavina,"0,210"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Riboflavina,"0,161"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Riboflavina,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Riboflavina,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Riboflavina,"0,200"
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Riboflavina,"0,040"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Riboflavina,"0,405"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Riboflavina,"0,405"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Riboflavina,"0,060"
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Tiamina,"0,160"
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Tiamina,"0,002"
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Tiamina,"0,195"
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Tiamina,"0,117"
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Tiamina,"0,117"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Tiamina,"0,084"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Tiamina,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Tiamina,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Tiamina,"0,232"
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Tiamina,"0,164"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Tiamina,"0,016"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Tiamina,"0,016"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Tiamina,"0,247"
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Retinol,20
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Retinol,24
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Retinol,24
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Retinol,29
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Retinol,73
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Retinol,73
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Retinol,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,"Vitamina A, RAE",20
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,"Vitamina A, RAE",24
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,"Vitamina A, RAE",24
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,"Vitamina A, RAE",29
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol","Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,"Vitamina A, RAE",74
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,"Vitamina A, RAE",74
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,"Vitamina A, RAE",0
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Ácido fólico,48
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Ácido fólico,6
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Ácido fólico,6
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Ácido fólico,44
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Ácido fólico,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Ácido fólico,66
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Folato EFD,1
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Folato EFD,2
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Folato EFD,93
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Folato EFD,18
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Folato EFD,18
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Folato EFD,7
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Folato EFD,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Folato EFD,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Folato EFD,77
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Folato EFD,81
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Folato EFD,11
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Folato EFD,11
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Folato EFD,122
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Niacina,"0,50"
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Niacina,"0,05"
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Niacina,"1,94"
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Niacina,"0,50"
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Niacina,"0,50"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Niacina,"0,40"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Niacina,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Niacina,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Niacina,"8,20"
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Niacina,"0,54"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Niacina,"0,21"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Niacina,"0,21"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Niacina,"0,81"
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Zinc,"0,6"
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Zinc,"0,03"
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Zinc,"0,5"
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Zinc,"0,09"
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Zinc,"0,09"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Zinc,"1,25"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Zinc,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Zinc,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Zinc,2
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Zinc,"0,14"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Zinc,"0,7"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Zinc,"0,7"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Zinc,"0,21"
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Magnesio,13
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Magnesio,6
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Magnesio,16
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Magnesio,37
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Magnesio,37
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Magnesio,45
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Magnesio,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Magnesio,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Magnesio,110
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Magnesio,4
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Magnesio,22
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Magnesio,22
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Magnesio,7
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Hierro,"0,57"
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Hierro,"0,10"
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Hierro,"1,60"
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Hierro,"1,00"
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Hierro,"1,00"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Hierro,"1,71"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Hierro,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Hierro,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Hierro,"1,70"
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Hierro,"0,83"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Hierro,"0,37"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Hierro,"0,37"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Hierro,"1,25"
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Fósforo,104
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Fósforo,8
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Fósforo,108
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Fósforo,135
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Fósforo,135
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Fósforo,143
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Fósforo,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Fósforo,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Fósforo,310
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Fósforo,26
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Fósforo,176
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Fósforo,176
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Fósforo,39
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Cobre,"0,06"
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Cobre,"0,019"
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Cobre,"0,09"
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Cobre,"0,22"
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Cobre,"0,22"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Cobre,"0,373"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Cobre,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Cobre,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Cobre,"0,4"
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Cobre,"0,0288"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Cobre,"0,004"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Cobre,"0,004"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Cobre,"0,0432"
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Calcio,13
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Calcio,5
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Calcio,92
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Calcio,125
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Calcio,125
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Calcio,86
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Calcio,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Calcio,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Calcio,110
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Calcio,2
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Calcio,253
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Calcio,253
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Calcio,3
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Potasio,389
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Potasio,153
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Potasio,127
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Potasio,231
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Potasio,231
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Potasio,514
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Potasio,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Potasio,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Potasio,505
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Potasio,32
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Potasio,265
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Potasio,265
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Potasio,48
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Sodio,1
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Sodio,243
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Sodio,135
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Sodio,54
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Sodio,54
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Sodio,36
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Sodio,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Sodio,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Sodio,250
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Sodio,13
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Sodio,120
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Sodio,138
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Sodio,206
+13,Golosinas y chocolates,vitaminas_minerales,110,Medallón de menta y chocolate,Cenizas,"0,6"
+13,Golosinas y chocolates,vitaminas_minerales,110,Merengues / merenguitos,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,110,Minitorta bañada,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,110,Oblea bañada tipo Kit Kat,Cenizas,"1,28"
+13,Golosinas y chocolates,vitaminas_minerales,110,Obleas bañadas tipo Nugaton,Cenizas,"1,28"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pasas de uva con chocolate,Cenizas,"1,5"
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas,Cenizas,0
+13,Golosinas y chocolates,vitaminas_minerales,110,Pastillas sin azúcar,Cenizas,0
+13,Golosinas y chocolates,vitaminas_minerales,110,"Postre a base de pasta de maní, tipo Mantecol",Cenizas,"2,35"
+13,Golosinas y chocolates,vitaminas_minerales,110,Rhodesia,Cenizas,
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche,Cenizas,"1,49"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tableta de dulce de leche light,Cenizas,"1,49"
+13,Golosinas y chocolates,vitaminas_minerales,110,Tita,Cenizas,

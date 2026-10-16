@@ -1,0 +1,10 @@
+"""Endpoint paths shared by several integration test modules."""
+
+LOGIN_URL = "/api/v1/auth/login"
+LOGOUT_URL = "/api/v1/auth/logout"
+REGISTER_URL = "/api/v1/auth/register/field-worker"
+INVITE_ADMIN_URL = "/api/v1/admin/invite-admin"
+DASHBOARD_URL = "/api/v1/establishments/{establishment_id}/dashboard"
+SUBJECTS_URL = "/api/v1/subjects"
+MEASUREMENTS_URL = "/api/v1/measurements"
+SURVEYS_URL = "/api/v1/surveys"

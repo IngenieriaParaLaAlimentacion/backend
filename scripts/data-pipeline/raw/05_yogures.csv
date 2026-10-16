@@ -1,0 +1,547 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,Alcohol,0
+5,Yogures,macronutrientes,73,Yogur descremado,Alcohol,0
+5,Yogures,macronutrientes,73,Yogur descremado bebible,Alcohol,0
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,Alcohol,0
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,Alcohol,0
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,Alcohol,0
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,Alcohol,0
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,Alcohol,0
+5,Yogures,macronutrientes,73,Yogur entero con cereales,Alcohol,0
+5,Yogures,macronutrientes,73,Yogur entero con frutas,Alcohol,0
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,Alcohol,0
+5,Yogures,macronutrientes,73,Yogur entero natural,Alcohol,0
+5,Yogures,macronutrientes,73,Yogur entero saborizado,Alcohol,0
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,Alcohol,0
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,Fibra alimentaria,0
+5,Yogures,macronutrientes,73,Yogur descremado,Fibra alimentaria,0
+5,Yogures,macronutrientes,73,Yogur descremado bebible,Fibra alimentaria,0
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,Fibra alimentaria,"0,2"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,Fibra alimentaria,"0,3"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,Fibra alimentaria,"0,5"
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,Fibra alimentaria,0
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,Fibra alimentaria,0
+5,Yogures,macronutrientes,73,Yogur entero con cereales,Fibra alimentaria,"0,3"
+5,Yogures,macronutrientes,73,Yogur entero con frutas,Fibra alimentaria,"0,2"
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,Fibra alimentaria,"0,6"
+5,Yogures,macronutrientes,73,Yogur entero natural,Fibra alimentaria,0
+5,Yogures,macronutrientes,73,Yogur entero saborizado,Fibra alimentaria,0
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,Fibra alimentaria,0
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,Azúcar agregado,"1,8"
+5,Yogures,macronutrientes,73,Yogur descremado,Azúcar agregado,0
+5,Yogures,macronutrientes,73,Yogur descremado bebible,Azúcar agregado,0
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,Azúcar agregado,"1,5"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,Azúcar agregado,"4,8"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,Azúcar agregado,"3,4"
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,Azúcar agregado,"4,7"
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,Azúcar agregado,"6,1"
+5,Yogures,macronutrientes,73,Yogur entero con cereales,Azúcar agregado,"10,8"
+5,Yogures,macronutrientes,73,Yogur entero con frutas,Azúcar agregado,"10,2"
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,Azúcar agregado,"8,2"
+5,Yogures,macronutrientes,73,Yogur entero natural,Azúcar agregado,0
+5,Yogures,macronutrientes,73,Yogur entero saborizado,Azúcar agregado,"6,3"
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,Azúcar agregado,"6,3"
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,Azúcar total,"6,4"
+5,Yogures,macronutrientes,73,Yogur descremado,Azúcar total,"6,0"
+5,Yogures,macronutrientes,73,Yogur descremado bebible,Azúcar total,"5,9"
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,Azúcar total,"6,0"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,Azúcar total,"9,3"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,Azúcar total,"11,2"
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,Azúcar total,"9,2"
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,Azúcar total,"12,0"
+5,Yogures,macronutrientes,73,Yogur entero con cereales,Azúcar total,"14,5"
+5,Yogures,macronutrientes,73,Yogur entero con frutas,Azúcar total,"14,7"
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,Azúcar total,"20,8"
+5,Yogures,macronutrientes,73,Yogur entero natural,Azúcar total,"4,7"
+5,Yogures,macronutrientes,73,Yogur entero saborizado,Azúcar total,"11,0"
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,Azúcar total,"11,0"
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,Carbohidratos totales,"6,4"
+5,Yogures,macronutrientes,73,Yogur descremado,Carbohidratos totales,"6,0"
+5,Yogures,macronutrientes,73,Yogur descremado bebible,Carbohidratos totales,"6,0"
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,Carbohidratos totales,"12,2"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,Carbohidratos totales,"9,6"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,Carbohidratos totales,"13,2"
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,Carbohidratos totales,"9,2"
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,Carbohidratos totales,"12,0"
+5,Yogures,macronutrientes,73,Yogur entero con cereales,Carbohidratos totales,"20,8"
+5,Yogures,macronutrientes,73,Yogur entero con frutas,Carbohidratos totales,"14,9"
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,Carbohidratos totales,"22,9"
+5,Yogures,macronutrientes,73,Yogur entero natural,Carbohidratos totales,"4,7"
+5,Yogures,macronutrientes,73,Yogur entero saborizado,Carbohidratos totales,"11,0"
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,Carbohidratos totales,"11,0"
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,Carbohidratos disponibles,"6,4"
+5,Yogures,macronutrientes,73,Yogur descremado,Carbohidratos disponibles,"6,0"
+5,Yogures,macronutrientes,73,Yogur descremado bebible,Carbohidratos disponibles,"6,0"
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,Carbohidratos disponibles,"12,0"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,Carbohidratos disponibles,"9,3"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,Carbohidratos disponibles,"12,7"
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,Carbohidratos disponibles,"9,2"
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,Carbohidratos disponibles,"12,0"
+5,Yogures,macronutrientes,73,Yogur entero con cereales,Carbohidratos disponibles,"20,5"
+5,Yogures,macronutrientes,73,Yogur entero con frutas,Carbohidratos disponibles,"14,7"
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,Carbohidratos disponibles,"22,3"
+5,Yogures,macronutrientes,73,Yogur entero natural,Carbohidratos disponibles,"4,7"
+5,Yogures,macronutrientes,73,Yogur entero saborizado,Carbohidratos disponibles,"11,0"
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,Carbohidratos disponibles,"11,0"
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,22:6 n-3 Docosahexaenoico (DHA),0
+5,Yogures,macronutrientes,73,Yogur descremado,22:6 n-3 Docosahexaenoico (DHA),0
+5,Yogures,macronutrientes,73,Yogur descremado bebible,22:6 n-3 Docosahexaenoico (DHA),0
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,22:6 n-3 Docosahexaenoico (DHA),0
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,22:6 n-3 Docosahexaenoico (DHA),0
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,22:6 n-3 Docosahexaenoico (DHA),0
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,22:6 n-3 Docosahexaenoico (DHA),0
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,22:6 n-3 Docosahexaenoico (DHA),0
+5,Yogures,macronutrientes,73,Yogur entero con cereales,22:6 n-3 Docosahexaenoico (DHA),0
+5,Yogures,macronutrientes,73,Yogur entero con frutas,22:6 n-3 Docosahexaenoico (DHA),0
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,22:6 n-3 Docosahexaenoico (DHA),0
+5,Yogures,macronutrientes,73,Yogur entero natural,22:6 n-3 Docosahexaenoico (DHA),0
+5,Yogures,macronutrientes,73,Yogur entero saborizado,22:6 n-3 Docosahexaenoico (DHA),0
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,22:6 n-3 Docosahexaenoico (DHA),0
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,20:5 n-3 Eicosapentaenoico (EPA),0
+5,Yogures,macronutrientes,73,Yogur descremado,20:5 n-3 Eicosapentaenoico (EPA),0
+5,Yogures,macronutrientes,73,Yogur descremado bebible,20:5 n-3 Eicosapentaenoico (EPA),0
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,20:5 n-3 Eicosapentaenoico (EPA),0
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,20:5 n-3 Eicosapentaenoico (EPA),0
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,20:5 n-3 Eicosapentaenoico (EPA),0
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,20:5 n-3 Eicosapentaenoico (EPA),0
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,20:5 n-3 Eicosapentaenoico (EPA),0
+5,Yogures,macronutrientes,73,Yogur entero con cereales,20:5 n-3 Eicosapentaenoico (EPA),0
+5,Yogures,macronutrientes,73,Yogur entero con frutas,20:5 n-3 Eicosapentaenoico (EPA),0
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,20:5 n-3 Eicosapentaenoico (EPA),0
+5,Yogures,macronutrientes,73,Yogur entero natural,20:5 n-3 Eicosapentaenoico (EPA),0
+5,Yogures,macronutrientes,73,Yogur entero saborizado,20:5 n-3 Eicosapentaenoico (EPA),0
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,20:5 n-3 Eicosapentaenoico (EPA),0
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,20:4 Araquidónico,0
+5,Yogures,macronutrientes,73,Yogur descremado,20:4 Araquidónico,0
+5,Yogures,macronutrientes,73,Yogur descremado bebible,20:4 Araquidónico,0
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,20:4 Araquidónico,0
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,20:4 Araquidónico,0
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,20:4 Araquidónico,0
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,20:4 Araquidónico,0
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,20:4 Araquidónico,0
+5,Yogures,macronutrientes,73,Yogur entero con cereales,20:4 Araquidónico,0
+5,Yogures,macronutrientes,73,Yogur entero con frutas,20:4 Araquidónico,0
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,20:4 Araquidónico,0
+5,Yogures,macronutrientes,73,Yogur entero natural,20:4 Araquidónico,0
+5,Yogures,macronutrientes,73,Yogur entero saborizado,20:4 Araquidónico,0
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,20:4 Araquidónico,0
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,18:3 cis Alfa linolénico (ALA),0
+5,Yogures,macronutrientes,73,Yogur descremado,18:3 cis Alfa linolénico (ALA),0
+5,Yogures,macronutrientes,73,Yogur descremado bebible,18:3 cis Alfa linolénico (ALA),0
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,18:3 cis Alfa linolénico (ALA),0
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,18:3 cis Alfa linolénico (ALA),0
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,18:3 cis Alfa linolénico (ALA),0
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,18:3 cis Alfa linolénico (ALA),"0,004"
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,18:3 cis Alfa linolénico (ALA),"0,005"
+5,Yogures,macronutrientes,73,Yogur entero con cereales,18:3 cis Alfa linolénico (ALA),"0,008"
+5,Yogures,macronutrientes,73,Yogur entero con frutas,18:3 cis Alfa linolénico (ALA),"0,010"
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,18:3 cis Alfa linolénico (ALA),"0,009"
+5,Yogures,macronutrientes,73,Yogur entero natural,18:3 cis Alfa linolénico (ALA),"0,009"
+5,Yogures,macronutrientes,73,Yogur entero saborizado,18:3 cis Alfa linolénico (ALA),"0,009"
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,18:3 cis Alfa linolénico (ALA),"0,009"
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,18:2 cis Linoléico,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado,18:2 cis Linoléico,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado bebible,18:2 cis Linoléico,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,18:2 cis Linoléico,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,18:2 cis Linoléico,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,18:2 cis Linoléico,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,18:2 cis Linoléico,"0,03"
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,18:2 cis Linoléico,"0,05"
+5,Yogures,macronutrientes,73,Yogur entero con cereales,18:2 cis Linoléico,"0,07"
+5,Yogures,macronutrientes,73,Yogur entero con frutas,18:2 cis Linoléico,"0,09"
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,18:2 cis Linoléico,"0,08"
+5,Yogures,macronutrientes,73,Yogur entero natural,18:2 cis Linoléico,"0,08"
+5,Yogures,macronutrientes,73,Yogur entero saborizado,18:2 cis Linoléico,"0,08"
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,18:2 cis Linoléico,"0,08"
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,Trans,0
+5,Yogures,macronutrientes,73,Yogur descremado,Trans,0
+5,Yogures,macronutrientes,73,Yogur descremado bebible,Trans,0
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,Trans,0
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,Trans,0
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,Trans,0
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,Trans,"0,04"
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,Trans,"0,05"
+5,Yogures,macronutrientes,73,Yogur entero con cereales,Trans,"0,09"
+5,Yogures,macronutrientes,73,Yogur entero con frutas,Trans,"0,10"
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,Trans,"0,10"
+5,Yogures,macronutrientes,73,Yogur entero natural,Trans,"0,10"
+5,Yogures,macronutrientes,73,Yogur entero saborizado,Trans,"0,10"
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,Trans,"0,10"
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,Poliinsaturados,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado,Poliinsaturados,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado bebible,Poliinsaturados,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,Poliinsaturados,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,Poliinsaturados,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,Poliinsaturados,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,Poliinsaturados,"0,04"
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,Poliinsaturados,"0,05"
+5,Yogures,macronutrientes,73,Yogur entero con cereales,Poliinsaturados,"0,08"
+5,Yogures,macronutrientes,73,Yogur entero con frutas,Poliinsaturados,"0,10"
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,Poliinsaturados,"0,09"
+5,Yogures,macronutrientes,73,Yogur entero natural,Poliinsaturados,"0,09"
+5,Yogures,macronutrientes,73,Yogur entero saborizado,Poliinsaturados,"0,09"
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,Poliinsaturados,"0,09"
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,Monoinsaturados,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado,Monoinsaturados,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado bebible,Monoinsaturados,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,Monoinsaturados,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,Monoinsaturados,"0,10"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,Monoinsaturados,"0,20"
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,Monoinsaturados,"0,36"
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,Monoinsaturados,"0,63"
+5,Yogures,macronutrientes,73,Yogur entero con cereales,Monoinsaturados,"0,80"
+5,Yogures,macronutrientes,73,Yogur entero con frutas,Monoinsaturados,"1,00"
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,Monoinsaturados,"0,89"
+5,Yogures,macronutrientes,73,Yogur entero natural,Monoinsaturados,"0,89"
+5,Yogures,macronutrientes,73,Yogur entero saborizado,Monoinsaturados,"0,89"
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,Monoinsaturados,"0,89"
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,Saturados,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado,Saturados,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado bebible,Saturados,"0,00"
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,Saturados,"0,21"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,Saturados,"0,18"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,Saturados,"0,30"
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,Saturados,"0,84"
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,Saturados,"1,10"
+5,Yogures,macronutrientes,73,Yogur entero con cereales,Saturados,"1,73"
+5,Yogures,macronutrientes,73,Yogur entero con frutas,Saturados,"1,44"
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,Saturados,"1,97"
+5,Yogures,macronutrientes,73,Yogur entero natural,Saturados,"2,10"
+5,Yogures,macronutrientes,73,Yogur entero saborizado,Saturados,"2,10"
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,Saturados,"2,10"
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,Colesterol,0
+5,Yogures,macronutrientes,73,Yogur descremado,Colesterol,"3,0"
+5,Yogures,macronutrientes,73,Yogur descremado bebible,Colesterol,0
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,Colesterol,0
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,Colesterol,0
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,Colesterol,2
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,Colesterol,"5,2"
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,Colesterol,"10,0"
+5,Yogures,macronutrientes,73,Yogur entero con cereales,Colesterol,12
+5,Yogures,macronutrientes,73,Yogur entero con frutas,Colesterol,13
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,Colesterol,13
+5,Yogures,macronutrientes,73,Yogur entero natural,Colesterol,13
+5,Yogures,macronutrientes,73,Yogur entero saborizado,Colesterol,13
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,Colesterol,13
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,Lípidos totales,"1,0"
+5,Yogures,macronutrientes,73,Yogur descremado,Lípidos totales,"0,0"
+5,Yogures,macronutrientes,73,Yogur descremado bebible,Lípidos totales,"0,0"
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,Lípidos totales,"0,3"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,Lípidos totales,"0,3"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,Lípidos totales,"0,6"
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,Lípidos totales,"1,3"
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,Lípidos totales,"1,8"
+5,Yogures,macronutrientes,73,Yogur entero con cereales,Lípidos totales,"2,8"
+5,Yogures,macronutrientes,73,Yogur entero con frutas,Lípidos totales,"2,6"
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,Lípidos totales,"3,4"
+5,Yogures,macronutrientes,73,Yogur entero natural,Lípidos totales,"3,3"
+5,Yogures,macronutrientes,73,Yogur entero saborizado,Lípidos totales,"3,3"
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,Lípidos totales,"3,3"
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,Proteínas,"2,9"
+5,Yogures,macronutrientes,73,Yogur descremado,Proteínas,"2,9"
+5,Yogures,macronutrientes,73,Yogur descremado bebible,Proteínas,"2,9"
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,Proteínas,"4,5"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,Proteínas,"3,9"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,Proteínas,"4,3"
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,Proteínas,"4,0"
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,Proteínas,"2,9"
+5,Yogures,macronutrientes,73,Yogur entero con cereales,Proteínas,"3,9"
+5,Yogures,macronutrientes,73,Yogur entero con frutas,Proteínas,"3,6"
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,Proteínas,"3,2"
+5,Yogures,macronutrientes,73,Yogur entero natural,Proteínas,"3,5"
+5,Yogures,macronutrientes,73,Yogur entero saborizado,Proteínas,"3,5"
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,Proteínas,"3,5"
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,Agua,"89,7"
+5,Yogures,macronutrientes,73,Yogur descremado,Agua,"79,0"
+5,Yogures,macronutrientes,73,Yogur descremado bebible,Agua,"79,0"
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,Agua,"82,9"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,Agua,"86,2"
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,Agua,"82,0"
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,Agua,"85,6"
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,Agua,"79,0"
+5,Yogures,macronutrientes,73,Yogur entero con cereales,Agua,"72,5"
+5,Yogures,macronutrientes,73,Yogur entero con frutas,Agua,"79,0"
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,Agua,"70,5"
+5,Yogures,macronutrientes,73,Yogur entero natural,Agua,"87,9"
+5,Yogures,macronutrientes,73,Yogur entero saborizado,Agua,"81,4"
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,Agua,"81,4"
+5,Yogures,macronutrientes,73,Yogur con fitoesteroles,Valor energético,46
+5,Yogures,macronutrientes,73,Yogur descremado,Valor energético,36
+5,Yogures,macronutrientes,73,Yogur descremado bebible,Valor energético,36
+5,Yogures,macronutrientes,73,Yogur descremado con cereales,Valor energético,69
+5,Yogures,macronutrientes,73,Yogur descremado con frutas,Valor energético,56
+5,Yogures,macronutrientes,73,Yogur descremado con frutas y cereales,Valor energético,73
+5,Yogures,macronutrientes,73,Yogur descremado fortificado con calcio,Valor energético,64
+5,Yogures,macronutrientes,73,Yogur entero bebible saborizado,Valor energético,76
+5,Yogures,macronutrientes,73,Yogur entero con cereales,Valor energético,123
+5,Yogures,macronutrientes,73,Yogur entero con frutas,Valor energético,96
+5,Yogures,macronutrientes,73,Yogur entero con frutas y cereales,Valor energético,133
+5,Yogures,macronutrientes,73,Yogur entero natural,Valor energético,62
+5,Yogures,macronutrientes,73,Yogur entero saborizado,Valor energético,87
+5,Yogures,macronutrientes,73,Yogur fortificado con hierro,Valor energético,87
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Vitamina D,"1,4"
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Vitamina D,"1,4"
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Vitamina D,"1,2"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Vitamina D,"0,72"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Vitamina D,"0,95"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Vitamina D,"2,08"
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Vitamina D,"1,4"
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Vitamina D,"0,58"
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Vitamina D,"0,69"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Vitamina D,"0,82"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Vitamina D,"0,08"
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Vitamina D,"0,08"
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Vitamina D,"0,60"
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Vitamina D,"1,4"
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Vitamina C,0
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Vitamina C,0
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Vitamina C,"0,5"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Vitamina C,0
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Vitamina C,"0,5"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Vitamina C,0
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Vitamina C,0
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Vitamina C,"0,5"
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Vitamina C,"0,5"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Vitamina C,"0,5"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Vitamina C,"0,5"
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Vitamina C,"0,5"
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Vitamina C,"0,5"
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Vitamina C,0
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Vitamina B-12,"0,53"
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Vitamina B-12,"0,53"
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Vitamina B-12,"0,34"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Vitamina B-12,"0,53"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Vitamina B-12,"0,37"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Vitamina B-12,"0,53"
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Vitamina B-12,"0,53"
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Vitamina B-12,"0,34"
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Vitamina B-12,"0,37"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Vitamina B-12,"0,37"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Vitamina B-12,"0,37"
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Vitamina B-12,"0,37"
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Vitamina B-12,"0,37"
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Vitamina B-12,"0,53"
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Riboflavina,"0,200"
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Riboflavina,"0,200"
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Riboflavina,"0,136"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Riboflavina,"0,200"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Riboflavina,"0,142"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Riboflavina,"0,200"
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Riboflavina,"0,200"
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Riboflavina,"0,136"
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Riboflavina,"0,142"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Riboflavina,"0,142"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Riboflavina,"0,142"
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Riboflavina,"0,142"
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Riboflavina,"0,142"
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Riboflavina,"0,200"
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Tiamina,"0,042"
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Tiamina,"0,042"
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Tiamina,"0,028"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Tiamina,"0,042"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Tiamina,"0,029"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Tiamina,"0,042"
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Tiamina,"0,042"
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Tiamina,"0,028"
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Tiamina,"0,029"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Tiamina,"0,029"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Tiamina,"0,029"
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Tiamina,"0,029"
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Tiamina,"0,029"
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Tiamina,"0,042"
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Retinol,61
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Retinol,61
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Retinol,172
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Retinol,97
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Retinol,122
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Retinol,115
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Retinol,61
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Retinol,71
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Retinol,77
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Retinol,103
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Retinol,27
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Retinol,27
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Retinol,66
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Retinol,61
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,"Vitamina A, RAE",61
+5,Yogures,vitaminas_minerales,74,Yogur descremado,"Vitamina A, RAE",61
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,"Vitamina A, RAE",172
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,"Vitamina A, RAE",97
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,"Vitamina A, RAE",122
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,"Vitamina A, RAE",115
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,"Vitamina A, RAE",61
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,"Vitamina A, RAE",71
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,"Vitamina A, RAE",77
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,"Vitamina A, RAE",103
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,"Vitamina A, RAE",27
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,"Vitamina A, RAE",27
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,"Vitamina A, RAE",66
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,"Vitamina A, RAE",61
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Ácido fólico,0
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Ácido fólico,0
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Ácido fólico,0
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Ácido fólico,0
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Ácido fólico,0
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Ácido fólico,0
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Ácido fólico,0
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Ácido fólico,0
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Ácido fólico,0
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Ácido fólico,0
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Ácido fólico,0
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Ácido fólico,0
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Ácido fólico,0
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Ácido fólico,0
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Folato EFD,11
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Folato EFD,11
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Folato EFD,7
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Folato EFD,11
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Folato EFD,7
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Folato EFD,11
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Folato EFD,11
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Folato EFD,7
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Folato EFD,7
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Folato EFD,7
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Folato EFD,7
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Folato EFD,7
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Folato EFD,7
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Folato EFD,11
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Niacina,"0,11"
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Niacina,"0,11"
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Niacina,"0,14"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Niacina,"0,11"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Niacina,"0,08"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Niacina,"0,11"
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Niacina,"0,11"
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Niacina,"0,14"
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Niacina,"0,08"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Niacina,"0,08"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Niacina,"0,08"
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Niacina,"0,08"
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Niacina,"0,08"
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Niacina,"0,11"
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Zinc,"0,83"
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Zinc,"0,83"
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Zinc,"0,55"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Zinc,"0,83"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Zinc,"0,59"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Zinc,"0,83"
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Zinc,"0,83"
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Zinc,"0,55"
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Zinc,"0,59"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Zinc,"0,59"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Zinc,"0,59"
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Zinc,"0,59"
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Zinc,"0,59"
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Zinc,"0,83"
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Magnesio,16
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Magnesio,16
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Magnesio,12
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Magnesio,16
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Magnesio,12
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Magnesio,16
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Magnesio,16
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Magnesio,12
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Magnesio,12
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Magnesio,12
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Magnesio,12
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Magnesio,12
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Magnesio,12
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Magnesio,16
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Hierro,0
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Hierro,0
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Hierro,"0,08"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Hierro,0
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Hierro,"0,05"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Hierro,0
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Hierro,0
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Hierro,"0,08"
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Hierro,"0,05"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Hierro,"0,05"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Hierro,"0,05"
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Hierro,"0,05"
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Hierro,"2,40"
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Hierro,0
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Fósforo,88
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Fósforo,88
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Fósforo,89
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Fósforo,88
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Fósforo,95
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Fósforo,101
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Fósforo,88
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Fósforo,89
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Fósforo,95
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Fósforo,95
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Fósforo,95
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Fósforo,95
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Fósforo,95
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Fósforo,88
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Cobre,"0,013"
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Cobre,"0,013"
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Cobre,"0,01"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Cobre,"0,013"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Cobre,"0,009"
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Cobre,"0,013"
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Cobre,"0,013"
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Cobre,"0,01"
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Cobre,"0,009"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Cobre,"0,009"
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Cobre,"0,009"
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Cobre,"0,009"
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Cobre,"0,009"
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Cobre,"0,013"
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Calcio,118
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Calcio,118
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Calcio,135
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Calcio,118
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Calcio,121
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Calcio,420
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Calcio,118
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Calcio,119
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Calcio,121
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Calcio,121
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Calcio,121
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Calcio,121
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Calcio,121
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Calcio,118
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Potasio,141
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Potasio,141
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Potasio,146
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Potasio,141
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Potasio,155
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Potasio,141
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Potasio,141
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Potasio,146
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Potasio,155
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Potasio,155
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Potasio,155
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Potasio,155
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Potasio,155
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Potasio,141
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Sodio,47
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Sodio,47
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Sodio,115
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Sodio,60
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Sodio,111
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Sodio,61
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Sodio,47
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Sodio,97
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Sodio,55
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Sodio,84
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Sodio,46
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Sodio,46
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Sodio,46
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Sodio,47
+5,Yogures,vitaminas_minerales,74,Yogur con fitoesteroles,Cenizas,"1,02"
+5,Yogures,vitaminas_minerales,74,Yogur descremado,Cenizas,"1,02"
+5,Yogures,vitaminas_minerales,74,Yogur descremado bebible,Cenizas,
+5,Yogures,vitaminas_minerales,74,Yogur descremado con cereales,Cenizas,
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas,Cenizas,
+5,Yogures,vitaminas_minerales,74,Yogur descremado con frutas y cereales,Cenizas,
+5,Yogures,vitaminas_minerales,74,Yogur descremado fortificado con calcio,Cenizas,"1,02"
+5,Yogures,vitaminas_minerales,74,Yogur entero bebible saborizado,Cenizas,
+5,Yogures,vitaminas_minerales,74,Yogur entero con cereales,Cenizas,
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas,Cenizas,
+5,Yogures,vitaminas_minerales,74,Yogur entero con frutas y cereales,Cenizas,"0,72"
+5,Yogures,vitaminas_minerales,74,Yogur entero natural,Cenizas,"0,72"
+5,Yogures,vitaminas_minerales,74,Yogur entero saborizado,Cenizas,"0,72"
+5,Yogures,vitaminas_minerales,74,Yogur fortificado con hierro,Cenizas,"1,02"

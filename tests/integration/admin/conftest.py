@@ -7,9 +7,13 @@ from fastapi import status
 
 import app.db.database as db_module
 from app.core.security import create_access_token
-from app.domain.establishment import EstablishmentRequestStatus
+from app.domain.establishment import (
+    EstablishmentRequestStatus,
+    UserEstablishmentStatus,
+)
 from app.domain.user import UserRole, UserStatus
 from app.models.auth.user import User
+from app.models.auth.user_establishment import UserEstablishment
 from app.models.establishments.establishment import Establishment
 from app.models.establishments.establishment_request import EstablishmentRequest
 
@@ -30,8 +34,6 @@ REVOKE_URL = "/api/v1/admin/field-worker/{user_id}/establishments/revoke"
 APPROVE_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/approve"
 REJECT_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/reject"
 PENDING_ESTABLISHMENTS_URL = "/api/v1/admin/field-worker/establishments/pending"
-SUBJECTS_URL = "/api/v1/subjects"
-INVITE_ADMIN_URL = "/api/v1/admin/invite-admin"
 
 
 async def _make_list_request(client, *, headers=None):
@@ -224,8 +226,9 @@ async def field_worker_user_id(app):
 
 @pytest_asyncio.fixture
 async def non_field_worker_user_id(app):
-    """Insert an active analyst user and return its UUID."""
-    return await _insert_user(UserRole.ANALYST, UserStatus.ACTIVE)
+    """Insert an active admin user and return its UUID."""
+    # An admin, not an analyst: analysts go through establishment review too.
+    return await _insert_user(UserRole.ADMIN, UserStatus.ACTIVE)
 
 
 async def _insert_user(
@@ -251,6 +254,22 @@ async def _insert_user(
         )
         await session.commit()
     return user_id
+
+
+async def _insert_relation(
+    user_id: uuid.UUID,
+    establishment_id: uuid.UUID,
+    relation_status: UserEstablishmentStatus,
+) -> None:
+    async with db_module.AsyncSessionLocal() as session:
+        session.add(
+            UserEstablishment(
+                user_id=user_id,
+                establishment_id=establishment_id,
+                status=relation_status,
+            )
+        )
+        await session.commit()
 
 
 async def _insert_establishment_request(

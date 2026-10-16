@@ -29,16 +29,24 @@ from app.exceptions.domain_exceptions import (
 )
 from app.models.subjects.subject import Subject
 from app.models.surveys.survey_response import SurveyResponse
+from app.models.surveys.survey_response_edit import SurveyResponseEdit
 from app.schemas.surveys.survey_response_schema import (
     ExistingResponseRef,
     SurveyResponseEditRequest,
     SurveyResponseRequest,
     UserRefResponse,
 )
+from app.services.access import check_field_work_access
 from app.services.exporters.base import SurveyResponseExporter
 
-# Roles allowed to submit a response.
-_SUBMITTER_ROLES = {UserRole.FIELD_WORKER, UserRole.ADMIN, UserRole.SUPERADMIN}
+# Roles allowed to submit a response. Analysts are further scoped by
+# check_field_work_access.
+_SUBMITTER_ROLES = {
+    UserRole.FIELD_WORKER,
+    UserRole.ANALYST,
+    UserRole.ADMIN,
+    UserRole.SUPERADMIN,
+}
 # Roles allowed to edit any response regardless of authorship.
 _ADMIN_ROLES = {UserRole.ADMIN, UserRole.SUPERADMIN}
 # Roles allowed to fetch and see responses
@@ -85,6 +93,16 @@ class SurveyResponseService:
                 "establishment_id.",
             )
         return None, None
+
+    @staticmethod
+    def _validate_response_number(
+        survey: SurveyDomain,
+        response_number: int | None,
+    ) -> int | None:
+        """Enforce the survey's conditional response-number invariant."""
+        if survey.requires_response_number is True and response_number is None:
+            raise InvalidSurveyResponseError("This survey requires a response_number.")
+        return response_number
 
     @staticmethod
     def _assert_target_filters_applicable(
@@ -177,9 +195,11 @@ class SurveyResponseService:
             raise SurveyNotFoundError(str(survey_id))
         return SurveyDomain.from_db(survey)
 
-    async def _get_response_or_raise(self, response_id: UUID) -> SurveyResponse:
+    async def _get_response_or_raise(
+        self, survey_id: UUID, response_id: UUID
+    ) -> SurveyResponse:
         response = await self.uow.survey_response_repo.get_by_id(response_id)
-        if response is None:
+        if response is None or response.survey_id != survey_id:
             raise SurveyResponseNotFoundError(str(response_id))
         return response
 
@@ -190,15 +210,15 @@ class SurveyResponseService:
         return subject
 
     @staticmethod
-    def _target_conflict_error(
-        existing: SurveyResponse,
+    def _conflict_error(
+        existing: SurveyResponse | None,
     ) -> SurveyResponseAlreadyExistsError:
-        """Build the 409 naming the response already recorded for a target.
+        """Build the 409 naming what already holds the response target.
 
         Serialized here because the RFC 7807 handler passes extensions straight
         to JSONResponse, which cannot encode a raw UUID or datetime.
         """
-        return SurveyResponseAlreadyExistsError(
+        ref = (
             ExistingResponseRef(
                 id=existing.id,
                 submitted_by=UserRefResponse(
@@ -207,8 +227,12 @@ class SurveyResponseService:
                     last_name=existing.submitted_by.last_name,
                 ),
                 event_at=existing.event_at,
+                response_number=existing.response_number,
             ).model_dump(mode="json")
+            if existing is not None
+            else None
         )
+        return SurveyResponseAlreadyExistsError(existing=ref)
 
     async def _raise_if_target_answered(
         self,
@@ -223,19 +247,36 @@ class SurveyResponseService:
             survey_id, subject_id=subject_id, establishment_id=establishment_id
         )
         if existing is not None:
-            raise self._target_conflict_error(existing)
+            raise self._conflict_error(existing)
 
     @staticmethod
-    def _replayed(existing: SurveyResponse, survey_id: UUID) -> SurveyResponseDomain:
-        """Return a replayed response, rejecting an id reused across surveys."""
+    def _replayed(
+        existing: SurveyResponse, survey_id: UUID, actor: UserActor
+    ) -> SurveyResponseDomain:
+        """Return a replayed response, rejecting an id reused across surveys or
+        replayed by someone other than its submitter or an admin."""
         if existing.survey_id != survey_id:
             raise InvalidSurveyResponseError(
                 "This response id already belongs to a different survey.",
             )
+        SurveyResponseService._assert_owner_or_admin(actor, existing)
         return SurveyResponseDomain.from_db(existing)
 
-    async def get(self, response_id: UUID, actor: UserActor) -> SurveyResponseDomain:
-        """Return a response's full detail, including its answers.
+    @staticmethod
+    def _replayed_edit(
+        existing_edit: SurveyResponseEdit, response: SurveyResponse
+    ) -> SurveyResponseDomain:
+        """Return a replayed edit's response, rejecting an id of another response."""
+        if existing_edit.response_id != response.id:
+            raise InvalidSurveyResponseError(
+                "This edit id already belongs to a different response.",
+            )
+        return SurveyResponseDomain.from_db(response)
+
+    async def get(
+        self, survey_id: UUID, response_id: UUID, actor: UserActor
+    ) -> SurveyResponseDomain:
+        """Return a response of the given survey, including its answers.
 
         Does not re-check establishment access, so a submitter keeps read access
         to their own response even after losing access to its establishment.
@@ -244,7 +285,7 @@ class SurveyResponseService:
             SurveyResponseNotFoundError.
             NotResourceOwnerError: not the submitter and not admin/superadmin.
         """
-        response = await self._get_response_or_raise(response_id)
+        response = await self._get_response_or_raise(survey_id, response_id)
         self._assert_owner_or_admin(actor, response)
         return SurveyResponseDomain.from_db(response)
 
@@ -260,27 +301,37 @@ class SurveyResponseService:
 
         Raises:
             RoleNotAllowedError: role can't submit.
+            EstablishmentAccessDeniedError: analyst without approved access to
+                the response's establishment, or to any establishment when the
+                response names none.
             SurveyNotFoundError / EstablishmentNotFoundError / SubjectNotFoundError.
             InvalidSurveyResponseError: payload names an entity that does not
                 match the survey's response target, answers fail validation, or
                 the replayed id belongs to a different survey.
-            SurveyResponseAlreadyExistsError: this subject or establishment has
-                already answered this survey.
+            NotResourceOwnerError: replayed id belongs to a response submitted
+                by someone else and the actor is not admin/superadmin.
+            SurveyResponseAlreadyExistsError: target conflict.
         """
         self._assert_can_submit(actor)
 
         if data.id is not None:
             existing = await self.uow.survey_response_repo.get_by_id(data.id)
             if existing is not None:
-                return self._replayed(existing, survey_id), False
+                replayed = self._replayed(existing, survey_id, actor)
+                await check_field_work_access(
+                    self.uow, actor, existing.establishment_id
+                )
+                return replayed, False
 
         survey = await self._get_survey_or_raise(survey_id)
         subject_id, establishment_id = self._resolve_target(survey, data)
         if establishment_id is not None:
             await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
+        await check_field_work_access(self.uow, actor, establishment_id)
         if subject_id is not None:
             await self._get_subject_or_raise(subject_id)
         await self._raise_if_target_answered(survey_id, subject_id, establishment_id)
+        response_number = self._validate_response_number(survey, data.response_number)
         answers = self._validate_answers(survey.questions, data.answers)
         score_fies = self._calculate_fies_score(survey, answers)
 
@@ -293,6 +344,7 @@ class SurveyResponseService:
                 submitted_by_id=actor.user_id,
                 answers=answers,
                 score_fies=score_fies,
+                response_number=response_number,
                 event_at=data.event_at,
             )
         except UniqueConstraintError as error:
@@ -305,11 +357,11 @@ class SurveyResponseService:
                 # The conflicting row lost the read race, so it cannot be named
                 # here -- but the condition is the same one the pre-check above
                 # reports, and must not leave with a different contract.
-                raise SurveyResponseAlreadyExistsError()
+                raise self._conflict_error(None)
             if data.id is not None:
                 raced = await self.uow.survey_response_repo.get_by_id(data.id)
                 if raced is not None:
-                    return self._replayed(raced, survey_id), False
+                    return self._replayed(raced, survey_id, actor), False
             raise
 
         await self.uow.survey_repo.increment_response_count(survey.id)
@@ -317,29 +369,36 @@ class SurveyResponseService:
         return SurveyResponseDomain.from_db(response), True
 
     async def edit(
-        self, response_id: UUID, data: SurveyResponseEditRequest, actor: UserActor
+        self,
+        survey_id: UUID,
+        response_id: UUID,
+        data: SurveyResponseEditRequest,
+        actor: UserActor,
     ) -> SurveyResponseDomain:
-        """Full-replace edit of a response's answers.
+        """Full-replace edit of a response's answers and response number.
 
         Every edit attempt appends a row to ``survey_response_edits``; the
         response's current state only advances if ``event_at`` is at least as
-        recent as what it already has (last-write-wins).The FIES score is
+        recent as what it already has (last-write-wins). The FIES score is
         recalculated from the new answers whenever the edit is applied.
 
         Raises:
             SurveyResponseNotFoundError, NotResourceOwnerError (not the
-            submitter/admin),
+            submitter/admin), EstablishmentAccessDeniedError (analyst without
+            the approved access that submitting requires),
             InvalidSurveyResponseError (answers fail validation).
         """
-        response = await self._get_response_or_raise(response_id)
+        response = await self._get_response_or_raise(survey_id, response_id)
         self._assert_owner_or_admin(actor, response)
+        await check_field_work_access(self.uow, actor, response.establishment_id)
 
         if data.id is not None:
             existing_edit = await self.uow.survey_response_edit_repo.get_by_id(data.id)
             if existing_edit is not None:
-                return SurveyResponseDomain.from_db(response)
+                return self._replayed_edit(existing_edit, response)
 
         survey = await self._get_survey_or_raise(response.survey_id)
+        response_number = self._validate_response_number(survey, data.response_number)
         answers = self._validate_answers(survey.questions, data.answers)
         score_fies = self._calculate_fies_score(survey, answers)
 
@@ -349,18 +408,23 @@ class SurveyResponseService:
                 response_id=response.id,
                 edited_by_id=actor.user_id,
                 answers=answers,
+                response_number=response_number,
                 event_at=data.event_at,
             )
         except UniqueConstraintError:
             if data.id is not None:
                 raced = await self.uow.survey_response_edit_repo.get_by_id(data.id)
                 if raced is not None:
-                    return SurveyResponseDomain.from_db(response)
+                    return self._replayed_edit(raced, response)
             raise
 
         if data.event_at >= response.event_at:
             response = await self.uow.survey_response_repo.update_answers(
-                response, answers=answers, score_fies=score_fies, event_at=data.event_at
+                response,
+                answers=answers,
+                score_fies=score_fies,
+                response_number=response_number,
+                event_at=data.event_at,
             )
         await self.uow.commit()
         return SurveyResponseDomain.from_db(response)
@@ -374,6 +438,8 @@ class SurveyResponseService:
         params: SurveyResponseListingParams,
     ) -> PaginatedResult[SurveyResponseDashboardItemDomain]:
         """Return a paginated list of a survey's responses in ``params.sort_order``.
+
+        ``params`` may narrow by response number, exactly or by range.
 
         Raises:
             RoleNotAllowedError: actor role isn't a dashboard reader.
@@ -404,7 +470,7 @@ class SurveyResponseService:
         )
 
     async def get_response_detail(
-        self, response_id: UUID, actor: UserActor
+        self, survey_id: UUID, response_id: UUID, actor: UserActor
     ) -> SurveyResponseDetailDomain:
         """Return one user's full response detail for the dashboard: every
         question in the survey and the value that user registered for it.
@@ -415,7 +481,7 @@ class SurveyResponseService:
         """
         self._assert_dashboard_reader(actor)
         response = await self.uow.survey_response_repo.get_with_relations(response_id)
-        if response is None:
+        if response is None or response.survey_id != survey_id:
             raise SurveyResponseNotFoundError(str(response_id))
         return SurveyResponseDetailDomain.from_db(response)
 
@@ -450,12 +516,9 @@ class SurveyResponseService:
         survey_id: UUID,
         actor: UserActor,
         exporter: SurveyResponseExporter,
-        establishment_id: UUID | None = None,
-        subject_id: UUID | None = None,
+        params: SurveyResponseListingParams,
     ) -> bytes:
-        """Export every response to a survey using the given exporter.
-
-        Optionally filter by the response's target.
+        """Export responses using the listing's filters.
 
         Raises:
             RoleNotAllowedError: actor role isn't a dashboard reader.
@@ -466,11 +529,15 @@ class SurveyResponseService:
         self._assert_dashboard_reader(actor)
         survey = await self._get_survey_or_raise(survey_id)
         self._assert_target_filters_applicable(
-            survey, subject_id=subject_id, establishment_id=establishment_id
+            survey,
+            subject_id=params.subject_id,
+            establishment_id=params.establishment_id,
+            city=params.city,
+            province=params.province,
         )
 
         responses = await self.uow.survey_response_repo.list_all_for_export(
-            survey_id, establishment_id, subject_id
+            survey_id, params=params
         )
         detailed = [SurveyResponseDetailDomain.from_db(r) for r in responses]
         return exporter.export(survey, detailed)

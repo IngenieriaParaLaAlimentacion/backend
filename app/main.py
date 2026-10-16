@@ -10,8 +10,12 @@ from app.config.logging import setup_logging
 from app.config.settings import settings
 from app.config.telemetry import setup_telemetry
 from app.core.openapi import configure_openapi
+from app.core.rate_limit import close_limiter
 from app.db.database import engine
 from app.exceptions.exception_handlers import register_exception_handlers
+from app.services.notifications.stale_establishment_scheduler import (
+    StaleEstablishmentScheduler,
+)
 
 logger = structlog.get_logger()
 
@@ -26,18 +30,28 @@ async def _shutdown_provider(name: str, provider) -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Ingenieria Para la Alimentacion service getting started")
+    notification_scheduler = StaleEstablishmentScheduler()
+    notification_scheduler.start()
 
-    yield
+    try:
+        yield
+    finally:
+        await notification_scheduler.shutdown()
 
-    logger.info("Shutting down service, flushing telemetry")
+        logger.info("Shutting down service, flushing telemetry")
 
-    await asyncio.gather(
-        _shutdown_provider("tracer_provider", telemetry.tracer_provider),
-        _shutdown_provider("meter_provider", telemetry.meter_provider),
-        _shutdown_provider("logger_provider", telemetry.logger_provider),
-    )
+        await asyncio.gather(
+            _shutdown_provider("tracer_provider", telemetry.tracer_provider),
+            _shutdown_provider("meter_provider", telemetry.meter_provider),
+            _shutdown_provider("logger_provider", telemetry.logger_provider),
+        )
 
-    await engine.dispose()
+        try:
+            await close_limiter()
+        except Exception:
+            logger.exception("Failed to close the rate limiter")
+
+        await engine.dispose()
 
 
 app = FastAPI(

@@ -71,10 +71,17 @@ class EstablishmentMetricsDomain:
     avg_weight_kg: float | None
     avg_bmi: float | None
     avg_age_months: int | None
+    last_intake_at: datetime | None = None
+    last_outflow_at: datetime | None = None
 
     @classmethod
     def empty(cls) -> "EstablishmentMetricsDomain":
-        """Return the metrics of an establishment with no measurements."""
+        """Return the metrics of an establishment with no measurements.
+
+        The food-movement dates are not part of the empty state: an
+        establishment may hold food before any subject is registered, so the
+        caller fills them in either way.
+        """
         return cls(
             subject_count=0,
             measurement_count=0,
@@ -159,3 +166,23 @@ class EstablishmentFieldWorkerItemDomain:
     relation_status: UserEstablishmentStatus
     measurement_count: int
     last_measured_at: datetime | None
+
+
+@dataclass
+class EstablishmentMapItemDomain:
+    """One establishment's location and rolled-up nutritional severity.
+
+    Deliberately thinner than EstablishmentAlertStatusDomain: no
+    distribution, no averages, no subject counts -- just enough to place and
+    color a marker on the map. has_data=False (with severity and
+    dominant_status left None) marks an establishment with no measurements,
+    which is never conflated with a NORMAL status.
+    """
+
+    id: UUID
+    name: str
+    latitude: float
+    longitude: float
+    has_data: bool
+    severity: AlertSeverity | None
+    dominant_status: NutritionalStatus | None

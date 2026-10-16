@@ -39,3 +39,21 @@ class Establishment(Base):
         "Measurement",
         back_populates="establishment",
     )
+    food_intakes = relationship(
+        "FoodIntake",
+        back_populates="establishment",
+    )
+    food_outflows = relationship(
+        "FoodOutflow",
+        back_populates="establishment",
+    )
+    food_stock = relationship(
+        "FoodStock",
+        back_populates="establishment",
+    )
+    stale_notification_cycle = relationship(
+        "StaleEstablishmentCycle",
+        back_populates="establishment",
+        uselist=False,
+        passive_deletes=True,
+    )

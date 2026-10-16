@@ -1,0 +1,8 @@
+# Pinned so extract_raw.py's output is reproducible. Without this, pip installs
+# whatever is latest at install time — this is how the tabla-mislabeling and
+# ligature-swap investigations in this pipeline's history got confusing: two
+# runs of the exact same script, against the exact same PDF, produced different
+# text for words like "fortificados" because pdfminer.six's version drifted
+# between them with no pin to catch it.
+pdfplumber==0.11.10
+pdfminer.six==20260107

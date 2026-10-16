@@ -1,0 +1,703 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,Alcohol,4
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",Alcohol,"15,3"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",Alcohol,"33,4"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,Alcohol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,Alcohol,"3,9"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,Alcohol,"0,33"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,Alcohol,"10,3"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",Alcohol,4
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,Alcohol,4
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,Alcohol,40
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",Alcohol,"29,8"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,Alcohol,"3,7"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,Alcohol,12
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,Alcohol,"10,3"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",Alcohol,"6,5"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,Alcohol,"15,3"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,Alcohol,"10,4"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,Alcohol,"42,5"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,Fibra alimentaria,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,Azúcar agregado,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",Azúcar agregado,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",Azúcar agregado,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,Azúcar agregado,"11,2"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,Azúcar agregado,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,Azúcar agregado,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,Azúcar agregado,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",Azúcar agregado,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,Azúcar agregado,"9,8"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,Azúcar agregado,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",Azúcar agregado,"41,6"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,Azúcar agregado,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,Azúcar agregado,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,Azúcar agregado,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",Azúcar agregado,"5,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,Azúcar agregado,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,Azúcar agregado,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,Azúcar agregado,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,Azúcar total,"8,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",Azúcar total,"7,8"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",Azúcar total,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,Azúcar total,"11,2"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,Azúcar total,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,Azúcar total,"5,4"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,Azúcar total,"1,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",Azúcar total,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,Azúcar total,"9,8"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,Azúcar total,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",Azúcar total,"41,6"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,Azúcar total,"4,3"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,Azúcar total,"13,5"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,Azúcar total,"1,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",Azúcar total,"5,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,Azúcar total,"7,8"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,Azúcar total,"0,8"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,Azúcar total,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,Carbohidratos totales,"8,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",Carbohidratos totales,"13,7"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",Carbohidratos totales,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,Carbohidratos totales,"11,2"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,Carbohidratos totales,"3,6"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,Carbohidratos totales,"5,4"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,Carbohidratos totales,"2,6"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",Carbohidratos totales,"16,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,Carbohidratos totales,"10,1"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,Carbohidratos totales,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",Carbohidratos totales,"41,6"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,Carbohidratos totales,"4,3"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,Carbohidratos totales,"13,5"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,Carbohidratos totales,"2,6"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",Carbohidratos totales,"5,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,Carbohidratos totales,"13,7"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,Carbohidratos totales,"2,7"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,Carbohidratos totales,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,Carbohidratos disponibles,"8,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",Carbohidratos disponibles,"13,7"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",Carbohidratos disponibles,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,Carbohidratos disponibles,"11,2"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,Carbohidratos disponibles,"3,6"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,Carbohidratos disponibles,"5,4"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,Carbohidratos disponibles,"2,6"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",Carbohidratos disponibles,"16,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,Carbohidratos disponibles,"10,1"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,Carbohidratos disponibles,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",Carbohidratos disponibles,"41,6"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,Carbohidratos disponibles,"4,3"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,Carbohidratos disponibles,"13,5"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,Carbohidratos disponibles,"2,6"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",Carbohidratos disponibles,"5,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,Carbohidratos disponibles,"13,7"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,Carbohidratos disponibles,"2,7"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,Carbohidratos disponibles,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,22:6 n-3 Docosahexaenoico (DHA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,20:5 n-3 Eicosapentaenoico (EPA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,20:4 Araquidónico,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",18:3 cis Alfa linolénico (ALA),"0,109"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,18:3 cis Alfa linolénico (ALA),0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",18:2 cis Linoléico,"0,06"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,18:2 cis Linoléico,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,Trans,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",Poliinsaturados,"0,17"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,Poliinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",Monoinsaturados,"0,02"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,Monoinsaturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",Saturados,"0,01"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,Saturados,"0,00"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,Colesterol,0
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",Lípidos totales,"0,3"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,Lípidos totales,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,Proteínas,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",Proteínas,"0,2"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",Proteínas,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,Proteínas,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,Proteínas,"0,5"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,Proteínas,"0,4"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,Proteínas,"0,1"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",Proteínas,"0,6"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,Proteínas,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,Proteínas,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",Proteínas,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,Proteínas,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,Proteínas,"0,1"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,Proteínas,"0,1"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",Proteínas,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,Proteínas,"0,2"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,Proteínas,"0,1"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,Proteínas,"0,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,Agua,"88,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",Agua,"70,5"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",Agua,"66,6"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,Agua,"88,8"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,Agua,"92,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,Agua,"93,3"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,Agua,"86,9"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",Agua,"83,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,Agua,"85,7"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,Agua,"60,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",Agua,"28,3"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,Agua,"91,2"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,Agua,"74,0"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,Agua,"86,9"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",Agua,"88,5"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,Agua,"70,5"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,Agua,"86,6"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,Agua,"57,5"
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Ananá Fizz,Valor energético,60
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Aperitivo, tipo Gancia",Valor energético,163
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Bebida destilada, PROMEDIO",Valor energético,234
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Bebida energizante,Valor energético,45
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza con alcohol,Valor energético,43
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Cerveza sin alcohol,Valor energético,25
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Champagne,Valor energético,83
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Chicha, bebida tradicional obtenida por fermentación del maíz",Valor energético,94
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Dr. Lemon,Valor energético,68
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Fernet,Valor energético,280
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Licor, PROMEDIO",Valor energético,378
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Sidra,Valor energético,43
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vermouth,Valor energético,138
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino blanco,Valor energético,83
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,"Vino espumante, tipo Frizze",Valor energético,66
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino Mistela,Valor energético,163
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vino tinto,Valor energético,84
+22,Bebidas alcohólicas y energizantes,macronutrientes,126,Vodka,Valor energético,298
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Vitamina D,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Vitamina C,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Vitamina C,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Vitamina C,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Vitamina C,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Vitamina C,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Vitamina C,"0,5"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Vitamina C,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Vitamina C,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Vitamina C,"2,8"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Vitamina C,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Vitamina C,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Vitamina C,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Vitamina C,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Vitamina C,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Vitamina C,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Vitamina C,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Vitamina C,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Vitamina C,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Vitamina B-12,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Vitamina B-12,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Vitamina B-12,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Vitamina B-12,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Vitamina B-12,"0,02"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Vitamina B-12,"0,02"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Vitamina B-12,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Vitamina B-12,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Vitamina B-12,"0,01"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Vitamina B-12,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Vitamina B-12,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Vitamina B-12,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Vitamina B-12,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Vitamina B-12,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Vitamina B-12,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Vitamina B-12,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Vitamina B-12,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Vitamina B-12,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Riboflavina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Riboflavina,"0,018"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Riboflavina,"0,004"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Riboflavina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Riboflavina,"0,025"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Riboflavina,"0,017"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Riboflavina,"0,015"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Riboflavina,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Riboflavina,"0,010"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Riboflavina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Riboflavina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Riboflavina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Riboflavina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Riboflavina,"0,015"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Riboflavina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Riboflavina,"0,018"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Riboflavina,"0,023"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Riboflavina,"0,004"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Tiamina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Tiamina,"0,018"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Tiamina,"0,006"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Tiamina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Tiamina,"0,005"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Tiamina,"0,055"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Tiamina,"0,005"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Tiamina,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Tiamina,"0,006"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Tiamina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Tiamina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Tiamina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Tiamina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Tiamina,"0,005"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Tiamina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Tiamina,"0,018"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Tiamina,"0,005"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Tiamina,"0,006"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Retinol,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,"Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia","Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO","Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,"Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,"Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,"Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,"Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz","Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,"Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,"Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO","Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,"Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,"Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,"Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze","Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,"Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,"Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,"Vitamina A, RAE",0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Ácido fólico,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Folato EFD,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Folato EFD,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Folato EFD,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Folato EFD,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Folato EFD,6
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Folato EFD,15
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Folato EFD,1
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Folato EFD,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Folato EFD,4
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Folato EFD,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Folato EFD,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Folato EFD,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Folato EFD,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Folato EFD,1
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Folato EFD,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Folato EFD,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Folato EFD,1
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Folato EFD,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Niacina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Niacina,"0,21"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Niacina,"0,01"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Niacina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Niacina,"0,51"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Niacina,"0,61"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Niacina,"0,11"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Niacina,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Niacina,"0,23"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Niacina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Niacina,"0,00"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Niacina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Niacina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Niacina,"0,11"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Niacina,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Niacina,"0,21"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Niacina,"0,17"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Niacina,"0,01"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Zinc,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Zinc,"0,07"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Zinc,"0,04"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Zinc,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Zinc,"0,01"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Zinc,"0,008"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Zinc,"0,12"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Zinc,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Zinc,"0,01"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Zinc,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Zinc,"0,04"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Zinc,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Zinc,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Zinc,"0,12"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Zinc,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Zinc,"0,07"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Zinc,"0,13"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Zinc,"0,04"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Magnesio,3
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Magnesio,9
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Magnesio,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Magnesio,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Magnesio,6
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Magnesio,8
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Magnesio,10
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Magnesio,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Magnesio,4
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Magnesio,5
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Magnesio,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Magnesio,3
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Magnesio,5
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Magnesio,10
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Magnesio,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Magnesio,9
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Magnesio,11
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Magnesio,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Hierro,"0,50"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Hierro,"0,24"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Hierro,"0,04"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Hierro,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Hierro,"0,02"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Hierro,"0,02"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Hierro,"0,27"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Hierro,"3,50"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Hierro,"0,03"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Hierro,"0,50"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Hierro,"0,07"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Hierro,"0,50"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Hierro,"0,50"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Hierro,"0,27"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Hierro,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Hierro,"0,24"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Hierro,"0,37"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Hierro,"0,04"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Fósforo,3
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Fósforo,9
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Fósforo,4
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Fósforo,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Fósforo,14
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Fósforo,20
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Fósforo,18
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Fósforo,35
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Fósforo,7
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Fósforo,7
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Fósforo,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Fósforo,3
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Fósforo,7
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Fósforo,18
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Fósforo,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Fósforo,9
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Fósforo,20
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Fósforo,4
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Cobre,"0,04"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Cobre,"0,045"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Cobre,"0,021"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Cobre,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Cobre,"0,005"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Cobre,"0,005"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Cobre,"0,004"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Cobre,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Cobre,"0,008"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Cobre,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Cobre,"0,08"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Cobre,"0,04"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Cobre,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Cobre,"0,004"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Cobre,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Cobre,"0,045"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Cobre,"0,007"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Cobre,"0,021"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Calcio,8
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Calcio,8
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Calcio,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Calcio,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Calcio,4
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Calcio,5
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Calcio,9
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Calcio,25
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Calcio,4
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Calcio,8
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Calcio,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Calcio,8
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Calcio,8
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Calcio,9
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Calcio,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Calcio,8
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Calcio,8
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Calcio,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Potasio,72
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Potasio,92
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Potasio,2
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Potasio,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Potasio,27
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Potasio,40
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Potasio,71
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Potasio,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Potasio,27
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Potasio,42
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Potasio,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Potasio,72
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Potasio,42
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Potasio,71
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Potasio,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Potasio,92
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Potasio,99
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Potasio,2
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Sodio,7
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Sodio,9
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Sodio,1
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Sodio,12
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Sodio,4
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Sodio,3
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Sodio,5
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Sodio,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Sodio,5
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Sodio,5
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Sodio,5
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Sodio,7
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Sodio,23
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Sodio,5
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Sodio,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Sodio,9
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Sodio,5
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Sodio,1
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Ananá Fizz,Cenizas,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Aperitivo, tipo Gancia",Cenizas,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Bebida destilada, PROMEDIO",Cenizas,"0,01"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Bebida energizante,Cenizas,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza con alcohol,Cenizas,"0,16"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Cerveza sin alcohol,Cenizas,"0,12"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Champagne,Cenizas,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Chicha, bebida tradicional obtenida por fermentación del maíz",Cenizas,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Dr. Lemon,Cenizas,"0,13"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Fernet,Cenizas,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Licor, PROMEDIO",Cenizas,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Sidra,Cenizas,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vermouth,Cenizas,
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino blanco,Cenizas,"0,2"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,"Vino espumante, tipo Frizze",Cenizas,0
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino Mistela,Cenizas,"0,3"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vino tinto,Cenizas,"0,24"
+22,Bebidas alcohólicas y energizantes,vitaminas_minerales,127,Vodka,Cenizas,"0,01"

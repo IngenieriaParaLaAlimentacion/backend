@@ -22,10 +22,28 @@ from app.repositories.establishments.establishment_repository import (
 from app.repositories.establishments.establishment_request_repository import (
     EstablishmentRequestRepository,
 )
+from app.repositories.food_catalog.food_category_repository import (
+    FoodCategoryRepository,
+)
+from app.repositories.food_catalog.food_nutrient_value_repository import (
+    FoodNutrientValueRepository,
+)
+from app.repositories.food_catalog.food_repository import FoodRepository
+from app.repositories.food_catalog.nutrient_repository import NutrientRepository
+from app.repositories.food_intakes.food_intake_repository import FoodIntakeRepository
+from app.repositories.food_outflows.food_outflow_repository import (
+    FoodOutflowRepository,
+)
+from app.repositories.food_stock.food_stock_repository import FoodStockRepository
 from app.repositories.measurements.measurement_alert_repository import (
     MeasurementAlertRepository,
 )
 from app.repositories.measurements.measurement_repository import MeasurementRepository
+from app.repositories.notifications import (
+    PushDeliveryJobRepository,
+    StaleEstablishmentCycleRepository,
+    UserPushDeviceRepository,
+)
 from app.repositories.subjects.subject_event_repository import SubjectEventRepository
 from app.repositories.subjects.subject_repository import SubjectRepository
 from app.repositories.surveys.survey_repository import SurveyRepository
@@ -66,6 +84,16 @@ class UnitOfWork(IUnitOfWork):
         self.establishment_dashboard_repo = EstablishmentDashboardRepository(
             self.session
         )
+        self.food_category_repo = FoodCategoryRepository(self.session)
+        self.nutrient_repo = NutrientRepository(self.session)
+        self.food_repo = FoodRepository(self.session)
+        self.food_nutrient_value_repo = FoodNutrientValueRepository(self.session)
+        self.food_intake_repo = FoodIntakeRepository(self.session)
+        self.food_outflow_repo = FoodOutflowRepository(self.session)
+        self.food_stock_repo = FoodStockRepository(self.session)
+        self.push_device_repo = UserPushDeviceRepository(self.session)
+        self.stale_cycle_repo = StaleEstablishmentCycleRepository(self.session)
+        self.push_delivery_job_repo = PushDeliveryJobRepository(self.session)
         return self
 
     async def commit(self) -> None:

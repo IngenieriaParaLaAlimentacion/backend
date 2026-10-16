@@ -1,6 +1,7 @@
 from collections.abc import AsyncIterator, Sequence
 
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy import func
+from sqlalchemy.exc import DBAPIError, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.exceptions.domain_exceptions import UniqueConstraintError
@@ -22,6 +23,18 @@ def escape_like(term: str) -> str:
 def ilike_condition(column, value: str):
     """Case-insensitive partial match condition for a column."""
     return column.ilike(f"%{escape_like(value)}%", escape="\\")
+
+
+def unaccent_lower(value):
+    """Lowercase and strip accents from a column or literal."""
+    return func.immutable_unaccent(func.lower(value))
+
+
+def unaccent_ilike_condition(column, value: str):
+    """Accent- and case-insensitive partial match condition for a column."""
+    return unaccent_lower(column).ilike(
+        unaccent_lower(f"%{escape_like(value)}%"), escape="\\"
+    )
 
 
 async def _execute_paginated_query(
@@ -226,21 +239,68 @@ async def execute_count(
     return (await db.execute(count_query)).scalar_one()
 
 
-async def insert_with_savepoint(db: AsyncSession, entity, field: str, value) -> object:
+def violated_constraint(error: IntegrityError) -> str | None:
+    """Return the name of the constraint Postgres rejected the write on.
+
+    asyncpg carries it on the driver error at ``orig.__cause__``, psycopg2
+    under ``orig.diag``.
+    """
+    for candidate in (error.orig, getattr(error.orig, "__cause__", None)):
+        if candidate is None:
+            continue
+        name = getattr(candidate, "constraint_name", None) or getattr(
+            getattr(candidate, "diag", None), "constraint_name", None
+        )
+        if name:
+            return name
+    return None
+
+
+def sqlstate(error: DBAPIError) -> str | None:
+    """Return the SQLSTATE code Postgres failed the statement with.
+
+    asyncpg carries it as ``sqlstate`` on the driver error at ``orig.__cause__``,
+    psycopg2 as ``pgcode`` on ``orig`` -- the same split ``violated_constraint``
+    has to straddle.
+    """
+    for candidate in (error.orig, getattr(error.orig, "__cause__", None)):
+        if candidate is None:
+            continue
+        code = getattr(candidate, "sqlstate", None) or getattr(
+            candidate, "pgcode", None
+        )
+        if code:
+            return code
+    return None
+
+
+async def insert_with_savepoint(
+    db: AsyncSession, entity, field: str, value, constraint: str | None = None
+) -> object:
     """Insert ``entity`` inside a SAVEPOINT, mapping unique violations.
 
     The SAVEPOINT rolls back only the failed row, leaving the session usable
     for the caller to re-query.
 
+    Args:
+        constraint: name of the constraint whose violation means ``field`` is
+            taken. Pass it whenever the insert can fail on something else too
+            — cascaded child rows, a check constraint, an FK — so those surface
+            as themselves instead of as a false duplicate. Left as None, any
+            integrity error is read as a duplicate.
+
     Raises:
         UniqueConstraintError: if ``field`` is already in use. The caller is
             responsible for re-querying to decide the outcome.
+        IntegrityError: for any other constraint the write violated.
     """
     try:
         async with db.begin_nested():
             db.add(entity)
             await db.flush()
-    except IntegrityError:
+    except IntegrityError as error:
+        if constraint is not None and violated_constraint(error) != constraint:
+            raise
         raise UniqueConstraintError(field, value)
     await db.refresh(entity)
     return entity

@@ -1,11 +1,8 @@
 import uuid
 
-import pytest
 from fastapi import status
 
 from tests.integration.subjects.conftest import _upload, _upload_with_id
-
-pytestmark = pytest.mark.asyncio
 
 
 class TestSubjectEventLog:

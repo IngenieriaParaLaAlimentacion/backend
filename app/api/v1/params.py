@@ -5,6 +5,7 @@ from uuid import UUID
 
 from fastapi import Query, status
 
+from app.domain.activity import ActivityListingParams, ActivityType
 from app.domain.establishment import (
     EstablishmentCreationRequestListingParams,
     EstablishmentCreationRequestSortOrder,
@@ -17,6 +18,17 @@ from app.domain.establishment_dashboard import (
     EstablishmentFieldWorkerListingParams,
     EstablishmentSubjectListingParams,
     EstablishmentSubjectSortOrder,
+)
+from app.domain.food_catalog import (
+    FoodCategoryListingParams,
+    FoodListingParams,
+    FoodSortOrder,
+)
+from app.domain.food_stock import (
+    FoodMovementDirection,
+    FoodMovementListingParams,
+    FoodStockListingParams,
+    FoodStockSortOrder,
 )
 from app.domain.measurement import MeasurementListingParams, MeasurementSortOrder
 from app.domain.subject import Sex, SubjectListingParams, SubjectSortOrder
@@ -34,6 +46,11 @@ from app.domain.survey_response import (
 from app.exceptions.domain_exceptions import (
     InvalidAgeRangeError,
     InvalidDateRangeError,
+    InvalidNumberRangeError,
+)
+from app.schemas.surveys.survey_response_schema import (
+    RESPONSE_NUMBER_MAX,
+    RESPONSE_NUMBER_MIN,
 )
 
 AUTH_RESPONSES: dict[int | str, dict[str, str]] = {
@@ -41,6 +58,10 @@ AUTH_RESPONSES: dict[int | str, dict[str, str]] = {
         "description": "Missing or invalid authentication token"
     },
     status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+}
+
+RATE_LIMITED_RESPONSES: dict[int | str, dict[str, str]] = {
+    status.HTTP_429_TOO_MANY_REQUESTS: {"description": "Too many requests"},
 }
 
 
@@ -55,6 +76,16 @@ def _validate_date_range(
     if start is not None and end is not None and start > end:
         raise InvalidDateRangeError(
             f"{field_prefix}_from cannot be after {field_prefix}_to"
+        )
+
+
+def _validate_number_range(
+    start: int | None, end: int | None, field_prefix: str
+) -> None:
+    """Raise InvalidNumberRangeError if ``start`` is greater than ``end``."""
+    if start is not None and end is not None and start > end:
+        raise InvalidNumberRangeError(
+            f"{field_prefix}_from cannot be greater than {field_prefix}_to"
         )
 
 
@@ -169,6 +200,100 @@ class EstablishmentFieldWorkersQuery:
 
 
 @dataclass
+class ActivityListingQuery:
+    """Query params for the current user's activity feed."""
+
+    activity_types: Annotated[
+        list[ActivityType] | None,
+        Query(
+            alias="type",
+            description="Activity types to include. Repeat the parameter to "
+            "merge several types into one date-descending feed "
+            "(`?type=food_intake&type=food_outflow`). Repeated values are "
+            "idempotent. Defaults to every type when omitted.",
+        ),
+    ] = None
+
+    def to_domain(self) -> ActivityListingParams:
+        return ActivityListingParams(activity_types=self.activity_types)
+
+
+@dataclass
+class FoodStockListingQuery:
+    category_id: Annotated[UUID | None, Query()] = None
+    only_available: Annotated[
+        bool,
+        Query(description="Exclude foods whose balance is zero."),
+    ] = False
+    sort_order: FoodStockSortOrder = FoodStockSortOrder.NAME_ASC
+
+    def to_domain(self) -> FoodStockListingParams:
+        return FoodStockListingParams(
+            category_id=self.category_id,
+            only_available=self.only_available,
+            sort_order=self.sort_order,
+        )
+
+
+@dataclass
+class FoodMovementListingQuery:
+    direction: Annotated[
+        FoodMovementDirection | None,
+        Query(description="Keep only intakes (`in`) or only outflows (`out`)."),
+    ] = None
+    occurred_from: Annotated[
+        datetime | None,
+        Query(
+            description=("Lower bound on `occurred_at`, the date the movement happened")
+        ),
+    ] = None
+    occurred_to: Annotated[
+        datetime | None,
+        Query(description="Upper bound on the event date."),
+    ] = None
+    food_id: Annotated[
+        UUID | None,
+        Query(
+            description=("Keep only movements carrying this food on at least one line.")
+        ),
+    ] = None
+
+    def validate(self) -> None:
+        """Raise InvalidDateRangeError if the event-date bounds are inverted."""
+        _validate_date_range(self.occurred_from, self.occurred_to, "occurred")
+
+    def to_domain(self) -> FoodMovementListingParams:
+        return FoodMovementListingParams(
+            direction=self.direction,
+            occurred_from=self.occurred_from,
+            occurred_to=self.occurred_to,
+            food_id=self.food_id,
+        )
+
+
+@dataclass
+class FoodListingQuery:
+    search: Annotated[str | None, Query(max_length=200)] = None
+    category_id: Annotated[UUID | None, Query()] = None
+    sort_order: FoodSortOrder = FoodSortOrder.NAME_ASC
+
+    def to_domain(self) -> FoodListingParams:
+        return FoodListingParams(
+            search=self.search,
+            category_id=self.category_id,
+            sort_order=self.sort_order,
+        )
+
+
+@dataclass
+class FoodCategoryListingQuery:
+    sort_order: FoodSortOrder = FoodSortOrder.NAME_ASC
+
+    def to_domain(self) -> FoodCategoryListingParams:
+        return FoodCategoryListingParams(sort_order=self.sort_order)
+
+
+@dataclass
 class SurveyListingQuery:
     search: Annotated[str | None, Query(max_length=NAME_MAX)] = None
     created_by: Annotated[UUID | None, Query()] = None
@@ -192,11 +317,23 @@ class SurveyResponseListingQuery(LocationQuery):
     establishment_id: Annotated[UUID | None, Query()] = None
     event_at_from: Annotated[datetime | None, Query()] = None
     event_at_to: Annotated[datetime | None, Query()] = None
+    response_number: Annotated[
+        int | None, Query(ge=RESPONSE_NUMBER_MIN, le=RESPONSE_NUMBER_MAX)
+    ] = None
+    response_number_from: Annotated[
+        int | None, Query(ge=RESPONSE_NUMBER_MIN, le=RESPONSE_NUMBER_MAX)
+    ] = None
+    response_number_to: Annotated[
+        int | None, Query(ge=RESPONSE_NUMBER_MIN, le=RESPONSE_NUMBER_MAX)
+    ] = None
     sort_order: SurveyResponseSortOrder = SurveyResponseSortOrder.EVENT_AT_DESC
 
     def validate(self) -> None:
-        """Raise InvalidDateRangeError if the date bounds are inverted."""
+        """Raise when the date or response-number bounds are inverted."""
         _validate_date_range(self.event_at_from, self.event_at_to, "event_at")
+        _validate_number_range(
+            self.response_number_from, self.response_number_to, "response_number"
+        )
 
     def to_domain(self) -> SurveyResponseListingParams:
         return SurveyResponseListingParams(
@@ -206,6 +343,9 @@ class SurveyResponseListingQuery(LocationQuery):
             event_at_to=self.event_at_to,
             city=self.city,
             province=self.province,
+            response_number=self.response_number,
+            response_number_from=self.response_number_from,
+            response_number_to=self.response_number_to,
             sort_order=self.sort_order,
         )
 

@@ -23,6 +23,10 @@ class SurveyResponse(Base):
     a subject, an establishment, or nobody (anonymous). At most one of
     ``subject_id`` / ``establishment_id`` is ever set; both are null for an
     anonymous response.
+
+    ``response_number`` is a nullable human-facing reference copied from a
+    paper form and allowed to repeat within a survey. The service conditionally
+    requires it from the parent survey's configuration.
     """
 
     __tablename__ = "survey_responses"
@@ -45,6 +49,12 @@ class SurveyResponse(Base):
             "subject_id",
             unique=True,
             postgresql_where=text("subject_id IS NOT NULL"),
+        ),
+        Index(
+            "ix_survey_responses_survey_response_number",
+            "survey_id",
+            "response_number",
+            unique=False,
         ),
     )
 
@@ -74,6 +84,7 @@ class SurveyResponse(Base):
         index=True,
     )
     answers = Column(JSONB, nullable=False)
+    response_number = Column(Integer, nullable=True)
     score_fies = Column(Integer, nullable=True)
     event_at = Column(DateTime(timezone=True), nullable=False)
     created_at = Column(

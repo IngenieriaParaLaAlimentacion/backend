@@ -1,0 +1,625 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",Alcohol,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",Alcohol,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",Alcohol,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",Alcohol,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Alcohol,0
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,Alcohol,0
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,Alcohol,0
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",Alcohol,0
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",Alcohol,0
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",Alcohol,0
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",Alcohol,0
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",Alcohol,0
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,Alcohol,0
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",Alcohol,0
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,Alcohol,0
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",Alcohol,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",Fibra alimentaria,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",Fibra alimentaria,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",Fibra alimentaria,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",Fibra alimentaria,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Fibra alimentaria,0
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,Fibra alimentaria,0
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,Fibra alimentaria,"0,6"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",Fibra alimentaria,"0,4"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",Fibra alimentaria,"0,3"
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",Fibra alimentaria,0
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",Fibra alimentaria,0
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",Fibra alimentaria,0
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,Fibra alimentaria,0
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",Fibra alimentaria,0
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,Fibra alimentaria,0
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",Fibra alimentaria,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",Azúcar agregado,"7,5"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",Azúcar agregado,"3,5"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",Azúcar agregado,"5,3"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",Azúcar agregado,"4,5"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Azúcar agregado,"8,5"
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,Azúcar agregado,"20,0"
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,Azúcar agregado,"3,0"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",Azúcar agregado,"6,0"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",Azúcar agregado,"0,5"
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",Azúcar agregado,"10,0"
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",Azúcar agregado,"7,0"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",Azúcar agregado,"5,4"
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,Azúcar agregado,"25,0"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",Azúcar agregado,"6,1"
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,Azúcar agregado,"55,6"
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",Azúcar agregado,"6,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",Azúcar total,"7,5"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",Azúcar total,"3,5"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",Azúcar total,"5,3"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",Azúcar total,"4,5"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Azúcar total,"8,5"
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,Azúcar total,"20,0"
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,Azúcar total,"3,0"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",Azúcar total,"6,0"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",Azúcar total,"0,5"
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",Azúcar total,"10,0"
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",Azúcar total,"7,0"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",Azúcar total,"5,4"
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,Azúcar total,"25,0"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",Azúcar total,"12,2"
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,Azúcar total,"55,6"
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",Azúcar total,"6,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",Carbohidratos totales,"7,5"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",Carbohidratos totales,"3,5"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",Carbohidratos totales,"5,3"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",Carbohidratos totales,"5,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Carbohidratos totales,"8,5"
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,Carbohidratos totales,"20,0"
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,Carbohidratos totales,"4,6"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",Carbohidratos totales,"7,4"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",Carbohidratos totales,"2,9"
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",Carbohidratos totales,"10,0"
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",Carbohidratos totales,"7,0"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",Carbohidratos totales,"5,4"
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,Carbohidratos totales,"25,0"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",Carbohidratos totales,"12,2"
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,Carbohidratos totales,"80,6"
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",Carbohidratos totales,"6,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",Carbohidratos disponibles,"7,5"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",Carbohidratos disponibles,"3,5"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",Carbohidratos disponibles,"5,3"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",Carbohidratos disponibles,"5,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Carbohidratos disponibles,"8,5"
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,Carbohidratos disponibles,"20,0"
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,Carbohidratos disponibles,"4,0"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",Carbohidratos disponibles,"7,0"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",Carbohidratos disponibles,"2,6"
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",Carbohidratos disponibles,"10,0"
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",Carbohidratos disponibles,"7,0"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",Carbohidratos disponibles,"5,4"
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,Carbohidratos disponibles,"25,0"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",Carbohidratos disponibles,"12,2"
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,Carbohidratos disponibles,"80,6"
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",Carbohidratos disponibles,"6,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",22:6 n-3 Docosahexaenoico (DHA),0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",22:6 n-3 Docosahexaenoico (DHA),0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",22:6 n-3 Docosahexaenoico (DHA),0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",22:6 n-3 Docosahexaenoico (DHA),0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",22:6 n-3 Docosahexaenoico (DHA),0
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,22:6 n-3 Docosahexaenoico (DHA),0
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,22:6 n-3 Docosahexaenoico (DHA),0
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",22:6 n-3 Docosahexaenoico (DHA),0
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",22:6 n-3 Docosahexaenoico (DHA),0
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",22:6 n-3 Docosahexaenoico (DHA),0
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",22:6 n-3 Docosahexaenoico (DHA),0
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",22:6 n-3 Docosahexaenoico (DHA),0
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,22:6 n-3 Docosahexaenoico (DHA),0
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",22:6 n-3 Docosahexaenoico (DHA),0
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,22:6 n-3 Docosahexaenoico (DHA),0
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",22:6 n-3 Docosahexaenoico (DHA),0
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",20:5 n-3 Eicosapentaenoico (EPA),0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",20:5 n-3 Eicosapentaenoico (EPA),0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",20:5 n-3 Eicosapentaenoico (EPA),0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",20:5 n-3 Eicosapentaenoico (EPA),0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",20:5 n-3 Eicosapentaenoico (EPA),0
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,20:5 n-3 Eicosapentaenoico (EPA),0
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,20:5 n-3 Eicosapentaenoico (EPA),0
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",20:5 n-3 Eicosapentaenoico (EPA),0
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",20:5 n-3 Eicosapentaenoico (EPA),0
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",20:5 n-3 Eicosapentaenoico (EPA),0
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",20:5 n-3 Eicosapentaenoico (EPA),0
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",20:5 n-3 Eicosapentaenoico (EPA),0
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,20:5 n-3 Eicosapentaenoico (EPA),0
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",20:5 n-3 Eicosapentaenoico (EPA),0
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,20:5 n-3 Eicosapentaenoico (EPA),0
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",20:5 n-3 Eicosapentaenoico (EPA),0
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",20:4 Araquidónico,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",20:4 Araquidónico,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",20:4 Araquidónico,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",20:4 Araquidónico,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",20:4 Araquidónico,0
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,20:4 Araquidónico,0
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,20:4 Araquidónico,0
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",20:4 Araquidónico,0
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",20:4 Araquidónico,0
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",20:4 Araquidónico,0
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",20:4 Araquidónico,0
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",20:4 Araquidónico,0
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,20:4 Araquidónico,0
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",20:4 Araquidónico,0
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,20:4 Araquidónico,0
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",20:4 Araquidónico,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",18:3 cis Alfa linolénico (ALA),0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",18:3 cis Alfa linolénico (ALA),0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",18:3 cis Alfa linolénico (ALA),0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",18:3 cis Alfa linolénico (ALA),0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",18:3 cis Alfa linolénico (ALA),0
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,18:3 cis Alfa linolénico (ALA),0
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,18:3 cis Alfa linolénico (ALA),"0,063"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",18:3 cis Alfa linolénico (ALA),"0,014"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",18:3 cis Alfa linolénico (ALA),"0,014"
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",18:3 cis Alfa linolénico (ALA),0
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",18:3 cis Alfa linolénico (ALA),0
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",18:3 cis Alfa linolénico (ALA),0
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,18:3 cis Alfa linolénico (ALA),0
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",18:3 cis Alfa linolénico (ALA),0
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,18:3 cis Alfa linolénico (ALA),0
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",18:3 cis Alfa linolénico (ALA),0
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",18:2 cis Linoléico,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",18:2 cis Linoléico,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",18:2 cis Linoléico,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",18:2 cis Linoléico,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",18:2 cis Linoléico,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,18:2 cis Linoléico,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,18:2 cis Linoléico,"0,84"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",18:2 cis Linoléico,"0,18"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",18:2 cis Linoléico,"0,18"
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",18:2 cis Linoléico,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",18:2 cis Linoléico,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",18:2 cis Linoléico,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,18:2 cis Linoléico,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",18:2 cis Linoléico,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,18:2 cis Linoléico,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",18:2 cis Linoléico,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",Trans,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",Trans,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",Trans,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",Trans,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Trans,0
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,Trans,0
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,Trans,0
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",Trans,0
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",Trans,0
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",Trans,0
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",Trans,0
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",Trans,0
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,Trans,0
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",Trans,0
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,Trans,0
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",Trans,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",Poliinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",Poliinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",Poliinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",Poliinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Poliinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,Poliinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,Poliinsaturados,"0,90"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",Poliinsaturados,"0,20"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",Poliinsaturados,"0,20"
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",Poliinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",Poliinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",Poliinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,Poliinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",Poliinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,Poliinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",Poliinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",Monoinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",Monoinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",Monoinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",Monoinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Monoinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,Monoinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,Monoinsaturados,"0,30"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",Monoinsaturados,"0,10"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",Monoinsaturados,"0,10"
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",Monoinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",Monoinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",Monoinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,Monoinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",Monoinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,Monoinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",Monoinsaturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",Saturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",Saturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",Saturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",Saturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Saturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,Saturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,Saturados,"0,30"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",Saturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",Saturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",Saturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",Saturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",Saturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,Saturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",Saturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,Saturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",Saturados,"0,00"
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",Colesterol,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",Colesterol,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",Colesterol,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",Colesterol,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Colesterol,0
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,Colesterol,0
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,Colesterol,0
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",Colesterol,0
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",Colesterol,0
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",Colesterol,0
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",Colesterol,0
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",Colesterol,0
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,Colesterol,0
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",Colesterol,0
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,Colesterol,0
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",Colesterol,0
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",Lípidos totales,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",Lípidos totales,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",Lípidos totales,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",Lípidos totales,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Lípidos totales,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,Lípidos totales,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,Lípidos totales,"1,5"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",Lípidos totales,"0,3"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",Lípidos totales,"0,3"
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",Lípidos totales,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",Lípidos totales,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",Lípidos totales,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,Lípidos totales,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",Lípidos totales,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,Lípidos totales,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",Lípidos totales,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",Proteínas,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",Proteínas,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",Proteínas,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",Proteínas,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Proteínas,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,Proteínas,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,Proteínas,"2,6"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",Proteínas,"0,6"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",Proteínas,"0,6"
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",Proteínas,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",Proteínas,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",Proteínas,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,Proteínas,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",Proteínas,"0,2"
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,Proteínas,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",Proteínas,"0,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",Agua,"92,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",Agua,"95,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",Agua,"93,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",Agua,"93,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Agua,"91,5"
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,Agua,"79,0"
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,Agua,"90,0"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",Agua,"91,0"
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",Agua,"96,0"
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",Agua,"90,0"
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",Agua,"91,0"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",Agua,"98,0"
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,Agua,"75,0"
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",Agua,"86,2"
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,Agua,"19,4"
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",Agua,"93,0"
+20,Bebidas con azúcar,macronutrientes,122,"Agua sabores saborizada Aquarius, varios",Valor energético,30
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Awafrut, varios sabores",Valor energético,14
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada con azúcar, PROMEDIO",Valor energético,21
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada Levité, varios sabores",Valor energético,20
+20,Bebidas con azúcar,macronutrientes,122,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Valor energético,34
+20,Bebidas con azúcar,macronutrientes,122,Amargo serrano,Valor energético,80
+20,Bebidas con azúcar,macronutrientes,122,Bebida a base de soja sabor natural,Valor energético,40
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, sabores varios",Valor energético,33
+20,Bebidas con azúcar,macronutrientes,122,"Bebida a base de soja y jugo, varios sabores light",Valor energético,16
+20,Bebidas con azúcar,macronutrientes,122,"Gaseosa con azúcar, PROMEDIO",Valor energético,40
+20,Bebidas con azúcar,macronutrientes,122,"Gatorade, varios sabores",Valor energético,28
+20,Bebidas con azúcar,macronutrientes,122,"Jugo concentrado con azúcar, para diluir",Valor energético,22
+20,Bebidas con azúcar,macronutrientes,122,Jugo congelado con azúcar en sachet,Valor energético,100
+20,Bebidas con azúcar,macronutrientes,122,"Jugo de fruta envasado, varios sabores",Valor energético,49
+20,Bebidas con azúcar,macronutrientes,122,Jugo en polvo con azúcar,Valor energético,322
+20,Bebidas con azúcar,macronutrientes,122,"Powerade, varios sabores",Valor energético,24
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Vitamina D,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Vitamina D,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Vitamina D,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Vitamina D,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Vitamina D,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Vitamina D,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Vitamina D,"1,00"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Vitamina D,"0,38"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Vitamina D,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Vitamina D,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Vitamina D,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Vitamina D,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Vitamina D,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Vitamina D,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Vitamina D,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Vitamina D,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Vitamina C,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Vitamina C,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Vitamina C,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Vitamina C,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Vitamina C,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Vitamina C,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Vitamina C,"7,0"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Vitamina C,"4,5"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Vitamina C,"4,5"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Vitamina C,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Vitamina C,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Vitamina C,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Vitamina C,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Vitamina C,"13,0"
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Vitamina C,332
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Vitamina C,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Vitamina B-12,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Vitamina B-12,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Vitamina B-12,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Vitamina B-12,"0,18"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Vitamina B-12,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Vitamina B-12,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Vitamina B-12,"0,48"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Vitamina B-12,"0,24"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Vitamina B-12,"0,24"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Vitamina B-12,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Vitamina B-12,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Vitamina B-12,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Vitamina B-12,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Vitamina B-12,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Vitamina B-12,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Vitamina B-12,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Riboflavina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Riboflavina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Riboflavina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Riboflavina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Riboflavina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Riboflavina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Riboflavina,"0,195"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Riboflavina,"0,195"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Riboflavina,"0,130"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Riboflavina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Riboflavina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Riboflavina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Riboflavina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Riboflavina,"0,015"
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Riboflavina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Riboflavina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Tiamina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Tiamina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Tiamina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Tiamina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Tiamina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Tiamina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Tiamina,"0,060"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Tiamina,"0,120"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Tiamina,"0,120"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Tiamina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Tiamina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Tiamina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Tiamina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Tiamina,"0,045"
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Tiamina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Tiamina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Retinol,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Retinol,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Retinol,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Retinol,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Retinol,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Retinol,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Retinol,60
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Retinol,45
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Retinol,45
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Retinol,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Retinol,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Retinol,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Retinol,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Retinol,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Retinol,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Retinol,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios","Vitamina A, RAE",0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores","Vitamina A, RAE",0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO","Vitamina A, RAE",0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores","Vitamina A, RAE",0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros","Vitamina A, RAE",0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,"Vitamina A, RAE",0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,"Vitamina A, RAE",60
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios","Vitamina A, RAE",45
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light","Vitamina A, RAE",45
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO","Vitamina A, RAE",0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores","Vitamina A, RAE",0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir","Vitamina A, RAE",0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,"Vitamina A, RAE",0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores","Vitamina A, RAE",2
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,"Vitamina A, RAE",0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores","Vitamina A, RAE",0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Ácido fólico,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Ácido fólico,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Ácido fólico,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Ácido fólico,18
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Ácido fólico,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Ácido fólico,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Ácido fólico,24
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Ácido fólico,24
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Ácido fólico,24
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Ácido fólico,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Ácido fólico,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Ácido fólico,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Ácido fólico,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Ácido fólico,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Ácido fólico,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Ácido fólico,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Folato EFD,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Folato EFD,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Folato EFD,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Folato EFD,29
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Folato EFD,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Folato EFD,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Folato EFD,38
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Folato EFD,38
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Folato EFD,38
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Folato EFD,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Folato EFD,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Folato EFD,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Folato EFD,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Folato EFD,4
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Folato EFD,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Folato EFD,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Niacina,"1,25"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Niacina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Niacina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Niacina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Niacina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Niacina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Niacina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Niacina,"1,60"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Niacina,"1,60"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Niacina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Niacina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Niacina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Niacina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Niacina,"0,20"
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Niacina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Niacina,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Zinc,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Zinc,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Zinc,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Zinc,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Zinc,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Zinc,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Zinc,"0,5"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Zinc,"0,75"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Zinc,"0,75"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Zinc,"0,06"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Zinc,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Zinc,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Zinc,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Zinc,"0,02"
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Zinc,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Zinc,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Magnesio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Magnesio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Magnesio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Magnesio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Magnesio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Magnesio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Magnesio,25
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Magnesio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Magnesio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Magnesio,1
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Magnesio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Magnesio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Magnesio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Magnesio,3
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Magnesio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Magnesio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Hierro,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Hierro,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Hierro,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Hierro,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Hierro,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Hierro,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Hierro,"0,64"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Hierro,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Hierro,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Hierro,"0,03"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Hierro,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Hierro,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Hierro,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Hierro,"0,11"
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Hierro,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Hierro,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Fósforo,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Fósforo,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Fósforo,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Fósforo,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Fósforo,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Fósforo,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Fósforo,52
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Fósforo,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Fósforo,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Fósforo,2
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Fósforo,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Fósforo,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Fósforo,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Fósforo,4
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Fósforo,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Fósforo,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Cobre,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Cobre,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Cobre,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Cobre,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Cobre,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Cobre,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Cobre,"0,128"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Cobre,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Cobre,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Cobre,"0,005"
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Cobre,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Cobre,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Cobre,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Cobre,"0,018"
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Cobre,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Cobre,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Calcio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Calcio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Calcio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Calcio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Calcio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Calcio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Calcio,120
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Calcio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Calcio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Calcio,2
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Calcio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Calcio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Calcio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Calcio,2
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Calcio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Calcio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Potasio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Potasio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Potasio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Potasio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Potasio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Potasio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Potasio,118
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Potasio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Potasio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Potasio,2
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Potasio,15
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Potasio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Potasio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Potasio,42
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Potasio,0
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Potasio,12
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Sodio,47
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Sodio,6
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Sodio,24
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Sodio,20
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Sodio,15
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Sodio,14
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Sodio,70
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Sodio,17
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Sodio,27
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Sodio,10
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Sodio,55
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Sodio,114
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Sodio,20
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Sodio,14
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Sodio,689
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Sodio,45
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua sabores saborizada Aquarius, varios",Cenizas,
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Awafrut, varios sabores",Cenizas,
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada con azúcar, PROMEDIO",Cenizas,
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada Levité, varios sabores",Cenizas,
+20,Bebidas con azúcar,vitaminas_minerales,123,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",Cenizas,
+20,Bebidas con azúcar,vitaminas_minerales,123,Amargo serrano,Cenizas,
+20,Bebidas con azúcar,vitaminas_minerales,123,Bebida a base de soja sabor natural,Cenizas,
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, sabores varios",Cenizas,
+20,Bebidas con azúcar,vitaminas_minerales,123,"Bebida a base de soja y jugo, varios sabores light",Cenizas,
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gaseosa con azúcar, PROMEDIO",Cenizas,
+20,Bebidas con azúcar,vitaminas_minerales,123,"Gatorade, varios sabores",Cenizas,
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo concentrado con azúcar, para diluir",Cenizas,
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo congelado con azúcar en sachet,Cenizas,
+20,Bebidas con azúcar,vitaminas_minerales,123,"Jugo de fruta envasado, varios sabores",Cenizas,
+20,Bebidas con azúcar,vitaminas_minerales,123,Jugo en polvo con azúcar,Cenizas,
+20,Bebidas con azúcar,vitaminas_minerales,123,"Powerade, varios sabores",Cenizas,

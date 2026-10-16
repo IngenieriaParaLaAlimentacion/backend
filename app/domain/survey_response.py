@@ -42,6 +42,7 @@ class SurveyResponseDomain:
     """A registered survey response."""
 
     id: UUID
+    response_number: int | None
     survey_id: UUID
     subject_id: UUID | None
     establishment_id: UUID | None
@@ -57,6 +58,7 @@ class SurveyResponseDomain:
         """Build a SurveyResponseDomain from an ORM SurveyResponse."""
         return cls(
             id=obj.id,
+            response_number=obj.response_number,
             survey_id=obj.survey_id,
             subject_id=obj.subject_id,
             establishment_id=obj.establishment_id,
@@ -77,6 +79,7 @@ class SurveyResponseListItemDomain:
     """
 
     id: UUID
+    response_number: int | None
     event_at: datetime
     survey: IdentifierRefDomain
     establishment: EstablishmentRefDomain | None
@@ -88,6 +91,7 @@ class SurveyResponseListItemDomain:
         ``subject`` loaded."""
         return cls(
             id=obj.id,
+            response_number=obj.response_number,
             event_at=obj.event_at,
             survey=IdentifierRefDomain.from_db(obj.survey),
             establishment=_optional_ref(
@@ -106,6 +110,7 @@ class SurveyResponseDashboardItemDomain:
     """
 
     id: UUID
+    response_number: int | None
     event_at: datetime
     survey: IdentifierRefDomain
     establishment: EstablishmentRefDomain | None
@@ -119,6 +124,7 @@ class SurveyResponseDashboardItemDomain:
         submitted_by loaded."""
         return cls(
             id=obj.id,
+            response_number=obj.response_number,
             event_at=obj.event_at,
             survey=IdentifierRefDomain.from_db(obj.survey),
             establishment=_optional_ref(
@@ -149,6 +155,7 @@ class SurveyResponseDetailDomain:
     resolved to option text when the question is choice-based."""
 
     id: UUID
+    response_number: int | None
     event_at: datetime
     survey: IdentifierRefDomain
     establishment: EstablishmentRefDomain | None
@@ -175,6 +182,7 @@ class SurveyResponseDetailDomain:
         ]
         return cls(
             id=obj.id,
+            response_number=obj.response_number,
             event_at=obj.event_at,
             survey=IdentifierRefDomain.from_db(obj.survey),
             establishment=_optional_ref(
@@ -204,7 +212,8 @@ class SurveyResponseDetailDomain:
 class SurveyResponseListingParams:
     """Filters and sort order for a survey's response listing: subject,
     establishment, event date range, and geographic zone (establishment's
-    city/province)."""
+    city/province), and the hand-entered response number — exactly, or by
+    range."""
 
     subject_id: UUID | None = None
     establishment_id: UUID | None = None
@@ -212,6 +221,9 @@ class SurveyResponseListingParams:
     event_at_to: datetime | None = None
     city: str | None = None
     province: str | None = None
+    response_number: int | None = None
+    response_number_from: int | None = None
+    response_number_to: int | None = None
     sort_order: SurveyResponseSortOrder = SurveyResponseSortOrder.EVENT_AT_DESC
 
     def __post_init__(self) -> None:

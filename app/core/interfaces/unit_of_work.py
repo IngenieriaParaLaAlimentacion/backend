@@ -22,10 +22,28 @@ from app.repositories.establishments.establishment_repository import (
 from app.repositories.establishments.establishment_request_repository import (
     EstablishmentRequestRepository,
 )
+from app.repositories.food_catalog.food_category_repository import (
+    FoodCategoryRepository,
+)
+from app.repositories.food_catalog.food_nutrient_value_repository import (
+    FoodNutrientValueRepository,
+)
+from app.repositories.food_catalog.food_repository import FoodRepository
+from app.repositories.food_catalog.nutrient_repository import NutrientRepository
+from app.repositories.food_intakes.food_intake_repository import FoodIntakeRepository
+from app.repositories.food_outflows.food_outflow_repository import (
+    FoodOutflowRepository,
+)
+from app.repositories.food_stock.food_stock_repository import FoodStockRepository
 from app.repositories.measurements.measurement_alert_repository import (
     MeasurementAlertRepository,
 )
 from app.repositories.measurements.measurement_repository import MeasurementRepository
+from app.repositories.notifications import (
+    PushDeliveryJobRepository,
+    StaleEstablishmentCycleRepository,
+    UserPushDeviceRepository,
+)
 from app.repositories.subjects.subject_event_repository import SubjectEventRepository
 from app.repositories.subjects.subject_repository import SubjectRepository
 from app.repositories.surveys.survey_repository import SurveyRepository
@@ -53,6 +71,16 @@ class IUnitOfWork(ABC):
     survey_response_repo: SurveyResponseRepository
     survey_response_edit_repo: SurveyResponseEditRepository
     establishment_dashboard_repo: EstablishmentDashboardRepository
+    food_category_repo: FoodCategoryRepository
+    nutrient_repo: NutrientRepository
+    food_repo: FoodRepository
+    food_nutrient_value_repo: FoodNutrientValueRepository
+    food_intake_repo: FoodIntakeRepository
+    food_outflow_repo: FoodOutflowRepository
+    food_stock_repo: FoodStockRepository
+    push_device_repo: UserPushDeviceRepository
+    stale_cycle_repo: StaleEstablishmentCycleRepository
+    push_delivery_job_repo: PushDeliveryJobRepository
 
     @abstractmethod
     async def commit(self) -> None: ...

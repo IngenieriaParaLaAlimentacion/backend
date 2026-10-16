@@ -64,6 +64,7 @@ def build_fies_template() -> SurveyTemplateResponse:
         name="",
         description=_FIES_PREAMBLE,
         response_target=SurveyResponseTarget.ANONYMOUS,
+        requires_response_number=True,
         questions=[
             TemplateQuestion(
                 text=text,

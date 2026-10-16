@@ -13,6 +13,7 @@ from app.api.v1.params import (
 from app.core.dependencies import (
     get_establishment_dashboard_service,
     require_admin_or_analyst,
+    require_any,
 )
 from app.domain import UserActor
 from app.schemas.establishments.establishment_dashboard_schema import (
@@ -40,7 +41,10 @@ router = APIRouter(prefix="/establishments")
         "its overall alert state. Averages are computed over each subject's most "
         "recent measurement at this establishment. When the establishment has no "
         "measurements, `has_data` is false and every average is null rather than "
-        "zero. Accessible by admins and analysts."
+        "zero. `last_intake_at` and `last_outflow_at` are independent of that: "
+        "an establishment may hold food before any subject is registered. "
+        "Accessible by any authenticated role; a field worker needs approved "
+        "access to this establishment."
     ),
     responses={
         **AUTH_RESPONSES,
@@ -49,12 +53,12 @@ router = APIRouter(prefix="/establishments")
 )
 async def get_establishment_dashboard(
     establishment_id: UUID,
-    _: UserActor = Depends(require_admin_or_analyst),
+    actor: UserActor = Depends(require_any),
     service: EstablishmentDashboardService = Depends(
         get_establishment_dashboard_service
     ),
 ) -> EstablishmentDashboardResponse:
-    dashboard = await service.get_establishment_dashboard(establishment_id)
+    dashboard = await service.get_establishment_dashboard(establishment_id, actor)
     return EstablishmentDashboardResponse.model_validate(dashboard)
 
 

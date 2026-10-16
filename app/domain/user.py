@@ -17,6 +17,9 @@ class UserRole(StrEnum):
 BACKOFFICE_ROLES = frozenset({UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.ANALYST})
 """Roles that operate from the backoffice and can be invited by an admin."""
 
+REVIEWED_ACCESS_ROLES = frozenset({UserRole.FIELD_WORKER, UserRole.ANALYST})
+"""Roles whose establishment access goes through admin review."""
+
 
 class UserStatus(str, Enum):
     """Lifecycle states a user account can be in."""
@@ -78,7 +81,7 @@ class UserWithEstablishmentsDomain(BaseUserDomain):
 
 @dataclass
 class ProfileDomain(BaseUserDomain):
-    """Current user's profile. ``establishments`` is None for non-field-workers,
-    and a (possibly empty) list for field workers."""
+    """Current user's profile, with every establishment relation the user holds
+    (a possibly empty list) annotated with its status."""
 
     establishments: list[EstablishmentWithStatusDomain] | None = None

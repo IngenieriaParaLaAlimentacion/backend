@@ -12,6 +12,13 @@ from app.exceptions.domain_exceptions import EmailDeliveryError
 
 logger = logging.getLogger(__name__)
 
+_ROLE_LABELS = {
+    UserRole.SUPERADMIN: "superadministrador",
+    UserRole.ADMIN: "administrador",
+    UserRole.ANALYST: "analista",
+    UserRole.FIELD_WORKER: "relevador",
+}
+
 
 def _build_deeplink(deeplink_url: str, token: str) -> str:
     """Inject the opaque token as a query param into a deep link URL."""
@@ -202,6 +209,37 @@ async def send_access_granted_email(
     )
 
 
+async def send_role_changed_email(
+    to_email: str, old_role: UserRole, new_role: UserRole
+) -> None:
+    """Notify a user that an admin changed their role."""
+    old_label = _ROLE_LABELS.get(old_role, "usuario")
+    new_label = _ROLE_LABELS.get(new_role, "usuario")
+    html_content = _render_base_template(
+        title="Tu rol fue actualizado",
+        content_html=(
+            f"<p>Tu rol en <strong>Ingeniería Para la Alimentación</strong> "
+            f"cambió de <strong>{old_label}</strong> a "
+            f"<strong>{new_label}</strong>.</p>"
+            "<p>Por seguridad cerramos tus sesiones abiertas: vuelve a iniciar "
+            "sesión para continuar con tu nuevo rol.</p>"
+        ),
+    )
+    await _send_email(
+        to_email=to_email,
+        subject="Tu rol fue actualizado",
+        body=(
+            "Hola,\n\n"
+            "Tu rol en Ingeniería Para la Alimentación cambió de "
+            f"{old_label} a {new_label}.\n\n"
+            "Por seguridad cerramos tus sesiones abiertas: vuelve a iniciar "
+            "sesión para continuar con tu nuevo rol."
+        ),
+        html_body=html_content,
+        log_label="Role changed",
+    )
+
+
 async def send_creation_denied_email(
     to_email: str, establishment_name: str, reason: str | None = None
 ) -> None:
@@ -275,10 +313,7 @@ async def send_invite_email(
     """Send an admin invitation email with a password setup link."""
     formatted_expiry = expires_at.strftime("%d/%m/%Y a las %H:%M UTC")
 
-    role_label = {
-        "admin": "administrador",
-        "analyst": "analista",
-    }.get(role, "usuario")
+    role_label = _ROLE_LABELS.get(role, "usuario")
 
     html_content = _render_base_template(
         title="¡Bienvenido a Ingeniería Para la Alimentación!",

@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime
 
-import pytest
 from fastapi import status
 from sqlalchemy import select
 
@@ -18,8 +17,6 @@ from tests.integration.admin.conftest import (
     _insert_establishment_request,
     _insert_user,
 )
-
-pytestmark = pytest.mark.asyncio
 
 
 def _approve_body(**overrides):
@@ -415,21 +412,6 @@ class TestApproveEstablishmentRequest:
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    async def test_already_reviewed_returns_409(self, client, admin_headers, app):
-        """Approving a request that was already resolved returns 409."""
-        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
-        request_id = await _insert_establishment_request(
-            user_id, request_status=EstablishmentRequestStatus.APPROVED
-        )
-
-        response = await client.patch(
-            APPROVE_ESTABLISHMENT_REQUEST_URL.format(request_id=request_id),
-            json=_approve_body(),
-            headers=admin_headers,
-        )
-
-        assert response.status_code == status.HTTP_409_CONFLICT
-
     async def test_already_reviewed_reports_the_terminal_status(
         self, client, admin_headers, app
     ):
@@ -446,6 +428,7 @@ class TestApproveEstablishmentRequest:
             headers=admin_headers,
         )
 
+        assert response.status_code == status.HTTP_409_CONFLICT
         body = response.json()
         assert body["type"] == "/errors/establishment-request-already-reviewed"
         assert body["current_status"] == "rejected"

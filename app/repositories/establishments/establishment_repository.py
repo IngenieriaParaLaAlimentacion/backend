@@ -99,6 +99,13 @@ class EstablishmentRepository:
 
         return establishments
 
+    async def get_all(self) -> list[Establishment]:
+        """Return every establishment ordered by name, unfiltered and unpaginated."""
+        result = await self.db.execute(
+            select(Establishment).order_by(Establishment.name)
+        )
+        return list(result.scalars().all())
+
     @staticmethod
     def _search_condition(search: str | None):
         """Case-insensitive name/formatted_address match for ``search``, or None.

@@ -115,6 +115,36 @@
       "description": "Raised when a filter resolves through a target the resource does not carry."
     },
     {
+      "type": "/errors/food-movement-not-found",
+      "status": 404,
+      "exception": "FoodMovementNotFoundError",
+      "description": "Exception raised when a food movement cannot be found in an establishment."
+    },
+    {
+      "type": "/errors/food-not-found",
+      "status": 404,
+      "exception": "FoodNotFoundError",
+      "description": "Exception raised when a food cannot be found."
+    },
+    {
+      "type": "/errors/image-content-mismatch",
+      "status": 422,
+      "exception": "ImageContentMismatchError",
+      "description": "Raised when an image's bytes do not match its declared content type."
+    },
+    {
+      "type": "/errors/image-too-large",
+      "status": 422,
+      "exception": "ImageTooLargeError",
+      "description": "Raised when an uploaded image is larger than the configured ceiling."
+    },
+    {
+      "type": "/errors/insufficient-stock",
+      "status": 409,
+      "exception": "InsufficientStockError",
+      "description": "Exception raised when an outflow exceeds an establishment's stock."
+    },
+    {
       "type": "/errors/invalid-age-range",
       "status": 400,
       "exception": "InvalidAgeRangeError",
@@ -131,6 +161,12 @@
       "status": 400,
       "exception": "InvalidDateRangeError",
       "description": "Raised when a date-range filter starts after it ends."
+    },
+    {
+      "type": "/errors/invalid-response-number-range",
+      "status": 400,
+      "exception": "InvalidNumberRangeError",
+      "description": "Raised when a response-number-range filter starts above where it ends."
     },
     {
       "type": "/errors/invalid-survey-payload",
@@ -169,10 +205,28 @@
       "description": "Raised when a non-admin acts on a resource somebody else created."
     },
     {
+      "type": "/errors/notification-configuration-invalid",
+      "status": 503,
+      "exception": "NotificationConfigurationError",
+      "description": "Raised when scheduled notifications are not fully configured."
+    },
+    {
       "type": "/errors/password-not-found",
       "status": 404,
       "exception": "PasswordNotFoundError",
       "description": "Exception raised when a user's password record is not found."
+    },
+    {
+      "type": "/errors/rate-limited",
+      "status": 429,
+      "exception": "RateLimitedError",
+      "description": "Raised when a caller exceeds the rate limit of a public endpoint."
+    },
+    {
+      "type": "/errors/receipt-photo-storage-failed",
+      "status": 502,
+      "exception": "ReceiptPhotoStorageError",
+      "description": "Raised when a receipt photo cannot be persisted to object storage."
     },
     {
       "type": "/errors/role-not-allowed",
@@ -202,7 +256,7 @@
       "type": "/errors/survey-locked",
       "status": 409,
       "exception": "SurveyLockedError",
-      "description": "Exception raised when a survey can no longer be modified."
+      "description": "Exception raised when an edit to a survey with recorded responses would invalidate them."
     },
     {
       "type": "/errors/survey-not-available",
@@ -235,6 +289,12 @@
       "description": "Exception raised when authorization fails."
     },
     {
+      "type": "/errors/unsupported-image-type",
+      "status": 422,
+      "exception": "UnsupportedImageTypeError",
+      "description": "Raised when an uploaded image's content type is not in the allow-list."
+    },
+    {
       "type": "/errors/user-already-exists",
       "status": 409,
       "exception": "UserAlreadyExistsError",
@@ -253,10 +313,16 @@
       "description": "Exception raised when a user-establishment relation does not exist."
     },
     {
+      "type": "/errors/user-establishment-not-withdrawable",
+      "status": 409,
+      "exception": "UserEstablishmentNotWithdrawableError",
+      "description": "Raised when a user tries to withdraw their own access to an establishment whose relation is not currently approved or pending."
+    },
+    {
       "type": "/errors/user-is-not-a-field-worker",
       "status": 400,
       "exception": "UserNotFieldWorkerError",
-      "description": "Raised when an operation requires the target user to be a field worker."
+      "description": "Raised when the target user's role is not one the operation accepts: a field worker, or also an analyst for establishment access revocation."
     },
     {
       "type": "/errors/user-is-not-active",

@@ -1,3 +1,4 @@
+from collections import defaultdict
 from collections.abc import AsyncIterator
 from uuid import UUID
 
@@ -8,6 +9,7 @@ from app.domain.establishment_dashboard import (
     EstablishmentDashboardDomain,
     EstablishmentFieldWorkerItemDomain,
     EstablishmentFieldWorkerListingParams,
+    EstablishmentMapItemDomain,
     EstablishmentMetricsDomain,
     EstablishmentSubjectItemDomain,
     EstablishmentSubjectListingParams,
@@ -22,7 +24,9 @@ from app.domain.measurement import (
     status_from_alerts,
 )
 from app.domain.pagination import PaginatedResult
+from app.domain.user import UserActor
 from app.reference_data.anthropometry import age_in_months
+from app.services.access import check_establishment_access
 from app.services.exporters.csv.csv_exporter import CsvExporter
 
 
@@ -87,6 +91,29 @@ class EstablishmentDashboardService:
             distribution=distribution,
         )
 
+    @classmethod
+    def _build_map_item(
+        cls, establishment: EstablishmentDomain, rows: list
+    ) -> EstablishmentMapItemDomain:
+        """Build one establishment's map item from its status-distribution rows."""
+        total = sum(row.count for row in rows)
+        # Same builder as the individual dashboard, so severity and
+        # dominant_status cannot drift from what the establishment ficha shows.
+        alert_status = (
+            cls._build_alert_status(rows, total)
+            if total > 0
+            else EstablishmentAlertStatusDomain.empty()
+        )
+        return EstablishmentMapItemDomain(
+            id=establishment.id,
+            name=establishment.name,
+            latitude=establishment.latitude,
+            longitude=establishment.longitude,
+            has_data=total > 0,
+            severity=alert_status.severity,
+            dominant_status=alert_status.dominant_status,
+        )
+
     @staticmethod
     def _build_subject_item(
         measurement, measurement_count: int
@@ -107,26 +134,34 @@ class EstablishmentDashboardService:
         )
 
     async def get_establishment_dashboard(
-        self, establishment_id: UUID
+        self, establishment_id: UUID, actor: UserActor
     ) -> EstablishmentDashboardDomain:
         """Return identification data, aggregated metrics and the alert state
         for one establishment.
 
         Raises:
             EstablishmentNotFoundError: If the establishment does not exist.
+            EstablishmentAccessDeniedError: field worker lacks approved access.
         """
         establishment = await self.uow.establishment_repo.get_by_id_or_raise(
             establishment_id
         )
+        await check_establishment_access(self.uow, actor, establishment_id)
 
+        movements = await self.uow.establishment_dashboard_repo.get_last_movement_dates(
+            establishment_id
+        )
         row = await self.uow.establishment_dashboard_repo.get_metrics(establishment_id)
         subject_count = row.subject_count or 0
 
         if subject_count == 0:
+            empty = EstablishmentMetricsDomain.empty()
+            empty.last_intake_at = movements.last_intake_at
+            empty.last_outflow_at = movements.last_outflow_at
             return EstablishmentDashboardDomain(
                 establishment=EstablishmentDomain.from_db(establishment),
                 has_data=False,
-                metrics=EstablishmentMetricsDomain.empty(),
+                metrics=empty,
                 alert_status=EstablishmentAlertStatusDomain.empty(),
             )
 
@@ -144,6 +179,8 @@ class EstablishmentDashboardService:
             avg_bmi=_round(row.avg_bmi),
             # Completed months, not a 2-decimal average: _round would give a float.
             avg_age_months=round(float(row.avg_age_months)),
+            last_intake_at=movements.last_intake_at,
+            last_outflow_at=movements.last_outflow_at,
         )
 
         rows = await self.uow.establishment_dashboard_repo.get_status_distribution(
@@ -157,6 +194,32 @@ class EstablishmentDashboardService:
             metrics=metrics,
             alert_status=alert_status,
         )
+
+    async def get_establishments_map(self) -> list[EstablishmentMapItemDomain]:
+        """Return every establishment's location and rolled-up nutritional
+        severity, for plotting on a map.
+
+        An establishment with no measurements gets has_data=False and no
+        severity.
+        """
+        establishments = [
+            EstablishmentDomain.from_db(establishment)
+            for establishment in await self.uow.establishment_repo.get_all()
+        ]
+        rows = await (
+            self.uow.establishment_dashboard_repo.get_status_distribution_for_all()
+        )
+
+        rows_by_establishment: dict[UUID, list] = defaultdict(list)
+        for row in rows:
+            rows_by_establishment[row.establishment_id].append(row)
+
+        return [
+            self._build_map_item(
+                establishment, rows_by_establishment.get(establishment.id, [])
+            )
+            for establishment in establishments
+        ]
 
     async def list_establishment_subjects(
         self,

@@ -1,0 +1,1093 @@
+grupo_num,grupo_nombre,tabla,pagina_pdf,alimento,nutriente,valor_raw
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",Fibra alimentaria,"1,4"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Fibra alimentaria,"1,8"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",Fibra alimentaria,"2,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",Fibra alimentaria,"2,3"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",Fibra alimentaria,"2,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",Fibra alimentaria,"4,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",Fibra alimentaria,"4,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",Fibra alimentaria,"1,3"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",Fibra alimentaria,"1,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Fibra alimentaria,"1,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Fibra alimentaria,"1,4"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",Fibra alimentaria,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",Fibra alimentaria,"1,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",Azúcar agregado,"2,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Azúcar agregado,"3,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",Azúcar agregado,"3,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",Azúcar agregado,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",Azúcar agregado,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",Azúcar agregado,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",Azúcar agregado,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",Azúcar agregado,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",Azúcar agregado,"1,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Azúcar agregado,"2,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Azúcar agregado,"2,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",Azúcar agregado,"14,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",Azúcar agregado,"2,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",Azúcar total,"4,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Azúcar total,"6,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",Azúcar total,"6,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",Azúcar total,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",Azúcar total,"0,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",Azúcar total,"0,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",Azúcar total,"0,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",Azúcar total,"3,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",Azúcar total,"3,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Azúcar total,"4,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Azúcar total,"4,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",Azúcar total,"19,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",Azúcar total,"5,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",Carbohidratos totales,"22,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Carbohidratos totales,"30,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",Carbohidratos totales,"33,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",Carbohidratos totales,"36,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",Carbohidratos totales,"19,8"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",Carbohidratos totales,"37,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",Carbohidratos totales,"37,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",Carbohidratos totales,"4,9"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",Carbohidratos totales,"12,8"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Carbohidratos totales,"16,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Carbohidratos totales,"14,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",Carbohidratos totales,"30,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",Carbohidratos totales,"20,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",Carbohidratos disponibles,"20,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Carbohidratos disponibles,"28,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",Carbohidratos disponibles,"30,9"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",Carbohidratos disponibles,"33,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",Carbohidratos disponibles,"17,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",Carbohidratos disponibles,"33,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",Carbohidratos disponibles,"33,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",Carbohidratos disponibles,"3,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",Carbohidratos disponibles,"11,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Carbohidratos disponibles,"14,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Carbohidratos disponibles,"12,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",Carbohidratos disponibles,"30,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",Carbohidratos disponibles,"19,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",20:4 Araquidónico,"0,017"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",20:4 Araquidónico,"0,004"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",20:4 Araquidónico,"0,004"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",18:3 cis Alfa linolénico (ALA),"0,025"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",18:3 cis Alfa linolénico (ALA),"0,036"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",18:3 cis Alfa linolénico (ALA),"0,134"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",18:3 cis Alfa linolénico (ALA),"0,038"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",18:3 cis Alfa linolénico (ALA),"0,187"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",18:3 cis Alfa linolénico (ALA),"0,382"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",18:3 cis Alfa linolénico (ALA),"0,382"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",18:3 cis Alfa linolénico (ALA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",18:3 cis Alfa linolénico (ALA),"0,070"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",18:3 cis Alfa linolénico (ALA),"0,288"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",18:3 cis Alfa linolénico (ALA),"0,288"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",18:3 cis Alfa linolénico (ALA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",18:3 cis Alfa linolénico (ALA),"0,060"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",18:2 cis Linoléico,"0,22"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",18:2 cis Linoléico,"0,32"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",18:2 cis Linoléico,"1,14"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",18:2 cis Linoléico,"0,48"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",18:2 cis Linoléico,"3,22"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",18:2 cis Linoléico,"4,25"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",18:2 cis Linoléico,"4,25"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",18:2 cis Linoléico,"0,00"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",18:2 cis Linoléico,"0,63"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",18:2 cis Linoléico,"2,59"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",18:2 cis Linoléico,"2,59"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",18:2 cis Linoléico,"0,00"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",18:2 cis Linoléico,"0,54"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",Trans,"0,33"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Trans,"0,36"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",Trans,"0,31"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",Trans,"0,00"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",Trans,"0,31"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",Trans,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",Trans,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",Trans,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",Trans,"0,41"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Trans,"0,10"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Trans,"0,10"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",Trans,"0,10"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",Trans,"0,48"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",Poliinsaturados,"0,25"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Poliinsaturados,"0,36"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",Poliinsaturados,"1,42"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",Poliinsaturados,"0,64"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",Poliinsaturados,"3,54"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",Poliinsaturados,"4,73"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",Poliinsaturados,"4,73"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",Poliinsaturados,"0,00"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",Poliinsaturados,"0,70"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Poliinsaturados,"2,88"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Poliinsaturados,"2,88"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",Poliinsaturados,"0,30"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",Poliinsaturados,"0,60"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",Monoinsaturados,"2,82"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Monoinsaturados,"3,63"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",Monoinsaturados,"3,77"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",Monoinsaturados,"1,71"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",Monoinsaturados,"5,13"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",Monoinsaturados,"7,38"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",Monoinsaturados,"7,38"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",Monoinsaturados,"0,00"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",Monoinsaturados,"6,00"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Monoinsaturados,"3,41"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Monoinsaturados,"3,41"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",Monoinsaturados,"1,21"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",Monoinsaturados,"6,00"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",Saturados,"4,81"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Saturados,"5,32"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",Saturados,"3,71"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",Saturados,"3,10"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",Saturados,"1,98"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",Saturados,"1,50"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",Saturados,"1,50"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",Saturados,"0,10"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",Saturados,"6,29"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Saturados,"1,64"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Saturados,"1,64"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",Saturados,"2,70"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",Saturados,"7,41"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",Colesterol,36
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Colesterol,35
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",Colesterol,27
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",Colesterol,29
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",Colesterol,44
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",Colesterol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",Colesterol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",Colesterol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",Colesterol,57
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Colesterol,22
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Colesterol,22
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",Colesterol,15
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",Colesterol,39
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",Lípidos totales,"12,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Lípidos totales,"11,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",Lípidos totales,"9,3"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",Lípidos totales,"5,8"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",Lípidos totales,"12,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",Lípidos totales,"16,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",Lípidos totales,"16,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",Lípidos totales,"0,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",Lípidos totales,"13,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Lípidos totales,"5,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Lípidos totales,"5,8"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",Lípidos totales,"4,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",Lípidos totales,"15,3"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",Proteínas,"12,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Proteínas,"12,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",Proteínas,"12,4"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",Proteínas,"10,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",Proteínas,"14,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",Proteínas,"4,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",Proteínas,"4,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",Proteínas,"1,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",Proteínas,"13,4"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Proteínas,"13,9"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Proteínas,"14,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",Proteínas,"5,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",Proteínas,"14,8"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",Agua,"53,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Agua,"45,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",Agua,"43,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",Agua,"47,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",Agua,"53,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",Agua,"43,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",Agua,"43,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",Agua,"91,4"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",Agua,"60,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Agua,"64,3"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Agua,"66,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",Agua,"60,3"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",Agua,"49,3"
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, BigMc",Valor energético,240
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Valor energético,269
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Hamburguesa Grill",Valor energético,257
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Mc Tostado",Valor energético,229
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, McNuggets X4",Valor energético,242
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas Kids",Valor energético,292
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Papas pequeñas",Valor energético,292
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cajita Feliz, Tomate cherry 50g",Valor energético,23
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Club House",Valor energético,223
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Valor energético,165
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Valor energético,159
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cono",Valor energético,179
+25,Alimentos de locales de comidas rápidas,macronutrientes,132,"McDonald's, Cuarto de Libra",Valor energético,273
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Vitamina D,"0,13"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Vitamina C,"0,4"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Vitamina C,"0,6"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Vitamina C,"0,6"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Vitamina C,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Vitamina C,"1,2"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Vitamina C,"5,6"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Vitamina C,"5,6"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Vitamina C,"15,0"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Vitamina C,"0,6"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Vitamina C,"0,9"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Vitamina C,"0,9"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Vitamina C,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Vitamina C,"0,9"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Vitamina B-12,"0,88"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Vitamina B-12,"0,86"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Vitamina B-12,"0,83"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Vitamina B-12,"0,42"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Vitamina B-12,"0,33"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Vitamina B-12,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Vitamina B-12,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Vitamina B-12,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Vitamina B-12,"1,68"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Vitamina B-12,"0,17"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Vitamina B-12,"0,17"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Vitamina B-12,"0,58"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Vitamina B-12,"1,28"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Riboflavina,"0,209"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Riboflavina,"0,260"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Riboflavina,"0,239"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Riboflavina,"0,369"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Riboflavina,"0,110"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Riboflavina,"0,037"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Riboflavina,"0,037"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Riboflavina,"0,020"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Riboflavina,"0,303"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Riboflavina,"0,216"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Riboflavina,"0,216"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Riboflavina,"0,246"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Riboflavina,"0,344"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Tiamina,"0,176"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Tiamina,"0,223"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Tiamina,"0,247"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Tiamina,"0,612"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Tiamina,"0,160"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Tiamina,"0,180"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Tiamina,"0,180"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Tiamina,"0,050"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Tiamina,"0,127"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Tiamina,"0,234"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Tiamina,"0,234"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Tiamina,"0,043"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Tiamina,"0,183"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Retinol,27
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado","Vitamina A, RAE",28
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g","Vitamina A, RAE",40
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Ácido fólico,45
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Folato EFD,46
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Folato EFD,59
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Folato EFD,64
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Folato EFD,117
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Folato EFD,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Folato EFD,35
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Folato EFD,35
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Folato EFD,24
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Folato EFD,45
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Folato EFD,72
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Folato EFD,72
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Folato EFD,9
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Folato EFD,56
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Niacina,"3,38"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Niacina,"4,03"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Niacina,"4,54"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Niacina,"4,31"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Niacina,"7,40"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Niacina,"3,22"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Niacina,"3,22"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Niacina,"0,40"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Niacina,"4,21"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Niacina,"4,37"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Niacina,"4,37"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Niacina,"0,50"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Niacina,"4,45"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Zinc,"1,91"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Zinc,"1,91"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Zinc,"1,95"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Zinc,"1,64"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Zinc,"0,59"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Zinc,"0,51"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Zinc,"0,51"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Zinc,"0,2"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Zinc,"3,33"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Zinc,"0,75"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Zinc,"0,75"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Zinc,"0,5"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Zinc,"2,69"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Magnesio,20
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Magnesio,20
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Magnesio,21
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Magnesio,30
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Magnesio,24
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Magnesio,37
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Magnesio,37
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Magnesio,12
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Magnesio,21
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Magnesio,20
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Magnesio,20
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Magnesio,13
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Magnesio,22
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Hierro,"2,00"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Hierro,"2,35"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Hierro,"2,87"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Hierro,"2,76"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Hierro,"0,89"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Hierro,"0,80"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Hierro,"0,80"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Hierro,"0,34"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Hierro,"2,18"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Hierro,"1,78"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Hierro,"1,78"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Hierro,"0,35"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Hierro,"2,41"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Fósforo,122
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Fósforo,140
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Fósforo,107
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Fósforo,252
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Fósforo,272
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Fósforo,127
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Fósforo,127
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Fósforo,31
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Fósforo,165
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Fósforo,150
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Fósforo,150
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Fósforo,111
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Fósforo,124
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Cobre,"0,098"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Cobre,"0,097"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Cobre,"0,096"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Cobre,"0,13"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Cobre,"0,049"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Cobre,"0,114"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Cobre,"0,114"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Cobre,"0,05"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Cobre,"0,091"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Cobre,"0,073"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Cobre,"0,073"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Cobre,"0,023"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Cobre,"0,107"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Calcio,116
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Calcio,167
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Calcio,127
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Calcio,144
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Calcio,11
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Calcio,19
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Calcio,19
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Calcio,10
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Calcio,106
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Calcio,96
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Calcio,96
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Calcio,129
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Calcio,84
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Potasio,181
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Potasio,200
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Potasio,192
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Potasio,165
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Potasio,252
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Potasio,596
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Potasio,596
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Potasio,274
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Potasio,242
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Potasio,184
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Potasio,184
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Potasio,193
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Potasio,227
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Sodio,453
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Sodio,595
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Sodio,464
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Sodio,732
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Sodio,344
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Sodio,220
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Sodio,220
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Sodio,4
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Sodio,256
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Sodio,381
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Sodio,280
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Sodio,89
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Sodio,524
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, BigMc",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Hamburguesa Grill",Cenizas,"2,18"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Mc Tostado",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, McNuggets X4",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas Kids",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Papas pequeñas",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cajita Feliz, Tomate cherry 50g",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Club House",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cono",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,133,"McDonald's, Cuarto de Libra",Cenizas,
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",Alcohol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",Fibra alimentaria,"1,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",Fibra alimentaria,"2,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",Fibra alimentaria,"1,8"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",Fibra alimentaria,"0,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",Fibra alimentaria,"2,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",Fibra alimentaria,"2,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",Fibra alimentaria,"2,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",Fibra alimentaria,"4,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",Fibra alimentaria,"4,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",Fibra alimentaria,"4,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",Fibra alimentaria,"2,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",Fibra alimentaria,"0,4"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",Fibra alimentaria,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",Fibra alimentaria,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",Fibra alimentaria,"2,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",Azúcar agregado,"1,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",Azúcar agregado,"3,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",Azúcar agregado,"3,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",Azúcar agregado,"21,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",Azúcar agregado,"2,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",Azúcar agregado,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",Azúcar agregado,"2,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",Azúcar agregado,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",Azúcar agregado,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",Azúcar agregado,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",Azúcar agregado,"2,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",Azúcar agregado,"22,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",Azúcar agregado,"18,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",Azúcar agregado,"20,8"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",Azúcar agregado,"1,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",Azúcar total,"3,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",Azúcar total,"6,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",Azúcar total,"6,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",Azúcar total,"21,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",Azúcar total,"5,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",Azúcar total,"0,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",Azúcar total,"4,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",Azúcar total,"0,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",Azúcar total,"0,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",Azúcar total,"0,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",Azúcar total,"4,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",Azúcar total,"26,9"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",Azúcar total,"23,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",Azúcar total,"25,3"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",Azúcar total,"3,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",Carbohidratos totales,"14,3"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",Carbohidratos totales,"33,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",Carbohidratos totales,"30,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",Carbohidratos totales,"25,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",Carbohidratos totales,"16,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",Carbohidratos totales,"19,8"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",Carbohidratos totales,"21,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",Carbohidratos totales,"37,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",Carbohidratos totales,"37,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",Carbohidratos totales,"37,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",Carbohidratos totales,"21,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",Carbohidratos totales,"29,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",Carbohidratos totales,"29,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",Carbohidratos totales,"27,4"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",Carbohidratos totales,"20,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",Carbohidratos disponibles,"13,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",Carbohidratos disponibles,"30,9"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",Carbohidratos disponibles,"28,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",Carbohidratos disponibles,"25,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",Carbohidratos disponibles,"14,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",Carbohidratos disponibles,"17,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",Carbohidratos disponibles,"19,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",Carbohidratos disponibles,"33,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",Carbohidratos disponibles,"33,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",Carbohidratos disponibles,"33,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",Carbohidratos disponibles,"19,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",Carbohidratos disponibles,"28,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",Carbohidratos disponibles,"29,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",Carbohidratos disponibles,"27,4"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",Carbohidratos disponibles,"18,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",22:6 n-3 Docosahexaenoico (DHA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",20:5 n-3 Eicosapentaenoico (EPA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",20:4 Araquidónico,"0,017"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",20:4 Araquidónico,"0,005"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",20:4 Araquidónico,"0,004"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",20:4 Araquidónico,"0,004"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",20:4 Araquidónico,"0,004"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",20:4 Araquidónico,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",18:3 cis Alfa linolénico (ALA),"0,048"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",18:3 cis Alfa linolénico (ALA),"0,134"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",18:3 cis Alfa linolénico (ALA),"0,036"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",18:3 cis Alfa linolénico (ALA),"0,020"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",18:3 cis Alfa linolénico (ALA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",18:3 cis Alfa linolénico (ALA),"0,187"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",18:3 cis Alfa linolénico (ALA),"0,288"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",18:3 cis Alfa linolénico (ALA),"0,382"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",18:3 cis Alfa linolénico (ALA),"0,382"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",18:3 cis Alfa linolénico (ALA),"0,382"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",18:3 cis Alfa linolénico (ALA),"0,288"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",18:3 cis Alfa linolénico (ALA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",18:3 cis Alfa linolénico (ALA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",18:3 cis Alfa linolénico (ALA),0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",18:3 cis Alfa linolénico (ALA),"0,028"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",18:2 cis Linoléico,"0,43"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",18:2 cis Linoléico,"1,14"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",18:2 cis Linoléico,"0,32"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",18:2 cis Linoléico,"0,34"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",18:2 cis Linoléico,"0,23"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",18:2 cis Linoléico,"3,22"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",18:2 cis Linoléico,"2,59"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",18:2 cis Linoléico,"4,25"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",18:2 cis Linoléico,"4,25"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",18:2 cis Linoléico,"4,25"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",18:2 cis Linoléico,"2,59"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",18:2 cis Linoléico,"0,00"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",18:2 cis Linoléico,"0,00"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",18:2 cis Linoléico,"0,00"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",18:2 cis Linoléico,"0,25"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",Trans,"0,59"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",Trans,"0,31"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",Trans,"0,36"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",Trans,"0,57"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",Trans,"0,28"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",Trans,"0,31"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",Trans,"0,10"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",Trans,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",Trans,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",Trans,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",Trans,"0,10"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",Trans,"0,14"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",Trans,"0,14"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",Trans,"0,07"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",Trans,"0,56"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",Poliinsaturados,"0,48"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",Poliinsaturados,"1,42"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",Poliinsaturados,"0,36"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",Poliinsaturados,"0,36"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",Poliinsaturados,"0,26"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",Poliinsaturados,"3,54"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",Poliinsaturados,"2,88"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",Poliinsaturados,"4,73"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",Poliinsaturados,"4,73"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",Poliinsaturados,"4,73"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",Poliinsaturados,"2,88"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",Poliinsaturados,"0,22"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",Poliinsaturados,"0,23"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",Poliinsaturados,"0,19"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",Poliinsaturados,"0,28"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",Monoinsaturados,"5,86"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",Monoinsaturados,"3,77"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",Monoinsaturados,"3,63"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",Monoinsaturados,"1,72"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",Monoinsaturados,"2,51"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",Monoinsaturados,"5,13"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",Monoinsaturados,"3,41"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",Monoinsaturados,"7,38"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",Monoinsaturados,"7,38"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",Monoinsaturados,"7,38"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",Monoinsaturados,"3,41"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",Monoinsaturados,"1,05"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",Monoinsaturados,"1,21"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",Monoinsaturados,"0,98"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",Monoinsaturados,"4,20"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",Saturados,"8,49"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",Saturados,"3,71"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",Saturados,"5,32"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",Saturados,"2,58"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",Saturados,"4,78"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",Saturados,"1,98"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",Saturados,"1,64"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",Saturados,"1,50"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",Saturados,"1,50"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",Saturados,"1,50"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",Saturados,"1,64"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",Saturados,"4,20"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",Saturados,"3,00"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",Saturados,"2,20"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",Saturados,"5,56"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",Colesterol,57
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",Colesterol,27
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",Colesterol,35
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",Colesterol,15
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",Colesterol,26
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",Colesterol,44
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",Colesterol,22
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",Colesterol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",Colesterol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",Colesterol,0
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",Colesterol,22
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",Colesterol,13
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",Colesterol,16
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",Colesterol,13
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",Colesterol,39
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",Lípidos totales,"17,3"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",Lípidos totales,"9,3"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",Lípidos totales,"11,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",Lípidos totales,"5,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",Lípidos totales,"11,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",Lípidos totales,"12,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",Lípidos totales,"7,9"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",Lípidos totales,"16,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",Lípidos totales,"16,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",Lípidos totales,"16,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",Lípidos totales,"7,9"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",Lípidos totales,"5,5"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",Lípidos totales,"4,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",Lípidos totales,"3,4"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",Lípidos totales,"11,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",Proteínas,"18,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",Proteínas,"12,4"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",Proteínas,"12,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",Proteínas,"4,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",Proteínas,"10,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",Proteínas,"14,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",Proteínas,"6,8"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",Proteínas,"4,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",Proteínas,"4,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",Proteínas,"4,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",Proteínas,"6,8"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",Proteínas,"4,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",Proteínas,"4,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",Proteínas,"3,4"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",Proteínas,"14,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",Agua,"50,3"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",Agua,"43,2"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",Agua,"45,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",Agua,"63,9"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",Agua,"62,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",Agua,"53,1"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",Agua,"63,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",Agua,"43,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",Agua,"43,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",Agua,"43,0"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",Agua,"63,7"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",Agua,"61,3"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",Agua,"62,3"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",Agua,"65,8"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",Agua,"53,6"
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Doble Cuarto de Libra con queso",Valor energético,281
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa",Valor energético,257
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Hamburguesa con queso",Valor energético,269
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Mc Flurry Oreo",Valor energético,169
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNífica",Valor energético,199
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McNuggets x 10",Valor energético,242
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, McPollo Grill",Valor energético,176
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas grandes",Valor energético,292
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas medianas",Valor energético,292
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Papas pequeñas",Valor energético,292
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Pollo Jr.",Valor energético,176
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae chocolate",Valor energético,181
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae dulce de leche",Valor energético,171
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Sundae frutilla",Valor energético,154
+25,Alimentos de locales de comidas rápidas,macronutrientes,134,"McDonald's, Triple Mac",Valor energético,235
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Vitamina D,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Vitamina C,"0,6"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Vitamina C,"0,6"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Vitamina C,"0,6"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Vitamina C,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Vitamina C,"3,3"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Vitamina C,"1,2"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Vitamina C,"0,9"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Vitamina C,"5,6"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Vitamina C,"5,6"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Vitamina C,"5,6"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Vitamina C,"0,9"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Vitamina C,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Vitamina C,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Vitamina C,"1,5"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Vitamina C,"0,9"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Vitamina B-12,"1,68"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Vitamina B-12,"0,83"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Vitamina B-12,"0,86"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Vitamina B-12,"0,58"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Vitamina B-12,"0,60"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Vitamina B-12,"0,33"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Vitamina B-12,"0,17"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Vitamina B-12,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Vitamina B-12,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Vitamina B-12,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Vitamina B-12,"0,17"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Vitamina B-12,"0,55"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Vitamina B-12,"0,51"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Vitamina B-12,"0,49"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Vitamina B-12,"1,28"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Riboflavina,"0,303"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Riboflavina,"0,239"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Riboflavina,"0,260"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Riboflavina,"0,229"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Riboflavina,"0,191"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Riboflavina,"0,110"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Riboflavina,"0,216"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Riboflavina,"0,037"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Riboflavina,"0,037"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Riboflavina,"0,037"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Riboflavina,"0,216"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Riboflavina,"0,226"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Riboflavina,"0,223"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Riboflavina,"0,195"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Riboflavina,"0,344"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Tiamina,"0,127"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Tiamina,"0,247"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Tiamina,"0,223"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Tiamina,"0,048"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Tiamina,"0,168"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Tiamina,"0,160"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Tiamina,"0,234"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Tiamina,"0,180"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Tiamina,"0,180"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Tiamina,"0,180"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Tiamina,"0,234"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Tiamina,"0,042"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Tiamina,"0,037"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Tiamina,"0,039"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Tiamina,"0,183"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Retinol,92
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Retinol,1
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Retinol,81
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Retinol,92
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Retinol,81
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Retinol,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo","Vitamina A, RAE",92
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica","Vitamina A, RAE",5
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate","Vitamina A, RAE",81
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche","Vitamina A, RAE",92
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla","Vitamina A, RAE",81
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac","Vitamina A, RAE",0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Ácido fólico,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Folato EFD,45
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Folato EFD,64
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Folato EFD,59
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Folato EFD,5
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Folato EFD,5
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Folato EFD,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Folato EFD,72
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Folato EFD,35
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Folato EFD,35
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Folato EFD,35
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Folato EFD,72
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Folato EFD,0
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Folato EFD,2
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Folato EFD,11
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Folato EFD,56
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Niacina,"4,21"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Niacina,"4,54"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Niacina,"4,03"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Niacina,"0,26"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Niacina,"2,83"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Niacina,"7,40"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Niacina,"4,37"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Niacina,"3,22"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Niacina,"3,22"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Niacina,"3,22"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Niacina,"4,37"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Niacina,"0,15"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Niacina,"0,11"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Niacina,"0,13"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Niacina,"4,45"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Zinc,"3,33"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Zinc,"1,95"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Zinc,"1,91"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Zinc,"0,5"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Zinc,"1,4"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Zinc,"0,59"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Zinc,"0,75"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Zinc,"0,51"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Zinc,"0,51"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Zinc,"0,51"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Zinc,"0,75"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Zinc,"0,56"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Zinc,"0,45"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Zinc,"0,39"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Zinc,"2,69"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Magnesio,21
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Magnesio,21
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Magnesio,20
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Magnesio,14
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Magnesio,16
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Magnesio,24
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Magnesio,20
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Magnesio,37
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Magnesio,37
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Magnesio,37
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Magnesio,20
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Magnesio,19
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Magnesio,12
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Magnesio,11
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Magnesio,22
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Hierro,"2,18"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Hierro,"2,87"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Hierro,"2,35"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Hierro,"0,61"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Hierro,"1,84"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Hierro,"0,89"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Hierro,"1,78"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Hierro,"0,80"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Hierro,"0,80"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Hierro,"0,80"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Hierro,"1,78"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Hierro,"0,83"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Hierro,"0,08"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Hierro,"0,10"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Hierro,"2,41"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Fósforo,165
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Fósforo,107
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Fósforo,140
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Fósforo,111
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Fósforo,106
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Fósforo,272
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Fósforo,150
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Fósforo,127
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Fósforo,127
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Fósforo,127
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Fósforo,150
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Fósforo,128
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Fósforo,112
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Fósforo,91
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Fósforo,124
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Cobre,"0,091"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Cobre,"0,096"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Cobre,"0,097"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Cobre,"0,03"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Cobre,"0,1"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Cobre,"0,049"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Cobre,"0,073"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Cobre,"0,114"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Cobre,"0,114"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Cobre,"0,114"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Cobre,"0,073"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Cobre,"0,051"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Cobre,"0,015"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Cobre,"0,015"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Cobre,"0,107"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Calcio,106
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Calcio,127
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Calcio,167
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Calcio,129
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Calcio,120
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Calcio,11
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Calcio,96
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Calcio,19
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Calcio,19
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Calcio,19
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Calcio,96
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Calcio,139
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Calcio,127
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Calcio,110
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Calcio,84
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Potasio,242
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Potasio,192
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Potasio,200
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Potasio,198
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Potasio,187
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Potasio,252
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Potasio,184
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Potasio,596
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Potasio,596
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Potasio,596
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Potasio,184
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Potasio,246
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Potasio,186
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Potasio,173
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Potasio,227
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Sodio,439
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Sodio,464
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Sodio,595
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Sodio,75
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Sodio,365
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Sodio,344
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Sodio,474
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Sodio,220
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Sodio,220
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Sodio,220
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Sodio,474
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Sodio,62
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Sodio,62
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Sodio,62
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Sodio,694
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Doble Cuarto de Libra con queso",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa",Cenizas,"2,18"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Hamburguesa con queso",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Mc Flurry Oreo",Cenizas,"0,92"
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNífica",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McNuggets x 10",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, McPollo Grill",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas grandes",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas medianas",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Papas pequeñas",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Pollo Jr.",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae chocolate",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae dulce de leche",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Sundae frutilla",Cenizas,
+25,Alimentos de locales de comidas rápidas,vitaminas_minerales,135,"McDonald's, Triple Mac",Cenizas,

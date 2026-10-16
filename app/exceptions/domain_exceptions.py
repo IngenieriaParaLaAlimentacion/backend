@@ -1,6 +1,8 @@
 """This module defines custom domain exceptions for the application."""
 
+import math
 import re
+import time
 from typing import ClassVar
 
 from fastapi import status
@@ -33,6 +35,7 @@ class BaseError(Exception):
             the ``problem+json`` body. Values must be JSON-primitive: the handler
             passes them straight to ``JSONResponse``, which cannot encode a raw
             ``UUID`` or ``datetime``.
+        headers (dict | None): Optional HTTP headers sent with the response.
     """
 
     error_type: ClassVar[str]
@@ -72,10 +75,12 @@ class BaseError(Exception):
         title: str,
         details: str,
         extensions: dict | None = None,
+        headers: dict[str, str] | None = None,
     ):
         self.title = title
         self.details = details
         self.extensions = extensions or {}
+        self.headers = headers or {}
         super().__init__(f"{title}: {details}")
 
 
@@ -105,6 +110,18 @@ class ConflictError(BaseError, abstract=True):
     """
 
     status = status.HTTP_409_CONFLICT
+
+
+class UnprocessableEntityError(BaseError, abstract=True):
+    """Base exception for a well-formed request whose content the server
+    understands but cannot process (HTTP 422).
+
+    Distinct from ``BadRequestError`` (400): the request syntax is fine and the
+    route matched -- it is the uploaded payload itself that is unacceptable, e.g.
+    an image in a format or size the server will not take.
+    """
+
+    status = status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 class UserNotFoundError(NotFoundError):
@@ -164,6 +181,45 @@ class UnauthorizedError(BaseError):
         extensions: dict | None = None,
     ):
         super().__init__(title, details, extensions)
+
+
+class RateLimitedError(BaseError):
+    """Raised when a caller exceeds the rate limit of a public endpoint.
+
+    Args:
+        limit (int): The number of requests the exceeded limit allows per window.
+        reset_at (float): Epoch seconds at which the caller may retry.
+    """
+
+    error_type = "rate-limited"
+    status = status.HTTP_429_TOO_MANY_REQUESTS
+
+    def __init__(self, limit: int, reset_at: float):
+        retry_after = max(1, math.ceil(reset_at - time.time()))
+        super().__init__(
+            "Too many requests",
+            f"Too many attempts. Try again in {retry_after} seconds.",
+            {"retry_after": retry_after},
+            {
+                "Retry-After": str(retry_after),
+                "X-RateLimit-Limit": str(limit),
+                "X-RateLimit-Remaining": "0",
+                "X-RateLimit-Reset": str(math.ceil(reset_at)),
+            },
+        )
+
+
+class NotificationConfigurationError(BaseError):
+    """Raised when scheduled notifications are not fully configured."""
+
+    error_type = "notification-configuration-invalid"
+    status = status.HTTP_503_SERVICE_UNAVAILABLE
+
+    def __init__(self):
+        super().__init__(
+            "Notification configuration invalid",
+            "Stale-establishment notifications are not fully configured.",
+        )
 
 
 class ForbiddenError(BaseError, abstract=True):
@@ -285,6 +341,30 @@ class UserEstablishmentNotApprovedError(ConflictError):
         )
 
 
+class UserEstablishmentNotWithdrawableError(ConflictError):
+    """Raised when a user tries to withdraw their own access to an
+    establishment whose relation is not currently approved or pending.
+
+    Args:
+        establishment_id (str): The establishment whose relation cannot be
+            withdrawn.
+        user_id (str): The user the relation belongs to.
+        relation_status (str): The state the relation is actually in
+            (rejected/revoked), attached as the ``relation_status`` extension.
+    """
+
+    error_type = "user-establishment-not-withdrawable"
+
+    def __init__(self, establishment_id: str, user_id: str, relation_status: str):
+        super().__init__(
+            "User establishment not withdrawable",
+            f"The establishment with id {establishment_id} is not currently "
+            f"approved or pending for the user with id {user_id}, so its "
+            "access cannot be withdrawn.",
+            extensions={"relation_status": relation_status},
+        )
+
+
 class EstablishmentRequestNotFoundError(NotFoundError):
     """Exception raised when an establishment request does not exist.
 
@@ -358,6 +438,26 @@ class EmailDeliveryError(BaseError):
         super().__init__("Email delivery failed", details)
 
 
+class ReceiptPhotoStorageError(BaseError):
+    """Raised when a receipt photo cannot be persisted to object storage.
+
+    Nothing has been saved yet at this point -- no intake exists, no DB row
+    references the failed key -- so the client's only recourse is to retry
+    the upload.
+    """
+
+    error_type = "receipt-photo-storage-failed"
+    status = status.HTTP_502_BAD_GATEWAY
+
+    def __init__(
+        self,
+        details: str = (
+            "The receipt photo could not be saved. Please try uploading it again."
+        ),
+    ):
+        super().__init__("Receipt photo storage failed", details)
+
+
 class UniqueConstraintError(Exception):
     """Raised by a repository when a unique constraint is violated.
 
@@ -369,6 +469,33 @@ class UniqueConstraintError(Exception):
         self.field = field
         self.value = value
         super().__init__(f"Unique constraint violated: {field}={value}")
+
+
+class ObjectStorageError(Exception):
+    """Raised by an ObjectStorage backend when a save fails.
+
+    Callers (services) are responsible for translating this into the
+    appropriate domain exception -- the storage layer knows nothing about
+    HTTP status codes, only that the object did not get written.
+    """
+
+    def __init__(self, key: str, reason: str) -> None:
+        self.key = key
+        self.reason = reason
+        super().__init__(f"Failed to store object {key!r}: {reason}")
+
+
+class LlmClientError(Exception):
+    """Raised by an ILlmClient implementation when a completion fails.
+
+    Callers (services) are responsible for translating this into the
+    appropriate domain exception -- the LLM layer knows nothing about HTTP
+    status codes, only that a usable response was not obtained.
+    """
+
+    def __init__(self, reason: str) -> None:
+        self.reason = reason
+        super().__init__(f"LLM completion failed: {reason}")
 
 
 class EmptyUpdateRequestError(BadRequestError):
@@ -405,6 +532,15 @@ class InvalidAgeRangeError(InvalidListingFilterError):
         super().__init__("Invalid age range", detail)
 
 
+class InvalidNumberRangeError(InvalidListingFilterError):
+    """Raised when a response-number-range filter starts above where it ends."""
+
+    error_type = "invalid-response-number-range"
+
+    def __init__(self, detail: str):
+        super().__init__("Invalid response number range", detail)
+
+
 class FilterNotApplicableError(InvalidListingFilterError):
     """Raised when a filter resolves through a target the resource does not carry."""
 
@@ -415,8 +551,11 @@ class FilterNotApplicableError(InvalidListingFilterError):
 
 
 class UserNotFieldWorkerError(BadRequestError):
-    """Raised when an operation requires the target user to be a field worker."""
+    """Raised when the target user's role is not one the operation accepts: a
+    field worker, or also an analyst for establishment access revocation."""
 
+    # Name and type predate analyst review and are kept so clients that branch
+    # on the type don't break.
     error_type = "user-is-not-a-field-worker"
 
     def __init__(self, detail: str):
@@ -701,12 +840,15 @@ class SurveyAlreadyExistsError(AlreadyExistsError):
 
 
 class SurveyLockedError(ConflictError):
-    """Exception raised when a survey can no longer be modified.
+    """Exception raised when an edit to a survey with recorded responses would
+    invalidate them.
 
-    Gates structural edits -- and changes to ``response_target`` -- once a survey
-    has recorded at least one response. One identity and one client recovery
-    ("stop, the survey is frozen") for every trigger, so the specific trigger is
-    carried by ``detail`` rather than by six near-identical classes.
+    Once a survey has recorded at least one response, most structural edits and
+    any change to ``response_target`` are rejected -- except adding a new
+    optional question, which is still allowed. One identity and one client
+    recovery ("that edit isn't allowed anymore") for every trigger, so the
+    specific trigger is carried by ``detail`` rather than by six near-identical
+    classes.
 
     Args:
         detail (str): Human-readable explanation of this occurrence.
@@ -778,8 +920,141 @@ class SurveyResponseAlreadyExistsError(AlreadyExistsError):
     error_type = "survey-response-already-exists"
 
     def __init__(self, existing: dict | None = None):
+        extensions: dict = {}
+        if existing:
+            extensions["existing_response"] = existing
         super().__init__(
             "Survey response already exists",
             "This survey has already been answered for that target.",
-            extensions={"existing_response": existing} if existing else None,
+            extensions=extensions or None,
+        )
+
+
+class FoodNotFoundError(NotFoundError):
+    """Exception raised when a food cannot be found.
+
+    Args:
+        food_id (str): The ID that was looked up.
+    """
+
+    error_type = "food-not-found"
+
+    def __init__(self, food_id: str):
+        super().__init__(
+            "Food not found",
+            f"No food with id {food_id} exists.",
+        )
+
+
+class FoodMovementNotFoundError(NotFoundError):
+    """Exception raised when a food movement cannot be found in an establishment.
+
+    Also raised when the movement exists but belongs to a different
+    establishment, so the two cases are indistinguishable to the caller.
+
+    Args:
+        movement_id (str): The ID that was looked up.
+    """
+
+    error_type = "food-movement-not-found"
+
+    def __init__(self, movement_id: str):
+        super().__init__(
+            "Food movement not found",
+            f"No food movement with id {movement_id} exists in this establishment.",
+        )
+
+
+class InsufficientStockError(ConflictError):
+    """Exception raised when an outflow exceeds an establishment's stock.
+
+    Carries the food and the two quantities so a client can tell the user what
+    is actually available rather than only that the request failed.
+
+    Args:
+        food_id (str): The food whose balance is short.
+        requested (str): The quantity the outflow asked for.
+        available (str): The quantity actually held.
+    """
+
+    error_type = "insufficient-stock"
+
+    def __init__(self, food_id: str, requested: str, available: str):
+        super().__init__(
+            "Insufficient stock",
+            f"The establishment holds {available} of food {food_id}, "
+            f"which does not cover the requested {requested}.",
+            extensions={
+                "food_id": food_id,
+                "requested": requested,
+                "available": available,
+            },
+        )
+
+
+class UnsupportedImageTypeError(UnprocessableEntityError):
+    """Raised when an uploaded image's content type is not in the allow-list.
+
+    Carries the rejected type and the accepted ones so a client can tell the
+    user what to send instead rather than only that the upload failed.
+
+    Args:
+        content_type (str | None): The rejected type, or None if the upload
+            declared none.
+        allowed (list[str]): The accepted content types.
+    """
+
+    error_type = "unsupported-image-type"
+
+    def __init__(self, content_type: str | None, allowed: list[str]):
+        accepted = sorted(allowed)
+        super().__init__(
+            "Unsupported image type",
+            f"Image type {content_type or 'unknown'!r} is not supported. "
+            f"Accepted types: {', '.join(accepted)}.",
+            extensions={"content_type": content_type, "accepted_types": accepted},
+        )
+
+
+class ImageTooLargeError(UnprocessableEntityError):
+    """Raised when an uploaded image is larger than the configured ceiling.
+
+    Carries both sizes so a client can report how far over the limit the file
+    is rather than only that it was rejected.
+
+    Args:
+        size_bytes (int): The size of the uploaded image.
+        max_bytes (int): The configured ceiling it exceeded.
+    """
+
+    error_type = "image-too-large"
+
+    def __init__(self, size_bytes: int, max_bytes: int):
+        super().__init__(
+            "Image too large",
+            f"The uploaded image is {size_bytes} bytes, over the "
+            f"{max_bytes}-byte limit.",
+            extensions={"size_bytes": size_bytes, "max_bytes": max_bytes},
+        )
+
+
+class ImageContentMismatchError(UnprocessableEntityError):
+    """Raised when an image's bytes do not match its declared content type.
+
+    The declared ``content_type`` passes the allow-list check, but the file's
+    magic bytes say otherwise -- e.g. a client mislabeling an upload, or one
+    spoofing the header to smuggle a non-image file past validation.
+
+    Args:
+        content_type (str): The declared type the file's bytes did not match.
+    """
+
+    error_type = "image-content-mismatch"
+
+    def __init__(self, content_type: str):
+        super().__init__(
+            "Image content does not match declared type",
+            f"The uploaded file's content does not match the declared type "
+            f"{content_type!r}.",
+            extensions={"content_type": content_type},
         )

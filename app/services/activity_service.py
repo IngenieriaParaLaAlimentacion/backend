@@ -19,15 +19,15 @@ class ActivityService:
         page_size: int,
         params: ActivityListingParams,
     ) -> PaginatedResult[ActivityItemDomain]:
-        """Return the caller's own subjects-created and measurements-taken,
-        merged into one date-descending feed."""
+        """Return the caller's own subjects, measurements, survey responses and
+        food movements, merged into one date-descending feed."""
         page = max(1, page)
         offset = (page - 1) * page_size
         items, total = await self.uow.activity_repo.get_activity_feed(
             actor_id=UUID(str(actor.user_id)),
             limit=page_size,
             offset=offset,
-            activity_type=params.activity_type,
+            activity_types=params.activity_types,
         )
         return PaginatedResult.build(
             items=items, total=total, page=page, page_size=page_size

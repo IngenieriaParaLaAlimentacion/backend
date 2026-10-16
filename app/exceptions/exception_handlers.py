@@ -2,9 +2,11 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from opentelemetry import trace
+from sqlalchemy.exc import DBAPIError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.exceptions.domain_exceptions import BaseError
+from app.utils.db import sqlstate
 
 
 def _problem_response(
@@ -48,11 +50,9 @@ async def domain_error_handler(request: Request, exc: BaseError) -> JSONResponse
         trace.get_current_span().record_exception(exc)
     # RFC 7235 requires a challenge on every 401. FastAPI attached it to the
     # auto-401 it no longer raises, so we re-attach it here.
-    headers = (
-        {"WWW-Authenticate": "Bearer"}
-        if exc.status == status.HTTP_401_UNAUTHORIZED
-        else None
-    )
+    headers = dict(exc.headers)
+    if exc.status == status.HTTP_401_UNAUTHORIZED:
+        headers["WWW-Authenticate"] = "Bearer"
     return _problem_response(
         request,
         status_code=exc.status,
@@ -60,7 +60,7 @@ async def domain_error_handler(request: Request, exc: BaseError) -> JSONResponse
         title=exc.title,
         detail=exc.details,
         extensions=exc.extensions,
-        headers=headers,
+        headers=headers or None,
     )
 
 
@@ -101,6 +101,43 @@ async def http_error_handler(
     )
 
 
+# SQLSTATE class 40: Postgres rolled the transaction back to break a deadlock
+# (40P01) or because it could not serialize it (40001). Both are transient and
+# leave nothing behind, unlike 40002/40003, which are not safely replayable.
+_RETRYABLE_SQLSTATES = frozenset({"40001", "40P01"})
+
+
+async def database_error_handler(request: Request, exc: DBAPIError) -> JSONResponse:
+    """Render a transient transaction rollback as a retryable 503.
+
+    Postgres guarantees the losing transaction wrote nothing, so replaying the
+    request verbatim is safe even on the endpoints that are not idempotent --
+    which is what the ``Retry-After`` invites clients and proxies to do. The
+    alternative, a bare 500, tells a caller that a retry is pointless when it is
+    in fact the correct move.
+
+    Any other database error is re-raised untouched: it reaches
+    ``unhandled_error_handler`` exactly as before, so the traceback is still
+    logged and the 500 stays a 500.
+    """
+    if sqlstate(exc) not in _RETRYABLE_SQLSTATES:
+        raise exc
+    # This handler sits inside the OTel middleware and answers the request, so
+    # the span would otherwise close UNSET on what is still a server-side fault.
+    trace.get_current_span().record_exception(exc)
+    return _problem_response(
+        request,
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        error_type="concurrent-update",
+        title="Concurrent update",
+        detail=(
+            "The request lost a race against another transaction and was rolled "
+            "back without writing anything. Retry it unchanged."
+        ),
+        headers={"Retry-After": "1"},
+    )
+
+
 async def unhandled_error_handler(request: Request, exc: Exception) -> JSONResponse:
     """Last-resort handler: render any unhandled exception canonically.
 
@@ -124,4 +161,5 @@ def register_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(BaseError, domain_error_handler)
     app.add_exception_handler(RequestValidationError, validation_error_handler)
     app.add_exception_handler(StarletteHTTPException, http_error_handler)
+    app.add_exception_handler(DBAPIError, database_error_handler)
     app.add_exception_handler(Exception, unhandled_error_handler)

@@ -18,25 +18,12 @@ from tests.integration.admin.conftest import (
     REJECT_FIELD_WORKER_URL,
     REJECT_URL,
     REVOKE_URL,
+    _insert_relation,
     _insert_user,
 )
 
-pytestmark = pytest.mark.asyncio
-
 
 class TestApproveEstablishments:
-    async def test_returns_no_content(
-        self, client, admin_headers, accepted_field_worker, db_establishment
-    ):
-        """Should return 204 on successful approval."""
-        url = APPROVE_URL.format(user_id=accepted_field_worker["id"])
-        response = await client.patch(
-            url,
-            json={"establishment_ids": [str(db_establishment.id)]},
-            headers=admin_headers,
-        )
-        assert response.status_code == status.HTTP_204_NO_CONTENT
-
     async def test_pending_account_returns_400(
         self, client, admin_headers, registered_field_worker, db_establishment
     ):
@@ -61,54 +48,6 @@ class TestApproveEstablishments:
 
         assert first.status_code == status.HTTP_204_NO_CONTENT
         assert second.status_code == status.HTTP_204_NO_CONTENT
-
-    async def test_user_not_found(self, client, admin_headers):
-        """Should return 404 if the field worker does not exist."""
-        url = APPROVE_URL.format(user_id=uuid.uuid4())
-        response = await client.patch(
-            url,
-            json={"establishment_ids": [str(uuid.uuid4())]},
-            headers=admin_headers,
-        )
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-
-    async def test_establishment_not_associated_with_field_worker(
-        self, client, admin_headers, accepted_field_worker
-    ):
-        """Should return 404 if an establishment ID is not linked to
-        this field worker."""
-        url = APPROVE_URL.format(user_id=accepted_field_worker["id"])
-        response = await client.patch(
-            url,
-            json={"establishment_ids": [str(uuid.uuid4())]},
-            headers=admin_headers,
-        )
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-
-    async def test_empty_ids_rejected(
-        self, client, admin_headers, registered_field_worker
-    ):
-        """Should return 422 if establishment_ids is empty."""
-        url = APPROVE_URL.format(user_id=registered_field_worker["id"])
-        response = await client.patch(
-            url,
-            json={"establishment_ids": []},
-            headers=admin_headers,
-        )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_user_is_not_a_field_worker(
-        self, client, admin_headers, non_field_worker_user_id
-    ):
-        """Should return 404 when the target user has no matching
-        establishment relations."""
-        url = APPROVE_URL.format(user_id=non_field_worker_user_id)
-        response = await client.patch(
-            url,
-            json={"establishment_ids": [str(uuid.uuid4())]},
-            headers=admin_headers,
-        )
-        assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 class TestRejectEstablishments:
@@ -161,54 +100,6 @@ class TestRejectEstablishments:
             u for u in users if u["id"] == registered_field_worker["id"]
         )
         assert field_worker["status"] == UserStatus.PENDING_VALIDATION
-
-    async def test_user_not_found(self, client, admin_headers):
-        """Should return 404 if the field worker does not exist."""
-        url = REJECT_URL.format(user_id=uuid.uuid4())
-        response = await client.patch(
-            url,
-            json={"establishment_ids": [str(uuid.uuid4())]},
-            headers=admin_headers,
-        )
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-
-    async def test_establishment_not_associated_with_field_worker(
-        self, client, admin_headers, registered_field_worker
-    ):
-        """Should return 404 if an establishment ID is not linked to
-        this field worker."""
-        url = REJECT_URL.format(user_id=registered_field_worker["id"])
-        response = await client.patch(
-            url,
-            json={"establishment_ids": [str(uuid.uuid4())]},
-            headers=admin_headers,
-        )
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-
-    async def test_empty_ids_rejected(
-        self, client, admin_headers, registered_field_worker
-    ):
-        """Should return 422 if establishment_ids is empty."""
-        url = REJECT_URL.format(user_id=registered_field_worker["id"])
-        response = await client.patch(
-            url,
-            json={"establishment_ids": []},
-            headers=admin_headers,
-        )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_user_is_not_a_field_worker(
-        self, client, admin_headers, non_field_worker_user_id
-    ):
-        """Should return 404 when the target user has no
-        matching establishment relations."""
-        url = REJECT_URL.format(user_id=non_field_worker_user_id)
-        response = await client.patch(
-            url,
-            json={"establishment_ids": [str(uuid.uuid4())]},
-            headers=admin_headers,
-        )
-        assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 class TestRevokeEstablishments:
@@ -273,29 +164,6 @@ class TestRevokeEstablishments:
         async with db_module.AsyncSessionLocal() as session:
             user = await session.get(User, uuid.UUID(user_id))
         assert user.status == UserStatus.ACTIVE
-
-    async def test_user_not_found(self, client, admin_headers):
-        """Should return 404 if the field worker does not exist."""
-        url = REVOKE_URL.format(user_id=uuid.uuid4())
-        response = await client.patch(
-            url,
-            json={"establishment_ids": [str(uuid.uuid4())]},
-            headers=admin_headers,
-        )
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-
-    async def test_establishment_not_associated_with_field_worker(
-        self, client, admin_headers, accepted_field_worker
-    ):
-        """Should return 404 if an establishment ID has no relation at all
-        with this field worker."""
-        url = REVOKE_URL.format(user_id=accepted_field_worker["id"])
-        response = await client.patch(
-            url,
-            json={"establishment_ids": [str(uuid.uuid4())]},
-            headers=admin_headers,
-        )
-        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     async def test_not_approved_establishment_returns_409(
         self, client, admin_headers, accepted_field_worker, db_establishment
@@ -370,23 +238,12 @@ class TestRevokeEstablishments:
         assert by_establishment[db_establishment.id] == "approved"
         assert by_establishment[db_establishment_2.id] == "pending"
 
-    async def test_empty_ids_rejected(
-        self, client, admin_headers, accepted_field_worker
-    ):
-        """Should return 422 if establishment_ids is empty."""
-        url = REVOKE_URL.format(user_id=accepted_field_worker["id"])
-        response = await client.patch(
-            url,
-            json={"establishment_ids": []},
-            headers=admin_headers,
-        )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_user_is_not_a_field_worker(
+    async def test_user_outside_reviewed_roles_returns_400(
         self, client, admin_headers, non_field_worker_user_id
     ):
         """Unlike approve/reject, revoke explicitly checks the target is a
-        field worker before looking at establishments, so this is a 400."""
+        field worker or analyst before looking at establishments, so this is
+        a 400."""
         url = REVOKE_URL.format(user_id=non_field_worker_user_id)
         response = await client.patch(
             url,
@@ -396,17 +253,99 @@ class TestRevokeEstablishments:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-class TestApproveFieldWorker:
-    async def test_returns_no_content(
-        self, client, admin_headers, registered_field_worker
-    ):
-        """Should return 204 without a body."""
-        url = APPROVE_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"])
-        response = await client.patch(
-            url, json={"establishment_ids": []}, headers=admin_headers
-        )
-        assert response.status_code == status.HTTP_204_NO_CONTENT
+class TestAnalystEstablishmentReview:
+    """An admin reviews an analyst's establishment access like a field
+    worker's."""
 
+    @pytest.mark.parametrize(
+        ("current", "url", "expected"),
+        [
+            (
+                UserEstablishmentStatus.PENDING,
+                APPROVE_URL,
+                UserEstablishmentStatus.APPROVED,
+            ),
+            (
+                UserEstablishmentStatus.PENDING,
+                REJECT_URL,
+                UserEstablishmentStatus.REJECTED,
+            ),
+            (
+                UserEstablishmentStatus.APPROVED,
+                REVOKE_URL,
+                UserEstablishmentStatus.REVOKED,
+            ),
+        ],
+    )
+    async def test_admin_resolves_analyst_relation(
+        self, client, admin_headers, db_establishment, current, url, expected
+    ):
+        analyst_id = await _insert_user(UserRole.ANALYST, UserStatus.ACTIVE)
+        await _insert_relation(analyst_id, db_establishment.id, current)
+
+        response = await client.patch(
+            url.format(user_id=analyst_id),
+            json={"establishment_ids": [str(db_establishment.id)]},
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        async with db_module.AsyncSessionLocal() as session:
+            relation = await session.scalar(
+                select(UserEstablishment).where(UserEstablishment.user_id == analyst_id)
+            )
+        assert relation.status == expected
+
+
+class TestEstablishmentAccessValidation:
+    """Checks shared by the approve, reject and revoke establishment endpoints."""
+
+    @pytest.mark.parametrize("url", [APPROVE_URL, REJECT_URL, REVOKE_URL])
+    async def test_unknown_user_returns_404(self, client, admin_headers, url):
+        response = await client.patch(
+            url.format(user_id=uuid.uuid4()),
+            json={"establishment_ids": [str(uuid.uuid4())]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    @pytest.mark.parametrize("url", [APPROVE_URL, REJECT_URL, REVOKE_URL])
+    async def test_establishment_not_linked_to_the_worker_returns_404(
+        self, client, admin_headers, accepted_field_worker, url
+    ):
+        response = await client.patch(
+            url.format(user_id=accepted_field_worker["id"]),
+            json={"establishment_ids": [str(uuid.uuid4())]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    @pytest.mark.parametrize("url", [APPROVE_URL, REJECT_URL, REVOKE_URL])
+    async def test_empty_ids_rejected(
+        self, client, admin_headers, accepted_field_worker, url
+    ):
+        response = await client.patch(
+            url.format(user_id=accepted_field_worker["id"]),
+            json={"establishment_ids": []},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    @pytest.mark.parametrize("url", [APPROVE_URL, REJECT_URL])
+    async def test_user_that_is_not_a_field_worker_returns_404(
+        self, client, admin_headers, non_field_worker_user_id, url
+    ):
+        """Approve and reject find no relations for such a user; revoke checks
+        the role first and answers 400 instead."""
+        response = await client.patch(
+            url.format(user_id=non_field_worker_user_id),
+            json={"establishment_ids": [str(uuid.uuid4())]},
+            headers=admin_headers,
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+class TestApproveFieldWorker:
     async def test_field_worker_status_becomes_active(
         self, client, admin_headers, registered_field_worker
     ):
@@ -461,22 +400,6 @@ class TestApproveFieldWorker:
             )
             relation = result.scalar_one()
         assert relation.status.value == "approved"
-
-    async def test_no_establishments_still_becomes_active(self, client, admin_headers):
-        """A field worker without requests can still be let in."""
-        user_id = await _insert_user(
-            UserRole.FIELD_WORKER, UserStatus.PENDING_VALIDATION
-        )
-        url = APPROVE_FIELD_WORKER_URL.format(user_id=user_id)
-
-        response = await client.patch(
-            url, json={"establishment_ids": []}, headers=admin_headers
-        )
-
-        assert response.status_code == status.HTTP_204_NO_CONTENT
-        async with db_module.AsyncSessionLocal() as session:
-            user = await session.get(User, user_id)
-        assert user.status == UserStatus.ACTIVE
 
     async def test_approves_only_the_selected_establishments(
         self, client, admin_headers, db_establishment, db_establishment_2
@@ -597,20 +520,13 @@ class TestApproveFieldWorker:
 
 
 class TestRejectFieldWorker:
-    async def test_returns_no_content(
-        self, client, admin_headers, registered_field_worker, db_establishment
-    ):
-        """Should return 204 on successful rejection."""
-        url = REJECT_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"])
-        response = await client.patch(url, headers=admin_headers)
-        assert response.status_code == status.HTTP_204_NO_CONTENT
-
     async def test_field_worker_status_becomes_inactive(
         self, client, admin_headers, registered_field_worker
     ):
         """Field worker status should be INACTIVE after rejection."""
         url = REJECT_FIELD_WORKER_URL.format(user_id=registered_field_worker["id"])
-        await client.patch(url, headers=admin_headers)
+        response = await client.patch(url, headers=admin_headers)
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
         list_response = await client.get(
             f"{ADMIN_USERS_URL}?page_size=100", headers=admin_headers
@@ -683,6 +599,24 @@ class TestListPendingEstablishments:
         assert item["id"] == accepted_field_worker["id"]
         assert item["status"] == UserStatus.ACTIVE.value
         assert [e["id"] for e in item["establishments"]] == [str(db_establishment.id)]
+
+    async def test_lists_analyst_with_pending_access(
+        self, client, admin_headers, db_establishment
+    ):
+        """An analyst's pending request reaches the admin's review list."""
+        analyst_id = await _insert_user(UserRole.ANALYST, UserStatus.ACTIVE)
+        await _insert_relation(
+            analyst_id, db_establishment.id, UserEstablishmentStatus.PENDING
+        )
+
+        response = await client.get(PENDING_ESTABLISHMENTS_URL, headers=admin_headers)
+
+        body = response.json()
+        assert body["total_pending_establishments"] == 1
+        assert [item["id"] for item in body["items"]] == [str(analyst_id)]
+        assert [e["id"] for e in body["items"][0]["establishments"]] == [
+            str(db_establishment.id)
+        ]
 
     async def test_excludes_accounts_still_awaiting_approval(
         self, client, admin_headers, registered_field_worker

@@ -24,7 +24,6 @@ from app.exceptions.domain_exceptions import (
     RecoveryTokenExpiredError,
     RecoveryTokenUsedError,
     UserAlreadyExistsError,
-    UserNotFoundError,
     VerificationTokenExpiredError,
     VerificationTokenUsedError,
 )
@@ -312,14 +311,11 @@ class AuthService:
         """Revoke existing verification tokens and send a fresh
         verification email.
 
-        Raises:
-            UserNotFoundError: If no user with the given email exists.
+        Notes:
+            Returns without error for unknown emails to avoid user enumeration.
         """
         user = await self.uow.user_repo.get_by_email(email)
-        if not user:
-            raise UserNotFoundError(email)
-
-        if user.is_email_verified:
+        if not user or user.is_email_verified:
             return
 
         await self.uow.email_verification_repo.revoke_active_for_user(user.id)

@@ -1,0 +1,71 @@
+"""Pins the public error catalog. Changing a slug or status here is an API
+change: update EXPECTED deliberately and coordinate with client teams."""
+
+from fastapi import status
+
+from app.exceptions.domain_exceptions import ERROR_REGISTRY
+
+EXPECTED: dict[str, int] = {
+    "account-pending-validation": status.HTTP_403_FORBIDDEN,
+    "admin/invite-already-pending": status.HTTP_409_CONFLICT,
+    "auth/invalid-recovery-token": status.HTTP_401_UNAUTHORIZED,
+    "auth/invalid-refresh-token": status.HTTP_401_UNAUTHORIZED,
+    "auth/invalid-verification-token": status.HTTP_401_UNAUTHORIZED,
+    "auth/missing-token": status.HTTP_401_UNAUTHORIZED,
+    "auth/recovery-token-expired": status.HTTP_401_UNAUTHORIZED,
+    "auth/recovery-token-used": status.HTTP_401_UNAUTHORIZED,
+    "auth/verification-token-expired": status.HTTP_401_UNAUTHORIZED,
+    "auth/verification-token-used": status.HTTP_401_UNAUTHORIZED,
+    "email-delivery-failed": status.HTTP_502_BAD_GATEWAY,
+    "establishment-access-denied": status.HTTP_403_FORBIDDEN,
+    "establishment-already-exists": status.HTTP_409_CONFLICT,
+    "establishment-not-found": status.HTTP_404_NOT_FOUND,
+    "establishment-request-already-reviewed": status.HTTP_409_CONFLICT,
+    "establishment-request-not-found": status.HTTP_404_NOT_FOUND,
+    "export/unmapped-label": status.HTTP_400_BAD_REQUEST,
+    "field-worker-is-not-pending": status.HTTP_400_BAD_REQUEST,
+    "filter-not-applicable": status.HTTP_400_BAD_REQUEST,
+    "food-movement-not-found": status.HTTP_404_NOT_FOUND,
+    "food-not-found": status.HTTP_404_NOT_FOUND,
+    "image-content-mismatch": status.HTTP_422_UNPROCESSABLE_CONTENT,
+    "image-too-large": status.HTTP_422_UNPROCESSABLE_CONTENT,
+    "insufficient-stock": status.HTTP_409_CONFLICT,
+    "invalid-age-range": status.HTTP_400_BAD_REQUEST,
+    "invalid-credentials": status.HTTP_401_UNAUTHORIZED,
+    "invalid-date-range": status.HTTP_400_BAD_REQUEST,
+    "invalid-response-number-range": status.HTTP_400_BAD_REQUEST,
+    "invalid-survey-payload": status.HTTP_400_BAD_REQUEST,
+    "invalid-survey-response": status.HTTP_400_BAD_REQUEST,
+    "invalid-survey-structure": status.HTTP_400_BAD_REQUEST,
+    "invalid-user-role": status.HTTP_400_BAD_REQUEST,
+    "no-fields-to-update": status.HTTP_400_BAD_REQUEST,
+    "not-resource-owner": status.HTTP_403_FORBIDDEN,
+    "notification-configuration-invalid": status.HTTP_503_SERVICE_UNAVAILABLE,
+    "password-not-found": status.HTTP_404_NOT_FOUND,
+    "rate-limited": status.HTTP_429_TOO_MANY_REQUESTS,
+    "receipt-photo-storage-failed": status.HTTP_502_BAD_GATEWAY,
+    "role-not-allowed": status.HTTP_403_FORBIDDEN,
+    "subject-already-exists": status.HTTP_409_CONFLICT,
+    "subject-not-found": status.HTTP_404_NOT_FOUND,
+    "survey-already-exists": status.HTTP_409_CONFLICT,
+    "survey-locked": status.HTTP_409_CONFLICT,
+    "survey-not-available": status.HTTP_403_FORBIDDEN,
+    "survey-not-found": status.HTTP_404_NOT_FOUND,
+    "survey-response-already-exists": status.HTTP_409_CONFLICT,
+    "survey-response-not-found": status.HTTP_404_NOT_FOUND,
+    "unauthorized": status.HTTP_401_UNAUTHORIZED,
+    "unsupported-image-type": status.HTTP_422_UNPROCESSABLE_CONTENT,
+    "user-already-exists": status.HTTP_409_CONFLICT,
+    "user-establishment-not-approved": status.HTTP_409_CONFLICT,
+    "user-establishment-not-found": status.HTTP_404_NOT_FOUND,
+    "user-establishment-not-withdrawable": status.HTTP_409_CONFLICT,
+    "user-is-not-a-field-worker": status.HTTP_400_BAD_REQUEST,
+    "user-is-not-active": status.HTTP_400_BAD_REQUEST,
+    "user-is-not-pending": status.HTTP_400_BAD_REQUEST,
+    "user-not-found": status.HTTP_404_NOT_FOUND,
+}
+
+
+def test_error_catalog_matches_snapshot():
+    actual = {slug: cls.status for slug, cls in ERROR_REGISTRY.items()}
+    assert dict(sorted(actual.items())) == dict(sorted(EXPECTED.items()))

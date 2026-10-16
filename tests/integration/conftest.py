@@ -1,17 +1,21 @@
 import os
 import uuid
 from datetime import date
+from typing import Any
 
+import boto3
 import pytest
 import pytest_asyncio
 from alembic.config import Config
 from httpx import ASGITransport, AsyncClient
+from moto.server import ThreadedMotoServer
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.pool import NullPool
-from testcontainers.postgres import PostgresContainer
+from testcontainers.community.postgres import PostgresContainer
 
 from alembic import command
+from app.core.dependencies import get_llm_client
+from app.core.interfaces.llm_client import ILlmClient
 from app.core.security import create_access_token, hash_password
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.user import UserRole, UserStatus
@@ -21,10 +25,11 @@ from app.models.auth.user_password import UserPassword
 from app.models.base import Base
 from app.models.establishments.establishment import Establishment
 from app.models.subjects.subject import Sex, Subject
+from tests.integration.helpers import Foods
+from tests.integration.urls import LOGIN_URL
 
 os.environ["TESTCONTAINERS_RYUK_DISABLED"] = "true"
 
-LOGIN_URL = "/api/v1/auth/login"
 
 # --- Auth: tokens and headers ---------------------------------------------
 
@@ -94,17 +99,57 @@ def analyst_headers():
 @pytest.fixture(scope="session")
 def postgres_url():
     """Start a Postgres container for the test session and yield its connection URL."""
-    with PostgresContainer("postgres:16-alpine") as postgres:
+    # The database is disposable, so durability guarantees only slow it down.
+    postgres = PostgresContainer("postgres:16-alpine").with_command(
+        "postgres -c fsync=off -c synchronous_commit=off -c full_page_writes=off"
+    )
+    with postgres:
         yield postgres.get_connection_url()
 
 
 @pytest.fixture(scope="session")
-def app(postgres_url):
+def storage_config():
+    """Start a local moto S3 server for the test session and create the test bucket.
+
+    The moto server listens on a real HTTP port, so requests go through the same
+    aioboto3 client code path R2 does in production -- the point of the
+    receipt-upload tests (see test_receipt_intake_confirm.py), without depending
+    on external Cloudflare credentials or on pulling a container image in CI.
+    """
+    server = ThreadedMotoServer(ip_address="127.0.0.1", port=0, verbose=False)
+    server.start()
+    try:
+        host, port = server.get_host_and_port()
+        endpoint_url = f"http://{host}:{port}"
+        access_key, secret_key, bucket = (
+            "test-access-key",
+            "test-secret-key",
+            "test-bucket",
+        )
+        boto3.client(
+            "s3",
+            endpoint_url=endpoint_url,
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_key,
+            region_name="us-east-1",
+        ).create_bucket(Bucket=bucket)
+        yield {
+            "endpoint_url": endpoint_url,
+            "bucket": bucket,
+            "access_key_id": access_key,
+            "secret_access_key": secret_key,
+        }
+    finally:
+        server.stop()
+
+
+@pytest.fixture(scope="session")
+def app(postgres_url, storage_config):
     """
     Build the FastAPI app against the test database.
 
     Patches settings.database_url temporarily so alembic/env.py picks up the
-    test container URL, then overrides the DB engine with NullPool. Does NOT
+    test container URL, then overrides the DB engine with a pooled one. Does NOT
     touch os.environ or sys.modules so unit test module references stay valid.
     """
     sync_url = postgres_url.replace("postgresql+psycopg2://", "postgresql://")
@@ -120,15 +165,56 @@ def app(postgres_url):
     finally:
         settings.database_url = original_db_url
 
+    settings.storage_endpoint_url = storage_config["endpoint_url"]
+    settings.storage_bucket = storage_config["bucket"]
+    settings.storage_access_key_id = storage_config["access_key_id"]
+    settings.storage_secret_access_key = storage_config["secret_access_key"]
+
+    # GeminiLlmClient() is constructed by the get_llm_client dependency on
+    # every request that resolves get_receipt_intake_service, even for tests
+    # that never reach the actual extraction call -- so it needs *a* key to
+    # construct without error. Tests that exercise extraction override the
+    # dependency outright via the fake_llm_client fixture instead of hitting
+    # the real API.
+    settings.gemini_api_key = "test-gemini-key"
+
     import app.db.database as db_module
     from app.main import app as fastapi_app
 
-    db_module.engine = create_async_engine(asyncpg_url, poolclass=NullPool)
+    db_module.engine = create_async_engine(asyncpg_url)
     db_module.AsyncSessionLocal = async_sessionmaker(
         db_module.engine, expire_on_commit=False, autoflush=False, autocommit=False
     )
 
     return fastapi_app
+
+
+class FakeLlmClient(ILlmClient):
+    """Test double for ILlmClient: returns a scripted result instead of
+    calling the real Gemini API.
+
+    Defaults to no detected lines, matching the manual-fallback behavior a
+    test gets by default. Set ``response`` or ``error`` before the request
+    to script an extraction result or a provider failure.
+    """
+
+    def __init__(self) -> None:
+        self.response: dict[str, Any] = {"lines": []}
+        self.error: Exception | None = None
+
+    async def complete(self, **_: Any) -> dict[str, Any]:
+        if self.error is not None:
+            raise self.error
+        return self.response
+
+
+@pytest.fixture
+def fake_llm_client(app):
+    """Override the receipt extractor with a scripted double for the test."""
+    fake = FakeLlmClient()
+    app.dependency_overrides[get_llm_client] = lambda: fake
+    yield fake
+    app.dependency_overrides.pop(get_llm_client, None)
 
 
 @pytest_asyncio.fixture()
@@ -322,3 +408,38 @@ async def db_logged_in_user(db_active_user, client):
     )
     body = response.json()
     return db_active_user, body["refresh_token"], device_id
+
+
+@pytest_asyncio.fixture()
+async def foods(app) -> Foods:
+    """Seed two catalog foods with different base units.
+
+    The catalog has no create endpoint -- it is only ever populated by the seed
+    script -- so the rows go in directly. The base units differ on purpose: a
+    line's unit must come from its own food, not from a constant.
+    """
+    from app.db.database import AsyncSessionLocal
+    from app.domain.food_catalog import MeasurementUnit
+    from app.models.food_catalog.food import Food
+    from app.models.food_catalog.food_category import FoodCategory
+
+    async with AsyncSessionLocal() as session:
+        cereals = FoodCategory(code="cereales", name="Cereales")
+        session.add(cereals)
+        await session.flush()
+
+        rice = Food(
+            code="arroz",
+            name="Arroz",
+            category_id=cereals.id,
+            base_unit=MeasurementUnit.KILOGRAMOS,
+        )
+        eggs = Food(
+            code="huevo",
+            name="Huevo",
+            category_id=cereals.id,
+            base_unit=MeasurementUnit.UNIDADES,
+        )
+        session.add_all([rice, eggs])
+        await session.commit()
+        return Foods(rice=rice.id, eggs=eggs.id)
