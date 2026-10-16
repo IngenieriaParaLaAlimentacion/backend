@@ -60,7 +60,7 @@ class FoodRepository:
         high against a coincidental extent of unrelated text. Whole-string
         ``similarity`` is used as a second, independent floor -- a genuine match
         also carries non-trivial whole-string overlap, while a short spurious
-        match doesn't (see ADR-0016).
+        match doesn't (see ADR-0017).
         """
         normalized_name = unaccent_lower(Food.name)
         normalized_term = unaccent_lower(term)
@@ -73,7 +73,7 @@ class FoodRepository:
     ) -> Food | None:
         """Return the catalog food whose name best matches ``description``, or None.
 
-        Used to auto-fill a receipt-extracted line's catalog reference (ADR-0016) -- a
+        Used to auto-fill a receipt-extracted line's catalog reference (ADR-0017) -- a
         single best-or-nothing match, not a ranked candidate list. A food only
         qualifies once both scores from ``_match_scores`` clear their respective
         floor; among those, the highest ``word_similarity`` wins. No relations are

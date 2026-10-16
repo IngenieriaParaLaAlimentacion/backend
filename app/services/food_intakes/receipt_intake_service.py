@@ -141,7 +141,7 @@ class ReceiptIntakeService:
         """Build one proposed line from an extracted receipt item.
 
         The catalog match is delegated entirely to
-        ``FoodRepository.find_best_match`` (trigram similarity, ADR-0016).
+        ``FoodRepository.find_best_match`` (trigram similarity, ADR-0017).
         For a matched line, ``quantity`` and ``unit`` are prefilled together
         from the printed quantity when its unit is exactly the food's base
         unit (see ``prefill_from_printed``), and both stay None otherwise.
@@ -199,7 +199,7 @@ class ReceiptIntakeService:
         rejected proposal never leaves an orphaned object in storage.
 
         Each line is matched against the food catalog by name similarity
-        (ADR-0016); ``food`` is set when a confident match is found, and left
+        (ADR-0017); ``food`` is set when a confident match is found, and left
         ``None`` otherwise. On a match, ``quantity`` and ``unit`` are
         prefilled from the printed quantity when it is already in the food's
         base unit; nothing is converted. ``needs_review`` is always ``True`` --
