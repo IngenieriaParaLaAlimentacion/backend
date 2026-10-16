@@ -106,7 +106,7 @@ async def test_sum_quantities_by_food_adds_intakes_inside_the_window(
     foods, db_establishment, make_user_with_role
 ):
     from app.db.database import AsyncSessionLocal
-    from app.domain.food_intake import FoodIntakeSource
+    from app.domain.food_intake import FoodIntakeOriginType, FoodIntakeSource
     from app.domain.user import UserRole
     from app.models.food_intakes.food_intake import FoodIntake
     from app.models.food_intakes.food_intake_item import FoodIntakeItem
@@ -122,6 +122,8 @@ async def test_sum_quantities_by_food_adds_intakes_inside_the_window(
             responsible_id=responsible_id,
             occurred_at=when,
             source=FoodIntakeSource.MANUAL,
+            origin_type=FoodIntakeOriginType.OTHER,
+            is_recurring=False,
             items=[
                 FoodIntakeItem(food_id=food_id, quantity=Decimal(qty))
                 for food_id, qty in items
