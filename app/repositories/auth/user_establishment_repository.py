@@ -1,11 +1,10 @@
 from uuid import UUID
 
 from sqlalchemy import delete, select, update
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.establishment import UserEstablishmentStatus
-from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.auth.user_establishment import UserEstablishment
 
 
@@ -27,39 +26,34 @@ class UserEstablishmentRepository:
         self.db.add(user_establishment)
         return user_establishment
 
-    async def create_or_approve_relation(
-        self, user_id: UUID, establishment_id: UUID
-    ) -> UserEstablishment:
-        """Grant the user approved access to the establishment.
+    async def approve_relations(
+        self, user_id: UUID, establishment_ids: list[UUID]
+    ) -> None:
+        """Grant the user approved access to each of the given establishments.
 
-        Creates the relation as approved if none exists yet; if one already
-        exists (e.g. a pending relation from registration), flips it to
-        approved instead of creating a duplicate row.
-
-        Raises:
-            UniqueConstraintError: If a concurrent request inserted the same
-                relation between the lookup and the insert.
+        Inserts missing relations as approved and flips existing ones in any
+        other status to approved, so no duplicate row is ever created.
         """
-        relation = await self.get_relation(user_id, establishment_id)
-        if relation is None:
-            relation = UserEstablishment(
-                user_id=user_id,
-                establishment_id=establishment_id,
-                status=UserEstablishmentStatus.APPROVED,
+        stmt = insert(UserEstablishment).values(
+            [
+                {
+                    "user_id": user_id,
+                    "establishment_id": establishment_id,
+                    "status": UserEstablishmentStatus.APPROVED,
+                }
+                for establishment_id in establishment_ids
+            ]
+        )
+        # An upsert keeps a concurrent subscribe to the same pair from failing.
+        await self.db.execute(
+            stmt.on_conflict_do_update(
+                index_elements=[
+                    UserEstablishment.user_id,
+                    UserEstablishment.establishment_id,
+                ],
+                set_={"status": stmt.excluded.status},
             )
-            # Flushed in a savepoint so a raced insert surfaces here, not as a
-            # 500 at commit.
-            try:
-                async with self.db.begin_nested():
-                    self.db.add(relation)
-                    await self.db.flush()
-            except IntegrityError:
-                raise UniqueConstraintError(
-                    "user_establishment", (user_id, establishment_id)
-                )
-        else:
-            relation.status = UserEstablishmentStatus.APPROVED
-        return relation
+        )
 
     async def get_by_user_ids(
         self,
@@ -111,15 +105,16 @@ class UserEstablishmentRepository:
         )
         return result.scalar_one_or_none()
 
-    async def delete_relation(self, user_id: UUID, establishment_id: UUID) -> bool:
-        """Delete the user-establishment relation. Return whether a row existed."""
-        result = await self.db.execute(
+    async def delete_relations(
+        self, user_id: UUID, establishment_ids: list[UUID]
+    ) -> None:
+        """Delete the user's relations to the given establishments, if any."""
+        await self.db.execute(
             delete(UserEstablishment).where(
                 UserEstablishment.user_id == user_id,
-                UserEstablishment.establishment_id == establishment_id,
+                UserEstablishment.establishment_id.in_(establishment_ids),
             )
         )
-        return result.rowcount > 0
 
     async def update_status_for_ids(
         self,

@@ -192,11 +192,12 @@ async def submit_survey_response(
     },
 )
 async def get_survey_response(
+    survey_id: UUID,
     response_id: UUID,
     actor: UserActor = Depends(require_any),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> SurveyResponseResponse:
-    survey_response = await service.get(response_id, actor)
+    survey_response = await service.get(survey_id, response_id, actor)
     return SurveyResponseResponse.model_validate(survey_response)
 
 
@@ -216,11 +217,12 @@ async def get_survey_response(
     },
 )
 async def get_survey_response_detail(
+    survey_id: UUID,
     response_id: UUID,
     actor: UserActor = Depends(require_any),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> SurveyResponseDetailResponse:
-    detail = await service.get_response_detail(response_id, actor)
+    detail = await service.get_response_detail(survey_id, response_id, actor)
     return SurveyResponseDetailResponse.model_validate(detail)
 
 
@@ -241,10 +243,11 @@ async def get_survey_response_detail(
     },
 )
 async def edit_survey_response(
+    survey_id: UUID,
     response_id: UUID,
     data: SurveyResponseEditRequest,
     actor: UserActor = Depends(require_any),
     service: SurveyResponseService = Depends(get_survey_response_service),
 ) -> SurveyResponseResponse:
-    survey_response = await service.edit(response_id, data, actor)
+    survey_response = await service.edit(survey_id, response_id, data, actor)
     return SurveyResponseResponse.model_validate(survey_response)

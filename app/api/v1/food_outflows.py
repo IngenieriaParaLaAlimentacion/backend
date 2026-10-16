@@ -23,13 +23,17 @@ router = APIRouter(prefix="/food-outflows")
         "and nothing is persisted — a partially applied outflow is never left "
         "behind.\n\n"
         "Send a client-generated `id` to make the submission idempotent: a replay "
-        "answers 200 and leaves the stock untouched."
+        "answers 200 and leaves the stock untouched.\n\n"
+        "`category` is family_delivery, kitchen, discard, or other. `comments` "
+        "are optional for every category. "
+        "Omitting category temporarily records other for older clients."
     ),
     responses={
         status.HTTP_200_OK: {
             "description": "Outflow already existed; idempotent replay of the same id."
         },
         **AUTH_RESPONSES,
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {"description": "Invalid category"},
         status.HTTP_404_NOT_FOUND: {"description": "Establishment or food not found"},
         status.HTTP_409_CONFLICT: {
             "description": "A line exceeds the food's current stock"

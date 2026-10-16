@@ -2,10 +2,10 @@ from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, field_validator
 
 from app.domain.food_catalog import MeasurementUnit
-from app.domain.food_intake import FoodIntakeSource
+from app.domain.food_intake import FoodIntakeOriginType, FoodIntakeSource
 from app.schemas.common import IdentifierRefSchema
 from app.schemas.types import ClientGeneratedId
 from app.utils.dates import validate_not_future_datetime
@@ -36,6 +36,12 @@ class FoodIntakeRequest(BaseModel):
     )
     comments: str | None = Field(default=None, max_length=500)
     source: FoodIntakeSource = FoodIntakeSource.MANUAL
+    origin_type: FoodIntakeOriginType = Field(
+        description="Type of food supplier or donor."
+    )
+    is_recurring: StrictBool = Field(
+        description="Whether this is a recurring contribution."
+    )
     items: list[FoodLineRequest] = Field(min_length=1)
 
     _check_occurred_at = field_validator("occurred_at")(validate_not_future_datetime)
@@ -61,6 +67,8 @@ class FoodIntakeResponse(BaseModel):
     occurred_at: datetime
     comments: str | None
     source: FoodIntakeSource
+    origin_type: FoodIntakeOriginType
+    is_recurring: bool
     photo_key: str | None
     created_at: datetime
     items: list[FoodLineResponse]

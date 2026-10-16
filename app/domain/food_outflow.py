@@ -13,6 +13,15 @@ class FoodOutflowSource(str, Enum):
     PHOTO = "photo"
 
 
+class FoodOutflowCategory(str, Enum):
+    """Why food left an establishment's stock."""
+
+    FAMILY_DELIVERY = "family_delivery"
+    KITCHEN = "kitchen"
+    DISCARD = "discard"
+    OTHER = "other"
+
+
 @dataclass
 class FoodOutflowDomain:
     """A food outflow with its lines, as returned after registering one."""
@@ -22,6 +31,7 @@ class FoodOutflowDomain:
     responsible_id: UUID
     occurred_at: datetime
     comments: str | None
+    category: FoodOutflowCategory
     source: FoodOutflowSource
     created_at: datetime
     items: list[FoodLineDomain]
@@ -35,6 +45,7 @@ class FoodOutflowDomain:
             responsible_id=outflow.responsible_id,
             occurred_at=outflow.occurred_at,
             comments=outflow.comments,
+            category=outflow.category,
             source=outflow.source,
             created_at=outflow.created_at,
             items=[FoodLineDomain.from_db(item) for item in outflow.items],

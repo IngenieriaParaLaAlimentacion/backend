@@ -50,7 +50,7 @@ async def responsible(app):
 async def _persist_intake(establishment_id, responsible_id, items):
     """Persist an intake and move the balance, as the service will."""
     from app.db.database import AsyncSessionLocal
-    from app.domain.food_intake import FoodIntakeSource
+    from app.domain.food_intake import FoodIntakeOriginType, FoodIntakeSource
     from app.models.food_intakes.food_intake import FoodIntake
     from app.models.food_intakes.food_intake_item import FoodIntakeItem
     from app.repositories.food_intakes.food_intake_repository import (
@@ -64,6 +64,8 @@ async def _persist_intake(establishment_id, responsible_id, items):
             responsible_id=responsible_id,
             occurred_at=datetime.now(timezone.utc),
             source=FoodIntakeSource.MANUAL,
+            origin_type=FoodIntakeOriginType.OTHER,
+            is_recurring=False,
         )
         intake.items = [
             FoodIntakeItem(food_id=food_id, quantity=quantity)

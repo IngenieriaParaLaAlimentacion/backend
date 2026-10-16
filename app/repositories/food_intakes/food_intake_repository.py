@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from datetime import datetime
+from decimal import Decimal
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -54,3 +56,24 @@ class FoodIntakeRepository:
             )
         )
         return result.scalar_one_or_none()
+
+    async def sum_quantities_by_food(
+        self, establishment_id: UUID, start: datetime, end: datetime
+    ) -> dict[UUID, Decimal]:
+        """Return the total quantity received per food in ``[start, end)``.
+
+        Quantities are summed in each food's ``base_unit``; a food with no
+        intake in the window is absent from the mapping.
+        """
+        total = func.sum(FoodIntakeItem.quantity)
+        result = await self.db.execute(
+            select(FoodIntakeItem.food_id, total)
+            .join(FoodIntake, FoodIntake.id == FoodIntakeItem.food_intake_id)
+            .where(
+                FoodIntake.establishment_id == establishment_id,
+                FoodIntake.occurred_at >= start,
+                FoodIntake.occurred_at < end,
+            )
+            .group_by(FoodIntakeItem.food_id)
+        )
+        return {food_id: quantity for food_id, quantity in result.all()}

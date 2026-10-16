@@ -1,7 +1,15 @@
 import enum
 from typing import Optional
 
-from pydantic import AnyUrl, EmailStr, Field, model_validator
+from limits import parse as parse_limit
+from pydantic import (
+    AnyUrl,
+    EmailStr,
+    Field,
+    SecretStr,
+    field_validator,
+    model_validator,
+)
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.domain.user import UserRole
@@ -106,6 +114,23 @@ class Settings(BaseSettings):
     # retryable failure. Unset disables the fallback.
     gemini_fallback_model: Optional[str] = None
     gemini_fallback_max_attempts: int = Field(default=2, ge=1)
+
+    # Rate limiting - each limit is "<count>/<period>", e.g. "5/minute".
+    rate_limit_redis_url: str = "redis://localhost:6379/0"
+    rate_limit_redis_connect_timeout_seconds: float = 0.2
+    rate_limit_redis_socket_timeout_seconds: float = 0.2
+    rate_limit_login_email: str = "5/minute"
+    rate_limit_login_ip: str = "20/minute"
+    rate_limit_mail_sending_email: str = "3/hour"
+    rate_limit_mail_sending_ip: str = "10/hour"
+    rate_limit_token_ip: str = "20/minute"
+    rate_limit_register_ip: str = "5/hour"
+    # Header where the edge proxy writes the address the connection came from.
+    rate_limit_client_ip_header: str = "x-real-ip"
+    # Shared with the backoffice, which reports its users' addresses. Unset
+    # disables trusting those reports.
+    internal_service_token: SecretStr | None = None
+
     # Stale-establishment notifications
     fcm_project_id: str | None = None
     fcm_client_email: str | None = None
@@ -141,6 +166,35 @@ class Settings(BaseSettings):
         return self._build_deeplink(
             self.backoffice_deeplink_base, f"{self.invite_path}/{role}"
         )
+
+    @field_validator("internal_service_token")
+    @classmethod
+    def treat_empty_service_token_as_unset(cls, value: SecretStr | None):
+        """Return ``None`` for an empty service token."""
+        # An empty token would match an empty header, so a blank variable in the
+        # deploy must disable the feature rather than trust every request.
+        if value is not None and not value.get_secret_value():
+            return None
+        return value
+
+    @field_validator(
+        "rate_limit_login_email",
+        "rate_limit_login_ip",
+        "rate_limit_mail_sending_email",
+        "rate_limit_mail_sending_ip",
+        "rate_limit_token_ip",
+        "rate_limit_register_ip",
+    )
+    @classmethod
+    def validate_rate_limit(cls, value: str) -> str:
+        """Reject a rate limit that is not written as ``<count>/<period>``."""
+        # The limit is otherwise only parsed on the first request that uses it,
+        # so a typo would let the service start with the endpoint unprotected.
+        try:
+            parse_limit(value)
+        except ValueError as exc:
+            raise ValueError(f"invalid rate limit {value!r}: {exc}") from exc
+        return value
 
     @model_validator(mode="after")
     def build_database_url(self) -> "Settings":

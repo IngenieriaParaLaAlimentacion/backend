@@ -6,7 +6,8 @@ from uuid import UUID
 
 from app.domain.common_domains import IdentifierRefDomain
 from app.domain.food_catalog import MeasurementUnit
-from app.domain.food_intake import FoodLineDomain
+from app.domain.food_intake import FoodIntakeOriginType, FoodLineDomain
+from app.domain.food_outflow import FoodOutflowCategory
 from app.domain.measurement import ResponsibleRefDomain
 
 
@@ -80,6 +81,9 @@ class FoodMovementSummaryDomain:
     occurred_at: datetime
     responsible: ResponsibleRefDomain
     food_count: int
+    origin_type: FoodIntakeOriginType | None
+    is_recurring: bool | None
+    category: FoodOutflowCategory | None
 
     @classmethod
     def from_rows(cls, page_row, summary_row) -> "FoodMovementSummaryDomain":
@@ -94,6 +98,9 @@ class FoodMovementSummaryDomain:
                 last_name=summary_row.responsible_last_name,
             ),
             food_count=summary_row.food_count,
+            origin_type=getattr(summary_row, "origin_type", None),
+            is_recurring=getattr(summary_row, "is_recurring", None),
+            category=summary_row.category,
         )
 
 
@@ -112,8 +119,11 @@ class FoodMovementDetailDomain:
     occurred_at: datetime
     comments: str | None
     source: str
+    origin_type: FoodIntakeOriginType | None
+    is_recurring: bool | None
     responsible: ResponsibleRefDomain
     items: list[FoodLineDomain]
+    category: FoodOutflowCategory | None
 
     @classmethod
     def from_db(
@@ -127,6 +137,15 @@ class FoodMovementDetailDomain:
             occurred_at=movement.occurred_at,
             comments=movement.comments,
             source=movement.source,
+            origin_type=(
+                movement.origin_type if direction == FoodMovementDirection.IN else None
+            ),
+            is_recurring=(
+                movement.is_recurring if direction == FoodMovementDirection.IN else None
+            ),
             responsible=ResponsibleRefDomain.from_db(movement.responsible),
             items=[FoodLineDomain.from_db(item) for item in movement.items],
+            category=(
+                movement.category if direction == FoodMovementDirection.OUT else None
+            ),
         )

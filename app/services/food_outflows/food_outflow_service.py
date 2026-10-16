@@ -98,6 +98,7 @@ class FoodOutflowService:
             responsible_id=actor.user_id,
             occurred_at=data.occurred_at,
             comments=data.comments,
+            category=data.category,
             source=data.source,
         )
 

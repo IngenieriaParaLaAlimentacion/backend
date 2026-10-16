@@ -34,7 +34,6 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/email-delivery-failed` | 502 | `EmailDeliveryError` | Raised when an outbound email cannot be delivered to the SMTP server. |
 | `/errors/establishment-access-denied` | 403 | `EstablishmentAccessDeniedError` | Raised when a field worker acts on an establishment they have no approved relation with. |
 | `/errors/establishment-already-exists` | 409 | `EstablishmentAlreadyExistsError` | Raised when an establishment with the given place_id already exists. |
-| `/errors/establishment-already-subscribed` | 409 | `EstablishmentAlreadySubscribedError` | Raised when an admin subscribes to an establishment they already have approved access to. |
 | `/errors/establishment-not-found` | 404 | `EstablishmentNotFoundError` | Exception raised when an establishment is not found. |
 | `/errors/establishment-request-already-reviewed` | 409 | `EstablishmentRequestAlreadyReviewedError` | Raised when approving/rejecting a request that is no longer pending. |
 | `/errors/establishment-request-not-found` | 404 | `EstablishmentRequestNotFoundError` | Exception raised when an establishment request does not exist. |
@@ -57,7 +56,11 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/no-fields-to-update` | 400 | `EmptyUpdateRequestError` | Exception raised when an update has no attributes to be updated. |
 | `/errors/not-resource-owner` | 403 | `NotResourceOwnerError` | Raised when a non-admin acts on a resource somebody else created. |
 | `/errors/notification-configuration-invalid` | 503 | `NotificationConfigurationError` | Raised when scheduled notifications are not fully configured. |
+| `/errors/nutrition/invalid-children-count` | 422 | `InvalidChildrenCountError` | Raised when a recipe is requested for no children or a negative number. |
+| `/errors/nutrition/recipe-optimization-failed` | 500 | `RecipeOptimizationError` | Raised when the solver cannot return an optimal recipe. |
+| `/errors/nutrition/unknown-gapa-group` | 500 | `UnknownGapaGroupError` | Raised when the catalog holds a GAPA group the application does not know. |
 | `/errors/password-not-found` | 404 | `PasswordNotFoundError` | Exception raised when a user's password record is not found. |
+| `/errors/rate-limited` | 429 | `RateLimitedError` | Raised when a caller exceeds the rate limit of a public endpoint. |
 | `/errors/receipt-photo-storage-failed` | 502 | `ReceiptPhotoStorageError` | Raised when a receipt photo cannot be persisted to object storage. |
 | `/errors/role-not-allowed` | 403 | `RoleNotAllowedError` | Raised when the actor's role is not permitted to perform the operation. |
 | `/errors/subject-already-exists` | 409 | `SubjectAlreadyExistsError` | Exception raised when trying to register a subject with an existing DNI. |

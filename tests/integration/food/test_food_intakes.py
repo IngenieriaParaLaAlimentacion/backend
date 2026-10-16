@@ -6,11 +6,15 @@ Rows are written through the repository and a real session rather than over HTTP
 import uuid
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
+from importlib.util import module_from_spec, spec_from_file_location
+from pathlib import Path
 
 import pytest
 import pytest_asyncio
-from sqlalchemy import delete
-from sqlalchemy.exc import IntegrityError
+from alembic.operations import Operations
+from alembic.runtime.migration import MigrationContext
+from sqlalchemy import create_engine, delete, text
+from sqlalchemy.exc import DBAPIError, IntegrityError
 
 
 @pytest_asyncio.fixture
@@ -36,7 +40,7 @@ async def responsible(app):
 
 def _build_intake(establishment_id, responsible_id, items, **overrides):
     """Build an unsaved FoodIntake with one FoodIntakeItem per (food_id, qty)."""
-    from app.domain.food_intake import FoodIntakeSource
+    from app.domain.food_intake import FoodIntakeOriginType, FoodIntakeSource
     from app.models.food_intakes.food_intake import FoodIntake
     from app.models.food_intakes.food_intake_item import FoodIntakeItem
 
@@ -45,6 +49,8 @@ def _build_intake(establishment_id, responsible_id, items, **overrides):
         "responsible_id": responsible_id,
         "occurred_at": datetime.now(timezone.utc),
         "source": FoodIntakeSource.MANUAL,
+        "origin_type": FoodIntakeOriginType.OTHER,
+        "is_recurring": False,
         **overrides,
     }
     intake = FoodIntake(**fields)
@@ -79,6 +85,30 @@ async def _fetch(intake_id):
 
 
 class TestPersistence:
+    @pytest.mark.parametrize(
+        ("origin_type", "is_recurring"),
+        [("MUNICIPAL_GOVERNMENT", True), ("OTHER", False)],
+    )
+    async def test_origin_and_recurrence_are_persisted(
+        self, db_establishment, responsible, foods, origin_type, is_recurring
+    ):
+        from app.domain.food_intake import FoodIntakeOriginType
+
+        origin = FoodIntakeOriginType[origin_type]
+        intake_id = await _persist(
+            _build_intake(
+                db_establishment.id,
+                responsible.id,
+                [(foods.rice, Decimal("1"))],
+                origin_type=origin,
+                is_recurring=is_recurring,
+            )
+        )
+
+        intake = await _fetch(intake_id)
+        assert intake.origin_type == origin
+        assert intake.is_recurring is is_recurring
+
     async def test_intake_groups_its_items(self, db_establishment, responsible, foods):
         intake_id = await _persist(
             _build_intake(
@@ -193,6 +223,33 @@ class TestRetroactiveLoad:
 
 
 class TestConstraints:
+    @pytest.mark.parametrize("field", ["origin_type", "is_recurring"])
+    async def test_intake_metadata_cannot_be_null(
+        self, db_establishment, responsible, foods, field
+    ):
+        with pytest.raises(IntegrityError):
+            await _persist(
+                _build_intake(
+                    db_establishment.id,
+                    responsible.id,
+                    [(foods.rice, Decimal("1"))],
+                    **{field: None},
+                )
+            )
+
+    async def test_origin_must_be_a_known_database_enum_value(
+        self, db_establishment, responsible, foods
+    ):
+        with pytest.raises(DBAPIError):
+            await _persist(
+                _build_intake(
+                    db_establishment.id,
+                    responsible.id,
+                    [(foods.rice, Decimal("1"))],
+                    origin_type="unknown",
+                )
+            )
+
     async def test_non_positive_quantity_is_rejected(
         self, db_establishment, responsible, foods
     ):
@@ -305,3 +362,96 @@ class TestConstraints:
                 delete(Establishment).where(Establishment.id == db_establishment.id)
             )
             await session.commit()
+
+
+def test_migration_backfills_existing_rows_and_removes_columns_on_downgrade(
+    postgres_url, monkeypatch
+):
+    """Exercise the revision against a disposable legacy intake table."""
+    revision_path = (
+        Path(__file__).resolve().parents[3]
+        / "alembic/versions/e6a4f17c902b_add_food_intake_origin_and_recurrence.py"
+    )
+    spec = spec_from_file_location("intake_origin_revision", revision_path)
+    assert spec is not None and spec.loader is not None
+    revision = module_from_spec(spec)
+    spec.loader.exec_module(revision)
+    schema = f"test_intake_migration_{uuid.uuid4().hex}"
+    intake_id = uuid.uuid4()
+    engine = create_engine(postgres_url)
+
+    try:
+        with engine.begin() as conn:
+            conn.exec_driver_sql(f'CREATE SCHEMA "{schema}"')
+            conn.exec_driver_sql(f'SET LOCAL search_path TO "{schema}"')
+            conn.exec_driver_sql("CREATE TABLE food_intakes (id uuid PRIMARY KEY)")
+            conn.execute(
+                text("INSERT INTO food_intakes (id) VALUES (:id)"), {"id": intake_id}
+            )
+            monkeypatch.setattr(
+                revision, "op", Operations(MigrationContext.configure(conn))
+            )
+
+            revision.upgrade()
+
+            row = conn.execute(
+                text(
+                    "SELECT origin_type::text, is_recurring "
+                    "FROM food_intakes WHERE id = :id"
+                ),
+                {"id": intake_id},
+            ).one()
+            assert row == ("other", False)
+            columns = conn.execute(
+                text(
+                    "SELECT column_name, is_nullable, column_default "
+                    "FROM information_schema.columns "
+                    "WHERE table_schema = :schema AND table_name = 'food_intakes' "
+                    "AND column_name IN ('origin_type', 'is_recurring')"
+                ),
+                {"schema": schema},
+            ).all()
+            actual_columns = {
+                name: (nullable, default) for name, nullable, default in columns
+            }
+            assert actual_columns == {
+                "origin_type": ("NO", None),
+                "is_recurring": ("NO", None),
+            }
+
+            revision.downgrade()
+
+            remaining_columns = (
+                conn.execute(
+                    text(
+                        "SELECT column_name FROM information_schema.columns "
+                        "WHERE table_schema = :schema AND table_name = 'food_intakes'"
+                    ),
+                    {"schema": schema},
+                )
+                .scalars()
+                .all()
+            )
+            assert remaining_columns == ["id"]
+            enum_count = conn.execute(
+                text(
+                    "SELECT count(*) FROM pg_type t "
+                    "JOIN pg_namespace n ON n.oid = t.typnamespace "
+                    "WHERE n.nspname = :schema AND t.typname = 'foodintakeorigintype'"
+                ),
+                {"schema": schema},
+            ).scalar_one()
+            assert enum_count == 0
+
+            revision.upgrade()
+            backfilled_again = conn.execute(
+                text(
+                    "SELECT origin_type::text, is_recurring "
+                    "FROM food_intakes WHERE id = :id"
+                ),
+                {"id": intake_id},
+            ).one()
+            assert backfilled_again == ("other", False)
+            conn.exec_driver_sql(f'DROP SCHEMA "{schema}" CASCADE')
+    finally:
+        engine.dispose()

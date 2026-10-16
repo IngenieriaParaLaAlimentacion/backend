@@ -8,6 +8,7 @@ import pytest
 
 from app.config.settings import settings
 from app.domain.food_catalog import MeasurementUnit
+from app.domain.food_intake import FoodIntakeOriginType
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentAccessDeniedError,
@@ -33,6 +34,8 @@ def _intake_request(**overrides) -> FoodIntakeRequest:
         "id": None,
         "establishment_id": uuid.uuid4(),
         "occurred_at": datetime.now(timezone.utc),
+        "origin_type": FoodIntakeOriginType.OTHER,
+        "is_recurring": False,
         "items": [FoodLineRequest(food_id=uuid.uuid4(), quantity=Decimal("1"))],
         **overrides,
     }

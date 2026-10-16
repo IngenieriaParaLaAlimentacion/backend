@@ -33,7 +33,10 @@ class TestEdit:
         uow = make_uow(survey=survey, existing_response=response)
 
         result = await SurveyResponseService(uow).edit(
-            response.id, edit_factory(response_number=None), admin_actor
+            response.survey_id,
+            response.id,
+            edit_factory(response_number=None),
+            admin_actor,
         )
 
         assert result.response_number is None
@@ -55,7 +58,10 @@ class TestEdit:
 
         with pytest.raises(InvalidSurveyResponseError):
             await SurveyResponseService(uow).edit(
-                response.id, edit_factory(response_number=None), admin_actor
+                response.survey_id,
+                response.id,
+                edit_factory(response_number=None),
+                admin_actor,
             )
 
         uow.survey_response_edit_repo.create.assert_not_called()
@@ -66,7 +72,7 @@ class TestEdit:
         uow = make_uow(existing_response=None)
         with pytest.raises(SurveyResponseNotFoundError):
             await SurveyResponseService(uow).edit(
-                uuid.uuid4(), edit_factory(), admin_actor
+                uuid.uuid4(), uuid.uuid4(), edit_factory(), admin_actor
             )
 
     async def test_non_owner_field_worker_forbidden(
@@ -78,7 +84,7 @@ class TestEdit:
         uow = make_uow(survey=survey, existing_response=response)
         with pytest.raises(ForbiddenError):
             await SurveyResponseService(uow).edit(
-                response.id, edit_factory(), field_worker_actor
+                response.survey_id, response.id, edit_factory(), field_worker_actor
             )
         uow.survey_response_edit_repo.create.assert_not_called()
 
@@ -89,7 +95,7 @@ class TestEdit:
         response.survey_id = survey.id
         uow = make_uow(survey=survey, existing_response=response)
         result = await SurveyResponseService(uow).edit(
-            response.id, edit_factory(), actor
+            response.survey_id, response.id, edit_factory(), actor
         )
         assert isinstance(result, SurveyResponseDomain)
         uow.commit.assert_called_once()
@@ -106,7 +112,7 @@ class TestEdit:
         uow = make_uow(survey=survey, existing_response=response, relation=None)
         with pytest.raises(EstablishmentAccessDeniedError):
             await SurveyResponseService(uow).edit(
-                response.id, edit_factory(), analyst_actor
+                response.survey_id, response.id, edit_factory(), analyst_actor
             )
         uow.survey_response_edit_repo.create.assert_not_called()
 
@@ -116,7 +122,7 @@ class TestEdit:
         response.survey_id = survey.id
         uow = make_uow(survey=survey, existing_response=response)
         result = await SurveyResponseService(uow).edit(
-            response.id, edit_factory(), admin_actor
+            response.survey_id, response.id, edit_factory(), admin_actor
         )
         assert isinstance(result, SurveyResponseDomain)
 
@@ -124,12 +130,28 @@ class TestEdit:
         self, make_uow, edit_factory, admin_actor
     ):
         response = _make_response()
-        existing_edit = MagicMock()
+        existing_edit = MagicMock(response_id=response.id)
         uow = make_uow(existing_response=response, existing_edit=existing_edit)
         result = await SurveyResponseService(uow).edit(
-            response.id, edit_factory(id=uuid.uuid4()), admin_actor
+            response.survey_id, response.id, edit_factory(id=uuid.uuid4()), admin_actor
         )
         assert result.id == response.id
+        uow.survey_response_edit_repo.create.assert_not_called()
+        uow.commit.assert_not_called()
+
+    async def test_edit_id_of_another_response_is_rejected(
+        self, make_uow, edit_factory, admin_actor
+    ):
+        response = _make_response()
+        existing_edit = MagicMock(response_id=uuid.uuid4())
+        uow = make_uow(existing_response=response, existing_edit=existing_edit)
+        with pytest.raises(InvalidSurveyResponseError):
+            await SurveyResponseService(uow).edit(
+                response.survey_id,
+                response.id,
+                edit_factory(id=uuid.uuid4()),
+                admin_actor,
+            )
         uow.survey_response_edit_repo.create.assert_not_called()
         uow.commit.assert_not_called()
 
@@ -142,7 +164,10 @@ class TestEdit:
         response.survey_id = survey.id
         uow = make_uow(survey=survey, existing_response=response)
         result = await SurveyResponseService(uow).edit(
-            response.id, edit_factory(answers={}, event_at=new_time), admin_actor
+            response.survey_id,
+            response.id,
+            edit_factory(answers={}, event_at=new_time),
+            admin_actor,
         )
         uow.survey_response_repo.update_answers.assert_awaited_once()
         assert result.event_at == new_time
@@ -156,7 +181,10 @@ class TestEdit:
         response.survey_id = survey.id
         uow = make_uow(survey=survey, existing_response=response)
         result = await SurveyResponseService(uow).edit(
-            response.id, edit_factory(answers={}, event_at=older_time), admin_actor
+            response.survey_id,
+            response.id,
+            edit_factory(answers={}, event_at=older_time),
+            admin_actor,
         )
         uow.survey_response_edit_repo.create.assert_awaited_once()
         uow.survey_response_repo.update_answers.assert_not_called()
@@ -174,7 +202,7 @@ class TestEdit:
         uow = make_uow(survey=survey, existing_response=response)
         with pytest.raises(InvalidSurveyResponseError):
             await SurveyResponseService(uow).edit(
-                response.id, edit_factory(answers={}), admin_actor
+                response.survey_id, response.id, edit_factory(answers={}), admin_actor
             )
         uow.survey_response_edit_repo.create.assert_not_called()
 
@@ -186,7 +214,10 @@ class TestEdit:
         uow = make_uow(survey=survey, existing_response=response)
 
         result = await SurveyResponseService(uow).edit(
-            response.id, edit_factory(response_number=1), admin_actor
+            response.survey_id,
+            response.id,
+            edit_factory(response_number=1),
+            admin_actor,
         )
 
         assert result.response_number == 1

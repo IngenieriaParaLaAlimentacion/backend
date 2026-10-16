@@ -1,3 +1,4 @@
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
@@ -5,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from app.domain.pagination import PaginatedResult
 from app.domain.subject import SubjectDomain
 from app.domain.subject_event import SubjectEventRecord
-from app.domain.user import UserWithEstablishmentsDomain
+from app.domain.user import UserRole, UserWithEstablishmentsDomain
 from app.schemas.common import ProfileFields
 from app.schemas.establishments.establishment_schema import EstablishmentResponse
 from app.schemas.pagination import PaginatedResponse
@@ -29,6 +30,14 @@ class UserAccessRequest(BaseModel):
 
 class InviteAdminRequest(BaseModel):
     email: EmailStr
+
+
+class ChangeUserRoleRequest(BaseModel):
+    """New role for a user. ``superadmin`` is never assignable."""
+
+    role: Literal[UserRole.FIELD_WORKER, UserRole.ANALYST, UserRole.ADMIN] = Field(
+        description="Role to assign: field_worker, analyst or admin."
+    )
 
 
 # -- Response --

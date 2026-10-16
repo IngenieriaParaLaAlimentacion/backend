@@ -56,7 +56,12 @@ def live_server():
     """Run a real uvicorn on a loopback port for the duration of the module."""
     port = _free_port()
     config = uvicorn.Config(
-        _app(), host="127.0.0.1", port=port, log_level="critical", access_log=False
+        _app(),
+        host="127.0.0.1",
+        port=port,
+        log_level="critical",
+        access_log=False,
+        ws="none",
     )
     server = uvicorn.Server(config)
     thread = threading.Thread(target=server.run, daemon=True)

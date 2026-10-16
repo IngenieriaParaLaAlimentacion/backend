@@ -1,6 +1,8 @@
 """This module defines custom domain exceptions for the application."""
 
+import math
 import re
+import time
 from typing import ClassVar
 
 from fastapi import status
@@ -33,6 +35,7 @@ class BaseError(Exception):
             the ``problem+json`` body. Values must be JSON-primitive: the handler
             passes them straight to ``JSONResponse``, which cannot encode a raw
             ``UUID`` or ``datetime``.
+        headers (dict | None): Optional HTTP headers sent with the response.
     """
 
     error_type: ClassVar[str]
@@ -72,10 +75,12 @@ class BaseError(Exception):
         title: str,
         details: str,
         extensions: dict | None = None,
+        headers: dict[str, str] | None = None,
     ):
         self.title = title
         self.details = details
         self.extensions = extensions or {}
+        self.headers = headers or {}
         super().__init__(f"{title}: {details}")
 
 
@@ -176,6 +181,32 @@ class UnauthorizedError(BaseError):
         extensions: dict | None = None,
     ):
         super().__init__(title, details, extensions)
+
+
+class RateLimitedError(BaseError):
+    """Raised when a caller exceeds the rate limit of a public endpoint.
+
+    Args:
+        limit (int): The number of requests the exceeded limit allows per window.
+        reset_at (float): Epoch seconds at which the caller may retry.
+    """
+
+    error_type = "rate-limited"
+    status = status.HTTP_429_TOO_MANY_REQUESTS
+
+    def __init__(self, limit: int, reset_at: float):
+        retry_after = max(1, math.ceil(reset_at - time.time()))
+        super().__init__(
+            "Too many requests",
+            f"Too many attempts. Try again in {retry_after} seconds.",
+            {"retry_after": retry_after},
+            {
+                "Retry-After": str(retry_after),
+                "X-RateLimit-Limit": str(limit),
+                "X-RateLimit-Remaining": "0",
+                "X-RateLimit-Reset": str(math.ceil(reset_at)),
+            },
+        )
 
 
 class NotificationConfigurationError(BaseError):
@@ -331,25 +362,6 @@ class UserEstablishmentNotWithdrawableError(ConflictError):
             f"approved or pending for the user with id {user_id}, so its "
             "access cannot be withdrawn.",
             extensions={"relation_status": relation_status},
-        )
-
-
-class EstablishmentAlreadySubscribedError(ConflictError):
-    """Raised when an admin subscribes to an establishment they already have
-    approved access to.
-
-    Args:
-        establishment_id (str): The establishment already subscribed to.
-        user_id (str): The admin the relation belongs to.
-    """
-
-    error_type = "establishment-already-subscribed"
-
-    def __init__(self, establishment_id: str, user_id: str):
-        super().__init__(
-            "Establishment already subscribed",
-            f"The user with id {user_id} is already subscribed to the "
-            f"establishment with id {establishment_id}.",
         )
 
 
@@ -1045,4 +1057,61 @@ class ImageContentMismatchError(UnprocessableEntityError):
             f"The uploaded file's content does not match the declared type "
             f"{content_type!r}.",
             extensions={"content_type": content_type},
+        )
+
+
+class InvalidChildrenCountError(UnprocessableEntityError):
+    """Raised when a recipe is requested for no children or a negative number.
+
+    Args:
+        children_count (int): The rejected number of children.
+    """
+
+    error_type = "nutrition/invalid-children-count"
+
+    def __init__(self, children_count: int):
+        super().__init__(
+            "Invalid number of children",
+            f"A recipe needs at least one child, got {children_count}.",
+            extensions={"children_count": children_count},
+        )
+
+
+class RecipeOptimizationError(BaseError):
+    """Raised when the solver cannot return an optimal recipe.
+
+    The stock check makes the program feasible, so this means the solver itself
+    failed rather than that the request cannot be met.
+
+    Args:
+        solver_status (str): The status the solver ended with.
+    """
+
+    error_type = "nutrition/recipe-optimization-failed"
+    status = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+    def __init__(self, solver_status: str):
+        super().__init__(
+            "Recipe optimization failed",
+            f"The solver ended as {solver_status!r} instead of finding a recipe.",
+            extensions={"solver_status": solver_status},
+        )
+
+
+class UnknownGapaGroupError(BaseError):
+    """Raised when the catalog holds a GAPA group the application does not know.
+
+    Args:
+        code (str): The code of the unknown group.
+    """
+
+    error_type = "nutrition/unknown-gapa-group"
+    status = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+    def __init__(self, code: str):
+        super().__init__(
+            "Unknown GAPA group",
+            f"The catalog has a GAPA group with code {code!r}, which is not one of "
+            "the six the service knows.",
+            extensions={"code": code},
         )

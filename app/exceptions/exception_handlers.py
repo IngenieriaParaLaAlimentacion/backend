@@ -50,11 +50,9 @@ async def domain_error_handler(request: Request, exc: BaseError) -> JSONResponse
         trace.get_current_span().record_exception(exc)
     # RFC 7235 requires a challenge on every 401. FastAPI attached it to the
     # auto-401 it no longer raises, so we re-attach it here.
-    headers = (
-        {"WWW-Authenticate": "Bearer"}
-        if exc.status == status.HTTP_401_UNAUTHORIZED
-        else None
-    )
+    headers = dict(exc.headers)
+    if exc.status == status.HTTP_401_UNAUTHORIZED:
+        headers["WWW-Authenticate"] = "Bearer"
     return _problem_response(
         request,
         status_code=exc.status,
@@ -62,7 +60,7 @@ async def domain_error_handler(request: Request, exc: BaseError) -> JSONResponse
         title=exc.title,
         detail=exc.details,
         extensions=exc.extensions,
-        headers=headers,
+        headers=headers or None,
     )
 
 

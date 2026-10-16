@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, Response, status
 
+from app.api.v1.params import RATE_LIMITED_RESPONSES
 from app.core.dependencies import get_auth_service
+from app.core.rate_limit import MAIL_SENDING_SCOPE, limit_by_email, limit_by_ip
 from app.schemas.auth.auth_schema import (
     LoginRequest,
     LogoutRequest,
@@ -21,6 +23,7 @@ router = APIRouter(prefix="/auth")
 
 @router.post(
     "/register/field-worker",
+    dependencies=[limit_by_ip("rate_limit_register_ip", scope="register")],
     response_model=RegistrationResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Register field worker",
@@ -30,10 +33,12 @@ router = APIRouter(prefix="/auth")
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid data"},
         status.HTTP_409_CONFLICT: {"description": "User already exists"},
         status.HTTP_404_NOT_FOUND: {"description": "Establishments not found"},
+        **RATE_LIMITED_RESPONSES,
     },
 )
 async def register_field_worker(
-    data: RegisterFieldWorkerRequest, service: AuthService = Depends(get_auth_service)
+    data: RegisterFieldWorkerRequest,
+    service: AuthService = Depends(get_auth_service),
 ) -> RegistrationResponse:
     user = await service.register_field_worker(data)
     return RegistrationResponse.model_validate(user)
@@ -41,6 +46,12 @@ async def register_field_worker(
 
 @router.post(
     "/login",
+    dependencies=[
+        # The IP limit comes first: a request an origin is already blocked for
+        # must not use up the account's counter.
+        limit_by_ip("rate_limit_login_ip", scope="login"),
+        limit_by_email(LoginRequest, "rate_limit_login_email", scope="login"),
+    ],
     response_model=TokenResponse,
     summary="Login user",
     description="Authenticates a user and returns a JWT token. Blocks pending users.",
@@ -48,10 +59,12 @@ async def register_field_worker(
         status.HTTP_200_OK: {"description": "Successful login"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Invalid credentials"},
         status.HTTP_403_FORBIDDEN: {"description": "Account pending validation"},
+        **RATE_LIMITED_RESPONSES,
     },
 )
 async def login(
-    data: LoginRequest, service: AuthService = Depends(get_auth_service)
+    data: LoginRequest,
+    service: AuthService = Depends(get_auth_service),
 ) -> TokenResponse:
     result = await service.login(data)
     return TokenResponse.model_validate(result)
@@ -87,6 +100,7 @@ async def logout(
 
 @router.post(
     "/refresh",
+    dependencies=[limit_by_ip("rate_limit_token_ip", scope="refresh")],
     response_model=RefreshResponse,
     status_code=status.HTTP_200_OK,
     summary="Refresh authentication tokens",
@@ -97,10 +111,12 @@ async def logout(
             "description": "Invalid or expired refresh token"
         },
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid request payload"},
+        **RATE_LIMITED_RESPONSES,
     },
 )
 async def refresh(
-    data: RefreshRequest, service: AuthService = Depends(get_auth_service)
+    data: RefreshRequest,
+    service: AuthService = Depends(get_auth_service),
 ) -> RefreshResponse:
     result = await service.refresh(data)
     return RefreshResponse.model_validate(result)
@@ -108,6 +124,14 @@ async def refresh(
 
 @router.post(
     "/password-recovery/request",
+    dependencies=[
+        limit_by_ip("rate_limit_mail_sending_ip", scope="password-recovery-request"),
+        limit_by_email(
+            PasswordRecoveryRequest,
+            "rate_limit_mail_sending_email",
+            scope=MAIL_SENDING_SCOPE,
+        ),
+    ],
     status_code=status.HTTP_202_ACCEPTED,
     response_class=Response,
     summary="Request password recovery",
@@ -119,10 +143,12 @@ async def refresh(
             )
         },
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid request payload"},
+        **RATE_LIMITED_RESPONSES,
     },
 )
 async def request_password_recovery(
-    data: PasswordRecoveryRequest, service: AuthService = Depends(get_auth_service)
+    data: PasswordRecoveryRequest,
+    service: AuthService = Depends(get_auth_service),
 ) -> Response:
     """Request password recovery for a user email."""
     await service.request_password_recovery(data)
@@ -131,6 +157,9 @@ async def request_password_recovery(
 
 @router.post(
     "/password-recovery/confirm",
+    dependencies=[
+        limit_by_ip("rate_limit_token_ip", scope="password-recovery-confirm")
+    ],
     status_code=status.HTTP_204_NO_CONTENT,
     response_class=Response,
     summary="Confirm password recovery",
@@ -141,6 +170,7 @@ async def request_password_recovery(
             "description": "Invalid or expired recovery token"
         },
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid request payload"},
+        **RATE_LIMITED_RESPONSES,
     },
 )
 async def confirm_password_recovery(
@@ -155,6 +185,7 @@ async def confirm_password_recovery(
 
 @router.post(
     "/verify-email/confirm",
+    dependencies=[limit_by_ip("rate_limit_token_ip", scope="verify-email-confirm")],
     status_code=status.HTTP_204_NO_CONTENT,
     response_class=Response,
     summary="Confirm email verification",
@@ -165,6 +196,7 @@ async def confirm_password_recovery(
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Invalid or expired verification token"
         },
+        **RATE_LIMITED_RESPONSES,
     },
 )
 async def verify_email(
@@ -178,6 +210,14 @@ async def verify_email(
 
 @router.post(
     "/verify-email/resend",
+    dependencies=[
+        limit_by_ip("rate_limit_mail_sending_ip", scope="verify-email-resend"),
+        limit_by_email(
+            ResendVerificationRequest,
+            "rate_limit_mail_sending_email",
+            scope=MAIL_SENDING_SCOPE,
+        ),
+    ],
     status_code=status.HTTP_202_ACCEPTED,
     response_class=Response,
     summary="Resend verification email",
@@ -188,7 +228,7 @@ async def verify_email(
             "description": "Verification email resent if the user exists "
             "and email is not already verified"
         },
-        status.HTTP_404_NOT_FOUND: {"description": "User not found"},
+        **RATE_LIMITED_RESPONSES,
     },
 )
 async def resend_verification_email(
