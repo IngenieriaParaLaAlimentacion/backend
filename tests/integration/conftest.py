@@ -297,15 +297,18 @@ async def db_subject():
 
 @pytest_asyncio.fixture()
 async def make_field_worker_with_access():
-    """Factory fixture: create a field worker with an APPROVED relation to a
-    given establishment.
+    """Factory fixture: create a field worker with a relation to a given
+    establishment, APPROVED unless another status is given.
 
-    Returns a callable ``(establishment_id) -> (headers, user_id)``, so a
-    single test can create field workers scoped to different establishments.
+    Returns a callable ``(establishment_id, status) -> (headers, user_id)``, so
+    a single test can create field workers scoped to different establishments.
     """
     from app.db.database import AsyncSessionLocal
 
-    async def _make(establishment_id: uuid.UUID):
+    async def _make(
+        establishment_id: uuid.UUID,
+        status: UserEstablishmentStatus = UserEstablishmentStatus.APPROVED,
+    ):
         user_id = uuid.uuid4()
         async with AsyncSessionLocal() as session:
             session.add(
@@ -322,7 +325,7 @@ async def make_field_worker_with_access():
                 UserEstablishment(
                     user_id=user_id,
                     establishment_id=establishment_id,
-                    status=UserEstablishmentStatus.APPROVED,
+                    status=status,
                 )
             )
             await session.commit()

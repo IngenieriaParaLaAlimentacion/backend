@@ -8,6 +8,9 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.exceptions.domain_exceptions import BaseError
 from app.utils.db import sqlstate
 
+INVALID_FIELD_EXTENSION = "x-invalid-field-extension"
+"""OpenAPI marker for routes whose 422 names the body field that failed."""
+
 
 def _problem_response(
     request: Request,
@@ -64,16 +67,44 @@ async def domain_error_handler(request: Request, exc: BaseError) -> JSONResponse
     )
 
 
+def _invalid_body_field(exc: RequestValidationError) -> str | None:
+    """Return the top-level body field of the first validation error, if any."""
+    for error in exc.errors():
+        loc = error.get("loc", ())
+        if len(loc) > 1 and loc[0] == "body" and isinstance(loc[1], str):
+            return loc[1]
+    return None
+
+
+def _reports_invalid_field(request: Request) -> bool:
+    """Return whether the matched route opted in to naming the failed field."""
+    route = request.scope.get("route")
+    openapi_extra = getattr(route, "openapi_extra", None) or {}
+    return bool(openapi_extra.get(INVALID_FIELD_EXTENSION))
+
+
 async def validation_error_handler(
     request: Request, exc: RequestValidationError
 ) -> JSONResponse:
-    """Render Pydantic validation failures in the canonical envelope."""
+    """Render Pydantic validation failures in the canonical envelope.
+
+    Routes marked with ``INVALID_FIELD_EXTENSION`` also get a ``field``
+    extension naming the body field that failed.
+    """
+    extensions = None
+    # Only the field name is returned, never the submitted value, so a
+    # rejected secret is not echoed back.
+    if _reports_invalid_field(request):
+        field = _invalid_body_field(exc)
+        if field is not None:
+            extensions = {"field": field}
     return _problem_response(
         request,
         status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
         error_type="validation-failed",
         title="Validation failed",
         detail="The request contains invalid or missing fields.",
+        extensions=extensions,
     )
 
 

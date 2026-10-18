@@ -12,7 +12,12 @@ from app.domain.establishment import (
     EstablishmentRequestStatus,
     UserEstablishmentStatus,
 )
+from app.domain.establishment_characterization import (
+    CharacterizationStatus,
+    characterization_status,
+)
 from app.domain.pagination import PaginatedResult
+from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
     EstablishmentAlreadyExistsError,
     UniqueConstraintError,
@@ -21,11 +26,15 @@ from app.models import Establishment
 from app.models.establishments.establishment_request import (
     EstablishmentRequest as EstablishmentRequestModel,
 )
+from app.schemas.establishments.establishment_characterization_schema import (
+    EstablishmentCharacterization,
+)
 from app.schemas.establishments.establishment_schema import (
     EstablishmentCreationRequestCreate,
     EstablishmentRequest,
     EstablishmentUpdateRequest,
 )
+from app.services.access import check_characterization_edit_access
 from app.services.email_service import (
     send_creation_denied_email,
     send_establishment_created_email,
@@ -175,6 +184,34 @@ class EstablishmentService:
         for field, value in data.model_dump(exclude_none=True).items():
             if getattr(establishment, field) != value:
                 setattr(establishment, field, value)
+
+        establishment = await self.uow.establishment_repo.update(establishment)
+        await self.uow.commit()
+        return EstablishmentDomain.from_db(establishment)
+
+    async def replace_characterization(
+        self,
+        establishment_id: UUID,
+        actor: UserActor,
+        data: EstablishmentCharacterization,
+    ) -> EstablishmentDomain:
+        """Replace an establishment's characterization profile as a whole.
+
+        A profile with no answered field is stored as no profile.
+
+        Raises:
+            EstablishmentNotFoundError: If no establishment with that ID exists.
+            EstablishmentAccessDeniedError: If the actor may not edit it.
+        """
+        establishment = await self.uow.establishment_repo.get_by_id_or_raise(
+            establishment_id
+        )
+        await check_characterization_edit_access(self.uow, actor, establishment_id)
+
+        characterization = data.model_dump(mode="json")
+        if characterization_status(characterization) == CharacterizationStatus.PENDING:
+            characterization = None
+        establishment.characterization = characterization
 
         establishment = await self.uow.establishment_repo.update(establishment)
         await self.uow.commit()

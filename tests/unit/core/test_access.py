@@ -6,7 +6,10 @@ import pytest
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import EstablishmentAccessDeniedError
-from app.services.access import check_field_work_access
+from app.services.access import (
+    check_characterization_edit_access,
+    check_field_work_access,
+)
 
 
 def _make_uow(*, relation_status=None, approved_ids=()):
@@ -72,3 +75,32 @@ class TestCheckFieldWorkAccess:
         else:
             with pytest.raises(EstablishmentAccessDeniedError):
                 await check_field_work_access(uow, _actor(UserRole.ANALYST), None)
+
+
+class TestCheckCharacterizationEditAccess:
+    @pytest.mark.parametrize("role", [UserRole.ADMIN, UserRole.SUPERADMIN])
+    async def test_admins_are_allowed_without_a_relation(self, role):
+        await check_characterization_edit_access(
+            _make_uow(), _actor(role), uuid.uuid4()
+        )
+
+    async def test_field_worker_approved_on_the_establishment_is_allowed(self):
+        uow = _make_uow(relation_status=UserEstablishmentStatus.APPROVED)
+        await check_characterization_edit_access(
+            uow, _actor(UserRole.FIELD_WORKER), uuid.uuid4()
+        )
+
+    @pytest.mark.parametrize(
+        ("role", "relation_status"),
+        [
+            (UserRole.FIELD_WORKER, None),
+            (UserRole.FIELD_WORKER, UserEstablishmentStatus.PENDING),
+            (UserRole.FIELD_WORKER, UserEstablishmentStatus.REVOKED),
+            # An approved analyst may read the establishment, not edit its profile.
+            (UserRole.ANALYST, UserEstablishmentStatus.APPROVED),
+        ],
+    )
+    async def test_others_are_denied(self, role, relation_status):
+        uow = _make_uow(relation_status=relation_status)
+        with pytest.raises(EstablishmentAccessDeniedError):
+            await check_characterization_edit_access(uow, _actor(role), uuid.uuid4())

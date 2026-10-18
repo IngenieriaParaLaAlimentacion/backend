@@ -4,6 +4,7 @@ from pydantic import (
     AfterValidator,
     BaseModel,
     BeforeValidator,
+    ConfigDict,
     EmailStr,
     Field,
     StringConstraints,
@@ -17,6 +18,7 @@ from app.domain.establishment_characterization import (
     AttendeeAge,
     Bathroom,
     CareTask,
+    CharacterizationStatus,
     CulturalIdentity,
     FoodReceptionFrequency,
     KitchenEquipment,
@@ -174,3 +176,27 @@ class EstablishmentCharacterization(BaseModel):
         if not is_other_chosen:
             raise ValueError('Only accepted when "other" is chosen.')
         return value
+
+
+def _none_to_empty_profile(value: Any) -> Any:
+    """Read a missing profile as one with every field unanswered."""
+    return {} if value is None else value
+
+
+StoredCharacterization = Annotated[
+    EstablishmentCharacterization, BeforeValidator(_none_to_empty_profile)
+]
+
+
+class EstablishmentCharacterizationResponse(BaseModel):
+    """An establishment's characterization profile as stored."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    characterization_status: CharacterizationStatus = Field(
+        description=(
+            "Computed, never stored: `pending` when no field holds an answer, "
+            "`complete` when at least one does."
+        )
+    )
+    characterization: StoredCharacterization

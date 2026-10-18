@@ -34,6 +34,10 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 `/errors/not-found` (404, unrouted path), `/errors/method-not-allowed` (405) and
 `/errors/internal-error` (500).
 
+`/errors/validation-failed` does not name the fields that failed, except on routes
+marked `x-invalid-field-extension` in the OpenAPI document: there it also carries
+`field`, the name of the first body field that failed, never its value.
+
 | `type` | Status | Exception | Description |
 |---|---|---|---|
 """
