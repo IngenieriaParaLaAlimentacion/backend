@@ -49,12 +49,16 @@ router = APIRouter(prefix="/establishments")
     response_model=EstablishmentResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Register a new establishment",
-    description="Creates a new establishment.",
+    description="Creates a new establishment, optionally with its "
+    "characterization profile.",
     responses={
-        status.HTTP_400_BAD_REQUEST: {"description": "Invalid data"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Invalid data; `field` names the field that failed"
+        },
         **AUTH_RESPONSES,
         status.HTTP_409_CONFLICT: {"description": "Establishment already exists"},
     },
+    openapi_extra={INVALID_FIELD_EXTENSION: True},
 )
 async def create_establishment(
     data: EstablishmentRequest,

@@ -152,7 +152,8 @@ class EstablishmentService:
     async def create_establishment(
         self, data: EstablishmentRequest
     ) -> EstablishmentDomain:
-        """Register a new establishment.
+        """Register a new establishment with its optional characterization
+        profile, stored as no profile when it holds no answer.
 
         Raises:
             EstablishmentAlreadyExistsError: If an establishment with the same
@@ -164,7 +165,12 @@ class EstablishmentService:
 
         try:
             establishment = await self.uow.establishment_repo.create(
-                Establishment(**data.model_dump())
+                Establishment(
+                    **data.model_dump(exclude={"characterization"}),
+                    characterization=self._to_stored_characterization(
+                        data.characterization
+                    ),
+                )
             )
         except UniqueConstraintError:
             # Concurrent create won the race for this place_id.

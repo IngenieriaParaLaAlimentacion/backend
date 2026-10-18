@@ -393,6 +393,50 @@ class TestCreateEstablishment:
         assert data["formatted_address"] == "Av. Cabildo 100"
         assert "id" in data
 
+    async def test_profile_sent_on_create_is_stored(self, client, admin_headers):
+        """The profile is stored with the new establishment and the dashboard
+        reads it back."""
+        profile = {"meals": ["lunch"], "premises": "other", "premises_other": "Club"}
+
+        response = await client.post(
+            ESTABLISHMENT_URL,
+            json=_make_payload(characterization=profile),
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.json()["characterization_status"] == "complete"
+        dashboard = await client.get(
+            f"{ESTABLISHMENT_URL}/{response.json()['id']}/dashboard",
+            headers=admin_headers,
+        )
+        stored = dashboard.json()["characterization"]
+        assert {key: stored[key] for key in profile} == profile
+
+    @pytest.mark.parametrize(
+        "extra", [{}, {"characterization": None}, {"characterization": {"meals": []}}]
+    )
+    async def test_create_without_answers_is_pending(
+        self, client, admin_headers, extra
+    ):
+        response = await client.post(
+            ESTABLISHMENT_URL, json=_make_payload(**extra), headers=admin_headers
+        )
+
+        assert response.json()["characterization_status"] == "pending"
+
+    async def test_invalid_profile_returns_422_naming_the_field(
+        self, client, admin_headers
+    ):
+        response = await client.post(
+            ESTABLISHMENT_URL,
+            json=_make_payload(characterization={"premises_other": "Club"}),
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+        assert response.json()["field"] == "characterization.premises_other"
+
     async def test_field_worker_cannot_create_establishment(
         self, client, field_worker_headers
     ):

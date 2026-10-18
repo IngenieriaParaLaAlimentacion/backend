@@ -15,6 +15,9 @@ from app.exceptions.domain_exceptions import (
     UniqueConstraintError,
 )
 from app.models import Establishment
+from app.schemas.establishments.establishment_characterization_schema import (
+    EstablishmentCharacterization,
+)
 from app.schemas.establishments.establishment_schema import (
     EstablishmentUpdateRequest,
 )
@@ -218,6 +221,31 @@ class TestCreateEstablishment:
         assert isinstance(call_arg, Establishment)
         assert call_arg.name == "Centro A"
         assert call_arg.formatted_address == "Calle 1"
+
+    @pytest.mark.parametrize(
+        ("characterization", "expected"),
+        [
+            (
+                EstablishmentCharacterization(meals=["lunch"]),
+                EstablishmentCharacterization(meals=["lunch"]).model_dump(mode="json"),
+            ),
+            # A profile with no answer is stored as no profile.
+            (EstablishmentCharacterization(district=""), None),
+            (None, None),
+        ],
+    )
+    async def test_stores_the_profile_sent_with_it(
+        self, make_uow, characterization, expected
+    ):
+        uow = make_uow(existing=None)
+        service = EstablishmentService(uow=uow)
+
+        await service.create_establishment(
+            _make_request(characterization=characterization)
+        )
+
+        created = uow.establishment_repo.create.call_args[0][0]
+        assert created.characterization == expected
 
     async def test_returns_created_establishment(self, make_uow, make_establishment):
         """Returns an EstablishmentDomain with the repo's data."""

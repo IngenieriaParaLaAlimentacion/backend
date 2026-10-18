@@ -35,6 +35,11 @@ class EstablishmentRequest(BaseModel):
     place_id: ValidStr
     city: ValidStr
     province: ValidStr
+    characterization: EstablishmentCharacterization | None = Field(
+        default=None,
+        description="Optional characterization profile stored with the new "
+        "establishment.",
+    )
 
 
 class EstablishmentApprovalRequest(EstablishmentRequest):
