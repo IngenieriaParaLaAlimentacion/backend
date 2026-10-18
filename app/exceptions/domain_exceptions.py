@@ -1292,3 +1292,38 @@ class AiUnavailableError(BaseError):
         super().__init__(
             "AI unavailable", "AI processing is temporarily unavailable. Try later."
         )
+
+
+class NutritionReportMonthNotOverError(UnprocessableEntityError):
+    """Raised when a nutrition report is requested for a month that has not ended.
+
+    Args:
+        month (str): The requested month, formatted as ``YYYY-MM``.
+    """
+
+    error_type = "nutrition/report-month-not-over"
+
+    def __init__(self, month: str):
+        super().__init__(
+            "Report month not over",
+            f"The report for {month} can only be generated once the month is over.",
+            extensions={"month": month},
+        )
+
+
+class NutritionReportConversionUnavailableError(ConflictError):
+    """Raised when none of the foods received in a month converts to grams.
+
+    Args:
+        month (str): The requested month, formatted as ``YYYY-MM``.
+    """
+
+    error_type = "nutrition/report-conversion-unavailable"
+
+    def __init__(self, month: str):
+        super().__init__(
+            "Report conversion unavailable",
+            f"The foods received in {month} have no known conversion to grams, so "
+            "the report cannot be calculated yet.",
+            extensions={"month": month},
+        )

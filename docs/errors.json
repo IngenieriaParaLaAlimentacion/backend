@@ -235,6 +235,18 @@
       "description": "Raised when the solver cannot return an optimal recipe."
     },
     {
+      "type": "/errors/nutrition/report-conversion-unavailable",
+      "status": 409,
+      "exception": "NutritionReportConversionUnavailableError",
+      "description": "Raised when none of the foods received in a month converts to grams."
+    },
+    {
+      "type": "/errors/nutrition/report-month-not-over",
+      "status": 422,
+      "exception": "NutritionReportMonthNotOverError",
+      "description": "Raised when a nutrition report is requested for a month that has not ended."
+    },
+    {
       "type": "/errors/nutrition/unknown-gapa-group",
       "status": 500,
       "exception": "UnknownGapaGroupError",

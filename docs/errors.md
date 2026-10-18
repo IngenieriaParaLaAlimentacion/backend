@@ -65,6 +65,8 @@ to the first list index), never its value.
 | `/errors/notification-configuration-invalid` | 503 | `NotificationConfigurationError` | Raised when scheduled notifications are not fully configured. |
 | `/errors/nutrition/invalid-children-count` | 422 | `InvalidChildrenCountError` | Raised when a recipe is requested for no children or a negative number. |
 | `/errors/nutrition/recipe-optimization-failed` | 500 | `RecipeOptimizationError` | Raised when the solver cannot return an optimal recipe. |
+| `/errors/nutrition/report-conversion-unavailable` | 409 | `NutritionReportConversionUnavailableError` | Raised when none of the foods received in a month converts to grams. |
+| `/errors/nutrition/report-month-not-over` | 422 | `NutritionReportMonthNotOverError` | Raised when a nutrition report is requested for a month that has not ended. |
 | `/errors/nutrition/unknown-gapa-group` | 500 | `UnknownGapaGroupError` | Raised when the catalog holds a GAPA group the application does not know. |
 | `/errors/password-not-found` | 404 | `PasswordNotFoundError` | Exception raised when a user's password record is not found. |
 | `/errors/rate-limited` | 429 | `RateLimitedError` | Raised when a caller exceeds the rate limit of a public endpoint. |
