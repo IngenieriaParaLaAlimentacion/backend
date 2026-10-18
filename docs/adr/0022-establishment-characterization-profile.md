@@ -23,16 +23,50 @@ already reads and writes it against a fixed contract:
 
 ### One `JSONB` column per table, validated by a Pydantic model
 
-`establishments.characterization` and `establishment_requests.characterization` are nullable
-`JSONB` columns. The profile is always read and replaced whole, and nothing queries inside it yet,
-so a document column avoids about thirty columns or a 1:1 table with array columns, and an option
-change needs no migration. `EstablishmentCharacterization`
-(`app/schemas/establishments/establishment_characterization_schema.py`) is the only way in: values
-outside the options, repeated, or out of range, and a `*_other` text without `"other"` chosen are
-rejected before anything is stored.
+**What.** `establishments.characterization` and `establishment_requests.characterization` are
+nullable `JSONB` columns. Each holds one document: the `EstablishmentCharacterization` model
+(`app/schemas/establishments/establishment_characterization_schema.py`) dumped as JSON, with every
+field present. A profile with no answered field is stored as `NULL`, so "never filled in" and
+"cleared" look the same.
 
-A profile with no answered field is stored as `NULL`, so "never filled in" and "cleared" look the
-same.
+The document is not in first normal form: nine multi-select fields are arrays, and
+`opening_hours` is a list of objects. This is deliberate.
+
+**Why.**
+
+- **The profile is a form's answers, read and written whole.** `PUT /characterization` replaces
+  it in full, `GET /dashboard` returns it in full, and an approval copies it in full. No endpoint
+  reads or filters by a single field, within one establishment or across many.
+- **Integrity lives in one place.** The model is the only way in. Values outside the options,
+  repeated, or out of range, and a `*_other` text without `"other"` chosen, are rejected before
+  anything is stored. The database does not repeat these rules.
+
+**Precedent: survey responses.** This follows how the codebase already stores a form's answers.
+`survey_responses.answers` and `survey_response_edits.answers` are `JSONB` documents validated by
+the application and read whole, while the survey's structure (`surveys`, `survey_questions`,
+`survey_question_options`) is relational. The profile is the same case: its structure (the option
+catalogs) is defined in code, and each establishment's answers are one document.
+
+**Alternatives considered.**
+
+- **A normalized 1:1 table**, following `stale_establishment_cycles`: an
+  `establishment_characterizations` table with typed columns for single values, an
+  `establishment_characterization_choices (characterization_id, field, value)` child table for the
+  multi-selects, and an `establishment_opening_hours` table with one row per day. Rejected for now.
+  It adds three tables and a repository for data that is never queried by field, and every option
+  change becomes a migration while the catalog is still moving. A requests table would still want a
+  document copy, since a proposal is stored and shown back as sent.
+- **Postgres enum `ARRAY` columns** on `establishments`. Rejected: no table in the codebase uses
+  arrays, so this would start a new convention for one feature.
+- **A separate document database.** Rejected. Editing the profile depends on the permission check
+  against `user_establishments`, and approval creates or reuses the establishment in the same
+  transaction. A second store would lose that transaction and add hosting, test containers and
+  backups, while `JSONB` already stores documents inside Postgres.
+
+**When to revisit.** Move to the normalized table once a feature needs to filter or aggregate
+establishments by profile fields (for example, a dashboard breakdown by space type or meals served)
+and a `JSONB` operator with a GIN index is not enough. The Pydantic model and the API contract stay
+as they are; only the model, the migration and the storage mapping in the service change.
 
 ### Options live in one module
 
