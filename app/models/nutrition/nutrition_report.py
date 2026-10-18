@@ -8,7 +8,6 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     String,
-    Text,
     UniqueConstraint,
     func,
 )
@@ -37,10 +36,10 @@ class NutritionReport(Base):
             "EXTRACT(day FROM month) = 1",
             name="ck_nutrition_reports_month_is_first_day",
         ),
-        # The summary text exists exactly when the AI wrote it.
+        # The summary exists exactly when the AI wrote it.
         CheckConstraint(
-            "(summary_status = 'generated') = (summary_text IS NOT NULL)",
-            name="ck_nutrition_reports_summary_text_matches_status",
+            "(summary_status = 'generated') = (summary IS NOT NULL)",
+            name="ck_nutrition_reports_summary_matches_status",
         ),
         # A month without intakes has nothing to summarize, and one with intakes
         # always has a summary to write, even if it could not be written yet.
@@ -61,7 +60,9 @@ class NutritionReport(Base):
     has_data = Column(Boolean, nullable=False)
     analysis = Column(JSONB, nullable=False)
     reference_profile = Column(String, nullable=False)
-    summary_text = Column(Text, nullable=True)
+    # A missing summary is SQL NULL, not the JSON value null, which is what the
+    # summary_status check looks at.
+    summary = Column(JSONB(none_as_null=True), nullable=True)
     summary_status = Column(
         SAEnum(
             SummaryStatus,

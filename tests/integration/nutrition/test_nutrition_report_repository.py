@@ -13,7 +13,9 @@ pytestmark = pytest.mark.usefixtures("app")
 SEPTEMBER = date(2026, 9, 1)
 OCTOBER = date(2026, 10, 1)
 
-GENERATED = (True, SummaryStatus.GENERATED, "Resumen.")
+SUMMARY = {"overview": "Resumen."}
+
+GENERATED = (True, SummaryStatus.GENERATED, SUMMARY)
 UNAVAILABLE = (True, SummaryStatus.UNAVAILABLE, None)
 NOT_APPLICABLE = (False, SummaryStatus.NOT_APPLICABLE, None)
 
@@ -21,7 +23,7 @@ NOT_APPLICABLE = (False, SummaryStatus.NOT_APPLICABLE, None)
 def make_report(
     establishment_id, *, month=SEPTEMBER, state=GENERATED
 ) -> NutritionReport:
-    has_data, summary_status, summary_text = state
+    has_data, summary_status, summary = state
     return NutritionReport(
         establishment_id=establishment_id,
         month=month,
@@ -29,7 +31,7 @@ def make_report(
         analysis={},
         reference_profile="nino_7_9",
         summary_status=summary_status,
-        summary_text=summary_text,
+        summary=summary,
     )
 
 
@@ -50,14 +52,14 @@ async def test_report_in_each_valid_state_is_saved(state, db_establishment):
     "state",
     [
         (True, SummaryStatus.GENERATED, None),
-        (True, SummaryStatus.UNAVAILABLE, "Resumen."),
-        (False, SummaryStatus.GENERATED, "Resumen."),
+        (True, SummaryStatus.UNAVAILABLE, SUMMARY),
+        (False, SummaryStatus.GENERATED, SUMMARY),
         (False, SummaryStatus.UNAVAILABLE, None),
         (True, SummaryStatus.NOT_APPLICABLE, None),
     ],
     ids=[
-        "generated-without-text",
-        "text-without-being-generated",
+        "generated-without-summary",
+        "summary-without-being-generated",
         "generated-without-data",
         "unavailable-without-data",
         "not-applicable-with-data",

@@ -38,7 +38,7 @@ def upgrade() -> None:
         sa.Column("has_data", sa.Boolean(), nullable=False),
         sa.Column("analysis", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
         sa.Column("reference_profile", sa.String(), nullable=False),
-        sa.Column("summary_text", sa.Text(), nullable=True),
+        sa.Column("summary", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column("summary_status", summary_status, nullable=False),
         sa.Column(
             "created_at",
@@ -66,8 +66,8 @@ def upgrade() -> None:
             name="ck_nutrition_reports_month_is_first_day",
         ),
         sa.CheckConstraint(
-            "(summary_status = 'generated') = (summary_text IS NOT NULL)",
-            name="ck_nutrition_reports_summary_text_matches_status",
+            "(summary_status = 'generated') = (summary IS NOT NULL)",
+            name="ck_nutrition_reports_summary_matches_status",
         ),
         sa.CheckConstraint(
             "has_data = (summary_status <> 'not_applicable')",

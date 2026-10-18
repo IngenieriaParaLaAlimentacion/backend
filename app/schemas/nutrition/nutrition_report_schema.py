@@ -1,11 +1,15 @@
 from datetime import date, datetime
-from typing import Any
+from typing import Annotated, Any
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.domain.nutrition import GapaGroup, Macronutrient, PrioritizedNutrient
-from app.domain.nutrition_report import SUMMARY_MAX_LENGTH, SummaryStatus
+from app.domain.nutrition_report import (
+    SUMMARY_MAX_ITEMS,
+    SUMMARY_TEXT_MAX_LENGTH,
+    SummaryStatus,
+)
 
 
 class ReportNutrient(BaseModel):
@@ -93,6 +97,54 @@ class NutritionReportAnalysis(BaseModel):
     )
 
 
+SummaryText = Annotated[str, Field(max_length=SUMMARY_TEXT_MAX_LENGTH)]
+
+
+class NutritionReportSummary(BaseModel):
+    """The summary of a report, written by the AI in Spanish, one text per section.
+
+    A section with nothing to say is an empty string or an empty list. The AI
+    returns this same shape.
+    """
+
+    overview: SummaryText = Field(
+        description="How balanced the food received in the month was, overall.",
+    )
+    at_risk_nutrients: list[SummaryText] = Field(
+        max_length=SUMMARY_MAX_ITEMS,
+        description="One item per nutrient at risk, saying what that shortfall means.",
+    )
+    macros: SummaryText = Field(
+        description="How the energy splits between proteins, lipids and carbohydrates.",
+    )
+    gapa_groups: SummaryText = Field(
+        description="Which food groups weigh most in the energy and which are missing.",
+    )
+    incorporate: SummaryText = Field(
+        description="A line on which foods to add for the nutrients at risk.",
+    )
+    limitations: list[SummaryText] = Field(
+        max_length=SUMMARY_MAX_ITEMS,
+        description="One item per data gap to keep in mind when reading the report.",
+    )
+
+    @field_validator("overview")
+    @classmethod
+    def _overview_not_blank(cls, value: str) -> str:
+        """Reject an overview made only of whitespace."""
+        if not value.strip():
+            raise ValueError("overview must not be blank")
+        return value
+
+    @field_validator("at_risk_nutrients", "limitations")
+    @classmethod
+    def _items_not_blank(cls, value: list[str]) -> list[str]:
+        """Reject a list item made only of whitespace."""
+        if any(not item.strip() for item in value):
+            raise ValueError("list items must not be blank")
+        return value
+
+
 class NutritionReportResponse(BaseModel):
     """A monthly nutrition report of an establishment."""
 
@@ -112,7 +164,7 @@ class NutritionReportResponse(BaseModel):
     )
     analysis: NutritionReportAnalysis
     summary_status: SummaryStatus
-    summary_text: str | None = Field(
+    summary: NutritionReportSummary | None = Field(
         default=None,
         description="Summary written by the AI, as returned. Null unless generated.",
     )
@@ -124,13 +176,3 @@ class NutritionReportResponse(BaseModel):
     def _format_month(cls, value: Any) -> Any:
         """Show the first day of the month the report is stored under as YYYY-MM."""
         return value.strftime("%Y-%m") if isinstance(value, date) else value
-
-
-class ReportSummaryOutput(BaseModel):
-    """What the AI returns when asked to write the summary of a report."""
-
-    summary: str = Field(
-        min_length=1,
-        max_length=SUMMARY_MAX_LENGTH,
-        description="Summary of the month's nutritional balance, in Spanish.",
-    )
