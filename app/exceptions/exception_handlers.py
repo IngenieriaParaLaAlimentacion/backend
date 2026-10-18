@@ -68,11 +68,23 @@ async def domain_error_handler(request: Request, exc: BaseError) -> JSONResponse
 
 
 def _invalid_body_field(exc: RequestValidationError) -> str | None:
-    """Return the top-level body field of the first validation error, if any."""
+    """Return the body field of the first validation error, if any.
+
+    Nested fields are joined with dots, down to the first list index:
+    ``characterization.premises_other``, or ``opening_hours`` for any error
+    inside one of its items.
+    """
     for error in exc.errors():
         loc = error.get("loc", ())
-        if len(loc) > 1 and loc[0] == "body" and isinstance(loc[1], str):
-            return loc[1]
+        if not loc or loc[0] != "body":
+            continue
+        path = []
+        for part in loc[1:]:
+            if not isinstance(part, str):
+                break
+            path.append(part)
+        if path:
+            return ".".join(path)
     return None
 
 

@@ -73,11 +73,15 @@ async def create_establishment(
     summary="Request creation of a missing establishment",
     description="Notifies an admin that the establishment the authenticated user "
     "needs access to is missing from the catalog, so it can be reviewed and "
-    "registered. Name and address are not optional.",
+    "registered. Name and address are not optional; a characterization "
+    "profile may be proposed with it.",
     responses={
-        status.HTTP_422_UNPROCESSABLE_CONTENT: {"description": "Invalid data"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Invalid data; `field` names the field that failed"
+        },
         **AUTH_RESPONSES,
     },
+    openapi_extra={INVALID_FIELD_EXTENSION: True},
 )
 async def create_establishment_request(
     data: EstablishmentCreationRequestCreate,

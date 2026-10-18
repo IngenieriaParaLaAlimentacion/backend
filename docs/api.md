@@ -73,7 +73,8 @@ FastAPI returns `422 Unprocessable Entity` by default when Pydantic rejects a re
 The response body is the same envelope as any other error, with a string `detail`.
 Individual field failures are not reported, except on routes marked
 `x-invalid-field-extension`: there the envelope also carries `field`, the name
-of the first body field that failed (never its value), so a client can flag the
+of the first body field that failed (dotted when nested, such as
+`characterization.premises_other`; never its value), so a client can flag the
 input without clearing the form.
 
 ### Extension members

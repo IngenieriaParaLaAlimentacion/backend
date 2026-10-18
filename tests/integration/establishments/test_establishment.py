@@ -705,6 +705,47 @@ class TestCreateEstablishmentRequest:
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
+    async def test_proposed_profile_is_shown_to_the_admin(
+        self, client, make_user_with_role, admin_headers
+    ):
+        """A profile sent with the request reaches the admin's request listing."""
+        headers, _ = await make_user_with_role(UserRole.FIELD_WORKER)
+        profile = {"meals": ["lunch"], "premises": "other", "premises_other": "Club"}
+
+        await client.post(
+            REQUESTS_URL,
+            headers=headers,
+            json={
+                "name": "Comedor Esperanza",
+                "formatted_address": "Av. Siempre Viva 742",
+                "characterization": profile,
+            },
+        )
+
+        listing = await client.get(
+            "/api/v1/admin/establishment-requests", headers=admin_headers
+        )
+        [item] = listing.json()["items"]
+        assert {key: item["characterization"][key] for key in profile} == profile
+
+    async def test_invalid_proposed_profile_returns_422_naming_the_field(
+        self, client, make_user_with_role
+    ):
+        headers, _ = await make_user_with_role(UserRole.FIELD_WORKER)
+
+        response = await client.post(
+            REQUESTS_URL,
+            headers=headers,
+            json={
+                "name": "Comedor Esperanza",
+                "formatted_address": "Av. Siempre Viva 742",
+                "characterization": {"premises_other": "Club"},
+            },
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+        assert response.json()["field"] == "characterization.premises_other"
+
     async def test_blank_field_returns_422(self, client, make_user_with_role):
         """Whitespace-only fields are rejected with 422."""
         headers, _ = await make_user_with_role(UserRole.FIELD_WORKER)

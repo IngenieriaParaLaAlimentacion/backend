@@ -21,7 +21,8 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 
 `/errors/validation-failed` does not name the fields that failed, except on routes
 marked `x-invalid-field-extension` in the OpenAPI document: there it also carries
-`field`, the name of the first body field that failed, never its value.
+`field`, the path of the first body field that failed (dotted when nested, down
+to the first list index), never its value.
 
 | `type` | Status | Exception | Description |
 |---|---|---|---|

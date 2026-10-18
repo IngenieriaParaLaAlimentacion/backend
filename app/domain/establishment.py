@@ -103,6 +103,7 @@ class EstablishmentRequestDomain:
     formatted_address: str
     city: str | None
     province: str | None
+    characterization: dict | None
     status: str
     created_at: datetime
     updated_at: datetime
