@@ -21,6 +21,7 @@ from .food_stock.food_stock import FoodStock
 from .measurements.measurement import Measurement
 from .measurements.measurement_alert import MeasurementAlert
 from .notifications import PushDeliveryJob, StaleEstablishmentCycle, UserPushDevice
+from .nutrition.nutrition_report import NutritionReport
 from .subjects.subject import Sex, Subject
 from .subjects.subject_event import SubjectEvent
 from .surveys.survey import Survey
@@ -65,6 +66,7 @@ __all__ = [
     "FoodOutflow",
     "FoodOutflowItem",
     "FoodStock",
+    "NutritionReport",
     "PushDeliveryJob",
     "StaleEstablishmentCycle",
     "UserPushDevice",
