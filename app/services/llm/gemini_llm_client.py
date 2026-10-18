@@ -5,10 +5,9 @@ import httpx
 import structlog
 from google import genai
 from google.genai import types
-from google.genai.errors import APIError, ClientError, ServerError
+from google.genai.errors import APIError
 from tenacity import (
     AsyncRetrying,
-    RetryCallState,
     retry_if_exception,
     stop_after_attempt,
     wait_exponential_jitter,
@@ -17,23 +16,17 @@ from tenacity import (
 from app.config.settings import settings
 from app.core.interfaces.llm_client import ILlmClient
 from app.exceptions.domain_exceptions import LlmClientError
+from app.services.llm.retry_policy import (
+    TRANSIENT_TRANSPORT_ERRORS as _TRANSIENT_TRANSPORT_ERRORS,
+)
+from app.services.llm.retry_policy import (
+    is_retryable,
+)
+from app.services.llm.retry_policy import (
+    log_retry as _log_retry,
+)
 
 logger = structlog.get_logger()
-
-# Raw transport failures below the SDK's APIError layer (connection reset,
-# socket timeout) -- retried the same as a 5xx/429 response from the API.
-_TRANSIENT_TRANSPORT_ERRORS = (httpx.TimeoutException, httpx.ConnectError)
-
-
-def _log_retry(retry_state: RetryCallState, *, model: str) -> None:
-    """Log a Gemini call attempt that failed and will be retried."""
-    exc = retry_state.outcome.exception() if retry_state.outcome else None
-    logger.warning(
-        "gemini_llm_call_retrying",
-        model=model,
-        attempt=retry_state.attempt_number,
-        error=str(exc),
-    )
 
 
 class GeminiLlmClient(ILlmClient):
@@ -55,20 +48,7 @@ class GeminiLlmClient(ILlmClient):
             http_options=types.HttpOptions(httpx_async_client=async_client),
         )
 
-    @staticmethod
-    def _is_retryable(exc: Exception) -> bool:
-        """Return whether ``exc`` is a transient Gemini failure worth retrying.
-
-        Server errors (5xx), request timeouts (408), rate limiting (429), and
-        raw transport failures (connection reset, socket timeout) are
-        retried; any other client error (bad request, auth, not found) is
-        not, since retrying it would just delay the same failure.
-        """
-        if isinstance(exc, ServerError):
-            return True
-        if isinstance(exc, ClientError):
-            return exc.code in (408, 429)
-        return isinstance(exc, _TRANSIENT_TRANSPORT_ERRORS)
+    _is_retryable = staticmethod(is_retryable)
 
     async def complete(
         self,

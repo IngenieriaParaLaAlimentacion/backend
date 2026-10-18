@@ -38,6 +38,8 @@ redis = "^8.1.0"
 limits = "^5.8.0"
 pulp = "^3.3"
 highspy = "^1.15"
+langchain-google-genai = "^4.4.2"
+langchain-core = "^1.6.12"
 
 [tool.poetry.group.dev.dependencies]
 ruff = ">=0.15.8,<0.16.0"

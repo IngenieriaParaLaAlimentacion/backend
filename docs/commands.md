@@ -116,3 +116,11 @@ alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8080
 ```
 
 All configuration is passed via environment variables (see `.env.example`).
+
+
+### Integration tests without Docker
+
+`TEST_POSTGRES_URL` may point to a **disposable test-only** PostgreSQL instance
+(e.g. `postgresql+psycopg2://test@127.0.0.1:55432/test`). The suite runs migrations
+and truncates every application table. Never use an application database.
+Redis-backed auth rate-limit tests still require their Redis Testcontainer.

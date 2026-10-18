@@ -256,3 +256,28 @@ async def require_admin_or_analyst(
     return await _get_authenticated_actor(
         token, {UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN}
     )
+
+
+async def get_recipe_llm_client() -> AsyncGenerator[ILlmClient, None]:
+    """Provide the LangChain recipe client, replaceable by a scripted test double."""
+    from app.services.llm.langchain_llm_client import LangChainLlmClient
+
+    yield LangChainLlmClient()
+
+
+async def get_recipe_service():
+    """Provide history and selection operations without constructing an LLM."""
+    from app.services.recipes.recipe_service import RecipeService
+
+    async with UnitOfWork() as uow:
+        yield RecipeService(uow)
+
+
+async def get_recipe_generation_service(
+    llm_client: ILlmClient = Depends(get_recipe_llm_client),
+):
+    """Provide the recommendation workflow with an injectable structured client."""
+    from app.services.recipes.recipe_service import RecipeService
+
+    async with UnitOfWork() as uow:
+        yield RecipeService(uow, llm_client)

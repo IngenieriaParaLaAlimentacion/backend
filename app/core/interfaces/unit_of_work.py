@@ -47,6 +47,7 @@ from app.repositories.notifications import (
     StaleEstablishmentCycleRepository,
     UserPushDeviceRepository,
 )
+from app.repositories.recipes.recipe_repository import RecipeRepository
 from app.repositories.subjects.subject_event_repository import SubjectEventRepository
 from app.repositories.subjects.subject_repository import SubjectRepository
 from app.repositories.surveys.survey_repository import SurveyRepository
@@ -57,6 +58,7 @@ from app.repositories.surveys.survey_response_repository import SurveyResponseRe
 
 
 class IUnitOfWork(ABC):
+    recipe_repo: RecipeRepository
     activity_repo: ActivityRepository
     user_repo: UserRepository
     password_repo: UserPasswordRepository

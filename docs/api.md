@@ -243,3 +243,89 @@ Nobody may change a `superadmin` or their own role.
 | `403` | `/errors/role-not-allowed` | Target is a `superadmin`, the actor themselves, or an `admin` changed by an `admin`. Also returned when the caller is not an admin. |
 | `404` | `/errors/user-not-found` | No user with that id. |
 | `422` | `/errors/validation-failed` | `role` missing or not one of the allowed values (including `superadmin`). |
+
+
+## Recipe recommendations (Nutrir, #170)
+
+Generation uses LangChain/Gemini → the existing nutrition LP → LangChain/Gemini.
+The backend owns quantities, nutrient indicators, permissions and stock changes.
+All routes below require Bearer authentication and establishment access. Missing
+establishments return 404; denied access returns 403; invalid input uses the
+standard 422 problem response. The [recipe OpenAPI contract](recipes.openapi.generated.json) includes request examples.
+Regenerate with `poetry run python docs/generate_openapi.py recipes --tag "Recipes V1"`.
+
+| Method | Path (under `/api/v1`) | Result |
+|---|---|---|
+| POST | `/recipe-recommendations` | 201: one request with 2–3 proposals |
+| GET | `/establishments/{establishment_id}/recipe-recommendations` | Paginated requests; `chosen_only=true` includes only chosen proposals |
+| POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/choose` | 201 selection; identical replay 200; another choice 409 |
+| POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/reuse-preview` | 200 read-only rescaled proposal; current stock checked; body `{"children_count":45}` |
+| POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/reuse` | 201 new selected request, or 200 replay of its client-generated id |
+| GET | `/cultural-identities` | Closed list of supported cultural identity codes |
+| GET | `/establishments/{establishment_id}/cultural-identities` | Configured identities (possibly empty) |
+| PUT | `/establishments/{establishment_id}/cultural-identities` | Admin-only replacement, 200 |
+| PUT | `/food-catalog/foods/{food_id}/gram-conversion` | Admin-only grams per litre/unit; kilograms always use 1000 |
+
+Generation body (no additional fields, no free text):
+
+```json
+{"establishment_id":"b45193cb-a2f1-427f-a4d8-adbb596561b0","children_count":30,"meal_type":"lunch"}
+```
+
+`children_count` is a strict integer from 1 to 10000. Meal types are `breakfast`,
+`lunch`, `snack`, `dinner`; the reference child is always age 7–9. Ingredient
+count 5–8 is prompt guidance, not validation. Generation does not reserve stock.
+Proposals do not expire; choosing always validates current stock.
+
+A response has `id`, `establishment_id`, `children_count`, `meal_type`, `user_id`,
+`created_at`, `prompt_version`, `proposals`, and nullable `selection`.
+Each proposal has `id`, `name`, `portions`, `ingredients` (food_id, name, grams,
+quantity in the catalog base unit, unit), `steps`, `indicators` (nutrient adequacy
+and macro shares), `gapa_groups`, `unmet_constraints`, `warnings`,
+`target_energy_kcal`, `energy_kcal`, explicit `nutrient_adequacy_percent` and
+`macronutrient_percent` maps, and nullable `cultural_identity`.
+`selection` contains `proposal_id`, `outflow_id`, `user_id`, and `chosen_at`.
+
+Nutritional and energy shortfalls do **not** prevent offering a recipe: clients
+must display `unmet_constraints`, energy and warnings. Empty stock, no usable
+energy or quantities below stock precision return 409
+`/errors/recipes/no-usable-stock` **before any model call**. Foods in litres or
+units require a reviewed gram conversion; absent conversions are excluded and
+reported, never guessed. Configure with `{"grams_per_base_unit":50}` (e.g. one
+egg); `null` clears it. All final quantities are rounded down to stock precision,
+and indicators are recalculated from the amounts actually offered.
+
+Choosing has no body. It creates a kitchen outflow and selection atomically.
+An identical retry returns the original selection without spending stock again.
+A different choice on the same request returns 409
+`/errors/recipes/already-chosen`. Insufficient stock at selection uses the same
+409 response and food/available/requested fields as manual food outflows.
+
+Before reuse, call `reuse-preview` to display backend-calculated quantities and
+indicators without saving a choice or changing stock. Confirmation calls `reuse`,
+which checks stock again. Neither endpoint calls the LLM.
+
+Reuse body:
+
+```json
+{"id":"72bde9cb-a7b5-48e0-8729-6f91a004d83b","children_count":45}
+```
+
+Reuse scales an existing proposal, recalculates indicators, validates current
+stock and selects the copy in one transaction without an LLM call. Replaying the
+same id and source/count returns 200; changing its meaning returns 409
+`/errors/recipes/idempotency-conflict`. The original request stays unchanged.
+
+Culture replacement body: `{"identities":["paraguayan","bolivian"]}`. The initial
+closed list is Paraguayan and Bolivian; multiple identities and an empty list
+are supported. Generation includes the last ten chosen recipes, asks for cultural
+inspiration when viable, and permits ordinary dishes when stock cannot support
+it. Cultural inspiration never adds ingredients or alters calculated quantities.
+
+Normal generation uses two logical model calls, with at most one repair call
+for invalid/duplicate candidate sets. Transport retries and fallback reuse the
+existing Gemini policy. Invalid/failing AI returns the standard
+`/errors/recipes/generation-failed` domain error; no incomplete proposals are saved.
+History uses the standard `items`, `total`, `page`, `page_size`, `total_pages`
+envelope, ordered by date and id descending. Ingredient amounts and steps are
+immutable snapshots; prompt templates are versioned in the repository.

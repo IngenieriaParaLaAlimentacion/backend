@@ -62,6 +62,11 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/password-not-found` | 404 | `PasswordNotFoundError` | Exception raised when a user's password record is not found. |
 | `/errors/rate-limited` | 429 | `RateLimitedError` | Raised when a caller exceeds the rate limit of a public endpoint. |
 | `/errors/receipt-photo-storage-failed` | 502 | `ReceiptPhotoStorageError` | Raised when a receipt photo cannot be persisted to object storage. |
+| `/errors/recipes/already-chosen` | 409 | `RecipeAlreadyChosenError` | A different proposal was already chosen for this request. |
+| `/errors/recipes/generation-failed` | 502 | `RecipeGenerationError` | The model failed to produce complete valid recipe proposals. |
+| `/errors/recipes/idempotency-conflict` | 409 | `RecipeIdempotencyConflictError` | A reuse id was already used with different input. |
+| `/errors/recipes/no-usable-stock` | 409 | `RecipeNoUsableStockError` | No stocked food with known mass and positive energy can form a recipe. |
+| `/errors/recipes/not-found` | 404 | `RecipeNotFoundError` | The requested recommendation or proposal does not exist. |
 | `/errors/role-not-allowed` | 403 | `RoleNotAllowedError` | Raised when the actor's role is not permitted to perform the operation. |
 | `/errors/subject-already-exists` | 409 | `SubjectAlreadyExistsError` | Exception raised when trying to register a subject with an existing DNI. |
 | `/errors/subject-not-found` | 404 | `SubjectNotFoundError` | Exception raised when a subject cannot be found. |

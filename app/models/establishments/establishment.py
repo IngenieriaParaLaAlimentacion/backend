@@ -1,7 +1,7 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, Float, String, func
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import CheckConstraint, Column, DateTime, Float, String, func
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy.orm import relationship
 
 from ..base import Base
@@ -11,8 +11,15 @@ class Establishment(Base):
     """Physical site where anthropometric measurements are conducted."""
 
     __tablename__ = "establishments"
+    __table_args__ = (
+        CheckConstraint(
+            "cultural_identities <@ ARRAY['paraguayan','bolivian']::varchar[]",
+            name="ck_establishments_cultural_identities",
+        ),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    cultural_identities = Column(ARRAY(String), nullable=False, server_default="{}")
     name = Column(String, nullable=False)
     formatted_address = Column(String, nullable=False)
     latitude = Column(Float, nullable=False)

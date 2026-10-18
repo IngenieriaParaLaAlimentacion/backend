@@ -484,3 +484,23 @@ class FoodStockRepository:
             if movement is not None:
                 return FoodMovementDetailDomain.from_db(movement, direction)
         return None
+
+    async def stocked_foods(self, establishment_id: UUID) -> list[tuple[Food, Decimal]]:
+        """Return positive balances with nutrient and GAPA data loaded."""
+        from app.models.food_catalog.food_nutrient_value import FoodNutrientValue
+
+        result = await self.db.execute(
+            select(Food, FoodStock.quantity)
+            .join(FoodStock, FoodStock.food_id == Food.id)
+            .where(
+                FoodStock.establishment_id == establishment_id, FoodStock.quantity > 0
+            )
+            .options(
+                selectinload(Food.gapa_category),
+                selectinload(Food.nutrient_values).selectinload(
+                    FoodNutrientValue.nutrient
+                ),
+            )
+            .order_by(Food.id)
+        )
+        return list(result.all())

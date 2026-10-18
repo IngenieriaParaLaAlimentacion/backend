@@ -247,6 +247,36 @@
       "description": "Raised when a receipt photo cannot be persisted to object storage."
     },
     {
+      "type": "/errors/recipes/already-chosen",
+      "status": 409,
+      "exception": "RecipeAlreadyChosenError",
+      "description": "A different proposal was already chosen for this request."
+    },
+    {
+      "type": "/errors/recipes/generation-failed",
+      "status": 502,
+      "exception": "RecipeGenerationError",
+      "description": "The model failed to produce complete valid recipe proposals."
+    },
+    {
+      "type": "/errors/recipes/idempotency-conflict",
+      "status": 409,
+      "exception": "RecipeIdempotencyConflictError",
+      "description": "A reuse id was already used with different input."
+    },
+    {
+      "type": "/errors/recipes/no-usable-stock",
+      "status": 409,
+      "exception": "RecipeNoUsableStockError",
+      "description": "No stocked food with known mass and positive energy can form a recipe."
+    },
+    {
+      "type": "/errors/recipes/not-found",
+      "status": 404,
+      "exception": "RecipeNotFoundError",
+      "description": "The requested recommendation or proposal does not exist."
+    },
+    {
       "type": "/errors/role-not-allowed",
       "status": 403,
       "exception": "RoleNotAllowedError",

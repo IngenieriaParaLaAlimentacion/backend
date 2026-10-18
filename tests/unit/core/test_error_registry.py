@@ -6,6 +6,11 @@ from fastapi import status
 from app.exceptions.domain_exceptions import ERROR_REGISTRY
 
 EXPECTED: dict[str, int] = {
+    "recipes/no-usable-stock": 409,
+    "recipes/not-found": 404,
+    "recipes/already-chosen": 409,
+    "recipes/idempotency-conflict": 409,
+    "recipes/generation-failed": 502,
     "account-pending-validation": status.HTTP_403_FORBIDDEN,
     "admin/invite-already-pending": status.HTTP_409_CONFLICT,
     "auth/invalid-recovery-token": status.HTTP_401_UNAUTHORIZED,
