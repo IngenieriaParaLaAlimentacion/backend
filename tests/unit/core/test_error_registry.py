@@ -45,6 +45,7 @@ EXPECTED: dict[str, int] = {
     "rate-limited": status.HTTP_429_TOO_MANY_REQUESTS,
     "receipt-photo-storage-failed": status.HTTP_502_BAD_GATEWAY,
     "role-not-allowed": status.HTTP_403_FORBIDDEN,
+    "service-not-ready": status.HTTP_503_SERVICE_UNAVAILABLE,
     "subject-already-exists": status.HTTP_409_CONFLICT,
     "subject-not-found": status.HTTP_404_NOT_FOUND,
     "survey-already-exists": status.HTTP_409_CONFLICT,
