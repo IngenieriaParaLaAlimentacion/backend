@@ -72,6 +72,7 @@ class MeasurementService:
                 height_cm=data.height_cm,
                 bmi=bmi,
                 measured_at=data.measured_at,
+                observation=data.observation,
             )
         except UniqueConstraintError:
             # Concurrent insert of the same id (race) -> treat as replay.

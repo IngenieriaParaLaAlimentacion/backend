@@ -168,6 +168,7 @@ class MeasurementDomain:
     measured_at: datetime
     created_at: datetime
     alerts: list[AlertDomain]
+    observation: str | None = None
 
     @classmethod
     def from_db(cls, obj) -> "MeasurementDomain":
@@ -183,6 +184,7 @@ class MeasurementDomain:
             measured_at=obj.measured_at,
             created_at=obj.created_at,
             alerts=[AlertDomain.from_db(a) for a in obj.alerts],
+            observation=obj.observation,
         )
 
 
@@ -279,6 +281,7 @@ class MeasurementListItemDomain(MeasurementBase):
     subject: SubjectRefDomain
     establishment: EstablishmentRefDomain
     responsible: ResponsibleRefDomain
+    observation: str | None = None
 
     @classmethod
     def from_db(cls, obj) -> "MeasurementListItemDomain":
@@ -289,4 +292,5 @@ class MeasurementListItemDomain(MeasurementBase):
             subject=SubjectRefDomain.from_db(obj.subject),
             establishment=EstablishmentRefDomain.from_db(obj.establishment),
             responsible=ResponsibleRefDomain.from_db(obj.responsible),
+            observation=obj.observation,
         )

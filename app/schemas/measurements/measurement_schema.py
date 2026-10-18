@@ -8,6 +8,7 @@ from pydantic import (
     field_validator,
 )
 
+from app.domain.common_domains import normalize_optional_str
 from app.domain.measurement import AlertSeverity, AlertType
 from app.domain.subject import Sex
 from app.schemas.common import IdentifierRefSchema
@@ -24,6 +25,13 @@ class MeasurementRequest(BaseModel):
     weight_kg: float = Field(gt=0.5, le=300, description="Weight in kilograms.")
     height_cm: float = Field(gt=20.0, le=250.0, description="Height in centimetres.")
     measured_at: datetime
+    observation: str | None = Field(default=None, max_length=500)
+
+    @field_validator("observation", mode="before")
+    @classmethod
+    def normalize_observation(cls, value):
+        """Trim optional observation text and collapse blank input."""
+        return normalize_optional_str(value) if isinstance(value, str) else value
 
     _check_measured_at = field_validator("measured_at")(validate_not_future_datetime)
 
@@ -64,6 +72,7 @@ class MeasurementResponse(BaseModel):
     measured_at: datetime
     created_at: datetime
     alerts: list[AlertResponse]
+    observation: str | None = None
 
 
 class SubjectRefResponse(BaseModel):
@@ -98,6 +107,7 @@ class MeasurementListItem(BaseModel):
     establishment: EstablishmentRefResponse
     responsible: ResponsibleRefResponse
     alerts: list[AlertResponse]
+    observation: str | None = None
 
 
 class EvolutionPoint(MeasurementSnapshotBase):
