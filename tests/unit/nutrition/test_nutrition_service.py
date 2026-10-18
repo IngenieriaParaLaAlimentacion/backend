@@ -98,6 +98,20 @@ async def test_monthly_analysis_without_intakes_has_no_data():
 
     assert not result.has_data
     assert result.nutrients_at_risk == []
+    assert result.foods_without_conversion == 0
+
+
+async def test_month_whose_foods_all_lack_conversion_is_told_apart_from_an_empty_one():
+    mystery_id = uuid.uuid4()
+    uow = make_uow(received={mystery_id: Decimal("5")})
+    grams = GramsPerUnit(unknown=frozenset({mystery_id}))
+
+    result = await NutritionService(uow, grams).analyze_monthly_intake(
+        ESTABLISHMENT_ID, 2026, 3, ADMIN
+    )
+
+    assert not result.has_data
+    assert result.foods_without_conversion == 1
 
 
 @pytest.mark.parametrize(

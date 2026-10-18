@@ -157,7 +157,8 @@ class NutritionReportResponse(BaseModel):
         examples=["2026-09"],
     )
     has_data: bool = Field(
-        description="False when the establishment received no food in the month.",
+        description="False when there is no energy to judge in the month: no food "
+        "was received, or only food without energy.",
     )
     reference_profile: str = Field(
         description="Reference the intake was compared against, e.g. `nino_7_9`.",
