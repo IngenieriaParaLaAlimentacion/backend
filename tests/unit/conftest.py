@@ -44,6 +44,7 @@ def make_establishment():
         e.place_id = "place-test-001"
         e.city = "Buenos Aires"
         e.province = "Buenos Aires"
+        e.characterization = None
         return e
 
     return _make

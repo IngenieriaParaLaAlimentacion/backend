@@ -3,6 +3,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.domain.establishment_characterization import CharacterizationStatus
 from app.schemas.types import DescriptionStr, Latitude, Longitude, ValidStr
 
 # -- Request --
@@ -86,6 +87,12 @@ class EstablishmentResponse(BaseModel):
     place_id: str
     city: str
     province: str
+    characterization_status: CharacterizationStatus = Field(
+        description=(
+            "Computed, never stored: `pending` when no characterization field "
+            "holds an answer, `complete` when at least one does."
+        )
+    )
 
 
 class EstablishmentApprovalResponse(EstablishmentResponse):

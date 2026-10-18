@@ -1,10 +1,14 @@
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, field, fields
 from datetime import datetime
 from enum import Enum, StrEnum
 from typing import NamedTuple
 from uuid import UUID
 
 from app.domain.common_domains import normalize_optional_str
+from app.domain.establishment_characterization import (
+    CharacterizationStatus,
+    characterization_status,
+)
 
 
 class UserEstablishmentStatus(str, Enum):
@@ -61,10 +65,17 @@ class EstablishmentDomain:
     place_id: str
     city: str
     province: str
+    # Keyword-only so subclasses can still declare required fields after it.
+    characterization: dict | None = field(default=None, kw_only=True)
+
+    @property
+    def characterization_status(self) -> CharacterizationStatus:
+        """Whether the characterization profile holds any answer."""
+        return characterization_status(self.characterization)
 
     @classmethod
     def from_db(cls, obj) -> "EstablishmentDomain":
-        return cls(**{field.name: getattr(obj, field.name) for field in fields(cls)})
+        return cls(**{f.name: getattr(obj, f.name) for f in fields(cls)})
 
 
 class EstablishmentApprovalResult(NamedTuple):

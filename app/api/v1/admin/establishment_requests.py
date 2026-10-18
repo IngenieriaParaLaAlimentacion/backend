@@ -82,6 +82,7 @@ async def approve_request(
         place_id=establishment.place_id,
         city=establishment.city,
         province=establishment.province,
+        characterization_status=establishment.characterization_status,
         reused=reused,
     )
 
