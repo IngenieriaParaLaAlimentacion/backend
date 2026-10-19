@@ -13,19 +13,27 @@ from app.domain.establishment import (
     EstablishmentRequestStatus,
     UserEstablishmentStatus,
 )
+from app.domain.establishment_characterization import CharacterizationStatus
 from app.domain.pagination import PaginatedResult
 from app.exceptions.domain_exceptions import (
     EstablishmentRequestAlreadyReviewedError,
     EstablishmentRequestNotFoundError,
     UniqueConstraintError,
 )
+from app.schemas.establishments.establishment_characterization_schema import (
+    EstablishmentCharacterization,
+)
 from app.schemas.establishments.establishment_schema import (
     EstablishmentCreationRequestCreate,
 )
 from app.services.establishments.establishment_service import EstablishmentService
 from tests.unit.establishments.establishment_service.helpers import (
-    _make_request,
+    _make_approval,
 )
+
+PROFILE = EstablishmentCharacterization(meals=["lunch"], cooks_per_service=4)
+PROFILE_STORED = PROFILE.model_dump(mode="json")
+OTHER_STORED = EstablishmentCharacterization(meals=["dinner"]).model_dump(mode="json")
 
 
 def _make_requester(**overrides) -> MagicMock:
@@ -49,6 +57,7 @@ def _make_request_orm(user_id: uuid.UUID, **overrides) -> MagicMock:
     request.formatted_address = None
     request.city = None
     request.province = None
+    request.characterization = None
     request.status = EstablishmentRequestStatus.PENDING
     request.created_at = datetime.now(timezone.utc)
     request.user = _make_requester(id=user_id)
@@ -116,6 +125,34 @@ class TestCreateEstablishmentRequest:
         assert call_arg.status == EstablishmentRequestStatus.PENDING
         assert call_arg.name == "Comedor Esperanza"
         assert call_arg.formatted_address == "Av. Siempre Viva 742"
+
+    @pytest.mark.parametrize(
+        ("characterization", "expected"),
+        [
+            (PROFILE, PROFILE_STORED),
+            # A proposed profile with no answer is stored as no profile.
+            (EstablishmentCharacterization(district=""), None),
+            (None, None),
+        ],
+    )
+    async def test_stores_the_proposed_profile(
+        self, make_uow, characterization, expected
+    ):
+        user_id = uuid.uuid4()
+        uow = make_uow(_make_request_orm(user_id))
+        service = EstablishmentService(uow=uow)
+
+        await service.create_establishment_request(
+            user_id,
+            EstablishmentCreationRequestCreate(
+                name="Comedor",
+                formatted_address="Av. Siempre Viva 742",
+                characterization=characterization,
+            ),
+        )
+
+        created = uow.establishment_request_repo.create.call_args[0][0]
+        assert created.characterization == expected
 
     async def test_commits(self, make_uow):
         """The created request is committed."""
@@ -296,7 +333,7 @@ class TestApproveCreationRequest:
 
         with pytest.raises(EstablishmentRequestNotFoundError):
             await service.approve_creation_request(
-                uuid.uuid4(), _make_request(), reviewer_id=uuid.uuid4()
+                uuid.uuid4(), _make_approval(), reviewer_id=uuid.uuid4()
             )
 
     async def test_raises_when_already_reviewed(self, make_uow):
@@ -310,7 +347,7 @@ class TestApproveCreationRequest:
 
         with pytest.raises(EstablishmentRequestAlreadyReviewedError):
             await service.approve_creation_request(
-                request.id, _make_request(), reviewer_id=uuid.uuid4()
+                request.id, _make_approval(), reviewer_id=uuid.uuid4()
             )
 
     async def test_creates_new_establishment_when_no_place_id_match(
@@ -326,7 +363,7 @@ class TestApproveCreationRequest:
 
         result, reused = await service.approve_creation_request(
             request.id,
-            _make_request(name="Centro Nuevo", place_id="place-new-001"),
+            _make_approval(name="Centro Nuevo", place_id="place-new-001"),
             reviewer_id=uuid.uuid4(),
         )
 
@@ -353,7 +390,7 @@ class TestApproveCreationRequest:
 
         result, reused = await service.approve_creation_request(
             request.id,
-            _make_request(name="Centro Nuevo", place_id="place-new-001"),
+            _make_approval(name="Centro Nuevo", place_id="place-new-001"),
             reviewer_id=uuid.uuid4(),
         )
 
@@ -371,7 +408,7 @@ class TestApproveCreationRequest:
 
         result, reused = await service.approve_creation_request(
             request.id,
-            _make_request(place_id=existing.place_id),
+            _make_approval(place_id=existing.place_id),
             reviewer_id=uuid.uuid4(),
         )
 
@@ -390,7 +427,7 @@ class TestApproveCreationRequest:
         service = EstablishmentService(uow=uow)
 
         result, reused = await service.approve_creation_request(
-            request.id, _make_request(), reviewer_id=uuid.uuid4()
+            request.id, _make_approval(), reviewer_id=uuid.uuid4()
         )
 
         assert reused is False
@@ -413,7 +450,7 @@ class TestApproveCreationRequest:
         service = EstablishmentService(uow=uow)
 
         await service.approve_creation_request(
-            request.id, _make_request(), reviewer_id=uuid.uuid4()
+            request.id, _make_approval(), reviewer_id=uuid.uuid4()
         )
 
         uow.user_establishment_repo.preset_relation.assert_called_once_with(
@@ -445,7 +482,7 @@ class TestApproveCreationRequest:
         service = EstablishmentService(uow=uow)
 
         await service.approve_creation_request(
-            request.id, _make_request(), reviewer_id=uuid.uuid4()
+            request.id, _make_approval(), reviewer_id=uuid.uuid4()
         )
 
         uow.user_establishment_repo.update_status_for_ids.assert_called_once_with(
@@ -474,7 +511,7 @@ class TestApproveCreationRequest:
         service = EstablishmentService(uow=uow)
 
         await service.approve_creation_request(
-            request.id, _make_request(), reviewer_id=uuid.uuid4()
+            request.id, _make_approval(), reviewer_id=uuid.uuid4()
         )
 
         uow.user_establishment_repo.preset_relation.assert_not_called()
@@ -487,7 +524,7 @@ class TestApproveCreationRequest:
         service = EstablishmentService(uow=uow)
 
         await service.approve_creation_request(
-            request.id, _make_request(), reviewer_id=uuid.uuid4()
+            request.id, _make_approval(), reviewer_id=uuid.uuid4()
         )
 
         assert request.status == EstablishmentRequestStatus.APPROVED
@@ -501,7 +538,7 @@ class TestApproveCreationRequest:
         service = EstablishmentService(uow=uow)
 
         await service.approve_creation_request(
-            request.id, _make_request(), reviewer_id=reviewer_id
+            request.id, _make_approval(), reviewer_id=reviewer_id
         )
 
         assert request.reviewed_by == reviewer_id
@@ -525,10 +562,88 @@ class TestApproveCreationRequest:
             new_callable=AsyncMock,
         ) as mock_email:
             await service.approve_creation_request(
-                request.id, _make_request(), reviewer_id=uuid.uuid4()
+                request.id, _make_approval(), reviewer_id=uuid.uuid4()
             )
 
         mock_email.assert_awaited_once_with("worker@test.com", "Centro A")
+
+    async def test_new_establishment_stores_the_approved_profile(self, make_uow):
+        """The profile sent on approval is stored on a new establishment,
+        over the one proposed with the request."""
+        request = _make_request_orm(uuid.uuid4(), characterization=OTHER_STORED)
+        uow = make_uow(request=request, existing_establishment=None)
+        service = EstablishmentService(uow=uow)
+
+        await service.approve_creation_request(
+            request.id,
+            _make_approval(characterization=PROFILE),
+            reviewer_id=uuid.uuid4(),
+        )
+
+        created = uow.establishment_repo.create.call_args[0][0]
+        assert created.characterization == PROFILE_STORED
+
+    @pytest.mark.parametrize(
+        ("approved_profile", "expected"),
+        [
+            # Without a final profile, the one proposed with the request is used.
+            (None, OTHER_STORED),
+            # An approved profile with no answer clears the proposed one.
+            (EstablishmentCharacterization(), None),
+        ],
+    )
+    async def test_new_establishment_profile_falls_back_to_the_request(
+        self, make_uow, approved_profile, expected
+    ):
+        request = _make_request_orm(uuid.uuid4(), characterization=OTHER_STORED)
+        uow = make_uow(request=request, existing_establishment=None)
+        service = EstablishmentService(uow=uow)
+
+        await service.approve_creation_request(
+            request.id,
+            _make_approval(characterization=approved_profile),
+            reviewer_id=uuid.uuid4(),
+        )
+
+        created = uow.establishment_repo.create.call_args[0][0]
+        assert created.characterization == expected
+
+    async def test_reused_establishment_without_answers_takes_the_profile(
+        self, make_uow, make_establishment
+    ):
+        existing = make_establishment()
+        existing.characterization_status = CharacterizationStatus.PENDING
+        request = _make_request_orm(uuid.uuid4())
+        uow = make_uow(request=request, existing_establishment=existing)
+        service = EstablishmentService(uow=uow)
+
+        await service.approve_creation_request(
+            request.id,
+            _make_approval(place_id=existing.place_id, characterization=PROFILE),
+            reviewer_id=uuid.uuid4(),
+        )
+
+        assert existing.characterization == PROFILE_STORED
+        uow.establishment_repo.update.assert_awaited_once_with(existing)
+
+    async def test_reused_establishment_keeps_its_answered_profile(
+        self, make_uow, make_establishment
+    ):
+        existing = make_establishment()
+        existing.characterization = OTHER_STORED
+        existing.characterization_status = CharacterizationStatus.COMPLETE
+        request = _make_request_orm(uuid.uuid4())
+        uow = make_uow(request=request, existing_establishment=existing)
+        service = EstablishmentService(uow=uow)
+
+        await service.approve_creation_request(
+            request.id,
+            _make_approval(place_id=existing.place_id, characterization=PROFILE),
+            reviewer_id=uuid.uuid4(),
+        )
+
+        assert existing.characterization == OTHER_STORED
+        uow.establishment_repo.update.assert_not_called()
 
 
 class TestRejectCreationRequest:

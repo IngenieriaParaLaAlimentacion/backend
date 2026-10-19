@@ -19,6 +19,11 @@ from app.core.dependencies import (
 )
 from app.domain import UserActor
 from app.exceptions.domain_exceptions import MissingTokenError
+from app.exceptions.exception_handlers import INVALID_FIELD_EXTENSION
+from app.schemas.establishments.establishment_characterization_schema import (
+    EstablishmentCharacterization,
+    EstablishmentCharacterizationResponse,
+)
 from app.schemas.establishments.establishment_dashboard_schema import (
     EstablishmentMapResponse,
 )
@@ -44,12 +49,16 @@ router = APIRouter(prefix="/establishments")
     response_model=EstablishmentResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Register a new establishment",
-    description="Creates a new establishment.",
+    description="Creates a new establishment, optionally with its "
+    "characterization profile.",
     responses={
-        status.HTTP_400_BAD_REQUEST: {"description": "Invalid data"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Invalid data; `field` names the field that failed"
+        },
         **AUTH_RESPONSES,
         status.HTTP_409_CONFLICT: {"description": "Establishment already exists"},
     },
+    openapi_extra={INVALID_FIELD_EXTENSION: True},
 )
 async def create_establishment(
     data: EstablishmentRequest,
@@ -68,11 +77,15 @@ async def create_establishment(
     summary="Request creation of a missing establishment",
     description="Notifies an admin that the establishment the authenticated user "
     "needs access to is missing from the catalog, so it can be reviewed and "
-    "registered. Name and address are not optional.",
+    "registered. Name and address are not optional; a characterization "
+    "profile may be proposed with it.",
     responses={
-        status.HTTP_422_UNPROCESSABLE_CONTENT: {"description": "Invalid data"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Invalid data; `field` names the field that failed"
+        },
         **AUTH_RESPONSES,
     },
+    openapi_extra={INVALID_FIELD_EXTENSION: True},
 )
 async def create_establishment_request(
     data: EstablishmentCreationRequestCreate,
@@ -106,6 +119,41 @@ async def update_establishment(
     """Partially update an establishment."""
     establishment = await service.update_establishment(establishment_id, data)
     return EstablishmentResponse.model_validate(establishment)
+
+
+@router.put(
+    "/{establishment_id}/characterization",
+    response_model=EstablishmentCharacterizationResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Replace an establishment's characterization profile",
+    description=(
+        "Replaces the whole profile: a field sent as `null` or `[]`, or left "
+        "out, clears what was stored. `characterization_status` is computed "
+        "and ignored if sent. Each `*_other` text is accepted only when "
+        '`"other"` is chosen in its field. A 422 carries a `field` extension '
+        "naming the body field that failed (`opening_hours` for any error "
+        "inside a slot). Accessible by admins, superadmins and field workers "
+        "with approved access to this establishment."
+    ),
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Invalid profile; `field` names the field that failed"
+        },
+    },
+    openapi_extra={INVALID_FIELD_EXTENSION: True},
+)
+async def replace_establishment_characterization(
+    establishment_id: UUID,
+    data: EstablishmentCharacterization,
+    actor: UserActor = Depends(require_any),
+    service: EstablishmentService = Depends(get_establishment_service),
+) -> EstablishmentCharacterizationResponse:
+    establishment = await service.replace_characterization(
+        establishment_id, actor, data
+    )
+    return EstablishmentCharacterizationResponse.model_validate(establishment)
 
 
 @router.get(

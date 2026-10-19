@@ -19,6 +19,11 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 `/errors/not-found` (404, unrouted path), `/errors/method-not-allowed` (405) and
 `/errors/internal-error` (500).
 
+`/errors/validation-failed` does not name the fields that failed, except on routes
+marked `x-invalid-field-extension` in the OpenAPI document: there it also carries
+`field`, the path of the first body field that failed (dotted when nested, down
+to the first list index), never its value.
+
 | `type` | Status | Exception | Description |
 |---|---|---|---|
 | `/errors/account-pending-validation` | 403 | `PendingValidationError` | Exception raised when a user attempts to log in with a pending account. |
@@ -56,6 +61,9 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/no-fields-to-update` | 400 | `EmptyUpdateRequestError` | Exception raised when an update has no attributes to be updated. |
 | `/errors/not-resource-owner` | 403 | `NotResourceOwnerError` | Raised when a non-admin acts on a resource somebody else created. |
 | `/errors/notification-configuration-invalid` | 503 | `NotificationConfigurationError` | Raised when scheduled notifications are not fully configured. |
+| `/errors/nutrition/invalid-children-count` | 422 | `InvalidChildrenCountError` | Raised when a recipe is requested for no children or a negative number. |
+| `/errors/nutrition/recipe-optimization-failed` | 500 | `RecipeOptimizationError` | Raised when the solver cannot return an optimal recipe. |
+| `/errors/nutrition/unknown-gapa-group` | 500 | `UnknownGapaGroupError` | Raised when the catalog holds a GAPA group the application does not know. |
 | `/errors/password-not-found` | 404 | `PasswordNotFoundError` | Exception raised when a user's password record is not found. |
 | `/errors/rate-limited` | 429 | `RateLimitedError` | Raised when a caller exceeds the rate limit of a public endpoint. |
 | `/errors/receipt-photo-storage-failed` | 502 | `ReceiptPhotoStorageError` | Raised when a receipt photo cannot be persisted to object storage. |

@@ -109,7 +109,7 @@ class Settings(BaseSettings):
     gemini_retry_backoff_max_seconds: float = 8
     # Per-request HTTP timeout, so a stalled connection fails fast instead of
     # hanging forever and never reaching the retry/fallback logic.
-    gemini_request_timeout_seconds: float = 30
+    gemini_request_timeout_seconds: float = 120
     # Secondary model tried after the primary exhausts its attempts on a
     # retryable failure. Unset disables the fallback.
     gemini_fallback_model: Optional[str] = None

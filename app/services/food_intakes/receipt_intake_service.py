@@ -1,5 +1,4 @@
 import uuid
-from decimal import Decimal, InvalidOperation
 from typing import Any
 from uuid import UUID
 
@@ -10,6 +9,8 @@ from app.core.interfaces.llm_client import ILlmClient
 from app.core.interfaces.object_storage import IObjectStorage
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.food_intake import FoodIntakeDomain
+from app.domain.printed_quantity import parse_printed_quantity
+from app.domain.printed_unit import prefill_from_printed
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
     ImageContentMismatchError,
@@ -136,35 +137,39 @@ class ReceiptIntakeService:
         if not self._validate_magic_bytes(data, content_type):
             raise ImageContentMismatchError(content_type)
 
-    @staticmethod
-    def _to_decimal(value: Any) -> Decimal | None:
-        """Convert an LLM-returned number to Decimal, via its string form to
-        avoid binary float artifacts (e.g. ``0.1`` -> ``Decimal("0.1")``).
+    async def _build_line(self, raw: dict[str, Any]) -> ProposedFoodLine:
+        """Build one proposed line from an extracted receipt item.
 
-        Returns None for a missing/null value or one the model returned in
-        an unparsable shape, rather than letting a malformed extraction
-        break the whole proposal.
+        The catalog match is delegated entirely to
+        ``FoodRepository.find_best_match`` (trigram similarity, ADR-0017).
+        For a matched line, ``quantity`` and ``unit`` are prefilled together
+        from the printed quantity when its unit is exactly the food's base
+        unit (see ``prefill_from_printed``), and both stay None otherwise.
         """
-        if value is None:
-            return None
-        try:
-            return Decimal(str(value))
-        except InvalidOperation:
-            return None
-
-    async def _match_food(self, description: str) -> IdentifierRefSchema | None:
-        """Return the catalog food that best matches ``description``, if any.
-
-        Delegates the confidence decision entirely to
-        ``FoodRepository.find_best_match`` (trigram similarity, ADR-0016) --
-        this only shapes the result for ``ProposedFoodLine.food``.
-        """
+        raw_quantity = parse_printed_quantity(raw.get("raw_quantity"))
+        raw_unit_text = raw.get("raw_unit_text")
         food = await self.uow.food_repo.find_best_match(
-            description,
+            raw["description"],
             settings.receipt_food_match_min_word_similarity,
             settings.receipt_food_match_min_similarity,
         )
-        return IdentifierRefSchema.model_validate(food) if food is not None else None
+
+        quantity = None
+        unit = None
+        if food is not None:
+            prefill = prefill_from_printed(raw_quantity, raw_unit_text, food.base_unit)
+            if prefill is not None:
+                quantity, unit = prefill
+
+        return ProposedFoodLine(
+            description=raw["description"],
+            food=IdentifierRefSchema.model_validate(food) if food is not None else None,
+            quantity=quantity,
+            unit=unit,
+            raw_quantity=raw_quantity,
+            raw_unit_text=raw_unit_text,
+            needs_review=True,
+        )
 
     @staticmethod
     def _build_photo_key(establishment_id: UUID, content_type: str) -> str:
@@ -194,8 +199,10 @@ class ReceiptIntakeService:
         rejected proposal never leaves an orphaned object in storage.
 
         Each line is matched against the food catalog by name similarity
-        (ADR-0016); ``food`` is set when a confident match is found, and left
-        ``None`` otherwise. ``needs_review`` is always ``True`` regardless --
+        (ADR-0017); ``food`` is set when a confident match is found, and left
+        ``None`` otherwise. On a match, ``quantity`` and ``unit`` are
+        prefilled from the printed quantity when it is already in the food's
+        base unit; nothing is converted. ``needs_review`` is always ``True`` --
         matching never marks a line as resolved, since the last validation
         before this data hits establishment stock is always the user's. When
         the extractor finds nothing, or the LLM call itself fails, the
@@ -235,16 +242,7 @@ class ReceiptIntakeService:
                 message=self._MANUAL_FALLBACK_MESSAGE,
             )
 
-        lines = [
-            ProposedFoodLine(
-                description=raw["description"],
-                food=await self._match_food(raw["description"]),
-                raw_quantity=self._to_decimal(raw.get("raw_quantity")),
-                raw_unit_text=raw.get("raw_unit_text"),
-                needs_review=True,
-            )
-            for raw in result["lines"]
-        ]
+        lines = [await self._build_line(raw) for raw in result["lines"]]
         if not lines:
             logger.info(
                 "receipt_intake_no_lines_found",

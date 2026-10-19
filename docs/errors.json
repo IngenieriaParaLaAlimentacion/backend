@@ -211,6 +211,24 @@
       "description": "Raised when scheduled notifications are not fully configured."
     },
     {
+      "type": "/errors/nutrition/invalid-children-count",
+      "status": 422,
+      "exception": "InvalidChildrenCountError",
+      "description": "Raised when a recipe is requested for no children or a negative number."
+    },
+    {
+      "type": "/errors/nutrition/recipe-optimization-failed",
+      "status": 500,
+      "exception": "RecipeOptimizationError",
+      "description": "Raised when the solver cannot return an optimal recipe."
+    },
+    {
+      "type": "/errors/nutrition/unknown-gapa-group",
+      "status": 500,
+      "exception": "UnknownGapaGroupError",
+      "description": "Raised when the catalog holds a GAPA group the application does not know."
+    },
+    {
       "type": "/errors/password-not-found",
       "status": 404,
       "exception": "PasswordNotFoundError",

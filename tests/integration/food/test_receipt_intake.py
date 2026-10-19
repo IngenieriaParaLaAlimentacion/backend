@@ -19,7 +19,7 @@ def _upload(establishment_id, *, filename="receipt.png", content_type="image/png
 @pytest_asyncio.fixture
 async def db_food(app):
     """Seed a single real catalog food ("Arroz") to exercise trigram matching
-    (ADR-0016) against a real Postgres instance, not a mock."""
+    (ADR-0017) against a real Postgres instance, not a mock."""
     from app.db.database import AsyncSessionLocal
     from app.domain.food_catalog import MeasurementUnit
     from app.models.food_catalog.food import Food
@@ -45,7 +45,7 @@ async def db_food(app):
 @pytest_asyncio.fixture
 async def db_foods(app):
     """Seed a small, varied catalog to exercise the word-similarity + whole-string
-    floor combination (ADR-0016) against a real Postgres instance.
+    floor combination (ADR-0017) against a real Postgres instance.
 
     Includes "Sal" -- a short name that a naive word-similarity match would score
     deceptively high against an unrelated, noisy receipt line -- to prove the
@@ -144,7 +144,7 @@ class TestAcceptedUpload:
 
 
 class TestCatalogMatching:
-    """Trigram-similarity matching against the real catalog (ADR-0016)."""
+    """Trigram-similarity matching against the real catalog (ADR-0017)."""
 
     async def test_close_description_matches_the_catalog_food(
         self, client, admin_headers, db_establishment, db_food, fake_llm_client
