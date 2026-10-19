@@ -7,7 +7,7 @@ from fastapi import status
 
 from app.core.security import create_access_token
 from app.domain.user import UserRole
-from tests.integration.urls import MEASUREMENTS_URL
+from tests.integration.urls import MEASUREMENTS_URL, SUBJECTS_URL
 
 
 @pytest_asyncio.fixture
@@ -455,6 +455,19 @@ class TestObservation:
         )
         assert listing.status_code == status.HTTP_200_OK
         assert listing.json()["items"][0]["observation"] == expected
+
+        detail = await client.get(
+            f"{SUBJECTS_URL}/{db_adult_subject.id}", headers=db_admin_headers
+        )
+        assert detail.status_code == status.HTTP_200_OK
+        assert detail.json()["latest_measurement"]["observation"] == expected
+
+        evolution = await client.get(
+            f"{SUBJECTS_URL}/{db_adult_subject.id}/measurements/evolution",
+            headers=db_admin_headers,
+        )
+        assert evolution.status_code == status.HTTP_200_OK
+        assert evolution.json()["points"][0]["observation"] == expected
 
     async def test_replay_keeps_original_note(
         self,

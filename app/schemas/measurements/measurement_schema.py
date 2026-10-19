@@ -57,6 +57,7 @@ class MeasurementSnapshotBase(BaseModel):
     height_cm: float
     bmi: RoundedBmi
     alerts: list[AlertResponse]
+    observation: str | None = None
 
 
 class MeasurementResponse(BaseModel):

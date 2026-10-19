@@ -69,6 +69,7 @@ MEASUREMENT_COLUMNS: tuple[CsvColumn[MeasurementListItemDomain], ...] = (
         lambda m: format_person(m.responsible.name, m.responsible.last_name),
     ),
     CsvColumn("Alertas", lambda m: format_alerts(m.alerts)),
+    CsvColumn("Observación", lambda m: normalize_cell(m.observation)),
 )
 
 SURVEY_COLUMNS: tuple[CsvColumn[SurveyListItemDomain], ...] = (

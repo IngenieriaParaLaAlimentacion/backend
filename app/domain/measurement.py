@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime
 from enum import Enum, StrEnum
 from typing import Self
@@ -132,6 +132,7 @@ class MeasurementBase:
     height_cm: float
     bmi: float
     alerts: list[AlertDomain]
+    observation: str | None = field(default=None, kw_only=True)
 
     @classmethod
     def _base_kwargs(cls, obj) -> dict:
@@ -142,6 +143,7 @@ class MeasurementBase:
             height_cm=obj.height_cm,
             bmi=obj.bmi,
             alerts=[AlertDomain.from_db(a) for a in obj.alerts],
+            observation=obj.observation,
         )
 
     @classmethod
@@ -281,7 +283,6 @@ class MeasurementListItemDomain(MeasurementBase):
     subject: SubjectRefDomain
     establishment: EstablishmentRefDomain
     responsible: ResponsibleRefDomain
-    observation: str | None = None
 
     @classmethod
     def from_db(cls, obj) -> "MeasurementListItemDomain":
@@ -292,5 +293,4 @@ class MeasurementListItemDomain(MeasurementBase):
             subject=SubjectRefDomain.from_db(obj.subject),
             establishment=EstablishmentRefDomain.from_db(obj.establishment),
             responsible=ResponsibleRefDomain.from_db(obj.responsible),
-            observation=obj.observation,
         )

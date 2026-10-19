@@ -80,6 +80,7 @@ class SubjectLatestMeasurementResponse(BaseModel):
     bmi: RoundedBmi
     establishment: EstablishmentRefResponse
     alerts: list[AlertResponse]
+    observation: str | None = None
 
 
 class SubjectDetailResponse(SubjectResponse):
