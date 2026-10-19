@@ -80,5 +80,6 @@ def test_stdout_line_is_replaced_when_masking_fails(stdout_logs, monkeypatch):
     lines = stdout_logs()
     assert [line["event"] for line in lines] == [MASKING_ERROR, MASKING_ERROR]
     assert [line["level"] for line in lines] == ["warning", "warning"]
+    assert [line["masking_error"] for line in lines] == ["RuntimeError"] * 2
     assert "30123456" not in str(lines)
     assert "ana@dominio.com" not in str(lines)

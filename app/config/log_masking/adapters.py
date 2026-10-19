@@ -1,7 +1,8 @@
 """Hooks that apply the masking core to structlog, OpenTelemetry logs and spans.
 
 None of them lets an exception escape: when masking fails, the data is replaced
-by ``[masking error]`` instead of being passed on unmasked.
+by ``[masking error]`` and the name of the exception type, instead of being passed
+on unmasked.
 """
 
 from typing import Any
@@ -30,8 +31,13 @@ def mask_structlog_event(logger: Any, method_name: str, event_dict: dict) -> dic
     """Structlog processor that masks the whole event dict."""
     try:
         return mask_event_dict(event_dict)
-    except Exception:
-        failed = {"event": MASKING_ERROR, "level": event_dict.get("level")}
+    except Exception as exc:
+        # The exception type is safe to write because it carries no event data.
+        failed = {
+            "event": MASKING_ERROR,
+            "level": event_dict.get("level"),
+            "masking_error": type(exc).__name__,
+        }
         failed.update(
             {key: event_dict[key] for key in _STRUCTLOG_META_KEYS if key in event_dict}
         )
@@ -51,9 +57,9 @@ class MaskingLogRecordProcessor(LogRecordProcessor):
                 # BoundedAttributes is immutable, so the attributes are replaced
                 # with a masked copy instead of being edited.
                 record.attributes = mask_event_dict(dict(record.attributes))
-        except Exception:
+        except Exception as exc:
             record.body = MASKING_ERROR
-            record.attributes = {}
+            record.attributes = {"masking_error": type(exc).__name__}
 
     def shutdown(self) -> None:
         """Do nothing: the processor holds no resources."""

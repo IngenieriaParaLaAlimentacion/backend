@@ -161,14 +161,17 @@ API response bodies are not touched: the processors only see log events and span
 
 The three adapters fail closed and never raise. If the core raises:
 
-- the structlog processor returns `{"event": "[masking error]", "level": <original level>}` (plus the
-  `_record` and `_from_structlog` keys that `ProcessorFormatter` deletes right after the chain and
-  needs in order not to drop the line);
-- the log record processor sets the body to `[masking error]` and clears the attributes;
+- the structlog processor returns `{"event": "[masking error]", "level": <original level>,
+  "masking_error": <exception type name>}` (plus the `_record` and `_from_structlog` keys that
+  `ProcessorFormatter` deletes right after the chain and needs in order not to drop the line);
+- the log record processor sets the body to `[masking error]` and replaces the attributes with
+  `{"masking_error": <exception type name>}`;
 - the span hook sets the URL attributes (`http.url`, `url.full`, `http.target`, `url.query`) and the
   client address attributes to `[masking error]`.
 
-The adapters do not log the failure, to avoid recursion through the same handlers. The hook must not
+The adapters do not log the failure, to avoid recursion through the same handlers. Only the exception
+type name is kept, never its message, because the type carries no event data and tells which rule
+change broke the masking. The hook must not
 raise because an exception inside an instrumentation hook can turn the response into a 500
 ([opentelemetry-python-contrib#3642](https://github.com/open-telemetry/opentelemetry-python-contrib/issues/3642)).
 

@@ -128,14 +128,14 @@ def _raise(*args, **kwargs):
     raise RuntimeError("masking broke")
 
 
-def test_log_processor_fails_closed_clearing_body_and_attributes(monkeypatch):
+def test_log_processor_fails_closed_keeping_only_the_error_type(monkeypatch):
     monkeypatch.setattr(adapters, "mask_event_dict", _raise)
     record = SimpleNamespace(body="dni 30123456", attributes={"dni": "30123456"})
 
     MaskingLogRecordProcessor().on_emit(SimpleNamespace(log_record=record))
 
     assert record.body == MASKING_ERROR
-    assert record.attributes == {}
+    assert record.attributes == {"masking_error": "RuntimeError"}
 
 
 def test_span_hook_replaces_url_attributes_when_masking_fails(monkeypatch):
