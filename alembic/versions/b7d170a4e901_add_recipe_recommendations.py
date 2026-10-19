@@ -1,4 +1,4 @@
-"""Add recommendation snapshots, atomic choices and cultural identities."""
+"""Add recommendation snapshots, atomic choices and catalog mass conversions."""
 
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
@@ -6,27 +6,13 @@ from sqlalchemy.dialects import postgresql
 from alembic import op
 
 revision = "b7d170a4e901"
-down_revision = "a1c5e9f27b34"
+down_revision = "2a0ca9c7a57a"
 branch_labels = None
 depends_on = None
 
 
 def upgrade() -> None:
-    """Create recommendation records and optional cultural and mass metadata."""
-    op.add_column(
-        "establishments",
-        sa.Column(
-            "cultural_identities",
-            postgresql.ARRAY(sa.String()),
-            nullable=False,
-            server_default="{}",
-        ),
-    )
-    op.create_check_constraint(
-        "ck_establishments_cultural_identities",
-        "establishments",
-        "cultural_identities <@ ARRAY['paraguayan','bolivian']::varchar[]",
-    )
+    """Create recommendation records and optional catalog mass metadata."""
     op.add_column(
         "foods", sa.Column("grams_per_base_unit", sa.Numeric(12, 3), nullable=True)
     )
@@ -112,5 +98,3 @@ def downgrade() -> None:
     op.drop_table("recipe_requests")
     op.drop_constraint("ck_foods_positive_gram_conversion", "foods")
     op.drop_column("foods", "grams_per_base_unit")
-    op.drop_constraint("ck_establishments_cultural_identities", "establishments")
-    op.drop_column("establishments", "cultural_identities")

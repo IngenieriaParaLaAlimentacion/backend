@@ -9,6 +9,7 @@ from sqlalchemy import func, select, update
 
 from app.core.dependencies import get_llm_client
 from app.core.interfaces.llm_client import ILlmClient
+from app.domain.establishment_characterization import CulturalIdentity
 from app.domain.food_catalog import NutrientGroup
 from app.domain.user import UserRole
 from app.exceptions.domain_exceptions import LlmClientError
@@ -326,26 +327,54 @@ async def test_invalid_children_count(client, recipe_setup, value):
     assert recipe_setup[1].calls == []
 
 
-async def test_culture_configured_and_absent(client, recipe_setup, make_user_with_role):
+@pytest.mark.parametrize(
+    "identity",
+    [
+        "paraguayan",
+        "bolivian",
+        "guarani",
+        "andean",
+        "indigenous",
+        "migrant",
+        "criollo",
+        "other",
+    ],
+)
+async def test_culture_from_characterization(
+    client, recipe_setup, identity, field_worker_with_access, make_user_with_role
+):
     headers, fake, body = recipe_setup
-    url = f"{ROOT}/establishments/{body['establishment_id']}/cultural-identities"
-    assert (await client.get(url, headers=headers)).json() == {"identities": []}
+    url = f"{ROOT}/establishments/{body['establishment_id']}/characterization"
     result = await generate(client, recipe_setup)
     assert all(p["cultural_identity"] is None for p in result["proposals"])
-    response = await client.put(
-        url, headers=headers, json={"identities": ["paraguayan", "bolivian"]}
-    )
+    profile = {"cultural_identities": [identity]}
+    if identity == "other":
+        profile["cultural_identities_other"] = "Cocina peruana"
+    field_headers, _ = field_worker_with_access
+    response = await client.put(url, headers=field_headers, json=profile)
     assert response.status_code == 200
     result = await generate(client, recipe_setup)
-    assert result["proposals"][0]["cultural_identity"] == "bolivian"
-    assert "bolivian" in fake.calls[-1]
-    field_headers, _ = await make_user_with_role(UserRole.FIELD_WORKER)
+    assert result["proposals"][0]["cultural_identity"] == identity
+    for prompt in fake.calls[-2:]:
+        context = json.loads(prompt.split("Context:\n")[1])
+        assert context["cultural_identities"] == [identity]
+        assert context["cultural_identities_other"] == profile.get(
+            "cultural_identities_other"
+        )
+    outsider, _ = await make_user_with_role(UserRole.FIELD_WORKER)
+    assert (await client.put(url, headers=outsider, json={})).status_code == 403
     assert (
-        await client.put(url, headers=field_headers, json={"identities": []})
-    ).status_code == 403
-    assert (
-        await client.put(url, headers=headers, json={"identities": ["invented"]})
+        await client.put(
+            url, headers=headers, json={"cultural_identities": ["invented"]}
+        )
     ).status_code == 422
+    assert (await client.put(url, headers=headers, json={})).status_code == 200
+    result = await generate(client, recipe_setup)
+    assert all(p["cultural_identity"] is None for p in result["proposals"])
+    assert (
+        json.loads(fake.calls[-1].split("Context:\n")[1])["cultural_identities_other"]
+        is None
+    )
 
 
 async def test_concurrent_identical_choices_spend_once(client, recipe_setup):
@@ -402,9 +431,9 @@ async def test_cultural_dish_not_viable_uses_ordinary_meals(client, recipe_setup
     headers, fake, body = recipe_setup
     fake.cultural_fallback = True
     await client.put(
-        f"{ROOT}/establishments/{body['establishment_id']}/cultural-identities",
+        f"{ROOT}/establishments/{body['establishment_id']}/characterization",
         headers=headers,
-        json={"identities": ["paraguayan"]},
+        json={"cultural_identities": ["paraguayan"]},
     )
     result = await generate(client, recipe_setup)
     assert all(p["cultural_identity"] is None for p in result["proposals"])
@@ -485,3 +514,17 @@ async def test_reuse_preview_insufficient_stock_saves_nothing(client, recipe_set
     )
     assert response.status_code == 409
     assert await counts() == [1, 0, 0]
+
+
+async def test_culture_catalog_is_shared_and_separate_editor_is_absent(
+    client, recipe_setup
+):
+    headers, _, body = recipe_setup
+    response = await client.get(f"{ROOT}/cultural-identities", headers=headers)
+    assert response.status_code == 200
+    assert set(response.json()) == {identity.value for identity in CulturalIdentity}
+    url = f"{ROOT}/establishments/{body['establishment_id']}/cultural-identities"
+    assert (await client.get(url, headers=headers)).status_code == 404
+    assert (
+        await client.put(url, headers=headers, json={"identities": []})
+    ).status_code == 404

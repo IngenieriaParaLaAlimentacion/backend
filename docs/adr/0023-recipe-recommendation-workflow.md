@@ -1,8 +1,8 @@
-# ADR-0022: Recipe recommendations with Gemini and the nutrition LP
+# ADR-0023: Recipe recommendations with Gemini and the nutrition LP
 
 - **Status**: Accepted
 - **Date**: 2026-10-17
-- **Related**: #170, #169, ADR-0021, ADR-0014, ADR-0004
+- **Related**: #170, #169, ADR-0022, ADR-0021, ADR-0014, ADR-0004
 
 ## Decision
 
@@ -50,9 +50,14 @@ Proposals do not expire; current stock is always checked at selection.
 
 ## Culture and mass conversion
 
-Establishments hold zero or more closed identity codes, initially `paraguayan`
-and `bolivian`. Only admins change them. Both prompts receive them and the last
-ten chosen recipes. The selection model reports whether a cultural dish is
+The establishment ficha from #200 is the single source of cultural context:
+`characterization.cultural_identities` and `cultural_identities_other`. Recipes
+reuse its domain catalog, extended with `paraguayan` and `bolivian` without
+reinterpreting existing identities. Editing uses the ficha endpoint and its
+admin/superadmin and approved field-worker permissions. There is no separate
+establishment culture column or recipe-specific culture editor. Both prompts
+receive the codes and optional other description; selection also receives the
+last ten chosen recipes. The selection model reports whether a cultural dish is
 viable; if so, at least one tagged candidate is required, with a bounded repair.
 Ordinary dishes remain valid when stock cannot support cultural inspiration.
 Culinary/cultural judgments remain model judgments rather than mathematical

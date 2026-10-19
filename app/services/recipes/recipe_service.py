@@ -38,7 +38,6 @@ from app.schemas.food_outflows.food_outflow_schema import FoodOutflowRequest
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.recipes.recipe_schema import (
     CandidateBatch,
-    CulturalIdentitiesInput,
     GramConversionInput,
     RecipeIngredient,
     RecipeProposal,
@@ -162,13 +161,18 @@ class RecipeService:
             if len(rows) != len(foods)
             else []
         )
-        identities = list(establishment.cultural_identities or [])
+        profile = establishment.characterization or {}
+        identities = list(profile.get("cultural_identities") or [])
+        identity_other = (
+            profile.get("cultural_identities_other") if "other" in identities else None
+        )
         recent, _ = await self.uow.recipe_repo.history(
             data.establishment_id, chosen_only=True, limit=10, offset=0
         )
         context = {
             **data.model_dump(mode="json"),
             "cultural_identities": identities,
+            "cultural_identities_other": identity_other,
             "stock": [
                 {
                     "food_id": str(f.id),
@@ -281,6 +285,7 @@ class RecipeService:
                 "write.txt",
                 {
                     "cultural_identities": identities,
+                    "cultural_identities_other": identity_other,
                     "recipes": [p.model_dump(mode="json") for p in proposals],
                 },
                 WritingBatch,
@@ -522,27 +527,6 @@ class RecipeService:
         await self._choose(record, proposal, actor)
         await self.uow.commit()
         return self._response(record), True
-
-    async def identities(
-        self, establishment_id: UUID, actor: UserActor
-    ) -> CulturalIdentitiesInput:
-        """Read cultural identities for an accessible establishment."""
-        establishment = await self._access(establishment_id, actor)
-        return CulturalIdentitiesInput(
-            identities=establishment.cultural_identities or []
-        )
-
-    async def set_identities(
-        self, establishment_id: UUID, data: CulturalIdentitiesInput, actor: UserActor
-    ) -> CulturalIdentitiesInput:
-        """Replace cultural identities as an administrator."""
-        if actor.role not in (UserRole.ADMIN, UserRole.SUPERADMIN):
-            raise RoleNotAllowedError()
-        establishment = await self._access(establishment_id, actor)
-        establishment.cultural_identities = sorted(set(data.identities))
-        await self.uow.establishment_repo.update(establishment)
-        await self.uow.commit()
-        return CulturalIdentitiesInput(identities=establishment.cultural_identities)
 
     async def set_conversion(
         self, food_id: UUID, data: GramConversionInput, actor: UserActor

@@ -543,212 +543,6 @@
         ]
       }
     },
-    "/api/v1/establishments/{establishment_id}/cultural-identities": {
-      "get": {
-        "tags": [
-          "Recipes V1"
-        ],
-        "summary": "Establishment Identities",
-        "description": "Read identities for an accessible establishment.",
-        "operationId": "establishment_identities_api_v1_establishments__establishment_id__cultural_identities_get",
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "establishment_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Establishment Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CulturalIdentitiesInput"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid authentication token",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permissions",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Establishment, request, proposal or food not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "No usable stock, insufficient stock, or conflicting choice",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request payload",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Unexpected internal error",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Recipes V1"
-        ],
-        "summary": "Replace Identities",
-        "description": "Replace an establishment's identities as an administrator.",
-        "operationId": "replace_identities_api_v1_establishments__establishment_id__cultural_identities_put",
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "establishment_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Establishment Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CulturalIdentitiesInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CulturalIdentitiesInput"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid authentication token",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permissions",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Establishment, request, proposal or food not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "No usable stock, insufficient stock, or conflicting choice",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request payload",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Unexpected internal error",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v1/food-catalog/foods/{food_id}/gram-conversion": {
       "put": {
         "tags": [
@@ -1452,10 +1246,15 @@
         "type": "string",
         "enum": [
           "paraguayan",
-          "bolivian"
+          "bolivian",
+          "indigenous",
+          "andean",
+          "guarani",
+          "migrant",
+          "criollo",
+          "other"
         ],
-        "title": "CulturalIdentity",
-        "description": "Supported establishment cultural identities."
+        "title": "CulturalIdentity"
       },
       "RecipeSelectionResponse": {
         "properties": {
@@ -1580,25 +1379,6 @@
         ],
         "title": "ReuseInput",
         "description": "Client-generated identity and portion count for a reused recipe."
-      },
-      "CulturalIdentitiesInput": {
-        "properties": {
-          "identities": {
-            "items": {
-              "$ref": "#/components/schemas/CulturalIdentity"
-            },
-            "type": "array",
-            "maxItems": 2,
-            "title": "Identities"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "identities"
-        ],
-        "title": "CulturalIdentitiesInput",
-        "description": "Replace an establishment's cultural identities."
       },
       "GramConversionInput-Input": {
         "properties": {

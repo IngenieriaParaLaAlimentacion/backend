@@ -71,7 +71,11 @@ The full list of `type` values is generated from the exception registry into
 FastAPI returns `422 Unprocessable Entity` by default when Pydantic rejects a request body or query parameter. The OpenAPI contract exposed to clients maps these to `400 Bad Request` instead (see `app/core/openapi.py`), which is the semantically correct code for malformed client input.
 
 The response body is the same envelope as any other error, with a string `detail`.
-Individual field failures are not reported.
+Individual field failures are not reported, except on routes marked
+`x-invalid-field-extension`: there the envelope also carries `field`, the name
+of the first body field that failed (dotted when nested, such as
+`characterization.premises_other`; never its value), so a client can flag the
+input without clearing the form.
 
 ### Extension members
 
@@ -262,8 +266,6 @@ Regenerate with `poetry run python docs/generate_openapi.py recipes --tag "Recip
 | POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/reuse-preview` | 200 read-only rescaled proposal; current stock checked; body `{"children_count":45}` |
 | POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/reuse` | 201 new selected request, or 200 replay of its client-generated id |
 | GET | `/cultural-identities` | Closed list of supported cultural identity codes |
-| GET | `/establishments/{establishment_id}/cultural-identities` | Configured identities (possibly empty) |
-| PUT | `/establishments/{establishment_id}/cultural-identities` | Admin-only replacement, 200 |
 | PUT | `/food-catalog/foods/{food_id}/gram-conversion` | Admin-only grams per litre/unit; kilograms always use 1000 |
 
 Generation body (no additional fields, no free text):
@@ -316,9 +318,11 @@ stock and selects the copy in one transaction without an LLM call. Replaying the
 same id and source/count returns 200; changing its meaning returns 409
 `/errors/recipes/idempotency-conflict`. The original request stays unchanged.
 
-Culture replacement body: `{"identities":["paraguayan","bolivian"]}`. The initial
-closed list is Paraguayan and Bolivian; multiple identities and an empty list
-are supported. Generation includes the last ten chosen recipes, asks for cultural
+Culture is read from `characterization.cultural_identities` and optional
+`characterization.cultural_identities_other`. Edit it through the existing ficha
+`PUT /establishments/{establishment_id}/characterization` (full profile replacement),
+using its admin/superadmin or approved field-worker permissions. The shared
+profile catalog includes Paraguayan and Bolivian alongside its existing codes. Generation includes the last ten chosen recipes, asks for cultural
 inspiration when viable, and permits ordinary dishes when stock cannot support
 it. Cultural inspiration never adds ingredients or alters calculated quantities.
 

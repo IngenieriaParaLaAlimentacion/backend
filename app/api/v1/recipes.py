@@ -12,7 +12,6 @@ from app.core.dependencies import (
 from app.domain.user import UserActor
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.recipes.recipe_schema import (
-    CulturalIdentitiesInput,
     CulturalIdentity,
     GramConversionInput,
     RecipeProposal,
@@ -123,35 +122,6 @@ async def reuse_recipe(
 async def cultural_identity_options(_: UserActor = Depends(require_any)):
     """List the closed set of supported cultural identity codes."""
     return list(CulturalIdentity)
-
-
-@router.get(
-    "/establishments/{establishment_id}/cultural-identities",
-    response_model=CulturalIdentitiesInput,
-    responses=_RESPONSES,
-)
-async def establishment_identities(
-    establishment_id: UUID,
-    actor: UserActor = Depends(require_any),
-    service: RecipeService = Depends(get_recipe_service),
-):
-    """Read identities for an accessible establishment."""
-    return await service.identities(establishment_id, actor)
-
-
-@router.put(
-    "/establishments/{establishment_id}/cultural-identities",
-    response_model=CulturalIdentitiesInput,
-    responses=_RESPONSES,
-)
-async def replace_identities(
-    establishment_id: UUID,
-    data: CulturalIdentitiesInput,
-    actor: UserActor = Depends(require_admin),
-    service: RecipeService = Depends(get_recipe_service),
-):
-    """Replace an establishment's identities as an administrator."""
-    return await service.set_identities(establishment_id, data, actor)
 
 
 @router.put(

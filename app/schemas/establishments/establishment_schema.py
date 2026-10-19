@@ -3,6 +3,10 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.domain.establishment_characterization import CharacterizationStatus
+from app.schemas.establishments.establishment_characterization_schema import (
+    EstablishmentCharacterization,
+)
 from app.schemas.types import DescriptionStr, Latitude, Longitude, ValidStr
 
 # -- Request --
@@ -16,6 +20,11 @@ class EstablishmentCreationRequestCreate(BaseModel):
     formatted_address: ValidStr
     city: ValidStr | None = None
     province: ValidStr | None = None
+    characterization: EstablishmentCharacterization | None = Field(
+        default=None,
+        description="Optional characterization profile proposed for the "
+        "establishment, for the admin to review on approval.",
+    )
 
 
 class EstablishmentRequest(BaseModel):
@@ -26,6 +35,22 @@ class EstablishmentRequest(BaseModel):
     place_id: ValidStr
     city: ValidStr
     province: ValidStr
+    characterization: EstablishmentCharacterization | None = Field(
+        default=None,
+        description="Optional characterization profile stored with the new "
+        "establishment.",
+    )
+
+
+class EstablishmentApprovalRequest(EstablishmentRequest):
+    """Payload for an admin approving an establishment creation request."""
+
+    characterization: EstablishmentCharacterization | None = Field(
+        default=None,
+        description="Final characterization profile. When omitted, the one "
+        "sent with the request is used. A reused establishment keeps its own "
+        "profile if it already holds an answer.",
+    )
 
 
 class EstablishmentRequestRejection(BaseModel):
@@ -86,6 +111,12 @@ class EstablishmentResponse(BaseModel):
     place_id: str
     city: str
     province: str
+    characterization_status: CharacterizationStatus = Field(
+        description=(
+            "Computed, never stored: `pending` when no characterization field "
+            "holds an answer, `complete` when at least one does."
+        )
+    )
 
 
 class EstablishmentApprovalResponse(EstablishmentResponse):
@@ -95,7 +126,9 @@ class EstablishmentApprovalResponse(EstablishmentResponse):
         description=(
             "True when this place already existed (e.g. another request "
             "for it was approved first): the field worker is linked to it "
-            "as-is, and the data submitted for this approval was discarded."
+            "as-is, and the data submitted for this approval was discarded "
+            "(except the characterization profile, stored only when the "
+            "establishment had none)."
         )
     )
 

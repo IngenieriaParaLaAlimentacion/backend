@@ -2,7 +2,7 @@ import uuid
 
 from sqlalchemy import Column, DateTime, ForeignKey, String, func
 from sqlalchemy import Enum as SAEnum
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship
 
 from app.domain.establishment import EstablishmentRequestStatus
@@ -27,6 +27,7 @@ class EstablishmentRequest(Base):
     formatted_address = Column(String, nullable=True)
     city = Column(String, nullable=True)
     province = Column(String, nullable=True)
+    characterization = Column(JSONB, nullable=True)
     reviewed_by = Column(
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="RESTRICT"),

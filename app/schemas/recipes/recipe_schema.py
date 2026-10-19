@@ -1,22 +1,15 @@
 from datetime import datetime
 from decimal import Decimal
-from enum import StrEnum
 from typing import Annotated
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.domain.establishment_characterization import CulturalIdentity
 from app.domain.food_catalog import MeasurementUnit
 from app.domain.nutrition import MealType, NutritionIndicators, UnmetConstraint
 
 ChildrenCount = Annotated[int, Field(strict=True, ge=1, le=10000)]
-
-
-class CulturalIdentity(StrEnum):
-    """Supported establishment cultural identities."""
-
-    PARAGUAYAN = "paraguayan"
-    BOLIVIAN = "bolivian"
 
 
 class RecommendationInput(BaseModel):
@@ -52,13 +45,6 @@ class ReuseInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
     id: UUID
     children_count: ChildrenCount
-
-
-class CulturalIdentitiesInput(BaseModel):
-    """Replace an establishment's cultural identities."""
-
-    model_config = ConfigDict(extra="forbid")
-    identities: list[CulturalIdentity] = Field(max_length=2)
 
 
 class GramConversionInput(BaseModel):
