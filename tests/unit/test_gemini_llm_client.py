@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, Mock
 import httpx
 import pytest
 from google.genai.errors import ClientError, ServerError
+from structlog.testing import capture_logs
 
 from app.config.settings import settings
 from app.exceptions.domain_exceptions import LlmClientError
@@ -91,6 +92,15 @@ async def test_retries_transport_error_then_succeeds():
 
     assert result == {"ok": True}
     assert client._client.aio.models.generate_content.await_count == 3
+
+
+async def test_response_text_is_never_logged():
+    client = _client(side_effect=[_response({"description": "SENTINEL-RECEIPT-TEXT"})])
+
+    with capture_logs() as logs:
+        await client.complete(prompt="p", response_schema={})
+
+    assert "SENTINEL-RECEIPT-TEXT" not in str(logs)
 
 
 @pytest.mark.asyncio

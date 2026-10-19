@@ -1,5 +1,9 @@
+import runpy
 from unittest.mock import AsyncMock, MagicMock
 
+from sqlalchemy.exc import DBAPIError
+
+from app.db import database
 from app.db.database import get_db
 
 
@@ -37,3 +41,18 @@ async def test_get_db_closes_on_exception(monkeypatch):
     except RuntimeError:
         pass
     mock_cm.__aexit__.assert_called_once()
+
+
+def test_engine_statement_errors_hide_parameters():
+    # Run the module source in isolation: the integration fixtures replace the
+    # engine attribute on the imported module.
+    engine = runpy.run_path(database.__file__)["engine"]
+    error = DBAPIError.instance(
+        "INSERT INTO subjects (dni) VALUES ($1)",
+        ("12345678",),
+        Exception("boom"),
+        Exception,
+        hide_parameters=engine.sync_engine.hide_parameters,
+    )
+
+    assert "12345678" not in str(error)

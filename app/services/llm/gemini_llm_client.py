@@ -88,8 +88,6 @@ class GeminiLlmClient(ILlmClient):
             contents=contents, response_schema=response_schema
         )
 
-        logger.info("gemini_llm_response", raw_text=response.text)
-
         if not response.text:
             raise LlmClientError("empty response from Gemini")
         try:

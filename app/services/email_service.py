@@ -6,6 +6,7 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 import aiosmtplib
 
+from app.config.log_masking import mask_email
 from app.config.settings import settings
 from app.domain.user import UserRole
 from app.exceptions.domain_exceptions import EmailDeliveryError
@@ -118,7 +119,7 @@ async def _send_email(
         logger.info(
             "%s email skipped because SMTP is disabled: to=%s",
             log_label,
-            to_email,
+            mask_email(to_email),
         )
         return
 

@@ -5,6 +5,7 @@ import structlog
 from opentelemetry import trace
 from structlog.processors import CallsiteParameter, CallsiteParameterAdder
 
+from app.config.log_masking import mask_structlog_event
 from app.config.settings import settings
 
 
@@ -54,6 +55,7 @@ def setup_logging(otel_handler: logging.Handler | None = None) -> None:
         structlog.processors.ExceptionRenderer(),
         add_service_name,
         opentelemetry_processor,
+        mask_structlog_event,
     ]
 
     if settings.environment == "development":
