@@ -15,6 +15,7 @@ KEY_FRAGMENTS = frozenset(
         "apellido",
         "lastname",
         "firstname",
+        "fullname",
         "email",
         "phone",
         "telefono",
@@ -57,6 +58,16 @@ EXACT_KEYS = frozenset(
         "bmi",
         "avgbmi",
         "imc",
+        # Sensitive under art. 2 of Ley 25.326 (ethnic origin, health). `sex` is
+        # too short to be a fragment.
+        "sex",
+        "isindigenous",
+        "scorefies",
+        # An alert detail carries the measured BMI; a device name often carries
+        # the name of its owner.
+        "detail",
+        "devicename",
+        "locality",
         "requestername",
         "answers",
         "payload",

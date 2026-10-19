@@ -3,6 +3,7 @@ import uuid
 from collections import namedtuple
 
 import pytest
+from sqlalchemy import DateTime
 
 from app.config.log_masking import (
     REDACTED,
@@ -12,7 +13,7 @@ from app.config.log_masking import (
     mask_text,
     mask_url,
 )
-from app.config.log_masking.core import normalize_key
+from app.config.log_masking.core import _is_sensitive_key, normalize_key
 from app.config.log_masking.rules import (
     EMAIL_KEY_FRAGMENTS,
     EXACT_KEYS,
@@ -20,6 +21,7 @@ from app.config.log_masking.rules import (
     NAME_KEYS,
     QUERY_PARAM_EXACT_KEYS,
 )
+from app.models import Base
 
 
 @pytest.mark.parametrize(
@@ -85,6 +87,13 @@ def test_mask_email_keeps_first_letter_and_domain(value, expected):
         "peso_kg",
         "z.score",
         "percentil",
+        "sex",
+        "is_indigenous",
+        "score_fies",
+        "full_name",
+        "detail",
+        "device_name",
+        "locality",
     ],
 )
 def test_sensitive_keys_are_fully_masked(key):
@@ -318,3 +327,71 @@ def test_query_string_masks_values_by_shape_whatever_the_name(query, expected):
 def test_every_rule_is_stored_normalized():
     rules = KEY_FRAGMENTS | EXACT_KEYS | NAME_KEYS | EMAIL_KEY_FRAGMENTS
     assert all(rule == normalize_key(rule) for rule in rules | QUERY_PARAM_EXACT_KEYS)
+
+
+# Columns that are neither identifiers nor timestamps and hold no personal data:
+# catalog and nutrient data, survey structure, stock quantities, notification
+# bookkeeping and establishment data. Adding a column to the schema fails
+# `test_every_schema_column_is_masked_or_allowed` until it is masked in `rules.py`
+# or listed here on purpose.
+NON_SENSITIVE_COLUMNS = frozenset(
+    {
+        "alerttype",
+        "amountper100g",
+        "attemptcount",
+        "baseunit",
+        "category",
+        "city",
+        "code",
+        "deviceid",
+        "eventtype",
+        "group",
+        "instrumenttype",
+        "isactive",
+        "isrecurring",
+        "isrequired",
+        "isrural",
+        "latitude",
+        "longitude",
+        "nextthresholdhours",
+        "origintype",
+        "photokey",
+        "placeid",
+        "platform",
+        "position",
+        "province",
+        "quantity",
+        "requiresresponsenumber",
+        "responsecount",
+        "responsenumber",
+        "responsetarget",
+        "responsetype",
+        "revoked",
+        "role",
+        "severity",
+        "source",
+        "sourcepage",
+        "status",
+        "text",
+        "thresholdhours",
+        "unit",
+        "used",
+    }
+)
+
+
+def test_every_schema_column_is_masked_or_allowed():
+    unclassified = {
+        f"{table.name}.{column.name}"
+        for table in Base.metadata.tables.values()
+        for column in table.columns
+        if not (
+            column.primary_key
+            or column.foreign_keys
+            or isinstance(column.type, DateTime)
+            or _is_sensitive_key(normalize_key(column.name))
+            or normalize_key(column.name) in NAME_KEYS
+            or normalize_key(column.name) in NON_SENSITIVE_COLUMNS
+        )
+    }
+    assert not unclassified
