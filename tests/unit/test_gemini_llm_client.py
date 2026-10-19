@@ -170,3 +170,45 @@ async def test_raises_once_both_primary_and_fallback_are_exhausted(monkeypatch):
         await client.complete(prompt="p", response_schema={})
 
     assert client._client.aio.models.generate_content.await_count == 5
+
+
+@pytest.mark.parametrize("schema_name", ["CandidateBatch", "WritingBatch"])
+async def test_recipe_schemas_work_through_google_sdk(schema_name):
+    from google import genai
+    from google.genai import types
+
+    from app.schemas.recipes import recipe_schema
+
+    requests = []
+    payload = {"candidates": []} if schema_name == "CandidateBatch" else {"recipes": []}
+
+    async def respond(request):
+        requests.append(json.loads(request.content))
+        return httpx.Response(
+            200,
+            json={
+                "candidates": [{"content": {"parts": [{"text": json.dumps(payload)}]}}]
+            },
+        )
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as http:
+        sdk = genai.Client(
+            api_key="test-key",
+            http_options=types.HttpOptions(httpx_async_client=http),
+        )
+        client = object.__new__(GeminiLlmClient)
+        client._client = sdk
+        try:
+            result = await client.complete(
+                prompt="Generate recipes",
+                response_schema=getattr(recipe_schema, schema_name).model_json_schema(),
+            )
+        finally:
+            await sdk.aio.aclose()
+            sdk.close()
+
+    assert result == payload
+    config = requests[0]["generationConfig"]
+    assert config["responseMimeType"] == "application/json"
+    root_field = "candidates" if schema_name == "CandidateBatch" else "recipes"
+    assert root_field in config["responseSchema"]["properties"]

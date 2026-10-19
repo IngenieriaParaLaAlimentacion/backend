@@ -7,7 +7,7 @@ import pytest
 import pytest_asyncio
 from sqlalchemy import func, select, update
 
-from app.core.dependencies import get_recipe_llm_client
+from app.core.dependencies import get_llm_client
 from app.core.interfaces.llm_client import ILlmClient
 from app.domain.food_catalog import NutrientGroup
 from app.domain.user import UserRole
@@ -130,7 +130,7 @@ async def recipe_setup(app, foods, db_establishment, make_user_with_role):
         )
         await db.commit()
     fake = RecipeLlm(foods)
-    app.dependency_overrides[get_recipe_llm_client] = lambda: fake
+    app.dependency_overrides[get_llm_client] = lambda: fake
     yield (
         headers,
         fake,
@@ -140,7 +140,7 @@ async def recipe_setup(app, foods, db_establishment, make_user_with_role):
             "meal_type": "lunch",
         },
     )
-    app.dependency_overrides.pop(get_recipe_llm_client, None)
+    app.dependency_overrides.pop(get_llm_client, None)
 
 
 async def generate(client, setup):

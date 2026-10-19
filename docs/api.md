@@ -247,7 +247,7 @@ Nobody may change a `superadmin` or their own role.
 
 ## Recipe recommendations (Nutrir, #170)
 
-Generation uses LangChain/Gemini → the existing nutrition LP → LangChain/Gemini.
+Generation uses Gemini → the existing nutrition LP → Gemini.
 The backend owns quantities, nutrient indicators, permissions and stock changes.
 All routes below require Bearer authentication and establishment access. Missing
 establishments return 404; denied access returns 403; invalid input uses the

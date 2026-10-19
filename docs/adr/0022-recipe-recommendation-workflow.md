@@ -1,4 +1,4 @@
-# ADR-0022: Recipe recommendations with LangChain and the nutrition LP
+# ADR-0022: Recipe recommendations with Gemini and the nutrition LP
 
 - **Status**: Accepted
 - **Date**: 2026-10-17
@@ -6,20 +6,22 @@
 
 ## Decision
 
-The backend runs a fixed workflow: LangChain/Gemini selects culinary ingredient
-sets, `NutritionService.maximize_recipe` solves each set, and LangChain/Gemini
+The backend runs a fixed workflow: Gemini selects culinary ingredient
+sets, `NutritionService.maximize_recipe` solves each set, and Gemini
 writes names and preparation using the actual nonzero calculated ingredients.
 The optimizer is unchanged. Calling it with all stock would produce one
 nutrition optimum without culinary or cultural requirements; different culinary
 candidates let the existing LP support two or three distinct meals. Distinct
 preparations may share an ingredient set and the same optimized quantities.
 
-Use `langchain-google-genai` and `langchain-core` for structured model calls
-behind `ILlmClient`. Backend code controls calls and validation; there is no
-model-controlled tool loop. One selection call, at most one repair, and one
-writing call bound logical turns to three. Provider retries/fallback share the
-existing Gemini classification and settings. Selection, history and reuse do not
-construct a model. Receipt extraction keeps its existing provider implementation.
+Reuse the existing `GeminiLlmClient` behind `ILlmClient` and the shared
+`get_llm_client` dependency for both receipt extraction and recipe generation.
+Its `complete` method already accepts a JSON response schema and handles retries
+and model fallback. LangChain adds no required capability to this fixed workflow;
+we defer adopting it until a concrete integration need justifies the dependency.
+Backend code controls calls and validation; there is no model-controlled tool
+loop. One selection call, at most one repair, and one writing call bound logical
+turns to three. Selection, history and reuse do not construct a model.
 
 Nutritional shortfalls, including insufficient energy, are offered explicitly.
 Only stock with no usable energy prevents generation. Ingredient count 5–8 is

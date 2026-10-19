@@ -123,11 +123,7 @@ async def get_food_intake_service() -> AsyncGenerator[FoodIntakeService, None]:
 
 
 async def get_llm_client() -> AsyncGenerator[ILlmClient, None]:
-    """Provide the LLM client used for receipt extraction.
-
-    Its own dependency (rather than inlined in ``get_receipt_intake_service``)
-    so tests can swap in a scripted double instead of calling Gemini for real.
-    """
+    """Provide the structured Gemini client used by receipts and recipes."""
     yield GeminiLlmClient()
 
 
@@ -258,13 +254,6 @@ async def require_admin_or_analyst(
     )
 
 
-async def get_recipe_llm_client() -> AsyncGenerator[ILlmClient, None]:
-    """Provide the LangChain recipe client, replaceable by a scripted test double."""
-    from app.services.llm.langchain_llm_client import LangChainLlmClient
-
-    yield LangChainLlmClient()
-
-
 async def get_recipe_service():
     """Provide history and selection operations without constructing an LLM."""
     from app.services.recipes.recipe_service import RecipeService
@@ -274,7 +263,7 @@ async def get_recipe_service():
 
 
 async def get_recipe_generation_service(
-    llm_client: ILlmClient = Depends(get_recipe_llm_client),
+    llm_client: ILlmClient = Depends(get_llm_client),
 ):
     """Provide the recommendation workflow with an injectable structured client."""
     from app.services.recipes.recipe_service import RecipeService
