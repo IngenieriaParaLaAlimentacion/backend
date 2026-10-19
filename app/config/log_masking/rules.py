@@ -68,6 +68,10 @@ EXACT_KEYS = frozenset(
         "detail",
         "devicename",
         "locality",
+        # Free text written about a child; the profile of an establishment holds
+        # contact emails and cultural identity.
+        "observation",
+        "characterization",
         "requestername",
         "answers",
         "payload",

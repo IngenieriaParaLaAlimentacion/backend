@@ -93,6 +93,8 @@ def test_mask_email_keeps_first_letter_and_domain(value, expected):
         "detail",
         "device_name",
         "locality",
+        "observation",
+        "characterization",
     ],
 )
 def test_sensitive_keys_are_fully_masked(key):

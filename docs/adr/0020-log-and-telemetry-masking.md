@@ -85,11 +85,13 @@ What `rules.py` holds:
 | Group | Match | Entries |
 | --- | --- | --- |
 | Key fragments | the normalized key contains it | Identity: `dni`, `cuil`, `cuit`, `documento`, `apellido`, `lastname`, `firstname`, `fullname`, `email`, `phone`, `telefono`, `celular`, `address`, `direccion`, `domicilio`, `birth`, `nacimiento`. Health: `weight`, `peso`, `height`, `talla`, `hemoglob`, `zscore`, `percentil`. Secrets: `password`, `secret`, `apikey`, `privatekey`, `databaseurl`, `redisurl`, `token`, `authorization`, `jwt`, `sessionid`, `setcookie`. |
-| Exact keys | the normalized key equals it | `cookie`, `installation_id`, `requester_name`, `bmi`, `avg_bmi`, `imc`, `sex`, `is_indigenous`, `score_fies`, `detail`, `device_name`, `locality`, `answers`, `payload`, `description`, `comments`, `reason` |
+| Exact keys | the normalized key equals it | `cookie`, `installation_id`, `requester_name`, `bmi`, `avg_bmi`, `imc`, `sex`, `is_indigenous`, `score_fies`, `detail`, `device_name`, `locality`, `observation`, `characterization`, `answers`, `payload`, `description`, `comments`, `reason` |
 
 `sex`, `is_indigenous` and `score_fies` are sensitive data under art. 2 of Ley 25.326 (ethnic origin and
 health). `detail` is the text of a measurement alert, which carries the measured BMI, and `device_name`
-often carries the name of its owner. `locality` is the location of a user.
+often carries the name of its owner. `locality` is the location of a user. `observation` is free text
+written about a measured child, and `characterization` is the profile of an establishment, which holds
+contact emails and cultural identity (ADR-0022).
 
 A test walks every column of the schema and fails unless the column is a primary key, a foreign key, a
 timestamp, masked by these rules or listed on purpose as not sensitive. Adding a column therefore forces
