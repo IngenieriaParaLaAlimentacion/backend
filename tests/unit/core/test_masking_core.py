@@ -8,6 +8,7 @@ from app.config.log_masking import (
     REDACTED,
     mask_email,
     mask_event_dict,
+    mask_query_string,
     mask_text,
     mask_url,
 )
@@ -230,6 +231,10 @@ def test_input_is_not_mutated():
             "GET /subjects?search=[REDACTED]&page=2&subject_id=7 HTTP/1.1",
         ),
         (
+            "GET /x?filter=30123456&page=2",
+            f"GET /x?filter={REDACTED}&page=2",
+        ),
+        (
             "/users?page=1&Email=a@b.com&name=Ana&last_name=P",
             "/users?page=1&Email=[REDACTED]&name=[REDACTED]&last_name=[REDACTED]",
         ),
@@ -293,6 +298,21 @@ def test_mask_url_masks_userinfo_query_and_fragment():
     assert mask_url(url) == (
         "https://[REDACTED]@h.com/x?search=[REDACTED]&page=1#access_token=[REDACTED]"
     )
+
+
+@pytest.mark.parametrize(
+    ("query", "expected"),
+    [
+        ("filter=30123456&page=2", f"filter={REDACTED}&page=2"),
+        ("filter=20-30123456-7", f"filter={REDACTED}"),
+        ("from=190.12.34.56", f"from={REDACTED}"),
+        ("ref=juan%40mail.com&page=1", f"ref={REDACTED}&page=1"),
+        ("ref=juan+perez%40mail.com", f"ref={REDACTED}"),
+        ("page=2&order=name", "page=2&order=name"),
+    ],
+)
+def test_query_string_masks_values_by_shape_whatever_the_name(query, expected):
+    assert mask_query_string(query) == expected
 
 
 def test_every_rule_is_stored_normalized():

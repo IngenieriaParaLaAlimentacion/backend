@@ -3,6 +3,7 @@
 import re
 from collections.abc import Mapping
 from typing import Any
+from urllib.parse import unquote_plus
 from uuid import UUID
 
 from app.config.log_masking.rules import (
@@ -54,6 +55,8 @@ _IPV4 = re.compile(
 _DNI = re.compile(
     rf"{_NUMBER_START}(?:\d{{1,2}}\.\d{{3}}\.\d{{3}}|\d{{7,8}}){_NUMBER_END}"
 )
+# A query parameter value matching any of these is masked whatever its name.
+_VALUE_SHAPES = (_EMAIL, _JWT, _CUIL, _IPV4, _DNI)
 
 
 def normalize_key(name: str) -> str:
@@ -90,7 +93,11 @@ def mask_email(value: str) -> str:
 
 
 def _mask_query_param(match: re.Match[str]) -> str:
-    if _is_sensitive_query_param(match["name"]):
+    # The value is decoded only to detect its shape: `%40` hides the `@` of an email.
+    value = unquote_plus(match["value"])
+    if _is_sensitive_query_param(match["name"]) or any(
+        pattern.search(value) for pattern in _VALUE_SHAPES
+    ):
         return f"{match['sep']}{match['name']}={REDACTED}"
     return match[0]
 
