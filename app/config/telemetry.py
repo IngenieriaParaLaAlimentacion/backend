@@ -17,6 +17,8 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 from app.config.settings import settings
 
+_UNTRACED_PATHS = "/health$,/ready$"
+
 
 class Telemetry(NamedTuple):
     logging_handler: LoggingHandler
@@ -56,7 +58,7 @@ def setup_telemetry(app) -> Telemetry:
         level=logging.NOTSET, logger_provider=logger_provider
     )
 
-    FastAPIInstrumentor.instrument_app(app)
+    FastAPIInstrumentor.instrument_app(app, excluded_urls=_UNTRACED_PATHS)
 
     return Telemetry(
         logging_handler=otel_log_handler,

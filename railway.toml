@@ -1,0 +1,10 @@
+# Railway config-as-code for the backend service. Values set here override the
+# same settings in the dashboard; anything not set here keeps its dashboard value.
+
+[deploy]
+# Railway keeps routing traffic to the previous deployment until a new one
+# answers 200 here, so a deploy goes live only once it can reach the database.
+healthcheckPath = "/ready"
+# Seconds the new deployment has to pass the check. The Dockerfile CMD runs the
+# migrations and both seeds before uvicorn starts, so this must cover all of them.
+healthcheckTimeout = 180

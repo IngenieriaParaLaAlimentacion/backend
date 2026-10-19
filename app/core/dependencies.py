@@ -4,6 +4,7 @@ from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 
+from app.config.settings import settings
 from app.core.interfaces.llm_client import ILlmClient
 from app.core.security import decode_token
 from app.db.unit_of_work import UnitOfWork
@@ -28,6 +29,7 @@ from app.services.food_intakes.food_intake_service import FoodIntakeService
 from app.services.food_intakes.receipt_intake_service import ReceiptIntakeService
 from app.services.food_outflows.food_outflow_service import FoodOutflowService
 from app.services.food_stock.food_stock_service import FoodStockService
+from app.services.health_service import HealthService
 from app.services.llm.gemini_llm_client import GeminiLlmClient
 from app.services.measurements.measurement_service import MeasurementService
 from app.services.notifications.device_service import DeviceService
@@ -172,6 +174,12 @@ async def get_establishment_dashboard_service() -> AsyncGenerator[
     """Provide a DashboardService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
         yield EstablishmentDashboardService(uow)
+
+
+async def get_health_service() -> AsyncGenerator[HealthService, None]:
+    """Provide a HealthService backed by a fresh UnitOfWork."""
+    async with UnitOfWork() as uow:
+        yield HealthService(uow, settings.readiness_db_timeout_seconds)
 
 
 def _decode_verified_payload(token: str) -> dict:

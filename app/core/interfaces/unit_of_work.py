@@ -38,6 +38,7 @@ from app.repositories.food_outflows.food_outflow_repository import (
     FoodOutflowRepository,
 )
 from app.repositories.food_stock.food_stock_repository import FoodStockRepository
+from app.repositories.health_repository import HealthRepository
 from app.repositories.measurements.measurement_alert_repository import (
     MeasurementAlertRepository,
 )
@@ -85,6 +86,7 @@ class IUnitOfWork(ABC):
     push_device_repo: UserPushDeviceRepository
     stale_cycle_repo: StaleEstablishmentCycleRepository
     push_delivery_job_repo: PushDeliveryJobRepository
+    health_repo: HealthRepository
 
     @abstractmethod
     async def commit(self) -> None: ...
