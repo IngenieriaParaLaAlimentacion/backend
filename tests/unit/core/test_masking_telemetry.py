@@ -156,6 +156,15 @@ def test_span_hook_replaces_url_attributes_when_masking_fails(monkeypatch):
     }
 
 
+def test_server_request_hook_leaves_a_span_that_is_not_recording_untouched():
+    span = FakeSpan({"http.url": "http://h/items?search=Tom"})
+    span.is_recording = lambda: False
+
+    server_request_hook(span, {"query_string": b"search=Tom"})
+
+    assert span.attributes == {"http.url": "http://h/items?search=Tom"}
+
+
 def test_span_hook_does_not_raise_when_the_span_cannot_be_written(monkeypatch):
     monkeypatch.setattr(adapters, "mask_span_attributes", _raise)
     span = SimpleNamespace(

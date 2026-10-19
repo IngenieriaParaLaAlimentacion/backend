@@ -192,8 +192,8 @@ async def seed_food_catalog() -> None:
             await seed_food_nutrient_values(uow, food_ids, nutrient_ids)
             await uow.commit()
             logger.info("Food catalog seed complete")
-        except Exception as error:
-            logger.error(f"Error seeding food catalog: {error}")
+        except Exception:
+            logger.exception("Error seeding food catalog")
             raise
 
 

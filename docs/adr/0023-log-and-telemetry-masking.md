@@ -211,6 +211,15 @@ therefore requires extending that list first, with a test against the real `Fast
   under a key with no sensitive sibling, is not masked. Documents other than 7 to 8 digit DNIs, a CUIL
   written without hyphens and IPv6 addresses are not recognized either, and neither is a number
   (`int` or `float`) under a non-sensitive key.
+- **Encoded values outside a query parameter value.** The value of a query parameter is URL-decoded
+  once to detect its shape, but only there: a percent-encoded email in free text (`juan%40mail.com`),
+  a double-encoded one, and a URL nested inside a parameter (`next=https%3A%2F%2F...%3Ftoken%3Dabc`)
+  are not detected.
+- **Credentials and personal data in free text that are only covered by key.** Of the credential
+  schemes, only `Bearer` is recognized by shape in text: `Authorization: Basic ...` and `cookie: ...`
+  lines are masked only when they are a key of the event. Phone numbers are masked by key (`phone`,
+  `telefono`, `celular`) and not by shape, and a DNI written with spaces (`30 123 456`) is not
+  recognized.
 - Out of scope: cost and volume reduction, the choice of telemetry destination, and moving the
   `search` filter out of the query string (it would change the contract with the backoffice and mobile
   app).

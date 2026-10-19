@@ -68,6 +68,17 @@ def test_structlog_event_reaches_otel_masked(stdout_logs, otel_logs):
     assert "18.2" not in str(exported.body)
 
 
+def test_structlog_meta_keys_are_not_masked():
+    record = logging.LogRecord("app", logging.INFO, "f.py", 1, "m", (), None)
+    event = {"event": "dni 30123456", "_record": record, "_from_structlog": True}
+
+    masked = adapters.mask_structlog_event(None, "info", event)
+
+    assert masked["_record"] is record
+    assert masked["_from_structlog"] is True
+    assert masked["event"] == f"dni {REDACTED}"
+
+
 def _raise(*args, **kwargs):
     raise RuntimeError("masking broke")
 

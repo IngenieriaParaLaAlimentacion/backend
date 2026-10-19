@@ -34,8 +34,8 @@ async def create_super_admin() -> None:
             await uow.commit()
             logger.info("Super admin created")
 
-        except Exception as error:
-            logger.error(f"Error creating super admin: {error}")
+        except Exception:
+            logger.exception("Error creating super admin")
             raise
 
 

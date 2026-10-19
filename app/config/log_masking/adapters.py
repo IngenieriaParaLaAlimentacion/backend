@@ -29,19 +29,19 @@ _STRUCTLOG_META_KEYS = ("_record", "_from_structlog")
 
 def mask_structlog_event(logger: Any, method_name: str, event_dict: dict) -> dict:
     """Structlog processor that masks the whole event dict."""
+    # The meta keys hold objects that structlog reads back, so they are never masked.
+    meta = {key: event_dict[key] for key in _STRUCTLOG_META_KEYS if key in event_dict}
     try:
-        return mask_event_dict(event_dict)
+        content = {k: v for k, v in event_dict.items() if k not in meta}
+        return {**mask_event_dict(content), **meta}
     except Exception as exc:
         # The exception type is safe to write because it carries no event data.
-        failed = {
+        return {
             "event": MASKING_ERROR,
             "level": event_dict.get("level"),
             "masking_error": type(exc).__name__,
+            **meta,
         }
-        failed.update(
-            {key: event_dict[key] for key in _STRUCTLOG_META_KEYS if key in event_dict}
-        )
-        return failed
 
 
 class MaskingLogRecordProcessor(LogRecordProcessor):

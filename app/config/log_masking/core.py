@@ -72,8 +72,17 @@ def _is_email_key(compact: str) -> bool:
     return any(fragment in compact for fragment in EMAIL_KEY_FRAGMENTS)
 
 
-def _is_sensitive_key(compact: str) -> bool:
+def is_sensitive_key(compact: str) -> bool:
+    """Return whether a normalized key is an exact key or contains a fragment."""
     return compact in EXACT_KEYS or _has_fragment(compact)
+
+
+def _has_sensitive_sibling(compacts: Mapping[Any, str], key: Any) -> bool:
+    return any(
+        is_sensitive_key(other)
+        for other_key, other in compacts.items()
+        if other_key != key
+    )
 
 
 def _is_sensitive_query_param(name: str) -> bool:
@@ -186,13 +195,8 @@ def _mask_mapping(mapping: Mapping, depth: int) -> dict:
             masked[key] = mask_value(value, depth + 1)
         elif _is_email_key(compact):
             masked[key] = mask_email(value) if isinstance(value, str) else REDACTED
-        elif _is_sensitive_key(compact) or (
-            compact in NAME_KEYS
-            and any(
-                _is_sensitive_key(other)
-                for other_key, other in compacts.items()
-                if other_key != key
-            )
+        elif is_sensitive_key(compact) or (
+            compact in NAME_KEYS and _has_sensitive_sibling(compacts, key)
         ):
             masked[key] = REDACTED
         else:
