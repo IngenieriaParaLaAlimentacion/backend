@@ -58,8 +58,6 @@ def setup_telemetry(app) -> Telemetry:
         level=logging.NOTSET, logger_provider=logger_provider
     )
 
-    # Probes are hit every few seconds by the platform: left in, they would drown
-    # the latency dashboards in near-zero requests nobody made.
     FastAPIInstrumentor.instrument_app(app, excluded_urls=_UNTRACED_PATHS)
 
     return Telemetry(
