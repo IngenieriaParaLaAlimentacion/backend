@@ -31,7 +31,12 @@ engine indicators are also exposed as explicit percentages for clients.
 
 ## Persistence and concurrency
 
-`recipe_requests` stores input, actor, prompt version and time. Its immutable
+`recipe_requests` stores input, actor, prompt version and time. Its `user_id`
+identifies who requested generation or reuse; selection `user_id` identifies who
+confirmed the stock outflow. `prompt_version` identifies the selection/writing
+prompt set and is inherited by reuse, which makes no model call. It supports
+provenance, not exact reproduction. Proposal `position` is its zero-based display
+order, preserved when loading history. Immutable
 `recipe_proposals` store complete JSON snapshots including final quantities and
 indicators. No request is persisted until both AI stages have validated.
 `recipe_selections` has one row per request and a unique outflow id. Its composite
@@ -63,11 +68,14 @@ Ordinary dishes remain valid when stock cannot support cultural inspiration.
 Culinary/cultural judgments remain model judgments rather than mathematical
 properties guaranteed by the LP.
 
-The LP's converter was an interface for #155. A catalog converter uses 1000 grams
-per kilogram and optional reviewed `foods.grams_per_base_unit` for litres/units.
+The LP converter remains behind the `GramsConverter` interface. A catalog
+converter uses 1000 grams per kilogram and optional reviewed `foods.grams_per_base_unit` for litres/units.
 An admin endpoint configures the latter; missing factors are excluded with a
-warning, never estimated from a food name. This small adapter can be replaced by
-#155's implementation while retaining the same `GramsConverter` protocol.
+warning, never estimated from a food name. The shared conversion module and
+food-equivalence management planned in #192 will replace this temporary adapter and its admin endpoint while retaining the
+`GramsConverter` protocol at the nutrition boundary. Transfer reviewed factors
+to the shared equivalences before removing the catalog field; neither recipes
+nor receipts should retain a second source of conversion data.
 
 ## Consequences
 

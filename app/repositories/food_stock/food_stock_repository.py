@@ -38,6 +38,7 @@ from app.domain.food_stock import (
 )
 from app.models.auth.user import User
 from app.models.food_catalog.food import Food
+from app.models.food_catalog.food_nutrient_value import FoodNutrientValue
 from app.models.food_intakes.food_intake import FoodIntake
 from app.models.food_intakes.food_intake_item import FoodIntakeItem
 from app.models.food_outflows.food_outflow import FoodOutflow
@@ -487,8 +488,6 @@ class FoodStockRepository:
 
     async def stocked_foods(self, establishment_id: UUID) -> list[tuple[Food, Decimal]]:
         """Return positive balances with nutrient and GAPA data loaded."""
-        from app.models.food_catalog.food_nutrient_value import FoodNutrientValue
-
         result = await self.db.execute(
             select(Food, FoodStock.quantity)
             .join(FoodStock, FoodStock.food_id == Food.id)

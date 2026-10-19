@@ -12,7 +12,6 @@ from app.core.dependencies import (
 from app.domain.user import UserActor
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.recipes.recipe_schema import (
-    CulturalIdentity,
     GramConversionInput,
     RecipeProposal,
     RecipeSelectionResponse,
@@ -41,6 +40,13 @@ _RESPONSES = {
         502: {"description": "Model failed or returned invalid proposals"},
     },
     summary="Generate 2–3 stock-backed recipe proposals",
+    description=(
+        "Generate and save proposals for the establishment, children count and meal "
+        "type using current stock, the establishment characterization and recent "
+        "choices. Requires establishment access and, for analysts, a subscription. "
+        "Quantities come from the nutrition optimizer; energy and nutritional "
+        "shortfalls are returned explicitly. Generation does not deduct stock."
+    ),
 )
 async def generate_recommendations(
     data: RecommendationInput,
@@ -54,7 +60,15 @@ async def generate_recommendations(
 @router.get(
     "/establishments/{establishment_id}/recipe-recommendations",
     response_model=PaginatedResponse[RecommendationResponse],
+    status_code=200,
     responses=_RESPONSES,
+    summary="List an establishment's recipe recommendation history",
+    description=(
+        "Return saved requests, newest first, with standard page and page_size "
+        "pagination. With chosen_only=true, exclude unchosen requests and return "
+        "only the chosen proposal in each request. Requires establishment access "
+        "and, for analysts, a subscription. No model call or stock deduction occurs."
+    ),
 )
 async def recommendation_history(
     establishment_id: UUID,
@@ -78,6 +92,14 @@ async def recommendation_history(
     response_model=RecipeSelectionResponse,
     status_code=201,
     responses={**_RESPONSES, 200: {"description": "Idempotent replay"}},
+    summary="Choose a recipe and deduct its ingredients",
+    description=(
+        "Atomically choose one proposal and create its kitchen food outflow. "
+        "Current stock is checked at confirmation; a shortage rolls back the "
+        "whole operation. Repeating the same choice returns 200 without another "
+        "deduction; choosing a different proposal for that request returns 409. "
+        "Requires establishment access and, for analysts, a subscription."
+    ),
 )
 async def choose_recipe(
     request_id: UUID,
@@ -98,6 +120,14 @@ async def choose_recipe(
     response_model=RecommendationResponse,
     status_code=201,
     responses={**_RESPONSES, 200: {"description": "Idempotent reuse replay"}},
+    summary="Scale and choose a saved recipe without a model call",
+    description=(
+        "Create a scaled copy for children_count and atomically deduct its "
+        "ingredients. The original stays unchanged. Retry with the same client "
+        "UUID, source and count to receive 200 without another deduction; changing "
+        "the meaning of that UUID returns 409. Current stock and establishment "
+        "access, including analyst subscription, are checked on confirmation."
+    ),
 )
 async def reuse_recipe(
     request_id: UUID,
@@ -114,20 +144,24 @@ async def reuse_recipe(
     return result
 
 
-@router.get(
-    "/cultural-identities",
-    response_model=list[CulturalIdentity],
-    responses=AUTH_RESPONSES,
-)
-async def cultural_identity_options(_: UserActor = Depends(require_any)):
-    """List the closed set of supported cultural identity codes."""
-    return list(CulturalIdentity)
-
-
 @router.put(
     "/food-catalog/foods/{food_id}/gram-conversion",
     response_model=GramConversionInput,
-    responses=_RESPONSES,
+    status_code=200,
+    responses={
+        **AUTH_RESPONSES,
+        404: {"description": "Food not found"},
+        422: {"description": "Invalid gram conversion"},
+    },
+    summary="Set a reviewed food mass conversion",
+    description=(
+        "Admins and superadmins may set grams_per_base_unit for one litre or "
+        "one unit of a catalog food; null removes that factor. Kilograms always "
+        "use 1000 grams. This is a temporary catalog adapter pending the shared "
+        "conversion module and food equivalences in backend issue #192. Once "
+        "integrated, the shared module and equivalence management replace this "
+        "adapter and endpoint. Missing factors are never estimated."
+    ),
 )
 async def set_gram_conversion(
     food_id: UUID,
@@ -142,7 +176,16 @@ async def set_gram_conversion(
 @router.post(
     "/recipe-recommendations/{request_id}/proposals/{proposal_id}/reuse-preview",
     response_model=RecipeProposal,
+    status_code=200,
     responses=_RESPONSES,
+    summary="Preview a saved recipe for a different number of children",
+    description=(
+        "Scale recorded ingredient quantities and recalculate nutritional "
+        "indicators for children_count without a model call, saving a request "
+        "or deducting stock. Check current stock and establishment access, "
+        "including analyst subscription. Stock is checked again when reuse is "
+        "confirmed; a successful preview does not reserve ingredients."
+    ),
 )
 async def preview_recipe_reuse(
     request_id: UUID,

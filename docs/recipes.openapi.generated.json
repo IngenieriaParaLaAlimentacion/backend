@@ -11,7 +11,7 @@
           "Recipes V1"
         ],
         "summary": "Generate 2–3 stock-backed recipe proposals",
-        "description": "Generate recipes with explicit nutritional and energy shortfalls.",
+        "description": "Generate and save proposals for the establishment, children count and meal type using current stock, the establishment characterization and recent choices. Requires establishment access and, for analysts, a subscription. Quantities come from the nutrition optimizer; energy and nutritional shortfalls are returned explicitly. Generation does not deduct stock.",
         "operationId": "generate_recommendations_api_v1_recipe_recommendations_post",
         "requestBody": {
           "content": {
@@ -117,8 +117,8 @@
         "tags": [
           "Recipes V1"
         ],
-        "summary": "Recommendation History",
-        "description": "List requests and optionally only their chosen proposals.",
+        "summary": "List an establishment's recipe recommendation history",
+        "description": "Return saved requests, newest first, with standard page and page_size pagination. With chosen_only=true, exclude unchosen requests and return only the chosen proposal in each request. Requires establishment access and, for analysts, a subscription. No model call or stock deduction occurs.",
         "operationId": "recommendation_history_api_v1_establishments__establishment_id__recipe_recommendations_get",
         "security": [
           {
@@ -253,8 +253,8 @@
         "tags": [
           "Recipes V1"
         ],
-        "summary": "Choose Recipe",
-        "description": "Choose a proposal and deduct its ingredients in one transaction.",
+        "summary": "Choose a recipe and deduct its ingredients",
+        "description": "Atomically choose one proposal and create its kitchen food outflow. Current stock is checked at confirmation; a shortage rolls back the whole operation. Repeating the same choice returns 200 without another deduction; choosing a different proposal for that request returns 409. Requires establishment access and, for analysts, a subscription.",
         "operationId": "choose_recipe_api_v1_recipe_recommendations__request_id__proposals__proposal_id__choose_post",
         "security": [
           {
@@ -365,8 +365,8 @@
         "tags": [
           "Recipes V1"
         ],
-        "summary": "Reuse Recipe",
-        "description": "Scale and choose a previous recipe without invoking a model.",
+        "summary": "Scale and choose a saved recipe without a model call",
+        "description": "Create a scaled copy for children_count and atomically deduct its ingredients. The original stays unchanged. Retry with the same client UUID, source and count to receive 200 without another deduction; changing the meaning of that UUID returns 409. Current stock and establishment access, including analyst subscription, are checked on confirmation.",
         "operationId": "reuse_recipe_api_v1_recipe_recommendations__request_id__proposals__proposal_id__reuse_post",
         "security": [
           {
@@ -482,74 +482,13 @@
         }
       }
     },
-    "/api/v1/cultural-identities": {
-      "get": {
-        "tags": [
-          "Recipes V1"
-        ],
-        "summary": "Cultural Identity Options",
-        "description": "List the closed set of supported cultural identity codes.",
-        "operationId": "cultural_identity_options_api_v1_cultural_identities_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/CulturalIdentity"
-                  },
-                  "type": "array",
-                  "title": "Response Cultural Identity Options Api V1 Cultural Identities Get"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid authentication token",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient permissions",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Unexpected internal error",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
-      }
-    },
     "/api/v1/food-catalog/foods/{food_id}/gram-conversion": {
       "put": {
         "tags": [
           "Recipes V1"
         ],
-        "summary": "Set Gram Conversion",
-        "description": "Set the reviewed mass of a food's stock unit as an administrator.",
+        "summary": "Set a reviewed food mass conversion",
+        "description": "Admins and superadmins may set grams_per_base_unit for one litre or one unit of a catalog food; null removes that factor. Kilograms always use 1000 grams. This is a temporary catalog adapter pending the shared conversion module and food equivalences in backend issue #192. Once integrated, the shared module and equivalence management replace this adapter and endpoint. Missing factors are never estimated.",
         "operationId": "set_gram_conversion_api_v1_food_catalog_foods__food_id__gram_conversion_put",
         "security": [
           {
@@ -610,17 +549,7 @@
             }
           },
           "404": {
-            "description": "Establishment, request, proposal or food not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "No usable stock, insufficient stock, or conflicting choice",
+            "description": "Food not found",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -657,8 +586,8 @@
         "tags": [
           "Recipes V1"
         ],
-        "summary": "Preview Recipe Reuse",
-        "description": "Preview rescaled quantities before confirming a stock deduction.",
+        "summary": "Preview a saved recipe for a different number of children",
+        "description": "Scale recorded ingredient quantities and recalculate nutritional indicators for children_count without a model call, saving a request or deducting stock. Check current stock and establishment access, including analyst subscription. Stock is checked again when reuse is confirmed; a successful preview does not reserve ingredients.",
         "operationId": "preview_recipe_reuse_api_v1_recipe_recommendations__request_id__proposals__proposal_id__reuse_preview_post",
         "security": [
           {
@@ -847,7 +776,8 @@
           "user_id": {
             "type": "string",
             "format": "uuid",
-            "title": "User Id"
+            "title": "User Id",
+            "description": "Actor who requested generation or reuse"
           },
           "created_at": {
             "type": "string",
@@ -856,7 +786,8 @@
           },
           "prompt_version": {
             "type": "string",
-            "title": "Prompt Version"
+            "title": "Prompt Version",
+            "description": "Selection/writing prompt-set version; inherited on AI-free reuse"
           },
           "proposals": {
             "items": {
@@ -1271,7 +1202,8 @@
           "user_id": {
             "type": "string",
             "format": "uuid",
-            "title": "User Id"
+            "title": "User Id",
+            "description": "Actor who confirmed this selection"
           },
           "chosen_at": {
             "type": "string",

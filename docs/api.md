@@ -265,7 +265,6 @@ Regenerate with `poetry run python docs/generate_openapi.py recipes --tag "Recip
 | POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/choose` | 201 selection; identical replay 200; another choice 409 |
 | POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/reuse-preview` | 200 read-only rescaled proposal; current stock checked; body `{"children_count":45}` |
 | POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/reuse` | 201 new selected request, or 200 replay of its client-generated id |
-| GET | `/cultural-identities` | Closed list of supported cultural identity codes |
 | PUT | `/food-catalog/foods/{food_id}/gram-conversion` | Admin-only grams per litre/unit; kilograms always use 1000 |
 
 Generation body (no additional fields, no free text):
@@ -318,12 +317,18 @@ stock and selects the copy in one transaction without an LLM call. Replaying the
 same id and source/count returns 200; changing its meaning returns 409
 `/errors/recipes/idempotency-conflict`. The original request stays unchanged.
 
+Recipe requests expose `user_id` (the generation/reuse actor) and `prompt_version`
+(the selection/writing prompt-set version, retained on AI-free reuse). Selection
+`user_id` identifies who confirmed the outflow. Proposal `position` is an internal
+zero-based display order, preserved in history. Prompt version tracks provenance;
+it does not guarantee reproduction of model output.
+
 Culture is read from `characterization.cultural_identities` and optional
 `characterization.cultural_identities_other`. Edit it through the existing ficha
 `PUT /establishments/{establishment_id}/characterization` (full profile replacement),
 using its admin/superadmin or approved field-worker permissions. The shared
-profile catalog includes Paraguayan and Bolivian alongside its existing codes. Generation includes the last ten chosen recipes, asks for cultural
-inspiration when viable, and permits ordinary dishes when stock cannot support
+profile catalog includes Paraguayan and Bolivian alongside its existing codes.
+Generation includes the last ten chosen recipes, asks for cultural inspiration when viable, and permits ordinary dishes when stock cannot support
 it. Cultural inspiration never adds ingredients or alters calculated quantities.
 
 Normal generation uses two logical model calls, with at most one repair call
@@ -333,3 +338,9 @@ existing Gemini policy. Invalid/failing AI returns the standard
 History uses the standard `items`, `total`, `page`, `page_size`, `total_pages`
 envelope, ordered by date and id descending. Ingredient amounts and steps are
 immutable snapshots; prompt templates are versioned in the repository.
+
+The gram-conversion endpoint is a temporary adapter pending #192. Its shared
+conversion module and food-equivalence management will replace this adapter and
+endpoint; existing reviewed factors must be transferred before retiring the
+catalog field. Kilogram conversions remain exact and missing mass/density factors
+are never guessed.

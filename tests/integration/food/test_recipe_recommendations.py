@@ -9,7 +9,6 @@ from sqlalchemy import func, select, update
 
 from app.core.dependencies import get_llm_client
 from app.core.interfaces.llm_client import ILlmClient
-from app.domain.establishment_characterization import CulturalIdentity
 from app.domain.food_catalog import NutrientGroup
 from app.domain.user import UserRole
 from app.exceptions.domain_exceptions import LlmClientError
@@ -516,13 +515,10 @@ async def test_reuse_preview_insufficient_stock_saves_nothing(client, recipe_set
     assert await counts() == [1, 0, 0]
 
 
-async def test_culture_catalog_is_shared_and_separate_editor_is_absent(
-    client, recipe_setup
-):
+async def test_recipe_specific_culture_endpoints_are_absent(client, recipe_setup):
     headers, _, body = recipe_setup
     response = await client.get(f"{ROOT}/cultural-identities", headers=headers)
-    assert response.status_code == 200
-    assert set(response.json()) == {identity.value for identity in CulturalIdentity}
+    assert response.status_code == 404
     url = f"{ROOT}/establishments/{body['establishment_id']}/cultural-identities"
     assert (await client.get(url, headers=headers)).status_code == 404
     assert (

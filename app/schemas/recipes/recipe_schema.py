@@ -89,7 +89,7 @@ class RecipeSelectionResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     proposal_id: UUID
     outflow_id: UUID
-    user_id: UUID
+    user_id: UUID = Field(description="Actor who confirmed this selection")
     chosen_at: datetime
 
 
@@ -100,9 +100,11 @@ class RecommendationResponse(BaseModel):
     establishment_id: UUID
     children_count: int
     meal_type: MealType
-    user_id: UUID
+    user_id: UUID = Field(description="Actor who requested generation or reuse")
     created_at: datetime
-    prompt_version: str
+    prompt_version: str = Field(
+        description="Selection/writing prompt-set version; inherited on AI-free reuse"
+    )
     proposals: list[RecipeProposal]
     selection: RecipeSelectionResponse | None
 
