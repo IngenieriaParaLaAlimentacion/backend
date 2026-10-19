@@ -125,21 +125,6 @@ def mask_query_string(query: str) -> str:
     return _EMAIL.sub(lambda match: mask_email(match[0]), query)
 
 
-def mask_url(url: str) -> str:
-    """Mask URL userinfo and sensitive query-string and fragment parameters."""
-    base, question, rest = url.partition("?")
-    query, hash_sign, fragment = rest.partition("#")
-    if not question:
-        base, hash_sign, fragment = base.partition("#")
-    return (
-        mask_text(base)
-        + question
-        + mask_query_string(query)
-        + hash_sign
-        + mask_query_string(fragment)
-    )
-
-
 def mask_span_attributes(
     attributes: Mapping[str, Any], raw_query: str
 ) -> dict[str, str]:
@@ -173,8 +158,10 @@ def mask_value(value: Any, depth: int = 0) -> Any:
         return value
     if isinstance(value, str):
         return mask_text(value)
+    if isinstance(value, (Mapping, list, tuple)) and depth >= _MAX_DEPTH:
+        return REDACTED
     if isinstance(value, Mapping):
-        return REDACTED if depth >= _MAX_DEPTH else _mask_mapping(value, depth)
+        return _mask_mapping(value, depth)
     if isinstance(value, list):
         return _mask_items(value, depth, list)
     if isinstance(value, tuple):
@@ -185,8 +172,6 @@ def mask_value(value: Any, depth: int = 0) -> Any:
 
 
 def _mask_items(items: Any, depth: int, container: type) -> Any:
-    if depth >= _MAX_DEPTH:
-        return REDACTED
     # The container is built explicitly: a namedtuple cannot be rebuilt from a
     # generator, and its field names are not needed in a log line.
     return container(mask_value(item, depth + 1) for item in items)

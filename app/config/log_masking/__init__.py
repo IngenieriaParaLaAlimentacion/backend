@@ -16,7 +16,6 @@ from app.config.log_masking.core import (
     mask_event_dict,
     mask_query_string,
     mask_text,
-    mask_url,
 )
 
 __all__ = [
@@ -28,6 +27,5 @@ __all__ = [
     "mask_query_string",
     "mask_structlog_event",
     "mask_text",
-    "mask_url",
     "server_request_hook",
 ]

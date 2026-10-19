@@ -11,7 +11,6 @@ from app.config.log_masking import (
     mask_event_dict,
     mask_query_string,
     mask_text,
-    mask_url,
 )
 from app.config.log_masking.core import _is_sensitive_key, normalize_key
 from app.config.log_masking.rules import (
@@ -223,6 +222,19 @@ def test_nesting_deeper_than_the_limit_is_redacted():
     assert masked == {"n": REDACTED}
 
 
+@pytest.mark.parametrize("container", [list, tuple])
+def test_sequences_nested_deeper_than_the_limit_are_redacted(container):
+    value = "leaf"
+    for _ in range(25):
+        value = container([value])
+
+    masked = mask_event_dict({"n": value})["n"]
+
+    for _ in range(19):
+        masked = masked[0]
+    assert masked == REDACTED
+
+
 def test_input_is_not_mutated():
     event = {"dni": "123", "nested": {"password": "p"}, "items": [{"email": "a@b.com"}]}
     original = copy.deepcopy(event)
@@ -300,13 +312,6 @@ def test_mask_text(text, expected):
 def test_mask_text_is_linear_on_long_unbroken_strings(char):
     # A quadratic scan would take seconds on this input.
     assert mask_text(char * 200_000) == char * 200_000
-
-
-def test_mask_url_masks_userinfo_query_and_fragment():
-    url = "https://u:p@h.com/x?search=Juan Perez&page=1#access_token=zzz"
-    assert mask_url(url) == (
-        "https://[REDACTED]@h.com/x?search=[REDACTED]&page=1#access_token=[REDACTED]"
-    )
 
 
 @pytest.mark.parametrize(

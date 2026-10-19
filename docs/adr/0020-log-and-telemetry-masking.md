@@ -54,8 +54,8 @@ The package `app/config/log_masking/` has three layers:
 | `adapters.py` | Where it is applied: the structlog processor, the OpenTelemetry log record processor and the span hook. Each one only calls the core. |
 
 `__init__.py` re-exports the public API (`REDACTED`, `MASKING_ERROR`, `mask_email`, `mask_text`,
-`mask_url`, `mask_query_string`, `mask_event_dict`, `mask_structlog_event`,
-`MaskingLogRecordProcessor`, `server_request_hook`), so callers import from `app.config.log_masking`.
+`mask_query_string`, `mask_event_dict`, `mask_structlog_event`, `MaskingLogRecordProcessor`,
+`server_request_hook`), so callers import from `app.config.log_masking`.
 
 ### What is masked
 
@@ -84,8 +84,16 @@ What `rules.py` holds:
 
 | Group | Match | Entries |
 | --- | --- | --- |
-| Key fragments | the normalized key contains it | Identity: `dni`, `cuil`, `cuit`, `documento`, `apellido`, `lastname`, `firstname`, `email`, `phone`, `telefono`, `celular`, `address`, `direccion`, `domicilio`, `birth`, `nacimiento`. Health: `weight`, `peso`, `height`, `talla`, `hemoglob`, `zscore`, `percentil`. Secrets: `password`, `secret`, `apikey`, `privatekey`, `databaseurl`, `redisurl`, `token`, `authorization`, `jwt`, `sessionid`, `setcookie`. |
-| Exact keys | the normalized key equals it | `cookie`, `installation_id`, `requester_name`, `bmi`, `avg_bmi`, `imc`, `answers`, `payload`, `description`, `comments`, `reason` |
+| Key fragments | the normalized key contains it | Identity: `dni`, `cuil`, `cuit`, `documento`, `apellido`, `lastname`, `firstname`, `fullname`, `email`, `phone`, `telefono`, `celular`, `address`, `direccion`, `domicilio`, `birth`, `nacimiento`. Health: `weight`, `peso`, `height`, `talla`, `hemoglob`, `zscore`, `percentil`. Secrets: `password`, `secret`, `apikey`, `privatekey`, `databaseurl`, `redisurl`, `token`, `authorization`, `jwt`, `sessionid`, `setcookie`. |
+| Exact keys | the normalized key equals it | `cookie`, `installation_id`, `requester_name`, `bmi`, `avg_bmi`, `imc`, `sex`, `is_indigenous`, `score_fies`, `detail`, `device_name`, `locality`, `answers`, `payload`, `description`, `comments`, `reason` |
+
+`sex`, `is_indigenous` and `score_fies` are sensitive data under art. 2 of Ley 25.326 (ethnic origin and
+health). `detail` is the text of a measurement alert, which carries the measured BMI, and `device_name`
+often carries the name of its owner. `locality` is the location of a user.
+
+A test walks every column of the schema and fails unless the column is a primary key, a foreign key, a
+timestamp, masked by these rules or listed on purpose as not sensitive. Adding a column therefore forces
+a decision about whether it is masked.
 
 Fragments match by containment, so they also catch keys nobody meant: `client_address` contains
 `address`, and `token` also hides counters such as `prompt_tokens` or `max_tokens`. `authorization`
@@ -102,7 +110,10 @@ in this order:
 4. SQLAlchemy `[parameters: ...]` blocks;
 5. PostgreSQL `DETAIL:` lines;
 6. values of sensitive query-string parameters (the parameter name stays: `search=[REDACTED]`), where
-   a parameter is sensitive if it matches a key fragment, an exact key, `name`, `nombre`, `search` or `q`;
+   a parameter is sensitive if it matches a key fragment, an exact key, `name`, `nombre`, `search` or `q`,
+   or if its URL-decoded value has the shape of an email, JWT, CUIL, IPv4 or DNI whatever its name
+   (`filter=30123456`, `ref=juan%40mail.com`). Decoding is only used to detect the shape; the same rule
+   applies to the access log line and to the span URL, so a new parameter does not need an entry first;
 7. emails (partially);
 8. CUIL with hyphens (`20-30123456-7`);
 9. IPv4 addresses with an optional port;
@@ -225,7 +236,8 @@ therefore requires extending that list first, with a test against the real `Fast
 - Masked logs are harder to debug: a `description`, `reason` or `payload` shows only `[REDACTED]`, and
   when masking fails the content of that line is lost.
 - A sensitive value in a non-sensitive key, or inside free text without a recognizable shape, is not
-  masked. The rules are maintained by hand and must grow with the schema.
+  masked. The rules are maintained by hand and must grow with the schema; the schema coverage test
+  fails when a new column is neither masked nor listed as not sensitive.
 - The span exception gap above stays open until a Collector is in place.
 - The OpenTelemetry processor depends on the (still underscore-named) logs SDK API: records are
   mutated in place and `BoundedAttributes` is replaced by a plain dict, which drops the
