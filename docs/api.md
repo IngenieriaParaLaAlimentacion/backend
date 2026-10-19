@@ -71,7 +71,11 @@ The full list of `type` values is generated from the exception registry into
 FastAPI returns `422 Unprocessable Entity` by default when Pydantic rejects a request body or query parameter. The OpenAPI contract exposed to clients maps these to `400 Bad Request` instead (see `app/core/openapi.py`), which is the semantically correct code for malformed client input.
 
 The response body is the same envelope as any other error, with a string `detail`.
-Individual field failures are not reported.
+Individual field failures are not reported, except on routes marked
+`x-invalid-field-extension`: there the envelope also carries `field`, the name
+of the first body field that failed (dotted when nested, such as
+`characterization.premises_other`; never its value), so a client can flag the
+input without clearing the form.
 
 ### Extension members
 

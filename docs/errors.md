@@ -19,6 +19,11 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 `/errors/not-found` (404, unrouted path), `/errors/method-not-allowed` (405) and
 `/errors/internal-error` (500).
 
+`/errors/validation-failed` does not name the fields that failed, except on routes
+marked `x-invalid-field-extension` in the OpenAPI document: there it also carries
+`field`, the path of the first body field that failed (dotted when nested, down
+to the first list index), never its value.
+
 | `type` | Status | Exception | Description |
 |---|---|---|---|
 | `/errors/account-pending-validation` | 403 | `PendingValidationError` | Exception raised when a user attempts to log in with a pending account. |
