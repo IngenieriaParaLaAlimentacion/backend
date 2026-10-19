@@ -4,6 +4,8 @@ These are the tests that catch a column drifting out of sync with the UI
 table: header text, header order, and how a sparse row renders.
 """
 
+import csv
+import io
 import uuid
 from datetime import date, datetime, timezone
 
@@ -160,12 +162,14 @@ class TestMeasurementColumns:
             "Comedor",
             "Responsable",
             "Alertas",
+            "Observación",
         )
 
     def test_row_with_no_alerts(self):
         _, row = _rows(MEASUREMENT_LISTING_EXPORTER, [self._measurement()])
         assert row == (
-            "18,50;105,25;16,72;14/03/2026 07:30;Ana Pérez;Comedor La Unión;Juan Gómez;"
+            "18,50;105,25;16,72;14/03/2026 07:30;Ana Pérez;"
+            "Comedor La Unión;Juan Gómez;;"
         )
 
     def test_alerts_are_joined_into_one_cell(self):
@@ -175,8 +179,17 @@ class TestMeasurementColumns:
             alerts=[_alert(AlertType.OBESE), _alert(AlertType.UNDERWEIGHT)]
         )
         _, row = _rows(MEASUREMENT_LISTING_EXPORTER, [measurement])
-        assert row.endswith(";Obesidad, Bajo peso")
-        assert row.count(";") == 7  # 8 columns, no stray delimiter from the join
+        assert row.endswith(";Obesidad, Bajo peso;")
+        assert row.count(";") == 8  # 9 columns, no stray delimiter from the join
+
+    def test_observation_is_exported_as_one_cell(self):
+        measurement = self._measurement()
+        measurement.observation = 'Sin calzado; dijo "repetir".\nPróximo control.'
+        output = MEASUREMENT_LISTING_EXPORTER.export([measurement]).decode("utf-8-sig")
+        rows = list(csv.reader(io.StringIO(output), delimiter=";"))
+        assert rows[0][-1] == "Observación"
+        assert len(rows[1]) == 9
+        assert rows[1][-1] == 'Sin calzado; dijo "repetir". Próximo control.'
 
 
 class TestSurveyColumns:

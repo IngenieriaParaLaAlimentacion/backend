@@ -296,6 +296,7 @@ class TestGetSubjectLatestMeasurement:
             "bmi",
             "establishment",
             "alerts",
+            "observation",
         } == body["latest_measurement"].keys()
 
     async def test_still_carries_the_plain_subject_fields(self, body):
