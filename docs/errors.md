@@ -19,6 +19,11 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 `/errors/not-found` (404, unrouted path), `/errors/method-not-allowed` (405) and
 `/errors/internal-error` (500).
 
+`/errors/validation-failed` does not name the fields that failed, except on routes
+marked `x-invalid-field-extension` in the OpenAPI document: there it also carries
+`field`, the path of the first body field that failed (dotted when nested, down
+to the first list index), never its value.
+
 | `type` | Status | Exception | Description |
 |---|---|---|---|
 | `/errors/account-pending-validation` | 403 | `PendingValidationError` | Exception raised when a user attempts to log in with a pending account. |
@@ -63,6 +68,7 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/rate-limited` | 429 | `RateLimitedError` | Raised when a caller exceeds the rate limit of a public endpoint. |
 | `/errors/receipt-photo-storage-failed` | 502 | `ReceiptPhotoStorageError` | Raised when a receipt photo cannot be persisted to object storage. |
 | `/errors/role-not-allowed` | 403 | `RoleNotAllowedError` | Raised when the actor's role is not permitted to perform the operation. |
+| `/errors/service-not-ready` | 503 | `ServiceNotReadyError` | Raised when a dependency the service needs to serve requests is down. |
 | `/errors/subject-already-exists` | 409 | `SubjectAlreadyExistsError` | Exception raised when trying to register a subject with an existing DNI. |
 | `/errors/subject-not-found` | 404 | `SubjectNotFoundError` | Exception raised when a subject cannot be found. |
 | `/errors/survey-already-exists` | 409 | `SurveyAlreadyExistsError` | Exception raised when a survey name collides with an existing one. |

@@ -7,6 +7,9 @@ from app.domain.establishment import UserEstablishmentStatus
 from app.domain.measurement import AlertSeverity, NutritionalStatus
 from app.domain.subject import Sex
 from app.domain.user import UserStatus
+from app.schemas.establishments.establishment_characterization_schema import (
+    StoredCharacterization,
+)
 from app.schemas.establishments.establishment_schema import EstablishmentResponse
 from app.schemas.measurements.measurement_schema import (
     MeasurementSnapshotBase,
@@ -57,6 +60,7 @@ class EstablishmentDashboardResponse(BaseModel):
     has_data: bool
     metrics: EstablishmentMetricsResponse
     alert_status: EstablishmentAlertStatusResponse
+    characterization: StoredCharacterization
 
 
 class LatestMeasurementResponse(MeasurementSnapshotBase):

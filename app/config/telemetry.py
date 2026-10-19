@@ -18,6 +18,8 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from app.config.log_masking import MaskingLogRecordProcessor, server_request_hook
 from app.config.settings import settings
 
+_UNTRACED_PATHS = "/health$,/ready$"
+
 
 class Telemetry(NamedTuple):
     logging_handler: LoggingHandler
@@ -65,6 +67,7 @@ def setup_telemetry(app) -> Telemetry:
         tracer_provider=tracer_provider,
         meter_provider=meter_provider,
         server_request_hook=server_request_hook,
+        excluded_urls=_UNTRACED_PATHS,
     )
 
     return Telemetry(

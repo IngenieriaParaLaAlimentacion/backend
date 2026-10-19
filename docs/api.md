@@ -15,6 +15,48 @@ Examples:
 /api/v1/nutrir/plans
 ```
 
+The only exceptions are the operational probes below.
+
+---
+
+## Health probes
+
+Two public endpoints, outside `/api/v1`, for the platform rather than for clients. Neither
+requires authentication, and neither produces traces or HTTP metrics, so they do not skew
+the latency dashboards.
+
+| Endpoint | Checks | Used by |
+|---|---|---|
+| `GET /health` | Nothing: the process answers. | Docker Compose `healthcheck`, post-deploy smoke tests |
+| `GET /ready` | PostgreSQL answers `SELECT 1` within `READINESS_DB_TIMEOUT_SECONDS` (default 2 s, connection included). | Railway Healthcheck Path (`railway.toml`) |
+
+`/health` always answers `200` while the process runs, even with the database down:
+
+```json
+{ "status": "ok" }
+```
+
+`/ready` answers `200` when every check passes:
+
+```json
+{ "status": "ready", "checks": { "database": "ok" } }
+```
+
+and `503` with type `/errors/service-not-ready` when one fails. The `checks` extension
+member names the failing check; the cause (host, driver error, traceback) is logged, never
+returned:
+
+```json
+{
+  "type": "/errors/service-not-ready",
+  "title": "Service not ready",
+  "status": 503,
+  "detail": "One or more dependencies required to serve requests are unavailable.",
+  "instance": "/ready",
+  "checks": { "database": "unavailable" }
+}
+```
+
 ---
 
 ## Authentication
@@ -71,7 +113,11 @@ The full list of `type` values is generated from the exception registry into
 FastAPI returns `422 Unprocessable Entity` by default when Pydantic rejects a request body or query parameter. The OpenAPI contract exposed to clients maps these to `400 Bad Request` instead (see `app/core/openapi.py`), which is the semantically correct code for malformed client input.
 
 The response body is the same envelope as any other error, with a string `detail`.
-Individual field failures are not reported.
+Individual field failures are not reported, except on routes marked
+`x-invalid-field-extension`: there the envelope also carries `field`, the name
+of the first body field that failed (dotted when nested, such as
+`characterization.premises_other`; never its value), so a client can flag the
+input without clearing the form.
 
 ### Extension members
 

@@ -12,7 +12,12 @@ from app.domain.establishment import (
     EstablishmentRequestStatus,
     UserEstablishmentStatus,
 )
+from app.domain.establishment_characterization import (
+    CharacterizationStatus,
+    characterization_status,
+)
 from app.domain.pagination import PaginatedResult
+from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
     EstablishmentAlreadyExistsError,
     UniqueConstraintError,
@@ -21,11 +26,16 @@ from app.models import Establishment
 from app.models.establishments.establishment_request import (
     EstablishmentRequest as EstablishmentRequestModel,
 )
+from app.schemas.establishments.establishment_characterization_schema import (
+    EstablishmentCharacterization,
+)
 from app.schemas.establishments.establishment_schema import (
+    EstablishmentApprovalRequest,
     EstablishmentCreationRequestCreate,
     EstablishmentRequest,
     EstablishmentUpdateRequest,
 )
+from app.services.access import check_characterization_edit_access
 from app.services.email_service import (
     send_creation_denied_email,
     send_establishment_created_email,
@@ -51,6 +61,18 @@ class EstablishmentService:
             page=page,
             page_size=page_size,
         )
+
+    @staticmethod
+    def _to_stored_characterization(
+        data: EstablishmentCharacterization | None,
+    ) -> dict | None:
+        """Dump a profile for storage, or None when it holds no answer."""
+        if data is None:
+            return None
+        characterization = data.model_dump(mode="json")
+        if characterization_status(characterization) == CharacterizationStatus.PENDING:
+            return None
+        return characterization
 
     async def _set_access_pending(
         self, user_id: UUID, establishment_id: UUID, reused: bool
@@ -85,10 +107,10 @@ class EstablishmentService:
         # else: APPROVED or PENDING, already under review or resolved — leave as-is.
 
     async def _create_or_reuse_establishment(
-        self, data: EstablishmentRequest
+        self, data: EstablishmentRequest, characterization: dict | None
     ) -> tuple[Establishment, bool]:
-        """Create the establishment described by ``data``, or reuse the
-        existing one with the same place_id.
+        """Create the establishment described by ``data`` with the given
+        characterization, or reuse the existing one with the same place_id.
 
         A concurrent approval racing to create the same place first is
         treated the same as finding it upfront. Returns the establishment
@@ -100,7 +122,10 @@ class EstablishmentService:
 
         try:
             created = await self.uow.establishment_repo.create(
-                Establishment(**data.model_dump())
+                Establishment(
+                    **data.model_dump(exclude={"characterization"}),
+                    characterization=characterization,
+                )
             )
             return created, False
         except UniqueConstraintError:
@@ -111,10 +136,24 @@ class EstablishmentService:
                 raise
             return establishment, True
 
+    async def _fill_pending_characterization(
+        self, establishment: Establishment, characterization: dict | None
+    ) -> None:
+        """Store ``characterization`` on an establishment whose profile holds
+        no answer yet, leaving an answered profile untouched."""
+        if (
+            characterization is None
+            or establishment.characterization_status == CharacterizationStatus.COMPLETE
+        ):
+            return
+        establishment.characterization = characterization
+        await self.uow.establishment_repo.update(establishment)
+
     async def create_establishment(
         self, data: EstablishmentRequest
     ) -> EstablishmentDomain:
-        """Register a new establishment.
+        """Register a new establishment with its optional characterization
+        profile, stored as no profile when it holds no answer.
 
         Raises:
             EstablishmentAlreadyExistsError: If an establishment with the same
@@ -126,7 +165,12 @@ class EstablishmentService:
 
         try:
             establishment = await self.uow.establishment_repo.create(
-                Establishment(**data.model_dump())
+                Establishment(
+                    **data.model_dump(exclude={"characterization"}),
+                    characterization=self._to_stored_characterization(
+                        data.characterization
+                    ),
+                )
             )
         except UniqueConstraintError:
             # Concurrent create won the race for this place_id.
@@ -147,7 +191,10 @@ class EstablishmentService:
             EstablishmentRequestModel(
                 user_id=user_id,
                 status=EstablishmentRequestStatus.PENDING,
-                **data.model_dump(),
+                **data.model_dump(exclude={"characterization"}),
+                characterization=self._to_stored_characterization(
+                    data.characterization
+                ),
             )
         )
         await self.uow.commit()
@@ -175,6 +222,31 @@ class EstablishmentService:
         for field, value in data.model_dump(exclude_none=True).items():
             if getattr(establishment, field) != value:
                 setattr(establishment, field, value)
+
+        establishment = await self.uow.establishment_repo.update(establishment)
+        await self.uow.commit()
+        return EstablishmentDomain.from_db(establishment)
+
+    async def replace_characterization(
+        self,
+        establishment_id: UUID,
+        actor: UserActor,
+        data: EstablishmentCharacterization,
+    ) -> EstablishmentDomain:
+        """Replace an establishment's characterization profile as a whole.
+
+        A profile with no answered field is stored as no profile.
+
+        Raises:
+            EstablishmentNotFoundError: If no establishment with that ID exists.
+            EstablishmentAccessDeniedError: If the actor may not edit it.
+        """
+        establishment = await self.uow.establishment_repo.get_by_id_or_raise(
+            establishment_id
+        )
+        await check_characterization_edit_access(self.uow, actor, establishment_id)
+
+        establishment.characterization = self._to_stored_characterization(data)
 
         establishment = await self.uow.establishment_repo.update(establishment)
         await self.uow.commit()
@@ -282,7 +354,10 @@ class EstablishmentService:
         )
 
     async def approve_creation_request(
-        self, request_id: UUID, data: EstablishmentRequest, reviewer_id: UUID
+        self,
+        request_id: UUID,
+        data: EstablishmentApprovalRequest,
+        reviewer_id: UUID,
     ) -> EstablishmentApprovalResult:
         """Approve a pending establishment creation request.
 
@@ -290,6 +365,10 @@ class EstablishmentService:
         existing one with the same place_id, and leaves the requesting field
         worker's access to it pending a separate admin review. Notifies them
         by email that the establishment was created.
+
+        The characterization profile is the one in ``data``, or the request's
+        own when ``data`` has none. A reused establishment only takes it when
+        its own profile holds no answer.
 
         Raises:
             EstablishmentRequestNotFoundError: If no request with that ID
@@ -301,7 +380,16 @@ class EstablishmentService:
             request_id, EstablishmentRequestStatus.APPROVED, reviewer_id
         )
 
-        establishment, reused = await self._create_or_reuse_establishment(data)
+        characterization = (
+            self._to_stored_characterization(data.characterization)
+            if data.characterization is not None
+            else request.characterization
+        )
+        establishment, reused = await self._create_or_reuse_establishment(
+            data, characterization
+        )
+        if reused:
+            await self._fill_pending_characterization(establishment, characterization)
 
         await self._set_access_pending(request.user_id, establishment.id, reused)
         await self.uow.commit()
