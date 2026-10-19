@@ -1,4 +1,4 @@
-# ADR-0020: Masking of sensitive data in logs and telemetry
+# ADR-0023: Masking of sensitive data in logs and telemetry
 
 - **Status**: Accepted
 - **Date**: 2026-10-12
