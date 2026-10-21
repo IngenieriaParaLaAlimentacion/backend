@@ -132,8 +132,8 @@ async def update_establishment(
         "and ignored if sent. Each `*_other` text is accepted only when "
         '`"other"` is chosen in its field. A 422 carries a `field` extension '
         "naming the body field that failed (`opening_hours` for any error "
-        "inside a slot). Accessible by admins, superadmins and field workers "
-        "with approved access to this establishment."
+        "inside a slot). Accessible by admins, superadmins, analysts and field "
+        "workers with approved access to this establishment."
     ),
     responses={
         **AUTH_RESPONSES,

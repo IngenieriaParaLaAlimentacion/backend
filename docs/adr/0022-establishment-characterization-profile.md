@@ -81,12 +81,13 @@ provisional until referents validate it.
 response built from either one (listing, detail, user and admin views, approval) carries it without
 each caller computing it. Rows that existed before the column read as `pending` with no backfill.
 
-### Editing is narrower than reading
+### Who can edit
 
-`PUT /establishments/{id}/characterization` uses `check_characterization_edit_access`
-(`app/services/access.py`): admins and superadmins edit any establishment, field workers only those
-they have approved access to, and analysts none. `check_establishment_access` could not be reused
-because it lets analysts through, which is right for reads (ADR-0018) but not for this write.
+`PUT /establishments/{id}/characterization` uses the same `check_establishment_access` as reads
+(`app/services/access.py`, ADR-0018): admins, superadmins and analysts edit any establishment, field
+workers only those they have approved access to. Analysts were first left out, but they can already
+fill in the profile when they propose an establishment, and a field worker can edit it in the app, so
+there was no reason to keep them from completing it in the backoffice.
 
 The full profile, which includes a private contact phone, is returned only by `PUT
 /characterization`, `GET /dashboard` and the request endpoints, never by the public listing or the

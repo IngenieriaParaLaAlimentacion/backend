@@ -124,8 +124,10 @@ class TestReplaceCharacterization:
 
 
 class TestCharacterizationPermissions:
-    @pytest.mark.parametrize("role", [UserRole.ADMIN, UserRole.SUPERADMIN])
-    async def test_admins_can_edit_any_establishment(
+    @pytest.mark.parametrize(
+        "role", [UserRole.ADMIN, UserRole.SUPERADMIN, UserRole.ANALYST]
+    )
+    async def test_admins_and_analysts_can_edit_any_establishment(
         self, client, db_establishment, make_user_with_role, role
     ):
         headers, _ = await make_user_with_role(role)
@@ -173,27 +175,17 @@ class TestCharacterizationPermissions:
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    async def test_analyst_returns_403(
-        self, client, db_establishment, make_user_with_role
-    ):
-        """Analysts may read the profile but not edit it."""
-        headers, _ = await make_user_with_role(UserRole.ANALYST)
-
-        response = await client.put(
-            _url(db_establishment.id), json=FULL_PROFILE, headers=headers
-        )
-
-        assert response.status_code == status.HTTP_403_FORBIDDEN
-
     async def test_rejected_edit_leaves_the_profile_unchanged(
-        self, client, db_establishment, admin_headers, make_user_with_role
+        self, client, db_establishment, admin_headers, make_field_worker_with_access
     ):
         await client.put(
             _url(db_establishment.id), json=FULL_PROFILE, headers=admin_headers
         )
-        analyst_headers, _ = await make_user_with_role(UserRole.ANALYST)
+        pending_headers, _ = await make_field_worker_with_access(
+            db_establishment.id, UserEstablishmentStatus.PENDING
+        )
 
-        await client.put(_url(db_establishment.id), json={}, headers=analyst_headers)
+        await client.put(_url(db_establishment.id), json={}, headers=pending_headers)
 
         dashboard = await client.get(
             DASHBOARD_URL.format(establishment_id=db_establishment.id),
