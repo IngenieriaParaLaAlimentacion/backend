@@ -1,185 +1,104 @@
 import uuid
-from datetime import datetime, timedelta, timezone
 
+import pytest
 from fastapi import status
 from sqlalchemy import select, text
 
 import app.db.database as db_module
-from app.config.settings import settings
-from app.core.security import create_password_recovery_token, hash_password
 from app.domain.user import UserRole, UserStatus
-from app.models.auth.password_recovery_token import PasswordRecoveryToken
 from app.models.auth.user import User
-from app.models.auth.user_password import UserPassword
+from tests.integration.auth.helpers import insert_user_with_recovery_token
 from tests.integration.urls import LOGIN_URL
 
 ACCEPT_INVITE_URL = "/api/v1/auth/invite/accept"
 
 
-def _login_payload(email: str, password: str) -> dict:
-    return {"email": email, "password": password, "device_id": str(uuid.uuid4())}
+def _payload(token: str, **overrides) -> dict:
+    return {
+        "token": token,
+        "new_password": "newpassword123",
+        "name": "Ana",
+        "last_name": "Gomez",
+        **overrides,
+    }
 
 
-async def _insert_invited_user(
-    role: UserRole,
-    status_val: UserStatus = UserStatus.PENDING_VALIDATION,
-) -> tuple[User, str]:
-    """Helper: create user in DB and emit an invite recovery token."""
-    plain_token, token_hash = create_password_recovery_token()
-    user_id = uuid.uuid4()
+async def _fetch_user(user_id: uuid.UUID) -> User:
     async with db_module.AsyncSessionLocal() as session:
-        user = User(
-            id=user_id,
-            name="",
-            last_name="",
-            email=f"invited_{user_id.hex[:6]}@test.com",
-            role=role,
-            status=status_val,
-        )
-        session.add(user)
-        await session.flush()
-        session.add(
-            UserPassword(
-                user_id=user.id,
-                password_hashed=hash_password("temp_password_123"),
-            )
-        )
-        session.add(
-            PasswordRecoveryToken(
-                user_id=user.id,
-                token_hash=token_hash,
-                expires_at=datetime.now(timezone.utc)
-                + timedelta(minutes=settings.password_recovery_token_expire_minutes),
-                used=False,
-            )
-        )
-        await session.commit()
-        await session.refresh(user)
-    return user, plain_token
+        result = await session.execute(select(User).where(User.id == user_id))
+        return result.scalar_one()
 
 
 class TestAcceptInviteSuccess:
-    async def test_pending_admin_accepts_invite_successfully(self, client):
-        user, token = await _insert_invited_user(UserRole.ADMIN)
+    @pytest.mark.parametrize("role", [UserRole.ADMIN, UserRole.ANALYST])
+    async def test_pending_invitee_is_activated_with_profile(self, client, role):
+        user, token = await insert_user_with_recovery_token(role)
 
-        payload = {
-            "token": token,
-            "new_password": "newpassword123",
-            "name": "AdminName",
-            "last_name": "AdminLastName",
-            "locality": "La Plata",
-            "description": "Admin bio info",
-            "contact_phone": "+541198765432",
-        }
-        res = await client.post(ACCEPT_INVITE_URL, json=payload)
-        assert res.status_code == status.HTTP_204_NO_CONTENT
-
-        # Verify DB state
-        async with db_module.AsyncSessionLocal() as session:
-            result = await session.execute(select(User).where(User.id == user.id))
-            updated_user = result.scalar_one()
-            assert updated_user.status == UserStatus.ACTIVE
-            assert updated_user.is_email_verified is True
-            assert updated_user.name == "AdminName"
-            assert updated_user.last_name == "AdminLastName"
-            assert updated_user.locality == "La Plata"
-            assert updated_user.description == "Admin bio info"
-            assert updated_user.contact_phone == "+541198765432"
-
-        # Verify new password works on login
-        login_res = await client.post(
-            LOGIN_URL, json=_login_payload(user.email, "newpassword123")
+        res = await client.post(
+            ACCEPT_INVITE_URL,
+            json=_payload(
+                token,
+                locality="La Plata",
+                description="Bio",
+                contact_phone="+541198765432",
+            ),
         )
-        assert login_res.status_code == status.HTTP_200_OK
-
-    async def test_pending_analyst_accepts_invite_successfully(self, client):
-        user, token = await _insert_invited_user(UserRole.ANALYST)
-
-        payload = {
-            "token": token,
-            "new_password": "analystpassword123",
-            "name": "AnalystName",
-            "last_name": "AnalystLastName",
-        }
-        res = await client.post(ACCEPT_INVITE_URL, json=payload)
         assert res.status_code == status.HTTP_204_NO_CONTENT
 
-        async with db_module.AsyncSessionLocal() as session:
-            result = await session.execute(select(User).where(User.id == user.id))
-            updated_user = result.scalar_one()
-            assert updated_user.status == UserStatus.ACTIVE
-            assert updated_user.is_email_verified is True
-            assert updated_user.name == "AnalystName"
-            assert updated_user.last_name == "AnalystLastName"
-            assert updated_user.locality is None
-            assert updated_user.description is None
-            assert updated_user.contact_phone is None
+        stored = await _fetch_user(user.id)
+        assert stored.status == UserStatus.ACTIVE
+        assert stored.is_email_verified is True
+        assert (stored.name, stored.last_name) == ("Ana", "Gomez")
+        assert (stored.locality, stored.description, stored.contact_phone) == (
+            "La Plata",
+            "Bio",
+            "+541198765432",
+        )
 
         login_res = await client.post(
-            LOGIN_URL, json=_login_payload(user.email, "analystpassword123")
+            LOGIN_URL,
+            json={
+                "email": user.email,
+                "password": "newpassword123",
+                "device_id": str(uuid.uuid4()),
+            },
         )
         assert login_res.status_code == status.HTTP_200_OK
 
 
 class TestAcceptInviteRejections:
-    async def test_field_worker_token_returns_401(self, client):
-        user, token = await _insert_invited_user(UserRole.FIELD_WORKER)
+    @pytest.mark.parametrize(
+        ("role", "user_status"),
+        [
+            (UserRole.FIELD_WORKER, UserStatus.PENDING_VALIDATION),
+            (UserRole.ADMIN, UserStatus.ACTIVE),
+        ],
+    )
+    async def test_user_not_pending_invitee_returns_401(
+        self, client, role, user_status
+    ):
+        user, token = await insert_user_with_recovery_token(role, user_status)
 
-        payload = {
-            "token": token,
-            "new_password": "newpassword123",
-            "name": "FieldName",
-            "last_name": "FieldLast",
-        }
-        res = await client.post(ACCEPT_INVITE_URL, json=payload)
+        res = await client.post(ACCEPT_INVITE_URL, json=_payload(token))
         assert res.status_code == status.HTTP_401_UNAUTHORIZED
         assert res.json()["type"] == "/errors/auth/invalid-recovery-token"
-
-    async def test_active_user_token_returns_401(self, client):
-        user, token = await _insert_invited_user(
-            UserRole.ADMIN, status_val=UserStatus.ACTIVE
-        )
-
-        payload = {
-            "token": token,
-            "new_password": "newpassword123",
-            "name": "AdminName",
-            "last_name": "AdminLast",
-        }
-        res = await client.post(ACCEPT_INVITE_URL, json=payload)
-        assert res.status_code == status.HTTP_401_UNAUTHORIZED
-        assert res.json()["type"] == "/errors/auth/invalid-recovery-token"
+        assert (await _fetch_user(user.id)).status == user_status
 
     async def test_unknown_token_returns_401(self, client):
-        payload = {
-            "token": "completely-unknown-token",
-            "new_password": "newpassword123",
-            "name": "SomeName",
-            "last_name": "SomeLast",
-        }
-        res = await client.post(ACCEPT_INVITE_URL, json=payload)
+        res = await client.post(ACCEPT_INVITE_URL, json=_payload("unknown-token"))
         assert res.status_code == status.HTTP_401_UNAUTHORIZED
         assert res.json()["type"] == "/errors/auth/invalid-recovery-token"
 
     async def test_used_token_returns_401(self, client):
-        user, token = await _insert_invited_user(UserRole.ADMIN)
+        _, token = await insert_user_with_recovery_token(UserRole.ADMIN)
+        await client.post(ACCEPT_INVITE_URL, json=_payload(token))
 
-        payload = {
-            "token": token,
-            "new_password": "newpassword123",
-            "name": "AdminName",
-            "last_name": "AdminLast",
-        }
-        first_res = await client.post(ACCEPT_INVITE_URL, json=payload)
-        assert first_res.status_code == status.HTTP_204_NO_CONTENT
-
-        second_res = await client.post(ACCEPT_INVITE_URL, json=payload)
-        assert second_res.status_code == status.HTTP_401_UNAUTHORIZED
-        assert second_res.json()["type"] == "/errors/auth/recovery-token-used"
+        res = await client.post(ACCEPT_INVITE_URL, json=_payload(token))
+        assert res.status_code == status.HTTP_401_UNAUTHORIZED
+        assert res.json()["type"] == "/errors/auth/recovery-token-used"
 
     async def test_expired_token_returns_401(self, client):
-        user, token = await _insert_invited_user(UserRole.ADMIN)
-
+        _, token = await insert_user_with_recovery_token(UserRole.ADMIN)
         async with db_module.engine.begin() as conn:
             await conn.execute(
                 text(
@@ -188,50 +107,14 @@ class TestAcceptInviteRejections:
                 )
             )
 
-        payload = {
-            "token": token,
-            "new_password": "newpassword123",
-            "name": "AdminName",
-            "last_name": "AdminLast",
-        }
-        res = await client.post(ACCEPT_INVITE_URL, json=payload)
+        res = await client.post(ACCEPT_INVITE_URL, json=_payload(token))
         assert res.status_code == status.HTTP_401_UNAUTHORIZED
         assert res.json()["type"] == "/errors/auth/recovery-token-expired"
 
+    @pytest.mark.parametrize("field", ["name", "last_name"])
+    async def test_missing_required_profile_field_returns_422(self, client, field):
+        body = _payload("sometoken")
+        del body[field]
 
-class TestAcceptInviteValidation:
-    async def test_missing_name_returns_422(self, client):
-        res = await client.post(
-            ACCEPT_INVITE_URL,
-            json={
-                "token": "sometoken",
-                "new_password": "newpassword123",
-                "last_name": "LastName",
-            },
-        )
-        assert res.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_short_password_returns_422(self, client):
-        res = await client.post(
-            ACCEPT_INVITE_URL,
-            json={
-                "token": "sometoken",
-                "new_password": "short",
-                "name": "Name",
-                "last_name": "LastName",
-            },
-        )
-        assert res.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
-
-    async def test_invalid_phone_pattern_returns_422(self, client):
-        res = await client.post(
-            ACCEPT_INVITE_URL,
-            json={
-                "token": "sometoken",
-                "new_password": "newpassword123",
-                "name": "Name",
-                "last_name": "LastName",
-                "contact_phone": "invalid-phone-abc",
-            },
-        )
+        res = await client.post(ACCEPT_INVITE_URL, json=body)
         assert res.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT

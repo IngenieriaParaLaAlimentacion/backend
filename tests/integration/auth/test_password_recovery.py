@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime, timedelta, timezone
 from urllib.parse import parse_qs, urlparse
 
 import pytest
@@ -7,12 +6,10 @@ from fastapi import status
 from sqlalchemy import select
 
 import app.db.database as db_module
-from app.config.settings import settings
-from app.core.security import create_password_recovery_token, hash_password
 from app.domain.user import UserRole, UserStatus
 from app.models.auth.password_recovery_token import PasswordRecoveryToken
 from app.models.auth.user import User
-from app.models.auth.user_password import UserPassword
+from tests.integration.auth.helpers import insert_user_with_recovery_token
 from tests.integration.urls import LOGIN_URL, LOGOUT_URL
 
 REQUEST_URL = "/api/v1/auth/password-recovery/request"
@@ -238,40 +235,6 @@ class TestPasswordRecoveryConfirm:
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
-async def _insert_pending_backoffice_user(role: UserRole) -> tuple[User, str]:
-    plain_token, token_hash = create_password_recovery_token()
-    user_id = uuid.uuid4()
-    async with db_module.AsyncSessionLocal() as session:
-        user = User(
-            id=user_id,
-            name="Pending",
-            last_name="Backoffice",
-            email=f"{user_id}@test.com",
-            role=role,
-            status=UserStatus.PENDING_VALIDATION,
-        )
-        session.add(user)
-        await session.flush()
-        session.add(
-            UserPassword(
-                user_id=user.id,
-                password_hashed=hash_password("oldpassword123"),
-            )
-        )
-        session.add(
-            PasswordRecoveryToken(
-                user_id=user.id,
-                token_hash=token_hash,
-                expires_at=datetime.now(timezone.utc)
-                + timedelta(minutes=settings.password_recovery_token_expire_minutes),
-                used=False,
-            )
-        )
-        await session.commit()
-        await session.refresh(user)
-    return user, plain_token
-
-
 class TestDecoupledPasswordRecovery:
     async def test_pending_field_worker_resets_password_and_remains_pending(
         self, client, db_pending_user, capture_deeplink
@@ -284,7 +247,6 @@ class TestDecoupledPasswordRecovery:
         )
         assert confirm_res.status_code == status.HTTP_204_NO_CONTENT
 
-        # Status must remain PENDING_VALIDATION, is_email_verified must be True
         async with db_module.AsyncSessionLocal() as session:
             result = await session.execute(
                 select(User).where(User.email == "pending@test.com")
@@ -293,7 +255,6 @@ class TestDecoupledPasswordRecovery:
             assert user.status == UserStatus.PENDING_VALIDATION
             assert user.is_email_verified is True
 
-        # Login must be rejected with 403 /errors/account-pending-validation
         login_res = await client.post(
             LOGIN_URL, json=_login_payload("pending@test.com", "newpassword123")
         )
@@ -306,7 +267,7 @@ class TestPendingBackofficeBlockedFromPasswordRecovery:
     async def test_request_password_recovery_skips_email_for_pending_backoffice(
         self, client, capture_deeplink, role
     ):
-        user, _ = await _insert_pending_backoffice_user(role)
+        user, _ = await insert_user_with_recovery_token(role)
 
         res = await client.post(REQUEST_URL, json={"email": user.email})
         assert res.status_code == status.HTTP_202_ACCEPTED
@@ -316,7 +277,7 @@ class TestPendingBackofficeBlockedFromPasswordRecovery:
     async def test_confirm_password_recovery_rejected_for_pending_backoffice(
         self, client, role
     ):
-        user, token = await _insert_pending_backoffice_user(role)
+        user, token = await insert_user_with_recovery_token(role)
 
         res = await client.post(
             CONFIRM_URL, json={"token": token, "new_password": "newpassword123"}

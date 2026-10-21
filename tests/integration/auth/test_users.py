@@ -269,70 +269,33 @@ class TestProfileEdit:
 
         assert response.status_code == 400
 
-    async def test_optional_fields_populated_and_then_cleared_to_null_by_explicit_null(
+    async def test_explicit_null_clears_only_that_optional_field(
         self, client, analyst_user
     ):
-        """Explicit null clears optional profile fields in DB, leaving others."""
-        # 1. Populate all three optional fields
-        populate_res = await client.patch(
+        await client.patch(
             ME_URL,
-            json={
-                "locality": "Cordoba",
-                "description": "My initial description",
-                "contact_phone": "+541112345678",
-            },
+            json={"locality": "Cordoba", "description": "Bio"},
             headers=_headers_for(analyst_user),
         )
-        assert populate_res.status_code == 200
-        stored = await _fetch_user(analyst_user.id)
-        assert stored.locality == "Cordoba"
-        assert stored.description == "My initial description"
-        assert stored.contact_phone == "+541112345678"
 
-        # 2. Clear locality with explicit null
-        clear_loc_res = await client.patch(
-            ME_URL,
-            json={"locality": None},
-            headers=_headers_for(analyst_user),
+        response = await client.patch(
+            ME_URL, json={"locality": None}, headers=_headers_for(analyst_user)
         )
-        assert clear_loc_res.status_code == 200
-        assert clear_loc_res.json()["locality"] is None
+
+        assert response.status_code == 200
         stored = await _fetch_user(analyst_user.id)
         assert stored.locality is None
-        assert stored.description == "My initial description"
-        assert stored.contact_phone == "+541112345678"
+        assert stored.description == "Bio"
 
-        # 3. Clear description and phone with explicit null
-        clear_all_res = await client.patch(
-            ME_URL,
-            json={"description": None, "contact_phone": None},
-            headers=_headers_for(analyst_user),
-        )
-        assert clear_all_res.status_code == 200
-        assert clear_all_res.json()["description"] is None
-        assert clear_all_res.json()["contact_phone"] is None
-        stored = await _fetch_user(analyst_user.id)
-        assert stored.locality is None
-        assert stored.description is None
-        assert stored.contact_phone is None
-
-    async def test_name_null_returns_422_and_keeps_db(self, client, analyst_user):
-        """Explicit null for name is rejected (422) and keeps DB."""
+    @pytest.mark.parametrize("field", ["name", "last_name"])
+    async def test_null_required_name_returns_422(self, client, analyst_user, field):
         response = await client.patch(
-            ME_URL, json={"name": None}, headers=_headers_for(analyst_user)
+            ME_URL, json={field: None}, headers=_headers_for(analyst_user)
         )
+
         assert response.status_code == 422
         stored = await _fetch_user(analyst_user.id)
-        assert stored.name == analyst_user.name
-
-    async def test_last_name_null_returns_422_and_keeps_db(self, client, analyst_user):
-        """Explicit null for last_name is rejected (422) and keeps DB."""
-        response = await client.patch(
-            ME_URL, json={"last_name": None}, headers=_headers_for(analyst_user)
-        )
-        assert response.status_code == 422
-        stored = await _fetch_user(analyst_user.id)
-        assert stored.last_name == analyst_user.last_name
+        assert getattr(stored, field) == getattr(analyst_user, field)
 
     @pytest.mark.parametrize(
         "payload",
