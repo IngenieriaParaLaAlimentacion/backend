@@ -28,11 +28,9 @@ def upgrade() -> None:
             sa.ForeignKey("establishments.id"),
             nullable=False,
         ),
-        sa.Column("user_id", sa.UUID(), sa.ForeignKey("users.id"), nullable=False),
         sa.Column("children_count", sa.Integer(), nullable=False),
         sa.Column("meal_type", sa.String(), nullable=False),
         sa.Column("input_snapshot", postgresql.JSONB(), nullable=False),
-        sa.Column("prompt_version", sa.String(), nullable=False),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),

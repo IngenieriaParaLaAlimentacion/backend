@@ -70,8 +70,11 @@ to the first list index), never its value.
 | `/errors/recipes/already-chosen` | 409 | `RecipeAlreadyChosenError` | A different proposal was already chosen for this request. |
 | `/errors/recipes/generation-failed` | 502 | `RecipeGenerationError` | The model failed to produce complete valid recipe proposals. |
 | `/errors/recipes/idempotency-conflict` | 409 | `RecipeIdempotencyConflictError` | A reuse id was already used with different input. |
+| `/errors/recipes/ingredient-unavailable` | 409 | `RecipeIngredientUnavailableError` | A saved recipe ingredient is no longer in the catalog. |
+| `/errors/recipes/ingredient-unit-changed` | 409 | `RecipeIngredientUnitChangedError` | A saved ingredient's stock unit changed since generation. |
 | `/errors/recipes/no-usable-stock` | 409 | `RecipeNoUsableStockError` | No stocked food with known mass and positive energy can form a recipe. |
 | `/errors/recipes/not-found` | 404 | `RecipeNotFoundError` | The requested recommendation or proposal does not exist. |
+| `/errors/recipes/scale-too-small` | 409 | `RecipeScaleTooSmallError` | Scaling would round a required ingredient down to zero. |
 | `/errors/role-not-allowed` | 403 | `RoleNotAllowedError` | Raised when the actor's role is not permitted to perform the operation. |
 | `/errors/subject-already-exists` | 409 | `SubjectAlreadyExistsError` | Exception raised when trying to register a subject with an existing DNI. |
 | `/errors/subject-not-found` | 404 | `SubjectNotFoundError` | Exception raised when a subject cannot be found. |

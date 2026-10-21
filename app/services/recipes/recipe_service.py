@@ -1,31 +1,26 @@
-import json
 import math
-import re
 from datetime import datetime, timezone
 from decimal import ROUND_DOWN, Decimal
-from pathlib import Path
 from uuid import UUID, uuid4
-
-from pydantic import BaseModel, ValidationError
 
 from app.core.interfaces.llm_client import ILlmClient
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.food_catalog import MeasurementUnit
 from app.domain.food_outflow import FoodOutflowCategory
 from app.domain.nutrition import (
-    RecipeRequest,
-    RecipeSolution,
+    StockedFood,
 )
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     FoodNotFoundError,
     InsufficientStockError,
-    LlmClientError,
     RecipeAlreadyChosenError,
-    RecipeGenerationError,
     RecipeIdempotencyConflictError,
+    RecipeIngredientUnavailableError,
+    RecipeIngredientUnitChangedError,
     RecipeNotFoundError,
     RecipeNoUsableStockError,
+    RecipeScaleTooSmallError,
     RoleNotAllowedError,
 )
 from app.models.recipes.recipe import (
@@ -37,15 +32,14 @@ from app.schemas.food_intakes.food_intake_schema import FoodLineRequest
 from app.schemas.food_outflows.food_outflow_schema import FoodOutflowRequest
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.recipes.recipe_schema import (
-    CandidateBatch,
     GramConversionInput,
+    RecipeHistoryItem,
     RecipeIngredient,
     RecipeProposal,
     RecipeSelectionResponse,
     RecommendationInput,
     RecommendationResponse,
     ReuseInput,
-    WritingBatch,
 )
 from app.services.access import check_establishment_access, check_field_work_access
 from app.services.food_outflows.food_outflow_service import FoodOutflowService
@@ -53,14 +47,11 @@ from app.services.nutrition.compositions import composition_from_food
 from app.services.nutrition.grams import CatalogGramsConverter
 from app.services.nutrition.indicators import ENERGY
 from app.services.nutrition.nutrition_service import NutritionService
-from app.services.recipes.calculations import calculate_proposal, stock_ingredients
-
-PROMPT_VERSION = "v1"
-PROMPTS = Path(__file__).parent / "prompts" / PROMPT_VERSION
-# Amounts are rendered from the backend snapshot, never from model-authored prose.
-_AMOUNT_IN_PROSE = re.compile(
-    r"\b\d+(?:[.,]\d+)?\s*(?:kg|g|gr|gramos?|kilogramos?|mg|ml|litros?|lts?|unidades?|tazas?|cucharadas?)\b",
-    re.IGNORECASE,
+from app.services.recipes.calculations import calculate_proposal
+from app.services.recipes.generation import (
+    FoodSnapshot,
+    GenerationSnapshot,
+    RecipeGenerator,
 )
 
 
@@ -79,19 +70,6 @@ class RecipeService:
         await check_field_work_access(self.uow, actor, establishment_id)
         return establishment
 
-    async def _completion(self, template: str, context: dict, schema: type[BaseModel]):
-        if self.llm is None:
-            raise RecipeGenerationError()
-        prompt = (
-            (PROMPTS / template)
-            .read_text()
-            .replace("{context}", json.dumps(context, ensure_ascii=False))
-        )
-        result = await self.llm.complete(
-            prompt=prompt, response_schema=schema.model_json_schema()
-        )
-        return schema.model_validate(result)
-
     @staticmethod
     def _response(
         record: RecipeRequestRecord, *, chosen_only: bool = False
@@ -102,9 +80,7 @@ class RecipeService:
             establishment_id=record.establishment_id,
             children_count=record.children_count,
             meal_type=record.meal_type,
-            user_id=record.user_id,
             created_at=record.created_at,
-            prompt_version=record.prompt_version,
             proposals=[
                 RecipeProposal.model_validate(p.recipe)
                 for p in record.proposals
@@ -135,10 +111,10 @@ class RecipeService:
             raise RecipeNotFoundError()
         return record, RecipeProposal.model_validate(proposal.recipe)
 
-    async def generate(
+    async def _generation_snapshot(
         self, data: RecommendationInput, actor: UserActor
-    ) -> RecommendationResponse:
-        """Generate two or three complete proposals without reserving stock."""
+    ) -> GenerationSnapshot:
+        """Load one plain snapshot, then release the database connection."""
         establishment = await self._access(data.establishment_id, actor)
         rows = await self.uow.food_stock_repo.stocked_foods(data.establishment_id)
         converter = CatalogGramsConverter([food for food, _ in rows])
@@ -193,144 +169,42 @@ class RecipeService:
                 if r.selection and p.id == r.selection.proposal_id
             ],
         }
-        nutrition = NutritionService(self.uow, converter)
-        proposals = []
-        signatures = set()
-        failures = []
-        try:
-            # One initial selection and at most one repair; the writing call is last.
-            for _ in range(2):
-                try:
-                    batch = await self._completion(
-                        "select.txt",
-                        {
-                            **context,
-                            "failures": failures,
-                            "accepted": [p.model_dump(mode="json") for p in proposals],
-                        },
-                        CandidateBatch,
-                    )
-                except ValidationError:
-                    failures.append("Candidate response failed schema validation")
-                    continue
-                for candidate in batch.candidates:
-                    if len(proposals) == 3:
-                        break
-                    ids = sorted(set(candidate.food_ids) & foods.keys())
-                    if (
-                        not ids
-                        or candidate.cultural_identity
-                        and candidate.cultural_identity not in identities
-                    ):
-                        failures.append(
-                            "Candidate has no valid foods or its culture is unsupported"
-                        )
-                        continue
-                    solution: RecipeSolution = await nutrition.maximize_recipe(
-                        data.establishment_id,
-                        RecipeRequest(ids, data.children_count, data.meal_type),
-                        actor,
-                    )
-                    ingredients = stock_ingredients(
-                        solution.quantities, foods, converter
-                    )
-                    if not solution.has_data or not ingredients:
-                        failures.append(
-                            f"{candidate.concept}: no usable energy after calculation"
-                        )
-                        continue
-                    signature = (
-                        frozenset(i.food_id for i in ingredients),
-                        candidate.concept.strip().casefold(),
-                    )
-                    if signature in signatures:
-                        failures.append(
-                            f"{candidate.concept}: duplicate dish candidate"
-                        )
-                        continue
-                    proposal = calculate_proposal(
-                        uuid4(),
-                        data.children_count,
-                        ingredients,
-                        solution.target_energy_kcal,
-                        foods,
-                        nutrition.profile,
-                        warnings + solution.warnings,
-                    )
-                    if proposal.energy_kcal <= 0:
-                        failures.append(
-                            f"{candidate.concept}: no energy after rounding"
-                        )
-                        continue
-                    proposal.name = candidate.concept
-                    proposal.cultural_identity = candidate.cultural_identity
-                    proposals.append(proposal)
-                    signatures.add(signature)
-                needs_culture = (
-                    identities
-                    and batch.cultural_dish_viable
-                    and not any(p.cultural_identity for p in proposals)
+        compositions = {food.id: composition_from_food(food) for food in foods.values()}
+        snapshot = GenerationSnapshot(
+            context=context,
+            foods={
+                food.id: FoodSnapshot(food.id, food.name, food.base_unit)
+                for food in foods.values()
+            },
+            compositions=compositions,
+            stocked=[
+                StockedFood(
+                    compositions[food_id], converter.to_grams(food_id, quantity)
                 )
-                if needs_culture:
-                    failures.append(
-                        "Include a culturally inspired candidate when one is viable"
-                    )
-                    proposals = []
-                    signatures = set()
-                elif len(proposals) >= 2:
-                    break
-            if len(proposals) < 2:
-                raise RecipeGenerationError()
-            written = await self._completion(
-                "write.txt",
-                {
-                    "cultural_identities": identities,
-                    "cultural_identities_other": identity_other,
-                    "recipes": [p.model_dump(mode="json") for p in proposals],
-                },
-                WritingBatch,
-            )
-            if len(written.recipes) != len(proposals) or {
-                r.proposal_id for r in written.recipes
-            } != {p.id for p in proposals}:
-                raise RecipeGenerationError()
-            prepared_signatures = set()
-            for proposal in proposals:
-                presentation = next(
-                    r for r in written.recipes if r.proposal_id == proposal.id
-                )
-                allowed = {i.food_id for i in proposal.ingredients}
-                referenced = {
-                    fid for step in presentation.steps for fid in step.food_ids
-                }
-                if (
-                    referenced != allowed
-                    or any(
-                        _AMOUNT_IN_PROSE.search(step.text)
-                        for step in presentation.steps
-                    )
-                    or presentation.cultural_identity != proposal.cultural_identity
-                ):
-                    raise RecipeGenerationError()
-                proposal.name = presentation.name
-                proposal.steps = [s.text for s in presentation.steps]
-                prepared_signature = (
-                    frozenset(i.food_id for i in proposal.ingredients),
-                    tuple(step.strip().casefold() for step in proposal.steps),
-                )
-                if prepared_signature in prepared_signatures:
-                    raise RecipeGenerationError()
-                prepared_signatures.add(prepared_signature)
-        except (LlmClientError, ValidationError) as exc:
-            raise RecipeGenerationError() from exc
+                for food_id, quantity in stock.items()
+            ],
+            converter=converter,
+            warnings=warnings,
+        )
+        # rollback expires ORM objects. Everything passed to the model/LP is plain
+        # data, so subsequent calls cannot lazy-load or acquire a connection.
+        await self.uow.rollback()
+        return snapshot
+
+    async def generate(
+        self, data: RecommendationInput, actor: UserActor
+    ) -> RecommendationResponse:
+        """Prepare one snapshot, generate without DB connections, then save."""
+        snapshot = await self._generation_snapshot(data, actor)
+        proposals = await RecipeGenerator(
+            self.llm, NutritionService(self.uow, snapshot.converter)
+        ).generate(data, snapshot)
         request = RecipeRequestRecord(
             id=uuid4(),
             establishment_id=data.establishment_id,
-            user_id=actor.user_id,
             children_count=data.children_count,
             meal_type=data.meal_type.value,
             input_snapshot=data.model_dump(mode="json"),
-            prompt_version=PROMPT_VERSION,
             proposals=[
                 RecipeProposalRecord(
                     id=p.id, position=i, recipe=p.model_dump(mode="json")
@@ -366,6 +240,57 @@ class RecipeService:
             page=page,
             page_size=page_size,
             total_pages=math.ceil(total / page_size),
+        )
+
+    async def recipes(
+        self,
+        establishment_id: UUID,
+        actor: UserActor,
+        *,
+        chosen_only: bool,
+        page: int,
+        page_size: int,
+    ) -> PaginatedResponse[RecipeHistoryItem]:
+        """Return one item per saved proposal, including unchosen alternatives."""
+        await self._access(establishment_id, actor)
+        rows, total = await self.uow.recipe_repo.proposals(
+            establishment_id,
+            chosen_only=chosen_only,
+            limit=page_size,
+            offset=(page - 1) * page_size,
+        )
+        return PaginatedResponse(
+            items=[
+                RecipeHistoryItem(
+                    request_id=r.id,
+                    establishment_id=r.establishment_id,
+                    meal_type=r.meal_type,
+                    created_at=r.created_at,
+                    chosen=chosen,
+                    proposal=RecipeProposal.model_validate(p.recipe),
+                )
+                for r, p, chosen in rows
+            ],
+            total=total,
+            page=page,
+            page_size=page_size,
+            total_pages=math.ceil(total / page_size),
+        )
+
+    async def detail(
+        self, request_id: UUID, proposal_id: UUID, actor: UserActor
+    ) -> RecipeHistoryItem:
+        """Read an immutable saved proposal without checking current stock."""
+        record, proposal = await self._find(request_id, proposal_id, actor)
+        return RecipeHistoryItem(
+            request_id=record.id,
+            establishment_id=record.establishment_id,
+            meal_type=record.meal_type,
+            created_at=record.created_at,
+            chosen=bool(
+                record.selection and record.selection.proposal_id == proposal_id
+            ),
+            proposal=proposal,
         )
 
     async def _choose(
@@ -418,7 +343,10 @@ class RecipeService:
         )
         foods = {food.id: food for food in rows}
         if len(foods) != len(source.ingredients):
-            raise RecipeNotFoundError()
+            missing = next(
+                item for item in source.ingredients if item.food_id not in foods
+            )
+            raise RecipeIngredientUnavailableError(str(missing.food_id), missing.name)
         converter = CatalogGramsConverter(rows)
         # Preserve stock-unit quantities when reviewed gram metadata changes.
         ratio = Decimal(children_count) / Decimal(original.children_count)
@@ -428,9 +356,9 @@ class RecipeService:
                 Decimal("0.001"), rounding=ROUND_DOWN
             )
             if quantity <= 0:
-                continue
+                raise RecipeScaleTooSmallError(str(item.food_id), item.name)
             if foods[item.food_id].base_unit != item.unit:
-                raise RecipeIdempotencyConflictError()
+                raise RecipeIngredientUnitChangedError(str(item.food_id), item.name)
             grams = converter.to_grams(item.food_id, quantity)
             if grams is None:
                 raise RecipeNoUsableStockError()
@@ -443,14 +371,8 @@ class RecipeService:
                     unit=item.unit,
                 )
             )
-        if len(ingredients) != len(source.ingredients):
-            raise RecipeNoUsableStockError()
         nutrition = NutritionService(self.uow, converter)
-        target = (
-            children_count
-            * nutrition.profile.energy_kcal
-            * nutrition.profile.meal_energy_fractions[original.meal_type]
-        )
+        target = nutrition.target_energy_kcal(children_count, original.meal_type)
         proposal = calculate_proposal(
             uuid4(),
             children_count,
@@ -511,11 +433,9 @@ class RecipeService:
         record = RecipeRequestRecord(
             id=data.id,
             establishment_id=original.establishment_id,
-            user_id=actor.user_id,
             children_count=data.children_count,
             meal_type=original.meal_type,
             input_snapshot=snapshot,
-            prompt_version=original.prompt_version,
             proposals=[
                 RecipeProposalRecord(
                     id=proposal.id, position=0, recipe=proposal.model_dump(mode="json")

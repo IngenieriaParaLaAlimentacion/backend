@@ -265,6 +265,18 @@
       "description": "A reuse id was already used with different input."
     },
     {
+      "type": "/errors/recipes/ingredient-unavailable",
+      "status": 409,
+      "exception": "RecipeIngredientUnavailableError",
+      "description": "A saved recipe ingredient is no longer in the catalog."
+    },
+    {
+      "type": "/errors/recipes/ingredient-unit-changed",
+      "status": 409,
+      "exception": "RecipeIngredientUnitChangedError",
+      "description": "A saved ingredient's stock unit changed since generation."
+    },
+    {
       "type": "/errors/recipes/no-usable-stock",
       "status": 409,
       "exception": "RecipeNoUsableStockError",
@@ -275,6 +287,12 @@
       "status": 404,
       "exception": "RecipeNotFoundError",
       "description": "The requested recommendation or proposal does not exist."
+    },
+    {
+      "type": "/errors/recipes/scale-too-small",
+      "status": 409,
+      "exception": "RecipeScaleTooSmallError",
+      "description": "Scaling would round a required ingredient down to zero."
     },
     {
       "type": "/errors/role-not-allowed",

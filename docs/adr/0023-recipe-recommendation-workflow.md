@@ -31,12 +31,11 @@ engine indicators are also exposed as explicit percentages for clients.
 
 ## Persistence and concurrency
 
-`recipe_requests` stores input, actor, prompt version and time. Its `user_id`
-identifies who requested generation or reuse; selection `user_id` identifies who
-confirmed the stock outflow. `prompt_version` identifies the selection/writing
-prompt set and is inherited by reuse, which makes no model call. It supports
-provenance, not exact reproduction. Proposal `position` is its zero-based display
-order, preserved when loading history. Immutable
+`recipe_requests` stores the fixed input snapshot and time. Unused request-level
+`user_id` and persisted `prompt_version` have been removed before deployment.
+Selection `user_id` attributes the actual stock deduction. The prompt version
+remains a code constant used in structured failure logs, not an unused history
+field. Proposal `position` preserves its zero-based display order. Immutable
 `recipe_proposals` store complete JSON snapshots including final quantities and
 indicators. No request is persisted until both AI stages have validated.
 `recipe_selections` has one row per request and a unique outflow id. Its composite
@@ -85,3 +84,39 @@ There is no claim that the current LP imposes culinary portion caps or upper
 bounds for sodium, saturated fat or sugar: ADR-0021 still governs its model.
 Real-world culinary quality requires evaluation with reviewed examples; tests
 use a scripted `ILlmClient`, never live model calls.
+
+## Review refinements
+
+Generation loads authorization, stock, nutrient compositions and recent choices
+once. It copies the data into plain snapshots, then rolls back the read-only
+transaction before any model call. Rollback expires ORM state, so no ORM object
+is passed to generation or the LP. `maximize_stocked_recipe` accepts the already
+authorized snapshot and does no DB I/O; the existing public nutrition entry point
+still performs its own authorization and reads. Candidate solves use the same
+snapshot even if stock changes during model calls. Saving opens a short write
+transaction; choosing always rechecks live stock atomically.
+
+The workflow separates snapshot loading, bounded selection/repair, writing
+validation and persistence. Structured warnings report stage, controlled failure
+reason, prompt version and controlled rejection codes. Provider failures,
+timeouts, schema errors, bad references, prose quantities and duplicates can be
+distinguished without logging prompts, stock, model prose or provider messages.
+
+Recipe listing offers both request history and individual proposal pagination,
+plus read-only detail for chosen and unchosen proposals. All use the same access
+policy: approved establishment relations for field workers and analysts;
+admins/superadmins are unrestricted by establishment.
+
+AI endpoints share the authenticated-user quota `RATE_LIMIT_AI_USER` (20/hour
+by default) for recipe generation and receipt extraction. Exceeding it returns
+429 with Retry-After before model work. Existing Redis outage fallback remains
+per process; quotas are separate per replica while degraded. This bounds request
+rate, not provider spend globally; provider retries and fallback still count as
+one incoming request, and no global budget or retention policy is introduced.
+
+Final-quantity shortfall evaluation and named tolerances live in
+`nutrition.shortfalls`; recipes only consume them. The reference profile remains
+the source of macro ranges and GAPA minima for both evaluation and the LP, whose
+objective and constraints are unchanged. `NutritionService.target_energy_kcal`
+is shared by optimization and reuse. Reuse distinguishes missing ingredients,
+changed units and quantities below stock precision with explicit domain errors.

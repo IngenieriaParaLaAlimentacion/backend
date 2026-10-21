@@ -36,14 +36,9 @@ class RecipeRequestRecord(Base):
     establishment_id = Column(
         UUID(as_uuid=True), ForeignKey("establishments.id"), nullable=False
     )
-    # Actor who requested this generation or AI-free reuse.
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     children_count = Column(Integer, nullable=False)
     meal_type = Column(String, nullable=False)
     input_snapshot = Column(JSONB, nullable=False)
-    # Version of the selection/writing prompt files; inherited by AI-free reuse.
-    # Supports tracing generated output to its prompt set, not exact reproduction.
-    prompt_version = Column(String, nullable=False)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

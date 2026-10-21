@@ -1179,3 +1179,45 @@ class RecipeGenerationError(BaseError):
             "Recipe generation failed",
             "Could not generate valid recommendations. Please try again.",
         )
+
+
+class RecipeIngredientUnavailableError(BaseError):
+    """A saved recipe ingredient is no longer in the catalog."""
+
+    error_type = "recipes/ingredient-unavailable"
+    status = status.HTTP_409_CONFLICT
+
+    def __init__(self, food_id: str, ingredient: str):
+        super().__init__(
+            "Recipe ingredient unavailable",
+            f"{ingredient} is no longer available in the food catalog.",
+            extensions={"food_id": food_id, "ingredient": ingredient},
+        )
+
+
+class RecipeIngredientUnitChangedError(BaseError):
+    """A saved ingredient's stock unit changed since generation."""
+
+    error_type = "recipes/ingredient-unit-changed"
+    status = status.HTTP_409_CONFLICT
+
+    def __init__(self, food_id: str, ingredient: str):
+        super().__init__(
+            "Recipe ingredient unit changed",
+            f"The stock unit for {ingredient} changed; generate a new recipe.",
+            extensions={"food_id": food_id, "ingredient": ingredient},
+        )
+
+
+class RecipeScaleTooSmallError(BaseError):
+    """Scaling would round a required ingredient down to zero."""
+
+    error_type = "recipes/scale-too-small"
+    status = status.HTTP_409_CONFLICT
+
+    def __init__(self, food_id: str, ingredient: str):
+        super().__init__(
+            "Recipe scale too small",
+            f"The portion count is too small for {ingredient} at stock precision.",
+            extensions={"food_id": food_id, "ingredient": ingredient},
+        )

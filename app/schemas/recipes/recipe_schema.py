@@ -100,11 +100,7 @@ class RecommendationResponse(BaseModel):
     establishment_id: UUID
     children_count: int
     meal_type: MealType
-    user_id: UUID = Field(description="Actor who requested generation or reuse")
     created_at: datetime
-    prompt_version: str = Field(
-        description="Selection/writing prompt-set version; inherited on AI-free reuse"
-    )
     proposals: list[RecipeProposal]
     selection: RecipeSelectionResponse | None
 
@@ -146,3 +142,14 @@ class WritingBatch(BaseModel):
     """Structured names and steps returned by the model."""
 
     recipes: list[RecipeWriting] = Field(min_length=2, max_length=3)
+
+
+class RecipeHistoryItem(BaseModel):
+    """One saved proposal, with the request IDs needed for choose/reuse."""
+
+    request_id: UUID
+    establishment_id: UUID
+    meal_type: MealType
+    created_at: datetime
+    chosen: bool
+    proposal: RecipeProposal

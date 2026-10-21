@@ -125,6 +125,7 @@ class Settings(BaseSettings):
     rate_limit_mail_sending_ip: str = "10/hour"
     rate_limit_token_ip: str = "20/minute"
     rate_limit_register_ip: str = "5/hour"
+    rate_limit_ai_user: str = "20/hour"
     # Header where the edge proxy writes the address the connection came from.
     rate_limit_client_ip_header: str = "x-real-ip"
     # Shared with the backoffice, which reports its users' addresses. Unset
@@ -184,6 +185,7 @@ class Settings(BaseSettings):
         "rate_limit_mail_sending_ip",
         "rate_limit_token_ip",
         "rate_limit_register_ip",
+        "rate_limit_ai_user",
     )
     @classmethod
     def validate_rate_limit(cls, value: str) -> str:

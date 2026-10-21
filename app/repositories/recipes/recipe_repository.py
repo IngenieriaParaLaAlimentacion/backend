@@ -4,8 +4,12 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models.recipes.recipe import RecipeRequestRecord, RecipeSelection
-from app.utils.db import execute_paginated
+from app.models.recipes.recipe import (
+    RecipeProposalRecord,
+    RecipeRequestRecord,
+    RecipeSelection,
+)
+from app.utils.db import execute_paginated, execute_paginated_rows
 
 
 class RecipeRepository:
@@ -64,4 +68,39 @@ class RecipeRepository:
         # A row lock cannot protect an id that has not been inserted yet.
         await self.db.execute(
             select(func.pg_advisory_xact_lock(request_id.int % (2**63)))
+        )
+
+    async def proposals(
+        self, establishment_id: UUID, *, chosen_only: bool, limit: int, offset: int
+    ):
+        """Paginate individual proposals without loading every request's siblings."""
+        chosen = (
+            select(RecipeSelection.request_id)
+            .where(
+                RecipeSelection.request_id == RecipeRequestRecord.id,
+                RecipeSelection.proposal_id == RecipeProposalRecord.id,
+            )
+            .correlate(RecipeRequestRecord, RecipeProposalRecord)
+            .exists()
+        )
+        conditions = [RecipeRequestRecord.establishment_id == establishment_id]
+        if chosen_only:
+            conditions.append(chosen)
+        join = RecipeRequestRecord.id == RecipeProposalRecord.request_id
+        return await execute_paginated_rows(
+            self.db,
+            select(RecipeRequestRecord, RecipeProposalRecord, chosen).join(
+                RecipeProposalRecord, join
+            ),
+            select(func.count())
+            .select_from(RecipeRequestRecord)
+            .join(RecipeProposalRecord, join),
+            (
+                RecipeRequestRecord.created_at.desc(),
+                RecipeRequestRecord.id.desc(),
+                RecipeProposalRecord.position.asc(),
+            ),
+            limit,
+            offset,
+            conditions,
         )

@@ -262,6 +262,8 @@ Regenerate with `poetry run python docs/generate_openapi.py recipes --tag "Recip
 |---|---|---|
 | POST | `/recipe-recommendations` | 201: one request with 2–3 proposals |
 | GET | `/establishments/{establishment_id}/recipe-recommendations` | Paginated requests; `chosen_only=true` includes only chosen proposals |
+| GET | `/establishments/{establishment_id}/recipes` | Paginated individual proposals, including unchosen alternatives |
+| GET | `/recipe-recommendations/{request_id}/proposals/{proposal_id}` | Original saved recipe detail; no scaling or stock check |
 | POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/choose` | 201 selection; identical replay 200; another choice 409 |
 | POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/reuse-preview` | 200 read-only rescaled proposal; current stock checked; body `{"children_count":45}` |
 | POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/reuse` | 201 new selected request, or 200 replay of its client-generated id |
@@ -278,8 +280,8 @@ Generation body (no additional fields, no free text):
 count 5–8 is prompt guidance, not validation. Generation does not reserve stock.
 Proposals do not expire; choosing always validates current stock.
 
-A response has `id`, `establishment_id`, `children_count`, `meal_type`, `user_id`,
-`created_at`, `prompt_version`, `proposals`, and nullable `selection`.
+A response has `id`, `establishment_id`, `children_count`, `meal_type`,
+`created_at`, `proposals`, and nullable `selection`.
 Each proposal has `id`, `name`, `portions`, `ingredients` (food_id, name, grams,
 quantity in the catalog base unit, unit), `steps`, `indicators` (nutrient adequacy
 and macro shares), `gapa_groups`, `unmet_constraints`, `warnings`,
@@ -317,11 +319,42 @@ stock and selects the copy in one transaction without an LLM call. Replaying the
 same id and source/count returns 200; changing its meaning returns 409
 `/errors/recipes/idempotency-conflict`. The original request stays unchanged.
 
-Recipe requests expose `user_id` (the generation/reuse actor) and `prompt_version`
-(the selection/writing prompt-set version, retained on AI-free reuse). Selection
-`user_id` identifies who confirmed the outflow. Proposal `position` is an internal
-zero-based display order, preserved in history. Prompt version tracks provenance;
-it does not guarantee reproduction of model output.
+A history item from `/establishments/{id}/recipe-recommendations` is a request
+containing its original proposals (2–3 for generation, one for reuse).
+`chosen_only=true` filters both requests and their proposals to the chosen ones.
+For a flat list, use `GET /establishments/{id}/recipes`: each item contains one
+`proposal` plus `request_id`, `establishment_id`, `meal_type`, `created_at` and
+`chosen`. It includes unchosen alternatives unless `chosen_only=true`; three
+requests with three proposals each produce nine items. Both lists use standard
+pagination. Read any original snapshot without scaling or stock validation via
+`GET /recipe-recommendations/{request_id}/proposals/{proposal_id}`. Preview is
+only for rescaling and checking current stock before reuse; it does not replace
+reading a saved recipe. Viewing old recipes never invokes AI.
+
+Field workers **and analysts** require an approved `user_establishments` relation
+for the establishment. “Access” and “subscription” describe that same approved
+relation in this workflow; there is no second paid subscription or permission.
+Admins and superadmins may access any establishment.
+
+Request-level `user_id` and `prompt_version` were removed before the migration
+was applied: no feature consumes them. Selection `user_id` is retained to
+attribute the actual stock outflow. Prompt version is recorded in generation
+failure logs, where it supports diagnosis; it does not promise reproducibility.
+Proposal `position` remains an internal zero-based display order for history.
+
+AI generation and receipt extraction (`POST /food-intakes/from-photo`) share a
+per-authenticated-user moving-window quota, configured by `RATE_LIMIT_AI_USER`
+(default `20/hour`). Users behind the same IP have separate quotas. Requests
+past the quota return `429 /errors/rate-limited` and `Retry-After`, before model
+calls. Redis-backed counting uses the existing in-process fallback during an
+outage (replicas count separately while degraded). Non-AI history, preview,
+selection and reuse do not consume this quota.
+
+Reuse/preview return specific 409 errors with `food_id` and `ingredient`:
+`/errors/recipes/ingredient-unavailable` when a catalog ingredient is missing,
+`/errors/recipes/ingredient-unit-changed` when its base unit changed, and
+`/errors/recipes/scale-too-small` when rounding would drop a required ingredient.
+Missing gram factors or zero usable energy still return `no-usable-stock`.
 
 Culture is read from `characterization.cultural_identities` and optional
 `characterization.cultural_identities_other`. Edit it through the existing ficha

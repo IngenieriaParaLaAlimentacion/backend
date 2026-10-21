@@ -9,10 +9,12 @@ from app.core.dependencies import (
     require_admin,
     require_any,
 )
+from app.core.rate_limit import limit_by_user
 from app.domain.user import UserActor
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.recipes.recipe_schema import (
     GramConversionInput,
+    RecipeHistoryItem,
     RecipeProposal,
     RecipeSelectionResponse,
     RecommendationInput,
@@ -33,17 +35,20 @@ _RESPONSES = {
 
 @router.post(
     "/recipe-recommendations",
+    dependencies=[limit_by_user("rate_limit_ai_user", "ai")],
     response_model=RecommendationResponse,
     status_code=201,
     responses={
         **_RESPONSES,
+        429: {"description": "AI quota exceeded; retry after Retry-After"},
         502: {"description": "Model failed or returned invalid proposals"},
     },
     summary="Generate 2–3 stock-backed recipe proposals",
     description=(
         "Generate and save proposals for the establishment, children count and meal "
         "type using current stock, the establishment characterization and recent "
-        "choices. Requires establishment access and, for analysts, a subscription. "
+        "choices. Requires an approved establishment relation for field workers "
+        "and analysts; admins and superadmins may access any establishment. "
         "Quantities come from the nutrition optimizer; energy and nutritional "
         "shortfalls are returned explicitly. Generation does not deduct stock."
     ),
@@ -66,8 +71,11 @@ async def generate_recommendations(
     description=(
         "Return saved requests, newest first, with standard page and page_size "
         "pagination. With chosen_only=true, exclude unchosen requests and return "
-        "only the chosen proposal in each request. Requires establishment access "
-        "and, for analysts, a subscription. No model call or stock deduction occurs."
+        "only the chosen proposal in each request. Each item is a request containing "
+        "its two or three proposals, or one proposal after reuse. Requires "
+        "establishment access "
+        "(an approved relation for field workers and analysts). No model call "
+        "or stock deduction occurs. "
     ),
 )
 async def recommendation_history(
@@ -98,7 +106,8 @@ async def recommendation_history(
         "Current stock is checked at confirmation; a shortage rolls back the "
         "whole operation. Repeating the same choice returns 200 without another "
         "deduction; choosing a different proposal for that request returns 409. "
-        "Requires establishment access and, for analysts, a subscription."
+        "Requires an approved establishment relation for field workers and "
+        "analysts; admins and superadmins may access any establishment. "
     ),
 )
 async def choose_recipe(
@@ -126,7 +135,8 @@ async def choose_recipe(
         "ingredients. The original stays unchanged. Retry with the same client "
         "UUID, source and count to receive 200 without another deduction; changing "
         "the meaning of that UUID returns 409. Current stock and establishment "
-        "access, including analyst subscription, are checked on confirmation."
+        "access (an approved relation for field workers and analysts) are "
+        "checked on confirmation. "
     ),
 )
 async def reuse_recipe(
@@ -183,7 +193,8 @@ async def set_gram_conversion(
         "Scale recorded ingredient quantities and recalculate nutritional "
         "indicators for children_count without a model call, saving a request "
         "or deducting stock. Check current stock and establishment access, "
-        "including analyst subscription. Stock is checked again when reuse is "
+        "requiring an approved relation for field workers and analysts. Stock "
+        "is checked again when reuse is "
         "confirmed; a successful preview does not reserve ingredients."
     ),
 )
@@ -198,3 +209,60 @@ async def preview_recipe_reuse(
     return await service.preview_reuse(
         request_id, proposal_id, data.children_count, actor
     )
+
+
+@router.get(
+    "/establishments/{establishment_id}/recipes",
+    response_model=PaginatedResponse[RecipeHistoryItem],
+    status_code=200,
+    responses=_RESPONSES,
+    summary="List individual saved recipes",
+    description=(
+        "Each item is one saved proposal, including unchosen alternatives by "
+        "default. Three requests with three proposals each produce nine items. "
+        "chosen_only=true returns only chosen recipes. Newest requests appear "
+        "first, with original proposal order within each request. Includes "
+        "request_id and proposal.id for detail, choose and reuse. Field workers "
+        "and analysts need an approved establishment relation; admins and "
+        "superadmins may access any establishment. "
+    ),
+)
+async def list_recipes(
+    establishment_id: UUID,
+    chosen_only: bool = False,
+    pagination: PaginatedQueryParams = Depends(),
+    actor: UserActor = Depends(require_any),
+    service: RecipeService = Depends(get_recipe_service),
+):
+    return await service.recipes(
+        establishment_id,
+        actor,
+        chosen_only=chosen_only,
+        page=pagination.page,
+        page_size=pagination.page_size,
+    )
+
+
+@router.get(
+    "/recipe-recommendations/{request_id}/proposals/{proposal_id}",
+    response_model=RecipeHistoryItem,
+    status_code=200,
+    responses=_RESPONSES,
+    summary="Read a saved recipe proposal",
+    description=(
+        "Read any saved proposal, chosen or unchosen, with its original "
+        "ingredients, quantities, steps and indicators. Does not scale, call AI "
+        "or require available stock. Use reuse-preview only when requesting a "
+        "different number of children; it recalculates quantities and checks "
+        "current stock. Field workers and analysts need an approved "
+        "establishment relation; admins and superadmins may access any "
+        "establishment. "
+    ),
+)
+async def recipe_detail(
+    request_id: UUID,
+    proposal_id: UUID,
+    actor: UserActor = Depends(require_any),
+    service: RecipeService = Depends(get_recipe_service),
+):
+    return await service.detail(request_id, proposal_id, actor)
