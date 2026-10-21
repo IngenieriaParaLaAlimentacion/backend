@@ -168,9 +168,10 @@ async def request_password_recovery(
     responses={
         status.HTTP_204_NO_CONTENT: {"description": "Password updated successfully"},
         status.HTTP_400_BAD_REQUEST: {
-            "description": (
-                "Invalid, used, or expired recovery token, or pending backoffice user"
-            )
+            "description": "Unknown recovery token, or pending backoffice user"
+        },
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Recovery token already used or expired"
         },
         **RATE_LIMITED_RESPONSES,
     },
@@ -200,11 +201,9 @@ async def confirm_password_recovery(
             "description": "Invitation accepted and account activated"
         },
         status.HTTP_400_BAD_REQUEST: {
-            "description": (
-                "Invalid, expired, or used token, or user is not an "
-                "unactivated backoffice user"
-            )
+            "description": "Unknown token, or user is not a pending backoffice user"
         },
+        status.HTTP_401_UNAUTHORIZED: {"description": "Token already used or expired"},
         **RATE_LIMITED_RESPONSES,
     },
 )

@@ -161,7 +161,7 @@ class TestAcceptInviteRejections:
         assert res.status_code == status.HTTP_400_BAD_REQUEST
         assert res.json()["type"] == "/errors/auth/invalid-recovery-token"
 
-    async def test_used_token_rejected_with_400(self, client):
+    async def test_used_token_returns_401(self, client):
         user, token = await _insert_invited_user(UserRole.ADMIN)
 
         payload = {
@@ -173,12 +173,11 @@ class TestAcceptInviteRejections:
         first_res = await client.post(ACCEPT_INVITE_URL, json=payload)
         assert first_res.status_code == status.HTTP_204_NO_CONTENT
 
-        # Second attempt with the same token must fail with 400
         second_res = await client.post(ACCEPT_INVITE_URL, json=payload)
-        assert second_res.status_code == status.HTTP_400_BAD_REQUEST
-        assert second_res.json()["type"] == "/errors/auth/invalid-recovery-token"
+        assert second_res.status_code == status.HTTP_401_UNAUTHORIZED
+        assert second_res.json()["type"] == "/errors/auth/recovery-token-used"
 
-    async def test_expired_token_rejected_with_400(self, client):
+    async def test_expired_token_returns_401(self, client):
         user, token = await _insert_invited_user(UserRole.ADMIN)
 
         async with db_module.engine.begin() as conn:
@@ -196,8 +195,8 @@ class TestAcceptInviteRejections:
             "last_name": "AdminLast",
         }
         res = await client.post(ACCEPT_INVITE_URL, json=payload)
-        assert res.status_code == status.HTTP_400_BAD_REQUEST
-        assert res.json()["type"] == "/errors/auth/invalid-recovery-token"
+        assert res.status_code == status.HTTP_401_UNAUTHORIZED
+        assert res.json()["type"] == "/errors/auth/recovery-token-expired"
 
 
 class TestAcceptInviteValidation:

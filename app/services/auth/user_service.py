@@ -172,15 +172,11 @@ class UserService:
 
         # Capture scalars before the write/commit to avoid async attribute expiry.
         email, role, status = user.email, user.role, user.status
-        name = values["name"] if "name" in values else user.name
-        last_name = values["last_name"] if "last_name" in values else user.last_name
-        locality = values["locality"] if "locality" in values else user.locality
-        description = (
-            values["description"] if "description" in values else user.description
-        )
-        contact_phone = (
-            values["contact_phone"] if "contact_phone" in values else user.contact_phone
-        )
+        name = values.get("name", user.name)
+        last_name = values.get("last_name", user.last_name)
+        locality = values.get("locality", user.locality)
+        description = values.get("description", user.description)
+        contact_phone = values.get("contact_phone", user.contact_phone)
 
         await self.uow.user_repo.update_profile(user.id, values)
         await self.uow.commit()

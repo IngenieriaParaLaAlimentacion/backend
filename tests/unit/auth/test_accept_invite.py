@@ -8,6 +8,8 @@ from app.domain.user import UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
     InvalidRecoveryTokenError,
     PasswordNotFoundError,
+    RecoveryTokenExpiredError,
+    RecoveryTokenUsedError,
 )
 from app.schemas.auth.auth_schema import AcceptInviteRequest
 from app.services.auth.auth_service import AuthService
@@ -210,7 +212,7 @@ class TestAcceptInviteTokenValidation:
         uow.user_repo.update_status.assert_not_awaited()
         uow.commit.assert_not_awaited()
 
-    async def test_used_token_raises_invalid_recovery_token(
+    async def test_used_token_raises_recovery_token_used(
         self,
         make_uow_invite,
         make_recovery_token,
@@ -220,13 +222,13 @@ class TestAcceptInviteTokenValidation:
         token = make_recovery_token(used=True)
         uow = make_uow_invite(active_token=token)
 
-        with pytest.raises(InvalidRecoveryTokenError):
+        with pytest.raises(RecoveryTokenUsedError):
             await AuthService(uow).accept_invite(valid_accept_request)
 
         uow.user_repo.update_status.assert_not_awaited()
         uow.commit.assert_not_awaited()
 
-    async def test_expired_token_raises_invalid_recovery_token(
+    async def test_expired_token_raises_recovery_token_expired(
         self,
         make_uow_invite,
         make_recovery_token,
@@ -236,7 +238,7 @@ class TestAcceptInviteTokenValidation:
         token = make_recovery_token(expires_in=timedelta(hours=-1))
         uow = make_uow_invite(active_token=token)
 
-        with pytest.raises(InvalidRecoveryTokenError):
+        with pytest.raises(RecoveryTokenExpiredError):
             await AuthService(uow).accept_invite(valid_accept_request)
 
         uow.user_repo.update_status.assert_not_awaited()

@@ -13,7 +13,7 @@ from app.core.security import (
     verify_password,
 )
 from app.domain.auth import LoginDomain, RefreshDomain
-from app.domain.user import UserDomain, UserRole, UserStatus
+from app.domain.user import BACKOFFICE_ROLES, UserDomain, UserRole, UserStatus
 from app.exceptions.domain_exceptions import (
     InvalidCredentialsError,
     InvalidRecoveryTokenError,
@@ -27,7 +27,7 @@ from app.exceptions.domain_exceptions import (
     VerificationTokenExpiredError,
     VerificationTokenUsedError,
 )
-from app.models import PasswordRecoveryToken
+from app.models import PasswordRecoveryToken, User
 from app.schemas.auth.auth_schema import (
     AcceptInviteRequest,
     LoginRequest,
@@ -50,11 +50,45 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def _is_pending_invitee(user: User) -> bool:
+    """Whether the user is a backoffice user who has not accepted the invite yet."""
+    return (
+        user.role in BACKOFFICE_ROLES and user.status == UserStatus.PENDING_VALIDATION
+    )
+
+
 class AuthService:
     """Service layer for authentication and token lifecycle operations."""
 
     def __init__(self, uow: IUnitOfWork) -> None:
         self.uow = uow
+
+    async def _get_usable_recovery_token(
+        self, token: str
+    ) -> tuple[PasswordRecoveryToken, User]:
+        """Return an unused, unexpired recovery token and the user it belongs to.
+
+        Raises:
+            InvalidRecoveryTokenError: If no token with that hash exists, or its
+                user no longer exists.
+            RecoveryTokenUsedError: If the link was already used, or superseded
+                by a newer one.
+            RecoveryTokenExpiredError: If the link is past its expiry.
+        """
+        recovery_token = await self.uow.password_recovery_repo.get_by_hash(
+            hash_token(token)
+        )
+        if recovery_token is None:
+            raise InvalidRecoveryTokenError()
+        if recovery_token.used:
+            raise RecoveryTokenUsedError()
+        if recovery_token.expires_at <= _now():
+            raise RecoveryTokenExpiredError()
+
+        user = await self.uow.user_repo.get_by_id(recovery_token.user_id)
+        if user is None:
+            raise InvalidRecoveryTokenError()
+        return recovery_token, user
 
     async def register_field_worker(
         self, data: RegisterFieldWorkerRequest
@@ -226,13 +260,7 @@ class AuthService:
             Returns without error for unknown emails to avoid user enumeration.
         """
         user = await self.uow.user_repo.get_by_email(data.email)
-        if not user:
-            return
-
-        if (
-            user.role in {UserRole.ADMIN, UserRole.ANALYST}
-            and user.status == UserStatus.PENDING_VALIDATION
-        ):
+        if not user or _is_pending_invitee(user):
             return
 
         await self.uow.password_recovery_repo.revoke_active_for_user(user.id)
@@ -263,23 +291,9 @@ class AuthService:
             RecoveryTokenExpiredError: If the link is past its expiry.
             PasswordNotFoundError: If the user has no stored password row.
         """
-        recovery_token = await self.uow.password_recovery_repo.get_by_hash(
-            hash_token(data.token)
-        )
-        if recovery_token is None:
-            raise InvalidRecoveryTokenError()
-        if recovery_token.used:
-            raise RecoveryTokenUsedError()
-        if recovery_token.expires_at <= _now():
-            raise RecoveryTokenExpiredError()
-
-        user = await self.uow.user_repo.get_by_id(recovery_token.user_id)
-        if not user:
-            raise InvalidRecoveryTokenError()
-        if (
-            user.role in {UserRole.ADMIN, UserRole.ANALYST}
-            and user.status == UserStatus.PENDING_VALIDATION
-        ):
+        recovery_token, user = await self._get_usable_recovery_token(data.token)
+        # A pending invitee must go through accept_invite to complete the profile.
+        if _is_pending_invitee(user):
             raise InvalidRecoveryTokenError()
 
         user_password = await self.uow.password_repo.get_by_user_id(
@@ -300,26 +314,15 @@ class AuthService:
         """Validate an invitation recovery token and activate a backoffice user.
 
         Raises:
-            InvalidRecoveryTokenError: If token does not exist, is expired or used,
-                or belongs to a user who is not a pending admin/analyst.
+            InvalidRecoveryTokenError: If no token with that hash exists, or it
+                belongs to a user who is not a pending backoffice user.
+            RecoveryTokenUsedError: If the link was already used, or superseded
+                by a newer one.
+            RecoveryTokenExpiredError: If the link is past its expiry.
             PasswordNotFoundError: If the user has no stored password row.
         """
-        recovery_token = await self.uow.password_recovery_repo.get_by_hash(
-            hash_token(data.token)
-        )
-        if recovery_token is None:
-            raise InvalidRecoveryTokenError()
-        if recovery_token.used or recovery_token.expires_at <= _now():
-            raise InvalidRecoveryTokenError()
-
-        user = await self.uow.user_repo.get_by_id(recovery_token.user_id)
-        if not user:
-            raise InvalidRecoveryTokenError()
-
-        if (
-            user.role not in {UserRole.ADMIN, UserRole.ANALYST}
-            or user.status != UserStatus.PENDING_VALIDATION
-        ):
+        recovery_token, user = await self._get_usable_recovery_token(data.token)
+        if not _is_pending_invitee(user):
             raise InvalidRecoveryTokenError()
 
         user_password = await self.uow.password_repo.get_by_user_id(user.id)
