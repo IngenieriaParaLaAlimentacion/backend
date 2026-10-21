@@ -316,10 +316,21 @@ class TestPendingBackofficeBlockedFromPasswordRecovery:
     async def test_confirm_password_recovery_rejected_for_pending_backoffice(
         self, client, role
     ):
-        _, token = await _insert_pending_backoffice_user(role)
+        user, token = await _insert_pending_backoffice_user(role)
 
         res = await client.post(
             CONFIRM_URL, json={"token": token, "new_password": "newpassword123"}
         )
         assert res.status_code == status.HTTP_400_BAD_REQUEST
         assert res.json()["type"] == "/errors/auth/invalid-recovery-token"
+
+        # The invitee must still be able to accept the invite with the same link.
+        async with db_module.AsyncSessionLocal() as session:
+            recovery_token = (
+                await session.execute(
+                    select(PasswordRecoveryToken).where(
+                        PasswordRecoveryToken.user_id == user.id
+                    )
+                )
+            ).scalar_one()
+        assert recovery_token.used is False
