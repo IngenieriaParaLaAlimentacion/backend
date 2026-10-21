@@ -698,6 +698,7 @@ class InvalidRecoveryTokenError(InvalidTokenError):
     """Raised when a password recovery token is unusable."""
 
     error_type = "auth/invalid-recovery-token"
+    status = status.HTTP_400_BAD_REQUEST
 
     def __init__(self, details: str = "Password recovery token is invalid or expired."):
         super().__init__("Invalid recovery token", details)

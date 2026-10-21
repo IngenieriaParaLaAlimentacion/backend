@@ -8,7 +8,7 @@ from app.exceptions.domain_exceptions import ERROR_REGISTRY
 EXPECTED: dict[str, int] = {
     "account-pending-validation": status.HTTP_403_FORBIDDEN,
     "admin/invite-already-pending": status.HTTP_409_CONFLICT,
-    "auth/invalid-recovery-token": status.HTTP_401_UNAUTHORIZED,
+    "auth/invalid-recovery-token": status.HTTP_400_BAD_REQUEST,
     "auth/invalid-refresh-token": status.HTTP_401_UNAUTHORIZED,
     "auth/invalid-verification-token": status.HTTP_401_UNAUTHORIZED,
     "auth/missing-token": status.HTTP_401_UNAUTHORIZED,

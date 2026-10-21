@@ -1,9 +1,18 @@
 import uuid
+from datetime import datetime, timedelta, timezone
 from urllib.parse import parse_qs, urlparse
 
 import pytest
 from fastapi import status
+from sqlalchemy import select
 
+import app.db.database as db_module
+from app.config.settings import settings
+from app.core.security import create_password_recovery_token, hash_password
+from app.domain.user import UserRole, UserStatus
+from app.models.auth.password_recovery_token import PasswordRecoveryToken
+from app.models.auth.user import User
+from app.models.auth.user_password import UserPassword
 from tests.integration.urls import LOGIN_URL, LOGOUT_URL
 
 REQUEST_URL = "/api/v1/auth/password-recovery/request"
@@ -114,7 +123,7 @@ class TestPasswordRecoveryConfirm:
             json={"token": "not-a-valid-token", "new_password": "newpassword123"},
         )
 
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json()["type"] == "/errors/auth/invalid-recovery-token"
 
     async def test_reused_token_is_reported_as_used(
@@ -227,3 +236,90 @@ class TestPasswordRecoveryConfirm:
     async def test_missing_new_password_returns_422(self, client):
         response = await client.post(CONFIRM_URL, json={"token": "sometoken"})
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+async def _insert_pending_backoffice_user(role: UserRole) -> tuple[User, str]:
+    plain_token, token_hash = create_password_recovery_token()
+    user_id = uuid.uuid4()
+    async with db_module.AsyncSessionLocal() as session:
+        user = User(
+            id=user_id,
+            name="Pending",
+            last_name="Backoffice",
+            email=f"{user_id}@test.com",
+            role=role,
+            status=UserStatus.PENDING_VALIDATION,
+        )
+        session.add(user)
+        await session.flush()
+        session.add(
+            UserPassword(
+                user_id=user.id,
+                password_hashed=hash_password("oldpassword123"),
+            )
+        )
+        session.add(
+            PasswordRecoveryToken(
+                user_id=user.id,
+                token_hash=token_hash,
+                expires_at=datetime.now(timezone.utc)
+                + timedelta(minutes=settings.password_recovery_token_expire_minutes),
+                used=False,
+            )
+        )
+        await session.commit()
+        await session.refresh(user)
+    return user, plain_token
+
+
+class TestDecoupledPasswordRecovery:
+    async def test_pending_field_worker_resets_password_and_remains_pending(
+        self, client, db_pending_user, capture_deeplink
+    ):
+        await client.post(REQUEST_URL, json={"email": "pending@test.com"})
+        token = _extract_token(capture_deeplink["deeplink"])
+
+        confirm_res = await client.post(
+            CONFIRM_URL, json={"token": token, "new_password": "newpassword123"}
+        )
+        assert confirm_res.status_code == status.HTTP_204_NO_CONTENT
+
+        # Status must remain PENDING_VALIDATION, is_email_verified must be True
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(User).where(User.email == "pending@test.com")
+            )
+            user = result.scalar_one()
+            assert user.status == UserStatus.PENDING_VALIDATION
+            assert user.is_email_verified is True
+
+        # Login must be rejected with 403 /errors/account-pending-validation
+        login_res = await client.post(
+            LOGIN_URL, json=_login_payload("pending@test.com", "newpassword123")
+        )
+        assert login_res.status_code == status.HTTP_403_FORBIDDEN
+        assert login_res.json()["type"] == "/errors/account-pending-validation"
+
+
+class TestPendingBackofficeBlockedFromPasswordRecovery:
+    @pytest.mark.parametrize("role", [UserRole.ADMIN, UserRole.ANALYST])
+    async def test_request_password_recovery_skips_email_for_pending_backoffice(
+        self, client, capture_deeplink, role
+    ):
+        user, _ = await _insert_pending_backoffice_user(role)
+
+        res = await client.post(REQUEST_URL, json={"email": user.email})
+        assert res.status_code == status.HTTP_202_ACCEPTED
+        assert capture_deeplink["deeplink"] is None
+
+    @pytest.mark.parametrize("role", [UserRole.ADMIN, UserRole.ANALYST])
+    async def test_confirm_password_recovery_rejected_for_pending_backoffice(
+        self, client, role
+    ):
+        _, token = await _insert_pending_backoffice_user(role)
+
+        res = await client.post(
+            CONFIRM_URL, json={"token": token, "new_password": "newpassword123"}
+        )
+        assert res.status_code == status.HTTP_400_BAD_REQUEST
+        assert res.json()["type"] == "/errors/auth/invalid-recovery-token"

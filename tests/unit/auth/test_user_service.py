@@ -2,6 +2,7 @@ import uuid
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from pydantic import ValidationError
 
 from app.domain.establishment import (
     EstablishmentWithStatusDomain,
@@ -294,6 +295,44 @@ class TestUpdateProfile:
         assert profile.locality == "Existing locality"
         assert profile.description is None
         assert profile.contact_phone is None
+
+    async def test_explicit_none_for_optional_fields_clears_them_in_db_values(self):
+        user = _make_user(role=UserRole.ANALYST)
+        user.locality = "Old Locality"
+        uow = _make_uow(user=user)
+        service = UserService(uow)
+
+        data = ProfileUpdateRequest(locality=None)
+        profile = await service.update_profile(_actor_for(user), data)
+
+        _, values = uow.user_repo.update_profile.call_args.args
+        assert values == {"locality": None}
+        assert profile.locality is None
+
+    async def test_explicit_none_for_all_optional_fields_clears_all(self):
+        user = _make_user(role=UserRole.ANALYST)
+        user.locality = "Old Locality"
+        user.description = "Old Desc"
+        user.contact_phone = "+541112345678"
+        uow = _make_uow(user=user)
+        service = UserService(uow)
+
+        data = ProfileUpdateRequest(locality=None, description=None, contact_phone=None)
+        profile = await service.update_profile(_actor_for(user), data)
+
+        _, values = uow.user_repo.update_profile.call_args.args
+        assert values == {"locality": None, "description": None, "contact_phone": None}
+        assert profile.locality is None
+        assert profile.description is None
+        assert profile.contact_phone is None
+
+    def test_name_cannot_be_none(self):
+        with pytest.raises(ValidationError):
+            ProfileUpdateRequest(name=None)
+
+    def test_last_name_cannot_be_none(self):
+        with pytest.raises(ValidationError):
+            ProfileUpdateRequest(last_name=None)
 
 
 class TestGetOwnEstablishments:

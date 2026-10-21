@@ -4,6 +4,7 @@ from app.api.v1.params import RATE_LIMITED_RESPONSES
 from app.core.dependencies import get_auth_service
 from app.core.rate_limit import MAIL_SENDING_SCOPE, limit_by_email, limit_by_ip
 from app.schemas.auth.auth_schema import (
+    AcceptInviteRequest,
     LoginRequest,
     LogoutRequest,
     PasswordRecoveryConfirmRequest,
@@ -166,10 +167,11 @@ async def request_password_recovery(
     description="Consumes a valid recovery token and updates the user's password.",
     responses={
         status.HTTP_204_NO_CONTENT: {"description": "Password updated successfully"},
-        status.HTTP_401_UNAUTHORIZED: {
-            "description": "Invalid or expired recovery token"
+        status.HTTP_400_BAD_REQUEST: {
+            "description": (
+                "Invalid, used, or expired recovery token, or pending backoffice user"
+            )
         },
-        status.HTTP_400_BAD_REQUEST: {"description": "Invalid request payload"},
         **RATE_LIMITED_RESPONSES,
     },
 )
@@ -180,6 +182,38 @@ async def confirm_password_recovery(
     """Confirm password recovery and set a new password."""
 
     await service.confirm_password_recovery(data)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post(
+    "/invite/accept",
+    dependencies=[limit_by_ip("rate_limit_token_ip", scope="invite-accept")],
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+    summary="Accept backoffice invitation",
+    description=(
+        "Validates an invite token, sets profile and password, and activates "
+        "a pending admin or analyst."
+    ),
+    responses={
+        status.HTTP_204_NO_CONTENT: {
+            "description": "Invitation accepted and account activated"
+        },
+        status.HTTP_400_BAD_REQUEST: {
+            "description": (
+                "Invalid, expired, or used token, or user is not an "
+                "unactivated backoffice user"
+            )
+        },
+        **RATE_LIMITED_RESPONSES,
+    },
+)
+async def accept_invite(
+    data: AcceptInviteRequest,
+    service: AuthService = Depends(get_auth_service),
+) -> Response:
+    """Accept an invitation to join as an admin or analyst."""
+    await service.accept_invite(data)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

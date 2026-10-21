@@ -29,6 +29,7 @@ from app.exceptions.domain_exceptions import (
 )
 from app.models import PasswordRecoveryToken
 from app.schemas.auth.auth_schema import (
+    AcceptInviteRequest,
     LoginRequest,
     LogoutRequest,
     PasswordRecoveryConfirmRequest,
@@ -228,6 +229,12 @@ class AuthService:
         if not user:
             return
 
+        if (
+            user.role in {UserRole.ADMIN, UserRole.ANALYST}
+            and user.status == UserStatus.PENDING_VALIDATION
+        ):
+            return
+
         await self.uow.password_recovery_repo.revoke_active_for_user(user.id)
 
         recovery_token, recovery_token_hash = create_password_recovery_token()
@@ -249,7 +256,8 @@ class AuthService:
         """Validate a recovery token and update the user's password.
 
         Raises:
-            InvalidRecoveryTokenError: If no token with that hash exists.
+            InvalidRecoveryTokenError: If no token with that hash exists, or the token
+                belongs to a pending admin or analyst.
             RecoveryTokenUsedError: If the link was already used, or superseded
                 by a newer one.
             RecoveryTokenExpiredError: If the link is past its expiry.
@@ -265,22 +273,74 @@ class AuthService:
         if recovery_token.expires_at <= _now():
             raise RecoveryTokenExpiredError()
 
+        user = await self.uow.user_repo.get_by_id(recovery_token.user_id)
+        if not user:
+            raise InvalidRecoveryTokenError()
+        if (
+            user.role in {UserRole.ADMIN, UserRole.ANALYST}
+            and user.status == UserStatus.PENDING_VALIDATION
+        ):
+            raise InvalidRecoveryTokenError()
+
         user_password = await self.uow.password_repo.get_by_user_id(
             recovery_token.user_id
         )
         if user_password is None:
             raise PasswordNotFoundError(str(recovery_token.user_id))
         user_password.password_hashed = hash_password(data.new_password)
-        user = await self.uow.user_repo.get_by_id(recovery_token.user_id)
-
-        if user.status == UserStatus.PENDING_VALIDATION:
-            await self.uow.user_repo.update_status(user.id, UserStatus.ACTIVE)
 
         if not user.is_email_verified:
             await self.uow.user_repo.update_email_verification(user.id)
 
         await self.uow.password_recovery_repo.mark_used(recovery_token)
         await self.uow.token_repo.revoke_all_by_user_id(recovery_token.user_id)
+        await self.uow.commit()
+
+    async def accept_invite(self, data: AcceptInviteRequest) -> None:
+        """Validate an invitation recovery token and activate a backoffice user.
+
+        Raises:
+            InvalidRecoveryTokenError: If token does not exist, is expired or used,
+                or belongs to a user who is not a pending admin/analyst.
+            PasswordNotFoundError: If the user has no stored password row.
+        """
+        recovery_token = await self.uow.password_recovery_repo.get_by_hash(
+            hash_token(data.token)
+        )
+        if recovery_token is None:
+            raise InvalidRecoveryTokenError()
+        if recovery_token.used or recovery_token.expires_at <= _now():
+            raise InvalidRecoveryTokenError()
+
+        user = await self.uow.user_repo.get_by_id(recovery_token.user_id)
+        if not user:
+            raise InvalidRecoveryTokenError()
+
+        if (
+            user.role not in {UserRole.ADMIN, UserRole.ANALYST}
+            or user.status != UserStatus.PENDING_VALIDATION
+        ):
+            raise InvalidRecoveryTokenError()
+
+        user_password = await self.uow.password_repo.get_by_user_id(user.id)
+        if user_password is None:
+            raise PasswordNotFoundError(str(user.id))
+
+        user_password.password_hashed = hash_password(data.new_password)
+
+        profile_values = {
+            "name": data.name,
+            "last_name": data.last_name,
+            "locality": data.locality,
+            "description": data.description,
+            "contact_phone": data.contact_phone,
+        }
+        await self.uow.user_repo.update_profile(user.id, profile_values)
+        await self.uow.user_repo.update_status(user.id, UserStatus.ACTIVE)
+        await self.uow.user_repo.update_email_verification(user.id)
+
+        await self.uow.password_recovery_repo.mark_used(recovery_token)
+        await self.uow.token_repo.revoke_all_by_user_id(user.id)
         await self.uow.commit()
 
     async def verify_email(self, token: str) -> None:
