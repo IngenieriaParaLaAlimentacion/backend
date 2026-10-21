@@ -123,7 +123,7 @@ class TestPasswordRecoveryConfirm:
             json={"token": "not-a-valid-token", "new_password": "newpassword123"},
         )
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.json()["type"] == "/errors/auth/invalid-recovery-token"
 
     async def test_reused_token_is_reported_as_used(
@@ -321,7 +321,7 @@ class TestPendingBackofficeBlockedFromPasswordRecovery:
         res = await client.post(
             CONFIRM_URL, json={"token": token, "new_password": "newpassword123"}
         )
-        assert res.status_code == status.HTTP_400_BAD_REQUEST
+        assert res.status_code == status.HTTP_401_UNAUTHORIZED
         assert res.json()["type"] == "/errors/auth/invalid-recovery-token"
 
         # The invitee must still be able to accept the invite with the same link.

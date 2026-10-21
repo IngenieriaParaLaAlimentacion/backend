@@ -122,7 +122,7 @@ class TestAcceptInviteSuccess:
 
 
 class TestAcceptInviteRejections:
-    async def test_field_worker_token_rejected_with_400(self, client):
+    async def test_field_worker_token_returns_401(self, client):
         user, token = await _insert_invited_user(UserRole.FIELD_WORKER)
 
         payload = {
@@ -132,10 +132,10 @@ class TestAcceptInviteRejections:
             "last_name": "FieldLast",
         }
         res = await client.post(ACCEPT_INVITE_URL, json=payload)
-        assert res.status_code == status.HTTP_400_BAD_REQUEST
+        assert res.status_code == status.HTTP_401_UNAUTHORIZED
         assert res.json()["type"] == "/errors/auth/invalid-recovery-token"
 
-    async def test_active_user_token_rejected_with_400(self, client):
+    async def test_active_user_token_returns_401(self, client):
         user, token = await _insert_invited_user(
             UserRole.ADMIN, status_val=UserStatus.ACTIVE
         )
@@ -147,10 +147,10 @@ class TestAcceptInviteRejections:
             "last_name": "AdminLast",
         }
         res = await client.post(ACCEPT_INVITE_URL, json=payload)
-        assert res.status_code == status.HTTP_400_BAD_REQUEST
+        assert res.status_code == status.HTTP_401_UNAUTHORIZED
         assert res.json()["type"] == "/errors/auth/invalid-recovery-token"
 
-    async def test_unknown_token_rejected_with_400(self, client):
+    async def test_unknown_token_returns_401(self, client):
         payload = {
             "token": "completely-unknown-token",
             "new_password": "newpassword123",
@@ -158,7 +158,7 @@ class TestAcceptInviteRejections:
             "last_name": "SomeLast",
         }
         res = await client.post(ACCEPT_INVITE_URL, json=payload)
-        assert res.status_code == status.HTTP_400_BAD_REQUEST
+        assert res.status_code == status.HTTP_401_UNAUTHORIZED
         assert res.json()["type"] == "/errors/auth/invalid-recovery-token"
 
     async def test_used_token_returns_401(self, client):

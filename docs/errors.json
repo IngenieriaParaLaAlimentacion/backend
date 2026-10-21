@@ -14,7 +14,7 @@
     },
     {
       "type": "/errors/auth/invalid-recovery-token",
-      "status": 400,
+      "status": 401,
       "exception": "InvalidRecoveryTokenError",
       "description": "Raised when a password recovery token is unusable."
     },
