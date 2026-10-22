@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from decimal import ROUND_HALF_EVEN, Decimal
-from enum import StrEnum
-from typing import assert_never
+from enum import Enum, StrEnum
+from typing import NamedTuple, assert_never
 
 from app.domain.food_catalog import MeasurementUnit
 
@@ -47,8 +47,27 @@ class Unconverted:
 
 ConversionResult = Converted | Unconverted
 
-GRAMS_PER_KILOGRAM = Decimal(1000)
-MILLILITRES_PER_LITRE = Decimal(1000)
+
+class _Dimension(Enum):
+    """What a unit measures, named after the unit its size is counted in."""
+
+    MASS = "grams"
+    VOLUME = "millilitres"
+    COUNT = "units"
+
+
+class _Measure(NamedTuple):
+    """A unit as its dimension and how many grams, millilitres or units it is."""
+
+    dimension: _Dimension
+    size: Decimal
+
+
+_BASE_UNIT_MEASURE: dict[MeasurementUnit, _Measure] = {
+    MeasurementUnit.KILOGRAMOS: _Measure(_Dimension.MASS, Decimal(1000)),
+    MeasurementUnit.LITROS: _Measure(_Dimension.VOLUME, Decimal(1000)),
+    MeasurementUnit.UNIDADES: _Measure(_Dimension.COUNT, Decimal(1)),
+}
 
 # Kilograms and litres are persisted as Numeric(10, 3); units are counted whole.
 _BASE_UNIT_QUANTUM: dict[MeasurementUnit, Decimal] = {
@@ -67,7 +86,7 @@ def to_grams(
     need ``factors.unit_weight_g``. A missing factor is returned as
     ``Unconverted`` with its reason. The result is not rounded.
     """
-    grams_per_unit = _grams_per_base_unit(base_unit, factors)
+    grams_per_unit = _grams_per(_BASE_UNIT_MEASURE[base_unit], factors)
     if isinstance(grams_per_unit, ConversionFailure):
         return Unconverted(grams_per_unit)
     return Converted(quantity * grams_per_unit)
@@ -83,30 +102,30 @@ def from_grams(
     ``Unconverted`` with its reason. The result is rounded half-to-even to
     three decimals, or to a whole number for units.
     """
-    grams_per_unit = _grams_per_base_unit(base_unit, factors)
+    grams_per_unit = _grams_per(_BASE_UNIT_MEASURE[base_unit], factors)
     if isinstance(grams_per_unit, ConversionFailure):
         return Unconverted(grams_per_unit)
     return Converted(_round_base_quantity(grams / grams_per_unit, base_unit))
 
 
-def _grams_per_base_unit(
-    base_unit: MeasurementUnit, factors: ConversionFactors
+def _grams_per(
+    measure: _Measure, factors: ConversionFactors
 ) -> Decimal | ConversionFailure:
-    """Return the grams one ``base_unit`` of the food weighs, or why it is unknown."""
-    match base_unit:
-        case MeasurementUnit.KILOGRAMOS:
-            return GRAMS_PER_KILOGRAM
-        case MeasurementUnit.LITROS:
+    """Return the grams one of ``measure`` of the food weighs, or why it is unknown."""
+    match measure.dimension:
+        case _Dimension.MASS:
+            return measure.size
+        case _Dimension.VOLUME:
             if factors.density_g_ml is None:
                 return ConversionFailure.MISSING_DENSITY
-            return MILLILITRES_PER_LITRE * factors.density_g_ml
-        case MeasurementUnit.UNIDADES:
+            return measure.size * factors.density_g_ml
+        case _Dimension.COUNT:
             if factors.unit_weight_g is None:
                 return ConversionFailure.MISSING_UNIT_WEIGHT
-            return factors.unit_weight_g
+            return measure.size * factors.unit_weight_g
         case _:
-            # A new base unit must get its own rule here before it can convert.
-            assert_never(base_unit)
+            # A new dimension must get its own rule here before it can convert.
+            assert_never(measure.dimension)
 
 
 def _round_base_quantity(quantity: Decimal, base_unit: MeasurementUnit) -> Decimal:

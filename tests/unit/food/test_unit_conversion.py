@@ -127,6 +127,15 @@ def test_base_quantity_survives_a_round_trip_through_grams(
     assert result == Converted(Decimal(quantity))
 
 
+@pytest.mark.parametrize("convert", [to_grams, from_grams])
+@pytest.mark.parametrize("base_unit", list(MeasurementUnit))
+def test_every_base_unit_converts_given_its_factors(convert, base_unit):
+    """Every base unit a food can be stocked in has a conversion rule."""
+    result = convert(Decimal(1), base_unit, ALL_FACTORS)
+
+    assert isinstance(result, Converted)
+
+
 @pytest.mark.parametrize("field", ["density_g_ml", "unit_weight_g"])
 @pytest.mark.parametrize("value", ["0", "-1"])
 def test_conversion_factors_reject_non_positive_values(field, value):
