@@ -3,12 +3,14 @@ from decimal import Decimal
 import pytest
 
 from app.domain.food_catalog import MeasurementUnit
+from app.domain.printed_unit import PrintedUnit as P
 from app.domain.unit_conversion import (
     ConversionFactors,
     ConversionFailure,
     Converted,
     Unconverted,
     from_grams,
+    printed_to_base_unit,
     to_grams,
 )
 
@@ -132,6 +134,67 @@ def test_base_quantity_survives_a_round_trip_through_grams(
 def test_every_base_unit_converts_given_its_factors(convert, base_unit):
     """Every base unit a food can be stocked in has a conversion rule."""
     result = convert(Decimal(1), base_unit, ALL_FACTORS)
+
+    assert isinstance(result, Converted)
+
+
+@pytest.mark.parametrize(
+    ("quantity", "printed_unit", "base_unit", "factors", "expected_quantity"),
+    [
+        # the same dimension converts with no factor at all
+        ("500", P.GRAMOS, KG, NO_FACTORS, "0.5"),
+        ("2", P.KILOGRAMOS, KG, NO_FACTORS, "2"),
+        ("500", P.MILILITROS, L, NO_FACTORS, "0.5"),
+        ("50", P.CENTILITROS, L, NO_FACTORS, "0.5"),
+        ("1.5", P.LITROS, L, NO_FACTORS, "1.5"),
+        ("3", P.UNIDADES, UN, NO_FACTORS, "3"),
+        # rounded as a stored quantity of the base unit
+        ("1234.5678", P.GRAMOS, KG, NO_FACTORS, "1.235"),
+        ("2.5", P.UNIDADES, UN, NO_FACTORS, "2"),
+        # another dimension goes through grams
+        ("600", P.GRAMOS, UN, UNIT_WEIGHT_50, "12"),
+        ("1", P.KILOGRAMOS, L, DENSITY_1_03, "0.971"),
+        ("500", P.MILILITROS, KG, DENSITY_1_03, "0.515"),
+        ("1", P.LITROS, UN, ALL_FACTORS, "21"),
+        ("3", P.UNIDADES, KG, UNIT_WEIGHT_50, "0.15"),
+        ("2", P.UNIDADES, L, ALL_FACTORS, "0.097"),
+    ],
+)
+def test_printed_to_base_unit_converts_printed_quantity(
+    quantity, printed_unit, base_unit, factors, expected_quantity
+):
+    """A receipt-printed quantity converts to the food's base unit."""
+    result = printed_to_base_unit(Decimal(quantity), printed_unit, base_unit, factors)
+
+    assert result == Converted(Decimal(expected_quantity))
+
+
+@pytest.mark.parametrize(
+    ("printed_unit", "base_unit", "factors", "reason"),
+    [
+        (None, KG, ALL_FACTORS, ConversionFailure.UNSUPPORTED_UNIT),
+        # the factor the printed unit needs is missing
+        (P.UNIDADES, KG, DENSITY_1_03, ConversionFailure.MISSING_UNIT_WEIGHT),
+        (P.LITROS, KG, UNIT_WEIGHT_50, ConversionFailure.MISSING_DENSITY),
+        # the factor the base unit needs is missing
+        (P.GRAMOS, UN, DENSITY_1_03, ConversionFailure.MISSING_UNIT_WEIGHT),
+        (P.GRAMOS, L, UNIT_WEIGHT_50, ConversionFailure.MISSING_DENSITY),
+    ],
+)
+def test_printed_to_base_unit_reports_why_it_cannot_convert(
+    printed_unit, base_unit, factors, reason
+):
+    """A printed quantity that cannot be converted gets no value, only the reason."""
+    result = printed_to_base_unit(Decimal(1), printed_unit, base_unit, factors)
+
+    assert result == Unconverted(reason)
+
+
+@pytest.mark.parametrize("printed_unit", list(P))
+@pytest.mark.parametrize("base_unit", list(MeasurementUnit))
+def test_every_printed_unit_converts_given_its_factors(printed_unit, base_unit):
+    """Every unit a receipt can print converts to every base unit."""
+    result = printed_to_base_unit(Decimal(1), printed_unit, base_unit, ALL_FACTORS)
 
     assert isinstance(result, Converted)
 

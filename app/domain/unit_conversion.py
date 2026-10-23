@@ -4,6 +4,7 @@ from enum import Enum, StrEnum
 from typing import NamedTuple, assert_never
 
 from app.domain.food_catalog import MeasurementUnit
+from app.domain.printed_unit import PrintedUnit
 
 
 class ConversionFailure(StrEnum):
@@ -11,6 +12,7 @@ class ConversionFailure(StrEnum):
 
     MISSING_DENSITY = "missing_density"
     MISSING_UNIT_WEIGHT = "missing_unit_weight"
+    UNSUPPORTED_UNIT = "unsupported_unit"
 
 
 @dataclass(frozen=True)
@@ -69,6 +71,15 @@ _BASE_UNIT_MEASURE: dict[MeasurementUnit, _Measure] = {
     MeasurementUnit.UNIDADES: _Measure(_Dimension.COUNT, Decimal(1)),
 }
 
+_PRINTED_UNIT_MEASURE: dict[PrintedUnit, _Measure] = {
+    PrintedUnit.GRAMOS: _Measure(_Dimension.MASS, Decimal(1)),
+    PrintedUnit.KILOGRAMOS: _Measure(_Dimension.MASS, Decimal(1000)),
+    PrintedUnit.MILILITROS: _Measure(_Dimension.VOLUME, Decimal(1)),
+    PrintedUnit.CENTILITROS: _Measure(_Dimension.VOLUME, Decimal(10)),
+    PrintedUnit.LITROS: _Measure(_Dimension.VOLUME, Decimal(1000)),
+    PrintedUnit.UNIDADES: _Measure(_Dimension.COUNT, Decimal(1)),
+}
+
 # Kilograms and litres are persisted as Numeric(10, 3); units are counted whole.
 _BASE_UNIT_QUANTUM: dict[MeasurementUnit, Decimal] = {
     MeasurementUnit.KILOGRAMOS: Decimal("0.001"),
@@ -106,6 +117,36 @@ def from_grams(
     if isinstance(grams_per_unit, ConversionFailure):
         return Unconverted(grams_per_unit)
     return Converted(_round_base_quantity(grams / grams_per_unit, base_unit))
+
+
+def printed_to_base_unit(
+    quantity: Decimal,
+    printed_unit: PrintedUnit | None,
+    base_unit: MeasurementUnit,
+    factors: ConversionFactors,
+) -> ConversionResult:
+    """Convert a quantity printed on a receipt to the food's ``base_unit``.
+
+    A printed unit of the same dimension as ``base_unit`` converts with no
+    factor. Any other goes through grams and needs the factors both units
+    call for. A missing ``printed_unit`` is returned as ``Unconverted`` with
+    ``UNSUPPORTED_UNIT``, and a missing factor with its reason. The result is
+    rounded as in ``from_grams``.
+    """
+    if printed_unit is None:
+        return Unconverted(ConversionFailure.UNSUPPORTED_UNIT)
+
+    printed = _PRINTED_UNIT_MEASURE[printed_unit]
+    base = _BASE_UNIT_MEASURE[base_unit]
+    if printed.dimension is base.dimension:
+        return Converted(
+            _round_base_quantity(quantity * printed.size / base.size, base_unit)
+        )
+
+    grams_per_printed_unit = _grams_per(printed, factors)
+    if isinstance(grams_per_printed_unit, ConversionFailure):
+        return Unconverted(grams_per_printed_unit)
+    return from_grams(quantity * grams_per_printed_unit, base_unit, factors)
 
 
 def _grams_per(
