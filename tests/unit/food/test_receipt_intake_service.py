@@ -9,6 +9,7 @@ import pytest
 from app.config.settings import settings
 from app.domain.food_catalog import MeasurementUnit
 from app.domain.food_intake import FoodIntakeOriginType
+from app.domain.unit_conversion import ConversionFactors
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentAccessDeniedError,
@@ -42,6 +43,11 @@ def _intake_request(**overrides) -> FoodIntakeRequest:
     return FoodIntakeRequest(**fields)
 
 
+def _factors_for_every_food(factors: ConversionFactors) -> AsyncMock:
+    """A factors lookup that, like the repository, answers for every food asked."""
+    return AsyncMock(side_effect=lambda food_ids: dict.fromkeys(food_ids, factors))
+
+
 @pytest.fixture
 def admin_actor() -> UserActor:
     return UserActor(user_id=uuid.uuid4(), role=UserRole.ADMIN)
@@ -60,6 +66,9 @@ def uow(stub_establishment_lookup):
     stub_establishment_lookup(_uow, establishment=object())
     _uow.user_establishment_repo.get_relation = AsyncMock(return_value=None)
     _uow.food_repo.find_best_match = AsyncMock(return_value=None)
+    _uow.food_equivalence_repo.get_factors_by_food_ids = _factors_for_every_food(
+        ConversionFactors()
+    )
     return _uow
 
 
@@ -308,14 +317,37 @@ class TestExtraction:
         )
 
     @pytest.mark.parametrize(
-        ("base_unit", "raw_quantity", "raw_unit_text", "quantity", "unit"),
+        ("base_unit", "factors", "raw_quantity", "raw_unit_text", "quantity", "unit"),
         [
             # printed in the food's own base unit
-            (MeasurementUnit.KILOGRAMOS, 1, "kg", Decimal("1"), "kilogramos"),
+            (
+                MeasurementUnit.KILOGRAMOS,
+                ConversionFactors(),
+                1,
+                "kg",
+                Decimal("1"),
+                "kilogramos",
+            ),
             # printed in another unit of the same dimension
-            (MeasurementUnit.KILOGRAMOS, 500, "g", Decimal("0.5"), "kilogramos"),
-            # a different dimension than the food's base unit, with no factor
-            (MeasurementUnit.UNIDADES, 1, "kg", None, None),
+            (
+                MeasurementUnit.KILOGRAMOS,
+                ConversionFactors(),
+                500,
+                "g",
+                Decimal("0.5"),
+                "kilogramos",
+            ),
+            # a different dimension, through the food's stored unit weight
+            (
+                MeasurementUnit.UNIDADES,
+                ConversionFactors(unit_weight_g=Decimal("50")),
+                600,
+                "g",
+                Decimal("12"),
+                "unidades",
+            ),
+            # a different dimension, with no factor stored for the food
+            (MeasurementUnit.UNIDADES, ConversionFactors(), 1, "kg", None, None),
         ],
     )
     async def test_matched_line_is_prefilled_in_base_unit_when_convertible(
@@ -326,6 +358,7 @@ class TestExtraction:
         llm_client,
         admin_actor,
         base_unit,
+        factors,
         raw_quantity,
         raw_unit_text,
         quantity,
@@ -335,6 +368,9 @@ class TestExtraction:
             return_value=SimpleNamespace(
                 id=uuid.uuid4(), name="Arroz", base_unit=base_unit
             )
+        )
+        uow.food_equivalence_repo.get_factors_by_food_ids = _factors_for_every_food(
+            factors
         )
         llm_client.complete = AsyncMock(
             return_value={
