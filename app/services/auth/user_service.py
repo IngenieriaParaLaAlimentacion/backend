@@ -166,7 +166,7 @@ class UserService:
         """
         user = await self._get_user_or_raise(actor)
 
-        values = data.model_dump(exclude_unset=True, exclude_none=True)
+        values = data.model_dump(exclude_unset=True)
         if not values:
             raise EmptyUpdateRequestError()
 

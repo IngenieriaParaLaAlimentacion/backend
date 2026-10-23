@@ -33,6 +33,16 @@ IP_ONLY_ENDPOINTS = {
         "rate_limit_token_ip",
         {"token": "unknown", "new_password": "long-enough-1"},
     ),
+    "invite-accept": (
+        "/api/v1/auth/invite/accept",
+        "rate_limit_token_ip",
+        {
+            "token": "unknown",
+            "new_password": "long-enough-1",
+            "name": "Ana",
+            "last_name": "Gomez",
+        },
+    ),
     "verify-email-confirm": (
         "/api/v1/auth/verify-email/confirm",
         "rate_limit_token_ip",
