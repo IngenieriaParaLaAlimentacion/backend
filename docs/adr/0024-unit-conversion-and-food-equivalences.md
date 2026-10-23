@@ -81,7 +81,6 @@ One row per food and kind of factor:
 | `source` | Where the value comes from |
 | `source_ref` | The food's name in that source |
 | `match_type` | `direct` (that food) or `family` (taken from a similar food) |
-| `notes` | Free text |
 
 Unique per food and `kind`. No row means no equivalence: there is no default density or weight. The repository reads the factors of many foods in one query and returns them as `ConversionFactors` per food. Loading the real values is a separate task; tests use made-up factors.
 
