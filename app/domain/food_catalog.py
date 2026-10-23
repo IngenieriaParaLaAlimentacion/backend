@@ -15,6 +15,20 @@ class MeasurementUnit(str, Enum):
     LITROS = "litros"
 
 
+class EquivalenceKind(str, Enum):
+    """Which factor a food equivalence gives."""
+
+    DENSITY_G_ML = "density_g_ml"
+    UNIT_WEIGHT_G = "unit_weight_g"
+
+
+class EquivalenceMatchType(str, Enum):
+    """Whether an equivalence was taken for the food itself or a similar one."""
+
+    DIRECT = "direct"
+    FAMILY = "family"
+
+
 class NutrientGroup(str, Enum):
     """Which of SARA 2's two composition tables a nutrient belongs to."""
 
