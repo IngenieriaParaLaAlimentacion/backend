@@ -4,7 +4,7 @@ from enum import Enum, StrEnum
 from typing import NamedTuple, assert_never
 
 from app.domain.food_catalog import MeasurementUnit
-from app.domain.printed_unit import PrintedUnit
+from app.domain.printed_unit import PrintedUnit, normalize_printed_unit
 
 
 class ConversionFailure(StrEnum):
@@ -80,6 +80,15 @@ _PRINTED_UNIT_MEASURE: dict[PrintedUnit, _Measure] = {
     PrintedUnit.UNIDADES: _Measure(_Dimension.COUNT, Decimal(1)),
 }
 
+# Printed units that already are one of the units a food's stock is kept in.
+# Grams, millilitres and centilitres are recognised but deliberately absent:
+# moving them to a base unit is a conversion, which is not done here.
+_STORED_UNIT: dict[PrintedUnit, MeasurementUnit] = {
+    PrintedUnit.KILOGRAMOS: MeasurementUnit.KILOGRAMOS,
+    PrintedUnit.LITROS: MeasurementUnit.LITROS,
+    PrintedUnit.UNIDADES: MeasurementUnit.UNIDADES,
+}
+
 # Kilograms and litres are persisted as Numeric(10, 3); units are counted whole.
 _BASE_UNIT_QUANTUM: dict[MeasurementUnit, Decimal] = {
     MeasurementUnit.KILOGRAMOS: Decimal("0.001"),
@@ -147,6 +156,27 @@ def printed_to_base_unit(
     if isinstance(grams_per_printed_unit, ConversionFailure):
         return Unconverted(grams_per_printed_unit)
     return from_grams(quantity * grams_per_printed_unit, base_unit, factors)
+
+
+def prefill_from_printed(
+    quantity: Decimal | None,
+    unit_text: str | None,
+    base_unit: MeasurementUnit,
+) -> tuple[Decimal, MeasurementUnit] | None:
+    """Take a receipt-printed quantity as-is when it is in the food's base unit.
+
+    Returns the ``(quantity, unit)`` pair to prefill, or None when there is no
+    positive quantity, the unit text is missing or unrecognised, or the printed
+    unit is not exactly ``base_unit``. Nothing is converted between units.
+    """
+    if quantity is None or quantity <= 0:
+        return None
+
+    printed_unit = normalize_printed_unit(unit_text)
+    if printed_unit is None or _STORED_UNIT.get(printed_unit) is not base_unit:
+        return None
+
+    return quantity, base_unit
 
 
 def _grams_per(

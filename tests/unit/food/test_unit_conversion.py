@@ -10,6 +10,7 @@ from app.domain.unit_conversion import (
     Converted,
     Unconverted,
     from_grams,
+    prefill_from_printed,
     printed_to_base_unit,
     to_grams,
 )
@@ -197,6 +198,47 @@ def test_every_printed_unit_converts_given_its_factors(printed_unit, base_unit):
     result = printed_to_base_unit(Decimal(1), printed_unit, base_unit, ALL_FACTORS)
 
     assert isinstance(result, Converted)
+
+
+@pytest.mark.parametrize(
+    ("quantity", "unit_text", "base_unit", "expected"),
+    [
+        # printed in the food's own base unit
+        ("1", "kg", KG, ("1", KG)),
+        ("2", "L", L, ("2", L)),
+        ("3", "un", UN, ("3", UN)),
+        # the printed spelling varies, the result does not
+        ("1.5", " Lts. ", L, ("1.5", L)),
+        ("0.25", "KG.", KG, ("0.25", KG)),
+        # recognised, but reaching the base unit would need a conversion
+        ("500", "g", KG, None),
+        ("900", "ml", L, None),
+        ("33", "cl", L, None),
+        # a different dimension than the food's base unit
+        ("1", "kg", UN, None),
+        ("1", "l", KG, None),
+        ("3", "un", L, None),
+        # unit text that cannot be used
+        ("1", "cucharada", KG, None),
+        ("1", "xyz", UN, None),
+        ("3", "", UN, None),
+        ("3", None, UN, None),
+        # no usable quantity
+        (None, "kg", KG, None),
+        ("0", "kg", KG, None),
+        ("-1", "kg", KG, None),
+    ],
+)
+def test_prefill_from_printed(quantity, unit_text, base_unit, expected):
+    """A printed quantity is prefilled as-is only when it has a valid amount
+    and its unit is exactly the food's base unit; otherwise nothing is."""
+    result = prefill_from_printed(
+        Decimal(quantity) if quantity is not None else None, unit_text, base_unit
+    )
+
+    assert result == (
+        (Decimal(expected[0]), expected[1]) if expected is not None else None
+    )
 
 
 @pytest.mark.parametrize("field", ["density_g_ml", "unit_weight_g"])

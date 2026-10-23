@@ -10,7 +10,7 @@ from app.core.interfaces.object_storage import IObjectStorage
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.food_intake import FoodIntakeDomain
 from app.domain.printed_quantity import parse_printed_quantity
-from app.domain.printed_unit import prefill_from_printed
+from app.domain.unit_conversion import prefill_from_printed
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
     ImageContentMismatchError,
