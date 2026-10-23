@@ -24,10 +24,12 @@ The nutrition service works in grams (ADR-0021) and receipt prefill only accepts
 | Operation | From | To | Used by |
 | --- | --- | --- | --- |
 | `to_grams` | base unit | grams | nutrition |
-| `from_grams` | grams | base unit | receipts, future recipe output |
-| `printed_to_base_unit` | printed unit | base unit | receipts |
+| `from_grams` | grams | base unit | `printed_to_base_unit`, future recipe output |
+| `printed_to_base_unit` | printed unit | base unit | `prefill_from_printed` |
 
 Each returns `Converted(value)` or `Unconverted(reason)`. A missing factor is never replaced by a guess: the reasons are `missing_density`, `missing_unit_weight` and `unsupported_unit` (printed unit not recognised).
+
+`prefill_from_printed` applies the receipt's own rules on top of `printed_to_base_unit`: it returns the quantity to prefill on a receipt line, or nothing when the printed quantity is missing, cannot be converted, or converts to a value a line cannot hold (zero, or above `MAX_LINE_QUANTITY`).
 
 ### Units as a dimension and a size
 
@@ -69,6 +71,17 @@ All arithmetic is `Decimal`. Grams are not rounded, so a round trip `base → gr
 
 Half-to-even keeps tie roundings from drifting a stock balance, which is a sum of many lines, upwards.
 
+### Who converts
+
+- **Nutrition** converts stock and monthly intakes to grams through `GramsConverter`
+  (`app/services/nutrition/grams.py`), which reads the factors of all the foods in one query and returns a
+  result per food. The nutrition service works in `float` from there on, and leaves out each food that did not
+  convert with a warning naming it and the factor it lacks.
+- **Receipts** prefill each matched line with `prefill_from_printed`, reading the factors of every matched food
+  of a proposal in one query (ADR-0017).
+- **Stock** converts nothing. Confirming a receipt, like any intake, takes quantities already in the food's base
+  unit, so the stock is always kept in it.
+
 ### Equivalence table
 
 One row per food and kind of factor:
@@ -82,7 +95,12 @@ One row per food and kind of factor:
 | `source_ref` | The food's name in that source |
 | `match_type` | `direct` (that food) or `family` (taken from a similar food) |
 
-Unique per food and `kind`. No row means no equivalence: there is no default density or weight. The repository reads the factors of many foods in one query and returns them as `ConversionFactors` per food. Loading the real values is a separate task; tests use made-up factors.
+Unique per food and `kind`. No row means no equivalence: there is no default density or weight.
+
+A unit weight is the weight of the **edible portion** of one unit, since SARA 2 gives nutrients per 100 g of
+edible portion (ADR-0012): an egg is weighed without its shell. A weight with shell, bone or packaging would
+overstate every nutrient computed from it, with nothing to flag the error.
+ The repository reads the factors of many foods in one query and returns them as `ConversionFactors` per food. Loading the real values is a separate task; tests use made-up factors.
 
 Pending decisions:
 
@@ -92,11 +110,11 @@ Pending decisions:
 ## Consequences
 
 - `g` and `kg` convert with an empty table. Foods stocked in `litros` or `unidades` convert to grams only once their factor is loaded; until then the nutrition service leaves them out and reports why, per food.
-- Stock, receipts and the nutrition service share the module, so no conversion arithmetic lives anywhere else.
-  `_STORED_UNIT` in `app/domain/printed_unit.py`, which matched a printed unit to an identical base unit, is
-  superseded by `printed_to_base_unit` and goes away when receipt prefill moves to it.
+- Receipts and the nutrition service share the module, so no conversion arithmetic lives anywhere else.
+  `_STORED_UNIT`, which matched a printed unit to an identical base unit, was superseded by
+  `printed_to_base_unit` and removed.
 - A small quantity can round to zero (`20 g` of a food weighing 50 g per unit gives `0` units), while intake lines
-  require a positive quantity. Whoever stores the result decides what to do with a zero.
+  require a positive quantity. Receipt prefill leaves such a line empty, as it does one that cannot be converted.
 - Only conversion results are whole for `unidades`. Manual intakes and outflows still accept fractional units.
 - A new base unit or printed unit needs its dimension and size in the module's tables before it converts. Tests run
   every member of `MeasurementUnit` and `PrintedUnit` through the conversions, so a missing entry fails them.

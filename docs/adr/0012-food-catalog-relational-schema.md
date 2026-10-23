@@ -201,7 +201,8 @@ be entered in an alternate unit and scaled to a nutrient total** — rejected fo
 supplies no weight-per-unit or per-volume density data for anything other than already-weight-based
 foods; sourcing it would require a secondary, external reference for every food measured by count or
 volume, for a computation (deriving a nutrient total from a logged stock quantity) that no functionality
-defined for this catalog performs. Deferred to whichever future feature actually needs it.
+defined for this catalog performs. Deferred to whichever future feature actually needs it. Adopted later, as
+a `food_equivalences` table, once the nutrition service and receipt prefill needed it (ADR-0024).
 
 **`food_categories` as a fixed enum instead of a table** — rejected, for the same reason ADR-0011 rejected
 enum/in-memory constants for the food catalog itself: group names are part of the curated, reviewable
