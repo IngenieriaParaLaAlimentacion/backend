@@ -6,7 +6,7 @@ _QUANTITY_PRECISION = Decimal("0.001")
 
 # The largest value that fits ``max_digits=10, decimal_places=3`` on a
 # proposed line, so a parsed quantity can always be placed on one.
-_MAX_QUANTITY = Decimal("9999999.999")
+MAX_LINE_QUANTITY = Decimal("9999999.999")
 
 _DOT_GROUPED_INTEGER = re.compile(r"\d{1,3}(\.\d{3})+")
 
@@ -49,7 +49,7 @@ def parse_printed_quantity(value: Any) -> Decimal | None:
     except InvalidOperation:
         return None
 
-    if not number.is_finite() or number <= 0 or number > _MAX_QUANTITY:
+    if not number.is_finite() or number <= 0 or number > MAX_LINE_QUANTITY:
         return None
 
     rounded = number.quantize(_QUANTITY_PRECISION, rounding=ROUND_HALF_UP)

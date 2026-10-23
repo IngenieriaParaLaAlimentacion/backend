@@ -4,6 +4,7 @@ from enum import Enum, StrEnum
 from typing import NamedTuple, assert_never
 
 from app.domain.food_catalog import MeasurementUnit
+from app.domain.printed_quantity import MAX_LINE_QUANTITY
 from app.domain.printed_unit import PrintedUnit, normalize_printed_unit
 
 
@@ -80,15 +81,6 @@ _PRINTED_UNIT_MEASURE: dict[PrintedUnit, _Measure] = {
     PrintedUnit.UNIDADES: _Measure(_Dimension.COUNT, Decimal(1)),
 }
 
-# Printed units that already are one of the units a food's stock is kept in.
-# Grams, millilitres and centilitres are recognised but deliberately absent:
-# moving them to a base unit is a conversion, which is not done here.
-_STORED_UNIT: dict[PrintedUnit, MeasurementUnit] = {
-    PrintedUnit.KILOGRAMOS: MeasurementUnit.KILOGRAMOS,
-    PrintedUnit.LITROS: MeasurementUnit.LITROS,
-    PrintedUnit.UNIDADES: MeasurementUnit.UNIDADES,
-}
-
 # Kilograms and litres are persisted as Numeric(10, 3); units are counted whole.
 _BASE_UNIT_QUANTUM: dict[MeasurementUnit, Decimal] = {
     MeasurementUnit.KILOGRAMOS: Decimal("0.001"),
@@ -162,21 +154,26 @@ def prefill_from_printed(
     quantity: Decimal | None,
     unit_text: str | None,
     base_unit: MeasurementUnit,
+    factors: ConversionFactors,
 ) -> tuple[Decimal, MeasurementUnit] | None:
-    """Take a receipt-printed quantity as-is when it is in the food's base unit.
+    """Convert a receipt-printed quantity to the food's base unit, to prefill.
 
     Returns the ``(quantity, unit)`` pair to prefill, or None when there is no
-    positive quantity, the unit text is missing or unrecognised, or the printed
-    unit is not exactly ``base_unit``. Nothing is converted between units.
+    positive quantity, the printed quantity cannot be converted (see
+    ``printed_to_base_unit``), or the result is zero or too large for a line.
     """
     if quantity is None or quantity <= 0:
         return None
 
-    printed_unit = normalize_printed_unit(unit_text)
-    if printed_unit is None or _STORED_UNIT.get(printed_unit) is not base_unit:
+    result = printed_to_base_unit(
+        quantity, normalize_printed_unit(unit_text), base_unit, factors
+    )
+    # A line needs a positive quantity that fits it; anything else is left for
+    # the user to enter rather than offered and then rejected.
+    if isinstance(result, Unconverted) or not 0 < result.value <= MAX_LINE_QUANTITY:
         return None
 
-    return quantity, base_unit
+    return result.value, base_unit
 
 
 def _grams_per(

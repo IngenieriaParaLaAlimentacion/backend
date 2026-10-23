@@ -312,13 +312,13 @@ class TestExtraction:
         [
             # printed in the food's own base unit
             (MeasurementUnit.KILOGRAMOS, 1, "kg", Decimal("1"), "kilogramos"),
-            # recognised, but reaching the base unit would need a conversion
-            (MeasurementUnit.KILOGRAMOS, 500, "g", None, None),
-            # a different dimension than the food's base unit
+            # printed in another unit of the same dimension
+            (MeasurementUnit.KILOGRAMOS, 500, "g", Decimal("0.5"), "kilogramos"),
+            # a different dimension than the food's base unit, with no factor
             (MeasurementUnit.UNIDADES, 1, "kg", None, None),
         ],
     )
-    async def test_matched_line_is_prefilled_only_when_printed_in_base_unit(
+    async def test_matched_line_is_prefilled_in_base_unit_when_convertible(
         self,
         uow,
         storage,

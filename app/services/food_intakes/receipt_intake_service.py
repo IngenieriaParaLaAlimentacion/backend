@@ -10,7 +10,7 @@ from app.core.interfaces.object_storage import IObjectStorage
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.food_intake import FoodIntakeDomain
 from app.domain.printed_quantity import parse_printed_quantity
-from app.domain.unit_conversion import prefill_from_printed
+from app.domain.unit_conversion import ConversionFactors, prefill_from_printed
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
     ImageContentMismatchError,
@@ -143,8 +143,8 @@ class ReceiptIntakeService:
         The catalog match is delegated entirely to
         ``FoodRepository.find_best_match`` (trigram similarity, ADR-0017).
         For a matched line, ``quantity`` and ``unit`` are prefilled together
-        from the printed quantity when its unit is exactly the food's base
-        unit (see ``prefill_from_printed``), and both stay None otherwise.
+        with the printed quantity converted to the food's base unit (see
+        ``prefill_from_printed``), and both stay None when it cannot be.
         """
         raw_quantity = parse_printed_quantity(raw.get("raw_quantity"))
         raw_unit_text = raw.get("raw_unit_text")
@@ -157,7 +157,9 @@ class ReceiptIntakeService:
         quantity = None
         unit = None
         if food is not None:
-            prefill = prefill_from_printed(raw_quantity, raw_unit_text, food.base_unit)
+            prefill = prefill_from_printed(
+                raw_quantity, raw_unit_text, food.base_unit, ConversionFactors()
+            )
             if prefill is not None:
                 quantity, unit = prefill
 
@@ -201,8 +203,8 @@ class ReceiptIntakeService:
         Each line is matched against the food catalog by name similarity
         (ADR-0017); ``food`` is set when a confident match is found, and left
         ``None`` otherwise. On a match, ``quantity`` and ``unit`` are
-        prefilled from the printed quantity when it is already in the food's
-        base unit; nothing is converted. ``needs_review`` is always ``True`` --
+        prefilled from the printed quantity converted to the food's base
+        unit, when it can be. ``needs_review`` is always ``True`` --
         matching never marks a line as resolved, since the last validation
         before this data hits establishment stock is always the user's. When
         the extractor finds nothing, or the LLM call itself fails, the

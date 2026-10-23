@@ -201,39 +201,51 @@ def test_every_printed_unit_converts_given_its_factors(printed_unit, base_unit):
 
 
 @pytest.mark.parametrize(
-    ("quantity", "unit_text", "base_unit", "expected"),
+    ("quantity", "unit_text", "base_unit", "factors", "expected"),
     [
         # printed in the food's own base unit
-        ("1", "kg", KG, ("1", KG)),
-        ("2", "L", L, ("2", L)),
-        ("3", "un", UN, ("3", UN)),
+        ("1", "kg", KG, NO_FACTORS, ("1", KG)),
+        ("2", "L", L, NO_FACTORS, ("2", L)),
+        ("3", "un", UN, NO_FACTORS, ("3", UN)),
         # the printed spelling varies, the result does not
-        ("1.5", " Lts. ", L, ("1.5", L)),
-        ("0.25", "KG.", KG, ("0.25", KG)),
-        # recognised, but reaching the base unit would need a conversion
-        ("500", "g", KG, None),
-        ("900", "ml", L, None),
-        ("33", "cl", L, None),
-        # a different dimension than the food's base unit
-        ("1", "kg", UN, None),
-        ("1", "l", KG, None),
-        ("3", "un", L, None),
+        ("1.5", " Lts. ", L, NO_FACTORS, ("1.5", L)),
+        ("0.25", "KG.", KG, NO_FACTORS, ("0.25", KG)),
+        # the same dimension as the base unit converts with no factor
+        ("500", "g", KG, NO_FACTORS, ("0.5", KG)),
+        ("900", "ml", L, NO_FACTORS, ("0.9", L)),
+        ("33", "cl", L, NO_FACTORS, ("0.33", L)),
+        # another dimension converts with the factors it needs
+        ("1", "kg", UN, UNIT_WEIGHT_50, ("20", UN)),
+        ("1", "l", KG, DENSITY_1_03, ("1.03", KG)),
+        ("3", "un", L, ALL_FACTORS, ("0.146", L)),
+        # ...and is not prefilled without them
+        ("1", "kg", UN, NO_FACTORS, None),
+        ("1", "l", KG, NO_FACTORS, None),
+        ("3", "un", L, NO_FACTORS, None),
         # unit text that cannot be used
-        ("1", "cucharada", KG, None),
-        ("1", "xyz", UN, None),
-        ("3", "", UN, None),
-        ("3", None, UN, None),
+        ("1", "cucharada", KG, ALL_FACTORS, None),
+        ("1", "xyz", UN, ALL_FACTORS, None),
+        ("3", "", UN, ALL_FACTORS, None),
+        ("3", None, UN, ALL_FACTORS, None),
         # no usable quantity
-        (None, "kg", KG, None),
-        ("0", "kg", KG, None),
-        ("-1", "kg", KG, None),
+        (None, "kg", KG, NO_FACTORS, None),
+        ("0", "kg", KG, NO_FACTORS, None),
+        ("-1", "kg", KG, NO_FACTORS, None),
+        # a converted quantity a line cannot hold: zero, or too many digits
+        ("20", "g", UN, UNIT_WEIGHT_50, None),
+        ("0.4", "g", KG, NO_FACTORS, None),
+        ("9999999", "l", KG, DENSITY_1_03, None),
     ],
 )
-def test_prefill_from_printed(quantity, unit_text, base_unit, expected):
-    """A printed quantity is prefilled as-is only when it has a valid amount
-    and its unit is exactly the food's base unit; otherwise nothing is."""
+def test_prefill_from_printed(quantity, unit_text, base_unit, factors, expected):
+    """A printed quantity is prefilled converted to the food's base unit when
+    it has a valid amount, a usable unit and the factors the conversion needs,
+    and the result fits a line; otherwise nothing is."""
     result = prefill_from_printed(
-        Decimal(quantity) if quantity is not None else None, unit_text, base_unit
+        Decimal(quantity) if quantity is not None else None,
+        unit_text,
+        base_unit,
+        factors,
     )
 
     assert result == (
