@@ -31,19 +31,20 @@ ADMIN = UserActor(user_id=uuid.uuid4(), role=UserRole.ADMIN)
 
 class GramsPerUnit:
     """Converter that weighs every unit of a food as ``factor`` grams, or cannot
-    convert the foods listed in ``unknown``. Keeps the base units it was given."""
+    convert the foods in ``failures``, for the reason given there. Keeps the base
+    units it was given."""
 
-    def __init__(self, factor: int = 1000, unknown: frozenset = frozenset()):
+    def __init__(self, factor: int = 1000, failures: dict | None = None):
         self.factor = factor
-        self.unknown = unknown
+        self.failures = failures or {}
         self.base_units = None
 
     async def to_grams(self, quantities, base_units):
         self.base_units = dict(base_units)
         return {
             food_id: (
-                Unconverted(ConversionFailure.MISSING_DENSITY)
-                if food_id in self.unknown
+                Unconverted(self.failures[food_id])
+                if food_id in self.failures
                 else Converted(quantity * self.factor)
             )
             for food_id, quantity in quantities.items()
@@ -55,10 +56,12 @@ def food_with(
     per_100g: dict[str, float],
     gapa_code: str | None = None,
     base_unit: MeasurementUnit = MeasurementUnit.KILOGRAMOS,
+    name: str = "Food",
 ):
     """A loaded Food, as the repository returns it."""
     food = MagicMock()
     food.id = food_id
+    food.name = name
     food.base_unit = base_unit
     food.gapa_category = MagicMock(code=gapa_code) if gapa_code else None
     food.nutrient_values = [
@@ -154,19 +157,23 @@ async def test_monthly_analysis_converts_each_food_from_its_own_base_unit():
 
 
 async def test_food_without_known_conversion_is_left_out_and_reported():
-    rice_id, mystery_id = uuid.uuid4(), uuid.uuid4()
+    rice_id, milk_id = uuid.uuid4(), uuid.uuid4()
     uow = make_uow(
-        received={rice_id: Decimal("1"), mystery_id: Decimal("5")},
-        foods=[food_with(rice_id, {"valor_energetico": 100})],
+        received={rice_id: Decimal("1"), milk_id: Decimal("5")},
+        foods=[
+            food_with(rice_id, {"valor_energetico": 100}),
+            food_with(milk_id, {"valor_energetico": 100}, name="Leche"),
+        ],
     )
-    grams = GramsPerUnit(unknown=frozenset({mystery_id}))
+    grams = GramsPerUnit(failures={milk_id: ConversionFailure.MISSING_DENSITY})
 
     result = await NutritionService(uow, grams).analyze_monthly_intake(
         ESTABLISHMENT_ID, 2026, 3, ADMIN
     )
 
     assert result.indicators.energy_kcal == pytest.approx(1000)
-    assert any("conversion" in warning for warning in result.warnings)
+    # The warning names the food and the factor it lacks.
+    assert any("Leche" in w and "density" in w for w in result.warnings)
 
 
 async def test_field_worker_without_approved_access_cannot_analyze():
@@ -348,22 +355,23 @@ async def test_the_gapa_group_of_a_food_counts_in_its_energy_share():
 
 
 async def test_recipe_reports_the_foods_left_out_for_having_no_conversion():
-    rice_id, mystery_id = uuid.uuid4(), uuid.uuid4()
+    rice_id, eggs_id = uuid.uuid4(), uuid.uuid4()
     uow = make_uow(
         foods=[
             food_with(rice_id, {"valor_energetico": 100}),
-            food_with(mystery_id, {"valor_energetico": 100}),
+            food_with(eggs_id, {"valor_energetico": 100}, name="Huevo"),
         ],
-        stock={rice_id: Decimal("1000"), mystery_id: Decimal("5")},
+        stock={rice_id: Decimal("1000"), eggs_id: Decimal("5")},
     )
     request = RecipeRequest(
-        [rice_id, mystery_id], children_count=5, meal_type=MealType.LUNCH
+        [rice_id, eggs_id], children_count=5, meal_type=MealType.LUNCH
     )
-    grams = GramsPerUnit(unknown=frozenset({mystery_id}))
+    grams = GramsPerUnit(failures={eggs_id: ConversionFailure.MISSING_UNIT_WEIGHT})
 
     result = await NutritionService(uow, grams).maximize_recipe(
         ESTABLISHMENT_ID, request, ADMIN
     )
 
     assert [q.food_id for q in result.quantities] == [rice_id]
-    assert any("conversion" in warning for warning in result.warnings)
+    # The warning names the food and the factor it lacks.
+    assert any("Huevo" in w and "unit weight" in w for w in result.warnings)
