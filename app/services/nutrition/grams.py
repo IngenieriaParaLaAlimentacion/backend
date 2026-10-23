@@ -1,19 +1,33 @@
+from collections.abc import Mapping
 from decimal import Decimal
-from typing import Protocol
 from uuid import UUID
 
+from app.core.interfaces.unit_of_work import IUnitOfWork
+from app.domain.food_catalog import MeasurementUnit
+from app.domain.unit_conversion import ConversionResult
+from app.domain.unit_conversion import to_grams as convert_to_grams
 
-class GramsConverter(Protocol):
-    """Converts a food's quantity between its ``base_unit`` and grams.
 
-    Placeholder for the conversion delivered by #155; the shape of its methods
-    may change when that lands. ``None`` means the food has no known conversion.
-    """
+class GramsConverter:
+    """Converts quantities of catalog foods from their base unit to grams."""
 
-    def to_grams(self, food_id: UUID, quantity: Decimal) -> float | None:
-        """Return the grams that ``quantity`` of the food's base unit weighs."""
-        ...
+    def __init__(self, uow: IUnitOfWork) -> None:
+        self.uow = uow
 
-    def from_grams(self, food_id: UUID, grams: float) -> Decimal | None:
-        """Return ``grams`` of the food expressed in its base unit."""
-        ...
+    async def to_grams(
+        self,
+        quantities: Mapping[UUID, Decimal],
+        base_units: Mapping[UUID, MeasurementUnit],
+    ) -> dict[UUID, ConversionResult]:
+        """Return each food's quantity in grams, or why it could not be converted.
+
+        ``base_units`` holds the base unit of every food in ``quantities``. The
+        factors of all the foods are read in one query.
+        """
+        factors = await self.uow.food_equivalence_repo.get_factors_by_food_ids(
+            list(quantities)
+        )
+        return {
+            food_id: convert_to_grams(quantity, base_units[food_id], factors[food_id])
+            for food_id, quantity in quantities.items()
+        }

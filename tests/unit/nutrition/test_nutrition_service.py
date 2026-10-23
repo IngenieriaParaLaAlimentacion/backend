@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.domain.food_catalog import FoodNutrientRow
+from app.domain.food_catalog import FoodNutrientRow, MeasurementUnit
 from app.domain.nutrition import (
     FoodQuantity,
     GapaGroup,
@@ -14,6 +14,7 @@ from app.domain.nutrition import (
     PrioritizedNutrient,
     RecipeRequest,
 )
+from app.domain.unit_conversion import ConversionFailure, Converted, Unconverted
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentAccessDeniedError,
@@ -29,24 +30,36 @@ ADMIN = UserActor(user_id=uuid.uuid4(), role=UserRole.ADMIN)
 
 
 class GramsPerUnit:
-    """Converter that weighs every unit of a food as ``factor`` grams, or knows
-    nothing about the foods listed in ``unknown``."""
+    """Converter that weighs every unit of a food as ``factor`` grams, or cannot
+    convert the foods listed in ``unknown``. Keeps the base units it was given."""
 
-    def __init__(self, factor: float = 1000, unknown: frozenset = frozenset()):
+    def __init__(self, factor: int = 1000, unknown: frozenset = frozenset()):
         self.factor = factor
         self.unknown = unknown
+        self.base_units = None
 
-    def to_grams(self, food_id, quantity: Decimal):
-        return None if food_id in self.unknown else float(quantity) * self.factor
+    async def to_grams(self, quantities, base_units):
+        self.base_units = dict(base_units)
+        return {
+            food_id: (
+                Unconverted(ConversionFailure.MISSING_DENSITY)
+                if food_id in self.unknown
+                else Converted(quantity * self.factor)
+            )
+            for food_id, quantity in quantities.items()
+        }
 
-    def from_grams(self, food_id, grams: float):
-        raise NotImplementedError
 
-
-def food_with(food_id, per_100g: dict[str, float], gapa_code: str | None = None):
+def food_with(
+    food_id,
+    per_100g: dict[str, float],
+    gapa_code: str | None = None,
+    base_unit: MeasurementUnit = MeasurementUnit.KILOGRAMOS,
+):
     """A loaded Food, as the repository returns it."""
     food = MagicMock()
     food.id = food_id
+    food.base_unit = base_unit
     food.gapa_category = MagicMock(code=gapa_code) if gapa_code else None
     food.nutrient_values = [
         MagicMock(nutrient=MagicMock(code=code), amount_per_100g=Decimal(str(amount)))
@@ -115,6 +128,29 @@ async def test_monthly_analysis_converts_quantities_to_grams_before_calculating(
     )
 
     assert result.indicators.energy_kcal == pytest.approx(2000)
+
+
+async def test_monthly_analysis_converts_each_food_from_its_own_base_unit():
+    rice_id, milk_id = uuid.uuid4(), uuid.uuid4()
+    uow = make_uow(
+        received={rice_id: Decimal("1"), milk_id: Decimal("2")},
+        foods=[
+            food_with(rice_id, {"valor_energetico": 100}),
+            food_with(
+                milk_id, {"valor_energetico": 60}, base_unit=MeasurementUnit.LITROS
+            ),
+        ],
+    )
+    grams = GramsPerUnit()
+
+    await NutritionService(uow, grams).analyze_monthly_intake(
+        ESTABLISHMENT_ID, 2026, 3, ADMIN
+    )
+
+    assert grams.base_units == {
+        rice_id: MeasurementUnit.KILOGRAMOS,
+        milk_id: MeasurementUnit.LITROS,
+    }
 
 
 async def test_food_without_known_conversion_is_left_out_and_reported():

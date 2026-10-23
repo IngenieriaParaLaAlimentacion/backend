@@ -4,6 +4,7 @@ from decimal import Decimal
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
+from app.domain.food_catalog import MeasurementUnit
 from app.domain.nutrition import (
     FoodQuantity,
     MonthlyIntakeAnalysis,
@@ -13,6 +14,7 @@ from app.domain.nutrition import (
     ReferenceProfile,
     StockedFood,
 )
+from app.domain.unit_conversion import Converted
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import InvalidChildrenCountError
 from app.reference_data.nutrition_references import NINO_7_9
@@ -54,19 +56,24 @@ class NutritionService:
         await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
         await check_establishment_access(self.uow, actor, establishment_id)
 
-    def _to_grams(
-        self, quantities: Mapping[UUID, Decimal]
+    async def _to_grams(
+        self,
+        quantities: Mapping[UUID, Decimal],
+        base_units: Mapping[UUID, MeasurementUnit],
     ) -> tuple[dict[UUID, float], str | None]:
         """Convert quantities in each food's base unit to grams.
 
+        ``base_units`` holds the base unit of every food in ``quantities``.
         Returns the grams per food and a warning naming how many foods were left
         out for having no known conversion, or None when every food converted.
         """
+        results = await self.grams.to_grams(quantities, base_units)
         grams: dict[UUID, float] = {}
-        for food_id, quantity in quantities.items():
-            converted = self.grams.to_grams(food_id, quantity)
-            if converted is not None:
-                grams[food_id] = converted
+        for food_id, result in results.items():
+            if isinstance(result, Converted):
+                # The solver and indicators work in floats; exact decimals only
+                # matter for stored quantities, not for estimating nutrients.
+                grams[food_id] = float(result.value)
         left_out = len(quantities) - len(grams)
         warning = (
             f"{left_out} food(s) have no conversion to grams and were left out"
@@ -106,7 +113,9 @@ class NutritionService:
         stock = await self.uow.food_stock_repo.get_many(
             establishment_id, [food.id for food in foods]
         )
-        stock_grams, warning = self._to_grams(stock)
+        stock_grams, warning = await self._to_grams(
+            stock, {food.id: food.base_unit for food in foods}
+        )
         stocked = [
             StockedFood(composition_from_food(food), stock_grams[food.id])
             for food in foods
@@ -139,12 +148,12 @@ class NutritionService:
         received = await self.uow.food_intake_repo.sum_quantities_by_food(
             establishment_id, start, end
         )
-        grams, warning = self._to_grams(received)
+        foods = await self.uow.food_repo.get_with_nutrients_by_ids(list(received))
+        grams, warning = await self._to_grams(
+            received, {food.id: food.base_unit for food in foods}
+        )
         items = [FoodQuantity(food_id, amount) for food_id, amount in grams.items()]
 
-        foods = await self.uow.food_repo.get_with_nutrients_by_ids(
-            [item.food_id for item in items]
-        )
         analysis = analyze_intake(
             items,
             {food.id: composition_from_food(food) for food in foods},
