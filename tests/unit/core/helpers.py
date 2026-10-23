@@ -64,8 +64,10 @@ NON_SENSITIVE_COLUMNS = frozenset(
         "isrecurring",
         "isrequired",
         "isrural",
+        "kind",
         "latitude",
         "longitude",
+        "matchtype",
         "nextthresholdhours",
         "origintype",
         "photokey",
@@ -84,10 +86,12 @@ NON_SENSITIVE_COLUMNS = frozenset(
         "severity",
         "source",
         "sourcepage",
+        "sourceref",
         "status",
         "text",
         "thresholdhours",
         "unit",
         "used",
+        "value",
     }
 )
