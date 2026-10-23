@@ -15,7 +15,7 @@ async def create_super_admin() -> None:
     async with UnitOfWork() as uow:
         try:
             if await uow.user_repo.get_by_email(settings.seed_admin_email):
-                logger.error("Super admin already exists")
+                logger.info("Super admin already exists; skipping seed")
                 return
 
             logger.info("Creating super admin")
