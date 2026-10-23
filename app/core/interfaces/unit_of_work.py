@@ -25,6 +25,9 @@ from app.repositories.establishments.establishment_request_repository import (
 from app.repositories.food_catalog.food_category_repository import (
     FoodCategoryRepository,
 )
+from app.repositories.food_catalog.food_equivalence_repository import (
+    FoodEquivalenceRepository,
+)
 from app.repositories.food_catalog.food_nutrient_value_repository import (
     FoodNutrientValueRepository,
 )
@@ -80,6 +83,7 @@ class IUnitOfWork(ABC):
     nutrient_repo: NutrientRepository
     food_repo: FoodRepository
     food_nutrient_value_repo: FoodNutrientValueRepository
+    food_equivalence_repo: FoodEquivalenceRepository
     food_intake_repo: FoodIntakeRepository
     food_outflow_repo: FoodOutflowRepository
     food_stock_repo: FoodStockRepository
