@@ -4,7 +4,7 @@
 
 - Python 3.11+
 - [Poetry 2.0+](https://python-poetry.org/docs/#installation)
-- Docker (required for running tests)
+- Docker (required for Testcontainers-based integration tests)
 - A running PostgreSQL instance (for local dev without Docker)
 - A running Redis instance for rate limiting (for local dev without Docker; `docker compose up redis`)
 
@@ -67,7 +67,7 @@ poetry run alembic current
 
 ## Testing
 
-Tests use [Testcontainers](https://testcontainers.com/) to spin up a real PostgreSQL instance, and a Redis for the rate-limit tests. **Docker must be running.**
+Integration tests use [Testcontainers](https://testcontainers.com/) to spin up a real PostgreSQL instance, and a Redis for the rate-limit tests. Docker must be running for those tests unless `TEST_POSTGRES_URL` points to a disposable PostgreSQL instance; Redis-backed tests still need Docker.
 
 ```bash
 # Run all tests
@@ -135,3 +135,10 @@ CI checks that the current head can run `upgrade head`, `downgrade -1`, and `upg
 - `c9a4b7e2f168`: an orphan stub has no schema operations, and historical databases may differ from fresh ones.
 
 Back up a populated database and review each migration before relying on downgrade as a rollback procedure.
+
+### Integration tests without Docker
+
+`TEST_POSTGRES_URL` may point to a **disposable test-only** PostgreSQL instance
+(e.g. `postgresql+psycopg2://test@127.0.0.1:55432/test`). The suite runs migrations
+and truncates every application table. Never use an application database.
+Redis-backed auth rate-limit tests still require their Redis Testcontainer.

@@ -1133,3 +1133,122 @@ class UnknownGapaGroupError(BaseError):
             "the six the service knows.",
             extensions={"code": code},
         )
+
+
+class RecipeNoUsableStockError(BaseError):
+    """No stocked food with known mass and positive energy can form a recipe."""
+
+    error_type = "recipes/no-usable-stock"
+    status = status.HTTP_409_CONFLICT
+
+    def __init__(self):
+        super().__init__(
+            "No usable stock",
+            "No recipe can be built from stock with known gram conversions "
+            "and usable energy.",
+        )
+
+
+class RecipeNotFoundError(NotFoundError):
+    """The requested recommendation or proposal does not exist."""
+
+    error_type = "recipes/not-found"
+
+    def __init__(self):
+        super().__init__(
+            "Recipe not found", "The recommendation or proposal does not exist."
+        )
+
+
+class RecipeAlreadyChosenError(BaseError):
+    """A different proposal was already chosen for this request."""
+
+    error_type = "recipes/already-chosen"
+    status = status.HTTP_409_CONFLICT
+
+    def __init__(self):
+        super().__init__(
+            "Recipe already chosen", "Only one proposal may be chosen per request."
+        )
+
+
+class RecipeIdempotencyConflictError(BaseError):
+    """A reuse id was already used with different input."""
+
+    error_type = "recipes/idempotency-conflict"
+    status = status.HTTP_409_CONFLICT
+
+    def __init__(self):
+        super().__init__(
+            "Reuse id conflict",
+            "This id was already used for a different recipe, establishment "
+            "or portion count.",
+        )
+
+
+class RecipeGenerationError(BaseError):
+    """The model failed to produce complete valid recipe proposals."""
+
+    error_type = "recipes/generation-failed"
+    status = status.HTTP_502_BAD_GATEWAY
+
+    def __init__(self):
+        super().__init__(
+            "Recipe generation failed",
+            "Could not generate valid recommendations. Please try again.",
+        )
+
+
+class RecipeIngredientUnavailableError(BaseError):
+    """A saved recipe ingredient is no longer in the catalog."""
+
+    error_type = "recipes/ingredient-unavailable"
+    status = status.HTTP_409_CONFLICT
+
+    def __init__(self, food_id: str, ingredient: str):
+        super().__init__(
+            "Recipe ingredient unavailable",
+            f"{ingredient} is no longer available in the food catalog.",
+            extensions={"food_id": food_id, "ingredient": ingredient},
+        )
+
+
+class RecipeIngredientUnitChangedError(BaseError):
+    """A saved ingredient's stock unit changed since generation."""
+
+    error_type = "recipes/ingredient-unit-changed"
+    status = status.HTTP_409_CONFLICT
+
+    def __init__(self, food_id: str, ingredient: str):
+        super().__init__(
+            "Recipe ingredient unit changed",
+            f"The stock unit for {ingredient} changed; generate a new recipe.",
+            extensions={"food_id": food_id, "ingredient": ingredient},
+        )
+
+
+class RecipeScaleTooSmallError(BaseError):
+    """Scaling would round a required ingredient down to zero."""
+
+    error_type = "recipes/scale-too-small"
+    status = status.HTTP_409_CONFLICT
+
+    def __init__(self, food_id: str, ingredient: str):
+        super().__init__(
+            "Recipe scale too small",
+            f"The portion count is too small for {ingredient} at stock precision.",
+            extensions={"food_id": food_id, "ingredient": ingredient},
+        )
+
+
+class RecipeGenerationTimeoutError(BaseError):
+    """Recipe generation exceeded its total request time budget."""
+
+    error_type = "recipes/generation-timeout"
+    status = status.HTTP_504_GATEWAY_TIMEOUT
+
+    def __init__(self):
+        super().__init__(
+            "Recipe generation timed out",
+            "Recipe generation exceeded its total time budget.",
+        )

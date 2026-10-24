@@ -98,7 +98,10 @@ def analyst_headers():
 
 @pytest.fixture(scope="session")
 def postgres_url():
-    """Start a Postgres container for the test session and yield its connection URL."""
+    """Yield a disposable external test database or start a Postgres container."""
+    if test_url := os.environ.get("TEST_POSTGRES_URL"):
+        yield test_url
+        return
     # The database is disposable, so durability guarantees only slow it down.
     postgres = PostgresContainer("postgres:16-alpine").with_command(
         "postgres -c fsync=off -c synchronous_commit=off -c full_page_writes=off"

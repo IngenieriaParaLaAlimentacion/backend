@@ -180,3 +180,133 @@ async def test_raises_once_both_primary_and_fallback_are_exhausted(monkeypatch):
         await client.complete(prompt="p", response_schema={})
 
     assert client._client.aio.models.generate_content.await_count == 5
+
+
+@pytest.mark.parametrize("schema_name", ["CandidateBatch", "WritingBatch"])
+async def test_recipe_schemas_work_through_google_sdk(schema_name):
+    from google import genai
+    from google.genai import types
+
+    from app.schemas.recipes import recipe_schema
+
+    requests = []
+    payload = {"candidates": []} if schema_name == "CandidateBatch" else {"recipes": []}
+
+    async def respond(request):
+        requests.append(json.loads(request.content))
+        return httpx.Response(
+            200,
+            json={
+                "candidates": [{"content": {"parts": [{"text": json.dumps(payload)}]}}]
+            },
+        )
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as http:
+        sdk = genai.Client(
+            api_key="test-key",
+            http_options=types.HttpOptions(httpx_async_client=http),
+        )
+        client = object.__new__(GeminiLlmClient)
+        client._client = sdk
+        try:
+            result = await client.complete(
+                prompt="Generate recipes",
+                response_schema=getattr(recipe_schema, schema_name).model_json_schema(),
+            )
+        finally:
+            await sdk.aio.aclose()
+            sdk.close()
+
+    assert result == payload
+    config = requests[0]["generationConfig"]
+    assert config["responseMimeType"] == "application/json"
+    root_field = "candidates" if schema_name == "CandidateBatch" else "recipes"
+    assert "responseSchema" not in config
+    assert root_field in config["responseJsonSchema"]["properties"]
+    expected = getattr(recipe_schema, schema_name).model_json_schema()
+    assert config["responseJsonSchema"] == expected
+    assert "tools" not in requests[0]
+
+
+async def test_generation_options_bound_output_and_use_low_thinking_for_gemini3(
+    monkeypatch,
+):
+    monkeypatch.setattr(settings, "gemini_model", "gemini-3.6-flash")
+    monkeypatch.setattr(settings, "gemini_max_output_tokens", 4096)
+    monkeypatch.setattr(settings, "gemini_temperature", None)
+    monkeypatch.setattr(settings, "gemini_seed", None)
+    monkeypatch.setattr(settings, "gemini_thinking_level", "low")
+    client = _client([_response({"ok": True})])
+    await client.complete(prompt="p", response_schema={})
+    config = client._client.aio.models.generate_content.await_args.kwargs["config"]
+    assert config.max_output_tokens == 4096
+    assert config.temperature is None
+    assert config.thinking_config.thinking_level.value.upper() == "LOW"
+
+
+async def test_generation_options_do_not_send_gemini3_thinking_to_older_models(
+    monkeypatch,
+):
+    monkeypatch.setattr(settings, "gemini_model", "gemini-2.5-flash")
+    monkeypatch.setattr(settings, "gemini_temperature", 0.2)
+    monkeypatch.setattr(settings, "gemini_seed", 7)
+    client = _client([_response({"ok": True})])
+    await client.complete(prompt="p", response_schema={})
+    config = client._client.aio.models.generate_content.await_args.kwargs["config"]
+    assert config.thinking_config is None
+    assert config.temperature == 0.2
+    assert config.seed == 7
+
+
+async def test_response_and_retry_logs_never_include_model_or_provider_text():
+    import structlog
+
+    secret = "private stock and cultural details"
+    client = _client(
+        [ServerError(503, {"message": secret}), _response({"secret": secret})]
+    )
+    with structlog.testing.capture_logs() as logs:
+        result = await client.complete(prompt=secret, response_schema={})
+    assert result["secret"] == secret
+    assert secret not in json.dumps(logs)
+    response_log = next(item for item in logs if item["event"] == "gemini_llm_response")
+    assert response_log["response_chars"] > 0
+    assert "raw_text" not in response_log
+
+
+async def test_sdk_does_not_add_its_own_retry_budget(monkeypatch):
+    from google import genai
+    from google.genai import types
+
+    requests = []
+
+    async def respond(request):
+        requests.append(request)
+        if len(requests) < 3:
+            return httpx.Response(
+                503,
+                json={
+                    "error": {"code": 503, "message": "busy", "status": "UNAVAILABLE"}
+                },
+            )
+        return httpx.Response(
+            200,
+            json={"candidates": [{"content": {"parts": [{"text": '{"ok":true}'}]}}]},
+        )
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as http:
+        sdk = genai.Client(
+            api_key="test-key",
+            http_options=types.HttpOptions(
+                httpx_async_client=http,
+                retry_options=types.HttpRetryOptions(attempts=1),
+            ),
+        )
+        client = object.__new__(GeminiLlmClient)
+        client._client = sdk
+        try:
+            assert await client.complete(prompt="p", response_schema={}) == {"ok": True}
+        finally:
+            await sdk.aio.aclose()
+            sdk.close()
+    assert len(requests) == 3

@@ -67,6 +67,7 @@ class TestRegisterIntake:
             {key: value for key, value in valid.items() if key != "origin_type"},
             {key: value for key, value in valid.items() if key != "is_recurring"},
             {**valid, "origin_type": "unknown"},
+            {**valid, "origin_type": "social_organization"},
             {**valid, "is_recurring": "true"},
             {**valid, "is_recurring": 1},
         )

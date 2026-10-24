@@ -168,7 +168,6 @@ class ReceiptIntakeService:
             unit=unit,
             raw_quantity=raw_quantity,
             raw_unit_text=raw_unit_text,
-            needs_review=True,
         )
 
     @staticmethod
@@ -202,12 +201,10 @@ class ReceiptIntakeService:
         (ADR-0017); ``food`` is set when a confident match is found, and left
         ``None`` otherwise. On a match, ``quantity`` and ``unit`` are
         prefilled from the printed quantity when it is already in the food's
-        base unit; nothing is converted. ``needs_review`` is always ``True`` --
-        matching never marks a line as resolved, since the last validation
-        before this data hits establishment stock is always the user's. When
-        the extractor finds nothing, or the LLM call itself fails, the
-        response falls back to an empty proposal with a hint to enter the
-        intake manually rather than surfacing the failure as an error.
+        base unit; nothing is converted. When the extractor finds nothing, or
+        the LLM call itself fails, the response falls back to an empty
+        proposal with a hint to enter the intake manually rather than
+        surfacing the failure as an error.
 
         Raises:
             UnsupportedImageTypeError: image type not accepted.

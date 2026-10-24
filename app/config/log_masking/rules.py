@@ -72,6 +72,9 @@ EXACT_KEYS = frozenset(
         # contact emails and cultural identity.
         "observation",
         "characterization",
+        # Recommendation snapshots and generated recipes can carry cultural identity.
+        "inputsnapshot",
+        "recipe",
         "requestername",
         "answers",
         "payload",
