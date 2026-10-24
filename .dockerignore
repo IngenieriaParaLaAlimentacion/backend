@@ -26,6 +26,7 @@ env
 
 # Tests
 tests
+e2e
 test_*
 *_test.py
 pytest.ini

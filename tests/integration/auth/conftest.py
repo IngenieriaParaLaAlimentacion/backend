@@ -44,6 +44,17 @@ async def connect_limiter_to_redis(redis_container, redis_url, monkeypatch):
 
 
 @pytest.fixture
+async def fresh_limiter():
+    """Start the test with no limiter, so the first request builds one from settings.
+
+    The limiter built during the test is dropped afterwards.
+    """
+    await close_limiter()
+    yield
+    await close_limiter()
+
+
+@pytest.fixture
 def redis_outage(redis_container):
     """Freeze Redis on demand so connections time out, as in a network outage.
 
