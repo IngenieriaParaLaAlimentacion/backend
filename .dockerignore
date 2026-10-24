@@ -60,6 +60,7 @@ LICENSE
 # app/reference_data/ instead.
 scripts
 
-# CI
+# Secrets
+.env
 .env.*
 !.env.example
