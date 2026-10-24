@@ -6,7 +6,9 @@ from app.config.settings import settings
 
 # hide_parameters=True keeps bound values (DNI, emails, tokens) out of the text of
 # database errors.
-engine = create_async_engine(settings.database_url, hide_parameters=True)
+engine = create_async_engine(
+    settings.database_url, hide_parameters=True, pool_pre_ping=True
+)
 AsyncSessionLocal = async_sessionmaker(
     engine, expire_on_commit=False, autoflush=False, autocommit=False
 )
