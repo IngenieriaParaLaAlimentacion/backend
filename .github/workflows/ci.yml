@@ -78,6 +78,21 @@ jobs:
     env:
       # TEMP: the third ref is only to create the package; remove it before the PR.
       PUBLISH: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/chore/publish-backend-image' }}
+    services:
+      # Same credentials as DATABASE_* in e2e/.env.e2e.
+      postgres:
+        image: postgres:17.9-bookworm
+        env:
+          POSTGRES_DB: db
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U admin -d db"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
         with:
@@ -106,12 +121,45 @@ jobs:
             type=ref,event=branch
             type=sha,prefix=sha-,format=long
 
-      - name: Build Docker image (push only from develop and main)
+      - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: ${{ env.PUBLISH == 'true' }}
+          load: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # The container shares the runner's network to reach the PostgreSQL service.
+      - name: Prepare the database
+        run: >-
+          docker run --rm --network host
+          --env-file e2e/.env.e2e -e DATABASE_HOST=localhost
+          ${{ env.IMAGE }}:sha-${{ github.sha }}
+          sh -c "alembic upgrade head && python seed_superadmin.py && python seed_food_catalog.py"
+
+      - name: Start the backend
+        run: >-
+          docker run -d --name backend --network host
+          --env-file e2e/.env.e2e -e DATABASE_HOST=localhost
+          ${{ env.IMAGE }}:sha-${{ github.sha }}
+
+      - name: Wait for the backend to be ready
+        run: |
+          for _ in $(seq 1 60); do
+            curl -fsS http://localhost:8080/ready && exit 0
+            sleep 2
+          done
+          echo "The backend did not become ready" >&2
+          exit 1
+
+      - name: Show the backend logs
+        if: failure()
+        run: docker logs backend
+
+      - name: Push Docker image (only from develop and main)
+        if: env.PUBLISH == 'true'
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+        run: echo "$TAGS" | xargs -n1 docker push
