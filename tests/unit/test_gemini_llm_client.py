@@ -211,4 +211,8 @@ async def test_recipe_schemas_work_through_google_sdk(schema_name):
     config = requests[0]["generationConfig"]
     assert config["responseMimeType"] == "application/json"
     root_field = "candidates" if schema_name == "CandidateBatch" else "recipes"
-    assert root_field in config["responseSchema"]["properties"]
+    assert "responseSchema" not in config
+    assert root_field in config["responseJsonSchema"]["properties"]
+    expected = getattr(recipe_schema, schema_name).model_json_schema()
+    assert config["responseJsonSchema"] == expected
+    assert "tools" not in requests[0]

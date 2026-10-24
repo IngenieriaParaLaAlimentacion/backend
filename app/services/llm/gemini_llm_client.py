@@ -152,7 +152,12 @@ class GeminiLlmClient(ILlmClient):
                     contents=contents,
                     config=types.GenerateContentConfig(
                         response_mime_type="application/json",
-                        response_schema=response_schema,
+                        # Callers provide Pydantic JSON Schema, not the legacy
+                        # Google Schema dialect. Preserve refs and nested schemas.
+                        response_json_schema=response_schema,
+                        automatic_function_calling=types.AutomaticFunctionCallingConfig(
+                            disable=True
+                        ),
                         http_options=types.HttpOptions(
                             timeout=int(settings.gemini_request_timeout_seconds * 1000)
                         ),

@@ -58,6 +58,35 @@ class GenerationSnapshot:
         return self.context["cultural_identities"]
 
 
+def writing_response_schema() -> dict:
+    """Keep the wire schema small; enforce all bounds with WritingBatch locally.
+
+    Large bounds on nested arrays can exceed provider structured-output
+    complexity limits. Do not encode text lengths, UUID formats or array
+    cardinalities in the decoder; validation below still rejects invalid output.
+    """
+    omitted = {
+        "minLength",
+        "maxLength",
+        "minItems",
+        "maxItems",
+        "format",
+        "title",
+        "default",
+    }
+
+    def simplify(value):
+        if isinstance(value, dict):
+            return {
+                key: simplify(item) for key, item in value.items() if key not in omitted
+            }
+        if isinstance(value, list):
+            return [simplify(item) for item in value]
+        return value
+
+    return simplify(WritingBatch.model_json_schema())
+
+
 class RecipeGenerator:
     def __init__(self, llm: ILlmClient | None, nutrition: NutritionService):
         self.llm = llm
@@ -87,7 +116,10 @@ class RecipeGenerator:
         )
         try:
             result = await self.llm.complete(
-                prompt=prompt, response_schema=schema.model_json_schema()
+                prompt=prompt,
+                response_schema=writing_response_schema()
+                if schema is WritingBatch
+                else schema.model_json_schema(),
             )
             return schema.model_validate(result)
         except LlmClientError as exc:
