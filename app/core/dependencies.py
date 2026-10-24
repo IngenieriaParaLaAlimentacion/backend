@@ -1,6 +1,6 @@
 from collections.abc import AsyncGenerator
 
-from fastapi import Depends
+from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 
@@ -124,13 +124,15 @@ async def get_food_intake_service() -> AsyncGenerator[FoodIntakeService, None]:
         yield FoodIntakeService(uow)
 
 
-async def get_llm_client() -> AsyncGenerator[ILlmClient, None]:
-    """Provide the LLM client used for receipt extraction.
-
-    Its own dependency (rather than inlined in ``get_receipt_intake_service``)
-    so tests can swap in a scripted double instead of calling Gemini for real.
-    """
-    yield GeminiLlmClient()
+async def get_llm_client(request: Request) -> ILlmClient:
+    """Lazily share one structured client per app; lifespan owns its cleanup."""
+    client = getattr(request.app.state, "llm_client", None)
+    if client is None:
+        # No await between lookup and assignment: concurrent requests cannot
+        # create two clients on the application event loop.
+        client = GeminiLlmClient()
+        request.app.state.llm_client = client
+    return client
 
 
 async def get_receipt_intake_service(
@@ -264,3 +266,21 @@ async def require_admin_or_analyst(
     return await _get_authenticated_actor(
         token, {UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN}
     )
+
+
+async def get_recipe_service():
+    """Provide history and selection operations without constructing an LLM."""
+    from app.services.recipes.recipe_service import RecipeService
+
+    async with UnitOfWork() as uow:
+        yield RecipeService(uow)
+
+
+async def get_recipe_generation_service(
+    llm_client: ILlmClient = Depends(get_llm_client),
+):
+    """Provide the recommendation workflow with an injectable structured client."""
+    from app.services.recipes.recipe_service import RecipeService
+
+    async with UnitOfWork() as uow:
+        yield RecipeService(uow, llm_client)

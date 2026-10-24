@@ -141,6 +141,8 @@ class KitchenEquipment(StrEnum):
 
 class CulturalIdentity(StrEnum):
     # Provisional catalog, pending validation with community referents.
+    PARAGUAYAN = "paraguayan"
+    BOLIVIAN = "bolivian"
     INDIGENOUS = "indigenous"
     ANDEAN = "andean"
     GUARANI = "guarani"

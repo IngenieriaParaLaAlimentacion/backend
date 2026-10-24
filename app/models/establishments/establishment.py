@@ -16,7 +16,6 @@ class Establishment(Base):
     """Physical site where anthropometric measurements are conducted."""
 
     __tablename__ = "establishments"
-
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
     formatted_address = Column(String, nullable=False)

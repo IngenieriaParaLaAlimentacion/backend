@@ -1,5 +1,5 @@
 import enum
-from typing import Optional
+from typing import Literal, Optional
 
 from limits import parse as parse_limit
 from pydantic import (
@@ -106,6 +106,12 @@ class Settings(BaseSettings):
 
     # LLM
     gemini_api_key: Optional[str] = None
+    gemini_max_output_tokens: int = Field(default=8192, ge=256, le=65536)
+    # None preserves the provider default, recommended for Gemini 3.
+    gemini_temperature: float | None = Field(default=None, ge=0, le=2)
+    gemini_seed: int | None = None
+    gemini_thinking_level: Literal["low", "medium", "high"] = "low"
+    recipe_generation_timeout_seconds: float = Field(default=90, gt=0, le=240)
     gemini_model: str = "gemini-3.6-flash"
     # Total attempts (first call + retries)
     gemini_max_attempts: int = Field(default=3, ge=1)
@@ -129,6 +135,7 @@ class Settings(BaseSettings):
     rate_limit_mail_sending_ip: str = "10/hour"
     rate_limit_token_ip: str = "20/minute"
     rate_limit_register_ip: str = "5/hour"
+    rate_limit_ai_user: str = "20/hour"
     # Header where the edge proxy writes the address the connection came from.
     rate_limit_client_ip_header: str = "x-real-ip"
     # Shared with the backoffice, which reports its users' addresses. Unset
@@ -188,6 +195,7 @@ class Settings(BaseSettings):
         "rate_limit_mail_sending_ip",
         "rate_limit_token_ip",
         "rate_limit_register_ip",
+        "rate_limit_ai_user",
     )
     @classmethod
     def validate_rate_limit(cls, value: str) -> str:
