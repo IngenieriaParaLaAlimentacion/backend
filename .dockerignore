@@ -60,6 +60,14 @@ LICENSE
 # app/reference_data/ instead.
 scripts
 
+# Dev tooling and deploy config — not read at runtime
+.agents
+.claude
+.pre-commit-config.yaml
+codecov.yml
+compose.yml
+railway.toml
+
 # Secrets
 .env
 .env.*
