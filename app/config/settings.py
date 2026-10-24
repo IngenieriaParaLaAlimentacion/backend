@@ -48,6 +48,10 @@ class Settings(BaseSettings):
     # Database - DATABASE_URL is set
     database_url: Optional[str] = None
 
+    # Upper bound for the readiness probe's database round trip, connection
+    # included, so a hung database fails the probe instead of stalling it.
+    readiness_db_timeout_seconds: float = Field(default=2, gt=0)
+
     # JWT
     jwt_secret_field_worker: str = "secret_field_worker"
     jwt_secret_admin: str = "secret_admin"

@@ -167,6 +167,17 @@ class TestSendAccessGrantedEmail:
             await send_access_granted_email("worker@test.com", ["Centro A"])
 
 
+class TestSmtpDisabledLogging:
+    async def test_recipient_is_masked_in_the_skip_log(self, smtp_disabled, caplog):
+        with caplog.at_level("INFO", logger="app.services.email_service"):
+            await send_recovery_email(
+                "juana@dominio.com", "https://app/reset?token=abc", _FIXED_NOW
+            )
+
+        assert "juana@dominio.com" not in caplog.text
+        assert "j***@dominio.com" in caplog.text
+
+
 class TestSendInviteEmail:
     async def test_smtp_enabled_sends_to_correct_recipient(self, smtp_enabled_no_tls):
         with patch(

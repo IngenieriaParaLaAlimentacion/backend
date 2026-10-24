@@ -222,6 +222,24 @@ class NotificationConfigurationError(BaseError):
         )
 
 
+class ServiceNotReadyError(BaseError):
+    """Raised when a dependency the service needs to serve requests is down.
+
+    Args:
+        checks (dict[str, str]): Outcome of each readiness check, by check name.
+    """
+
+    error_type = "service-not-ready"
+    status = status.HTTP_503_SERVICE_UNAVAILABLE
+
+    def __init__(self, checks: dict[str, str]):
+        super().__init__(
+            "Service not ready",
+            "One or more dependencies required to serve requests are unavailable.",
+            {"checks": checks},
+        )
+
+
 class ForbiddenError(BaseError, abstract=True):
     """Base exception for a request the caller is not permitted to make.
 

@@ -77,6 +77,7 @@ to the first list index), never its value.
 | `/errors/recipes/not-found` | 404 | `RecipeNotFoundError` | The requested recommendation or proposal does not exist. |
 | `/errors/recipes/scale-too-small` | 409 | `RecipeScaleTooSmallError` | Scaling would round a required ingredient down to zero. |
 | `/errors/role-not-allowed` | 403 | `RoleNotAllowedError` | Raised when the actor's role is not permitted to perform the operation. |
+| `/errors/service-not-ready` | 503 | `ServiceNotReadyError` | Raised when a dependency the service needs to serve requests is down. |
 | `/errors/subject-already-exists` | 409 | `SubjectAlreadyExistsError` | Exception raised when trying to register a subject with an existing DNI. |
 | `/errors/subject-not-found` | 404 | `SubjectNotFoundError` | Exception raised when a subject cannot be found. |
 | `/errors/survey-already-exists` | 409 | `SurveyAlreadyExistsError` | Exception raised when a survey name collides with an existing one. |

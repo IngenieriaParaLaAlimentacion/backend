@@ -35,7 +35,7 @@ from app.schemas.establishments.establishment_schema import (
     EstablishmentRequest,
     EstablishmentUpdateRequest,
 )
-from app.services.access import check_characterization_edit_access
+from app.services.access import check_establishment_access
 from app.services.email_service import (
     send_creation_denied_email,
     send_establishment_created_email,
@@ -244,7 +244,7 @@ class EstablishmentService:
         establishment = await self.uow.establishment_repo.get_by_id_or_raise(
             establishment_id
         )
-        await check_characterization_edit_access(self.uow, actor, establishment_id)
+        await check_establishment_access(self.uow, actor, establishment_id)
 
         establishment.characterization = self._to_stored_characterization(data)
 

@@ -307,6 +307,12 @@
       "description": "Raised when the actor's role is not permitted to perform the operation."
     },
     {
+      "type": "/errors/service-not-ready",
+      "status": 503,
+      "exception": "ServiceNotReadyError",
+      "description": "Raised when a dependency the service needs to serve requests is down."
+    },
+    {
       "type": "/errors/subject-already-exists",
       "status": 409,
       "exception": "SubjectAlreadyExistsError",

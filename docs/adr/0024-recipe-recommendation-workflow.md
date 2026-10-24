@@ -1,4 +1,4 @@
-# ADR-0023: Recipe recommendations with Gemini and the nutrition LP
+# ADR-0024: Recipe recommendations with Gemini and the nutrition LP
 
 - **Status**: Accepted
 - **Date**: 2026-10-17

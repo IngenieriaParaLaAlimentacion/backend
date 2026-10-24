@@ -66,26 +66,3 @@ async def check_field_work_access(
         )
     if not allowed:
         raise EstablishmentAccessDeniedError()
-
-
-async def check_characterization_edit_access(
-    uow: IUnitOfWork, actor: UserActor, establishment_id: UUID
-) -> None:
-    """Allow the actor to edit this establishment's characterization, or raise.
-
-    Admins and superadmins edit any establishment, field workers only those
-    they have approved access to, and analysts none.
-
-    Raises:
-        EstablishmentAccessDeniedError: the actor is an analyst, or a field
-            worker with no approved relation to this establishment.
-    """
-    if actor.role in (UserRole.ADMIN, UserRole.SUPERADMIN):
-        return
-    if actor.role == UserRole.FIELD_WORKER and await _has_approved_relation(
-        uow, actor.user_id, establishment_id
-    ):
-        return
-    raise EstablishmentAccessDeniedError(
-        "You cannot edit this establishment's characterization."
-    )

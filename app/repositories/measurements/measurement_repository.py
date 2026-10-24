@@ -227,6 +227,7 @@ class MeasurementRepository:
         height_cm: float,
         bmi: float,
         measured_at: datetime,
+        observation: str | None = None,
     ) -> Measurement:
         """Persist a new measurement. ``id`` is optional; when None the server
         generates it.
@@ -246,6 +247,7 @@ class MeasurementRepository:
             height_cm=height_cm,
             bmi=bmi,
             measured_at=measured_at,
+            observation=observation,
         )
         if id is not None:
             fields["id"] = id
