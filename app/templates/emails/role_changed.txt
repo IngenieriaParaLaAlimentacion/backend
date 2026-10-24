@@ -1,0 +1,13 @@
+{% extends "base.txt" %}
+{% block content %}
+Un administrador actualizó tu rol en Raíz: de {{ old_role_label }} a {{ new_role_label }}.
+
+Por seguridad cerramos tus sesiones abiertas. Volvé a iniciar sesión para usar tu nuevo rol.
+{% if signin_url %}
+Iniciá sesión desde este enlace:
+{{ signin_url }}
+{% else %}
+Abrí la app de Raíz e iniciá sesión de nuevo.
+{% endif %}
+{% endblock %}
+{% block footer_reason %}Recibiste este correo porque cambió el rol de tu cuenta. Si creés que es un error, contactá a un administrador del proyecto.{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "_macros.html" import banner, box, button, pill %}
+{% block preheader %}Ahora sos {{ new_role_label }}. Volvé a iniciar sesión para usarlo.{% endblock %}
+{% block title %}Tu rol cambió{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">Un administrador actualizó tu rol en Raíz.</p>
+{% call box("Rol") %}
+{{ pill(old_role_label | capitalize, struck=true) }}
+<span style="font-family:{{ f.mono }};color:{{ c.tinta_suave }};">&nbsp;→&nbsp;</span>
+{{ pill(new_role_label | capitalize, tone="success") }}
+{% endcall %}
+{% call banner("warning") %}Por seguridad cerramos tus sesiones abiertas. Volvé a iniciar sesión para usar tu nuevo rol.{% endcall %}
+{% if signin_url %}
+{{ button("Iniciar sesión", signin_url) }}
+{% else %}
+<p style="margin:0;">Abrí la app de Raíz e iniciá sesión de nuevo.</p>
+{% endif %}
+{% endblock %}
+{% block footer_reason %}Recibiste este correo porque cambió el rol de tu cuenta. Si creés que es un error, contactá a un administrador del proyecto.{% endblock %}

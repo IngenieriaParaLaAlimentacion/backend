@@ -1,0 +1,11 @@
+{% extends "base.txt" %}
+{% block content %}
+Un administrador aprobó tu acceso a {{ "este establecimiento" if establishment_names | length == 1 else "estos establecimientos" }}:
+
+{% for establishment_name in establishment_names %}
+✓ {{ establishment_name }}
+{% endfor %}
+
+Ya podés abrir la app de Raíz e iniciar sesión para relevar en {{ "él" if establishment_names | length == 1 else "ellos" }}.
+{% endblock %}
+{% block footer_reason %}Recibiste este correo porque pediste acceso a estos establecimientos en Raíz.{% endblock %}

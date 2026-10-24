@@ -1,0 +1,9 @@
+{% extends "base.txt" %}
+{% block content %}
+Un administrador revisó tu pedido de alta de {{ establishment_name }} y no lo aprobó.
+
+Motivo: {{ reason or "El administrador no indicó un motivo." }}
+
+Podés revisar los datos y enviar una nueva solicitud desde la app.
+{% endblock %}
+{% block footer_reason %}Recibiste este correo porque pediste dar de alta este establecimiento en Raíz.{% endblock %}

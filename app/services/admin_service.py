@@ -335,7 +335,7 @@ class AdminService:
         await self.uow.token_repo.revoke_all_by_user_id(user_id)
         await self.uow.commit()
 
-        await send_role_changed_email(user.email, old_role, new_role)
+        await send_role_changed_email(user.email, old_role, new_role, user.name)
         return await self.get_user_info(user_id)
 
     async def approve_establishments(
@@ -364,6 +364,7 @@ class AdminService:
         await send_access_granted_email(
             user.email,
             [e.name for e in establishments],
+            user.name,
         )
 
     async def reject_establishments(
@@ -458,6 +459,7 @@ class AdminService:
         await send_access_granted_email(
             user.email,
             [e.name for e in establishments],
+            user.name,
         )
 
     async def reject_field_worker(self, user_id: UUID) -> None:

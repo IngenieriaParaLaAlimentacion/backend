@@ -1,4 +1,3 @@
-import html
 import logging
 from datetime import datetime
 from email.message import EmailMessage
@@ -10,7 +9,7 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoes
 
 from app.config.log_masking import mask_email
 from app.config.settings import settings
-from app.domain.user import UserRole
+from app.domain.user import BACKOFFICE_ROLES, UserRole
 from app.exceptions.domain_exceptions import EmailDeliveryError
 from app.utils.dates import ARGENTINA_TZ
 
@@ -97,55 +96,6 @@ def build_recovery_deeplink(token: str) -> str:
 def build_invite_deeplink(token: str, user_role: UserRole) -> str:
     """Build the invitation deep link, injecting the opaque token."""
     return _build_deeplink(settings.invite_deeplink_url(user_role), token)
-
-
-def _render_base_template(
-    title: str,
-    content_html: str,
-    button_text: str | None = None,
-    button_url: str | None = None,
-    button_color: str | None = None,
-    formatted_expiry: str | None = None,
-) -> str:
-    """Private helper to unify the visual design of all system emails.
-
-    ``content_html`` is the message-specific HTML after the greeting;
-    callers wrap it in their own ``<p>``/``<ul>``/etc. tags. The button and
-    the expiry note are only rendered when given, so plain notifications
-    with no call-to-action link can reuse the same shell.
-    """
-    button_html = ""
-    if button_text and button_url and button_color:
-        escaped_url = html.escape(button_url)
-        button_html = (
-            f'<div style="text-align: center; margin: 30px 0;">'
-            f'<a href="{escaped_url}" style="background-color: {button_color}; '
-            f"color: #ffffff; padding: 12px 24px; text-decoration: none; "
-            f"border-radius: 5px; font-weight: bold; "
-            f'display: inline-block;">{button_text}</a>'
-            f"</div>"
-        )
-
-    expiry_html = ""
-    if formatted_expiry:
-        expiry_html = (
-            f'<p style="font-size: 0.9em; color: #666666;">Este enlace expira el '
-            f"<strong>{formatted_expiry}</strong>.</p>"
-        )
-
-    return (
-        f'<div style="font-family: Arial, sans-serif; max-width: 550px; '
-        f'margin: 0 auto; padding: 20px; color: #333333; line-height: 1.6;">'
-        f'  <h2 style="color: #111111; margin-bottom: 20px;">{title}</h2>'
-        f"  <p>Hola,</p>"
-        f"  {content_html}"
-        f"  {button_html}"
-        f"  {expiry_html}"
-        f'  <hr style="border: 0; border-top: 1px solid #eeeeee; margin: 20px 0;">'
-        f'  <p style="font-size: 0.85em; color: #999999;">'
-        f"Si no solicitaste esto, puedes ignorar este correo de forma segura.</p>"
-        f"</div>"
-    )
 
 
 async def _send_email(
@@ -238,89 +188,55 @@ async def send_recovery_email(
 
 
 async def send_access_granted_email(
-    to_email: str, establishment_names: list[str]
+    to_email: str, establishment_names: list[str], name: str | None = None
 ) -> None:
     """Notify a field worker that their establishment access was approved."""
-    names = ", ".join(establishment_names)
-    html_content = _render_base_template(
-        title="Acceso concedido a establecimientos",
-        content_html=(
-            "<p>Tu solicitud de acceso a los siguientes establecimientos ha "
-            "sido aprobada:</p>"
-            f"<ul><li>{'</li><li>'.join(establishment_names)}</li></ul>"
-            "<p>Ya puedes iniciar sesión y comenzar a trabajar.</p>"
-        ),
-    )
-    await _send_email(
-        to_email=to_email,
-        subject="Acceso concedido a establecimientos",
-        body=(
-            "Hola,\n\n"
-            "Tu solicitud de acceso a los siguientes establecimientos ha sido "
-            f"aprobada:\n\n{names}\n\n"
-            "Ya puedes iniciar sesión y comenzar a trabajar."
-        ),
-        html_body=html_content,
+    count = len(establishment_names)
+    noun = "establecimiento" if count == 1 else "establecimientos"
+    await _send_templated(
+        to_email,
+        "access_granted",
+        subject=f"Ya tenés acceso a {count} {noun}",
         log_label="Access granted",
+        name=name,
+        establishment_names=establishment_names,
     )
 
 
 async def send_role_changed_email(
-    to_email: str, old_role: UserRole, new_role: UserRole
+    to_email: str, old_role: UserRole, new_role: UserRole, name: str | None = None
 ) -> None:
     """Notify a user that an admin changed their role."""
-    old_label = _ROLE_LABELS.get(old_role, "usuario")
-    new_label = _ROLE_LABELS.get(new_role, "usuario")
-    html_content = _render_base_template(
-        title="Tu rol fue actualizado",
-        content_html=(
-            f"<p>Tu rol en <strong>Ingeniería Para la Alimentación</strong> "
-            f"cambió de <strong>{old_label}</strong> a "
-            f"<strong>{new_label}</strong>.</p>"
-            "<p>Por seguridad cerramos tus sesiones abiertas: vuelve a iniciar "
-            "sesión para continuar con tu nuevo rol.</p>"
-        ),
-    )
-    await _send_email(
-        to_email=to_email,
-        subject="Tu rol fue actualizado",
-        body=(
-            "Hola,\n\n"
-            "Tu rol en Ingeniería Para la Alimentación cambió de "
-            f"{old_label} a {new_label}.\n\n"
-            "Por seguridad cerramos tus sesiones abiertas: vuelve a iniciar "
-            "sesión para continuar con tu nuevo rol."
-        ),
-        html_body=html_content,
+    await _send_templated(
+        to_email,
+        "role_changed",
+        subject="Cambió tu rol en Raíz",
         log_label="Role changed",
+        name=name,
+        old_role_label=_ROLE_LABELS[old_role],
+        new_role_label=_ROLE_LABELS[new_role],
+        # Field workers only use the mobile app, which has no sign-in link.
+        signin_url=(
+            settings.backoffice_signin_url if new_role in BACKOFFICE_ROLES else None
+        ),
     )
 
 
 async def send_creation_denied_email(
-    to_email: str, establishment_name: str, reason: str | None = None
+    to_email: str,
+    establishment_name: str,
+    reason: str | None = None,
+    name: str | None = None,
 ) -> None:
     """Notify a field worker that their establishment creation request was denied."""
-    reason_text = f"\n\nMotivo: {reason}" if reason else ""
-    reason_html = f"<p>Motivo: {reason}</p>" if reason else ""
-    html_content = _render_base_template(
-        title="Creación de establecimiento denegada",
-        content_html=(
-            "<p>Tu solicitud de creación del siguiente establecimiento ha "
-            "sido denegada:</p>"
-            f"<p>{establishment_name}</p>"
-            f"{reason_html}"
-        ),
-    )
-    await _send_email(
-        to_email=to_email,
-        subject="Creación de establecimientos denegada",
-        body=(
-            "Hola,\n\n"
-            "Tu solicitud de creación del siguiente establecimiento ha sido "
-            f"denegada:\n\n{establishment_name}.{reason_text}"
-        ),
-        html_body=html_content,
+    await _send_templated(
+        to_email,
+        "creation_denied",
+        subject=f"No aprobamos la solicitud de {establishment_name}",
         log_label="Creation denied",
+        name=name,
+        establishment_name=establishment_name,
+        reason=reason,
     )
 
 
@@ -367,29 +283,15 @@ async def send_invite_email(
 
 
 async def send_establishment_created_email(
-    to_email: str, establishment_name: str
+    to_email: str, establishment_name: str, name: str | None = None
 ) -> None:
     """Notify a field worker that their establishment creation request was
     approved, and access is now pending an admin's review."""
-    html_content = _render_base_template(
-        title="Establecimiento creado",
-        content_html=(
-            "<p>Tu solicitud de creación del siguiente establecimiento ha "
-            "sido aprobada:</p>"
-            f"<p>{establishment_name}</p>"
-            "<p>Tu acceso está pendiente de revisión por un administrador. "
-            "Te notificaremos cuando sea aprobado.</p>"
-        ),
-    )
-    await _send_email(
-        to_email=to_email,
-        subject="Establecimiento creado",
-        body=(
-            "Hola,\n\n"
-            "Tu solicitud de creación del siguiente establecimiento ha sido "
-            f"aprobada:\n\n{establishment_name}\n\n"
-            "Tu acceso está pendiente de revisión por un administrador."
-        ),
-        html_body=html_content,
+    await _send_templated(
+        to_email,
+        "establishment_created",
+        subject=f"Creamos {establishment_name}",
         log_label="Establishment created",
+        name=name,
+        establishment_name=establishment_name,
     )

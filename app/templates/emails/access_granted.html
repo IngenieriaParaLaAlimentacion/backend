@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "_macros.html" import box %}
+{% block preheader %}{{ establishment_names | join(" y ") }} ya {{ "está" if establishment_names | length == 1 else "están" }} en tu app.{% endblock %}
+{% block title %}Te aprobaron el acceso{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">Un administrador aprobó tu acceso a {{ "este establecimiento" if establishment_names | length == 1 else "estos establecimientos" }}:</p>
+{% call box("Establecimientos habilitados · " ~ establishment_names | length) %}
+{% for establishment_name in establishment_names %}
+<p style="margin:0 0 6px;"><span style="color:{{ c.salvia_profunda }};font-weight:600;">✓</span>&nbsp;&nbsp;{{ establishment_name }}</p>
+{% endfor %}
+{% endcall %}
+<p style="margin:0;">Ya podés abrir la app de Raíz e iniciar sesión para relevar en {{ "él" if establishment_names | length == 1 else "ellos" }}.</p>
+{% endblock %}
+{% block footer_reason %}Recibiste este correo porque pediste acceso a estos establecimientos en Raíz.{% endblock %}
