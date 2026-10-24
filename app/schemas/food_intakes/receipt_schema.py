@@ -11,8 +11,8 @@ class ProposedFoodLine(BaseModel):
     """One food line the extractor proposes from the receipt.
 
     ``food`` is the catalog match. When it is null the line was read but not
-    recognised, ``needs_review`` is true, and the user has to pick a catalog
-    food (or drop the line) before the intake can be confirmed.
+    recognised, and the user has to pick a catalog food (or drop the line)
+    before the intake can be confirmed.
     """
 
     model_config = ConfigDict(from_attributes=True)
@@ -57,9 +57,6 @@ class ProposedFoodLine(BaseModel):
             "(e.g. 'kg', 'un', 'L'), verbatim. Null when raw_quantity is null "
             "or the receipt gives a bare count with no unit."
         ),
-    )
-    needs_review: bool = Field(
-        description="True when the user must fix this line before confirming.",
     )
 
 
