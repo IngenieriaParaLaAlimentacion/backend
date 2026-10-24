@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_theme.html" import c %}
 {% from "_macros.html" import box %}
 {% block preheader %}{{ establishment_names | join(" y ") }} ya {{ "está" if establishment_names | length == 1 else "están" }} en tu app.{% endblock %}
 {% block title %}Te aprobaron el acceso{% endblock %}

@@ -39,33 +39,6 @@ _env = Environment(
     trim_blocks=True,
     lstrip_blocks=True,
 )
-# Raíz palette; hex values mirror the backoffice's app/globals.css.
-_env.globals["c"] = {
-    "papel": "#F6F4EC",
-    "papel_atenuado": "#C7CBB8",
-    "tinta": "#26251F",
-    "tinta_suave": "#6B6759",
-    "card": "#FFFFFF",
-    "banda": "#F1EFE4",
-    "linea": "#DED9C8",
-    "tierra": "#26362A",
-    "mostaza": "#C99A2E",
-    "mostaza_oscura": "#8A6614",
-    "mostaza_clara": "#F7EAD0",
-    "mostaza_borde": "#E6D1A3",
-    "salvia_profunda": "#4E6339",
-    "salvia_palida": "#E6EBDC",
-    "salvia_borde": "#C9D3B8",
-    "ladrillo": "#A9432E",
-    "ladrillo_claro": "#F1E1DA",
-    "ladrillo_borde": "#DFBFB3",
-}
-# Gmail drops web fonts, so every stack ends in a font mail clients ship.
-_env.globals["f"] = {
-    "display": "'Fraunces', Georgia, 'Times New Roman', serif",
-    "body": "'Work Sans', Arial, Helvetica, sans-serif",
-    "mono": "'IBM Plex Mono', 'Courier New', monospace",
-}
 
 
 def _build_deeplink(deeplink_url: str, token: str) -> str:

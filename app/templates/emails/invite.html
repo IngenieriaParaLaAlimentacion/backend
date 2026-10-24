@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_theme.html" import c %}
 {% from "_macros.html" import box, button, expiry, pill, steps %}
 {% block preheader %}Activá tu cuenta de {{ role_label }} antes del {{ expires_at }}.{% endblock %}
 {% block title %}Te damos la bienvenida a Raíz{% endblock %}
