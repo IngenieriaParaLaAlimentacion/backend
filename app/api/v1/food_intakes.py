@@ -48,7 +48,7 @@ def _parse_intake_data(data: str = Form(...)) -> FoodIntakeRequest:
         "one transaction. Send a client-generated `id` to make the submission "
         "idempotent: a replay of an id that already exists answers 200 and leaves "
         "the stock untouched, so a retried offline sync cannot inflate it.\n\n"
-        "`origin_type` (one of the documented donor categories) and boolean "
+        "`origin_type` (one of the documented food sources) and boolean "
         "`is_recurring` are required for manual and photo-confirmed intakes. "
         "`source` only identifies manual versus photo capture. "
         "Each line's unit is not sent — it is the referenced catalog food's "

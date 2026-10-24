@@ -17,15 +17,16 @@ class FoodIntakeSource(str, Enum):
 
 
 class FoodIntakeOriginType(str, Enum):
-    """The organization type that supplied an intake."""
+    """The kind of source that supplied an intake."""
 
     NATIONAL_GOVERNMENT = "national_government"
     PROVINCIAL_GOVERNMENT = "provincial_government"
     MUNICIPAL_GOVERNMENT = "municipal_government"
     PRIVATE_COMPANY = "private_company"
     FOUNDATION = "foundation"
-    SOCIAL_ORGANIZATION = "social_organization"
     CHURCH = "church"
+    PRIVATE_DONATION = "private_donation"
+    COLLECTION_EVENT = "collection_event"
     OTHER = "other"
 
 
