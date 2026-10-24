@@ -116,3 +116,42 @@ alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8080
 ```
 
 All configuration is passed via environment variables (see `.env.example`).
+
+### Published image
+
+Every push to `develop` and `main` publishes the image to GitHub Container Registry, after it has started and answered `/ready` against an empty PostgreSQL. Pull requests publish nothing.
+
+| | |
+|---|---|
+| Image | `ghcr.io/ingenieriaparalaalimentacion/backend` |
+| `develop`, `main` | The latest commit of that branch |
+| `sha-<commit>` | That exact commit (the full 40-character hash); never changes |
+
+The image is private. From a workflow of another repository of the organization, log in with its own token; the package grants that repository read access:
+
+```yaml
+permissions:
+  packages: read
+steps:
+  - uses: docker/login-action@v3
+    with:
+      registry: ghcr.io
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
+```
+
+From a machine, log in with a personal access token that has the `read:packages` scope.
+
+#### Run it with its dependencies
+
+`e2e/compose.yml` starts the image next to PostgreSQL, applies the migrations and seeds, and waits until `/ready` answers:
+
+```bash
+# Start (BACKEND_IMAGE picks another tag; the default is develop)
+docker compose -f e2e/compose.yml up --wait
+
+# Stop and drop the database
+docker compose -f e2e/compose.yml down -v
+```
+
+The API listens on `http://localhost:8080`. The configuration is `e2e/.env.e2e`, which holds throwaway test values only: no real secret goes in it. With it the backend needs no file storage, Gemini, SMTP or Redis, and the rate limits are high enough for the same user to log in repeatedly. The seeded superadmin is the `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` of that file.

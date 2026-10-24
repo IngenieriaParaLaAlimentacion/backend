@@ -1,0 +1,49 @@
+# Runs the published backend image next to PostgreSQL, as the E2E tests need it.
+# The image is private: log in to ghcr.io first (see docs/commands.md).
+#
+#   docker compose -f e2e/compose.yml up --wait
+#
+# BACKEND_IMAGE picks another tag, e.g. sha-<commit> to pin an exact commit.
+
+x-backend-image: &backend-image ${BACKEND_IMAGE:-ghcr.io/ingenieriaparalaalimentacion/backend:develop}
+
+services:
+  postgres:
+    image: postgres:17.9-bookworm
+    environment:
+      # Same credentials as DATABASE_* in .env.e2e.
+      POSTGRES_DB: db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    image: *backend-image
+    command: sh -c "alembic upgrade head && python seed_superadmin.py && python seed_food_catalog.py"
+    env_file: .env.e2e
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  backend:
+    image: *backend-image
+    env_file: .env.e2e
+    ports:
+      - "8080:8080"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8080/ready', timeout=3)"
+      interval: 5s
+      timeout: 5s
+      retries: 20
