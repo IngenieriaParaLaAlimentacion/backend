@@ -89,6 +89,9 @@ class Settings(BaseSettings):
     password_recovery_path: str = "/reset-password"
     email_verification_path: str = "/verify-email"
     invite_path: str = "/invite"
+    backoffice_signin_path: str = "/signin"
+    # Served by the backoffice; emails link to it instead of embedding the logo.
+    email_logo_path: str = "/apple-icon.png"
 
     # Receipt upload
     receipt_image_max_bytes: int = 10 * 1024 * 1024  # 10 MiB
@@ -175,6 +178,18 @@ class Settings(BaseSettings):
         return self._build_deeplink(
             self.backoffice_deeplink_base, self.email_verification_path
         )
+
+    @property
+    def backoffice_signin_url(self) -> str:
+        """Derived backoffice sign-in URL from the backoffice base URL."""
+        return self._build_deeplink(
+            self.backoffice_deeplink_base, self.backoffice_signin_path
+        )
+
+    @property
+    def email_logo_url(self) -> str:
+        """Derived URL of the logo shown in system emails."""
+        return self._build_deeplink(self.backoffice_deeplink_base, self.email_logo_path)
 
     def invite_deeplink_url(self, role: UserRole) -> str:
         """Derived invitation deeplink URL for a backoffice role."""

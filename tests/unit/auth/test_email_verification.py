@@ -301,6 +301,7 @@ class TestResendVerificationEmailSuccess:
             self.user.email,
             "https://example.com/verify?token=raw_verification_token",
             self.uow.email_verification_repo.create.return_value.expires_at,
+            self.user.name,
         )
 
     async def test_commits(self, valid_resend_request):

@@ -1,0 +1,58 @@
+{% macro button(label, url) %}
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 16px;">
+  <tr>
+    <td style="background-color:{{ c.mostaza }};border-radius:8px;">
+      <a href="{{ url }}" style="display:inline-block;padding:13px 22px;font-family:{{ f.body }};font-size:15px;font-weight:600;color:{{ c.tinta }};text-decoration:none;border-radius:8px;">{{ label }}</a>
+    </td>
+  </tr>
+</table>
+<p style="margin:0 0 16px;font-size:12px;color:{{ c.tinta_suave }};word-break:break-all;">Si el botón no funciona, copiá este enlace en tu navegador:<br><a href="{{ url }}" style="color:{{ c.salvia_profunda }};">{{ url }}</a></p>
+{% endmacro %}
+
+{% macro expiry(when) %}
+<p style="margin:16px 0 0;padding-top:12px;border-top:1px dashed {{ c.linea }};font-size:13px;color:{{ c.tinta_suave }};">El enlace vence el <span style="font-family:{{ f.mono }};color:{{ c.tinta }};">{{ when }}</span> (hora de Argentina). Después vas a tener que pedir uno nuevo.</p>
+{% endmacro %}
+
+{% macro box(label) %}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px;">
+  <tr>
+    <td style="background-color:{{ c.banda }};border:1px solid {{ c.linea }};border-radius:8px;padding:14px 16px;">
+      <p style="margin:0 0 8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:{{ c.tinta_suave }};">{{ label }}</p>
+      {{ caller() }}
+    </td>
+  </tr>
+</table>
+{% endmacro %}
+
+{% macro banner(tone) %}
+{% set tones = {
+  "neutral": (c.banda, c.tinta, c.linea),
+  "warning": (c.mostaza_clara, c.mostaza_oscura, c.mostaza_borde),
+  "danger": (c.ladrillo_claro, c.ladrillo, c.ladrillo_borde),
+} %}
+{% set bg, fg, border = tones[tone] %}
+<p style="margin:0 0 16px;padding:12px 16px;border:1px solid {{ border }};border-radius:8px;background-color:{{ bg }};color:{{ fg }};font-size:14px;">{{ caller() }}</p>
+{% endmacro %}
+
+{% macro pill(label, tone="neutral", struck=false) %}
+{% set bg, fg, border = (c.salvia_palida, c.salvia_profunda, c.salvia_borde) if tone == "success" else (c.banda, c.tinta, c.linea) %}
+<span style="display:inline-block;padding:2px 10px;border:1px solid {{ border }};border-radius:999px;background-color:{{ bg }};color:{{ fg }};font-size:13px;font-weight:500;{% if struck %}text-decoration:line-through;{% endif %}">{{ label }}</span>
+{% endmacro %}
+
+{# items: (state, text, detail) with state "done", "now" or "" (pending). #}
+{% macro steps(items) %}
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px;">
+  {% for state, text, detail in items %}
+  {% set dot_bg, dot_fg, dot_border = (c.salvia_profunda, c.card, c.salvia_profunda) if state == "done" else (c.mostaza_clara, c.mostaza_oscura, c.mostaza) if state == "now" else (c.card, c.tinta_suave, c.linea) %}
+  <tr>
+    <td style="vertical-align:top;padding:0 10px 10px 0;">
+      <div style="width:22px;height:22px;line-height:22px;border:1.5px solid {{ dot_border }};border-radius:50%;background-color:{{ dot_bg }};color:{{ dot_fg }};text-align:center;font-family:{{ f.mono }};font-size:12px;">{{ "✓" if state == "done" else loop.index }}</div>
+    </td>
+    <td style="vertical-align:top;padding:2px 0 10px;font-size:14px;color:{{ c.tinta }};">
+      {{ text }}
+      {% if detail %}<br><span style="font-size:13px;color:{{ c.tinta_suave }};">{{ detail }}</span>{% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endmacro %}

@@ -217,6 +217,7 @@ class AdminService:
             build_invite_deeplink(plain_token, user.role),
             created_token.expires_at,
             user.role,
+            user.name or None,
         )
 
     async def get_users_paginated(

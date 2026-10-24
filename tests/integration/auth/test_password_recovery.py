@@ -49,7 +49,7 @@ def capture_deeplink(monkeypatch):
     """Intercepts send_recovery_email and returns a dict with the captured deeplink."""
     captured = {"deeplink": None}
 
-    async def _fake(to_email, deeplink, expires_at):
+    async def _fake(to_email, deeplink, expires_at, name):
         captured["deeplink"] = deeplink
 
     monkeypatch.setattr("app.services.auth.auth_service.send_recovery_email", _fake)

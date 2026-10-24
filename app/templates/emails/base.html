@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>{% block title %}{% endblock %}</title>
+</head>
+<body style="margin:0;padding:0;background-color:{{ c.papel }};">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">{% block preheader %}{% endblock %}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:{{ c.papel }};">
+  <tr>
+    <td align="center" style="padding:24px 12px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;">
+        <tr>
+          <td style="background-color:{{ c.tierra }};border-radius:10px 10px 0 0;padding:18px 24px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="vertical-align:middle;">
+                  <img src="{{ logo_url }}" width="36" height="36" alt="Raíz" style="display:block;border:0;border-radius:6px;">
+                </td>
+                <td style="vertical-align:middle;padding-left:10px;font-family:{{ f.display }};font-size:20px;font-weight:600;color:{{ c.papel }};">Raíz</td>
+                <td style="vertical-align:middle;padding-left:10px;font-family:{{ f.body }};font-size:12px;color:{{ c.papel_atenuado }};">Ingeniería Para La Alimentación</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="background-color:{{ c.card }};border:1px solid {{ c.linea }};border-top:0;border-radius:0 0 10px 10px;padding:32px 24px 28px;font-family:{{ f.body }};font-size:15px;line-height:1.55;color:{{ c.tinta }};">
+            <h1 style="margin:0 0 16px;font-family:{{ f.display }};font-size:26px;line-height:1.2;font-weight:600;color:{{ c.tinta }};">{{ self.title() }}</h1>
+            <p style="margin:0 0 16px;">Hola{% if name %}, {{ name }}{% endif %}:</p>
+            {% block content %}{% endblock %}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:18px 24px 6px;font-family:{{ f.body }};font-size:12px;line-height:1.5;color:{{ c.tinta_suave }};">
+            <p style="margin:0 0 6px;">{% block footer_reason %}{% endblock %}</p>
+            <p style="margin:0 0 6px;">Este correo se envía automáticamente; las respuestas a esta dirección no se leen.</p>
+            <p style="margin:0;">Raíz · Ingeniería Para La Alimentación</p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

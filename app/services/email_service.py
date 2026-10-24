@@ -2,14 +2,17 @@ import html
 import logging
 from datetime import datetime
 from email.message import EmailMessage
+from pathlib import Path
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 import aiosmtplib
+from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 
 from app.config.log_masking import mask_email
 from app.config.settings import settings
 from app.domain.user import UserRole
 from app.exceptions.domain_exceptions import EmailDeliveryError
+from app.utils.dates import ARGENTINA_TZ
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +21,51 @@ _ROLE_LABELS = {
     UserRole.ADMIN: "administrador",
     UserRole.ANALYST: "analista",
     UserRole.FIELD_WORKER: "relevador",
+}
+
+_ROLE_DESCRIPTIONS = {
+    UserRole.SUPERADMIN: "Gestioná todo el panel, incluidos los administradores.",
+    UserRole.ADMIN: (
+        "Gestioná usuarios, establecimientos, encuestas y solicitudes de acceso."
+    ),
+    UserRole.ANALYST: (
+        "Consultá mediciones, encuestas y tableros de los establecimientos."
+    ),
+}
+
+_env = Environment(
+    loader=FileSystemLoader(Path(__file__).parent.parent / "templates" / "emails"),
+    autoescape=select_autoescape(["html"]),
+    undefined=StrictUndefined,
+    trim_blocks=True,
+    lstrip_blocks=True,
+)
+# Raíz palette; hex values mirror the backoffice's app/globals.css.
+_env.globals["c"] = {
+    "papel": "#F6F4EC",
+    "papel_atenuado": "#C7CBB8",
+    "tinta": "#26251F",
+    "tinta_suave": "#6B6759",
+    "card": "#FFFFFF",
+    "banda": "#F1EFE4",
+    "linea": "#DED9C8",
+    "tierra": "#26362A",
+    "mostaza": "#C99A2E",
+    "mostaza_oscura": "#8A6614",
+    "mostaza_clara": "#F7EAD0",
+    "mostaza_borde": "#E6D1A3",
+    "salvia_profunda": "#4E6339",
+    "salvia_palida": "#E6EBDC",
+    "salvia_borde": "#C9D3B8",
+    "ladrillo": "#A9432E",
+    "ladrillo_claro": "#F1E1DA",
+    "ladrillo_borde": "#DFBFB3",
+}
+# Gmail drops web fonts, so every stack ends in a font mail clients ship.
+_env.globals["f"] = {
+    "display": "'Fraunces', Georgia, 'Times New Roman', serif",
+    "body": "'Work Sans', Arial, Helvetica, sans-serif",
+    "mono": "'IBM Plex Mono', 'Courier New', monospace",
 }
 
 
@@ -146,39 +194,46 @@ async def _send_email(
             raise EmailDeliveryError() from exc
 
 
-async def send_recovery_email(
-    to_email: str, deeplink: str, expires_at: datetime
+def _format_expiry(expires_at: datetime) -> str:
+    """Format an expiry instant as ``dd/mm/aaaa, HH:MM`` in Argentina time."""
+    return expires_at.astimezone(ARGENTINA_TZ).strftime("%d/%m/%Y, %H:%M")
+
+
+async def _send_templated(
+    to_email: str,
+    template: str,
+    subject: str,
+    log_label: str,
+    raise_on_failure: bool = False,
+    **context,
 ) -> None:
-    """Send the password recovery deep link to the user via SMTP."""
-    formatted_expiry = expires_at.strftime("%d/%m/%Y a las %H:%M UTC")
-
-    html_content = _render_base_template(
-        title="Restablece tu contraseña",
-        content_html=(
-            "<p>Hemos recibido una solicitud para restablecer la contraseña "
-            "de tu cuenta. "
-            # TODO: cuando tengamos nombre de app, customizamos
-            "Haz clic en el botón de abajo para continuar:</p>"
-        ),
-        button_text="Restablecer Contraseña",
-        button_url=deeplink,
-        button_color="#007bff",
-        formatted_expiry=formatted_expiry,
-    )
-
+    """Render the HTML and plain-text versions of ``template`` from the same
+    context and send them."""
+    context = {"logo_url": settings.email_logo_url, **context}
     await _send_email(
         to_email=to_email,
-        subject="Recuperación de contraseña",
-        body=(
-            "Hola,\n\n"
-            "Hemos recibido una solicitud para restablecer tu contraseña. "
-            "Usa el siguiente enlace para continuar:\n\n"
-            f"{deeplink}\n\n"
-            f"Este enlace expira el {formatted_expiry}.\n"
-            "Si no solicitaste esto, puedes ignorar este mensaje.\n"
-        ),
-        html_body=html_content,
+        subject=subject,
+        body=_env.get_template(f"{template}.txt").render(context),
+        html_body=_env.get_template(f"{template}.html").render(context),
+        log_label=log_label,
+        raise_on_failure=raise_on_failure,
+    )
+
+
+async def send_recovery_email(
+    to_email: str, deeplink: str, expires_at: datetime, name: str | None = None
+) -> None:
+    """Send the password recovery deep link to the user via SMTP."""
+    await _send_templated(
+        to_email,
+        "recovery",
+        subject="Restablecé tu contraseña de Raíz",
         log_label="Password recovery",
+        name=name,
+        account_email=to_email,
+        url=deeplink,
+        expires_at=_format_expiry(expires_at),
+        valid_minutes=settings.password_recovery_token_expire_minutes,
     )
 
 
@@ -275,76 +330,39 @@ def build_verification_deeplink(token: str) -> str:
 
 
 async def send_verification_email(
-    to_email: str, deeplink: str, expires_at: datetime
+    to_email: str, deeplink: str, expires_at: datetime, name: str | None = None
 ) -> None:
     """Send the email verification deep link to the user via SMTP."""
-    formatted_expiry = expires_at.strftime("%d/%m/%Y a las %H:%M UTC")
-
-    html_content = _render_base_template(
-        title="Verifica tu correo electrónico",
-        content_html=(
-            "<p>Gracias por registrarte. Por favor verifica tu dirección de correo "
-            "electrónico haciendo clic en el botón de abajo para activar tu cuenta:</p>"
-        ),
-        button_text="Verificar Correo",
-        button_url=deeplink,
-        button_color="#28a745",
-        formatted_expiry=formatted_expiry,
-    )
-
-    await _send_email(
-        to_email=to_email,
-        subject="Verifica tu correo electrónico",
-        body=(
-            "Hola,\n\n"
-            "Gracias por registrarte. Por favor verifica tu dirección de correo "
-            "electrónico usando el siguiente enlace:\n\n"
-            f"{deeplink}\n\n"
-            f"Este enlace expira el {formatted_expiry}.\n"
-            "Si no creaste una cuenta, puedes ignorar este mensaje.\n"
-        ),
-        html_body=html_content,
+    await _send_templated(
+        to_email,
+        "verification",
+        subject="Confirmá tu correo para Raíz",
         log_label="Email verification",
+        name=name,
+        url=deeplink,
+        expires_at=_format_expiry(expires_at),
     )
 
 
 async def send_invite_email(
-    to_email: str, deeplink: str, expires_at: datetime, role: str = "admin"
+    to_email: str,
+    deeplink: str,
+    expires_at: datetime,
+    role: UserRole = UserRole.ADMIN,
+    name: str | None = None,
 ) -> None:
-    """Send an admin invitation email with a password setup link."""
-    formatted_expiry = expires_at.strftime("%d/%m/%Y a las %H:%M UTC")
-
-    role_label = _ROLE_LABELS.get(role, "usuario")
-
-    html_content = _render_base_template(
-        title="¡Bienvenido a Ingeniería Para la Alimentación!",
-        content_html=(
-            f"<p>Has sido invitado a unirte a"
-            f" <strong>Ingeniería Para la Alimentación</strong> "
-            f"como {role_label}. Haz clic en el botón de abajo para configurar "
-            f"tu contraseña y activar tu cuenta:</p>"
-        ),
-        button_text="Configurar Contraseña",
-        button_url=deeplink,
-        button_color="#28a745",
-        formatted_expiry=formatted_expiry,
-    )
-
-    await _send_email(
-        to_email=to_email,
-        subject="Has sido invitado a Ingeniería Para la Alimentación",
-        body=(
-            "Hola,\n\n"
-            "Has sido invitado a unirte a Ingeniería Para la Alimentación. "
-            "Usa el siguiente enlace para configurar tu contraseña:\n\n"
-            f"{deeplink}\n\n"
-            f"Este enlace expira el {formatted_expiry}.\n"
-            "Si no esperabas esta invitación, "
-            "puedes ignorar este mensaje.\n"
-        ),
-        html_body=html_content,
+    """Send a backoffice invitation email with an account activation link."""
+    await _send_templated(
+        to_email,
+        "invite",
+        subject="Te invitaron a Raíz",
         log_label="Admin invite",
         raise_on_failure=True,
+        name=name,
+        role_label=_ROLE_LABELS[role],
+        role_description=_ROLE_DESCRIPTIONS[role],
+        url=deeplink,
+        expires_at=_format_expiry(expires_at),
     )
 
 
