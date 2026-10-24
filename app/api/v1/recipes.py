@@ -44,14 +44,16 @@ _RESPONSES = {
         502: {"description": "Model failed or returned invalid proposals"},
         504: {"description": "Total generation time budget exceeded"},
     },
-    summary="Generate 2–3 stock-backed recipe proposals",
+    summary="Generate up to 3 stock-backed recipe proposals",
     description=(
         "Generate and save proposals for the establishment, children count and meal "
         "type using current stock, the establishment characterization and recent "
         "choices. Requires an approved establishment relation for field workers "
         "and analysts; admins and superadmins may access any establishment. "
         "Quantities come from the nutrition optimizer; energy and nutritional "
-        "shortfalls are returned explicitly. Generation does not deduct stock."
+        "shortfalls are returned explicitly. Aim for 2–3 proposals; a single valid "
+        "proposal may be returned with warnings. Missing cultural inspiration "
+        "does not block generation. Generation does not deduct stock."
     ),
 )
 async def generate_recommendations(
@@ -73,7 +75,7 @@ async def generate_recommendations(
         "Return saved requests, newest first, with standard page and page_size "
         "pagination. With chosen_only=true, exclude unchosen requests and return "
         "only the chosen proposal in each request. Each item is a request containing "
-        "its two or three proposals, or one proposal after reuse. Requires "
+        "its saved proposals (1–3), or one proposal after reuse. Requires "
         "establishment access "
         "(an approved relation for field workers and analysts). No model call "
         "or stock deduction occurs. "

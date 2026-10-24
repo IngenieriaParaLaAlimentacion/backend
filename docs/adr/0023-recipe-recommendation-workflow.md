@@ -11,7 +11,8 @@ sets, `NutritionService.maximize_recipe` solves each set, and Gemini
 writes names and preparation using the actual nonzero calculated ingredients.
 The optimizer is unchanged. Calling it with all stock would produce one
 nutrition optimum without culinary or cultural requirements; different culinary
-candidates let the existing LP support two or three distinct meals. Distinct
+candidates let the existing LP support distinct meals. Generation aims for
+two or three and can return one independently valid recipe. Distinct
 preparations may share an ingredient set and the same optimized quantities.
 
 Reuse the existing `GeminiLlmClient` behind `ILlmClient` and the shared
@@ -61,8 +62,10 @@ reinterpreting existing identities. Editing uses the ficha endpoint and its
 admin/superadmin and approved field-worker permissions. There is no separate
 establishment culture column or recipe-specific culture editor. Both prompts
 receive the codes and optional other description; selection also receives the
-last ten chosen recipes. The selection model reports whether a cultural dish is
-viable; if so, at least one tagged candidate is required, with a bounded repair.
+last ten chosen recipes. Cultural inspiration is a preference: the model's
+self-reported viability does not trigger rejection or another call. If no final
+recipe has a cultural tag, return the valid recipes with a cultural-unavailable
+warning.
 Ordinary dishes remain valid when stock cannot support cultural inspiration.
 Culinary/cultural judgments remain model judgments rather than mathematical
 properties guaranteed by the LP.
@@ -142,6 +145,29 @@ claiming deterministic reproduction. See Google's
 The shared client logs only response length, model/token metadata and safe error
 class/status, never model prose or raw provider errors. Quantity detection now
 covers common Argentine Spanish unit names and abbreviations, spelled-out
-numbers and fractions; durations and temperatures remain allowed. This does not
-change the current whole-request rejection policy for invalid writing, cultural
-candidate requirements, or generation's lack of an idempotency key.
+numbers and fractions; durations and temperatures remain allowed. Generation still has no idempotency key; see the partial-result decision below.
+
+## Partial results and cultural preference
+
+Preserve each independently valid recipe rather than rejecting its siblings.
+The provider still receives the complete candidate/writing schemas, but runtime
+parsing first validates only the outer list, then validates each item with its
+full Pydantic schema and semantic checks. Thus one malformed entry cannot make
+valid entries disappear. Writing must still reference exactly the calculated
+ingredients, retain its culture and contain no ingredient amounts in prose.
+Duplicate preparations and unknown output IDs are skipped. With duplicate
+presentations for the same proposal, keep the first independently valid one;
+never return that proposal twice. Return only validated snapshots, even if one
+survives. Fail without persistence only when none survives, or when the provider
+or the outer response cannot be used.
+
+Selection may use its existing single repair only when no usable candidate was
+found. There is no extra selection call to complete a count or obtain a cultural
+recipe, and no writing repair. The ceiling remains three logical model calls
+under the existing request deadline.
+
+Missing cultural inspiration is reported using `recipes/cultural-unavailable`
+regardless of the model's viability boolean. Reduced alternatives are reported
+using `recipes/fewer-alternatives`. Both use the existing per-proposal warnings
+list and persist into history/reuse; consumers must distinguish them from
+nutritional metadata gaps. No stock is reserved or deducted during generation.

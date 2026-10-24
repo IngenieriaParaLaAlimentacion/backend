@@ -179,7 +179,7 @@ async def test_reuse_reports_precise_ingredient_failures(
     [
         ("error", "selection", "provider_failure"),
         ("invalid_candidates", "selection", "insufficient_valid_proposals"),
-        ("invalid_writing", "writing", "ingredient_references_mismatch"),
+        ("invalid_writing", "writing", "no_valid_recipes"),
     ],
 )
 async def test_generation_failure_logs_are_actionable_and_do_not_dump_context(
@@ -246,7 +246,7 @@ async def test_ai_quota_is_shared_across_endpoints_and_separate_for_each_user(
         ("ids", "proposal_ids_mismatch"),
         ("amounts", "quantities_in_prose"),
         ("duplicate", "duplicate_preparation"),
-        ("schema", "schema_validation"),
+        ("schema", "no_valid_recipes"),
         ("culture", "culture_mismatch"),
     ],
 )
@@ -287,9 +287,21 @@ async def test_writing_and_transport_failure_reasons(
         response = await client.post(
             f"{ROOT}/recipe-recommendations", headers=headers, json=body
         )
-    assert response.status_code == 502
-    failure = [log for log in logs if log["event"] == "recipes.generation_failed"][-1]
-    assert failure["reason"] == reason
+    if mode in {"timeout", "schema"}:
+        assert response.status_code == 502
+        failure = [log for log in logs if log["event"] == "recipes.generation_failed"][
+            -1
+        ]
+        assert failure["reason"] == reason
+    else:
+        assert response.status_code == 201
+        assert len(response.json()["proposals"]) == 1
+        assert (
+            "recipes/fewer-alternatives" in response.json()["proposals"][0]["warnings"]
+        )
+        rejected = [log for log in logs if log["event"] == "recipes.proposal_rejected"]
+        expected_reason = "unknown_proposal_id" if mode == "ids" else reason
+        assert any(log["reason"] == expected_reason for log in rejected)
     assert "sensitive" not in json.dumps(logs)
 
 

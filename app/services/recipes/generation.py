@@ -16,10 +16,14 @@ from app.domain.food_catalog import MeasurementUnit
 from app.domain.nutrition import FoodComposition, RecipeRequest, StockedFood
 from app.exceptions.domain_exceptions import LlmClientError, RecipeGenerationError
 from app.schemas.recipes.recipe_schema import (
+    Candidate,
     CandidateBatch,
+    CandidateEnvelope,
     RecipeProposal,
+    RecipeWriting,
     RecommendationInput,
     WritingBatch,
+    WritingEnvelope,
 )
 from app.services.nutrition.grams import CatalogGramsConverter
 from app.services.nutrition.nutrition_service import NutritionService
@@ -28,6 +32,9 @@ from app.services.recipes.calculations import calculate_proposal, stock_ingredie
 ResponseT = TypeVar("ResponseT", bound=BaseModel)
 
 logger = structlog.get_logger()
+CULTURAL_UNAVAILABLE_WARNING = "recipes/cultural-unavailable"
+FEWER_ALTERNATIVES_WARNING = "recipes/fewer-alternatives"
+
 PROMPT_VERSION = "v1"
 PROMPTS = Path(__file__).parent / "prompts" / PROMPT_VERSION
 # Quantities in Spanish, including fractions and compound number words. Time
@@ -121,7 +128,12 @@ class RecipeGenerator:
         raise RecipeGenerationError()
 
     async def _completion(
-        self, stage: str, template: str, context: dict, schema: type[ResponseT]
+        self,
+        stage: str,
+        template: str,
+        context: dict,
+        schema: type[BaseModel],
+        parser: type[ResponseT],
     ) -> ResponseT:
         if self.llm is None:
             self._fail(stage, "client_unavailable")
@@ -137,7 +149,7 @@ class RecipeGenerator:
                 if schema is WritingBatch
                 else schema.model_json_schema(),
             )
-            return schema.model_validate(result)
+            return parser.model_validate(result)
         except LlmClientError as exc:
             cause = exc
             timeout = False
@@ -159,7 +171,10 @@ class RecipeGenerator:
     ) -> list[RecipeProposal]:
         proposals = await self._select(data, snapshot)
         try:
-            return await self._write(proposals, snapshot)
+            valid = await self._write(proposals, snapshot)
+            if snapshot.identities and not any(p.cultural_identity for p in valid):
+                self._warn(valid, CULTURAL_UNAVAILABLE_WARNING)
+            return valid
         except ValidationError:
             self._fail("writing", "schema_validation")
 
@@ -181,11 +196,17 @@ class RecipeGenerator:
                         "accepted": [p.model_dump(mode="json") for p in proposals],
                     },
                     CandidateBatch,
+                    CandidateEnvelope,
                 )
             except ValidationError:
                 failures.append("candidate_schema_validation")
                 continue
-            for candidate in batch.candidates:
+            for raw in batch.candidates[:3]:
+                try:
+                    candidate = Candidate.model_validate(raw)
+                except ValidationError:
+                    failures.append("candidate_schema_validation")
+                    continue
                 if len(proposals) == 3:
                     break
                 supplied_ids = set(candidate.food_ids)
@@ -233,16 +254,9 @@ class RecipeGenerator:
                 proposal.cultural_identity = candidate.cultural_identity
                 proposals.append(proposal)
                 signatures.add(signature)
-            needs_culture = (
-                snapshot.identities
-                and batch.cultural_dish_viable
-                and not any(p.cultural_identity for p in proposals)
-            )
-            if needs_culture:
-                failures.append("missing_viable_cultural_dish")
-                proposals = []
-                signatures = set()
-            elif len(proposals) >= 2:
+            if proposals:
+                if len(proposals) < max(2, min(len(batch.candidates), 3)):
+                    self._warn(proposals, FEWER_ALTERNATIVES_WARNING)
                 break
             logger.warning(
                 "recipes.candidates_rejected",
@@ -252,7 +266,7 @@ class RecipeGenerator:
                 failures=list(failures),
                 attempt=attempt + 1,
             )
-        if len(proposals) < 2:
+        if not proposals:
             self._fail("selection", "insufficient_valid_proposals", failures)
         return proposals
 
@@ -270,31 +284,74 @@ class RecipeGenerator:
                 "recipes": [p.model_dump(mode="json") for p in proposals],
             },
             WritingBatch,
+            WritingEnvelope,
         )
-        if len(written.recipes) != len(proposals) or {
-            r.proposal_id for r in written.recipes
-        } != {p.id for p in proposals}:
-            self._fail("writing", "proposal_ids_mismatch")
-        prepared_signatures = set()
+        failures = []
+        by_id: dict[UUID, list[RecipeWriting]] = {}
+        expected = {p.id for p in proposals}
+        for raw in written.recipes:
+            try:
+                presentation = RecipeWriting.model_validate(raw)
+            except ValidationError:
+                self._reject("writing", "recipe_schema_validation", failures)
+                continue
+            if presentation.proposal_id not in expected:
+                self._reject("writing", "unknown_proposal_id", failures)
+                continue
+            by_id.setdefault(presentation.proposal_id, []).append(presentation)
+        signatures = set()
+        valid = []
         for proposal in proposals:
-            presentation = next(
-                r for r in written.recipes if r.proposal_id == proposal.id
-            )
-            allowed = {i.food_id for i in proposal.ingredients}
-            referenced = {fid for step in presentation.steps for fid in step.food_ids}
-            if referenced != allowed:
-                self._fail("writing", "ingredient_references_mismatch")
-            if any(_AMOUNT_IN_PROSE.search(step.text) for step in presentation.steps):
-                self._fail("writing", "quantities_in_prose")
-            if presentation.cultural_identity != proposal.cultural_identity:
-                self._fail("writing", "culture_mismatch")
-            proposal.name = presentation.name
-            proposal.steps = [s.text for s in presentation.steps]
-            prepared_signature = (
-                frozenset(i.food_id for i in proposal.ingredients),
-                tuple(step.strip().casefold() for step in proposal.steps),
-            )
-            if prepared_signature in prepared_signatures:
-                self._fail("writing", "duplicate_preparation")
-            prepared_signatures.add(prepared_signature)
-        return proposals
+            matches = by_id.get(proposal.id, [])
+            if not matches:
+                self._reject("writing", "missing_proposal_id", failures)
+                continue
+            for presentation in matches:
+                allowed = {i.food_id for i in proposal.ingredients}
+                referenced = {
+                    fid for step in presentation.steps for fid in step.food_ids
+                }
+                if referenced != allowed:
+                    self._reject("writing", "ingredient_references_mismatch", failures)
+                    continue
+                if any(
+                    _AMOUNT_IN_PROSE.search(step.text) for step in presentation.steps
+                ):
+                    self._reject("writing", "quantities_in_prose", failures)
+                    continue
+                if presentation.cultural_identity != proposal.cultural_identity:
+                    self._reject("writing", "culture_mismatch", failures)
+                    continue
+                signature = (
+                    frozenset(i.food_id for i in proposal.ingredients),
+                    tuple(step.text.strip().casefold() for step in presentation.steps),
+                )
+                if signature in signatures:
+                    self._reject("writing", "duplicate_preparation", failures)
+                    continue
+                signatures.add(signature)
+                proposal.name = presentation.name
+                proposal.steps = [step.text for step in presentation.steps]
+                valid.append(proposal)
+                break
+        if not valid:
+            self._fail("writing", "no_valid_recipes", failures)
+        if len(valid) < len(proposals):
+            self._warn(valid, FEWER_ALTERNATIVES_WARNING)
+        return valid
+
+    @staticmethod
+    def _warn(proposals: list[RecipeProposal], warning: str) -> None:
+        for proposal in proposals:
+            if warning not in proposal.warnings:
+                proposal.warnings.append(warning)
+
+    @staticmethod
+    def _reject(stage: str, reason: str, failures: list[str]) -> None:
+        failures.append(reason)
+        logger.warning(
+            "recipes.proposal_rejected",
+            stage=stage,
+            reason=reason,
+            prompt_version=PROMPT_VERSION,
+        )

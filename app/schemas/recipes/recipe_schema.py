@@ -1,6 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -119,7 +119,7 @@ class CandidateBatch(BaseModel):
     cultural_dish_viable: bool = Field(
         description="Whether stock supports a dish inspired by a configured identity"
     )
-    candidates: list[Candidate] = Field(min_length=2, max_length=3)
+    candidates: list[Candidate] = Field(min_length=1, max_length=3)
 
 
 class PreparationStep(BaseModel):
@@ -141,7 +141,7 @@ class RecipeWriting(BaseModel):
 class WritingBatch(BaseModel):
     """Structured names and steps returned by the model."""
 
-    recipes: list[RecipeWriting] = Field(min_length=2, max_length=3)
+    recipes: list[RecipeWriting] = Field(min_length=1, max_length=3)
 
 
 class RecipeHistoryItem(BaseModel):
@@ -153,3 +153,15 @@ class RecipeHistoryItem(BaseModel):
     created_at: datetime
     chosen: bool
     proposal: RecipeProposal
+
+
+class CandidateEnvelope(BaseModel):
+    """Validate the container, then validate candidates independently."""
+
+    candidates: list[Any]
+
+
+class WritingEnvelope(BaseModel):
+    """One malformed writing item must not invalidate its valid siblings."""
+
+    recipes: list[Any]

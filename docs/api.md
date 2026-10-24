@@ -260,7 +260,7 @@ Regenerate with `poetry run python docs/generate_openapi.py recipes --tag "Recip
 
 | Method | Path (under `/api/v1`) | Result |
 |---|---|---|
-| POST | `/recipe-recommendations` | 201: one request with 2–3 proposals |
+| POST | `/recipe-recommendations` | 201: one request with 1–3 validated proposals; partial results carry warnings |
 | GET | `/establishments/{establishment_id}/recipe-recommendations` | Paginated requests; `chosen_only=true` includes only chosen proposals |
 | GET | `/establishments/{establishment_id}/recipes` | Paginated individual proposals, including unchosen alternatives |
 | GET | `/recipe-recommendations/{request_id}/proposals/{proposal_id}` | Original saved recipe detail; no scaling or stock check |
@@ -320,7 +320,7 @@ same id and source/count returns 200; changing its meaning returns 409
 `/errors/recipes/idempotency-conflict`. The original request stays unchanged.
 
 A history item from `/establishments/{id}/recipe-recommendations` is a request
-containing its original proposals (2–3 for generation, one for reuse).
+containing its saved proposals (1–3 for generation, one for reuse).
 `chosen_only=true` filters both requests and their proposals to the chosen ones.
 For a flat list, use `GET /establishments/{id}/recipes`: each item contains one
 `proposal` plus `request_id`, `establishment_id`, `meal_type`, `created_at` and
@@ -401,3 +401,23 @@ response text, prompts and raw provider error bodies are not logged. The Spanish
 quantity detector covers common numeric/word amounts, fractions and ingredient
 units while allowing cooking times and temperatures; it remains a heuristic,
 not a general natural-language guarantee.
+
+Generation aims for 2–3 alternatives but returns even one independently valid
+recipe. Invalid candidate entries are skipped; a selection repair is attempted
+only when there are no usable candidates. Writing is validated per recipe:
+malformed entries, missing/unknown IDs, unsupported culture, changed ingredient
+references, prose quantities and duplicate preparations do not discard valid
+siblings. There is no extra model call to fill the result count or repair writing.
+No valid final recipe still returns 502 and saves nothing.
+
+The existing per-proposal `warnings` list also carries these stable codes:
+- `recipes/fewer-alternatives`: fewer valid alternatives than expected survived.
+- `recipes/cultural-unavailable`: cultural identities were configured but none
+  of the final recipes has a cultural tag. The model's cultural_dish_viable flag
+  does not control rejection or trigger another call.
+
+Warnings are attached to every surviving proposal, persisted with its snapshot
+and returned in history/detail/reuse. They describe recommendation availability,
+not missing nutrient data. Clients must display them separately from nutrition
+metadata warnings. Cultural inspiration remains optional even when the model
+claims a cultural dish was viable.
