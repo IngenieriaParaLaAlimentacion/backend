@@ -76,8 +76,7 @@ jobs:
       contents: read
       packages: write
     env:
-      # TEMP: the third ref is only to create the package; remove it before the PR.
-      PUBLISH: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/chore/publish-backend-image' }}
+      PUBLISH: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' }}
     services:
       # Same credentials as DATABASE_* in e2e/.env.e2e.
       postgres:
