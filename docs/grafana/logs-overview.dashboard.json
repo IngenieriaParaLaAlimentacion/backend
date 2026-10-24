@@ -13,11 +13,14 @@
         "name": "service",
         "label": "Service",
         "type": "custom",
-        "query": "backend",
+        "query": "backend-prod,backend-dev",
         "includeAll": false,
         "multi": false,
-        "options": [{ "selected": true, "text": "backend", "value": "backend" }],
-        "current": { "text": "backend", "value": "backend" },
+        "options": [
+          { "selected": true, "text": "backend-prod", "value": "backend-prod" },
+          { "selected": false, "text": "backend-dev", "value": "backend-dev" }
+        ],
+        "current": { "text": "backend-prod", "value": "backend-prod" },
         "hide": 0
       },
       {
