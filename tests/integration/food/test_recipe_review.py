@@ -291,3 +291,26 @@ async def test_writing_and_transport_failure_reasons(
     failure = [log for log in logs if log["event"] == "recipes.generation_failed"][-1]
     assert failure["reason"] == reason
     assert "sensitive" not in json.dumps(logs)
+
+
+async def test_generation_deadline_returns_504_without_partial_records(
+    client, recipe_setup, monkeypatch
+):
+    import asyncio
+
+    from tests.integration.food.test_recipe_recommendations import counts
+
+    headers, fake, body = recipe_setup
+    monkeypatch.setattr(settings, "recipe_generation_timeout_seconds", 0.1)
+
+    async def blocked(**_):
+        await asyncio.Event().wait()
+
+    fake.complete = blocked
+    response = await asyncio.wait_for(
+        client.post(f"{ROOT}/recipe-recommendations", headers=headers, json=body),
+        timeout=2,
+    )
+    assert response.status_code == 504
+    assert response.json()["type"] == "/errors/recipes/generation-timeout"
+    assert await counts() == [0, 0, 0]

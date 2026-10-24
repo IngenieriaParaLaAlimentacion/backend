@@ -120,3 +120,28 @@ the source of macro ranges and GAPA minima for both evaluation and the LP, whose
 objective and constraints are unchanged. `NutritionService.target_energy_kcal`
 is shared by optimization and reuse. Reuse distinguishes missing ingredients,
 changed units and quantities below stock precision with explicit domain errors.
+
+## Runtime resource and output bounds
+
+The generation service runs under a configurable 90-second total deadline,
+including read preparation, solver awaits, retry/backoff/fallback and persistence.
+Deadline expiry cancels the active task, rolls back and returns the distinct
+504 `recipes/generation-timeout` error. It does not extend a shorter deployment
+proxy deadline or add idempotency; gateway/client timeouts must be aligned with
+`RECIPE_GENERATION_TIMEOUT_SECONDS`. A solver thread already running at
+cancellation can finish its existing bounded solve; it holds no DB connection.
+
+A single lazy Gemini client is owned by each app's lifespan and explicitly closed
+with its supplied HTTP client at shutdown. SDK-internal retries are disabled so
+there is one retry owner (Tenacity), covered by the request deadline. The response
+cap is 8192 tokens by default. Gemini 3 uses low thinking and the recommended
+default temperature; temperature and seed can be explicitly configured, without
+claiming deterministic reproduction. See Google's
+[Gemini 3 temperature guidance](https://ai.google.dev/gemini-api/docs/gemini-3).
+
+The shared client logs only response length, model/token metadata and safe error
+class/status, never model prose or raw provider errors. Quantity detection now
+covers common Argentine Spanish unit names and abbreviations, spelled-out
+numbers and fractions; durations and temperatures remain allowed. This does not
+change the current whole-request rejection policy for invalid writing, cultural
+candidate requirements, or generation's lack of an idempotency key.

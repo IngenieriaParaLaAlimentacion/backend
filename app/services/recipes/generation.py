@@ -30,9 +30,25 @@ ResponseT = TypeVar("ResponseT", bound=BaseModel)
 logger = structlog.get_logger()
 PROMPT_VERSION = "v1"
 PROMPTS = Path(__file__).parent / "prompts" / PROMPT_VERSION
+# Quantities in Spanish, including fractions and compound number words. Time
+# and temperature units deliberately do not appear in the ingredient-unit list.
+_NUMBER_WORD = (
+    r"(?:un[ao]?|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|"
+    r"trece|catorce|quince|diecis[eé]is|diecisiete|dieciocho|diecinueve|veinte|"
+    r"veinti(?:un[ao]?|ún|d[oó]s|tr[eé]s|cuatro|cinco|s[eé]is|siete|ocho|nueve)|"
+    r"treinta|cuarenta|cincuenta|sesenta|setenta|ochenta|noventa|cien(?:to)?|"
+    r"doscientos|trescientos|cuatrocientos|quinientos|seiscientos|setecientos|"
+    r"ochocientos|novecientos|mil|medi[oa]s?|cuartos?)"
+)
 _AMOUNT_IN_PROSE = re.compile(
-    r"\b\d+(?:[.,]\d+)?\s*"
-    r"(?:kg|g|gr|gramos?|kilogramos?|mg|ml|litros?|lts?|unidades?|tazas?|cucharadas?)\b",
+    r"(?<!\w)(?:\d+(?:[.,]\d+)?(?:\s*/\s*\d+)?|[½¼¾⅓⅔]|"
+    + _NUMBER_WORD
+    + r"(?:\s+(?:y\s+)?"
+    + _NUMBER_WORD
+    + r")*)"
+    r"(?:\s+de)?\s*"
+    r"(?:kg|g|grs?|gramos?|kilogramos?|kilos?|mg|ml|cl|cc|l|litros?|lts?|"
+    r"unidad(?:es)?|tazas?|cucharadas?|cucharaditas?|cdas?|cditas?|vasos?|latas?)\b",
     re.IGNORECASE,
 )
 

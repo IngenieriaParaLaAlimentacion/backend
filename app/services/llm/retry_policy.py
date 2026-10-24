@@ -17,7 +17,8 @@ def log_retry(retry_state: RetryCallState, *, model: str) -> None:
         "gemini_llm_call_retrying",
         model=model,
         attempt=retry_state.attempt_number,
-        error=str(exc),
+        error_type=type(exc).__name__,
+        status_code=getattr(exc, "code", None),
     )
 
 

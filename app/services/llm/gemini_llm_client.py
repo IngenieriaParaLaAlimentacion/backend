@@ -42,11 +42,27 @@ class GeminiLlmClient(ILlmClient):
     """
 
     def __init__(self) -> None:
-        async_client = httpx.AsyncClient()
+        if not settings.gemini_api_key:
+            raise LlmClientError("Gemini API key is not configured")
+        self._http_client = httpx.AsyncClient()
         self._client = genai.Client(
             api_key=settings.gemini_api_key,
-            http_options=types.HttpOptions(httpx_async_client=async_client),
+            http_options=types.HttpOptions(
+                httpx_async_client=self._http_client,
+                # Tenacity owns retries; avoid an independent SDK retry budget.
+                retry_options=types.HttpRetryOptions(attempts=1),
+            ),
         )
+
+    async def aclose(self) -> None:
+        """Release SDK and supplied HTTP clients at application shutdown."""
+        try:
+            await self._client.aio.aclose()
+        finally:
+            try:
+                self._client.close()
+            finally:
+                await self._http_client.aclose()
 
     _is_retryable = staticmethod(is_retryable)
 
@@ -68,14 +84,20 @@ class GeminiLlmClient(ILlmClient):
             contents=contents, response_schema=response_schema
         )
 
-        logger.info("gemini_llm_response", raw_text=response.text)
+        usage = getattr(response, "usage_metadata", None)
+        logger.info(
+            "gemini_llm_response",
+            model_version=getattr(response, "model_version", None),
+            response_chars=len(response.text or ""),
+            total_tokens=getattr(usage, "total_token_count", None),
+        )
 
         if not response.text:
             raise LlmClientError("empty response from Gemini")
         try:
             return json.loads(response.text)
         except json.JSONDecodeError as exc:
-            raise LlmClientError(f"non-JSON response: {exc}") from exc
+            raise LlmClientError("Gemini returned invalid JSON") from exc
 
     async def _generate_with_fallback(
         self, *, contents: list[Any], response_schema: dict[str, Any]
@@ -110,14 +132,18 @@ class GeminiLlmClient(ILlmClient):
                 is_last_model = index == len(models) - 1
                 if is_last_model or not self._is_retryable(exc):
                     logger.warning(
-                        "gemini_llm_call_failed", model=model, error=str(exc)
+                        "gemini_llm_call_failed",
+                        model=model,
+                        error_type=type(exc).__name__,
+                        status_code=getattr(exc, "code", None),
                     )
-                    raise LlmClientError(str(exc)) from exc
+                    raise LlmClientError("Gemini provider request failed") from exc
                 logger.warning(
                     "gemini_llm_call_switching_model",
                     failed_model=model,
                     next_model=models[index + 1][0],
-                    error=str(exc),
+                    error_type=type(exc).__name__,
+                    status_code=getattr(exc, "code", None),
                 )
 
     async def _generate_with_retry(
@@ -152,6 +178,14 @@ class GeminiLlmClient(ILlmClient):
                     contents=contents,
                     config=types.GenerateContentConfig(
                         response_mime_type="application/json",
+                        max_output_tokens=settings.gemini_max_output_tokens,
+                        temperature=settings.gemini_temperature,
+                        seed=settings.gemini_seed,
+                        thinking_config=types.ThinkingConfig(
+                            thinking_level=settings.gemini_thinking_level
+                        )
+                        if model.rsplit("/", 1)[-1].startswith("gemini-3")
+                        else None,
                         # Callers provide Pydantic JSON Schema, not the legacy
                         # Google Schema dialect. Preserve refs and nested schemas.
                         response_json_schema=response_schema,

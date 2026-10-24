@@ -69,6 +69,7 @@ to the first list index), never its value.
 | `/errors/receipt-photo-storage-failed` | 502 | `ReceiptPhotoStorageError` | Raised when a receipt photo cannot be persisted to object storage. |
 | `/errors/recipes/already-chosen` | 409 | `RecipeAlreadyChosenError` | A different proposal was already chosen for this request. |
 | `/errors/recipes/generation-failed` | 502 | `RecipeGenerationError` | The model failed to produce complete valid recipe proposals. |
+| `/errors/recipes/generation-timeout` | 504 | `RecipeGenerationTimeoutError` | Recipe generation exceeded its total request time budget. |
 | `/errors/recipes/idempotency-conflict` | 409 | `RecipeIdempotencyConflictError` | A reuse id was already used with different input. |
 | `/errors/recipes/ingredient-unavailable` | 409 | `RecipeIngredientUnavailableError` | A saved recipe ingredient is no longer in the catalog. |
 | `/errors/recipes/ingredient-unit-changed` | 409 | `RecipeIngredientUnitChangedError` | A saved ingredient's stock unit changed since generation. |

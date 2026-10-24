@@ -1,6 +1,6 @@
 from collections.abc import AsyncGenerator
 
-from fastapi import Depends
+from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 
@@ -122,9 +122,15 @@ async def get_food_intake_service() -> AsyncGenerator[FoodIntakeService, None]:
         yield FoodIntakeService(uow)
 
 
-async def get_llm_client() -> AsyncGenerator[ILlmClient, None]:
-    """Provide the structured Gemini client used by receipts and recipes."""
-    yield GeminiLlmClient()
+async def get_llm_client(request: Request) -> ILlmClient:
+    """Lazily share one structured client per app; lifespan owns its cleanup."""
+    client = getattr(request.app.state, "llm_client", None)
+    if client is None:
+        # No await between lookup and assignment: concurrent requests cannot
+        # create two clients on the application event loop.
+        client = GeminiLlmClient()
+        request.app.state.llm_client = client
+    return client
 
 
 async def get_receipt_intake_service(

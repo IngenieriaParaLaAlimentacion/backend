@@ -94,6 +94,16 @@
               }
             }
           },
+          "504": {
+            "description": "Total generation time budget exceeded",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request payload",
             "content": {

@@ -1,8 +1,12 @@
+import asyncio
 import math
 from datetime import datetime, timezone
 from decimal import ROUND_DOWN, Decimal
 from uuid import UUID, uuid4
 
+import structlog
+
+from app.config.settings import settings
 from app.core.interfaces.llm_client import ILlmClient
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.food_catalog import MeasurementUnit
@@ -15,6 +19,7 @@ from app.exceptions.domain_exceptions import (
     FoodNotFoundError,
     InsufficientStockError,
     RecipeAlreadyChosenError,
+    RecipeGenerationTimeoutError,
     RecipeIdempotencyConflictError,
     RecipeIngredientUnavailableError,
     RecipeIngredientUnitChangedError,
@@ -49,10 +54,13 @@ from app.services.nutrition.indicators import ENERGY
 from app.services.nutrition.nutrition_service import NutritionService
 from app.services.recipes.calculations import calculate_proposal
 from app.services.recipes.generation import (
+    PROMPT_VERSION,
     FoodSnapshot,
     GenerationSnapshot,
     RecipeGenerator,
 )
+
+logger = structlog.get_logger()
 
 
 class RecipeService:
@@ -192,6 +200,27 @@ class RecipeService:
         return snapshot
 
     async def generate(
+        self, data: RecommendationInput, actor: UserActor
+    ) -> RecommendationResponse:
+        """Bound the whole request, including DB reads, LP, retries and writes."""
+        deadline = asyncio.timeout(settings.recipe_generation_timeout_seconds)
+        try:
+            async with deadline:
+                return await self._generate(data, actor)
+        except TimeoutError as exc:
+            if not deadline.expired():
+                raise
+            logger.warning(
+                "recipes.generation_failed",
+                stage="request",
+                reason="total_deadline_exceeded",
+                prompt_version=PROMPT_VERSION,
+                failures=[],
+            )
+            await self.uow.rollback()
+            raise RecipeGenerationTimeoutError() from exc
+
+    async def _generate(
         self, data: RecommendationInput, actor: UserActor
     ) -> RecommendationResponse:
         """Prepare one snapshot, generate without DB connections, then save."""

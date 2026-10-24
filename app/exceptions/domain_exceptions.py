@@ -1221,3 +1221,16 @@ class RecipeScaleTooSmallError(BaseError):
             f"The portion count is too small for {ingredient} at stock precision.",
             extensions={"food_id": food_id, "ingredient": ingredient},
         )
+
+
+class RecipeGenerationTimeoutError(BaseError):
+    """Recipe generation exceeded its total request time budget."""
+
+    error_type = "recipes/generation-timeout"
+    status = status.HTTP_504_GATEWAY_TIMEOUT
+
+    def __init__(self):
+        super().__init__(
+            "Recipe generation timed out",
+            "Recipe generation exceeded its total time budget.",
+        )

@@ -42,6 +42,7 @@ _RESPONSES = {
         **_RESPONSES,
         429: {"description": "AI quota exceeded; retry after Retry-After"},
         502: {"description": "Model failed or returned invalid proposals"},
+        504: {"description": "Total generation time budget exceeded"},
     },
     summary="Generate 2–3 stock-backed recipe proposals",
     description=(

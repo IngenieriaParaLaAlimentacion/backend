@@ -377,3 +377,27 @@ conversion module and food-equivalence management will replace this adapter and
 endpoint; existing reviewed factors must be transferred before retiring the
 catalog field. Kilogram conversions remain exact and missing mass/density factors
 are never guessed.
+
+Recipe generation has a total service budget, configured by
+`RECIPE_GENERATION_TIMEOUT_SECONDS` (90 seconds by default). It includes context
+reads, LP work, all model attempts, retry waits, fallback and persistence. On
+expiry the task is cancelled, the transaction is rolled back and the API returns
+`504 /errors/recipes/generation-timeout`. Authentication, upload/transport and
+proxy timeouts are outside this service budget. Configure the deployment proxy
+and client timeout above that budget; the repository does not establish the
+live gateway's timeout. This deadline does not add generation idempotency.
+
+Gemini output is capped by `GEMINI_MAX_OUTPUT_TOKENS` (8192 by default).
+Gemini 3 uses `GEMINI_THINKING_LEVEL=low`. Temperature is unset by default, in
+line with Google's recommendation for Gemini 3; `GEMINI_TEMPERATURE` and
+`GEMINI_SEED` are optional overrides, not reproducibility guarantees. Older-model
+fallbacks omit the Gemini-3-specific thinking configuration. The SDK's own retry
+budget is disabled: the existing Tenacity policy owns retries.
+
+Receipts and recipes share one lazy Gemini client per application instance,
+closed at lifespan shutdown (including the supplied HTTP client). Logs contain
+response length/model/token metadata and controlled error types/status codes;
+response text, prompts and raw provider error bodies are not logged. The Spanish
+quantity detector covers common numeric/word amounts, fractions and ingredient
+units while allowing cooking times and temperatures; it remains a heuristic,
+not a general natural-language guarantee.

@@ -1,5 +1,5 @@
 import enum
-from typing import Optional
+from typing import Literal, Optional
 
 from limits import parse as parse_limit
 from pydantic import (
@@ -102,6 +102,12 @@ class Settings(BaseSettings):
 
     # LLM
     gemini_api_key: Optional[str] = None
+    gemini_max_output_tokens: int = Field(default=8192, ge=256, le=65536)
+    # None preserves the provider default, recommended for Gemini 3.
+    gemini_temperature: float | None = Field(default=None, ge=0, le=2)
+    gemini_seed: int | None = None
+    gemini_thinking_level: Literal["low", "medium", "high"] = "low"
+    recipe_generation_timeout_seconds: float = Field(default=90, gt=0, le=240)
     gemini_model: str = "gemini-3.6-flash"
     # Total attempts (first call + retries)
     gemini_max_attempts: int = Field(default=3, ge=1)

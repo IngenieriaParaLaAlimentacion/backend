@@ -259,6 +259,12 @@
       "description": "The model failed to produce complete valid recipe proposals."
     },
     {
+      "type": "/errors/recipes/generation-timeout",
+      "status": 504,
+      "exception": "RecipeGenerationTimeoutError",
+      "description": "Recipe generation exceeded its total request time budget."
+    },
+    {
       "type": "/errors/recipes/idempotency-conflict",
       "status": 409,
       "exception": "RecipeIdempotencyConflictError",
