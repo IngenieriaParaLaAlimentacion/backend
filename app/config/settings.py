@@ -48,6 +48,10 @@ class Settings(BaseSettings):
     # Database - DATABASE_URL is set
     database_url: Optional[str] = None
 
+    database_connect_timeout_seconds: float = Field(default=10, gt=0)
+    database_pool_size: int = Field(default=5, ge=1)
+    database_max_overflow: int = Field(default=10, ge=0)
+
     # Upper bound for the readiness probe's database round trip, connection
     # included, so a hung database fails the probe instead of stalling it.
     readiness_db_timeout_seconds: float = Field(default=2, gt=0)
