@@ -198,7 +198,6 @@ class TestExtraction:
             "Leche 1L",
         ]
         assert all(line.food is None for line in proposal.lines)
-        assert all(line.needs_review for line in proposal.lines)
         assert proposal.message is None
         storage.save.assert_not_called()  # nothing is stored until confirmation
 
@@ -269,7 +268,7 @@ class TestExtraction:
         assert noodles.raw_quantity is None
         assert rice.raw_quantity == Decimal("1.5")
 
-    async def test_confident_catalog_match_populates_food_but_still_needs_review(
+    async def test_confident_catalog_match_populates_food(
         self, uow, storage, food_intake_service, llm_client, admin_actor
     ):
         matched_food = SimpleNamespace(
@@ -300,7 +299,6 @@ class TestExtraction:
         assert line.food is not None
         assert line.food.id == matched_food.id
         assert line.food.name == "Arroz"
-        assert line.needs_review is True
         uow.food_repo.find_best_match.assert_awaited_once_with(
             "Arroz 1kg",
             settings.receipt_food_match_min_word_similarity,

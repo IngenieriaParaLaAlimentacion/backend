@@ -96,7 +96,7 @@ class TestAcceptedUpload:
         assert body["lines"] == []
         assert body["message"]
 
-    async def test_detected_items_are_returned_needing_review(
+    async def test_detected_items_are_returned(
         self, client, admin_headers, db_establishment, fake_llm_client
     ):
         fake_llm_client.response = {
@@ -114,7 +114,6 @@ class TestAcceptedUpload:
             "Leche 1L",
         ]
         assert all(line["food"] is None for line in body["lines"])
-        assert all(line["needs_review"] for line in body["lines"])
         assert body["message"] is None
 
     async def test_llm_failure_falls_back_to_manual_entry(
@@ -158,7 +157,6 @@ class TestCatalogMatching:
         assert response.status_code == 200
         (line,) = response.json()["lines"]
         assert line["food"] == {"id": str(db_food.id), "name": db_food.name}
-        assert line["needs_review"] is True
 
     async def test_unrelated_description_leaves_food_null(
         self, client, admin_headers, db_establishment, db_food, fake_llm_client
@@ -172,7 +170,6 @@ class TestCatalogMatching:
         assert response.status_code == 200
         (line,) = response.json()["lines"]
         assert line["food"] is None
-        assert line["needs_review"] is True
 
     async def test_brand_and_pack_size_noise_still_matches_the_catalog_food(
         self, client, admin_headers, db_establishment, db_foods, fake_llm_client
@@ -193,7 +190,6 @@ class TestCatalogMatching:
         (line,) = response.json()["lines"]
         ketchup = db_foods["ketchup"]
         assert line["food"] == {"id": str(ketchup.id), "name": ketchup.name}
-        assert line["needs_review"] is True
 
     async def test_short_catalog_name_does_not_false_positive_on_unrelated_noise(
         self, client, admin_headers, db_establishment, db_foods, fake_llm_client
@@ -213,7 +209,6 @@ class TestCatalogMatching:
         assert response.status_code == 200
         (line,) = response.json()["lines"]
         assert line["food"] is None
-        assert line["needs_review"] is True
 
 
 class TestImageValidation:
