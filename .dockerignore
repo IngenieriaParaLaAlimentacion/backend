@@ -44,6 +44,9 @@ htmlcov
 *.swp
 *.swo
 
+# Local workspace artifacts, including manual capture environments
+.context
+
 # OS
 .DS_Store
 Thumbs.db

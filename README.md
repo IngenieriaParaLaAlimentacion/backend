@@ -6,6 +6,8 @@
 
 API REST del proyecto **Ingeniería para la Alimentación**, desarrollada con FastAPI, SQLAlchemy (async) y asyncpg sobre Python 3.11+.
 
+El [manual de usuario de Raíz](docs/manual-usuario/README.md) reúne los recorridos de la app móvil y el backoffice, organizados por Talla y Peso, Encuestas y Nutrir. También está disponible en [formato HTML](docs/manual-usuario/index.html).
+
 ---
 
 ## Requisitos previos

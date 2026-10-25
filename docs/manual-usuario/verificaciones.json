@@ -1,0 +1,47 @@
+{
+  "verifiedAt": "2026-10-25T18:50:48.263475+00:00",
+  "environment": "isolated-local-manual",
+  "model": "demonstration-double",
+  "scenarios": [
+    {
+      "scenario": "Medición Android → backend",
+      "result": "passed",
+      "evidence": "5 registros fuera del seed, visibles en el listado real"
+    },
+    {
+      "scenario": "Encuesta Android → backend",
+      "result": "passed",
+      "evidence": "Respuesta 101 del relevamiento por sujeto persistida"
+    },
+    {
+      "scenario": "Movimientos Android → backend",
+      "result": "passed",
+      "evidence": "8 movimientos en el establecimiento"
+    },
+    {
+      "scenario": "Elegir receta → salida",
+      "result": "passed",
+      "evidence": "Receta elegida persistida; el flujo usa la transacción real del backend"
+    },
+    {
+      "scenario": "Permisos de administración",
+      "result": "passed",
+      "evidence": "Analista y relevador reciben 403 al listar usuarios administrativos"
+    },
+    {
+      "scenario": "Exportación web",
+      "result": "passed",
+      "evidence": "CSV real descargado por Playwright, 14 filas de datos"
+    },
+    {
+      "scenario": "Exportación de respuestas",
+      "result": "passed",
+      "evidence": "Archivo Excel descargado por Playwright con estructura XLSX válida"
+    },
+    {
+      "scenario": "Análisis de recibo en Android",
+      "result": "known_incompatibility",
+      "evidence": "Respuesta 200 sin needs_review; el DTO Android lo exige. Captura y log de JsonConvertException conservados."
+    }
+  ]
+}

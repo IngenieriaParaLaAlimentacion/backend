@@ -1,0 +1,589 @@
+<!doctype html><html lang="es-AR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Raíz · Manual de usuario</title><style>
+summary{cursor:pointer;font-weight:650;padding:12px 0}pre{overflow:auto;max-width:100%;padding:18px;background:#eee8da;border-radius:7px}main,article{min-width:0}td,th,code,a{overflow-wrap:anywhere}table{max-width:100%}
+
+:root{--paper:#f6f3ea;--ink:#292a23;--green:#283e30;--sage:#e9eedf;--line:#ddd6c6;--muted:#666859;--gold:#bd952b}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:28px}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.75 system-ui,-apple-system,sans-serif}
+aside{position:fixed;inset:0 auto 0 0;width:260px;padding:38px 24px;background:var(--green);color:var(--paper);overflow:auto}aside .brand{font:700 38px Georgia,serif;letter-spacing:-2px}aside small{display:block;font-size:11px;letter-spacing:1.5px;margin:6px 0 24px;text-transform:uppercase;color:#d7dfc8}aside a{display:block;padding:10px 12px;margin:5px 0;border-radius:7px;text-decoration:none;color:inherit;font-size:14px;line-height:1.5}aside a:hover,aside a:focus{background:#40513b}aside input{width:100%;padding:11px;border:1px solid #91a18a;background:transparent;color:white;border-radius:6px;margin-bottom:18px}aside input::placeholder{color:#d7dfc8}
+main{margin-left:260px;padding:60px 5vw 100px;max-width:1450px}article{max-width:960px;margin:auto}section.chapter{padding-top:32px;margin-top:55px;border-top:2px solid var(--gold)}section.chapter:first-child{border:0;margin:0;padding:0}h1,h2,h3{font-family:Georgia,serif;line-height:1.2;letter-spacing:-.5px}h1{font-size:48px;color:var(--green);margin:0 0 30px}h2{font-size:29px;margin:54px 0 22px;scroll-margin-top:28px}h3{font-size:23px;margin-top:34px}p,li{max-width:78ch}a{color:#356143;text-underline-offset:4px}strong{font-weight:650}li{padding-left:3px;margin:9px 0}table{border-collapse:collapse;width:100%;font-size:15px;margin:28px 0;background:#fffdf6}th,td{text-align:left;vertical-align:top;padding:15px;border-bottom:1px solid var(--line)}th{background:var(--sage);font-size:13px}figure{margin:36px 0 46px;padding:18px;background:#fffdf7;border:1px solid var(--line);border-radius:13px;break-inside:avoid}figure img{display:block;width:100%;height:auto;margin:auto;border-radius:6px;cursor:zoom-in}figure.mobile img{width:auto;max-width:100%;max-height:730px;box-shadow:0 3px 18px #292a2314}figcaption{color:var(--muted);font-size:13px;line-height:1.5;padding:17px 2px 0}figcaption b{font-size:10px;letter-spacing:1px;background:var(--sage);padding:4px 6px;border-radius:4px;margin-right:8px}blockquote{border-left:3px solid var(--gold);padding:12px 22px;background:#eee8d5;margin:26px 0}code{font-size:.86em;background:#ebe6d9;padding:2px 5px;border-radius:3px}footer{padding-top:30px;margin-top:55px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}dialog{border:0;padding:16px;background:var(--paper);max-width:96vw;max-height:96vh;border-radius:10px}dialog::backdrop{background:#101a16d9}dialog img{display:block;max-width:90vw;max-height:84vh;object-fit:contain}dialog button{float:right;font:inherit;border:1px solid var(--line);border-radius:5px;padding:5px 12px;background:white;margin-bottom:10px}.toolbar button{border:1px solid var(--line);padding:8px 14px;border-radius:6px;background:#fffdf6;color:var(--green);cursor:pointer;font:inherit;font-size:13px}.toolbar{display:flex;justify-content:flex-end;margin-bottom:24px}.matched{outline:3px solid var(--gold);outline-offset:8px}
+@media(max-width:850px){aside{position:static;width:auto;padding:22px}aside nav{display:flex;flex-wrap:wrap}aside a{margin:0;padding:8px}aside input{max-width:360px}main{margin:0;padding:28px 20px}h1{font-size:36px}h2{font-size:26px}table{display:block;overflow:auto}figure{padding:10px}}
+@media print{body{background:white;font-size:10pt}aside,.toolbar,dialog{display:none}main{margin:0;padding:0;max-width:none}section.chapter{break-before:page}section.chapter:first-child{break-before:auto}h1{font-size:28pt}h2{font-size:17pt;break-after:avoid}figure{max-height:245mm;padding:8px;box-shadow:none}figure.mobile img{max-height:185mm}figure img{max-height:175mm;object-fit:contain}a{color:inherit;text-decoration:none}th,td{padding:7px;font-size:9pt}}
+</style></head><body><aside><div class="brand">Raíz</div><small>Manual de usuario · App + Web</small><label for="search">Buscar un tema</label><input id="search" type="search" placeholder="Ej.: sincronizar" autocomplete="off"><nav aria-label="Capítulos"><a href="#chapter-0">Raíz · Manual de usuario</a><a href="#chapter-1">1. Acceso y trabajo en equipo</a><a href="#chapter-2">2. Talla y Peso</a><a href="#chapter-3">3. Encuestas</a><a href="#chapter-4">4. Nutrir</a></nav></aside><main><div class="toolbar"><button onclick="window.print()">Imprimir</button></div><article><section class="chapter" id="chapter-0"><h1 id="c0-raiz-manual-de-usuario">Raíz · Manual de usuario</h1>
+<p><strong>App móvil y backoffice · Ingeniería Para la Alimentación</strong></p>
+<p>Una guía para trabajar desde el comedor hasta el seguimiento del equipo de coordinación. Los recorridos siguen una misma tarea aunque empiece en el teléfono y termine en el panel web.</p>
+<h2 id="c0-como-usar-esta-guia">Cómo usar esta guía</h2>
+<ol>
+<li>Completá el acceso y elegí el establecimiento con el que vas a trabajar.</li>
+<li>Seguí <strong>Talla y Peso</strong> para registrar personas y mediciones y consultar su evolución.</li>
+<li>Seguí <strong>Encuestas</strong> para preparar un relevamiento, responderlo y consultar los resultados.</li>
+<li>Seguí <strong>Nutrir</strong> para registrar alimentos, consultar existencias y trabajar con recetas.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Capítulo</th>
+<th>Qué vas a poder hacer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#chapter-1">Acceso y trabajo en equipo</a></td>
+<td>Crear una cuenta, conseguir acceso al comedor y administrar usuarios y establecimientos.</td>
+</tr>
+<tr>
+<td><a href="#chapter-2">Talla y Peso</a></td>
+<td>Registrar sujetos, cargar mediciones, sincronizar y consultar el seguimiento.</td>
+</tr>
+<tr>
+<td><a href="#chapter-3">Encuestas</a></td>
+<td>Crear, activar, responder, corregir y exportar relevamientos.</td>
+</tr>
+<tr>
+<td><a href="#chapter-4">Nutrir</a></td>
+<td>Registrar ingresos y egresos, revisar recibos, consultar stock e historial y usar recetas.</td>
+</tr>
+</tbody>
+</table>
+<p>En cada recorrido se indica <strong>quién actúa</strong>, <strong>dónde</strong> y <strong>qué resultado debe ver</strong>. Si una acción no aparece, primero comprobá el rol de tu cuenta y el establecimiento elegido.</p>
+<h2 id="c0-que-significa-cada-nombre">Qué significa cada nombre</h2>
+<table>
+<thead>
+<tr>
+<th>Nombre</th>
+<th>Significado en Raíz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Establecimiento o comedor</td>
+<td>Lugar al que se vinculan las actividades y los movimientos de alimentos.</td>
+</tr>
+<tr>
+<td>Sujeto</td>
+<td>Persona registrada para realizar su seguimiento.</td>
+</tr>
+<tr>
+<td>Relevador / Responsable de establecimiento</td>
+<td>Persona que realiza las cargas desde la app. La pantalla móvil puede mostrar «Responsable de establecimiento».</td>
+</tr>
+<tr>
+<td>Analista</td>
+<td>Integrante del equipo que consulta y trabaja con relevamientos desde el backoffice.</td>
+</tr>
+<tr>
+<td>Administrador</td>
+<td>Persona que además gestiona cuentas, solicitudes y datos de establecimientos.</td>
+</tr>
+<tr>
+<td>Sincronizar</td>
+<td>Enviar al sistema los registros guardados en el teléfono. Guardar en el teléfono y completar la sincronización son momentos distintos.</td>
+</tr>
+<tr>
+<td>Perfil del establecimiento</td>
+<td>Ficha sobre su funcionamiento, las personas que asisten, la alimentación y la comunidad. No es el perfil personal de quien usa la app.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="c0-una-tarea-dos-plataformas">Una tarea, dos plataformas</h2>
+<table>
+<thead>
+<tr>
+<th>Etapa</th>
+<th>En la app</th>
+<th>En el backoffice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Preparar el trabajo</td>
+<td>Registrarse y solicitar acceso al comedor.</td>
+<td>Revisar la cuenta y las solicitudes de acceso.</td>
+</tr>
+<tr>
+<td>Talla y Peso</td>
+<td>Crear o buscar al sujeto y guardar la medición.</td>
+<td>Consultar sujetos, mediciones, evolución y estado del comedor.</td>
+</tr>
+<tr>
+<td>Encuestas</td>
+<td>Elegir la encuesta activa, responder y sincronizar.</td>
+<td>Diseñar y activar la encuesta; consultar y exportar respuestas.</td>
+</tr>
+<tr>
+<td>Nutrir</td>
+<td>Registrar alimentos, consultar stock y trabajar con recetas.</td>
+<td>Consultar stock y movimientos; registrar movimientos desde la ficha del comedor.</td>
+</tr>
+</tbody>
+</table></section><section class="chapter" id="chapter-1"><h1 id="c1-1-acceso-y-trabajo-en-equipo">1. Acceso y trabajo en equipo</h1>
+<h2 id="c1-11-elegir-donde-trabajar">1.1 Elegir dónde trabajar</h2>
+<p>El <strong>relevador</strong> usa la app móvil. Los <strong>administradores y analistas</strong> pueden entrar al backoffice. El panel web avisa a los relevadores que deben ingresar desde la app.</p>
+<p>En la app, <strong>Inicio</strong>, <strong>Historial</strong> y <strong>Perfil</strong> están en la barra inferior. Inicio reúne los accesos a Medición, Sujeto, Encuesta, Alimentos y Recetas. En el backoffice, el menú lateral reúne las secciones disponibles para tu rol.</p>
+<p><figure id="captura-app-inicio-comedor" class="mobile"><img src="assets/app-inicio-comedor.png" alt="Inicio de la app con un establecimiento elegido" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Inicio de la app con un establecimiento elegido" loading="lazy"><figcaption><b>APP ANDROID</b>Inicio de la app con un establecimiento elegido</figcaption></figure></p>
+<h2 id="c1-12-registrarse-como-relevador">1.2 Registrarse como relevador</h2>
+<p><strong>Quién:</strong> quien va a cargar datos en el comedor. <strong>Dónde:</strong> app.</p>
+<ol>
+<li>En la bienvenida, tocá <strong>Crear cuenta</strong>.</li>
+<li>Completá email, contraseña, nombre y apellido.</li>
+<li>Si ya sabés dónde vas a trabajar, seleccioná uno o más establecimientos. Este paso es opcional.</li>
+<li>Si corresponde, agregá localidad, descripción y teléfono de contacto.</li>
+<li>Tocá <strong>Crear cuenta</strong> y revisá el aviso de registro enviado.</li>
+<li>Abrí el correo de verificación y confirmá tu email.</li>
+<li>Esperá la aprobación de la cuenta por un administrador antes de iniciar sesión.</li>
+</ol>
+<p>La verificación del email y la aprobación de la cuenta son pasos diferentes. Una cuenta creada todavía puede estar pendiente de aprobación. Seleccionar un comedor durante el registro tampoco significa que el acceso haya sido aprobado.</p>
+<p>Si el correo ya está registrado, usá <strong>Iniciar sesión</strong> o la recuperación de contraseña. Si alguno de los establecimientos ya no está disponible, revisá la selección y volvé a enviar el formulario.</p>
+<p><figure id="captura-app-registro" class="mobile"><img src="assets/app-registro.png" alt="Registro de una cuenta desde Android" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Registro de una cuenta desde Android" loading="lazy"><figcaption><b>APP ANDROID</b>Registro de una cuenta desde Android</figcaption></figure></p>
+<h2 id="c1-13-aprobar-una-cuenta-y-decidir-sus-accesos">1.3 Aprobar una cuenta y decidir sus accesos</h2>
+<p><strong>Quién:</strong> administrador. <strong>Dónde:</strong> backoffice → <strong>Solicitudes → Registros de usuarios</strong>.</p>
+<ol>
+<li>Buscá el registro pendiente y elegí <strong>Revisar</strong>.</li>
+<li>Comprobá los datos y el aviso de email sin verificar, si aparece.</li>
+<li>Decidí qué establecimientos aceptar, cuáles rechazar y cuáles dejar pendientes.</li>
+<li>Elegí <strong>Aceptar solicitud</strong> y confirmá para activar la cuenta con las decisiones tomadas.</li>
+<li>Para rechazar el registro completo, elegí <strong>Rechazar solicitud</strong> y confirmá.</li>
+</ol>
+<p>Los accesos que dejás sin decidir siguen pendientes. Se resuelven después en <strong>Accesos a establecimientos</strong>. Si se informa una aprobación parcial, revisá esa pestaña antes de dar por terminada la tarea.</p>
+<p><figure id="captura-web-solicitudes-registro" class="web"><img src="assets/web-solicitudes-registro.png" alt="Sección de solicitudes de registro" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Sección de solicitudes de registro" loading="lazy"><figcaption><b>BACKOFFICE</b>Sección de solicitudes de registro</figcaption></figure></p>
+<p><figure id="captura-web-solicitud-revisar" class="web"><img src="assets/web-solicitud-revisar.png" alt="Revisión de una cuenta y de los establecimientos que solicitó" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Revisión de una cuenta y de los establecimientos que solicitó" loading="lazy"><figcaption><b>BACKOFFICE</b>Revisión de una cuenta y de los establecimientos que solicitó</figcaption></figure></p>
+<h2 id="c1-14-iniciar-sesion-y-recuperar-la-contrasena">1.4 Iniciar sesión y recuperar la contraseña</h2>
+<p><strong>Dónde:</strong> app → <strong>Iniciar sesión</strong>, o página de acceso del backoffice.</p>
+<ol>
+<li>Ingresá el email y la contraseña de tu cuenta.</li>
+<li>Elegí <strong>Iniciar sesión</strong>.</li>
+<li>Si la cuenta está pendiente, solicitá al administrador que revise tu registro.</li>
+<li>Si olvidaste la contraseña, elegí <strong>¿Olvidaste tu contraseña?</strong>, ingresá el email y seguí el enlace del correo.</li>
+<li>Definí la nueva contraseña y volvé a iniciar sesión.</li>
+</ol>
+<p>En el formulario web, los requisitos de contraseña se muestran junto al campo. Si un enlace venció o ya se usó, solicitá uno nuevo. Si el sistema pide esperar tras varios intentos, respetá el plazo indicado antes de reintentar.</p>
+<p>Si la sesión vence durante el trabajo, iniciá sesión nuevamente. No vuelvas a cargar un registro sin revisar primero su estado en Historial.</p>
+<p><figure id="captura-web-acceso" class="web"><img src="assets/web-acceso.png" alt="Acceso al backoffice" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Acceso al backoffice" loading="lazy"><figcaption><b>BACKOFFICE</b>Acceso al backoffice</figcaption></figure></p>
+<p><figure id="captura-web-recuperar" class="web"><img src="assets/web-recuperar.png" alt="Formulario para solicitar el correo de recuperación de contraseña" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Formulario para solicitar el correo de recuperación de contraseña" loading="lazy"><figcaption><b>BACKOFFICE</b>Formulario para solicitar el correo de recuperación de contraseña</figcaption></figure></p>
+<h2 id="c1-15-solicitar-acceso-a-otro-establecimiento">1.5 Solicitar acceso a otro establecimiento</h2>
+<p><strong>Quién:</strong> relevador o analista. <strong>Dónde:</strong> app → <strong>Perfil → Mis establecimientos</strong>, o backoffice → <strong>Perfil → Mis establecimientos</strong>.</p>
+<ol>
+<li>Elegí <strong>Solicitar acceso</strong> y buscá el comedor por su nombre o dirección.</li>
+<li>Seleccionalo y enviá la solicitud.</li>
+<li>Revisá el estado <strong>Pendiente</strong>, <strong>Aprobado</strong> o <strong>Rechazado</strong>.</li>
+<li>Cuando el administrador lo apruebe, volvé a Inicio y elegí ese establecimiento.</li>
+</ol>
+<p><figure id="captura-app-mis-establecimientos" class="mobile"><img src="assets/app-mis-establecimientos.png" alt="Mis establecimientos y la acción para solicitar otro acceso" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Mis establecimientos y la acción para solicitar otro acceso" loading="lazy"><figcaption><b>APP ANDROID</b>Mis establecimientos y la acción para solicitar otro acceso</figcaption></figure></p>
+<p>El administrador decide el acceso desde <strong>Solicitudes → Accesos a establecimientos → Revisar</strong>. Puede aceptar o rechazar cada vínculo y aplicar los cambios. La aprobación de la cuenta y la de cada comedor se administran por separado.</p>
+<p>Para dejar de trabajar en un comedor, usá la acción de retiro o baja de <strong>Mis establecimientos</strong> y confirmá. Un administrador puede quitar el acceso desde la ficha del usuario o la pestaña <strong>Relevadores</strong> del comedor. Si te revocaron el acceso, solicitá su revisión antes de continuar.</p>
+<p>Los administradores usan <strong>Suscribirme / Desuscribirme</strong> en lugar de solicitar una aprobación. La suscripción identifica sus establecimientos de interés.</p>
+<p><figure id="captura-web-solicitudes-acceso" class="web"><img src="assets/web-solicitudes-acceso.png" alt="Solicitudes de acceso a establecimientos" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Solicitudes de acceso a establecimientos" loading="lazy"><figcaption><b>BACKOFFICE</b>Solicitudes de acceso a establecimientos</figcaption></figure></p>
+<h2 id="c1-16-notificar-un-comedor-que-no-aparece">1.6 Notificar un comedor que no aparece</h2>
+<p><strong>Dónde:</strong> app → <strong>Perfil → Mis establecimientos → Solicitar acceso → ¿No encontrás tu comedor? Notificar</strong>.</p>
+<ol>
+<li>Completá el nombre y la dirección; agregá ciudad y provincia si las conocés.</li>
+<li>Tocá <strong>Siguiente</strong> para completar la ficha del comedor, o dejala para después con <strong>Contestar luego</strong>.</li>
+<li>Enviá la solicitud.</li>
+<li>Un administrador la revisa en <strong>Solicitudes → Altas de establecimientos</strong> del backoffice.</li>
+<li>Al aprobarla, el administrador completa o corrige la ubicación y los datos solicitados. El comedor queda disponible y se otorga el acceso correspondiente a quien lo propuso.</li>
+</ol>
+<p>Si el lugar ya existe, el sistema puede reutilizarlo para evitar un duplicado. El rechazo de una propuesta no crea el establecimiento. Una solicitud ya resuelta no se vuelve a aprobar: revisá su estado antes de reintentar.</p>
+<p>Un analista también puede usar <strong>Establecimientos → Proponer establecimiento</strong> en el panel web.</p>
+<p><figure id="captura-app-comedor-notificar" class="mobile"><img src="assets/app-comedor-notificar.png" alt="Notificación de un comedor nuevo desde la app" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Notificación de un comedor nuevo desde la app" loading="lazy"><figcaption><b>APP ANDROID</b>Notificación de un comedor nuevo desde la app</figcaption></figure></p>
+<p><figure id="captura-web-comedor-solicitud-revisar" class="web"><img src="assets/web-comedor-solicitud-revisar.png" alt="Revisión en el backoffice de la solicitud enviada desde la app" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Revisión en el backoffice de la solicitud enviada desde la app" loading="lazy"><figcaption><b>BACKOFFICE</b>Revisión en el backoffice de la solicitud enviada desde la app</figcaption></figure></p>
+<h2 id="c1-17-elegir-el-comedor-antes-de-cargar">1.7 Elegir el comedor antes de cargar</h2>
+<p>En <strong>Inicio</strong> de la app, tocá el nombre del establecimiento o <strong>Elegí el establecimiento</strong>. Seleccioná el lugar en el que estás trabajando y verificá el nombre antes de registrar mediciones o alimentos.</p>
+<p>Cambiar el comedor cambia el contexto de las nuevas tareas. No mueve los registros que ya se guardaron en otro establecimiento. Si un formulario muestra su propio selector, comprobá también ese campo.</p>
+<p><figure id="captura-app-comedor-seleccionar" class="mobile"><img src="assets/app-comedor-seleccionar.png" alt="Selector del establecimiento con el que se va a trabajar en la app" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Selector del establecimiento con el que se va a trabajar en la app" loading="lazy"><figcaption><b>APP ANDROID</b>Selector del establecimiento con el que se va a trabajar en la app</figcaption></figure></p>
+<h2 id="c1-18-crear-localizar-y-completar-un-establecimiento">1.8 Crear, localizar y completar un establecimiento</h2>
+<p><strong>Quién:</strong> administrador para el alta y la edición de nombre/dirección. <strong>Dónde:</strong> backoffice → <strong>Establecimientos</strong>.</p>
+<ol>
+<li>Elegí <strong>Nuevo establecimiento</strong>.</li>
+<li>Completá el nombre y buscá la dirección.</li>
+<li>Seleccioná una sugerencia de dirección para fijar la ubicación y verificá ciudad y provincia.</li>
+<li>Completá la ficha opcional si ya contás con esa información y guardá.</li>
+<li>Buscá el nuevo registro en la lista y abrilo para revisar sus datos.</li>
+</ol>
+<p><figure id="captura-web-establecimiento-alta" class="web"><img src="assets/web-establecimiento-alta.png" alt="Formulario para dar de alta un establecimiento desde el backoffice" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Formulario para dar de alta un establecimiento desde el backoffice" loading="lazy"><figcaption><b>BACKOFFICE</b>Formulario para dar de alta un establecimiento desde el backoffice</figcaption></figure></p>
+<p>La lista permite buscar y ordenar. La vista <strong>Mapa</strong> muestra los establecimientos con ubicación disponible y una leyenda de estados. Si un lugar no aparece en el mapa, revisá la lista y su ubicación.</p>
+<p>Desde la ficha, <strong>Editar datos</strong> permite corregir nombre y ubicación. La pestaña <strong>Perfil</strong> permite ver o completar la caracterización: ubicación y contacto, tipo de espacio, servicios, asistentes, alimentación y comunidad.</p>
+<p>En la app, el responsable con acceso aprobado puede abrir la ficha desde <strong>Mis establecimientos</strong> o el aviso <strong>Pendiente de ficha · Completar</strong>. Los campos son opcionales: completá lo que conozcas y guardá. «Perfil completo» indica que la ficha tiene información; revisá el contenido antes de asumir que todos sus campos fueron respondidos.</p>
+<p><figure id="captura-web-comedor-perfil-editar" class="web"><img src="assets/web-comedor-perfil-editar.png" alt="Ficha del establecimiento en el backoffice" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Ficha del establecimiento en el backoffice" loading="lazy"><figcaption><b>BACKOFFICE</b>Ficha del establecimiento en el backoffice</figcaption></figure></p>
+<h2 id="c1-19-invitar-usuarios-y-administrar-roles">1.9 Invitar usuarios y administrar roles</h2>
+<p><strong>Quién:</strong> administrador. <strong>Dónde:</strong> backoffice → <strong>Usuarios</strong>.</p>
+<ol>
+<li>Abrí la lista de <strong>Administradores</strong> o <strong>Analistas</strong> y elegí la acción de invitación.</li>
+<li>Ingresá el email y enviá la invitación.</li>
+<li>La persona abre el enlace, completa sus datos y crea su contraseña para activar la cuenta.</li>
+<li>Si no la recibió, usá <strong>Reenviar invitación</strong> cuando la pantalla lo permita.</li>
+</ol>
+<p><figure id="captura-web-usuario-invitar" class="web"><img src="assets/web-usuario-invitar.png" alt="Invitación de un analista por email desde el backoffice" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Invitación de un analista por email desde el backoffice" loading="lazy"><figcaption><b>BACKOFFICE</b>Invitación de un analista por email desde el backoffice</figcaption></figure></p>
+<p>Si el email ya tiene una cuenta, el panel informa esa situación. Una invitación pendiente no equivale a una cuenta activada.</p>
+<p>Abrí un usuario para ver su perfil, estado y establecimientos. <strong>Cambiar rol</strong> ofrece únicamente los roles que tu cuenta puede asignar. Un administrador no puede cambiar el rol de otro administrador ni del superadministrador; el superadministrador dispone de permisos adicionales. No podés cambiar tu propio rol desde ese diálogo.</p>
+<p><figure id="captura-web-usuarios" class="web"><img src="assets/web-usuarios.png" alt="Administración de usuarios" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Administración de usuarios" loading="lazy"><figcaption><b>BACKOFFICE</b>Administración de usuarios</figcaption></figure></p>
+<h2 id="c1-110-editar-el-perfil-y-cerrar-sesion">1.10 Editar el perfil y cerrar sesión</h2>
+<p>En <strong>Perfil → Editar perfil</strong>, modificá los datos que el formulario habilita y guardá. El email y el rol son datos de consulta en la edición del perfil personal.</p>
+<p><figure id="captura-web-perfil-editar" class="web"><img src="assets/web-perfil-editar.png" alt="Edición del perfil personal desde el backoffice" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Edición del perfil personal desde el backoffice" loading="lazy"><figcaption><b>BACKOFFICE</b>Edición del perfil personal desde el backoffice</figcaption></figure></p>
+<p>Para salir, elegí <strong>Cerrar sesión</strong> y confirmá cuando la app lo solicite. Antes de cambiar de cuenta o dispositivo, comprobá en Inicio e Historial que tus cargas estén sincronizadas. La copia pendiente en un teléfono no reemplaza el registro disponible para el resto del equipo.</p>
+<p><strong>En esta versión, cerrar sesión voluntariamente borra los datos locales de la app, incluidas las cargas que todavía no se sincronizaron.</strong> Esperá a que terminen de subir antes de confirmar la salida. Un vencimiento de sesión es distinto: volvé a ingresar y revisá las cargas pendientes.</p>
+<p><figure id="captura-app-cerrar-sesion" class="mobile"><img src="assets/app-cerrar-sesion.png" alt="Confirmación para cerrar sesión en la app; Cancelar permite volver sin salir" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Confirmación para cerrar sesión en la app; Cancelar permite volver sin salir" loading="lazy"><figcaption><b>APP ANDROID</b>Confirmación para cerrar sesión en la app; Cancelar permite volver sin salir</figcaption></figure></p></section><section class="chapter" id="chapter-2"><h1 id="c2-2-talla-y-peso">2. Talla y Peso</h1>
+<h2 id="c2-recorrido-completo">Recorrido completo</h2>
+<p><strong>Relevador, app:</strong> elegir comedor → buscar o crear sujeto → cargar y revisar medidas → guardar → sincronizar.</p>
+<p><strong>Analista o administrador, backoffice:</strong> localizar la medición → consultar el sujeto y su evolución → revisar el estado del establecimiento → exportar si hace falta.</p>
+<h2 id="c2-21-registrar-un-sujeto">2.1 Registrar un sujeto</h2>
+<p><strong>Antes de empezar:</strong> tené a mano los datos de la persona y buscala primero para evitar registrar dos veces a la misma persona.</p>
+<ol>
+<li>En Inicio, tocá <strong>Sujeto</strong>. También podés elegir <strong>Crear sujeto nuevo</strong> al buscar a alguien desde una medición.</li>
+<li>Ingresá el <strong>DNI</strong> sin puntos, <strong>Nombre</strong>, <strong>Apellido</strong> y <strong>Fecha de nacimiento</strong> en formato día/mes/año.</li>
+<li>Elegí <strong>Sexo</strong> y completá las opciones <strong>Población rural</strong> y <strong>Población indígena</strong> según corresponda.</li>
+<li>Tocá <strong>Guardar</strong> y verificá el aviso de guardado.</li>
+<li>Si llegaste desde la selección de una medición, continuá con el sujeto recién creado.</li>
+</ol>
+<p>La fecha de nacimiento no puede ser futura. Revisá los mensajes debajo de cada campo si el formulario no permite guardar. Si ya existe una persona con ese DNI, revisá el registro existente antes de crear otra.</p>
+<p>Si una carga local se reconcilia con una persona que ya estaba registrada, Historial muestra <strong>Ya existía</strong>. Revisá el resultado antes de repetir el alta.</p>
+<p><figure id="captura-app-sujeto-alta" class="mobile"><img src="assets/app-sujeto-alta.png" alt="Alta de un sujeto desde la app" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Alta de un sujeto desde la app" loading="lazy"><figcaption><b>APP ANDROID</b>Alta de un sujeto desde la app</figcaption></figure></p>
+<h2 id="c2-22-buscar-al-sujeto-y-preparar-la-medicion">2.2 Buscar al sujeto y preparar la medición</h2>
+<p><strong>Dónde:</strong> app → Inicio → <strong>Medición</strong>.</p>
+<ol>
+<li>Tocá <strong>Seleccionar sujeto</strong>.</li>
+<li>Buscá por nombre o DNI y elegí la persona correcta.</li>
+<li>Confirmá el nombre y el DNI que aparecen en el encabezado del formulario.</li>
+<li>Si elegiste otra persona por error, tocá <strong>Cambiar</strong>.</li>
+<li>Revisá el establecimiento de la medición. Debe ser el lugar al que corresponde esta carga.</li>
+</ol>
+<p>La búsqueda de sujetos existentes consulta al servidor. En esta versión, haber abierto el listado antes no garantiza poder volver a buscar sin conexión. Seleccioná al sujeto con conexión antes de continuar la medición, o usá la creación de un sujeto desde el formulario cuando corresponda. Si aparece <strong>No se pudieron cargar los sujetos</strong>, recuperá conexión y tocá <strong>Reintentar</strong>.</p>
+<p><figure id="captura-app-sujeto-buscar" class="mobile"><img src="assets/app-sujeto-buscar.png" alt="Selección del sujeto por nombre o DNI" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Selección del sujeto por nombre o DNI" loading="lazy"><figcaption><b>APP ANDROID</b>Selección del sujeto por nombre o DNI</figcaption></figure></p>
+<h2 id="c2-23-cargar-peso-talla-y-observaciones">2.3 Cargar peso, talla y observaciones</h2>
+<ol>
+<li>Completá <strong>Peso (kg)</strong> y <strong>Talla (cm)</strong>. No ingreses la talla en metros.</li>
+<li>Si hace falta, agregá una <strong>Observación (opcional)</strong> de hasta 500 caracteres.</li>
+<li>Revisá la <strong>Fecha de medición</strong> que muestra el formulario. La app asigna el momento de la carga; ese campo no es un selector de fecha retroactiva.</li>
+<li>Tocá <strong>Guardar</strong>.</li>
+<li>Comprobá <strong>Medición guardada</strong> y después el estado de sincronización.</li>
+</ol>
+<p>El formulario controla campos vacíos y valores fuera del rango permitido. Corregí el valor señalado y volvé a guardar. Si falla el guardado local, conservá los datos del formulario para reintentar.</p>
+<p><figure id="captura-app-medicion-completa" class="mobile"><img src="assets/app-medicion-completa.png" alt="Formulario de medición con el sujeto elegido" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Formulario de medición con el sujeto elegido" loading="lazy"><figcaption><b>APP ANDROID</b>Formulario de medición con el sujeto elegido</figcaption></figure></p>
+<h2 id="c2-24-revisar-una-medicion-que-genera-una-alerta">2.4 Revisar una medición que genera una alerta</h2>
+<p>Si los valores ingresados generarían una alerta, la app muestra <strong>Revisá las medidas</strong> antes de guardarlos.</p>
+<ol>
+<li>Compará el peso y la talla del diálogo con los valores que pretendías ingresar.</li>
+<li>Elegí <strong>Corregir</strong> si hay un error. Los datos permanecen en el formulario.</li>
+<li>Si los valores son los que querés registrar, elegí <strong>Confirmar y guardar</strong>.</li>
+<li>Revisá el aviso de guardado y su sincronización.</li>
+</ol>
+<p>Cerrar el diálogo o volver atrás no confirma la carga. Cambiar el sujeto, el comedor o las medidas obliga a revisar la nueva combinación antes de confirmar. Las medidas que no requieren esa revisión se guardan directamente.</p>
+<p>La alerta mostrada en esta instancia se calcula con los datos conocidos por la app. El resultado del registro sincronizado es el que podrá consultar el equipo en el sistema.</p>
+<p><figure id="captura-app-medicion-confirmacion" class="mobile"><img src="assets/app-medicion-confirmacion.png" alt="Confirmación de medidas antes del guardado" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Confirmación de medidas antes del guardado" loading="lazy"><figcaption><b>APP ANDROID</b>Confirmación de medidas antes del guardado</figcaption></figure></p>
+<h2 id="c2-25-cargar-sin-conexion-y-comprobar-la-subida">2.5 Cargar sin conexión y comprobar la subida</h2>
+<p>La app permite guardar sujetos y mediciones en el dispositivo y subirlos al recuperar conexión. No hace falta repetir la carga por el solo hecho de estar sin internet.</p>
+<table>
+<thead>
+<tr>
+<th>Aviso de Inicio</th>
+<th>Qué hacer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Todo sincronizado</strong></td>
+<td>Las colas no muestran cargas pendientes. Consultá Historial si necesitás comprobar un registro concreto.</td>
+</tr>
+<tr>
+<td><strong>Sin conexión</strong> y registros que «se subirán al reconectar»</td>
+<td>Conservá el dispositivo y recuperá conectividad para subirlos.</td>
+</tr>
+<tr>
+<td><strong>Sin subir / Sincronizar</strong></td>
+<td>Tocá <strong>Sincronizar</strong> y esperá el resultado.</td>
+</tr>
+<tr>
+<td><strong>Sincronizando…</strong></td>
+<td>Esperá a que termine antes de dar por finalizado el trabajo.</td>
+</tr>
+<tr>
+<td><strong>Con error</strong></td>
+<td>Abrí Historial, revisá la causa y usá la acción de reintento disponible.</td>
+</tr>
+</tbody>
+</table>
+<p>En <strong>Historial</strong>, seleccioná el tipo de carga y revisá sus estados. Una persona creada sin conexión debe sincronizarse antes que sus mediciones asociadas; la app coordina esa secuencia.</p>
+<p><figure id="captura-app-pendiente-offline" class="mobile"><img src="assets/app-pendiente-offline.png" alt="Medición guardada en el teléfono mientras no hay conexión" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Medición guardada en el teléfono mientras no hay conexión" loading="lazy"><figcaption><b>APP ANDROID</b>Medición guardada en el teléfono mientras no hay conexión</figcaption></figure></p>
+<p><figure id="captura-app-mediciones-historial" class="mobile"><img src="assets/app-mediciones-historial.png" alt="Registro sincronizado en el historial de mediciones" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Registro sincronizado en el historial de mediciones" loading="lazy"><figcaption><b>APP ANDROID</b>Registro sincronizado en el historial de mediciones</figcaption></figure></p>
+<p>No borres datos de la aplicación ni la reinstales para resolver una carga pendiente. Si el error persiste, comunicá al equipo qué registro y qué mensaje aparecen.</p>
+<p>La acción <strong>Eliminar</strong> de un historial local requiere especial cuidado: quitar una carga del teléfono no es un procedimiento para borrar una medición ya registrada en el sistema. No elimines una carga pendiente que todavía necesitás enviar.</p>
+<h2 id="c2-26-consultar-sujetos-desde-el-backoffice">2.6 Consultar sujetos desde el backoffice</h2>
+<p><strong>Quién:</strong> analista o administrador. <strong>Dónde:</strong> <strong>Sujetos</strong>.</p>
+<ol>
+<li>Buscá por nombre, apellido o documento.</li>
+<li>Abrí <strong>Filtros</strong> para acotar por fecha de nacimiento, establecimiento, zona rural, población indígena o sexo.</li>
+<li>Ordená el listado y cambiá de página si hace falta.</li>
+<li>Abrí la fila de una persona para ver sus datos y el último relevamiento.</li>
+</ol>
+<p>En el listado general, el último relevamiento puede pertenecer a cualquiera de los comedores. En la ficha de un establecimiento, la lectura de sus sujetos se refiere al último relevamiento <strong>en ese comedor</strong>. Comprobá el contexto antes de comparar las dos pantallas.</p>
+<p><figure id="captura-web-sujetos" class="web"><img src="assets/web-sujetos.png" alt="Listado de sujetos" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Listado de sujetos" loading="lazy"><figcaption><b>BACKOFFICE</b>Listado de sujetos</figcaption></figure></p>
+<p><figure id="captura-web-sujeto-detalle" class="web"><img src="assets/web-sujeto-detalle.png" alt="Detalle del sujeto y su último relevamiento al abrir la fila" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Detalle del sujeto y su último relevamiento al abrir la fila" loading="lazy"><figcaption><b>BACKOFFICE</b>Detalle del sujeto y su último relevamiento al abrir la fila</figcaption></figure></p>
+<h2 id="c2-27-consultar-mediciones-y-evolucion">2.7 Consultar mediciones y evolución</h2>
+<p><strong>Dónde:</strong> backoffice → <strong>Mediciones</strong>.</p>
+<ol>
+<li>Revisá peso, talla, IMC, fecha, sujeto, comedor, responsable, alertas y observaciones.</li>
+<li>Usá los filtros de fechas, edades y ubicación que muestra la pantalla para acotar la búsqueda.</li>
+<li>Elegí el orden que te resulte útil y tocá <strong>Actualizar</strong> para consultar las últimas cargas.</li>
+<li>Abrí una fila para ver la <strong>Evolución</strong> de esa persona, con el gráfico de peso y talla y las observaciones disponibles.</li>
+</ol>
+<p>Si una carga de la app no aparece, revisá primero que esté sincronizada y después comprobá filtros, fechas y establecimiento. Un rango con la fecha inicial posterior a la final, o la edad mínima mayor que la máxima, debe corregirse antes de consultar.</p>
+<p><figure id="captura-web-mediciones" class="web"><img src="assets/web-mediciones.png" alt="Mediciones y alertas disponibles para el equipo" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Mediciones y alertas disponibles para el equipo" loading="lazy"><figcaption><b>BACKOFFICE</b>Mediciones y alertas disponibles para el equipo</figcaption></figure></p>
+<p><figure id="captura-web-evolucion" class="web"><img src="assets/web-evolucion.png" alt="Evolución de peso y talla al abrir una medición" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Evolución de peso y talla al abrir una medición" loading="lazy"><figcaption><b>BACKOFFICE</b>Evolución de peso y talla al abrir una medición</figcaption></figure></p>
+<h2 id="c2-28-revisar-el-establecimiento-y-exportar">2.8 Revisar el establecimiento y exportar</h2>
+<p>En <strong>Establecimientos</strong>, abrí el comedor. La cabecera resume sus sujetos, promedios, último relevamiento y estado de alerta. La pestaña <strong>Sujetos</strong> permite revisar los registros que componen ese contexto.</p>
+<p><strong>Sin datos</strong> significa que todavía no hay información suficiente para mostrar esa lectura; no equivale a un resultado «Normal».</p>
+<p>Las acciones <strong>Exportar CSV</strong> de establecimientos, sujetos y mediciones descargan el listado correspondiente. Configurá primero los filtros y comprobá el archivo descargado. La exportación sirve para continuar el trabajo fuera del panel; la consulta del sistema sigue mostrando las actualizaciones posteriores.</p>
+<p><figure id="captura-web-comedor" class="web"><img src="assets/web-comedor.png" alt="Resumen de seguimiento del comedor" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Resumen de seguimiento del comedor" loading="lazy"><figcaption><b>BACKOFFICE</b>Resumen de seguimiento del comedor</figcaption></figure></p></section><section class="chapter" id="chapter-3"><h1 id="c3-3-encuestas">3. Encuestas</h1>
+<h2 id="c3-recorrido-completo">Recorrido completo</h2>
+<p><strong>Backoffice:</strong> diseñar o partir de FIES → guardar → activar. <strong>App:</strong> elegir la encuesta → identificar el destinatario → responder → guardar y sincronizar. <strong>Backoffice:</strong> consultar respuestas e indicadores → filtrar → exportar.</p>
+<h2 id="c3-31-crear-una-encuesta-personalizada">3.1 Crear una encuesta personalizada</h2>
+<p><strong>Quién:</strong> administrador o analista. <strong>Dónde:</strong> backoffice → <strong>Encuestas → Crear encuesta</strong>.</p>
+<ol>
+<li>Completá <strong>Nombre</strong> y, si corresponde, <strong>Descripción</strong>.</li>
+<li>Elegí el <strong>Destino de las respuestas</strong>:</li>
+<li><strong>Sujeto:</strong> cada respuesta se vincula a una persona registrada.</li>
+<li><strong>Establecimiento:</strong> cada respuesta corresponde a un comedor.</li>
+<li><strong>Anónima:</strong> no se asocia a una persona ni a un establecimiento.</li>
+<li>Decidí si vas a <strong>Requerir número de respuesta</strong>. Aunque sea opcional, la app conserva el campo.</li>
+<li>Escribí cada pregunta y elegí su tipo: <strong>Texto libre</strong>, <strong>Selección única</strong>, <strong>Selección múltiple</strong>, <strong>Numérica</strong> o <strong>Fecha</strong>.</li>
+<li>Marcá <strong>Obligatoria</strong> cuando corresponda. Para preguntas de selección, agregá las opciones necesarias.</li>
+<li>Usá <strong>Agregar pregunta</strong> para completar el formulario y tocá <strong>Guardar</strong>.</li>
+</ol>
+<p>La encuesta admite hasta 30 preguntas. El nombre debe distinguirla de las existentes. Una pregunta de selección necesita opciones; una pregunta de texto, número o fecha no usa una lista de opciones.</p>
+<p><figure id="captura-web-encuesta-nueva" class="web"><img src="assets/web-encuesta-nueva.png" alt="Configuración de una encuesta personalizada" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Configuración de una encuesta personalizada" loading="lazy"><figcaption><b>BACKOFFICE</b>Configuración de una encuesta personalizada</figcaption></figure></p>
+<h2 id="c3-32-partir-de-la-plantilla-fies">3.2 Partir de la plantilla FIES</h2>
+<p>Desde la creación de encuestas, elegí la opción de plantilla <strong>FIES</strong> que ofrece el panel. Revisá las preguntas precargadas, completá el nombre del relevamiento y guardá.</p>
+<p>FIES es un instrumento específico: si necesitás conservar su evaluación, mantené la estructura y las respuestas previstas por la plantilla. Para otro cuestionario, usá una encuesta personalizada. El <strong>Score FIES</strong> se consulta cuando corresponde a las respuestas de ese instrumento; no es una puntuación genérica para cualquier encuesta.</p>
+<p><figure id="captura-web-fies-crear" class="web"><img src="assets/web-fies-crear.png" alt="Formulario preparado con las ocho preguntas de la plantilla FIES" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Formulario preparado con las ocho preguntas de la plantilla FIES" loading="lazy"><figcaption><b>BACKOFFICE</b>Formulario preparado con las ocho preguntas de la plantilla FIES</figcaption></figure></p>
+<h2 id="c3-33-activar-desactivar-duplicar-y-eliminar">3.3 Activar, desactivar, duplicar y eliminar</h2>
+<p><strong>Dónde:</strong> backoffice → <strong>Encuestas → Más acciones</strong> de la fila correspondiente.</p>
+<p>Los administradores pueden modificar cualquier encuesta. Un analista puede modificar las que creó; para cambiar una de otra persona debe coordinar con su autor o con un administrador. La eliminación desde el backoffice está reservada a administradores.</p>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Resultado y precaución</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Activar</strong></td>
+<td>La encuesta queda habilitada para recibir respuestas. Confirmá la acción.</td>
+</tr>
+<tr>
+<td><strong>Desactivar</strong></td>
+<td>Deja de aceptar nuevas respuestas; sus resultados anteriores siguen siendo consultables.</td>
+</tr>
+<tr>
+<td><strong>Duplicar</strong></td>
+<td>Crea otra encuesta para preparar un nuevo relevamiento. Revisá el nombre, contenido y estado de la copia.</td>
+</tr>
+<tr>
+<td><strong>Editar</strong></td>
+<td>Abre su configuración. Con respuestas registradas se aplican restricciones.</td>
+</tr>
+<tr>
+<td><strong>Eliminar</strong></td>
+<td>Disponible según permisos y condiciones. Una encuesta con respuestas no se elimina. Confirmar el borrado es definitivo.</td>
+</tr>
+</tbody>
+</table>
+<p>Para cambiar el instrumento de un relevamiento ya iniciado, prepará una nueva encuesta o duplicala en lugar de alterar el significado de respuestas existentes.</p>
+<p><figure id="captura-web-encuesta-acciones" class="web"><img src="assets/web-encuesta-acciones.png" alt="Menú de acciones de una encuesta: editar, duplicar y cambiar su estado" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Menú de acciones de una encuesta: editar, duplicar y cambiar su estado" loading="lazy"><figcaption><b>BACKOFFICE</b>Menú de acciones de una encuesta: editar, duplicar y cambiar su estado</figcaption></figure></p>
+<h2 id="c3-34-editar-despues-de-recibir-respuestas">3.4 Editar después de recibir respuestas</h2>
+<p>El formulario muestra un aviso cuando la encuesta ya tiene respuestas. En ese estado no se puede cambiar el destino ni la obligatoriedad del número, eliminar preguntas, cambiar su tipo, volver obligatoria una pregunta opcional o agregar preguntas nuevas obligatorias. El panel también restringe la eliminación de opciones existentes.</p>
+<p>Si alguien respondió mientras editabas y el guardado informa un conflicto, recargá la encuesta y revisá las restricciones actuales. No repitas el guardado de una configuración anterior sin revisar el mensaje.</p>
+<p><figure id="captura-web-encuesta-editar" class="web"><img src="assets/web-encuesta-editar.png" alt="Editor de una encuesta existente" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Editor de una encuesta existente" loading="lazy"><figcaption><b>BACKOFFICE</b>Editor de una encuesta existente</figcaption></figure></p>
+<h2 id="c3-35-elegir-y-responder-desde-la-app">3.5 Elegir y responder desde la app</h2>
+<p><strong>Antes de empezar:</strong> asegurate de tener cargado el sujeto o de haber elegido el establecimiento, según el destino del cuestionario.</p>
+<ol>
+<li>En Inicio, tocá <strong>Encuesta</strong> y elegí una encuesta disponible.</li>
+<li>Si es de sujetos, seleccioná la persona y comprobá su identidad.</li>
+<li>Si es de establecimientos, verificá el comedor del encabezado. Si es anónima, el formulario indica <strong>Anónima</strong>.</li>
+<li>Ingresá el <strong>Número de respuesta</strong> si corresponde. El rango admitido es de 1 a 999999.</li>
+<li>Contestá las preguntas. En selección única elegís una opción; en selección múltiple podés marcar varias.</li>
+<li>Tocá <strong>Guardar</strong>, corregí los campos señalados y comprobá el resultado.</li>
+<li>Revisá la sincronización desde Inicio o Historial.</li>
+</ol>
+<p>Para un sujeto o establecimiento se admite una respuesta por encuesta. Al guardar, la app vuelve al listado para evitar otra carga para ese mismo destinatario. Las encuestas anónimas permiten realizar varias entrevistas: la app limpia las respuestas y propone el siguiente número.</p>
+<p>El número de respuesta sirve para identificar el relevamiento, pero puede repetirse. No reemplaza la comprobación del destinatario.</p>
+<p><figure id="captura-app-encuesta-completa" class="mobile"><img src="assets/app-encuesta-completa.png" alt="Encuesta completada para un sujeto desde Android" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Encuesta completada para un sujeto desde Android" loading="lazy"><figcaption><b>APP ANDROID</b>Encuesta completada para un sujeto desde Android</figcaption></figure></p>
+<p><figure id="captura-app-encuesta-anonima" class="mobile"><img src="assets/app-encuesta-anonima.png" alt="Formulario de una encuesta anónima, sin seleccionar sujeto ni comedor" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Formulario de una encuesta anónima, sin seleccionar sujeto ni comedor" loading="lazy"><figcaption><b>APP ANDROID</b>Formulario de una encuesta anónima, sin seleccionar sujeto ni comedor</figcaption></figure></p>
+<h2 id="c3-36-responder-sin-conexion-y-resolver-errores">3.6 Responder sin conexión y resolver errores</h2>
+<p>Con conexión, abrí las encuestas que necesitás antes de ir a terreno. Sin internet, la app muestra <strong>Mostrando encuestas guardadas</strong> y depende de los formularios y destinatarios disponibles en el teléfono.</p>
+<p><figure id="captura-app-encuestas-sin-conexion" class="mobile"><img src="assets/app-encuestas-sin-conexion.png" alt="Listado de encuestas guardadas disponible al abrir la app sin conexión" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Listado de encuestas guardadas disponible al abrir la app sin conexión" loading="lazy"><figcaption><b>APP ANDROID</b>Listado de encuestas guardadas disponible al abrir la app sin conexión</figcaption></figure></p>
+<p>Las respuestas guardadas localmente se suben al recuperar conectividad. Si la encuesta fue desactivada antes de que la carga llegue al servidor, puede ser rechazada: revisá Historial y coordiná con quien administra el relevamiento.</p>
+<p>Si una carga pendiente necesita completar el número, abrí <strong>Agregar número</strong>, ingresá un valor válido y usá <strong>Guardar y reenviar</strong>. Si el destinatario ya respondió, revisá la respuesta existente en lugar de crear otra.</p>
+<h2 id="c3-37-consultar-y-corregir-una-respuesta-en-la-app">3.7 Consultar y corregir una respuesta en la app</h2>
+<p>Desde <strong>Historial</strong>, entrá a las respuestas de encuestas y abrí el registro. El detalle permite revisar el cuestionario respondido y su número.</p>
+<p>Cuando aparece <strong>Editar</strong>, corregí los campos necesarios y elegí <strong>Guardar cambios</strong>. Revisá el estado de la edición y la acción <strong>Reintentar edición</strong> si aparece. Una modificación pendiente todavía debe sincronizarse antes de considerarla compartida con el equipo.</p>
+<p><figure id="captura-app-encuesta-detalle" class="mobile"><img src="assets/app-encuesta-detalle.png" alt="Detalle de una respuesta sincronizada en la app" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Detalle de una respuesta sincronizada en la app" loading="lazy"><figcaption><b>APP ANDROID</b>Detalle de una respuesta sincronizada en la app</figcaption></figure></p>
+<p><figure id="captura-app-encuesta-editar" class="mobile"><img src="assets/app-encuesta-editar.png" alt="Formulario para corregir una respuesta y guardar los cambios" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Formulario para corregir una respuesta y guardar los cambios" loading="lazy"><figcaption><b>APP ANDROID</b>Formulario para corregir una respuesta y guardar los cambios</figcaption></figure></p>
+<h2 id="c3-38-consultar-resultados-y-exportarlos">3.8 Consultar resultados y exportarlos</h2>
+<p><strong>Dónde:</strong> backoffice → <strong>Encuestas → Ver respuestas</strong>.</p>
+<ol>
+<li>Revisá el destino de la encuesta y la cantidad de respuestas.</li>
+<li>Usá los filtros de fecha, ubicación, entidad, persona que completó y número de respuesta disponibles para ese relevamiento.</li>
+<li>Para números, elegí búsqueda exacta o por intervalo; el valor «desde» no puede superar al valor «hasta».</li>
+<li>Abrí una respuesta para consultar sus preguntas y respuestas completas.</li>
+<li>Usá <strong>Exportar</strong> para descargar las respuestas en un archivo Excel (<code>.xlsx</code>).</li>
+<li>Comprobá el archivo descargado y que corresponde a la selección filtrada.</li>
+</ol>
+<p>La pantalla <strong>Inicio</strong> del backoffice reúne indicadores generales, como cantidad de respuestas y último relevamiento. La ausencia de resultados puede deberse a filtros, a que todavía no hubo respuestas o a que la app no terminó de sincronizar.</p>
+<p><figure id="captura-web-encuesta-exportar" class="web"><img src="assets/web-encuesta-exportar.png" alt="Filtros de respuestas y botón Exportar para descargar el archivo Excel" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Filtros de respuestas y botón Exportar para descargar el archivo Excel" loading="lazy"><figcaption><b>BACKOFFICE</b>Filtros de respuestas y botón Exportar para descargar el archivo Excel</figcaption></figure></p>
+<p><figure id="captura-web-encuesta-respuesta-detalle" class="web"><img src="assets/web-encuesta-respuesta-detalle.png" alt="Detalle de las respuestas al abrir un relevamiento desde el backoffice" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Detalle de las respuestas al abrir un relevamiento desde el backoffice" loading="lazy"><figcaption><b>BACKOFFICE</b>Detalle de las respuestas al abrir un relevamiento desde el backoffice</figcaption></figure></p></section><section class="chapter" id="chapter-4"><h1 id="c4-4-nutrir">4. Nutrir</h1>
+<h2 id="c4-recorrido-completo">Recorrido completo</h2>
+<p><strong>App o backoffice:</strong> registrar los alimentos recibidos → revisar el stock → registrar su salida o elegir una receta → comprobar el movimiento y el stock actualizado.</p>
+<p>Trabajá siempre sobre el comedor correcto. Los ingresos, egresos y las confirmaciones de recetas requieren conexión; no tienen el mismo circuito de guardado offline que las mediciones.</p>
+<h2 id="c4-41-abrir-alimentos-y-consultar-existencias">4.1 Abrir Alimentos y consultar existencias</h2>
+<p><strong>Dónde:</strong> app → Inicio → <strong>Alimentos</strong>.</p>
+<p>La pantalla muestra el stock actual y los últimos movimientos del establecimiento elegido. Desde allí podés <strong>Registrar ingreso</strong>, <strong>Registrar con recibo</strong>, <strong>Registrar egreso</strong>, <strong>Ver todo el stock</strong> o abrir <strong>Recetas con el stock disponible</strong>.</p>
+<p>En <strong>Stock</strong>, filtrá por categoría y elegí el orden que te resulte útil. Cada alimento muestra su unidad y cantidad. <strong>Sin alimentos disponibles</strong> indica que no hay existencias para esa consulta; si elegiste una categoría, probá quitar el filtro.</p>
+<p>En el backoffice, abrí <strong>Establecimientos → comedor → Stock</strong>. La tabla permite consultar cantidades, categorías, unidades y última actualización, filtrar y descargar <strong>Exportar CSV</strong>.</p>
+<p><figure id="captura-app-alimentos" class="mobile"><img src="assets/app-alimentos.png" alt="Vista de Alimentos desde la app" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Vista de Alimentos desde la app" loading="lazy"><figcaption><b>APP ANDROID</b>Vista de Alimentos desde la app</figcaption></figure></p>
+<p><figure id="captura-web-stock" class="web"><img src="assets/web-stock.png" alt="Existencias del comedor en el backoffice" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Existencias del comedor en el backoffice" loading="lazy"><figcaption><b>BACKOFFICE</b>Existencias del comedor en el backoffice</figcaption></figure></p>
+<h2 id="c4-42-registrar-un-ingreso-manual-desde-la-app">4.2 Registrar un ingreso manual desde la app</h2>
+<ol>
+<li>En <strong>Alimentos</strong>, tocá <strong>Registrar ingreso</strong>.</li>
+<li>Confirmá el establecimiento y completá la <strong>Fecha de recepción</strong>. No puede ser futura.</li>
+<li>Indicá el <strong>Origen del alimento</strong> y si el aporte es <strong>Único</strong> o <strong>Recurrente</strong>.</li>
+<li>En <strong>Agregar alimento</strong>, buscá en el catálogo y seleccioná el alimento correcto.</li>
+<li>Ingresá la cantidad en la unidad que muestra la línea. Repetí el paso para cada alimento recibido.</li>
+<li>Agregá comentarios si corresponde y tocá <strong>Registrar ingreso</strong>.</li>
+<li>Comprobá el resultado en el stock y el historial.</li>
+</ol>
+<p>El catálogo determina la unidad: kilogramos, litros o unidades. No conviertas una bolsa o una caja a «unidades» si el alimento está expresado en kilogramos; registrá la cantidad en la unidad indicada.</p>
+<p>El formulario requiere al menos un alimento y cantidades positivas. Si falla la conexión al guardar, revisá el mensaje y el historial antes de iniciar un ingreso nuevo.</p>
+<p><figure id="captura-app-ingreso-completo" class="mobile"><img src="assets/app-ingreso-completo.png" alt="Ingreso manual de alimentos con origen y tipo de aporte" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Ingreso manual de alimentos con origen y tipo de aporte" loading="lazy"><figcaption><b>APP ANDROID</b>Ingreso manual de alimentos con origen y tipo de aporte</figcaption></figure></p>
+<p><figure id="captura-app-ingreso-registrado" class="mobile"><img src="assets/app-ingreso-registrado.png" alt="Resultado del ingreso: stock y últimos movimientos actualizados" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Resultado del ingreso: stock y últimos movimientos actualizados" loading="lazy"><figcaption><b>APP ANDROID</b>Resultado del ingreso: stock y últimos movimientos actualizados</figcaption></figure></p>
+<h2 id="c4-43-registrar-alimentos-a-partir-de-un-recibo">4.3 Registrar alimentos a partir de un recibo</h2>
+<p><strong>Dónde:</strong> app → <strong>Alimentos → Registrar con recibo</strong>.</p>
+<ol>
+<li>Elegí o tomá una foto legible del recibo. Incluí el documento completo y evitá reflejos o texto cortado.</li>
+<li>Tocá <strong>Procesar recibo</strong> y esperá el análisis. Podés cancelar si necesitás volver.</li>
+<li>Revisá la fecha propuesta, el origen, el tipo de aporte y cada línea de alimento.</li>
+<li>Corregí la coincidencia del catálogo, la cantidad y la unidad cuando haga falta. El texto detectado del recibo se muestra como referencia.</li>
+<li>Marcá cada línea como revisada y agregá o quitá alimentos para que el registro coincida con lo recibido.</li>
+<li>Tocá <strong>Guardar ingreso</strong> y comprobá el movimiento registrado.</li>
+</ol>
+<p>El análisis prepara una propuesta: <strong>no registra automáticamente el ingreso</strong>. La revisión es parte del trabajo. Si el análisis no está disponible, la opción <strong>Cargar manualmente con esta foto</strong> permite continuar la revisión manual cuando la pantalla la ofrece.</p>
+<p><strong>Limitación comprobada en esta edición:</strong> el análisis automático puede terminar en <strong>No se pudo completar. Reintentá con este mismo recibo</strong> por una incompatibilidad entre la app y el backend. Para continuar, elegí <strong>Cargar manualmente con esta foto</strong>, seleccioná los alimentos y completá las cantidades. Consultá al equipo antes de repetir el análisis indefinidamente.</p>
+<p><figure id="captura-app-recibo-foto" class="mobile"><img src="assets/app-recibo-foto.png" alt="Foto de demostración antes de procesar el recibo" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Foto de demostración antes de procesar el recibo" loading="lazy"><figcaption><b>APP ANDROID</b>Foto de demostración antes de procesar el recibo</figcaption></figure></p>
+<p>Si la imagen no es válida, resulta demasiado grande o no se puede procesar, elegí otra foto. Si falla el guardado, usá <strong>Reintentar guardado</strong> con ese mismo recibo después de revisar el estado. <strong>Descartar recibo</strong> elimina la preparación de esa carga; confirmalo solo si querés abandonar ese trabajo.</p>
+<p><figure id="captura-app-recibo-listo" class="mobile"><img src="assets/app-recibo-listo.png" alt="Ingreso con foto revisado manualmente y listo para guardar" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Ingreso con foto revisado manualmente y listo para guardar" loading="lazy"><figcaption><b>APP ANDROID</b>Ingreso con foto revisado manualmente y listo para guardar</figcaption></figure></p>
+<h2 id="c4-44-registrar-un-egreso">4.4 Registrar un egreso</h2>
+<p><strong>Dónde:</strong> app → <strong>Alimentos → Registrar egreso</strong>.</p>
+<ol>
+<li>Comprobá el comedor y completá la <strong>Fecha del egreso</strong>.</li>
+<li>Indicá el <strong>Destino del egreso</strong>: entrega a familias, cocina, descarte u otro, según corresponda.</li>
+<li>Seleccioná los alimentos desde el stock disponible; podés filtrar por categoría.</li>
+<li>Ingresá las cantidades y agregá comentarios si hacen falta.</li>
+<li>Tocá <strong>Registrar egreso</strong>.</li>
+<li>Revisá el movimiento y el saldo restante en Stock.</li>
+</ol>
+<p>No se puede retirar más de lo disponible. El stock puede cambiar mientras otra persona registra un movimiento: si el sistema informa existencias insuficientes, actualizá la consulta y ajustá las cantidades antes de volver a guardar.</p>
+<p><figure id="captura-app-egreso-completo" class="mobile"><img src="assets/app-egreso-completo.png" alt="Egreso de alimentos destinado a cocina" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Egreso de alimentos destinado a cocina" loading="lazy"><figcaption><b>APP ANDROID</b>Egreso de alimentos destinado a cocina</figcaption></figure></p>
+<h2 id="c4-45-registrar-movimientos-desde-el-backoffice">4.5 Registrar movimientos desde el backoffice</h2>
+<p><strong>Quién:</strong> administrador o analista con acceso a las acciones correspondientes. <strong>Dónde:</strong> ficha del establecimiento → <strong>Stock → Registrar movimiento</strong>.</p>
+<ol>
+<li>Elegí si se trata de un ingreso o un egreso.</li>
+<li>Completá fecha, alimentos, cantidades y comentarios según el formulario.</li>
+<li>Para un egreso, elegí también su destino. Para un ingreso, indicá el origen y si el aporte es único o recurrente.</li>
+<li>Guardá y verificá <strong>Movimiento registrado</strong>.</li>
+<li>Usá <strong>Ver movimiento</strong> o <strong>Historial de Movimientos</strong> para comprobar el registro.</li>
+</ol>
+<p>Si se informa que el movimiento ya estaba registrado, abrí el guardado y revisalo antes de volver a cargarlo.</p>
+<p><figure id="captura-web-movimiento-registrar" class="web"><img src="assets/web-movimiento-registrar.png" alt="Formulario para registrar un movimiento desde el backoffice" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Formulario para registrar un movimiento desde el backoffice" loading="lazy"><figcaption><b>BACKOFFICE</b>Formulario para registrar un movimiento desde el backoffice</figcaption></figure></p>
+<h2 id="c4-46-consultar-historial-y-detalle">4.6 Consultar historial y detalle</h2>
+<p>En la app, abrí <strong>Alimentos → Ver todo</strong> en movimientos. En el backoffice, elegí <strong>Stock → Historial de Movimientos</strong>.</p>
+<ol>
+<li>Filtrá por dirección del movimiento, fechas, alimento y las opciones disponibles.</li>
+<li>Comprobá que la fecha inicial no sea posterior a la final.</li>
+<li>Abrí un ingreso o egreso para revisar fecha, responsable, comentarios, alimentos, cantidades y unidad.</li>
+<li>Si no encontrás un movimiento, quitá los filtros y comprobá el establecimiento.</li>
+</ol>
+<p>No confundas <strong>Historial</strong> de tus cargas en la app con el historial completo de movimientos del comedor: pueden tener alcances diferentes.</p>
+<p><figure id="captura-web-movimientos" class="web"><img src="assets/web-movimientos.png" alt="Historial de movimientos del establecimiento" width="1440" height="1000" tabindex="0" role="button" aria-label="Ampliar: Historial de movimientos del establecimiento" loading="lazy"><figcaption><b>BACKOFFICE</b>Historial de movimientos del establecimiento</figcaption></figure></p>
+<p><figure id="captura-app-movimientos" class="mobile"><img src="assets/app-movimientos.png" alt="Consulta de los movimientos del comedor desde la app" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Consulta de los movimientos del comedor desde la app" loading="lazy"><figcaption><b>APP ANDROID</b>Consulta de los movimientos del comedor desde la app</figcaption></figure></p>
+<p><figure id="captura-app-movimiento-detalle" class="mobile"><img src="assets/app-movimiento-detalle.png" alt="Detalle de un egreso al abrirlo desde el historial de la app" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Detalle de un egreso al abrirlo desde el historial de la app" loading="lazy"><figcaption><b>APP ANDROID</b>Detalle de un egreso al abrirlo desde el historial de la app</figcaption></figure></p>
+<h2 id="c4-47-solicitar-propuestas-de-recetas">4.7 Solicitar propuestas de recetas</h2>
+<p><strong>Dónde:</strong> app → Inicio → <strong>Recetas</strong>, o <strong>Alimentos → Recetas con el stock disponible</strong>.</p>
+<ol>
+<li>Elegí el comedor y verificá sus existencias.</li>
+<li>En <strong>Generar</strong>, completá <strong>¿Cuántos chicos comen hoy?</strong> con un número entero positivo.</li>
+<li>Elegí el <strong>Tipo de comida</strong>: desayuno, almuerzo, merienda o cena.</li>
+<li>Tocá <strong>Buscar propuestas</strong> y esperá. El formulario informa que la preparación puede tardar unos minutos.</li>
+<li>Revisá las propuestas disponibles: nombre, porciones, ingredientes, cantidades, preparación y los indicadores y restricciones que se muestran.</li>
+</ol>
+<p>Si no hay stock suficiente, el sistema no puede preparar una propuesta viable. Si la generación falla, revisá el mensaje y usá el reintento disponible. Una falta de conexión o un límite temporal no se resuelve creando repetidamente el mismo pedido.</p>
+<p>Completar la ficha del establecimiento aporta contexto sobre la cocina y la comunidad. El formulario de recetas no pide inventar ingredientes que el comedor no tiene.</p>
+<p><figure id="captura-app-recetas-generar" class="mobile"><img src="assets/app-recetas-generar.png" alt="Generación de propuestas para un comedor y una cantidad de chicos" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Generación de propuestas para un comedor y una cantidad de chicos" loading="lazy"><figcaption><b>APP ANDROID</b>Generación de propuestas para un comedor y una cantidad de chicos</figcaption></figure></p>
+<p>La propuesta puede advertir que no alcanza todos los objetivos. Abrí <strong>Ver preparación y nutrientes</strong> para revisar los pasos, indicadores y faltantes antes de decidir. El ejemplo de esta guía usa intencionalmente un stock limitado para mostrar ese aviso.</p>
+<p><figure id="captura-app-recetas-propuesta" class="mobile"><img src="assets/app-recetas-propuesta.png" alt="Propuesta de receta con las advertencias que conviene revisar antes de elegirla" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Propuesta de receta con las advertencias que conviene revisar antes de elegirla" loading="lazy"><figcaption><b>APP ANDROID</b>Propuesta de receta con las advertencias que conviene revisar antes de elegirla</figcaption></figure></p>
+<h2 id="c4-48-elegir-una-receta-y-descontar-sus-ingredientes">4.8 Elegir una receta y descontar sus ingredientes</h2>
+<ol>
+<li>En una propuesta, tocá <strong>Elegir esta receta</strong>.</li>
+<li>Revisá el diálogo <strong>¿Cocinar esta receta?</strong>, el nombre y la cantidad de chicos.</li>
+<li>Elegí <strong>Confirmar y registrar salida</strong> únicamente cuando quieras registrar ese consumo.</li>
+<li>Comprobá la receta elegida, el egreso generado y el nuevo stock.</li>
+</ol>
+<p>La confirmación crea una salida de alimentos y descuenta los ingredientes. Solo se puede elegir una propuesta por pedido. Si el stock cambió y no alcanza, revisá las existencias antes de continuar.</p>
+<p><figure id="captura-app-recetas-confirmacion" class="mobile"><img src="assets/app-recetas-confirmacion.png" alt="Confirmación del consumo de ingredientes antes de registrar la salida" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Confirmación del consumo de ingredientes antes de registrar la salida" loading="lazy"><figcaption><b>APP ANDROID</b>Confirmación del consumo de ingredientes antes de registrar la salida</figcaption></figure></p>
+<p>Si no se conoce el resultado por una falla de conexión, usá <strong>Reintentar confirmación</strong>. Si cambiaste de comedor, volvé al establecimiento indicado por la confirmación pendiente. Evitá registrar además un egreso manual por los mismos ingredientes.</p>
+<h2 id="c4-49-volver-a-cocinar-una-receta-anterior">4.9 Volver a cocinar una receta anterior</h2>
+<ol>
+<li>En <strong>Recetas → Historial</strong>, buscá una receta elegida y tocá <strong>Ver receta</strong>.</li>
+<li>En <strong>Volver a cocinar</strong>, ingresá la <strong>Cantidad de chicos de hoy</strong>.</li>
+<li>Tocá <strong>Ver cantidades para hoy</strong> para revisar los ingredientes ajustados.</li>
+<li>Elegí <strong>Cocinar esta receta</strong>, revisá la confirmación y registrá la salida.</li>
+<li>Comprobá el egreso y el stock actualizado.</li>
+</ol>
+<p>La reutilización ajusta una receta existente y vuelve a validar las existencias actuales. Consultar el detalle o previsualizar cantidades todavía no registra un consumo.</p>
+<p><figure id="captura-app-recetas-historial" class="mobile"><img src="assets/app-recetas-historial.png" alt="Historial de recetas elegidas del establecimiento" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Historial de recetas elegidas del establecimiento" loading="lazy"><figcaption><b>APP ANDROID</b>Historial de recetas elegidas del establecimiento</figcaption></figure></p>
+<p><figure id="captura-app-recetas-reutilizar" class="mobile"><img src="assets/app-recetas-reutilizar.png" alt="Detalle de la receta y campo para cambiar la cantidad de chicos" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Detalle de la receta y campo para cambiar la cantidad de chicos" loading="lazy"><figcaption><b>APP ANDROID</b>Detalle de la receta y campo para cambiar la cantidad de chicos</figcaption></figure></p>
+<p><figure id="captura-app-recetas-cantidades" class="mobile"><img src="assets/app-recetas-cantidades.png" alt="Previsualización de las cantidades ajustadas antes de volver a cocinar" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Previsualización de las cantidades ajustadas antes de volver a cocinar" loading="lazy"><figcaption><b>APP ANDROID</b>Previsualización de las cantidades ajustadas antes de volver a cocinar</figcaption></figure></p>
+<h2 id="c4-410-resolver-problemas-sin-duplicar-movimientos">4.10 Resolver problemas sin duplicar movimientos</h2>
+<table>
+<thead>
+<tr>
+<th>Situación</th>
+<th>Acción recomendada en la aplicación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No hay establecimiento elegido</td>
+<td>Volvé a Inicio y seleccioná el comedor.</td>
+</tr>
+<tr>
+<td>Sin conexión</td>
+<td>Recuperá conectividad antes de registrar ingresos, egresos o confirmar recetas.</td>
+</tr>
+<tr>
+<td>Ya no tenés acceso</td>
+<td>Pedí a un administrador que revise el vínculo con el comedor.</td>
+</tr>
+<tr>
+<td>Alimento no disponible en catálogo</td>
+<td>Revisá la selección y elegí una entrada válida.</td>
+</tr>
+<tr>
+<td>Stock insuficiente</td>
+<td>Actualizá la consulta y ajustá el egreso o la receta.</td>
+</tr>
+<tr>
+<td>Recibo con propuesta incorrecta</td>
+<td>Corregí las líneas manualmente antes de confirmar.</td>
+</tr>
+<tr>
+<td>Resultado de guardado incierto</td>
+<td>Revisá Historial y usá el reintento del mismo formulario.</td>
+</tr>
+<tr>
+<td>Servicio de recetas o recibos no disponible</td>
+<td>Conservá los datos y seguí la alternativa manual disponible para el ingreso.</td>
+</tr>
+</tbody>
+</table>
+<p><figure id="captura-app-recibo-error" class="mobile"><img src="assets/app-recibo-error.png" alt="Error al procesar un recibo y alternativa para continuar con la carga manual" width="1280" height="2856" tabindex="0" role="button" aria-label="Ampliar: Error al procesar un recibo y alternativa para continuar con la carga manual" loading="lazy"><figcaption><b>APP ANDROID</b>Error al procesar un recibo y alternativa para continuar con la carga manual</figcaption></figure></p>
+<h2 id="c4-411-recordatorios-de-actualizacion-del-stock">4.11 Recordatorios de actualización del stock</h2>
+<p>Android puede solicitar permiso para mostrar notificaciones después de iniciar sesión. Si lo permitís, podés recibir avisos cuando un establecimiento lleva tiempo sin registrar salidas.</p>
+<p>Al abrir uno de esos avisos, la app selecciona el establecimiento indicado y abre su stock. Comprobá el comedor, revisá los últimos movimientos y registrá las salidas reales que correspondan. Abrir una notificación no crea un movimiento ni modifica las existencias.</p>
+<p>Si no recibís avisos, podés consultar y actualizar la información desde <strong>Alimentos</strong>. La entrega de notificaciones no se verificó con el proveedor externo en esta edición.</p></section><section class="chapter" id="galeria"><details><summary>Galería de capturas adicionales</summary><figure id="captura-app-acceso-solicitar" class="mobile"><img src="assets/app-acceso-solicitar.png" alt="app acceso solicitar" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app acceso solicitar"><figcaption>app acceso solicitar</figcaption></figure><figure id="captura-app-acceso" class="mobile"><img src="assets/app-acceso.png" alt="app acceso" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app acceso"><figcaption>app acceso</figcaption></figure><figure id="captura-app-bienvenida" class="mobile"><img src="assets/app-bienvenida.png" alt="app bienvenida" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app bienvenida"><figcaption>app bienvenida</figcaption></figure><figure id="captura-app-comedor-ficha" class="mobile"><img src="assets/app-comedor-ficha.png" alt="app comedor ficha" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app comedor ficha"><figcaption>app comedor ficha</figcaption></figure><figure id="captura-app-comedor-notificar-ficha" class="mobile"><img src="assets/app-comedor-notificar-ficha.png" alt="app comedor notificar ficha" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app comedor notificar ficha"><figcaption>app comedor notificar ficha</figcaption></figure><figure id="captura-app-egreso-registrado" class="mobile"><img src="assets/app-egreso-registrado.png" alt="app egreso registrado" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app egreso registrado"><figcaption>app egreso registrado</figcaption></figure><figure id="captura-app-egreso" class="mobile"><img src="assets/app-egreso.png" alt="app egreso" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app egreso"><figcaption>app egreso</figcaption></figure><figure id="captura-app-encuesta-detalle-anonima" class="mobile"><img src="assets/app-encuesta-detalle-anonima.png" alt="app encuesta detalle anonima" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app encuesta detalle anonima"><figcaption>app encuesta detalle anonima</figcaption></figure><figure id="captura-app-encuesta-formulario" class="mobile"><img src="assets/app-encuesta-formulario.png" alt="app encuesta formulario" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app encuesta formulario"><figcaption>app encuesta formulario</figcaption></figure><figure id="captura-app-encuestas-historial" class="mobile"><img src="assets/app-encuestas-historial.png" alt="app encuestas historial" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app encuestas historial"><figcaption>app encuestas historial</figcaption></figure><figure id="captura-app-encuestas" class="mobile"><img src="assets/app-encuestas.png" alt="app encuestas" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app encuestas"><figcaption>app encuestas</figcaption></figure><figure id="captura-app-historial" class="mobile"><img src="assets/app-historial.png" alt="app historial" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app historial"><figcaption>app historial</figcaption></figure><figure id="captura-app-ingreso" class="mobile"><img src="assets/app-ingreso.png" alt="app ingreso" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app ingreso"><figcaption>app ingreso</figcaption></figure><figure id="captura-app-inicio" class="mobile"><img src="assets/app-inicio.png" alt="app inicio" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app inicio"><figcaption>app inicio</figcaption></figure><figure id="captura-app-medicion-formulario" class="mobile"><img src="assets/app-medicion-formulario.png" alt="app medicion formulario" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app medicion formulario"><figcaption>app medicion formulario</figcaption></figure><figure id="captura-app-medicion-guardada" class="mobile"><img src="assets/app-medicion-guardada.png" alt="app medicion guardada" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app medicion guardada"><figcaption>app medicion guardada</figcaption></figure><figure id="captura-app-perfil-editar" class="mobile"><img src="assets/app-perfil-editar.png" alt="app perfil editar" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app perfil editar"><figcaption>app perfil editar</figcaption></figure><figure id="captura-app-perfil" class="mobile"><img src="assets/app-perfil.png" alt="app perfil" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app perfil"><figcaption>app perfil</figcaption></figure><figure id="captura-app-recetas-ingredientes" class="mobile"><img src="assets/app-recetas-ingredientes.png" alt="app recetas ingredientes" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app recetas ingredientes"><figcaption>app recetas ingredientes</figcaption></figure><figure id="captura-app-recetas-reutilizar-confirmacion" class="mobile"><img src="assets/app-recetas-reutilizar-confirmacion.png" alt="app recetas reutilizar confirmacion" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app recetas reutilizar confirmacion"><figcaption>app recetas reutilizar confirmacion</figcaption></figure><figure id="captura-app-recibo-manual" class="mobile"><img src="assets/app-recibo-manual.png" alt="app recibo manual" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app recibo manual"><figcaption>app recibo manual</figcaption></figure><figure id="captura-app-recibo-registrado" class="mobile"><img src="assets/app-recibo-registrado.png" alt="app recibo registrado" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app recibo registrado"><figcaption>app recibo registrado</figcaption></figure><figure id="captura-app-sin-conexion" class="mobile"><img src="assets/app-sin-conexion.png" alt="app sin conexion" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app sin conexion"><figcaption>app sin conexion</figcaption></figure><figure id="captura-app-sincronizado" class="mobile"><img src="assets/app-sincronizado.png" alt="app sincronizado" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app sincronizado"><figcaption>app sincronizado</figcaption></figure><figure id="captura-app-stock" class="mobile"><img src="assets/app-stock.png" alt="app stock" width="1280" height="2856" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: app stock"><figcaption>app stock</figcaption></figure><figure id="captura-web-comedor-perfil" class="web"><img src="assets/web-comedor-perfil.png" alt="web comedor perfil" width="1440" height="1000" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: web comedor perfil"><figcaption>web comedor perfil</figcaption></figure><figure id="captura-web-comedor-relevadores" class="web"><img src="assets/web-comedor-relevadores.png" alt="web comedor relevadores" width="1440" height="1000" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: web comedor relevadores"><figcaption>web comedor relevadores</figcaption></figure><figure id="captura-web-encuesta-respuestas" class="web"><img src="assets/web-encuesta-respuestas.png" alt="web encuesta respuestas" width="1440" height="1000" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: web encuesta respuestas"><figcaption>web encuesta respuestas</figcaption></figure><figure id="captura-web-encuestas" class="web"><img src="assets/web-encuestas.png" alt="web encuestas" width="1440" height="1000" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: web encuestas"><figcaption>web encuestas</figcaption></figure><figure id="captura-web-establecimientos" class="web"><img src="assets/web-establecimientos.png" alt="web establecimientos" width="1440" height="1000" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: web establecimientos"><figcaption>web establecimientos</figcaption></figure><figure id="captura-web-fies-respuestas" class="web"><img src="assets/web-fies-respuestas.png" alt="web fies respuestas" width="1440" height="1000" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: web fies respuestas"><figcaption>web fies respuestas</figcaption></figure><figure id="captura-web-inicio" class="web"><img src="assets/web-inicio.png" alt="web inicio" width="1440" height="1000" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: web inicio"><figcaption>web inicio</figcaption></figure><figure id="captura-web-perfil" class="web"><img src="assets/web-perfil.png" alt="web perfil" width="1440" height="1000" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: web perfil"><figcaption>web perfil</figcaption></figure><figure id="captura-web-solicitudes-alta" class="web"><img src="assets/web-solicitudes-alta.png" alt="web solicitudes alta" width="1440" height="1000" loading="lazy" tabindex="0" role="button" aria-label="Ampliar: web solicitudes alta"><figcaption>web solicitudes alta</figcaption></figure></details></section><footer>Ingeniería Para la Alimentación · Edición de trabajo 25/10/2026 · Datos de demostración</footer></article></main><dialog aria-label="Captura ampliada"><button type="button">Cerrar</button><img alt=""></dialog><script>const dialog=document.querySelector("dialog");function reveal(n){for(let p=n;p;p=p.parentElement){if(p.tagName==="DETAILS")p.open=true}const d=n.querySelector(":scope > details");if(d)d.open=true}document.querySelectorAll("a[href^=\"#\"]").forEach(a=>a.addEventListener("click",()=>{const n=document.getElementById(a.hash.slice(1));if(n)reveal(n)}));function zoom(img){dialog.querySelector("img").src=img.src;dialog.querySelector("img").alt=img.alt;dialog.showModal()}document.querySelectorAll("figure img").forEach(img=>{img.onclick=()=>zoom(img);img.onkeydown=e=>{if(e.key==="Enter")zoom(img)}});dialog.querySelector("button").onclick=()=>dialog.close();document.getElementById("search").onkeydown=e=>{if(e.key!=="Enter")return;document.querySelectorAll(".matched").forEach(n=>n.classList.remove("matched"));const q=e.target.value.trim().toLocaleLowerCase("es");if(!q)return;const hit=Array.from(document.querySelectorAll("h2,h3,p,li")).find(n=>n.textContent.toLocaleLowerCase("es").includes(q));if(hit){reveal(hit);hit.classList.add("matched");hit.scrollIntoView({block:"center"})}};</script></body></html>

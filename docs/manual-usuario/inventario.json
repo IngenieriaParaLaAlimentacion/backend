@@ -1,0 +1,1096 @@
+{
+  "revisions": {
+    "backend": "99a1acbfee78b021558155bbae13c2aa882b6bf2",
+    "backoffice": "6d79a177742391443dc9560444be2d10f620b439",
+    "app_mobile": "b856633c35da5d452ef7a2dffb015bd6c55bf795"
+  },
+  "screens": [
+    {
+      "repository": "backoffice",
+      "source": "app/(auth)/forgot-password/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "e24021959534b2fb26b8257d609268a1f4e69b2db3b07f9108262ee6727c4874",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/(auth)/forgot-password/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/(auth)/invite/admin/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "531a7782ca93c4eca25b68ab497e3460b7c3fca2e00e10d9a181969ebfda31c9",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/(auth)/invite/admin/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/(auth)/invite/analyst/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "992c00ebd9003adc752ca6a5e160938c3f8765d3533f17c763430c997ea81c91",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/(auth)/invite/analyst/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/(auth)/invite/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "d36b4de570365d94ff8f6d3b238d23fd78e38315fadb15831e4cfdf852532d81",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/(auth)/invite/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/(auth)/reset-password/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "0e151a32100a58e496ee0d43d244be012d8405ecda448f536da78b0633d50fb2",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/(auth)/reset-password/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/(auth)/signin/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "a2e23c9e6ea303ec34f72be6678edc58d8cf79b2464b5c314578e24e8c975915",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/(auth)/signin/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/(auth)/verify-email/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "a6c3f697ffca13e993b1de1e1ae5e91dfe9184c24369c5b1062212b5a5f27de4",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/(auth)/verify-email/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/anthropometric-measurements/page.tsx",
+      "chapter": "02-talla-y-peso.md",
+      "sha256": "6fe8351bb184edc60d6aa43d31b8898e25f78446b4c037aeab6472f54084fe1b",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/anthropometric-measurements/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/establishments/(list)/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "b842a0570a1b3bf3e4ecb716c6a841baa333079ce91cfd609cde6b050b124753",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/establishments/(list)/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/establishments/[id]/(ficha)/field-workers/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "555ddf01845bfc0f6553ed1f420f4d196b1282e06dc3c89cb333eb6b65549fdf",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/establishments/[id]/(ficha)/field-workers/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/establishments/[id]/(ficha)/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "f1d22cccb853224c0ab50ad355d97cdeec9bfdac5b2fd91026a52a8fa1472c13",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/establishments/[id]/(ficha)/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/establishments/[id]/(ficha)/profile/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "d8deac419b8b5d7e95d67ad999be80e51fda8a194f89a44e1434d870ebd64317",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/establishments/[id]/(ficha)/profile/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/establishments/[id]/(ficha)/stock/page.tsx",
+      "chapter": "04-nutrir.md",
+      "sha256": "a84221716637578bb4eb9c9add8f967cf1f76eb695e759161f5faa0edecf570a",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/establishments/[id]/(ficha)/stock/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/establishments/[id]/stock/movements/page.tsx",
+      "chapter": "04-nutrir.md",
+      "sha256": "7f21362e30947afa039d5c64948720d4962bf4e5feb74fca42ed27ebaa1fc7b2",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/establishments/[id]/stock/movements/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/establishments/create/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "17bf3c93cfe57a5d64a1795a154c089f4d439d6519fdc2c476671c20d2ff862f",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/establishments/create/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/establishments/propose/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "90421f97ad7f4ca6dd72c9580b99b43b6b6f3658f8045266947c3a21e9d781fc",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/establishments/propose/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "19c131de4cdbef2d3589fecafb190fb5742aa71790a38d3f6fa097b916417eb5",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/profile/edit/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "be001d25c4e8741c182aa011384785ff5beae79e1d7deb4f208238d016aea197",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/profile/edit/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/profile/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "cb672b74e7a485a44e3e46e9f746412f52993a5cb046f39871070a386c618a7c",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/profile/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/requests/establishment-creations/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "039d7d839f809bf0a85610289d6b9ab6b8d29e208d99c1576b19eb36ae9fe4c0",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/requests/establishment-creations/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/requests/establishments/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "36ad5e9c8ea189fc52d9b5024dc60c5f4fc817b6fe94ae2b4665f415cde75316",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/requests/establishments/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/requests/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "9659dc75d7fff0839c2e91be621ee5b983c81bc15f293b667e05453fca4542b9",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/requests/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/subjects/page.tsx",
+      "chapter": "02-talla-y-peso.md",
+      "sha256": "2a852eabc97fb99acb831ff75407445754cd7b6588a4eee99ad0941473d49c5a",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/subjects/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/surveys/[id]/page.tsx",
+      "chapter": "03-encuestas.md",
+      "sha256": "8863769c1badbff31fa303578e9b88c2686602958ba1087ad16aa59fb9d027de",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/surveys/[id]/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/surveys/[id]/responses/page.tsx",
+      "chapter": "03-encuestas.md",
+      "sha256": "c2156eb87e481d7226247f7142055b92fce41b501d9c867c543efc3cadeb8439",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/surveys/[id]/responses/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/surveys/new/page.tsx",
+      "chapter": "03-encuestas.md",
+      "sha256": "e076d1936db1fafa5f56b5d15e52774b77e9b2a5359a13e45b966f2ed59325ef",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/surveys/new/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/surveys/page.tsx",
+      "chapter": "03-encuestas.md",
+      "sha256": "027a2fd8e124f05f05f36a0d243b00ea270958475d9e0ab446460e5af100d186",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/surveys/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/users/[role]/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "e62ba5b640ce363d7fbc42ba697a254d56264103f788a545983602a0210173ae",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/users/[role]/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/dashboard/users/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "3557dbbf67260c856550ab6bc3abc8d168f8d1d1f530e77aaf3face2e16b5c40",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/dashboard/users/page.tsx"
+    },
+    {
+      "repository": "backoffice",
+      "source": "app/page.tsx",
+      "chapter": "01-acceso.md",
+      "sha256": "9c1b88f00487cb4114e0b0f5f9c4c20685f58cd32421c738d7a63235e9fd6246",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/backoffice/blob/6d79a177742391443dc9560444be2d10f620b439/app/page.tsx"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/auth/forgot_password/ForgotPasswordScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "f59134952118cad6c924dc54d5843b7596907736bfeb8cbcc602ea81d6648d9f",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/auth/forgot_password/ForgotPasswordScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/auth/login/LoginScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "01bbcb22948e5cabb7d5eac1297bcc15d0c336f37b8ff18ae4651747ac44c9e4",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/auth/login/LoginScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/auth/reset_password/ResetPasswordScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "6b111ca8fdcff2ce519d3b923c56e391bd31451fdb16533860a3ff6dcc96b715",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/auth/reset_password/ResetPasswordScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/auth/reset_password/ResetPasswordSuccessScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "6fa0f1a3902906b1c2c88265811120be3f659a65337f6b0dce5bca516a10104c",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/auth/reset_password/ResetPasswordSuccessScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/auth/verify_email/VerifyEmailScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "07a72906e339415786874b93fe0ba88b7853dd9e463976a84549dad362fc5e04",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/auth/verify_email/VerifyEmailScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/establishment/characterization/edit_characterization/EditCharacterizationScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "56cfe384083b839f47e9e4a27418fb6e0ce62b39069a60cdc689de94b046a881",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/establishment/characterization/edit_characterization/EditCharacterizationScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/establishment/select_establishment/SelectEstablishmentScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "6bde0900c86395f36dc16ad7e71d37c2cf348dedff53d28382961d7103001a47",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/establishment/select_establishment/SelectEstablishmentScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/food/create_food_intake/CreateFoodIntakeScreen.kt",
+      "chapter": "04-nutrir.md",
+      "sha256": "6d31a2aab99c5253622960469bca2a7616178b2e21a70e70d2fae6e45e3a2de5",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/food/create_food_intake/CreateFoodIntakeScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/food/create_food_outflow/CreateFoodOutflowScreen.kt",
+      "chapter": "04-nutrir.md",
+      "sha256": "9474063eaa1aacd76971110ba572dfe4d60e165d035581aab49af506251fc56c",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/food/create_food_outflow/CreateFoodOutflowScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/food/establishment_food_movement_detail/EstablishmentFoodMovementDetailScreen.kt",
+      "chapter": "04-nutrir.md",
+      "sha256": "d218bfbf0d75e75827c1a7e828c1311c5e5a71568b48973ebd22dffc65e30738",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/food/establishment_food_movement_detail/EstablishmentFoodMovementDetailScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/food/establishment_food_movement_history/EstablishmentFoodMovementHistoryScreen.kt",
+      "chapter": "04-nutrir.md",
+      "sha256": "380346841e334e3632e0509ffb18971676548991e2468f154746b8b24d6341e9",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/food/establishment_food_movement_history/EstablishmentFoodMovementHistoryScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/food/food_overview/FoodOverviewScreen.kt",
+      "chapter": "04-nutrir.md",
+      "sha256": "d8649e9caf82d18004f7142387b8e6d91d73acf8b5076fdd7fd8ebee16fa083b",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/food/food_overview/FoodOverviewScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/food/food_stock/FoodStockScreen.kt",
+      "chapter": "04-nutrir.md",
+      "sha256": "0c9d077228dfa7a615499cc975d10bfdb9c82139c707f60482a5aa4742e0cc2b",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/food/food_stock/FoodStockScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/food/receipt_food_intake/ReceiptFoodIntakeScreen.kt",
+      "chapter": "04-nutrir.md",
+      "sha256": "d334c2a7d070946fa919a02ea8054158ced7e0b64c2442316a06e904c8a36dab",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/food/receipt_food_intake/ReceiptFoodIntakeScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/food/recipes/RecipesScreen.kt",
+      "chapter": "04-nutrir.md",
+      "sha256": "a2965d123cea6f08823d6339b4421a48fc106ba64fb76baf42300f2f4e036785",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/food/recipes/RecipesScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/get_started/GetStartedScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "bda29f9fd867564f08c03d9f791757fc49e7fc57fee5a136bd03d054cc791c4e",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/get_started/GetStartedScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/history/HistoryHubScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "f30bc091f19b59050a8576ec5609ff627067faeb99468df56e0bf6884cf9bf12",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/history/HistoryHubScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/home/HomeScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "77a18d7ade803023b438c2145d70b943d057a574798e6f754cc324a9017e2f81",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/home/HomeScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/measurement/create_measurement/MeasurementScreen.kt",
+      "chapter": "02-talla-y-peso.md",
+      "sha256": "c033b2ab2d5ceaec3b24deae8ce1ee98a5019a579ad918677f224269a0c59e33",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/measurement/create_measurement/MeasurementScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/profile/edit/EditProfileScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "f60afffa14ec6048bd0a31ff961ca6a057a4f9960a587437a00b3dcdbb1e1b8e",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/profile/edit/EditProfileScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/profile/establishments/MyEstablishmentsScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "960db63545e0cd8679d4a072ed850c3ae50390d867612803886573a4ae1676a8",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/profile/establishments/MyEstablishmentsScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/profile/notify_establishment/NotifyEstablishmentScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "36fa21dbdc3350e381d5a4926614bf2dd375cf637f9a0661e0c4fa1a1ba16a4c",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/profile/notify_establishment/NotifyEstablishmentScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/profile/request_establishment/RequestEstablishmentScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "94b09722d2c8c0f09e0ed69bd78ca5effa3d4653daed3f8ee0cc2dbb3cb41f15",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/profile/request_establishment/RequestEstablishmentScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/profile/view/ProfileScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "5da2b7f742cd012212c8da28d7ae564266521d0eb2eca68d67220491f271b204",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/profile/view/ProfileScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/register/RegisterScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "77294f8f848f318371d080495ee53b0bffbd0363575dae41c48915160fbce22a",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/register/RegisterScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/register/RegisterSuccessScreen.kt",
+      "chapter": "01-acceso.md",
+      "sha256": "1dbcc06cdd57ad8ce1a4bc68e01cdabed6f5aef2def9465c388bf16b8924d22d",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/register/RegisterSuccessScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/subject/create_subject/CreateSubjectScreen.kt",
+      "chapter": "02-talla-y-peso.md",
+      "sha256": "c18c992e925b003e248333db904e33d4d0fa610edda761b6e9e3fb622735e0a6",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/subject/create_subject/CreateSubjectScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/subject/select_subject/SelectSubjectScreen.kt",
+      "chapter": "02-talla-y-peso.md",
+      "sha256": "330d72c6a470270ef424151bded0bd33beb328ba80b867f1f0b4b63f1aada1be",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/subject/select_subject/SelectSubjectScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/subject/uploads/SubjectUploadsScreen.kt",
+      "chapter": "02-talla-y-peso.md",
+      "sha256": "4fcdb855a40b56d999d9153b83a8e0965dc7cd0732654a43b7c87d5d1f4b7624",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/subject/uploads/SubjectUploadsScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/survey/survey_list/SurveyListScreen.kt",
+      "chapter": "03-encuestas.md",
+      "sha256": "7bd678e179def53eebd2c0bce85a24d998aea530059df2a5838215b570017186",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/survey/survey_list/SurveyListScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/survey/survey_response_detail/SurveyResponseDetailScreen.kt",
+      "chapter": "03-encuestas.md",
+      "sha256": "6b83f7d72af899918edf83d45f9a977edf1e069801e3e59669f1a88e37f8cdeb",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/survey/survey_response_detail/SurveyResponseDetailScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/survey/survey_response_edit/SurveyResponseEditScreen.kt",
+      "chapter": "03-encuestas.md",
+      "sha256": "68131b3494a1043868251025622730e9bb29951c544b0e795ef2140fb03a4eff",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/survey/survey_response_edit/SurveyResponseEditScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/survey/survey_response_form/SurveyResponseFormScreen.kt",
+      "chapter": "03-encuestas.md",
+      "sha256": "bea17e6b869a2517f09260b8df06d6e48bb30b86b5c5679dcc842bdbe0bbf3de",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/survey/survey_response_form/SurveyResponseFormScreen.kt"
+    },
+    {
+      "repository": "app_mobile",
+      "source": "composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/survey/survey_response_number_fix/SurveyResponseNumberFixScreen.kt",
+      "chapter": "03-encuestas.md",
+      "sha256": "c9bd66762359d5825cc9fa68d954faea75c028e9ac8b4432e32a8d9f43e7d3fc",
+      "url": "https://github.com/IngenieriaParaLaAlimentacion/app_mobile/blob/b856633c35da5d452ef7a2dffb015bd6c55bf795/composeApp/src/commonMain/kotlin/ar/com/ingenieriaalimentacion/presentation/feature/survey/survey_response_number_fix/SurveyResponseNumberFixScreen.kt"
+    }
+  ],
+  "captures": [
+    {
+      "id": "web-establecimientos",
+      "surface": "backoffice",
+      "file": "web-establecimientos.png",
+      "expected": "Establecimientos registrados",
+      "capturedAt": "2026-10-25T18:24:36.471Z"
+    },
+    {
+      "id": "web-establecimiento-alta",
+      "surface": "backoffice",
+      "file": "web-establecimiento-alta.png",
+      "expected": "Nombre",
+      "capturedAt": "2026-10-25T18:24:37.123Z"
+    },
+    {
+      "id": "web-comedor",
+      "surface": "backoffice",
+      "file": "web-comedor.png",
+      "expected": "Sujetos que asisten",
+      "capturedAt": "2026-10-25T18:24:37.868Z"
+    },
+    {
+      "id": "web-comedor-relevadores",
+      "surface": "backoffice",
+      "file": "web-comedor-relevadores.png",
+      "expected": "Relevadores",
+      "capturedAt": "2026-10-25T18:24:38.632Z"
+    },
+    {
+      "id": "web-comedor-perfil",
+      "surface": "backoffice",
+      "file": "web-comedor-perfil.png",
+      "expected": "Perfil",
+      "capturedAt": "2026-10-25T18:24:39.346Z"
+    },
+    {
+      "id": "web-comedor-perfil-editar",
+      "surface": "backoffice",
+      "file": "web-comedor-perfil-editar.png",
+      "expected": "Guardar perfil",
+      "capturedAt": "2026-10-25T18:24:40.099Z"
+    },
+    {
+      "id": "web-sujetos",
+      "surface": "backoffice",
+      "file": "web-sujetos.png",
+      "expected": "Sujetos registrados",
+      "capturedAt": "2026-10-25T18:24:40.803Z"
+    },
+    {
+      "id": "web-mediciones",
+      "surface": "backoffice",
+      "file": "web-mediciones.png",
+      "expected": "Mediciones antropométricas",
+      "capturedAt": "2026-10-25T18:24:41.539Z"
+    },
+    {
+      "id": "web-encuestas",
+      "surface": "backoffice",
+      "file": "web-encuestas.png",
+      "expected": "Relevamientos FIES",
+      "capturedAt": "2026-10-25T18:24:42.262Z"
+    },
+    {
+      "id": "web-encuesta-nueva",
+      "surface": "backoffice",
+      "file": "web-encuesta-nueva.png",
+      "expected": "Nueva encuesta",
+      "capturedAt": "2026-10-25T18:24:42.923Z"
+    },
+    {
+      "id": "web-encuesta-editar",
+      "surface": "backoffice",
+      "file": "web-encuesta-editar.png",
+      "expected": "Editar encuesta",
+      "capturedAt": "2026-10-25T18:24:43.666Z"
+    },
+    {
+      "id": "web-encuesta-respuestas",
+      "surface": "backoffice",
+      "file": "web-encuesta-respuestas.png",
+      "expected": "Respuestas",
+      "capturedAt": "2026-10-25T18:24:44.410Z"
+    },
+    {
+      "id": "web-fies-respuestas",
+      "surface": "backoffice",
+      "file": "web-fies-respuestas.png",
+      "expected": "Respuestas",
+      "capturedAt": "2026-10-25T18:24:45.457Z"
+    },
+    {
+      "id": "web-stock",
+      "surface": "backoffice",
+      "file": "web-stock.png",
+      "expected": "Stock",
+      "capturedAt": "2026-10-25T18:24:46.235Z"
+    },
+    {
+      "id": "web-movimientos",
+      "surface": "backoffice",
+      "file": "web-movimientos.png",
+      "expected": "Movimientos",
+      "capturedAt": "2026-10-25T18:24:46.958Z"
+    },
+    {
+      "id": "web-solicitudes-registro",
+      "surface": "backoffice",
+      "file": "web-solicitudes-registro.png",
+      "expected": "Solicitudes de usuario",
+      "capturedAt": "2026-10-25T18:24:47.691Z"
+    },
+    {
+      "id": "web-solicitudes-acceso",
+      "surface": "backoffice",
+      "file": "web-solicitudes-acceso.png",
+      "expected": "Solicitudes de establecimiento",
+      "capturedAt": "2026-10-25T18:24:48.387Z"
+    },
+    {
+      "id": "web-solicitudes-alta",
+      "surface": "backoffice",
+      "file": "web-solicitudes-alta.png",
+      "expected": "Solicitudes",
+      "capturedAt": "2026-10-25T18:24:49.130Z"
+    },
+    {
+      "id": "web-usuarios",
+      "surface": "backoffice",
+      "file": "web-usuarios.png",
+      "expected": "Usuarios",
+      "capturedAt": "2026-10-25T18:24:49.844Z"
+    },
+    {
+      "id": "web-perfil",
+      "surface": "backoffice",
+      "file": "web-perfil.png",
+      "expected": "Mi información personal",
+      "capturedAt": "2026-10-25T18:24:50.561Z"
+    },
+    {
+      "id": "web-perfil-editar",
+      "surface": "backoffice",
+      "file": "web-perfil-editar.png",
+      "expected": "Editar perfil",
+      "capturedAt": "2026-10-25T18:24:51.260Z"
+    },
+    {
+      "id": "web-comedor-solicitud-revisar",
+      "surface": "backoffice",
+      "file": "web-comedor-solicitud-revisar.png",
+      "expected": "Aprobar",
+      "capturedAt": "2026-10-25T18:24:52.026Z"
+    },
+    {
+      "id": "web-solicitud-revisar",
+      "surface": "backoffice",
+      "file": "web-solicitud-revisar.png",
+      "expected": "Aceptar solicitud",
+      "capturedAt": "2026-10-25T18:24:52.776Z"
+    },
+    {
+      "id": "web-encuesta-respuesta-detalle",
+      "surface": "backoffice",
+      "file": "web-encuesta-respuesta-detalle.png",
+      "expected": "Detalle de respuesta",
+      "capturedAt": "2026-10-25T18:24:53.677Z"
+    },
+    {
+      "id": "web-sujeto-detalle",
+      "surface": "backoffice",
+      "file": "web-sujeto-detalle.png",
+      "expected": "Documento de identidad",
+      "capturedAt": "2026-10-25T18:24:54.478Z"
+    },
+    {
+      "id": "web-evolucion",
+      "surface": "backoffice",
+      "file": "web-evolucion.png",
+      "expected": "Evolución de peso y talla",
+      "capturedAt": "2026-10-25T18:24:55.432Z"
+    },
+    {
+      "id": "web-fies-crear",
+      "surface": "backoffice",
+      "file": "web-fies-crear.png",
+      "expected": "8/30",
+      "capturedAt": "2026-10-25T18:24:56.198Z"
+    },
+    {
+      "id": "web-movimiento-registrar",
+      "surface": "backoffice",
+      "file": "web-movimiento-registrar.png",
+      "expected": "Guardar",
+      "capturedAt": "2026-10-25T18:24:56.993Z"
+    },
+    {
+      "id": "web-usuario-invitar",
+      "surface": "backoffice",
+      "file": "web-usuario-invitar.png",
+      "expected": "Enviar invitación",
+      "capturedAt": "2026-10-25T18:24:57.741Z"
+    },
+    {
+      "id": "web-acceso",
+      "surface": "backoffice",
+      "file": "web-acceso.png",
+      "expected": "Iniciar sesión",
+      "capturedAt": "2026-10-25T18:46:12.933Z"
+    },
+    {
+      "id": "web-inicio",
+      "surface": "backoffice",
+      "file": "web-inicio.png",
+      "expected": "Accesos disponibles",
+      "capturedAt": "2026-10-25T18:46:13.358Z"
+    },
+    {
+      "id": "web-encuesta-acciones",
+      "surface": "backoffice",
+      "file": "web-encuesta-acciones.png",
+      "expected": "Duplicar",
+      "capturedAt": "2026-10-25T18:46:14.211Z"
+    },
+    {
+      "id": "web-encuesta-exportar",
+      "surface": "backoffice",
+      "file": "web-encuesta-exportar.png",
+      "expected": "Exportar",
+      "capturedAt": "2026-10-25T18:46:15.022Z"
+    },
+    {
+      "id": "web-recuperar",
+      "surface": "backoffice",
+      "file": "web-recuperar.png",
+      "expected": "Email",
+      "capturedAt": "2026-10-25T18:46:16.697Z"
+    },
+    {
+      "id": "app-bienvenida",
+      "surface": "android",
+      "file": "app-bienvenida.png",
+      "expected": "Gestioná tu establecimiento",
+      "capturedAt": "2026-10-25T17:48:05.988480+00:00"
+    },
+    {
+      "id": "app-registro",
+      "surface": "android",
+      "file": "app-registro.png",
+      "expected": "Crear cuenta",
+      "capturedAt": "2026-10-25T17:48:13.251319+00:00"
+    },
+    {
+      "id": "app-acceso",
+      "surface": "android",
+      "file": "app-acceso.png",
+      "expected": "Iniciar sesión",
+      "capturedAt": "2026-10-25T17:48:43.336195+00:00"
+    },
+    {
+      "id": "app-inicio",
+      "surface": "android",
+      "file": "app-inicio.png",
+      "expected": "Hola, Ana",
+      "capturedAt": "2026-10-25T17:49:38.915562+00:00"
+    },
+    {
+      "id": "app-inicio-comedor",
+      "surface": "android",
+      "file": "app-inicio-comedor.png",
+      "expected": "Comedor Semillas del Sur",
+      "capturedAt": "2026-10-25T17:50:06.090405+00:00"
+    },
+    {
+      "id": "app-sujeto-alta",
+      "surface": "android",
+      "file": "app-sujeto-alta.png",
+      "expected": "Cargar sujeto",
+      "capturedAt": "2026-10-25T17:50:12.694380+00:00"
+    },
+    {
+      "id": "app-medicion-formulario",
+      "surface": "android",
+      "file": "app-medicion-formulario.png",
+      "expected": "Cargar medición",
+      "capturedAt": "2026-10-25T17:50:18.932941+00:00"
+    },
+    {
+      "id": "app-sujeto-buscar",
+      "surface": "android",
+      "file": "app-sujeto-buscar.png",
+      "expected": "Buscar por nombre o DNI",
+      "capturedAt": "2026-10-25T17:50:25.811620+00:00"
+    },
+    {
+      "id": "app-medicion-completa",
+      "surface": "android",
+      "file": "app-medicion-completa.png",
+      "expected": "Control de seguimiento",
+      "capturedAt": "2026-10-25T17:51:01.344723+00:00"
+    },
+    {
+      "id": "app-medicion-confirmacion",
+      "surface": "android",
+      "file": "app-medicion-confirmacion.png",
+      "expected": "Revisá las medidas",
+      "capturedAt": "2026-10-25T17:51:07.572189+00:00"
+    },
+    {
+      "id": "app-medicion-guardada",
+      "surface": "android",
+      "file": "app-medicion-guardada.png",
+      "expected": "Cargar medición",
+      "capturedAt": "2026-10-25T17:55:47.067680+00:00"
+    },
+    {
+      "id": "app-sin-conexion",
+      "surface": "android",
+      "file": "app-sin-conexion.png",
+      "expected": "Sin conexión",
+      "capturedAt": "2026-10-25T17:56:48.146302+00:00"
+    },
+    {
+      "id": "app-pendiente-offline",
+      "surface": "android",
+      "file": "app-pendiente-offline.png",
+      "expected": "se subirán al reconectar",
+      "capturedAt": "2026-10-25T18:01:45.667593+00:00"
+    },
+    {
+      "id": "app-sincronizado",
+      "surface": "android",
+      "file": "app-sincronizado.png",
+      "expected": "Todo sincronizado",
+      "capturedAt": "2026-10-25T18:01:54.092497+00:00"
+    },
+    {
+      "id": "app-historial",
+      "surface": "android",
+      "file": "app-historial.png",
+      "expected": "Historial",
+      "capturedAt": "2026-10-25T18:02:00.309793+00:00"
+    },
+    {
+      "id": "app-mediciones-historial",
+      "surface": "android",
+      "file": "app-mediciones-historial.png",
+      "expected": "Sincronizado",
+      "capturedAt": "2026-10-25T18:02:23.853835+00:00"
+    },
+    {
+      "id": "app-encuesta-formulario",
+      "surface": "android",
+      "file": "app-encuesta-formulario.png",
+      "expected": "Seguimiento alimentario",
+      "capturedAt": "2026-10-25T18:04:03.898490+00:00"
+    },
+    {
+      "id": "app-encuesta-completa",
+      "surface": "android",
+      "file": "app-encuesta-completa.png",
+      "expected": "Relevamiento de demostracion",
+      "capturedAt": "2026-10-25T18:05:11.546065+00:00"
+    },
+    {
+      "id": "app-encuesta-detalle",
+      "surface": "android",
+      "file": "app-encuesta-detalle.png",
+      "expected": "Relevamiento de demostracion",
+      "capturedAt": "2026-10-25T18:05:40.515731+00:00"
+    },
+    {
+      "id": "app-egreso",
+      "surface": "android",
+      "file": "app-egreso.png",
+      "expected": "Registrar egreso",
+      "capturedAt": "2026-10-25T18:08:17.682179+00:00"
+    },
+    {
+      "id": "app-recibo-foto",
+      "surface": "android",
+      "file": "app-recibo-foto.png",
+      "expected": "Procesar recibo",
+      "capturedAt": "2026-10-25T18:10:59.737308+00:00"
+    },
+    {
+      "id": "app-recibo-error",
+      "surface": "android",
+      "file": "app-recibo-error.png",
+      "expected": "No se pudo completar.",
+      "capturedAt": "2026-10-25T18:12:19.998129+00:00"
+    },
+    {
+      "id": "app-recibo-manual",
+      "surface": "android",
+      "file": "app-recibo-manual.png",
+      "expected": "Agregar alimento",
+      "capturedAt": "2026-10-25T18:12:57.216337+00:00"
+    },
+    {
+      "id": "app-recibo-listo",
+      "surface": "android",
+      "file": "app-recibo-listo.png",
+      "expected": "Guardar ingreso",
+      "capturedAt": "2026-10-25T18:14:03.559961+00:00"
+    },
+    {
+      "id": "app-recibo-registrado",
+      "surface": "android",
+      "file": "app-recibo-registrado.png",
+      "expected": "28 kg",
+      "capturedAt": "2026-10-25T18:14:31.253283+00:00"
+    },
+    {
+      "id": "app-recetas-generar",
+      "surface": "android",
+      "file": "app-recetas-generar.png",
+      "expected": "Buscar propuestas",
+      "capturedAt": "2026-10-25T18:14:37.526831+00:00"
+    },
+    {
+      "id": "app-recetas-propuesta",
+      "surface": "android",
+      "file": "app-recetas-propuesta.png",
+      "expected": "Arroz para el comedor",
+      "capturedAt": "2026-10-25T18:15:58.662076+00:00"
+    },
+    {
+      "id": "app-recetas-ingredientes",
+      "surface": "android",
+      "file": "app-recetas-ingredientes.png",
+      "expected": "Elegir esta receta",
+      "capturedAt": "2026-10-25T18:16:07.394714+00:00"
+    },
+    {
+      "id": "app-recetas-confirmacion",
+      "surface": "android",
+      "file": "app-recetas-confirmacion.png",
+      "expected": "Confirmar y registrar salida",
+      "capturedAt": "2026-10-25T18:16:13.915509+00:00"
+    },
+    {
+      "id": "app-recetas-historial",
+      "surface": "android",
+      "file": "app-recetas-historial.png",
+      "expected": "Ver receta",
+      "capturedAt": "2026-10-25T18:17:11.890343+00:00"
+    },
+    {
+      "id": "app-recetas-reutilizar",
+      "surface": "android",
+      "file": "app-recetas-reutilizar.png",
+      "expected": "Cantidad de chicos de hoy",
+      "capturedAt": "2026-10-25T18:18:10.330166+00:00"
+    },
+    {
+      "id": "app-recetas-cantidades",
+      "surface": "android",
+      "file": "app-recetas-cantidades.png",
+      "expected": "Cocinar esta receta",
+      "capturedAt": "2026-10-25T18:18:23.423720+00:00"
+    },
+    {
+      "id": "app-recetas-reutilizar-confirmacion",
+      "surface": "android",
+      "file": "app-recetas-reutilizar-confirmacion.png",
+      "expected": "Confirmar y registrar salida",
+      "capturedAt": "2026-10-25T18:18:29.691676+00:00"
+    },
+    {
+      "id": "app-alimentos",
+      "surface": "android",
+      "file": "app-alimentos.png",
+      "expected": "Stock actual",
+      "capturedAt": "2026-10-25T18:19:19.125909+00:00"
+    },
+    {
+      "id": "app-ingreso",
+      "surface": "android",
+      "file": "app-ingreso.png",
+      "expected": "Registrar ingreso",
+      "capturedAt": "2026-10-25T18:19:25.485977+00:00"
+    },
+    {
+      "id": "app-ingreso-completo",
+      "surface": "android",
+      "file": "app-ingreso-completo.png",
+      "expected": "Arroz blanco, crudo",
+      "capturedAt": "2026-10-25T18:19:42.384877+00:00"
+    },
+    {
+      "id": "app-ingreso-registrado",
+      "surface": "android",
+      "file": "app-ingreso-registrado.png",
+      "expected": "Stock actual",
+      "capturedAt": "2026-10-25T18:19:49.628210+00:00"
+    },
+    {
+      "id": "app-egreso-completo",
+      "surface": "android",
+      "file": "app-egreso-completo.png",
+      "expected": "Disponible:",
+      "capturedAt": "2026-10-25T18:20:06.204166+00:00"
+    },
+    {
+      "id": "app-egreso-registrado",
+      "surface": "android",
+      "file": "app-egreso-registrado.png",
+      "expected": "Stock actual",
+      "capturedAt": "2026-10-25T18:20:13.430968+00:00"
+    },
+    {
+      "id": "app-stock",
+      "surface": "android",
+      "file": "app-stock.png",
+      "expected": "Stock",
+      "capturedAt": "2026-10-25T18:20:19.595799+00:00"
+    },
+    {
+      "id": "app-movimientos",
+      "surface": "android",
+      "file": "app-movimientos.png",
+      "expected": "Movimientos",
+      "capturedAt": "2026-10-25T18:20:27.886481+00:00"
+    },
+    {
+      "id": "app-encuestas",
+      "surface": "android",
+      "file": "app-encuestas.png",
+      "expected": "Encuestas",
+      "capturedAt": "2026-10-25T18:20:35.792450+00:00"
+    },
+    {
+      "id": "app-encuesta-anonima",
+      "surface": "android",
+      "file": "app-encuesta-anonima.png",
+      "expected": "Anónima",
+      "capturedAt": "2026-10-25T18:20:48.855119+00:00"
+    },
+    {
+      "id": "app-encuestas-historial",
+      "surface": "android",
+      "file": "app-encuestas-historial.png",
+      "expected": "Opinión de la comunidad",
+      "capturedAt": "2026-10-25T18:21:05.014348+00:00"
+    },
+    {
+      "id": "app-encuesta-detalle-anonima",
+      "surface": "android",
+      "file": "app-encuesta-detalle-anonima.png",
+      "expected": "Relevamiento de demostracion",
+      "capturedAt": "2026-10-25T18:21:11.508101+00:00"
+    },
+    {
+      "id": "app-encuesta-editar",
+      "surface": "android",
+      "file": "app-encuesta-editar.png",
+      "expected": "Guardar cambios",
+      "capturedAt": "2026-10-25T18:21:18.115745+00:00"
+    },
+    {
+      "id": "app-perfil",
+      "surface": "android",
+      "file": "app-perfil.png",
+      "expected": "Mis establecimientos",
+      "capturedAt": "2026-10-25T18:21:55.758043+00:00"
+    },
+    {
+      "id": "app-perfil-editar",
+      "surface": "android",
+      "file": "app-perfil-editar.png",
+      "expected": "Guardar",
+      "capturedAt": "2026-10-25T18:22:02.017171+00:00"
+    },
+    {
+      "id": "app-mis-establecimientos",
+      "surface": "android",
+      "file": "app-mis-establecimientos.png",
+      "expected": "Mis establecimientos",
+      "capturedAt": "2026-10-25T18:22:10.838534+00:00"
+    },
+    {
+      "id": "app-comedor-ficha",
+      "surface": "android",
+      "file": "app-comedor-ficha.png",
+      "expected": "Ubicación",
+      "capturedAt": "2026-10-25T18:23:00.878231+00:00"
+    },
+    {
+      "id": "app-acceso-solicitar",
+      "surface": "android",
+      "file": "app-acceso-solicitar.png",
+      "expected": "Buscar establecimiento",
+      "capturedAt": "2026-10-25T18:23:09.129321+00:00"
+    },
+    {
+      "id": "app-comedor-notificar",
+      "surface": "android",
+      "file": "app-comedor-notificar.png",
+      "expected": "Notificar comedor",
+      "capturedAt": "2026-10-25T18:23:15.387549+00:00"
+    },
+    {
+      "id": "app-comedor-notificar-ficha",
+      "surface": "android",
+      "file": "app-comedor-notificar-ficha.png",
+      "expected": "Ficha del comedor",
+      "capturedAt": "2026-10-25T18:23:26.330369+00:00"
+    },
+    {
+      "id": "app-comedor-seleccionar",
+      "surface": "android",
+      "file": "app-comedor-seleccionar.png",
+      "expected": "Elegí el establecimiento",
+      "capturedAt": "2026-10-25T18:47:40.042877+00:00"
+    },
+    {
+      "id": "app-encuestas-sin-conexion",
+      "surface": "android",
+      "file": "app-encuestas-sin-conexion.png",
+      "expected": "Mostrando encuestas guardadas",
+      "capturedAt": "2026-10-25T18:47:58.652716+00:00"
+    },
+    {
+      "id": "app-movimiento-detalle",
+      "surface": "android",
+      "file": "app-movimiento-detalle.png",
+      "expected": "Detalle del movimiento",
+      "capturedAt": "2026-10-25T18:48:13.315110+00:00"
+    },
+    {
+      "id": "app-cerrar-sesion",
+      "surface": "android",
+      "file": "app-cerrar-sesion.png",
+      "expected": "¿Seguro que querés cerrar sesión?",
+      "capturedAt": "2026-10-25T18:48:23.019401+00:00"
+    }
+  ]
+}

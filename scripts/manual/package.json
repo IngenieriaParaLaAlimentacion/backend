@@ -1,0 +1,7 @@
+{
+  "name": "ipa-user-manual",
+  "private": true,
+  "type": "module",
+  "scripts": {"capture:web": "node capture-web.mjs"},
+  "dependencies": {"playwright": "1.61.1"}
+}
