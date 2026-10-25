@@ -4,7 +4,7 @@
 
 - Python 3.11+
 - [Poetry 2.0+](https://python-poetry.org/docs/#installation)
-- Docker (required for running tests)
+- Docker (required for Testcontainers-based integration tests)
 - A running PostgreSQL instance (for local dev without Docker)
 - A running Redis instance for rate limiting (for local dev without Docker; `docker compose up redis`)
 
@@ -33,6 +33,11 @@ cp .env.example .env
 ## Development
 
 ```bash
+# With local PostgreSQL, set DATABASE_HOST=localhost in .env, then:
+poetry run alembic upgrade head
+poetry run python seed_superadmin.py
+poetry run python seed_food_catalog.py
+
 # Run the dev server (hot reload)
 poetry run uvicorn app.main:app --reload
 # Listening on http://0.0.0.0:8080
@@ -62,7 +67,7 @@ poetry run alembic current
 
 ## Testing
 
-Tests use [Testcontainers](https://testcontainers.com/) to spin up a real PostgreSQL instance, and a Redis for the rate-limit tests. **Docker must be running.**
+Integration tests use [Testcontainers](https://testcontainers.com/) to spin up a real PostgreSQL instance, and a Redis for the rate-limit tests. Docker must be running for those tests unless `TEST_POSTGRES_URL` points to a disposable PostgreSQL instance; Redis-backed tests still need Docker.
 
 ```bash
 # Run all tests
@@ -100,23 +105,36 @@ poetry run ruff check . --fix && poetry run ruff format .
 
 ## Docker
 
-The Dockerfile uses a multi-stage build. On startup it runs migrations automatically before launching the server.
+The Dockerfile uses a multi-stage build. Its startup command runs only Uvicorn. With Compose, the one-shot `migrate` service runs migrations and both seeds before the backend starts.
 
 ```bash
 # Build the image
 docker build -t backend .
 
-# Run the container
+# Run the container after applying migrations and seeds to its database
 docker run --env-file .env -p 8080:8080 backend
 ```
 
-The container entrypoint runs:
+For local Compose, run:
 ```bash
-alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8080
+docker compose up --build
 ```
 
-All configuration is passed via environment variables (see `.env.example`).
+Before deploying this change in Railway, set the backend service's **Pre-Deploy Command** to `sh scripts/pre_deploy.sh` in both test and production. The script logs each step, applies `alembic upgrade head`, and runs `seed_superadmin.py` and `seed_food_catalog.py`; a failure stops the new deployment. This setting must be checked in both Railway environments because this checkout has no linked Railway project. If a seed fails after Alembic succeeds, the earlier database migration is not automatically undone.
 
+All configuration is passed via environment variables (see `.env.example`). If `DATABASE_URL` is set, it takes precedence over the individual database fields, including Compose's `DATABASE_HOST=postgres` override.
+
+### Migration rollback limits
+
+CI checks that the current head can run `upgrade head`, `downgrade -1`, and `upgrade head` on a fresh PostgreSQL Testcontainer. This checks command success and revision movement, but it does not prove that every historical migration restores data or schema exactly. Known exceptions include:
+
+- `3c300b242b41`, `9c55bed7c3d6`, and `9dfcb864e5a1`: PostgreSQL enum additions remain after downgrade.
+- `e515758f7b0a`: the email-verification backfill has no reverse data operation.
+- `c7d4e9a2b8f1`: upgrade deletes survey responses, which downgrade cannot restore.
+- `3f8d2a1b9c4e`: downgrade drops geocoding columns and their data.
+- `c9a4b7e2f168`: an orphan stub has no schema operations, and historical databases may differ from fresh ones.
+
+Back up a populated database and review each migration before relying on downgrade as a rollback procedure.
 
 ### Integration tests without Docker
 
