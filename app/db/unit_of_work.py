@@ -51,6 +51,7 @@ from app.repositories.notifications import (
     StaleEstablishmentCycleRepository,
     UserPushDeviceRepository,
 )
+from app.repositories.recipes.recipe_repository import RecipeRepository
 from app.repositories.subjects.subject_event_repository import SubjectEventRepository
 from app.repositories.subjects.subject_repository import SubjectRepository
 from app.repositories.surveys.survey_repository import SurveyRepository
@@ -72,6 +73,7 @@ class UnitOfWork(IUnitOfWork):
     async def __aenter__(self):
         """Open a new async session and initialize all repositories."""
         self.session = _db.AsyncSessionLocal()
+        self.recipe_repo = RecipeRepository(self.session)
         self.user_repo = UserRepository(self.session)
         self.password_repo = UserPasswordRepository(self.session)
         self.token_repo = TokenRepository(self.session)

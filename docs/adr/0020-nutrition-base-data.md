@@ -59,7 +59,7 @@ daily need and the energy, never hard-coded. Another age is a new profile; the s
   but no retinol counts retinol as zero and says so in the warnings; it never invents a value.
 - Fiber, sodium, saturated fat and added sugar are indicators only. The optimizer does not constrain them.
 - Quantities are grams. A food's `base_unit` is converted to grams by the `GramsConverter`, which applies the
-  unit conversion module (ADR-0024), before the calculation, which never sees another unit.
+  unit conversion module (ADR-0025), before the calculation, which never sees another unit.
 
 ## Consequences
 

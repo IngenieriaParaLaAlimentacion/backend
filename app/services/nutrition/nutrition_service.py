@@ -6,6 +6,7 @@ from uuid import UUID
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.nutrition import (
     FoodQuantity,
+    MealType,
     MonthlyIntakeAnalysis,
     NutritionIndicators,
     RecipeRequest,
@@ -127,13 +128,37 @@ class NutritionService:
             if food.id in stock_grams
         ]
 
-        target = (
-            request.children_count
+        return await self.maximize_stocked_recipe(request, stocked, warnings)
+
+    def target_energy_kcal(self, children_count: int, meal_type: MealType) -> float:
+        """Return the reference meal energy for this number of children."""
+        if children_count <= 0:
+            raise InvalidChildrenCountError(children_count)
+        return (
+            children_count
             * self.profile.energy_kcal
-            * self.profile.meal_energy_fractions[request.meal_type]
+            * self.profile.meal_energy_fractions[meal_type]
         )
-        # The solver is CPU-bound, so it stays off the event loop.
-        solution = await asyncio.to_thread(solve_recipe, stocked, target, self.profile)
+
+    async def maximize_stocked_recipe(
+        self,
+        request: RecipeRequest,
+        stocked: list[StockedFood],
+        warnings: Iterable[str] = (),
+    ) -> RecipeSolution:
+        """Optimize an authorized, already-loaded stock snapshot without DB reads.
+
+        The caller owns access checks and snapshot consistency. This internal
+        service operation is not an alternative HTTP authorization boundary.
+        """
+        target = self.target_energy_kcal(request.children_count, request.meal_type)
+        selected = set(request.food_ids)
+        solution = await asyncio.to_thread(
+            solve_recipe,
+            [food for food in stocked if food.composition.food_id in selected],
+            target,
+            self.profile,
+        )
         solution.warnings.extend(warnings)
         return solution
 

@@ -1,9 +1,11 @@
 import asyncio
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 import structlog
 import uvicorn
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from app.api.router import api_router
 from app.config.logging import setup_logging
@@ -30,6 +32,7 @@ async def _shutdown_provider(name: str, provider) -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Ingenieria Para la Alimentacion service getting started")
+    app.state.llm_client = None
     notification_scheduler = StaleEstablishmentScheduler()
     notification_scheduler.start()
 
@@ -37,6 +40,14 @@ async def lifespan(app: FastAPI):
         yield
     finally:
         await notification_scheduler.shutdown()
+
+        client = app.state.llm_client
+        app.state.llm_client = None
+        if client is not None:
+            try:
+                await client.aclose()
+            except Exception:
+                logger.exception("Failed to close Gemini client")
 
         logger.info("Shutting down service, flushing telemetry")
 
@@ -60,6 +71,11 @@ app = FastAPI(
 register_exception_handlers(app)
 
 app.include_router(api_router)
+app.mount(
+    "/static",
+    StaticFiles(directory=Path(__file__).parent / "static"),
+    name="static",
+)
 
 configure_openapi(app)
 

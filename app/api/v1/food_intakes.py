@@ -10,6 +10,7 @@ from app.core.dependencies import (
     get_receipt_intake_service,
     require_any,
 )
+from app.core.rate_limit import limit_by_user
 from app.domain import UserActor
 from app.schemas.food_intakes.food_intake_schema import (
     FoodIntakeRequest,
@@ -48,7 +49,7 @@ def _parse_intake_data(data: str = Form(...)) -> FoodIntakeRequest:
         "one transaction. Send a client-generated `id` to make the submission "
         "idempotent: a replay of an id that already exists answers 200 and leaves "
         "the stock untouched, so a retried offline sync cannot inflate it.\n\n"
-        "`origin_type` (one of the documented donor categories) and boolean "
+        "`origin_type` (one of the documented food sources) and boolean "
         "`is_recurring` are required for manual and photo-confirmed intakes. "
         "`source` only identifies manual versus photo capture. "
         "Each line's unit is not sent — it is the referenced catalog food's "
@@ -80,6 +81,7 @@ async def register_food_intake(
 
 @router.post(
     "/from-photo",
+    dependencies=[limit_by_user("rate_limit_ai_user", "ai")],
     response_model=ReceiptProposalResponse,
     summary="Propose food lines from a photo of the receipt",
     description=(
@@ -93,6 +95,7 @@ async def register_food_intake(
     ),
     responses={
         **AUTH_RESPONSES,
+        429: {"description": "AI quota exceeded; retry after Retry-After"},
         status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
         status.HTTP_422_UNPROCESSABLE_CONTENT: {
             "description": "Unsupported image type, file over the size limit, "

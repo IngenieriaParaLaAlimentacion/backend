@@ -1,0 +1,13 @@
+{% extends "base.txt" %}
+{% block content %}
+Gracias por registrarte en Raíz como relevador. Confirmá que esta dirección es tuya para seguir con el alta:
+{{ url }}
+
+Tu alta:
+✓ Registro enviado
+● Confirmar tu correo (este paso)
+○ Aprobación de un administrador: te avisamos por correo cuando te habiliten un establecimiento.
+
+El enlace vence el {{ expires_at }} (hora de Argentina). Después vas a tener que pedir uno nuevo.
+{% endblock %}
+{% block footer_reason %}Recibiste este correo porque alguien se registró en Raíz con esta dirección. Si no fuiste vos, ignoralo y la cuenta no se va a activar.{% endblock %}

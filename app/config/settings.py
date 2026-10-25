@@ -1,5 +1,5 @@
 import enum
-from typing import Optional
+from typing import Literal, Optional
 
 from limits import parse as parse_limit
 from pydantic import (
@@ -48,6 +48,10 @@ class Settings(BaseSettings):
     # Database - DATABASE_URL is set
     database_url: Optional[str] = None
 
+    database_connect_timeout_seconds: float = Field(default=10, gt=0)
+    database_pool_size: int = Field(default=5, ge=1)
+    database_max_overflow: int = Field(default=10, ge=0)
+
     # Upper bound for the readiness probe's database round trip, connection
     # included, so a hung database fails the probe instead of stalling it.
     readiness_db_timeout_seconds: float = Field(default=2, gt=0)
@@ -85,6 +89,9 @@ class Settings(BaseSettings):
     password_recovery_path: str = "/reset-password"
     email_verification_path: str = "/verify-email"
     invite_path: str = "/invite"
+    backoffice_signin_path: str = "/signin"
+    # Public URL of this API; email images are served from its /static mount.
+    public_base_url: AnyUrl = "http://localhost:8000"
 
     # Receipt upload
     receipt_image_max_bytes: int = 10 * 1024 * 1024  # 10 MiB
@@ -106,6 +113,12 @@ class Settings(BaseSettings):
 
     # LLM
     gemini_api_key: Optional[str] = None
+    gemini_max_output_tokens: int = Field(default=8192, ge=256, le=65536)
+    # None preserves the provider default, recommended for Gemini 3.
+    gemini_temperature: float | None = Field(default=None, ge=0, le=2)
+    gemini_seed: int | None = None
+    gemini_thinking_level: Literal["low", "medium", "high"] = "low"
+    recipe_generation_timeout_seconds: float = Field(default=90, gt=0, le=240)
     gemini_model: str = "gemini-3.6-flash"
     # Total attempts (first call + retries)
     gemini_max_attempts: int = Field(default=3, ge=1)
@@ -129,6 +142,7 @@ class Settings(BaseSettings):
     rate_limit_mail_sending_ip: str = "10/hour"
     rate_limit_token_ip: str = "20/minute"
     rate_limit_register_ip: str = "5/hour"
+    rate_limit_ai_user: str = "20/hour"
     # Header where the edge proxy writes the address the connection came from.
     rate_limit_client_ip_header: str = "x-real-ip"
     # Shared with the backoffice, which reports its users' addresses. Unset
@@ -165,6 +179,20 @@ class Settings(BaseSettings):
             self.backoffice_deeplink_base, self.email_verification_path
         )
 
+    @property
+    def backoffice_signin_url(self) -> str:
+        """Derived backoffice sign-in URL from the backoffice base URL."""
+        return self._build_deeplink(
+            self.backoffice_deeplink_base, self.backoffice_signin_path
+        )
+
+    @property
+    def email_logo_url(self) -> str:
+        """Derived URL of the logo shown in system emails."""
+        return self._build_deeplink(
+            self.public_base_url, "/static/emails/raiz-logo.png"
+        )
+
     def invite_deeplink_url(self, role: UserRole) -> str:
         """Derived invitation deeplink URL for a backoffice role."""
         return self._build_deeplink(
@@ -188,6 +216,7 @@ class Settings(BaseSettings):
         "rate_limit_mail_sending_ip",
         "rate_limit_token_ip",
         "rate_limit_register_ip",
+        "rate_limit_ai_user",
     )
     @classmethod
     def validate_rate_limit(cls, value: str) -> str:

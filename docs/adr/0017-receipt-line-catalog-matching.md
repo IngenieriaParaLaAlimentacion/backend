@@ -5,7 +5,7 @@
 - **Updated**: 2026-10-23
 - **Deciders**: Backend team
 - **Related**: ADR-0015 (receipt photo storage — the propose/confirm flow this ADR extends), ADR-0012 (food
-  catalog relational schema — the source of `foods.base_unit`), ADR-0024 (unit conversion — how a printed
+  catalog relational schema — the source of `foods.base_unit`), ADR-0025 (unit conversion — how a printed
   quantity reaches the food's base unit), ADR-0010 (SARA 2 as the catalog source)
 
 ## Context
@@ -76,19 +76,10 @@ Both defaults were chosen empirically against a sample of real receipt lines run
 including lines with no matching catalog entry at all (e.g. no bare `"Fideos"`, no `"Danbo"` cheese) — not
 derived analytically, and are expected to be retuned from observed data.
 
-### `needs_review` stays `true` unconditionally — matching never marks a line as resolved
-
-A confident catalog match does **not** flip `needs_review` to `false`. Every proposed line, matched or not,
-still requires the user's explicit confirmation before `POST /food-intakes/from-photo/confirm` can persist
-it. This is a deliberate choice, not a placeholder: this data feeds establishment stock levels for a food
-security platform, and a wrong auto-match silently accepted would corrupt that stock. `needs_review` is kept
-as a single, unconditional signal ("a human must look at every line") rather than becoming a
-per-line trust signal that a caller could reasonably start skipping past.
-
-### `quantity`/`unit` are prefilled with the printed quantity converted to the food's base unit
+### `quantity`/`unit` are prefilled only when the printed unit is already the food's base unit
 
 A matched line carries a prefilled `quantity`/`unit` when the printed quantity converts to the matched food's
-`base_unit` through the unit conversion module and the food's stored equivalences (ADR-0024). A factor the
+`base_unit` through the unit conversion module and the food's stored equivalences (ADR-0025). A factor the
 food does not have is never guessed: the line is left for the user to fill in.
 
 **The prefill rule** (`app/domain/unit_conversion.py::prefill_from_printed`):
@@ -152,12 +143,6 @@ quantity only drops that line's quantity; it never fails the response validation
 - A lone `1.000` is genuinely ambiguous (1 or 1000); it is read as 1. The quantity is shown for review like
   every other prefilled value.
 
-**Neutral**
-
-- `needs_review` remaining unconditionally `true` means the field currently carries no information beyond
-  "there is at least one line in this proposal" — revisited once unit conversion (or another per-line
-  resolution signal) is designed.
-
 ## Alternatives considered
 
 **Ask the LLM to select from the catalog during extraction** — rejected. Requires sending the full catalog
@@ -172,13 +157,7 @@ systematically, including exact substring matches, because the brand and pack-si
 **`word_similarity()` alone** — rejected. It fixes the dilution but lets short catalog names (`"Sal"`) match
 unrelated lines, sometimes outscoring the genuine match.
 
-**Flip `needs_review` to `false` on a confident match** — rejected for now. Considered as the literal reading
-of the field ("does the user need to fix something"), but rejected because this data writes directly to
-establishment stock and the last validation before that write should always be a human's, not a similarity
-score's. May be revisited alongside a broader per-line resolution model once unit conversion is designed.
-
-**Convert same-dimension units now (e.g. grams to a kilograms `base_unit`)** — rejected at first, adopted
-later. Even the "safe" subset required deciding how to handle every other case (no unit text, a dimension
-mismatch, an unrecognized unit string) consistently, which was real design work deferred to its own iteration
-and ADR. Prefilling only the no-conversion case delivered part of the value without making any of those
-decisions. ADR-0024 made them, and the prefill rule above now converts.
+**Convert same-dimension units now (e.g. grams to a kilograms `base_unit`)** — rejected for this ADR. Even
+the "safe" subset still requires deciding how to handle every other case (no unit text, a dimension mismatch,
+an unrecognized unit string) consistently, which is real design work deferred to its own iteration and ADR.
+Prefilling only the no-conversion case delivers part of the value without making any of those decisions.

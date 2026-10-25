@@ -1,4 +1,4 @@
-"""Rate limiter shared by the public authentication endpoints."""
+"""Rate limits for authentication and authenticated AI operations."""
 
 import functools
 import time
@@ -169,5 +169,16 @@ def limit_by_email(body_type: type, setting: str, scope: str) -> DependsParam:
     # body once, so the email counted is the validated one.
     async def dependency(data: body_type) -> None:  # type: ignore[valid-type]
         await _enforce(setting, scope, email_key(str(data.email)))
+
+    return Depends(dependency)
+
+
+def limit_by_user(setting: str, scope: str) -> DependsParam:
+    """Count verified actor IDs, so shared IPs do not share an AI quota."""
+    from app.core.dependencies import require_any
+    from app.domain.user import UserActor
+
+    async def dependency(actor: UserActor = Depends(require_any)) -> None:
+        await _enforce(setting, scope, f"user:{actor.user_id}")
 
     return Depends(dependency)

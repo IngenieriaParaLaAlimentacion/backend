@@ -565,7 +565,7 @@ class TestApproveCreationRequest:
                 request.id, _make_approval(), reviewer_id=uuid.uuid4()
             )
 
-        mock_email.assert_awaited_once_with("worker@test.com", "Centro A")
+        mock_email.assert_awaited_once_with("worker@test.com", "Centro A", "Maria")
 
     async def test_new_establishment_stores_the_approved_profile(self, make_uow):
         """The profile sent on approval is stored on a new establishment,
@@ -716,7 +716,7 @@ class TestRejectCreationRequest:
             )
 
         mock_email.assert_awaited_once_with(
-            "worker@test.com", "Comedor Esperanza", "Datos incompletos"
+            "worker@test.com", "Comedor Esperanza", "Datos incompletos", "Maria"
         )
 
     async def test_sends_denial_email_without_reason(self, make_uow):
@@ -734,5 +734,5 @@ class TestRejectCreationRequest:
             await service.reject_creation_request(request.id, reviewer_id=uuid.uuid4())
 
         mock_email.assert_awaited_once_with(
-            "worker@test.com", "Comedor Esperanza", None
+            "worker@test.com", "Comedor Esperanza", None, "Maria"
         )

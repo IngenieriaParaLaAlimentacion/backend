@@ -31,6 +31,9 @@ from .surveys.survey_response_edit import SurveyResponseEdit
 
 __all__ = [
     "Base",
+    "RecipeRequestRecord",
+    "RecipeProposalRecord",
+    "RecipeSelection",
     "EmailVerificationToken",
     "User",
     "UserRole",
@@ -66,3 +69,5 @@ __all__ = [
     "StaleEstablishmentCycle",
     "UserPushDevice",
 ]
+
+from .recipes.recipe import RecipeProposalRecord, RecipeRequestRecord, RecipeSelection

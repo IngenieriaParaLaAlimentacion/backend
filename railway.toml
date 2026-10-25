@@ -5,6 +5,6 @@
 # Railway keeps routing traffic to the previous deployment until a new one
 # answers 200 here, so a deploy goes live only once it can reach the database.
 healthcheckPath = "/ready"
-# Seconds the new deployment has to pass the check. The Dockerfile CMD runs the
-# migrations and both seeds before uvicorn starts, so this must cover all of them.
+# Seconds the new deployment has to pass the check after the pre-deploy command
+# completes and Uvicorn starts.
 healthcheckTimeout = 180

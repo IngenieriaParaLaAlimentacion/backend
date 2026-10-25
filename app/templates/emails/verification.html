@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "_macros.html" import box, button, expiry, steps %}
+{% block preheader %}Un paso más: confirmá tu correo y esperá la aprobación.{% endblock %}
+{% block title %}Confirmá tu correo{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">Gracias por registrarte en Raíz como relevador. Confirmá que esta dirección es tuya para seguir con el alta.</p>
+{{ button("Confirmar mi correo", url) }}
+{% call box("Tu alta") %}
+{{ steps([
+  ("done", "Registro enviado", ""),
+  ("now", "Confirmar tu correo", "Este paso."),
+  ("", "Aprobación de un administrador", "Te avisamos por correo cuando te habiliten un establecimiento."),
+]) }}
+{% endcall %}
+{{ expiry(expires_at) }}
+{% endblock %}
+{% block footer_reason %}Recibiste este correo porque alguien se registró en Raíz con esta dirección. Si no fuiste vos, ignoralo y la cuenta no se va a activar.{% endblock %}

@@ -196,7 +196,6 @@ class ReceiptIntakeService:
             unit=unit,
             raw_quantity=raw_quantity,
             raw_unit_text=raw_unit_text,
-            needs_review=True,
         )
 
     @staticmethod

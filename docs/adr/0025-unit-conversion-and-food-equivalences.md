@@ -1,4 +1,4 @@
-# ADR-0024: Unit conversion module and per-food equivalences
+# ADR-0025: Unit conversion module and per-food equivalences
 
 - **Status**: Proposed
 - **Date**: 2026-10-23

@@ -1,7 +1,7 @@
 """add food equivalences
 
 Revision ID: 601b0eef15b0
-Revises: a8c4f6d2e901
+Revises: c46b13b64867
 Create Date: 2026-10-23 00:00:00.000000
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 from alembic import op
 
 revision: str = "601b0eef15b0"
-down_revision: Union[str, Sequence[str], None] = "a8c4f6d2e901"
+down_revision: Union[str, Sequence[str], None] = "c46b13b64867"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

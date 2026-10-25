@@ -3,7 +3,13 @@ from urllib.parse import parse_qs, urlparse
 
 import pytest
 from fastapi import status
+from sqlalchemy import select
 
+import app.db.database as db_module
+from app.domain.user import UserRole, UserStatus
+from app.models.auth.password_recovery_token import PasswordRecoveryToken
+from app.models.auth.user import User
+from tests.integration.auth.helpers import insert_user_with_recovery_token
 from tests.integration.urls import LOGIN_URL, LOGOUT_URL
 
 REQUEST_URL = "/api/v1/auth/password-recovery/request"
@@ -43,7 +49,7 @@ def capture_deeplink(monkeypatch):
     """Intercepts send_recovery_email and returns a dict with the captured deeplink."""
     captured = {"deeplink": None}
 
-    async def _fake(to_email, deeplink, expires_at):
+    async def _fake(to_email, deeplink, expires_at, name):
         captured["deeplink"] = deeplink
 
     monkeypatch.setattr("app.services.auth.auth_service.send_recovery_email", _fake)
@@ -227,3 +233,65 @@ class TestPasswordRecoveryConfirm:
     async def test_missing_new_password_returns_422(self, client):
         response = await client.post(CONFIRM_URL, json={"token": "sometoken"})
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+class TestDecoupledPasswordRecovery:
+    async def test_pending_field_worker_resets_password_and_remains_pending(
+        self, client, db_pending_user, capture_deeplink
+    ):
+        await client.post(REQUEST_URL, json={"email": "pending@test.com"})
+        token = _extract_token(capture_deeplink["deeplink"])
+
+        confirm_res = await client.post(
+            CONFIRM_URL, json={"token": token, "new_password": "newpassword123"}
+        )
+        assert confirm_res.status_code == status.HTTP_204_NO_CONTENT
+
+        async with db_module.AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(User).where(User.email == "pending@test.com")
+            )
+            user = result.scalar_one()
+            assert user.status == UserStatus.PENDING_VALIDATION
+            assert user.is_email_verified is True
+
+        login_res = await client.post(
+            LOGIN_URL, json=_login_payload("pending@test.com", "newpassword123")
+        )
+        assert login_res.status_code == status.HTTP_403_FORBIDDEN
+        assert login_res.json()["type"] == "/errors/account-pending-validation"
+
+
+class TestPendingBackofficeBlockedFromPasswordRecovery:
+    @pytest.mark.parametrize("role", [UserRole.ADMIN, UserRole.ANALYST])
+    async def test_request_password_recovery_skips_email_for_pending_backoffice(
+        self, client, capture_deeplink, role
+    ):
+        user, _ = await insert_user_with_recovery_token(role)
+
+        res = await client.post(REQUEST_URL, json={"email": user.email})
+        assert res.status_code == status.HTTP_202_ACCEPTED
+        assert capture_deeplink["deeplink"] is None
+
+    @pytest.mark.parametrize("role", [UserRole.ADMIN, UserRole.ANALYST])
+    async def test_confirm_password_recovery_rejected_for_pending_backoffice(
+        self, client, role
+    ):
+        user, token = await insert_user_with_recovery_token(role)
+
+        res = await client.post(
+            CONFIRM_URL, json={"token": token, "new_password": "newpassword123"}
+        )
+        assert res.status_code == status.HTTP_401_UNAUTHORIZED
+        assert res.json()["type"] == "/errors/auth/invalid-recovery-token"
+
+        # The invitee must still be able to accept the invite with the same link.
+        async with db_module.AsyncSessionLocal() as session:
+            recovery_token = (
+                await session.execute(
+                    select(PasswordRecoveryToken).where(
+                        PasswordRecoveryToken.user_id == user.id
+                    )
+                )
+            ).scalar_one()
+        assert recovery_token.used is False

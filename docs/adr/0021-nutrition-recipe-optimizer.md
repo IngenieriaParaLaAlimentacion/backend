@@ -121,7 +121,7 @@ portion of groups 1, 4 and 5 and the meal shares are provisional.
 - GAPA minimums use the weight of the food as the catalog gives it, so a cereal counted raw weighs less than the
   cooked portion of the manual. The minimum is lower than the cooked one, on purpose.
 - Everything is in grams. Each food's stock is converted from its `base_unit` by the `GramsConverter`, which
-  applies the unit conversion module (ADR-0024); a food with no conversion is left out and reported.
+  applies the unit conversion module (ADR-0025); a food with no conversion is left out and reported.
 - The solver is CPU-bound and runs in the request's process, in a worker thread, so a slow solve occupies a
   thread but not the event loop.
 

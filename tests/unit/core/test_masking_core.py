@@ -67,6 +67,8 @@ def test_mask_email_keeps_first_letter_and_domain(value, expected):
         "IMC",
         "hemoglobin",
         "answers",
+        "input_snapshot",
+        "recipe",
         "payload",
         "description",
         "comments",

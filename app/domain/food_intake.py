@@ -24,8 +24,9 @@ class FoodIntakeOriginType(StrEnum):
     MUNICIPAL_GOVERNMENT = "municipal_government"
     PRIVATE_COMPANY = "private_company"
     FOUNDATION = "foundation"
-    SOCIAL_ORGANIZATION = "social_organization"
     CHURCH = "church"
+    PRIVATE_DONATION = "private_donation"
+    COLLECTION_EVENT = "collection_event"
     OTHER = "other"
 
 

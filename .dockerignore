@@ -58,8 +58,18 @@ LICENSE
 # Dev-only data pipeline (source PDF, raw extraction CSVs, review captures) —
 # never needed at runtime; the final seed data it produces lives in
 # app/reference_data/ instead.
-scripts
+scripts/*
+!scripts/pre_deploy.sh
 
-# CI
+# Dev tooling and deploy config — not read at runtime
+.agents
+.claude
+.pre-commit-config.yaml
+codecov.yml
+compose.yml
+railway.toml
+
+# Secrets
+.env
 .env.*
 !.env.example
