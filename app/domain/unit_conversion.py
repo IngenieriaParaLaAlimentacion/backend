@@ -120,7 +120,7 @@ def from_grams(
     return Converted(_round_base_quantity(grams / grams_per_unit, base_unit))
 
 
-def printed_to_base_unit(
+def _printed_to_base_unit(
     quantity: Decimal,
     printed_unit: PrintedUnit | None,
     base_unit: MeasurementUnit,
@@ -165,7 +165,7 @@ def prefill_from_printed(
     if quantity is None or quantity <= 0:
         return None
 
-    result = printed_to_base_unit(
+    result = _printed_to_base_unit(
         quantity, normalize_printed_unit(unit_text), base_unit, factors
     )
     # A line needs a positive quantity that fits it; anything else is left for
