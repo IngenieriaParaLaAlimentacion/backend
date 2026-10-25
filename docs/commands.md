@@ -119,7 +119,7 @@ All configuration is passed via environment variables (see `.env.example`).
 
 ### Published image
 
-Every push to `develop` and `main` publishes the image to GitHub Container Registry, after it has started and answered `/ready` against an empty PostgreSQL. Pull requests publish nothing.
+Every push to `develop` and `main` publishes the image to GitHub Container Registry, once the lint, the tests and the security scan pass and the image has started and answered `/ready` against an empty PostgreSQL. A push to any other branch, which is what a pull request is built from, publishes nothing.
 
 | | |
 |---|---|
