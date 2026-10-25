@@ -67,27 +67,18 @@ def test_to_grams_converts_base_quantity(quantity, base_unit, factors, expected_
         # litres go through the density
         ("2060", L, DENSITY_1_03, "2"),
         ("515", L, DENSITY_1_03, "0.5"),
-        # more decimals than a stored quantity holds: 1000 / 1030 = 0.97087...
-        ("1000", L, DENSITY_1_03, "0.971"),
-        ("1234.5678", KG, NO_FACTORS, "1.235"),
-        ("0.4", KG, NO_FACTORS, "0"),
-        # ties round to the even neighbour
-        ("0.5", KG, NO_FACTORS, "0"),
-        ("1.5", KG, NO_FACTORS, "0.002"),
-        # units go through the weight of one unit and are counted whole
+        # units go through the weight of one unit
         ("600", UN, UNIT_WEIGHT_50, "12"),
-        ("610", UN, UNIT_WEIGHT_50, "12"),
-        ("640", UN, UNIT_WEIGHT_50, "13"),
-        ("20", UN, UNIT_WEIGHT_50, "0"),
-        ("625", UN, UNIT_WEIGHT_50, "12"),
-        ("675", UN, UNIT_WEIGHT_50, "14"),
+        ("75", UN, UNIT_WEIGHT_50, "1.5"),
+        # never rounded: the caller decides how to round
+        ("1234.5678", KG, NO_FACTORS, "1.2345678"),
+        ("20", UN, UNIT_WEIGHT_50, "0.4"),
     ],
 )
-def test_from_grams_converts_to_rounded_base_quantity(
+def test_from_grams_converts_to_base_quantity(
     grams, base_unit, factors, expected_quantity
 ):
-    """Grams convert to the base unit, rounded half-to-even to three decimals
-    for kilograms and litres and to a whole number for units."""
+    """Grams convert to the base unit without rounding."""
     result = from_grams(Decimal(grams), base_unit, factors)
 
     assert result == Converted(Decimal(expected_quantity))
@@ -152,8 +143,13 @@ def test_every_base_unit_converts_given_its_factors(convert, base_unit):
         # rounded as a stored quantity of the base unit
         ("1234.5678", P.GRAMOS, KG, NO_FACTORS, "1.235"),
         ("2.5", P.UNIDADES, UN, NO_FACTORS, "2"),
+        ("0.0005", P.KILOGRAMOS, KG, NO_FACTORS, "0"),
+        ("0.0015", P.KILOGRAMOS, KG, NO_FACTORS, "0.002"),
         # another dimension goes through grams
         ("600", P.GRAMOS, UN, UNIT_WEIGHT_50, "12"),
+        # ties round to the even neighbour
+        ("625", P.GRAMOS, UN, UNIT_WEIGHT_50, "12"),
+        ("675", P.GRAMOS, UN, UNIT_WEIGHT_50, "14"),
         ("1", P.KILOGRAMOS, L, DENSITY_1_03, "0.971"),
         ("500", P.MILILITROS, KG, DENSITY_1_03, "0.515"),
         ("1", P.LITROS, UN, ALL_FACTORS, "21"),

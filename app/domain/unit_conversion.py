@@ -111,13 +111,12 @@ def from_grams(
 
     Kilograms need no factor, litres need ``factors.density_g_ml`` and units
     need ``factors.unit_weight_g``. A missing factor is returned as
-    ``Unconverted`` with its reason. The result is rounded half-to-even to
-    three decimals, or to a whole number for units.
+    ``Unconverted`` with its reason. The result is not rounded.
     """
     grams_per_unit = _grams_per(_BASE_UNIT_MEASURE[base_unit], factors)
     if isinstance(grams_per_unit, ConversionFailure):
         return Unconverted(grams_per_unit)
-    return Converted(_round_base_quantity(grams / grams_per_unit, base_unit))
+    return Converted(grams / grams_per_unit)
 
 
 def _printed_to_base_unit(
@@ -132,7 +131,7 @@ def _printed_to_base_unit(
     factor. Any other goes through grams and needs the factors both units
     call for. A missing ``printed_unit`` is returned as ``Unconverted`` with
     ``UNSUPPORTED_UNIT``, and a missing factor with its reason. The result is
-    rounded as in ``from_grams``.
+    rounded half-to-even to three decimals, or to a whole number for units.
     """
     if printed_unit is None:
         return Unconverted(ConversionFailure.UNSUPPORTED_UNIT)
@@ -147,7 +146,10 @@ def _printed_to_base_unit(
     grams_per_printed_unit = _grams_per(printed, factors)
     if isinstance(grams_per_printed_unit, ConversionFailure):
         return Unconverted(grams_per_printed_unit)
-    return from_grams(quantity * grams_per_printed_unit, base_unit, factors)
+    in_base_unit = from_grams(quantity * grams_per_printed_unit, base_unit, factors)
+    if isinstance(in_base_unit, Unconverted):
+        return in_base_unit
+    return Converted(_round_base_quantity(in_base_unit.value, base_unit))
 
 
 def prefill_from_printed(

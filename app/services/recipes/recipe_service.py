@@ -49,7 +49,7 @@ from app.schemas.recipes.recipe_schema import (
 from app.services.access import check_establishment_access, check_field_work_access
 from app.services.food_outflows.food_outflow_service import FoodOutflowService
 from app.services.nutrition.compositions import composition_from_food
-from app.services.nutrition.grams import CatalogGramsConverter
+from app.services.nutrition.grams import GramsConverter
 from app.services.nutrition.indicators import ENERGY
 from app.services.nutrition.nutrition_service import NutritionService
 from app.services.recipes.calculations import calculate_proposal
@@ -125,7 +125,7 @@ class RecipeService:
         """Load one plain snapshot, then release the database connection."""
         establishment = await self._access(data.establishment_id, actor)
         rows = await self.uow.food_stock_repo.stocked_foods(data.establishment_id)
-        converter = CatalogGramsConverter([food for food, _ in rows])
+        converter = await GramsConverter.load(self.uow, [food for food, _ in rows])
         foods = {
             food.id: food
             for food, quantity in rows
@@ -376,7 +376,7 @@ class RecipeService:
                 item for item in source.ingredients if item.food_id not in foods
             )
             raise RecipeIngredientUnavailableError(str(missing.food_id), missing.name)
-        converter = CatalogGramsConverter(rows)
+        converter = await GramsConverter.load(self.uow, rows)
         # Preserve stock-unit quantities when reviewed gram metadata changes.
         ratio = Decimal(children_count) / Decimal(original.children_count)
         ingredients = []

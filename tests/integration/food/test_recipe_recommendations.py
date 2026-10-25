@@ -9,10 +9,14 @@ from sqlalchemy import func, select, update
 
 from app.core.dependencies import get_llm_client
 from app.core.interfaces.llm_client import ILlmClient
-from app.domain.food_catalog import NutrientGroup
+from app.domain.food_catalog import (
+    EquivalenceKind,
+    EquivalenceMatchType,
+    NutrientGroup,
+)
 from app.domain.user import UserRole
 from app.exceptions.domain_exceptions import LlmClientError
-from app.models.food_catalog.food import Food
+from app.models.food_catalog.food_equivalence import FoodEquivalence
 from app.models.food_catalog.food_nutrient_value import FoodNutrientValue
 from app.models.food_catalog.nutrient import Nutrient
 from app.models.food_outflows.food_outflow import FoodOutflow
@@ -123,10 +127,15 @@ async def recipe_setup(app, foods, db_establishment, make_user_with_role):
                     food_id=foods.eggs,
                     quantity=Decimal("20"),
                 ),
+                FoodEquivalence(
+                    food_id=foods.eggs,
+                    kind=EquivalenceKind.UNIT_WEIGHT_G,
+                    value=Decimal("50"),
+                    source="test",
+                    source_ref="test",
+                    match_type=EquivalenceMatchType.DIRECT,
+                ),
             ]
-        )
-        await db.execute(
-            update(Food).where(Food.id == foods.eggs).values(grams_per_base_unit=50)
         )
         await db.commit()
     fake = RecipeLlm(foods)
