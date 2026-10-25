@@ -35,6 +35,8 @@ class NutritionReportRepository:
     async def update(self, report: NutritionReport) -> NutritionReport:
         """Persist changes made to an existing report."""
         await self.db.flush()
+        # The database sets updated_at, which leaves it expired for the caller.
+        await self.db.refresh(report)
         return report
 
     async def lock(self, establishment_id: UUID, month: date) -> None:
