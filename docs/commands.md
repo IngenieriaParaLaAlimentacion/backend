@@ -51,8 +51,8 @@ poetry run uvicorn app.main:app --reload
 # Apply all pending migrations
 poetry run alembic upgrade head
 
-# Roll back one migration
-poetry run alembic downgrade -1
+# Roll back to a specific revision (example: one parent of the current merge head)
+poetry run alembic downgrade b7d170a4e901
 
 # Generate a new migration from model changes
 poetry run alembic revision --autogenerate -m "short description"
@@ -126,7 +126,7 @@ All configuration is passed via environment variables (see `.env.example`). If `
 
 ### Migration rollback limits
 
-CI checks that the current head can run `upgrade head`, `downgrade -1`, and `upgrade head` on a fresh PostgreSQL Testcontainer. This checks command success and revision movement, but it does not prove that every historical migration restores data or schema exactly. Known exceptions include:
+CI checks that the current head can run `upgrade head`, downgrade to its parent revision (or both parents for a merge head), and `upgrade head` on a fresh PostgreSQL Testcontainer. This checks command success and revision movement, but it does not prove that every historical migration restores data or schema exactly. Known exceptions include:
 
 - `3c300b242b41`, `9c55bed7c3d6`, and `9dfcb864e5a1`: PostgreSQL enum additions remain after downgrade.
 - `e515758f7b0a`: the email-verification backfill has no reverse data operation.
