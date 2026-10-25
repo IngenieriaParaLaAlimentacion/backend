@@ -70,14 +70,11 @@ Ordinary dishes remain valid when stock cannot support cultural inspiration.
 Culinary/cultural judgments remain model judgments rather than mathematical
 properties guaranteed by the LP.
 
-The LP converter remains behind the `GramsConverter` interface. A catalog
-converter uses 1000 grams per kilogram and optional reviewed `foods.grams_per_base_unit` for litres/units.
-An admin endpoint configures the latter; missing factors are excluded with a
-warning, never estimated from a food name. The shared conversion module and
-food-equivalence management planned in #192 will replace this temporary adapter and its admin endpoint while retaining the
-`GramsConverter` protocol at the nutrition boundary. Transfer reviewed factors
-to the shared equivalences before removing the catalog field; neither recipes
-nor receipts should retain a second source of conversion data.
+The LP converts stock to grams and its result back to stock units through
+`GramsConverter`, which reads each food's density and unit weight from the
+shared `food_equivalences` (ADR-0025). Kilograms need no factor; missing
+factors are excluded with a warning, never estimated from a food name. Recipes
+keep no conversion data of their own.
 
 ## Consequences
 

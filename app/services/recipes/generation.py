@@ -25,7 +25,7 @@ from app.schemas.recipes.recipe_schema import (
     WritingBatch,
     WritingEnvelope,
 )
-from app.services.nutrition.grams import CatalogGramsConverter
+from app.services.nutrition.grams import GramsConverter
 from app.services.nutrition.nutrition_service import NutritionService
 from app.services.recipes.calculations import calculate_proposal, stock_ingredients
 
@@ -73,7 +73,7 @@ class GenerationSnapshot:
     foods: dict[UUID, FoodSnapshot]
     compositions: dict[UUID, FoodComposition]
     stocked: list[StockedFood]
-    converter: CatalogGramsConverter
+    converter: GramsConverter
     warnings: list[str]
 
     @property

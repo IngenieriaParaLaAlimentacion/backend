@@ -2,11 +2,11 @@
 
 - **Status**: Accepted
 - **Date**: 2026-09-19
-- **Updated**: 2026-10-16
+- **Updated**: 2026-10-23
 - **Deciders**: Backend team
 - **Related**: ADR-0015 (receipt photo storage — the propose/confirm flow this ADR extends), ADR-0012 (food
-  catalog relational schema — the source of `foods.base_unit` and the explicit non-goal this ADR reaffirms
-  for the receipt-intake case), ADR-0010 (SARA 2 as the catalog source)
+  catalog relational schema — the source of `foods.base_unit`), ADR-0025 (unit conversion — how a printed
+  quantity reaches the food's base unit), ADR-0010 (SARA 2 as the catalog source)
 
 ## Context
 
@@ -78,27 +78,29 @@ derived analytically, and are expected to be retuned from observed data.
 
 ### `quantity`/`unit` are prefilled only when the printed unit is already the food's base unit
 
-A matched line carries a prefilled `quantity`/`unit` only when no conversion is needed. Unit conversion
-itself is out of scope, reaffirming for the receipt-intake case the general non-goal ADR-0012 already
-recorded: SARA 2 provides no purchasing-unit or weight-per-unit data, so there is no sourced way to convert a
-receipt-printed quantity (which may be in a different unit, or a different physical dimension entirely — a
-bare count vs. a weight) into the matched food's `base_unit` without inventing a conversion factor.
+A matched line carries a prefilled `quantity`/`unit` when the printed quantity converts to the matched food's
+`base_unit` through the unit conversion module and the food's stored equivalences (ADR-0025). A factor the
+food does not have is never guessed: the line is left for the user to fill in.
 
-**The prefill rule** (`app/domain/printed_unit.py::prefill_from_printed`):
+**The prefill rule** (`app/domain/unit_conversion.py::prefill_from_printed`):
 
-- The extracted `raw_unit_text` is normalized to one of `g`, `kg`, `ml`, `cl`, `l`, `unidad`. Case, surrounding
-  whitespace and a trailing dot are ignored, and a variants table covers the common spellings (`gr`/`grs`/
-  `gramos`, `cc`, `lt`/`lts`/`litro`, `u`/`un`/`unid`, …). Anything else — `cucharada`, `taza`, unknown text —
-  does not normalize. The variants table is a starting list meant to grow from the spellings seen on real
-  receipts.
-- A matched line is prefilled only when the normalized unit is exactly the matched food's `base_unit`:
-  `kg` for a `kilogramos` food, `l` for `litros`, `unidad` for `unidades`. The quantity is taken as printed.
-- `g`, `ml` and `cl` are recognised but never prefilled, since reaching a kilograms or litres `base_unit` would
-  be a conversion. A line printed as `500 g` against a kilograms food stays empty.
+- The extracted `raw_unit_text` is normalized (`app/domain/printed_unit.py::normalize_printed_unit`) to one
+  of `g`, `kg`, `ml`, `cl`, `l`, `unidad`. Case, surrounding whitespace and a trailing dot are ignored, and a
+  variants table covers the common spellings (`gr`/`grs`/`gramos`, `cc`, `lt`/`lts`/`litro`, `u`/`un`/`unid`,
+  …). Anything else — `cucharada`, `taza`, unknown text — does not normalize. The variants table is a starting
+  list meant to grow from the spellings seen on real receipts.
+- A printed unit of the same dimension as the food's `base_unit` converts with no factor: `500 g` against a
+  `kilogramos` food is `0.5`, `33 cl` against a `litros` food is `0.33`.
+- A printed unit of another dimension converts through grams and needs the food's factors: `600 g` against a
+  `unidades` food that weighs 50 g per unit is `12`. Without that unit weight stored, the line stays empty.
+- The result is rounded as a stored quantity: three decimals for `kilogramos` and `litros`, a whole number for
+  `unidades`.
 - Every other case leaves **both** `quantity` and `unit` `null`: no catalog match, an unsupported or
-  unrecognised unit, no unit text at all (a bare count is not assumed to be units), a dimension mismatch
-  (`1 kg` against a `unidades` food), or an unusable quantity. The two fields are always null or set
-  together, so `unit` is never set merely because a food matched.
+  unrecognised unit, no unit text at all (a bare count is not assumed to be units), a factor the food does not
+  have, an unusable quantity, or a converted quantity that is zero or larger than a line holds
+  (`MAX_LINE_QUANTITY`, the same bound quantity parsing uses). The two fields are always null or set together,
+  so `unit` is never set merely because a food matched.
+- The factors of every matched food in a proposal are read in one query.
 - `raw_quantity`/`raw_unit_text` always pass through, so the user can see what was printed whether or not it
   was used.
 
@@ -123,7 +125,9 @@ quantity only drops that line's quantity; it never fails the response validation
 
 - Removes the manual catalog search for the common case (receipt line text closely matches a catalog food
   name), without weakening the review step: the user still explicitly confirms every line.
-- Removes the manual quantity entry for matched lines printed in the food's base unit (`kg`, `l`, units).
+- Removes the manual quantity entry for matched lines whose printed quantity converts to the food's base unit:
+  always within one dimension (`g`, `kg`, `ml`, `cl`, `l`, units), and across dimensions once the food's
+  factor is stored.
 - Matching needs no schema change, no new table and no LLM prompt change — it reuses `pg_trgm`
   infrastructure the catalog search endpoint already depends on.
 - The thresholds are tunable from observed data post-launch without a deploy of new logic.
@@ -133,8 +137,9 @@ quantity only drops that line's quantity; it never fails the response validation
 - Purely name-similarity based: a receipt abbreviation or brand name with low string similarity to the
   catalog's SARA 2-derived name (e.g. a specific commercial product name vs. a generic SARA 2 entry) will
   not match even when a human would recognize it instantly. Accepted — the fallback is manual search.
-- Lines printed in `g`, `ml` or `cl` — common on receipts — still need the quantity entered by hand. This is
-  the cost of not converting, and it goes away once unit conversion and per-food equivalences are designed.
+- Lines printed in another dimension than the food's base unit (a weight for a food counted in units, a volume
+  for a food weighed in kilograms) still need the quantity entered by hand until that food's equivalence is
+  stored.
 - A lone `1.000` is genuinely ambiguous (1 or 1000); it is read as 1. The quantity is shown for review like
   every other prefilled value.
 

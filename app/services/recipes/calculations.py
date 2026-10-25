@@ -7,13 +7,13 @@ from app.domain.nutrition import (
 )
 from app.schemas.recipes.recipe_schema import RecipeIngredient, RecipeProposal
 from app.services.nutrition.compositions import composition_from_food
-from app.services.nutrition.grams import CatalogGramsConverter
+from app.services.nutrition.grams import GramsConverter
 from app.services.nutrition.indicators import calculate_indicators
 from app.services.nutrition.shortfalls import evaluate_shortfalls
 
 
 def stock_ingredients(
-    quantities: list[FoodQuantity], foods: dict, converter: CatalogGramsConverter
+    quantities: list[FoodQuantity], foods: dict, converter: GramsConverter
 ) -> list[RecipeIngredient]:
     """Convert solver grams to stock precision without rounding quantities up."""
     ingredients = []

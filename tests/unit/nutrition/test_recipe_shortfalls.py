@@ -77,7 +77,7 @@ def test_only_noise_within_named_tolerances_is_ignored():
 
 @pytest.mark.parametrize("meal", list(MealType))
 def test_target_energy_is_shared_without_database_access(meal):
-    service = NutritionService(AsyncMock(), None)
+    service = NutritionService(AsyncMock())
     assert (
         service.target_energy_kcal(30, meal)
         == 30 * NINO_7_9.energy_kcal * NINO_7_9.meal_energy_fractions[meal]
@@ -86,7 +86,7 @@ def test_target_energy_is_shared_without_database_access(meal):
 
 async def test_snapshot_solver_uses_only_requested_foods_without_database_access():
     uow = AsyncMock()
-    service = NutritionService(uow, None)
+    service = NutritionService(uow)
     first, other = uuid4(), uuid4()
     foods = [
         StockedFood(FoodComposition(food_id, None, {"valor_energetico": 360}), 1000)

@@ -1,4 +1,5 @@
 import uuid
+from collections.abc import Mapping
 from typing import Any
 from uuid import UUID
 
@@ -10,7 +11,7 @@ from app.core.interfaces.object_storage import IObjectStorage
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.food_intake import FoodIntakeDomain
 from app.domain.printed_quantity import parse_printed_quantity
-from app.domain.printed_unit import prefill_from_printed
+from app.domain.unit_conversion import ConversionFactors, prefill_from_printed
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
     ImageContentMismatchError,
@@ -20,6 +21,7 @@ from app.exceptions.domain_exceptions import (
     ReceiptPhotoStorageError,
     UnsupportedImageTypeError,
 )
+from app.models.food_catalog.food import Food
 from app.schemas.common import IdentifierRefSchema
 from app.schemas.food_intakes.food_intake_schema import FoodIntakeRequest
 from app.schemas.food_intakes.receipt_schema import (
@@ -137,27 +139,53 @@ class ReceiptIntakeService:
         if not self._validate_magic_bytes(data, content_type):
             raise ImageContentMismatchError(content_type)
 
-    async def _build_line(self, raw: dict[str, Any]) -> ProposedFoodLine:
-        """Build one proposed line from an extracted receipt item.
+    async def _build_lines(
+        self, raw_lines: list[dict[str, Any]]
+    ) -> list[ProposedFoodLine]:
+        """Build the proposed lines from the extracted receipt items.
 
-        The catalog match is delegated entirely to
-        ``FoodRepository.find_best_match`` (trigram similarity, ADR-0017).
+        The catalog match of each item is delegated entirely to
+        ``FoodRepository.find_best_match`` (trigram similarity, ADR-0017). The
+        conversion factors of every matched food are read in one query.
+        """
+        foods = [
+            await self.uow.food_repo.find_best_match(
+                raw["description"],
+                settings.receipt_food_match_min_word_similarity,
+                settings.receipt_food_match_min_similarity,
+            )
+            for raw in raw_lines
+        ]
+        factors = await self.uow.food_equivalence_repo.get_factors_by_food_ids(
+            {food.id for food in foods if food is not None}
+        )
+        return [
+            self._build_line(raw, food, factors)
+            for raw, food in zip(raw_lines, foods, strict=True)
+        ]
+
+    @staticmethod
+    def _build_line(
+        raw: dict[str, Any],
+        food: Food | None,
+        factors: Mapping[UUID, ConversionFactors],
+    ) -> ProposedFoodLine:
+        """Build one proposed line from an extracted receipt item and its match.
+
         For a matched line, ``quantity`` and ``unit`` are prefilled together
-        from the printed quantity when its unit is exactly the food's base
-        unit (see ``prefill_from_printed``), and both stay None otherwise.
+        with the printed quantity converted to the food's base unit (see
+        ``prefill_from_printed``), and both stay None when it cannot be.
+        ``factors`` holds the conversion factors of the matched food.
         """
         raw_quantity = parse_printed_quantity(raw.get("raw_quantity"))
         raw_unit_text = raw.get("raw_unit_text")
-        food = await self.uow.food_repo.find_best_match(
-            raw["description"],
-            settings.receipt_food_match_min_word_similarity,
-            settings.receipt_food_match_min_similarity,
-        )
 
         quantity = None
         unit = None
         if food is not None:
-            prefill = prefill_from_printed(raw_quantity, raw_unit_text, food.base_unit)
+            prefill = prefill_from_printed(
+                raw_quantity, raw_unit_text, food.base_unit, factors[food.id]
+            )
             if prefill is not None:
                 quantity, unit = prefill
 
@@ -200,11 +228,13 @@ class ReceiptIntakeService:
         Each line is matched against the food catalog by name similarity
         (ADR-0017); ``food`` is set when a confident match is found, and left
         ``None`` otherwise. On a match, ``quantity`` and ``unit`` are
-        prefilled from the printed quantity when it is already in the food's
-        base unit; nothing is converted. When the extractor finds nothing, or
-        the LLM call itself fails, the response falls back to an empty
-        proposal with a hint to enter the intake manually rather than
-        surfacing the failure as an error.
+        prefilled from the printed quantity converted to the food's base
+        unit, when it can be. ``needs_review`` is always ``True`` --
+        matching never marks a line as resolved, since the last validation
+        before this data hits establishment stock is always the user's. When
+        the extractor finds nothing, or the LLM call itself fails, the
+        response falls back to an empty proposal with a hint to enter the
+        intake manually rather than surfacing the failure as an error.
 
         Raises:
             UnsupportedImageTypeError: image type not accepted.
@@ -239,7 +269,7 @@ class ReceiptIntakeService:
                 message=self._MANUAL_FALLBACK_MESSAGE,
             )
 
-        lines = [await self._build_line(raw) for raw in result["lines"]]
+        lines = await self._build_lines(result["lines"])
         if not lines:
             logger.info(
                 "receipt_intake_no_lines_found",

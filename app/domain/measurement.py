@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import date, datetime
-from enum import Enum, StrEnum
+from enum import StrEnum
 from typing import Self
 from uuid import UUID
 
@@ -26,7 +26,7 @@ class EvolutionOrder(StrEnum):
     NEWEST_FIRST = "newest_first"
 
 
-class AlertType(str, Enum):
+class AlertType(StrEnum):
     SEVERELY_WASTED = "severely_wasted"
     WASTED = "wasted"
     OVERWEIGHT = "overweight"
@@ -35,7 +35,7 @@ class AlertType(str, Enum):
     UNDERWEIGHT = "underweight"
 
 
-class AlertSeverity(str, Enum):
+class AlertSeverity(StrEnum):
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
