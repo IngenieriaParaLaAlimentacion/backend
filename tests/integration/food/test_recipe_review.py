@@ -92,7 +92,7 @@ async def test_generation_releases_connection_and_reuses_one_stock_snapshot(
         return await original_stock(self, establishment_id)
 
     async def complete(self, *args):
-        assert not self.nutrition.uow.session.in_transaction()
+        assert not self.nutrition_service.uow.session.in_transaction()
         calls.append(args[0])
         if len(calls) == 1:
             # A concurrent movement changes stock after the model context was built.

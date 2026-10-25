@@ -116,9 +116,9 @@ def writing_response_schema() -> dict:
 
 
 class RecipeGenerator:
-    def __init__(self, llm: ILlmClient | None, nutrition: NutritionService):
+    def __init__(self, llm: ILlmClient | None, nutrition_service: NutritionService):
         self.llm = llm
-        self.nutrition = nutrition
+        self.nutrition_service = nutrition_service
 
     @staticmethod
     def _fail(stage: str, reason: str, failures: list[str] | None = None) -> NoReturn:
@@ -227,7 +227,7 @@ class RecipeGenerator:
                 ):
                     failures.append("invalid_foods_or_unconfigured_culture")
                     continue
-                solution = await self.nutrition.maximize_stocked_recipe(
+                solution = await self.nutrition_service.maximize_stocked_recipe(
                     RecipeRequest(ids, data.children_count, data.meal_type),
                     snapshot.stocked,
                 )
@@ -250,7 +250,7 @@ class RecipeGenerator:
                     ingredients,
                     solution.target_energy_kcal,
                     snapshot.foods,
-                    self.nutrition.profile,
+                    self.nutrition_service.profile,
                     snapshot.warnings + solution.warnings,
                     compositions=snapshot.compositions,
                 )

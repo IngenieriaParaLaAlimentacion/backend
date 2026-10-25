@@ -1,5 +1,6 @@
 import uuid
 from datetime import date
+from decimal import Decimal
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -103,6 +104,35 @@ async def test_new_month_is_calculated_written_up_and_saved():
     llm.complete.assert_awaited_once()
     uow.nutrition_report_repo.create.assert_awaited_once_with(report)
     uow.commit.assert_awaited_once()
+
+
+async def test_calculator_is_built_only_from_the_foods_received_in_the_month(
+    monkeypatch,
+):
+    analysis, milk_id = monthly_analysis()
+    built = []
+
+    class FakeNutrition:
+        profile = NINO_7_9
+        analyze_monthly_intake = AsyncMock(return_value=analysis)
+
+        def __init__(self, uow, grams):
+            built.append(grams)
+
+    monkeypatch.setattr(
+        "app.services.nutrition.nutrition_report_service.NutritionService",
+        FakeNutrition,
+    )
+    service, uow, _, _ = make_service()
+    service.nutrition_service = None
+    uow.food_intake_repo.sum_quantities_by_food = AsyncMock(
+        return_value={milk_id: Decimal("5")}
+    )
+
+    await service.get_or_generate_report(ESTABLISHMENT_ID, "2026-09", ADMIN)
+
+    assert set(built[0].factors) == {milk_id}
+    uow.food_repo.get_all.assert_not_awaited()
 
 
 async def test_report_is_looked_up_only_after_taking_the_lock():

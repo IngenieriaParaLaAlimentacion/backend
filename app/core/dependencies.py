@@ -293,3 +293,11 @@ async def get_nutrition_report_service() -> AsyncGenerator[
     """Provide the saved-report operations without a calculator or an AI client."""
     async with UnitOfWork() as uow:
         yield NutritionReportService(uow)
+
+
+async def get_nutrition_report_generation_service(
+    llm_client: ILlmClient = Depends(get_llm_client),
+) -> AsyncGenerator[NutritionReportService, None]:
+    """Provide the report operations with an AI client, to generate reports."""
+    async with UnitOfWork() as uow:
+        yield NutritionReportService(uow, llm=llm_client)
