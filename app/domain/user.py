@@ -1,5 +1,5 @@
 from dataclasses import dataclass, fields
-from enum import Enum, StrEnum
+from enum import StrEnum
 from uuid import UUID
 
 from app.domain.establishment import EstablishmentDomain, EstablishmentWithStatusDomain
@@ -21,7 +21,7 @@ REVIEWED_ACCESS_ROLES = frozenset({UserRole.FIELD_WORKER, UserRole.ANALYST})
 """Roles whose establishment access goes through admin review."""
 
 
-class UserStatus(str, Enum):
+class UserStatus(StrEnum):
     """Lifecycle states a user account can be in."""
 
     ACTIVE = "active"

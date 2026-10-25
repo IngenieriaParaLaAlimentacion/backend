@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field, fields
 from datetime import datetime
-from enum import Enum, StrEnum
+from enum import StrEnum
 from typing import NamedTuple
 from uuid import UUID
 
@@ -11,7 +11,7 @@ from app.domain.establishment_characterization import (
 )
 
 
-class UserEstablishmentStatus(str, Enum):
+class UserEstablishmentStatus(StrEnum):
     APPROVED = "approved"
     PENDING = "pending"
     REJECTED = "rejected"

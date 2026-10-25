@@ -1,10 +1,10 @@
-from enum import Enum
+from enum import StrEnum
 
 from app.services.exporters.base import SurveyResponseExporter
 from app.services.exporters.xlsx_exporter import XlsxSurveyResponseExporter
 
 
-class ExportFormat(str, Enum):
+class ExportFormat(StrEnum):
     XLSX = "xlsx"
 
 

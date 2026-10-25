@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class PrintedUnit(str, Enum):
+class PrintedUnit(StrEnum):
     """A unit of measure that can be printed on a receipt line."""
 
     GRAMOS = "g"
