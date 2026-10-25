@@ -50,11 +50,9 @@ class NutritionService:
     def __init__(
         self,
         uow: IUnitOfWork,
-        grams: GramsConverter,
         profile: ReferenceProfile = NINO_7_9,
     ) -> None:
         self.uow = uow
-        self.grams = grams
         self.profile = profile
 
     async def _resolve_establishment(
@@ -72,13 +70,13 @@ class NutritionService:
         ``foods`` holds every food in ``quantities``. Returns the grams per food
         and one warning per food left out, naming it and the factor it lacks.
         """
+        foods = list(foods)
+        converter = await GramsConverter.load(self.uow, foods)
         by_id = {food.id: food for food in foods}
-        results = await self.grams.to_grams(
-            quantities, {food_id: by_id[food_id].base_unit for food_id in quantities}
-        )
         grams: dict[UUID, float] = {}
         warnings: list[str] = []
-        for food_id, result in results.items():
+        for food_id, quantity in quantities.items():
+            result = converter.convert(food_id, quantity)
             if isinstance(result, Converted):
                 # The solver and indicators work in floats; exact decimals only
                 # matter for stored quantities, not for estimating nutrients.

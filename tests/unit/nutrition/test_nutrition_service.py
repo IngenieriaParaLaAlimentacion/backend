@@ -14,7 +14,7 @@ from app.domain.nutrition import (
     PrioritizedNutrient,
     RecipeRequest,
 )
-from app.domain.unit_conversion import ConversionFailure, Converted, Unconverted
+from app.domain.unit_conversion import ConversionFactors
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentAccessDeniedError,
@@ -27,28 +27,6 @@ from app.utils.dates import month_bounds
 ESTABLISHMENT_ID = uuid.uuid4()
 FOOD_ID = uuid.uuid4()
 ADMIN = UserActor(user_id=uuid.uuid4(), role=UserRole.ADMIN)
-
-
-class GramsPerUnit:
-    """Converter that weighs every unit of a food as ``factor`` grams, or cannot
-    convert the foods in ``failures``, for the reason given there. Keeps the base
-    units it was given."""
-
-    def __init__(self, factor: int = 1000, failures: dict | None = None):
-        self.factor = factor
-        self.failures = failures or {}
-        self.base_units = None
-
-    async def to_grams(self, quantities, base_units):
-        self.base_units = dict(base_units)
-        return {
-            food_id: (
-                Unconverted(self.failures[food_id])
-                if food_id in self.failures
-                else Converted(quantity * self.factor)
-            )
-            for food_id, quantity in quantities.items()
-        }
 
 
 def food_with(
@@ -71,12 +49,19 @@ def food_with(
     return food
 
 
-def make_uow(received=None, foods=(), rows=(), stock=None):
+def make_uow(received=None, foods=(), rows=(), stock=None, factors=None):
     uow = AsyncMock()
     uow.food_intake_repo.sum_quantities_by_food = AsyncMock(return_value=received or {})
     uow.food_repo.get_with_nutrients_by_ids = AsyncMock(return_value=list(foods))
     uow.food_repo.list_all_with_nutrients = AsyncMock(return_value=list(rows))
     uow.food_stock_repo.get_many = AsyncMock(return_value=stock or {})
+    # Like the repository, every requested food gets factors, empty by default.
+    uow.food_equivalence_repo.get_factors_by_food_ids = AsyncMock(
+        side_effect=lambda food_ids: {
+            food_id: (factors or {}).get(food_id, ConversionFactors())
+            for food_id in food_ids
+        }
+    )
     return uow
 
 
@@ -98,9 +83,7 @@ def test_month_is_counted_in_buenos_aires_time(year, month, start, end):
 async def test_monthly_analysis_asks_the_repository_for_the_month_window():
     uow = make_uow()
 
-    await NutritionService(uow, GramsPerUnit()).analyze_monthly_intake(
-        ESTABLISHMENT_ID, 2026, 3, ADMIN
-    )
+    await NutritionService(uow).analyze_monthly_intake(ESTABLISHMENT_ID, 2026, 3, ADMIN)
 
     start, end = month_bounds(2026, 3)
     uow.food_intake_repo.sum_quantities_by_food.assert_awaited_once_with(
@@ -109,7 +92,7 @@ async def test_monthly_analysis_asks_the_repository_for_the_month_window():
 
 
 async def test_monthly_analysis_without_intakes_has_no_data():
-    result = await NutritionService(make_uow(), GramsPerUnit()).analyze_monthly_intake(
+    result = await NutritionService(make_uow()).analyze_monthly_intake(
         ESTABLISHMENT_ID, 2026, 3, ADMIN
     )
 
@@ -117,57 +100,55 @@ async def test_monthly_analysis_without_intakes_has_no_data():
     assert result.nutrients_at_risk == []
 
 
-async def test_monthly_analysis_converts_quantities_to_grams_before_calculating():
-    rice_id = uuid.uuid4()
-    # 2 kg of rice at 100 kcal per 100 g: 2,000 g give 2,000 kcal.
+@pytest.mark.parametrize(
+    ("base_unit", "factors", "quantity", "expected_kcal"),
+    [
+        # 2 kg at 100 kcal per 100 g: 2,000 g give 2,000 kcal.
+        (MeasurementUnit.KILOGRAMOS, ConversionFactors(), "2", 2000),
+        # 1 l at 1.03 g/ml: 1,030 g give 1,030 kcal.
+        (
+            MeasurementUnit.LITROS,
+            ConversionFactors(density_g_ml=Decimal("1.03")),
+            "1",
+            1030,
+        ),
+    ],
+)
+async def test_monthly_analysis_converts_quantities_to_grams_before_calculating(
+    base_unit, factors, quantity, expected_kcal
+):
+    food_id = uuid.uuid4()
     uow = make_uow(
-        received={rice_id: Decimal("2")},
-        foods=[food_with(rice_id, {"valor_energetico": 100})],
-        rows=[FoodNutrientRow(rice_id, None, "valor_energetico", Decimal("100"))],
+        received={food_id: Decimal(quantity)},
+        foods=[food_with(food_id, {"valor_energetico": 100}, base_unit=base_unit)],
+        rows=[FoodNutrientRow(food_id, None, "valor_energetico", Decimal("100"))],
+        factors={food_id: factors},
     )
 
-    result = await NutritionService(uow, GramsPerUnit()).analyze_monthly_intake(
+    result = await NutritionService(uow).analyze_monthly_intake(
         ESTABLISHMENT_ID, 2026, 3, ADMIN
     )
 
-    assert result.indicators.energy_kcal == pytest.approx(2000)
-
-
-async def test_monthly_analysis_converts_each_food_from_its_own_base_unit():
-    rice_id, milk_id = uuid.uuid4(), uuid.uuid4()
-    uow = make_uow(
-        received={rice_id: Decimal("1"), milk_id: Decimal("2")},
-        foods=[
-            food_with(rice_id, {"valor_energetico": 100}),
-            food_with(
-                milk_id, {"valor_energetico": 60}, base_unit=MeasurementUnit.LITROS
-            ),
-        ],
-    )
-    grams = GramsPerUnit()
-
-    await NutritionService(uow, grams).analyze_monthly_intake(
-        ESTABLISHMENT_ID, 2026, 3, ADMIN
-    )
-
-    assert grams.base_units == {
-        rice_id: MeasurementUnit.KILOGRAMOS,
-        milk_id: MeasurementUnit.LITROS,
-    }
+    assert result.indicators.energy_kcal == pytest.approx(expected_kcal)
 
 
 async def test_food_without_known_conversion_is_left_out_and_reported():
     rice_id, milk_id = uuid.uuid4(), uuid.uuid4()
+    # Milk is kept in litres and has no density, so it has no weight in grams.
     uow = make_uow(
         received={rice_id: Decimal("1"), milk_id: Decimal("5")},
         foods=[
             food_with(rice_id, {"valor_energetico": 100}),
-            food_with(milk_id, {"valor_energetico": 100}, name="Leche"),
+            food_with(
+                milk_id,
+                {"valor_energetico": 100},
+                base_unit=MeasurementUnit.LITROS,
+                name="Leche",
+            ),
         ],
     )
-    grams = GramsPerUnit(failures={milk_id: ConversionFailure.MISSING_DENSITY})
 
-    result = await NutritionService(uow, grams).analyze_monthly_intake(
+    result = await NutritionService(uow).analyze_monthly_intake(
         ESTABLISHMENT_ID, 2026, 3, ADMIN
     )
 
@@ -182,7 +163,7 @@ async def test_field_worker_without_approved_access_cannot_analyze():
     worker = UserActor(user_id=uuid.uuid4(), role=UserRole.FIELD_WORKER)
 
     with pytest.raises(EstablishmentAccessDeniedError):
-        await NutritionService(uow, GramsPerUnit()).analyze_monthly_intake(
+        await NutritionService(uow).analyze_monthly_intake(
             ESTABLISHMENT_ID, 2026, 3, worker
         )
 
@@ -193,7 +174,7 @@ async def test_calculate_indicators_loads_the_foods_and_computes_them():
     rice_id = uuid.uuid4()
     uow = make_uow(foods=[food_with(rice_id, {"valor_energetico": 130})])
 
-    result = await NutritionService(uow, GramsPerUnit()).calculate_indicators(
+    result = await NutritionService(uow).calculate_indicators(
         [FoodQuantity(rice_id, 200)]
     )
 
@@ -208,13 +189,11 @@ async def test_catalog_is_only_read_when_a_nutrient_is_at_risk():
         foods=[food_with(rice_id, {"valor_energetico": 100})],
         rows=[],
     )
-    await NutritionService(uow, GramsPerUnit()).analyze_monthly_intake(
-        ESTABLISHMENT_ID, 2026, 3, ADMIN
-    )
+    await NutritionService(uow).analyze_monthly_intake(ESTABLISHMENT_ID, 2026, 3, ADMIN)
     uow.food_repo.list_all_with_nutrients.assert_awaited_once()
 
     empty = make_uow()
-    await NutritionService(empty, GramsPerUnit()).analyze_monthly_intake(
+    await NutritionService(empty).analyze_monthly_intake(
         ESTABLISHMENT_ID, 2026, 3, ADMIN
     )
     empty.food_repo.list_all_with_nutrients.assert_not_awaited()
@@ -233,7 +212,7 @@ async def test_each_nutrient_at_risk_gets_its_best_sources_from_the_catalog():
         ],
     )
 
-    result = await NutritionService(uow, GramsPerUnit()).analyze_monthly_intake(
+    result = await NutritionService(uow).analyze_monthly_intake(
         ESTABLISHMENT_ID, 2026, 3, ADMIN
     )
 
@@ -250,7 +229,7 @@ async def test_recipe_target_is_the_meal_share_of_the_energy_of_every_child():
     )
     request = RecipeRequest([rice_id], children_count=10, meal_type=MealType.LUNCH)
 
-    result = await NutritionService(uow, GramsPerUnit()).maximize_recipe(
+    result = await NutritionService(uow).maximize_recipe(
         ESTABLISHMENT_ID, request, ADMIN
     )
 
@@ -271,7 +250,7 @@ async def test_recipe_only_uses_foods_the_establishment_holds_in_grams():
         [rice_id, absent_id], children_count=100, meal_type=MealType.LUNCH
     )
 
-    result = await NutritionService(uow, GramsPerUnit()).maximize_recipe(
+    result = await NutritionService(uow).maximize_recipe(
         ESTABLISHMENT_ID, request, ADMIN
     )
 
@@ -283,7 +262,7 @@ async def test_recipe_without_children_is_rejected():
     request = RecipeRequest([uuid.uuid4()], children_count=0, meal_type=MealType.LUNCH)
 
     with pytest.raises(InvalidChildrenCountError):
-        await NutritionService(make_uow(), GramsPerUnit()).maximize_recipe(
+        await NutritionService(make_uow()).maximize_recipe(
             ESTABLISHMENT_ID, request, ADMIN
         )
 
@@ -295,9 +274,7 @@ async def test_field_worker_without_approved_access_cannot_build_a_recipe():
     request = RecipeRequest([uuid.uuid4()], children_count=5, meal_type=MealType.LUNCH)
 
     with pytest.raises(EstablishmentAccessDeniedError):
-        await NutritionService(uow, GramsPerUnit()).maximize_recipe(
-            ESTABLISHMENT_ID, request, worker
-        )
+        await NutritionService(uow).maximize_recipe(ESTABLISHMENT_ID, request, worker)
 
     uow.food_stock_repo.get_many.assert_not_awaited()
 
@@ -311,7 +288,7 @@ async def test_recipe_target_follows_the_profile_the_service_was_given():
     profile = replace(NINO_7_9, energy_kcal=1000)
     request = RecipeRequest([rice_id], children_count=10, meal_type=MealType.LUNCH)
 
-    result = await NutritionService(uow, GramsPerUnit(), profile).maximize_recipe(
+    result = await NutritionService(uow, profile).maximize_recipe(
         ESTABLISHMENT_ID, request, ADMIN
     )
 
@@ -334,7 +311,7 @@ async def test_recipe_without_usable_stock_has_no_data(food_ids, stock):
     )
     request = RecipeRequest(food_ids, children_count=5, meal_type=MealType.LUNCH)
 
-    result = await NutritionService(uow, GramsPerUnit()).maximize_recipe(
+    result = await NutritionService(uow).maximize_recipe(
         ESTABLISHMENT_ID, request, ADMIN
     )
 
@@ -347,7 +324,7 @@ async def test_the_gapa_group_of_a_food_counts_in_its_energy_share():
         foods=[food_with(milk_id, {"valor_energetico": 60}, "leche_yogur_y_quesos")]
     )
 
-    result = await NutritionService(uow, GramsPerUnit()).calculate_indicators(
+    result = await NutritionService(uow).calculate_indicators(
         [FoodQuantity(milk_id, 200)]
     )
 
@@ -356,19 +333,24 @@ async def test_the_gapa_group_of_a_food_counts_in_its_energy_share():
 
 async def test_recipe_reports_the_foods_left_out_for_having_no_conversion():
     rice_id, eggs_id = uuid.uuid4(), uuid.uuid4()
+    # Eggs are counted in units and have no unit weight, so no weight in grams.
     uow = make_uow(
         foods=[
             food_with(rice_id, {"valor_energetico": 100}),
-            food_with(eggs_id, {"valor_energetico": 100}, name="Huevo"),
+            food_with(
+                eggs_id,
+                {"valor_energetico": 100},
+                base_unit=MeasurementUnit.UNIDADES,
+                name="Huevo",
+            ),
         ],
         stock={rice_id: Decimal("1000"), eggs_id: Decimal("5")},
     )
     request = RecipeRequest(
         [rice_id, eggs_id], children_count=5, meal_type=MealType.LUNCH
     )
-    grams = GramsPerUnit(failures={eggs_id: ConversionFailure.MISSING_UNIT_WEIGHT})
 
-    result = await NutritionService(uow, grams).maximize_recipe(
+    result = await NutritionService(uow).maximize_recipe(
         ESTABLISHMENT_ID, request, ADMIN
     )
 

@@ -1,37 +1,50 @@
 from collections.abc import Iterable, Mapping
 from decimal import Decimal
+from typing import Self
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.food_catalog import MeasurementUnit
-from app.domain.unit_conversion import ConversionResult
+from app.domain.unit_conversion import (
+    ConversionFactors,
+    ConversionResult,
+)
 from app.domain.unit_conversion import to_grams as convert_to_grams
 from app.models.food_catalog.food import Food
 
 
 class GramsConverter:
-    """Converts quantities of catalog foods from their base unit to grams."""
+    """Converts quantities of catalog foods from their base unit to grams.
 
-    def __init__(self, uow: IUnitOfWork) -> None:
-        self.uow = uow
+    It answers for the foods it was loaded with, from memory.
+    """
 
-    async def to_grams(
+    def __init__(
         self,
-        quantities: Mapping[UUID, Decimal],
         base_units: Mapping[UUID, MeasurementUnit],
-    ) -> dict[UUID, ConversionResult]:
-        """Return each food's quantity in grams, or why it could not be converted.
+        factors: Mapping[UUID, ConversionFactors],
+    ) -> None:
+        self.base_units = base_units
+        self.factors = factors
 
-        ``base_units`` holds the base unit of every food in ``quantities``. The
-        factors of all the foods are read in one query.
-        """
-        factors = await self.uow.food_equivalence_repo.get_factors_by_food_ids(
-            list(quantities)
+    @classmethod
+    async def load(cls, uow: IUnitOfWork, foods: Iterable[Food]) -> Self:
+        """Read the factors of ``foods`` in one query and build their converter."""
+        foods = list(foods)
+        factors = await uow.food_equivalence_repo.get_factors_by_food_ids(
+            [food.id for food in foods]
         )
-        return {
-            food_id: convert_to_grams(quantity, base_units[food_id], factors[food_id])
-            for food_id, quantity in quantities.items()
-        }
+        return cls({food.id: food.base_unit for food in foods}, factors)
+
+    def convert(self, food_id: UUID, quantity: Decimal) -> ConversionResult:
+        """Return the grams ``quantity`` of the food's base unit weighs, or why not.
+
+        Raises:
+            KeyError: the food was not loaded.
+        """
+        return convert_to_grams(
+            quantity, self.base_units[food_id], self.factors[food_id]
+        )
 
 
 class CatalogGramsConverter:

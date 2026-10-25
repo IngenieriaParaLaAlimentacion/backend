@@ -226,7 +226,7 @@ class RecipeService:
         """Prepare one snapshot, generate without DB connections, then save."""
         snapshot = await self._generation_snapshot(data, actor)
         proposals = await RecipeGenerator(
-            self.llm, NutritionService(self.uow, snapshot.converter)
+            self.llm, NutritionService(self.uow)
         ).generate(data, snapshot)
         request = RecipeRequestRecord(
             id=uuid4(),
@@ -400,7 +400,7 @@ class RecipeService:
                     unit=item.unit,
                 )
             )
-        nutrition = NutritionService(self.uow, converter)
+        nutrition = NutritionService(self.uow)
         target = nutrition.target_energy_kcal(children_count, original.meal_type)
         proposal = calculate_proposal(
             uuid4(),
