@@ -18,29 +18,34 @@ from seed_food_catalog import seed_food_catalog
 from seed_superadmin import create_super_admin
 
 
-def test_latest_migration_downgrades_and_upgrades(postgres_url, app):
-    """Exercise the latest revision on the integration Testcontainer."""
+def test_head_migration_downgrades_and_upgrades(postgres_url, app):
+    """Exercise the head revision, including a head that merges two branches."""
     asyncpg_url = postgres_url.replace(
         "postgresql+psycopg2://", "postgresql+asyncpg://", 1
     )
     original_url = settings.database_url
     engine = create_engine(postgres_url)
     config = Config("alembic.ini")
-    head = ScriptDirectory.from_config(config).get_current_head()
+    script = ScriptDirectory.from_config(config)
+    head = script.get_current_head()
+    down_revision = script.get_revision(head).down_revision
+    parents = down_revision if isinstance(down_revision, tuple) else (down_revision,)
 
-    def revision():
+    def revisions():
         with engine.connect() as connection:
-            return connection.exec_driver_sql(
-                "SELECT version_num FROM alembic_version"
-            ).scalar_one()
+            return set(
+                connection.exec_driver_sql(
+                    "SELECT version_num FROM alembic_version"
+                ).scalars()
+            )
 
     settings.database_url = asyncpg_url
     try:
-        assert revision() == head
-        command.downgrade(config, "-1")
-        assert revision() != head
+        assert revisions() == {head}
+        command.downgrade(config, parents[0])
+        assert revisions() == set(parents)
         command.upgrade(config, "head")
-        assert revision() == head
+        assert revisions() == {head}
     finally:
         command.upgrade(config, "head")
         settings.database_url = original_url
