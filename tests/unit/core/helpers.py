@@ -60,7 +60,6 @@ NON_SENSITIVE_COLUMNS = frozenset(
         "deviceid",
         "eventtype",
         "group",
-        "gramsperbaseunit",
         "instrumenttype",
         "isactive",
         "isrecurring",

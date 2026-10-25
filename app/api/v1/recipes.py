@@ -6,14 +6,12 @@ from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams
 from app.core.dependencies import (
     get_recipe_generation_service,
     get_recipe_service,
-    require_admin,
     require_any,
 )
 from app.core.rate_limit import limit_by_user
 from app.domain.user import UserActor
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.recipes.recipe_schema import (
-    GramConversionInput,
     RecipeHistoryItem,
     RecipeProposal,
     RecipeSelectionResponse,
@@ -155,35 +153,6 @@ async def reuse_recipe(
     if not created:
         response.status_code = 200
     return result
-
-
-@router.put(
-    "/food-catalog/foods/{food_id}/gram-conversion",
-    response_model=GramConversionInput,
-    status_code=200,
-    responses={
-        **AUTH_RESPONSES,
-        404: {"description": "Food not found"},
-        422: {"description": "Invalid gram conversion"},
-    },
-    summary="Set a reviewed food mass conversion",
-    description=(
-        "Admins and superadmins may set grams_per_base_unit for one litre or "
-        "one unit of a catalog food; null removes that factor. Kilograms always "
-        "use 1000 grams. This is a temporary catalog adapter pending the shared "
-        "conversion module and food equivalences in backend issue #192. Once "
-        "integrated, the shared module and equivalence management replace this "
-        "adapter and endpoint. Missing factors are never estimated."
-    ),
-)
-async def set_gram_conversion(
-    food_id: UUID,
-    data: GramConversionInput,
-    actor: UserActor = Depends(require_admin),
-    service: RecipeService = Depends(get_recipe_service),
-):
-    """Set the reviewed mass of a food's stock unit as an administrator."""
-    return await service.set_conversion(food_id, data, actor)
 
 
 @router.post(
