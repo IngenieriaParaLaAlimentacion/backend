@@ -9,9 +9,9 @@ from app.domain.unit_conversion import (
     ConversionFailure,
     Converted,
     Unconverted,
+    _printed_to_base_unit,
     from_grams,
     prefill_from_printed,
-    printed_to_base_unit,
     to_grams,
 )
 
@@ -165,7 +165,7 @@ def test_printed_to_base_unit_converts_printed_quantity(
     quantity, printed_unit, base_unit, factors, expected_quantity
 ):
     """A receipt-printed quantity converts to the food's base unit."""
-    result = printed_to_base_unit(Decimal(quantity), printed_unit, base_unit, factors)
+    result = _printed_to_base_unit(Decimal(quantity), printed_unit, base_unit, factors)
 
     assert result == Converted(Decimal(expected_quantity))
 
@@ -186,7 +186,7 @@ def test_printed_to_base_unit_reports_why_it_cannot_convert(
     printed_unit, base_unit, factors, reason
 ):
     """A printed quantity that cannot be converted gets no value, only the reason."""
-    result = printed_to_base_unit(Decimal(1), printed_unit, base_unit, factors)
+    result = _printed_to_base_unit(Decimal(1), printed_unit, base_unit, factors)
 
     assert result == Unconverted(reason)
 
@@ -195,7 +195,7 @@ def test_printed_to_base_unit_reports_why_it_cannot_convert(
 @pytest.mark.parametrize("base_unit", list(MeasurementUnit))
 def test_every_printed_unit_converts_given_its_factors(printed_unit, base_unit):
     """Every unit a receipt can print converts to every base unit."""
-    result = printed_to_base_unit(Decimal(1), printed_unit, base_unit, ALL_FACTORS)
+    result = _printed_to_base_unit(Decimal(1), printed_unit, base_unit, ALL_FACTORS)
 
     assert isinstance(result, Converted)
 
