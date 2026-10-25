@@ -1,0 +1,34 @@
+# Extend backend PR #217's Compose; paths are relative to e2e/compose.yml.
+# BACKEND_IMAGE must contain PR #219 as well as PR #217.
+services:
+  backend:
+    user: "${MANUAL_UID:-1000}:${MANUAL_GID:-1000}"
+    environment:
+      PYTHONPATH: /app:/manual
+      MANUAL_OBJECT_DIRECTORY: /output/receipt-objects
+    volumes:
+      - ../scripts/manual:/manual:ro
+      - ../.context/manual:/output
+    command: ["uvicorn", "demo_server:app", "--host", "0.0.0.0", "--port", "8080"]
+  manual-fixture:
+    user: "${MANUAL_UID:-1000}:${MANUAL_GID:-1000}"
+    image: ${BACKEND_IMAGE:-ghcr.io/ingenieriaparalaalimentacion/backend:develop}
+    env_file: .env.e2e
+    environment:
+      PYTHONPATH: /app
+    volumes:
+      - ../scripts/manual:/manual:ro
+      - ../.context/manual:/output
+    command:
+      - python
+      - /manual/seed.py
+      - --api-url
+      - http://backend:8080/api/v1
+      - --public-api-url
+      - http://127.0.0.1:8080/api/v1
+      - --output
+      - /output/fixture.json
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: "no"

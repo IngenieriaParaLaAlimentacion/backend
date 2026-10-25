@@ -6,7 +6,7 @@ El contenido editorial vive en `docs/manual-usuario/` del backend. App y backoff
 
 Antes de otra edición, fijar las revisiones de los tres repositorios, revisar las rutas y los permisos, y actualizar el inventario de cobertura. No publicar una captura del formulario como prueba de que el guardado o una integración externa funcionaron.
 
-## Entorno de la edición del 25/10/2026
+## Evidencias conservadas de la edición del 25/10/2026
 
 | Componente | Configuración |
 |---|---|
@@ -17,35 +17,59 @@ Antes de otra edición, fijar las revisiones de los tres repositorios, revisar l
 | Navegador | Chrome mediante Playwright, 1440 × 1000, locale `es-AR`, huso de Buenos Aires. |
 | Android | AVD dedicado `IPA_Manual`, Pixel 9 Pro, API 36, `google_apis_playstore`, `arm64-v8a`. |
 
+Las 91 capturas publicadas y sus verificaciones corresponden al escenario Semillas del Sur de esta edición, anterior a la adaptación al dataset compartido. Se conservan sin renombrar personas ni alterar imágenes. Las próximas capturas usan el dataset de #219; al publicarlas, actualizar también los ejemplos y el inventario de revisiones. La adaptación de los scripts no convierte estas imágenes históricas en evidencia de una ejecución del dataset nuevo.
+
 Las copias de trabajo, logs, descargas y capturas originales están bajo `.context/manual/`. Las imágenes aprobadas para el manual se copian a `assets/`. No se modifican los checkouts de trabajo de otras personas ni se conectan las pruebas a producción.
 
 ## Preparar datos y ejecutar las capturas
 
-Requisitos: checkouts de los tres repositorios en las revisiones indicadas; Node, JDK 21, Android SDK con API 36 y el AVD; PostgreSQL con `pg_trgm`, Redis y las dependencias del backend. Para el backoffice usar `npm ci`; para el backend instalar su lockfile. Ejecutar las migraciones Alembic y los seeds existentes del superadministrador y catálogo antes del fixture del manual.
+La reproducción usa el dataset compartido de [backend#219](https://github.com/IngenieriaParaLaAlimentacion/backend/pull/219) y el entorno E2E de [backend#217](https://github.com/IngenieriaParaLaAlimentacion/backend/pull/217). Ambos deben estar integrados en el checkout y en la imagen seleccionada antes de usar Compose. El PR del manual depende de esos cambios: no contiene copias de sus seeds ni de su infraestructura.
 
-Configurar el backend local con `DATABASE_URL=postgresql+asyncpg://manual@127.0.0.1:55432/manual`, Redis en `redis://127.0.0.1:56379/0` y límites de login altos para el entorno de captura. El script del fixture rechaza una base distinta de la dedicada al manual.
+`scripts/manual/seed.py` llama a `seed_superadmin.create_super_admin()` y `seed_reference_e2e.seed_reference_e2e()`. Reutiliza las cuentas, seis comedores, quince personas, mediciones, stock, FIES y solicitudes pendientes. Sólo agrega tres encuestas para mostrar los destinos sujeto, establecimiento y anónimo. No inserta usuarios ni contraseñas mediante ORM propio.
 
-Después de preparar la base, mantener el backend levantado en una terminal. Para reproducir también las recetas y la carga manual con foto, usar el servidor de demostración explicado más abajo. En otra terminal, desde el checkout del backoffice, iniciar:
+El fixture selecciona **Comedor Plaza de Mayo**, **Camila Fernández** y **Mateo Rodríguez** del dataset común. Para mostrar el aviso de revisión de medidas, el recorrido Android carga un peso ficticio de 23 kg para Mateo, conservando la talla de referencia; no es un dato clínico ni modifica el seed compartido. Exporta las credenciales de prueba, identificadores y nombres que consumen Playwright, Android y la verificación posterior; no exporta tokens de sesión. El superadministrador usa `SEED_ADMIN_EMAIL` y `SEED_ADMIN_PASSWORD` del entorno; el resto usa las credenciales definidas por #219. No versionar `fixture.json`.
+
+### Con el entorno compartido de #217
+
+Desde la raíz de un checkout que contenga ambos PRs y los scripts del manual:
+
+```bash
+mkdir -p .context/manual
+export MANUAL_UID="$(id -u)" MANUAL_GID="$(id -g)"
+# Imagen publicada que contenga #217 y #219; fijar un sha concreto.
+export BACKEND_IMAGE=ghcr.io/ingenieriaparalaalimentacion/backend:sha-COMMIT
+# Autenticarse en GHCR como indica docs/commands.md.
+docker compose -f e2e/compose.yml -f scripts/manual/compose.yml up -d --wait backend
+docker compose -f e2e/compose.yml -f scripts/manual/compose.yml run --rm manual-fixture
+```
+
+La extensión mantiene el PostgreSQL, las migraciones, las credenciales y los límites de #217. Añade el adaptador de datos y monta el servidor de demostración para las recetas y recibos. El contenedor escribe el fixture y las fotos en `.context/manual/`; los dos servicios usan el UID/GID del usuario local para escribir en ese montaje. El fixture guarda la URL de la API accesible desde el host (`127.0.0.1:8080`), aunque internamente se prepare mediante `http://backend:8080`.
+
+### Sin Docker, con los mismos seeds
+
+Requisitos: dependencias del backend y PostgreSQL con `pg_trgm`; Node, JDK 21 y Android SDK para las interfaces. En una base descartable dedicada, ejecutar las migraciones y el catálogo. Configurar `ENVIRONMENT=e2e`, `SMTP_ENABLED=false`, `OTEL_SDK_DISABLED=true` y `RATE_LIMIT_REDIS_URL=memory://`, junto con credenciales ficticias y los límites de `e2e/.env.e2e`. El seed compartido y el adaptador rechazan otros entornos.
+
+Mantener levantado el backend (servidor de demostración indicado más abajo). Desde su checkout con su entorno virtual activo:
+
+```bash
+PYTHONPATH=. python /ruta/al/workspace/scripts/manual/seed.py \
+  --output /ruta/al/workspace/.context/manual/fixture.json
+```
+
+Ejecutar la preparación antes de los recorridos. El fixture conserva los IDs iniciales de mediciones y movimientos para distinguirlos de los registros creados después por la app. Repetir el seed es idempotente; regenerar el fixture después de capturar redefine esa referencia inicial.
+
+Para el backoffice, instalar su lockfile y levantarlo:
 
 ```bash
 NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8080 npm run dev -- --port 3001
 ```
 
-Abrir el AVD `IPA_Manual`, instalar la app de prueba y comprobar que la API responda antes de ejecutar el fixture y los recorridos. El HTML final no necesita que esos servicios sigan levantados.
-
-Desde el checkout del backend de captura, con su entorno virtual activo y `PYTHONPATH` apuntando a ese checkout:
-
-```bash
-python /ruta/al/workspace/scripts/manual/seed.py --output ../fixture.json
-```
-
-El fixture crea cuentas ficticias para `superadmin`, `admin`, `analyst` y `field_worker` con emails terminados en `@manual.example` y contraseña `Manual2026!`. Son credenciales exclusivamente locales. Crea un comedor, sujetos y mediciones, encuestas activas y stock de demostración; usa identificadores estables para sus cargas.
+Abrir el AVD dedicado `IPA_Manual`, instalar la variante `tst` y usar una sesión limpia al cambiar de dataset. Nunca ejecutar los recorridos de carga contra una base compartida. El HTML final no necesita que estos servicios sigan levantados.
 
 Desde el workspace del manual:
 
 ```bash
 npm ci --prefix scripts/manual
-node scripts/manual/capture-web.mjs
 python3 scripts/manual/capture-android.py login
 python3 scripts/manual/capture-android.py talla
 python3 scripts/manual/capture-android.py encuestas
@@ -55,9 +79,12 @@ python3 scripts/manual/capture-android.py recibos
 python3 scripts/manual/capture-android.py recetas
 python3 scripts/manual/capture-android.py perfil
 python3 scripts/manual/capture-android.py apoyos
+node scripts/manual/capture-web.mjs
 ```
 
-El driver Android comprueba que el dispositivo sea el AVD `IPA_Manual`. Requiere la app `tst` instalada, autenticada con la cuenta ficticia y con **Comedor Semillas del Sur** seleccionado. Cada escenario reinicia la actividad conservando sus datos. El escenario de medición genera un registro nuevo: no se debe correr contra una base compartida.
+Si hay otros emuladores abiertos, configurar `export MANUAL_ADB_SERIAL=emulator-5556` con el serial del AVD dedicado que muestre `adb devices`; no usar el emulador de trabajo de otra persona.
+
+El driver Android comprueba que el dispositivo sea el AVD `IPA_Manual`. Requiere la app `tst` instalada, autenticada con la cuenta ficticia y con el comedor indicado en `fixture.json` seleccionado. Cada escenario reinicia la actividad conservando sus datos. El escenario de medición genera un registro nuevo: no se debe correr contra una base compartida.
 
 La fase `login` prepara la sesión si la app es nueva. Las dependencias del render y de la imagen de prueba están fijadas en `scripts/manual/requirements.txt`; instalarlas en el entorno Python de documentación. La fase `recibos` conserva y captura la incompatibilidad de esta revisión y continúa por la alternativa manual.
 
@@ -81,7 +108,7 @@ PYTHONPATH=.:/ruta/al/workspace/scripts/manual \
   python -m uvicorn demo_server:app --host 127.0.0.1 --port 8080
 ```
 
-El servidor rechaza una base que no sea la dedicada al manual. Mantiene los endpoints, la autenticación, el catálogo, los cálculos, las validaciones y las transacciones del backend. Sustituye solo la respuesta del modelo y el almacenamiento de objetos. **Estas capturas no validan Gemini, la extracción óptica real ni R2.** La propuesta de arroz es un ejemplo de interfaz con stock limitado; no representa una recomendación editorial del manual.
+El servidor exige `ENVIRONMENT=test` o `e2e`, igual que el seed compartido. Mantiene los endpoints, la autenticación, el catálogo, los cálculos, las validaciones y las transacciones del backend. Sustituye solo la respuesta del modelo y el almacenamiento de objetos. **Estas capturas no validan Gemini, la extracción óptica real ni R2.** La propuesta de arroz es un ejemplo de interfaz con stock limitado; no representa una recomendación editorial del manual.
 
 La entrega de emails se debe verificar con un buzón de prueba antes de considerar completados los recorridos de invitación, recuperación y verificación. Nunca incluir enlaces con tokens en el manual ni en los manifests versionados.
 

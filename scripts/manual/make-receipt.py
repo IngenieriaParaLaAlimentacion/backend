@@ -1,22 +1,25 @@
 """Create a clearly fictional receipt fixture and load it into IPA_Manual."""
 
+import json
+from datetime import date
 from pathlib import Path
 
 from android import ROOT, adb, assert_device
 from PIL import Image, ImageDraw, ImageFont
 
 assert_device()
+fixture = json.loads((ROOT / ".context/manual/fixture.json").read_text())
 image = Image.new("RGB", (1000, 1400), "#fffdf3")
 draw = ImageDraw.Draw(image)
 font_path = Path("/System/Library/Fonts/Supplemental/Arial.ttf")
 rows = [
-    ("COMEDOR SEMILLAS DEL SUR", 90, 42),
+    (fixture["establishment_name"].upper(), 90, 42),
     ("DOCUMENTO DE DEMOSTRACION", 170, 32),
     ("SIN VALOR FISCAL", 220, 28),
-    ("25/10/2026", 350, 32),
+    (date.today().strftime("%d/%m/%Y"), 350, 32),
     ("Alimento                          Cantidad", 460, 32),
     ("Arroz blanco, crudo                 2 kg", 550, 32),
-    ("Recibido por: Ana Relevadora", 900, 32),
+    (f"Recibido por: {fixture['accounts']['field_worker']['name']}", 900, 32),
     ("Datos ficticios para el manual de usuario", 1160, 27),
 ]
 for text, y, size in rows:

@@ -1,14 +1,22 @@
 """Replay manual capture scenarios on the isolated, authenticated IPA_Manual AVD."""
 
 import argparse
+import json
 import time
+from pathlib import Path
 
 from android import back, fill, find, offline, scroll_to, shot, start, tap, wait_for
+
+FIXTURE = json.loads(
+    (Path(__file__).resolve().parents[2] / ".context/manual/fixture.json").read_text()
+)
+COMEDOR = FIXTURE["establishment_name"]
+WORKER = FIXTURE["accounts"]["field_worker"]
 
 
 def talla():
     start()
-    shot("app-inicio-comedor", "Comedor Semillas del Sur")
+    shot("app-inicio-comedor", COMEDOR)
     tap("Sujeto")
     shot("app-sujeto-alta", "Cargar sujeto")
     tap("Atrás")
@@ -17,13 +25,14 @@ def talla():
     tap("Seleccionar sujeto")
     time.sleep(1)
     shot("app-sujeto-buscar", "Buscar por nombre o DNI")
-    tap("Mateo Demostración")
-    fill(1, "23")
-    fill(2, "135")
+    fill(0, FIXTURE["subject_dnis"][1])
+    back()
+    wait_for(FIXTURE["subject_names"][1])
+    tap(FIXTURE["subject_names"][1])
+    fill(1, FIXTURE["measurement"]["weight"])
+    fill(2, FIXTURE["measurement"]["height"])
     # Leave the input using a non-editable form label, retaining keyboard state
     # only until the explicit Android back event.
-    from android import back
-
     back()
     shot("app-medicion-completa", "Peso (kg)")
     try:
@@ -45,6 +54,26 @@ def encuestas():
     start()
     tap("Encuesta")
     shot("app-encuestas", "Encuestas")
+    tap("Seguimiento alimentario")
+    fill(0, FIXTURE["subject_dnis"][0])
+    back()
+    wait_for(FIXTURE["subject_names"][0])
+    tap(FIXTURE["subject_names"][0])
+    shot("app-encuesta-formulario", "Número de respuesta")
+    fill(0, "101")
+    tap("Sí")
+    fill(1, "Relevamiento de demostracion")
+    back()
+    shot("app-encuesta-completa", "Guardar")
+    tap("Guardar")
+    time.sleep(1)
+    tap("Atrás")
+    tap("Historial")
+    tap("Encuestas")
+    tap("Seguimiento alimentario")
+    shot("app-encuesta-detalle", "N.º 101")
+    start()
+    tap("Encuesta")
     tap("Opinión de la comunidad")
     fill(0, "101")
     tap("Sí")
@@ -136,7 +165,7 @@ def recibos():
 def login():
     start()
     try:
-        find("Hola, Ana")
+        find(f"Hola, {WORKER['name']}")
     except RuntimeError:
         shot("app-bienvenida", "Gestioná tu establecimiento")
         tap("Crear cuenta")
@@ -147,8 +176,8 @@ def login():
         tap("¿Olvidaste tu contraseña?")
         shot("app-recuperar", "Email")
         tap("Atrás")
-        fill(0, "field_worker@manual.example")
-        fill(1, "Manual2026!")
+        fill(0, WORKER["email"])
+        fill(1, WORKER["password"])
         back()
         tap("Iniciar sesión")
         time.sleep(1)
@@ -157,11 +186,11 @@ def login():
         except RuntimeError:
             pass
     try:
-        find("Comedor Semillas del Sur")
+        find(COMEDOR)
     except RuntimeError:
         tap("Elegí el establecimiento")
-        tap("Comedor Semillas del Sur")
-    shot("app-inicio-comedor", "Hola, Ana")
+        tap(COMEDOR)
+    shot("app-inicio-comedor", f"Hola, {WORKER['name']}")
 
 
 def recetas():
@@ -204,15 +233,15 @@ def perfil():
     tap("Atrás")
     tap("Mis establecimientos")
     shot("app-mis-establecimientos", "Mis establecimientos")
-    tap("Comedor Semillas del Sur")
+    tap(COMEDOR)
     shot("app-comedor-ficha", "Ubicación")
     tap("Atrás")
     tap("Solicitar acceso")
     shot("app-acceso-solicitar", "Buscar establecimiento")
     tap("¿No encontrás tu comedor? Notificar")
     shot("app-comedor-notificar", "Notificar comedor")
-    fill(0, "Comedor Esperanza")
-    fill(1, "Belgrano 2500")
+    fill(0, FIXTURE["establishment_request"]["name"])
+    fill(1, FIXTURE["establishment_request"]["address"])
     back()
     tap("Siguiente")
     shot("app-comedor-notificar-ficha", "Ficha del comedor")
@@ -222,9 +251,9 @@ def perfil():
 def apoyos():
     """Capture selectors, offline guidance and confirmation dialogs without saving."""
     start()
-    tap("Comedor Semillas del Sur", first=True)
+    tap(COMEDOR, first=True)
     shot("app-comedor-seleccionar", "Elegí el establecimiento")
-    tap("Comedor Semillas del Sur")
+    tap(COMEDOR)
     tap("Encuesta")
     find("Seguimiento alimentario")
     try:

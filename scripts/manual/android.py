@@ -1,6 +1,7 @@
 """ADB driver using visible text and accessibility bounds, on IPA_Manual only."""
 
 import json
+import os
 import re
 import subprocess
 import time
@@ -15,7 +16,7 @@ PACKAGE = "ar.com.ingenieriaalimentacion.tst"
 
 def adb(*args, binary=False):
     result = subprocess.run(
-        ["adb", "-s", "emulator-5554", *args],
+        ["adb", "-s", os.environ.get("MANUAL_ADB_SERIAL", "emulator-5554"), *args],
         check=True,
         capture_output=True,
         timeout=30,

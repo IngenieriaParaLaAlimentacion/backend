@@ -5,7 +5,7 @@ import json
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
-from uuid import NAMESPACE_URL, uuid4, uuid5
+from uuid import uuid4
 
 import httpx
 
@@ -19,14 +19,14 @@ def record(name, evidence):
     results.append({"scenario": name, "result": "passed", "evidence": evidence})
 
 
-with httpx.Client(base_url="http://127.0.0.1:8080/api/v1", timeout=30) as client:
+with httpx.Client(base_url=fixture["api_url"], timeout=30) as client:
     tokens = {}
     for role in ["superadmin", "analyst", "field_worker"]:
         response = client.post(
             "/auth/login",
             json={
-                "email": f"{role}@manual.example",
-                "password": "Manual2026!",
+                "email": fixture["accounts"][role]["email"],
+                "password": fixture["accounts"][role]["password"],
                 "device_id": str(uuid4()),
             },
         )
@@ -39,11 +39,7 @@ with httpx.Client(base_url="http://127.0.0.1:8080/api/v1", timeout=30) as client
         return response.json()
 
     measurements = get("/measurements?page_size=100")["items"]
-    seeded = {
-        str(uuid5(NAMESPACE_URL, f"ipa-user-manual/measurement-{i}-{j}"))
-        for i in range(3)
-        for j in range(3)
-    }
+    seeded = set(fixture["seeded_measurements"])
     android_rows = [
         m
         for m in measurements
@@ -66,8 +62,11 @@ with httpx.Client(base_url="http://127.0.0.1:8080/api/v1", timeout=30) as client
 
     eid = fixture["establishment"]
     movements = get(f"/establishments/{eid}/food-movements?page_size=100")["items"]
-    assert len(movements) >= 4, (
-        "Expected seed, manual intake, outflow and receipt intake"
+    new_movements = [
+        m for m in movements if m["id"] not in fixture["baseline_movement_ids"]
+    ]
+    assert len(new_movements) >= 3, (
+        "Expected Android intake, outflow and receipt intake"
     )
     record(
         "Movimientos Android → backend",

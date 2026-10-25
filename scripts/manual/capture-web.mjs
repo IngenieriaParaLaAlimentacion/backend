@@ -5,7 +5,7 @@ import path from "node:path";
 const root = path.resolve(import.meta.dirname, "../..");
 const output = path.join(root, ".context/manual/screenshots");
 const fixture = JSON.parse(await fs.readFile(path.join(root, ".context/manual/fixture.json")));
-const base = "http://localhost:3001";
+const base = process.env.BACKOFFICE_URL || "http://localhost:3001";
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, locale: "es-AR", timezoneId: "America/Argentina/Buenos_Aires", deviceScaleFactor: 1 });
 const extraOnly = process.argv.includes("--extra-only");
@@ -45,8 +45,8 @@ async function goto(url, expected) {
 try {
   await goto("/signin", "Iniciar sesión");
   await shot("web-acceso", "Iniciar sesión");
-  await page.getByRole("textbox", { name: /Email/ }).fill("superadmin@manual.example");
-  await page.locator('input[type="password"]').fill("Manual2026!");
+  await page.getByRole("textbox", { name: /Email/ }).fill(fixture.accounts.superadmin.email);
+  await page.locator('input[type="password"]').fill(fixture.accounts.superadmin.password);
   await page.getByRole("button", { name: "Iniciar sesión", exact: true }).click();
   await page.waitForURL("**/dashboard");
   await page.waitForLoadState("networkidle");
@@ -94,7 +94,7 @@ try {
     }],
     ["web-encuesta-exportar", async () => {
       await goto(`/dashboard/surveys/${fixture.surveys.subject}/responses`, "Respuestas");
-      await page.locator('input[type="date"]').first().fill("2026-10-01");
+      await page.locator('input[type="date"]').first().fill(new Date().toISOString().slice(0, 7) + "-01");
       await page.waitForLoadState("networkidle");
       await shot("web-encuesta-exportar", "Exportar");
       const downloaded = page.waitForEvent("download");
@@ -115,17 +115,17 @@ try {
     }],
     ["web-encuesta-respuesta-detalle", async () => {
       await goto(`/dashboard/surveys/${fixture.surveys.subject}/responses`, "Respuestas");
-      await page.getByRole("row").filter({hasText: "Sofía Ejemplo"}).first().click();
+      await page.getByRole("row").filter({hasText: fixture.subject_names[0]}).first().click();
       await shot("web-encuesta-respuesta-detalle", "Detalle de respuesta");
     }],
     ["web-sujeto-detalle", async () => {
       await goto("/dashboard/subjects", "Sujetos registrados");
-      await page.getByText("Mateo Demostración", {exact: true}).first().click();
+      await page.getByText(fixture.subject_names[1], {exact: true}).first().click();
       await shot("web-sujeto-detalle", "Documento de identidad");
     }],
     ["web-evolucion", async () => {
       await goto("/dashboard/anthropometric-measurements", "Mediciones antropométricas");
-      await page.getByRole("row").filter({hasText: "Mateo Demostración"}).first().click();
+      await page.getByRole("row").filter({hasText: fixture.subject_names[1]}).first().click();
       await page.getByText("Evolución de peso y talla", {exact: true}).waitFor();
       await shot("web-evolucion", "Evolución de peso y talla");
     }],

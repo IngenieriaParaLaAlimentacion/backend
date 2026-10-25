@@ -2,10 +2,11 @@
 
 The real backend still handles authentication, validation, nutrition calculations,
 catalog matching, transactions and persistence. These doubles do not validate
-Gemini quality or object-storage integration. Bind to loopback only.
+Gemini quality or object-storage integration. Use only with a disposable E2E database.
 """
 
 import json
+import os
 from pathlib import Path
 
 from app.config.settings import settings
@@ -17,8 +18,8 @@ from app.main import app
 from app.services.food_intakes.food_intake_service import FoodIntakeService
 from app.services.food_intakes.receipt_intake_service import ReceiptIntakeService
 
-if "127.0.0.1:55432/manual" not in str(settings.database_url):
-    raise RuntimeError("Demonstration services require the isolated manual database")
+if settings.environment.lower() not in {"test", "e2e"}:
+    raise RuntimeError("Demonstration services require ENVIRONMENT=test or e2e")
 
 
 class DemonstrationModel(ILlmClient):
@@ -71,7 +72,9 @@ class DemonstrationModel(ILlmClient):
 
 class DemonstrationStorage(IObjectStorage):
     async def save(self, *, key, content_type, data):
-        output = Path.cwd().parent / "receipt-objects" / key
+        output = (
+            Path(os.environ.get("MANUAL_OBJECT_DIRECTORY", "../receipt-objects")) / key
+        )
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_bytes(data)
 
