@@ -1,7 +1,7 @@
 """add nutrition reports
 
 Revision ID: 5b2e8d0c7a41
-Revises: a1c5e9f27b34
+Revises: c46b13b64867
 Create Date: 2026-10-18 00:00:00.000000
 
 """
@@ -14,7 +14,7 @@ from sqlalchemy.dialects import postgresql
 from alembic import op
 
 revision: str = "5b2e8d0c7a41"
-down_revision: Union[str, Sequence[str], None] = "a1c5e9f27b34"
+down_revision: Union[str, Sequence[str], None] = "c46b13b64867"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
