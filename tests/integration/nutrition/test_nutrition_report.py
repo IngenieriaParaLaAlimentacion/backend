@@ -1,20 +1,31 @@
+import asyncio
 import uuid
 
 import pytest
+from limits.aio.strategies import MovingWindowRateLimiter
+from limits.storage import storage_from_string
 
+from app.config.settings import settings
+from app.core import rate_limit
 from app.domain.nutrition import PrioritizedNutrient
+from app.domain.user import UserRole
 from app.schemas.nutrition.nutrition_report_schema import (
     NutritionReportAnalysis,
     ReportFoodWithoutConversion,
     ReportNutrient,
 )
+from app.utils.dates import today_in_argentina
 from tests.integration.nutrition.helpers import (
     AUGUST,
     GENERATED,
+    MARCH,
+    MARCH_INTAKE,
     NOT_APPLICABLE,
     OCTOBER,
     SEPTEMBER,
+    SUMMARY,
     UNAVAILABLE,
+    add_intake,
     make_report,
     save,
     save_other_establishment,
@@ -104,21 +115,32 @@ async def test_report_of_another_establishment_is_not_returned(
     assert response.status_code == 404
 
 
-@pytest.mark.parametrize("url_for", [report_url, list_url], ids=["detail", "list"])
-async def test_unknown_establishment_returns_404(url_for, client, admin_headers):
-    response = await client.get(url_for(uuid.uuid4()), headers=admin_headers)
+ROUTES = pytest.mark.parametrize(
+    ("method", "url_for"),
+    [("GET", report_url), ("GET", list_url), ("PUT", report_url)],
+    ids=["detail", "list", "put"],
+)
+
+
+@ROUTES
+async def test_unknown_establishment_returns_404(
+    method, url_for, client, admin_headers, report_llm
+):
+    response = await client.request(
+        method, url_for(uuid.uuid4()), headers=admin_headers
+    )
 
     assert response.status_code == 404
 
 
-@pytest.mark.parametrize("url_for", [report_url, list_url], ids=["detail", "list"])
+@ROUTES
 async def test_field_worker_returns_403(
-    url_for, client, field_worker_headers, db_establishment
+    method, url_for, client, field_worker_headers, db_establishment, report_llm
 ):
     await save(make_report(db_establishment.id))
 
-    response = await client.get(
-        url_for(db_establishment.id), headers=field_worker_headers
+    response = await client.request(
+        method, url_for(db_establishment.id), headers=field_worker_headers
     )
 
     assert response.status_code == 403
@@ -185,3 +207,121 @@ async def test_establishment_without_reports_lists_none(
     assert response.status_code == 200
     body = response.json()
     assert (body["items"], body["total"]) == ([], 0)
+
+
+async def test_report_is_generated_once_and_then_returned_as_saved(
+    client, admin_headers, db_establishment, rice_in_march, report_llm
+):
+    url = report_url(db_establishment.id, MARCH)
+
+    first = await client.put(url, headers=admin_headers)
+    second = await client.put(url, headers=admin_headers)
+
+    assert (first.status_code, second.status_code) == (201, 200)
+    body = first.json()
+    assert (body["month"], body["has_data"]) == (MARCH, True)
+    assert (body["summary_status"], body["summary"]) == ("generated", SUMMARY)
+    assert second.json()["id"] == body["id"]
+    assert len(report_llm.calls) == 1
+
+
+async def test_month_without_intakes_is_saved_as_no_data_without_calling_the_ai(
+    client, admin_headers, db_establishment, report_llm
+):
+    response = await client.put(
+        report_url(db_establishment.id, "2026-02"), headers=admin_headers
+    )
+
+    assert response.status_code == 201
+    body = response.json()
+    assert (body["has_data"], body["summary_status"], body["summary"]) == (
+        False,
+        "not_applicable",
+        None,
+    )
+    assert report_llm.calls == []
+
+
+async def test_report_with_a_failed_summary_is_written_again_on_the_next_request(
+    client, admin_headers, db_establishment, rice_in_march, report_llm
+):
+    url = report_url(db_establishment.id, MARCH)
+    report_llm.error = True
+    first = await client.put(url, headers=admin_headers)
+    report_llm.error = False
+
+    second = await client.put(url, headers=admin_headers)
+
+    assert (first.status_code, first.json()["summary_status"]) == (201, "unavailable")
+    assert (second.status_code, second.json()["summary_status"]) == (200, "generated")
+    assert second.json()["id"] == first.json()["id"]
+
+
+async def test_month_whose_foods_cannot_be_converted_returns_409_and_saves_nothing(
+    client,
+    admin_headers,
+    db_establishment,
+    energy_values,
+    foods,
+    make_user_with_role,
+    report_llm,
+):
+    _, responsible_id = await make_user_with_role(UserRole.FIELD_WORKER)
+    # Eggs are counted in units and have no reviewed weight per unit.
+    await add_intake(
+        db_establishment.id, responsible_id, MARCH_INTAKE, [(foods.eggs, "10")]
+    )
+    url = report_url(db_establishment.id, MARCH)
+
+    response = await client.put(url, headers=admin_headers)
+    saved = await client.get(url, headers=admin_headers)
+
+    assert response.status_code == 409
+    assert saved.status_code == 404
+    assert report_llm.calls == []
+
+
+async def test_current_month_returns_422(
+    client, admin_headers, db_establishment, report_llm
+):
+    month = today_in_argentina().strftime("%Y-%m")
+
+    response = await client.put(
+        report_url(db_establishment.id, month), headers=admin_headers
+    )
+
+    assert response.status_code == 422
+    assert report_llm.calls == []
+
+
+async def test_simultaneous_requests_for_a_month_call_the_ai_once(
+    client, admin_headers, db_establishment, rice_in_march, report_llm
+):
+    report_llm.delay = 0.3
+    url = report_url(db_establishment.id, MARCH)
+
+    responses = await asyncio.gather(
+        client.put(url, headers=admin_headers), client.put(url, headers=admin_headers)
+    )
+
+    assert sorted(response.status_code for response in responses) == [200, 201]
+    assert responses[0].json()["id"] == responses[1].json()["id"]
+    assert len(report_llm.calls) == 1
+
+
+async def test_every_request_counts_toward_the_ai_quota_even_for_a_saved_report(
+    client, admin_headers, db_establishment, rice_in_march, report_llm, monkeypatch
+):
+    memory = MovingWindowRateLimiter(storage_from_string("async+memory://"))
+    monkeypatch.setattr(
+        rate_limit, "_limiter", rate_limit.ResilientLimiter(memory, memory)
+    )
+    monkeypatch.setattr(settings, "rate_limit_ai_user", "1/hour")
+    url = report_url(db_establishment.id, MARCH)
+
+    first = await client.put(url, headers=admin_headers)
+    second = await client.put(url, headers=admin_headers)
+
+    assert (first.status_code, second.status_code) == (201, 429)
+    assert "retry-after" in second.headers
+    assert len(report_llm.calls) == 1

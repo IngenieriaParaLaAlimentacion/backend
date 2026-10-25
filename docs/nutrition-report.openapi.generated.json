@@ -234,6 +234,138 @@
             }
           }
         }
+      },
+      "put": {
+        "tags": [
+          "Nutrition Report V1"
+        ],
+        "summary": "Get or generate the monthly nutrition report of an establishment",
+        "description": "Returns the nutrition report of the establishment for a calendar month. A report that was already generated is returned as saved, without calling the AI (200). Otherwise it is calculated, written up by the AI and saved (201). A month with no intakes is saved as no data, without calling the AI. If the AI fails, the calculated data is still saved and the summary is marked unavailable: asking again for that month writes only the summary again (200). The current month and future months are rejected (422), and a month whose foods have no known conversion to grams answers 409 and is not saved. Every call counts toward the AI quota. Accessible by admins and analysts.",
+        "operationId": "put_nutrition_report_api_v1_establishments__establishment_id__nutrition_reports__month__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "establishment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Establishment Id"
+            }
+          },
+          {
+            "name": "month",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "description": "Calendar month of the report, formatted as `YYYY-MM`.",
+              "examples": [
+                "2026-09"
+              ],
+              "title": "Month"
+            },
+            "description": "Calendar month of the report, formatted as `YYYY-MM`."
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NutritionReportResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication token",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Report already saved, or its unavailable summary written again",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NutritionReportResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Establishment not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "None of the foods received in the month has a known conversion to grams",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "AI quota exceeded; retry after Retry-After",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
