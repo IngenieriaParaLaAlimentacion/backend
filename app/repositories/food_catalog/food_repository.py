@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Collection, Iterable
+from decimal import Decimal
 from uuid import UUID
 
 from sqlalchemy import asc, desc, func, select
@@ -219,3 +220,8 @@ class FoodRepository:
         """
         result = await self.db.execute(select(Food))
         return list(result.scalars().all())
+
+    async def set_gram_conversion(self, food: Food, grams: Decimal | None) -> None:
+        """Save the reviewed mass of one stock base unit."""
+        food.grams_per_base_unit = grams
+        await self.db.flush()

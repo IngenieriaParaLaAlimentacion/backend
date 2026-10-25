@@ -289,3 +289,177 @@ Nobody may change a `superadmin` or their own role.
 | `403` | `/errors/role-not-allowed` | Target is a `superadmin`, the actor themselves, or an `admin` changed by an `admin`. Also returned when the caller is not an admin. |
 | `404` | `/errors/user-not-found` | No user with that id. |
 | `422` | `/errors/validation-failed` | `role` missing or not one of the allowed values (including `superadmin`). |
+
+
+## Recipe recommendations (Nutrir, #170)
+
+Generation uses Gemini → the existing nutrition LP → Gemini.
+The backend owns quantities, nutrient indicators, permissions and stock changes.
+All routes below require Bearer authentication and establishment access. Missing
+establishments return 404; denied access returns 403; invalid input uses the
+standard 422 problem response. The [recipe OpenAPI contract](recipes.openapi.generated.json) includes request examples.
+Regenerate with `poetry run python docs/generate_openapi.py recipes --tag "Recipes V1"`.
+
+| Method | Path (under `/api/v1`) | Result |
+|---|---|---|
+| POST | `/recipe-recommendations` | 201: one request with 1–3 validated proposals; partial results carry warnings |
+| GET | `/establishments/{establishment_id}/recipe-recommendations` | Paginated requests; `chosen_only=true` includes only chosen proposals |
+| GET | `/establishments/{establishment_id}/recipes` | Paginated individual proposals, including unchosen alternatives |
+| GET | `/recipe-recommendations/{request_id}/proposals/{proposal_id}` | Original saved recipe detail; no scaling or stock check |
+| POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/choose` | 201 selection; identical replay 200; another choice 409 |
+| POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/reuse-preview` | 200 read-only rescaled proposal; current stock checked; body `{"children_count":45}` |
+| POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/reuse` | 201 new selected request, or 200 replay of its client-generated id |
+| PUT | `/food-catalog/foods/{food_id}/gram-conversion` | Admin-only grams per litre/unit; kilograms always use 1000 |
+
+Generation body (no additional fields, no free text):
+
+```json
+{"establishment_id":"b45193cb-a2f1-427f-a4d8-adbb596561b0","children_count":30,"meal_type":"lunch"}
+```
+
+`children_count` is a strict integer from 1 to 10000. Meal types are `breakfast`,
+`lunch`, `snack`, `dinner`; the reference child is always age 7–9. Ingredient
+count 5–8 is prompt guidance, not validation. Generation does not reserve stock.
+Proposals do not expire; choosing always validates current stock.
+
+A response has `id`, `establishment_id`, `children_count`, `meal_type`,
+`created_at`, `proposals`, and nullable `selection`.
+Each proposal has `id`, `name`, `portions`, `ingredients` (food_id, name, grams,
+quantity in the catalog base unit, unit), `steps`, `indicators` (nutrient adequacy
+and macro shares), `gapa_groups`, `unmet_constraints`, `warnings`,
+`target_energy_kcal`, `energy_kcal`, explicit `nutrient_adequacy_percent` and
+`macronutrient_percent` maps, and nullable `cultural_identity`.
+`selection` contains `proposal_id`, `outflow_id`, `user_id`, and `chosen_at`.
+
+Nutritional and energy shortfalls do **not** prevent offering a recipe: clients
+must display `unmet_constraints`, energy and warnings. Empty stock, no usable
+energy or quantities below stock precision return 409
+`/errors/recipes/no-usable-stock` **before any model call**. Foods in litres or
+units require a reviewed gram conversion; absent conversions are excluded and
+reported, never guessed. Configure with `{"grams_per_base_unit":50}` (e.g. one
+egg); `null` clears it. All final quantities are rounded down to stock precision,
+and indicators are recalculated from the amounts actually offered.
+
+Choosing has no body. It creates a kitchen outflow and selection atomically.
+An identical retry returns the original selection without spending stock again.
+A different choice on the same request returns 409
+`/errors/recipes/already-chosen`. Insufficient stock at selection uses the same
+409 response and food/available/requested fields as manual food outflows.
+
+Before reuse, call `reuse-preview` to display backend-calculated quantities and
+indicators without saving a choice or changing stock. Confirmation calls `reuse`,
+which checks stock again. Neither endpoint calls the LLM.
+
+Reuse body:
+
+```json
+{"id":"72bde9cb-a7b5-48e0-8729-6f91a004d83b","children_count":45}
+```
+
+Reuse scales an existing proposal, recalculates indicators, validates current
+stock and selects the copy in one transaction without an LLM call. Replaying the
+same id and source/count returns 200; changing its meaning returns 409
+`/errors/recipes/idempotency-conflict`. The original request stays unchanged.
+
+A history item from `/establishments/{id}/recipe-recommendations` is a request
+containing its saved proposals (1–3 for generation, one for reuse).
+`chosen_only=true` filters both requests and their proposals to the chosen ones.
+For a flat list, use `GET /establishments/{id}/recipes`: each item contains one
+`proposal` plus `request_id`, `establishment_id`, `meal_type`, `created_at` and
+`chosen`. It includes unchosen alternatives unless `chosen_only=true`; three
+requests with three proposals each produce nine items. Both lists use standard
+pagination. Read any original snapshot without scaling or stock validation via
+`GET /recipe-recommendations/{request_id}/proposals/{proposal_id}`. Preview is
+only for rescaling and checking current stock before reuse; it does not replace
+reading a saved recipe. Viewing old recipes never invokes AI.
+
+Field workers **and analysts** require an approved `user_establishments` relation
+for the establishment. “Access” and “subscription” describe that same approved
+relation in this workflow; there is no second paid subscription or permission.
+Admins and superadmins may access any establishment.
+
+Request-level `user_id` and `prompt_version` were removed before the migration
+was applied: no feature consumes them. Selection `user_id` is retained to
+attribute the actual stock outflow. Prompt version is recorded in generation
+failure logs, where it supports diagnosis; it does not promise reproducibility.
+Proposal `position` remains an internal zero-based display order for history.
+
+AI generation and receipt extraction (`POST /food-intakes/from-photo`) share a
+per-authenticated-user moving-window quota, configured by `RATE_LIMIT_AI_USER`
+(default `20/hour`). Users behind the same IP have separate quotas. Requests
+past the quota return `429 /errors/rate-limited` and `Retry-After`, before model
+calls. Redis-backed counting uses the existing in-process fallback during an
+outage (replicas count separately while degraded). Non-AI history, preview,
+selection and reuse do not consume this quota.
+
+Reuse/preview return specific 409 errors with `food_id` and `ingredient`:
+`/errors/recipes/ingredient-unavailable` when a catalog ingredient is missing,
+`/errors/recipes/ingredient-unit-changed` when its base unit changed, and
+`/errors/recipes/scale-too-small` when rounding would drop a required ingredient.
+Missing gram factors or zero usable energy still return `no-usable-stock`.
+
+Culture is read from `characterization.cultural_identities` and optional
+`characterization.cultural_identities_other`. Edit it through the existing ficha
+`PUT /establishments/{establishment_id}/characterization` (full profile replacement),
+using its admin/superadmin or approved field-worker permissions. The shared
+profile catalog includes Paraguayan and Bolivian alongside its existing codes.
+Generation includes the last ten chosen recipes, asks for cultural inspiration when viable, and permits ordinary dishes when stock cannot support
+it. Cultural inspiration never adds ingredients or alters calculated quantities.
+
+Normal generation uses two logical model calls, with at most one repair call
+for invalid/duplicate candidate sets. Transport retries and fallback reuse the
+existing Gemini policy. Invalid/failing AI returns the standard
+`/errors/recipes/generation-failed` domain error; no incomplete proposals are saved.
+History uses the standard `items`, `total`, `page`, `page_size`, `total_pages`
+envelope, ordered by date and id descending. Ingredient amounts and steps are
+immutable snapshots; prompt templates are versioned in the repository.
+
+The gram-conversion endpoint is a temporary adapter pending #192. Its shared
+conversion module and food-equivalence management will replace this adapter and
+endpoint; existing reviewed factors must be transferred before retiring the
+catalog field. Kilogram conversions remain exact and missing mass/density factors
+are never guessed.
+
+Recipe generation has a total service budget, configured by
+`RECIPE_GENERATION_TIMEOUT_SECONDS` (90 seconds by default). It includes context
+reads, LP work, all model attempts, retry waits, fallback and persistence. On
+expiry the task is cancelled, the transaction is rolled back and the API returns
+`504 /errors/recipes/generation-timeout`. Authentication, upload/transport and
+proxy timeouts are outside this service budget. Configure the deployment proxy
+and client timeout above that budget; the repository does not establish the
+live gateway's timeout. This deadline does not add generation idempotency.
+
+Gemini output is capped by `GEMINI_MAX_OUTPUT_TOKENS` (8192 by default).
+Gemini 3 uses `GEMINI_THINKING_LEVEL=low`. Temperature is unset by default, in
+line with Google's recommendation for Gemini 3; `GEMINI_TEMPERATURE` and
+`GEMINI_SEED` are optional overrides, not reproducibility guarantees. Older-model
+fallbacks omit the Gemini-3-specific thinking configuration. The SDK's own retry
+budget is disabled: the existing Tenacity policy owns retries.
+
+Receipts and recipes share one lazy Gemini client per application instance,
+closed at lifespan shutdown (including the supplied HTTP client). Logs contain
+response length/model/token metadata and controlled error types/status codes;
+response text, prompts and raw provider error bodies are not logged. The Spanish
+quantity detector covers common numeric/word amounts, fractions and ingredient
+units while allowing cooking times and temperatures; it remains a heuristic,
+not a general natural-language guarantee.
+
+Generation aims for 2–3 alternatives but returns even one independently valid
+recipe. Invalid candidate entries are skipped; a selection repair is attempted
+only when there are no usable candidates. Writing is validated per recipe:
+malformed entries, missing/unknown IDs, unsupported culture, changed ingredient
+references, prose quantities and duplicate preparations do not discard valid
+siblings. There is no extra model call to fill the result count or repair writing.
+No valid final recipe still returns 502 and saves nothing.
+
+The existing per-proposal `warnings` list also carries these stable codes:
+- `recipes/fewer-alternatives`: fewer valid alternatives than expected survived.
+- `recipes/cultural-unavailable`: cultural identities were configured but none
+  of the final recipes has a cultural tag. The model's cultural_dish_viable flag
+  does not control rejection or trigger another call.
+
+Warnings are attached to every surviving proposal, persisted with its snapshot
+and returned in history/detail/reuse. They describe recommendation availability,
+not missing nutrient data. Clients must display them separately from nutrition
+metadata warnings. Cultural inspiration remains optional even when the model
+claims a cultural dish was viable.

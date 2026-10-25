@@ -10,6 +10,7 @@ from app.core.dependencies import (
     get_receipt_intake_service,
     require_any,
 )
+from app.core.rate_limit import limit_by_user
 from app.domain import UserActor
 from app.schemas.food_intakes.food_intake_schema import (
     FoodIntakeRequest,
@@ -80,6 +81,7 @@ async def register_food_intake(
 
 @router.post(
     "/from-photo",
+    dependencies=[limit_by_user("rate_limit_ai_user", "ai")],
     response_model=ReceiptProposalResponse,
     summary="Propose food lines from a photo of the receipt",
     description=(
@@ -93,6 +95,7 @@ async def register_food_intake(
     ),
     responses={
         **AUTH_RESPONSES,
+        429: {"description": "AI quota exceeded; retry after Retry-After"},
         status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
         status.HTTP_422_UNPROCESSABLE_CONTENT: {
             "description": "Unsupported image type, file over the size limit, "

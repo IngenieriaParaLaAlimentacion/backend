@@ -67,12 +67,14 @@ class FoodOutflowService:
         )
 
     async def register(
-        self, data: FoodOutflowRequest, actor: UserActor
+        self, data: FoodOutflowRequest, actor: UserActor, *, commit: bool = True
     ) -> tuple[FoodOutflowDomain, bool]:
         """Idempotently register an outflow and take it off the stock.
 
         Returns a ``(outflow, created)`` tuple: ``created`` is False for an
         idempotent replay, which returns before touching the balance.
+
+        ``commit=False`` stages the outflow in the caller's transaction.
 
         A line the balance cannot cover aborts the whole outflow: the caller's
         UnitOfWork rolls back, so a half-applied outflow is never left behind.
@@ -119,5 +121,6 @@ class FoodOutflowService:
 
         await self._spend(data.establishment_id, aggregate_quantities(data.items))
 
-        await self.uow.commit()
+        if commit:
+            await self.uow.commit()
         return FoodOutflowDomain.from_db(outflow), True

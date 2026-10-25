@@ -155,3 +155,10 @@ docker compose -f e2e/compose.yml down -v
 ```
 
 The API listens on `http://localhost:8080`. The configuration is `e2e/.env.e2e`, which holds throwaway test values only: no real secret goes in it. With it the backend needs no file storage, Gemini, SMTP or Redis, and the rate limits are high enough for the same user to log in repeatedly. The seeded superadmin is the `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` of that file.
+
+### Integration tests without Docker
+
+`TEST_POSTGRES_URL` may point to a **disposable test-only** PostgreSQL instance
+(e.g. `postgresql+psycopg2://test@127.0.0.1:55432/test`). The suite runs migrations
+and truncates every application table. Never use an application database.
+Redis-backed auth rate-limit tests still require their Redis Testcontainer.
