@@ -3,6 +3,7 @@ from datetime import date
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from structlog.testing import capture_logs
 
 from app.domain.nutrition import MonthlyIntakeAnalysis
 from app.domain.nutrition_report import SummaryStatus
@@ -172,6 +173,29 @@ async def test_analysis_is_saved_even_when_the_summary_cannot_be_had(llm_result)
     assert report.summary is None
     assert report.analysis["energy_kcal"] == analysis.indicators.energy_kcal
     uow.commit.assert_awaited_once()
+
+
+@pytest.mark.parametrize(
+    ("llm_result", "reason"),
+    [
+        (LlmClientError("secret provider detail"), "provider_error"),
+        ({**SUMMARY, "overview": "  "}, "invalid_output"),
+    ],
+    ids=["ai-fails", "ai-answers-badly"],
+)
+async def test_failed_summary_is_logged_by_reason_without_the_providers_message(
+    llm_result, reason
+):
+    analysis, _ = monthly_analysis()
+    service, _, _, _ = make_service(analysis, llm_result=llm_result)
+
+    with capture_logs() as logs:
+        await service.get_or_generate_report(ESTABLISHMENT_ID, "2026-09", ADMIN)
+
+    [entry] = [log for log in logs if log["event"] == "nutrition_report.summary_failed"]
+    assert (entry["stage"], entry["reason"]) == ("summary", reason)
+    assert entry["prompt_version"] == "v1"
+    assert "secret provider detail" not in str(logs)
 
 
 async def test_unavailable_summary_is_written_again_without_recalculating():

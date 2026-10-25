@@ -7,7 +7,10 @@ from app.schemas.nutrition.nutrition_report_schema import (
     NutritionReportSummary,
 )
 
-PROMPT = (Path(__file__).parent / "prompts" / "report_summary.txt").read_text()
+PROMPT_VERSION = "v1"
+PROMPT = (
+    Path(__file__).parent / "prompts" / PROMPT_VERSION / "report_summary.txt"
+).read_text()
 
 RESPONSE_SCHEMA: dict[str, Any] = NutritionReportSummary.model_json_schema()
 

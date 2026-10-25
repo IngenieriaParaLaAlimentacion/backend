@@ -24,6 +24,7 @@ from app.services.access import check_establishment_access
 from app.services.nutrition.nutrition_service import NutritionService
 from app.services.nutrition.report_analysis import build_analysis
 from app.services.nutrition.report_summary import (
+    PROMPT_VERSION,
     RESPONSE_SCHEMA,
     build_prompt,
     parse_summary,
@@ -31,6 +32,25 @@ from app.services.nutrition.report_summary import (
 from app.utils.dates import today_in_argentina
 
 logger = structlog.get_logger()
+
+
+def _log_summary_failure(
+    establishment_id: UUID,
+    month: date,
+    reason: str,
+    failures: list[str] | None = None,
+) -> None:
+    """Log that the AI summary could not be had, by a controlled reason code."""
+    # Never the prompt, the model's text or the provider's message.
+    logger.warning(
+        "nutrition_report.summary_failed",
+        stage="summary",
+        reason=reason,
+        prompt_version=PROMPT_VERSION,
+        establishment_id=str(establishment_id),
+        month=month.isoformat(),
+        failures=failures or [],
+    )
 
 
 def _profile_key(profile: ReferenceProfile) -> str:
@@ -43,7 +63,10 @@ class NutritionReportService:
     the AI and saved."""
 
     def __init__(
-        self, uow: IUnitOfWork, nutrition: NutritionService, llm: ILlmClient
+        self,
+        uow: IUnitOfWork,
+        nutrition: NutritionService,
+        llm: ILlmClient | None = None,
     ) -> None:
         self.uow = uow
         self.nutrition = nutrition
@@ -153,18 +176,16 @@ class NutritionReportService:
                 prompt=build_prompt(snapshot), response_schema=RESPONSE_SCHEMA
             )
             return parse_summary(raw)
-        except LlmClientError as exc:
-            logger.warning(
-                "nutrition_report_summary_failed",
-                establishment_id=str(establishment_id),
-                month=month.isoformat(),
-                error=str(exc),
-            )
+        except LlmClientError:
+            _log_summary_failure(establishment_id, month, "provider_error")
         except ValidationError as exc:
-            logger.warning(
-                "nutrition_report_summary_invalid",
-                establishment_id=str(establishment_id),
-                month=month.isoformat(),
-                errors=exc.errors(include_input=False, include_url=False),
+            _log_summary_failure(
+                establishment_id,
+                month,
+                "invalid_output",
+                failures=[
+                    f"{'.'.join(map(str, error['loc']))}:{error['type']}"
+                    for error in exc.errors()
+                ],
             )
         return None
