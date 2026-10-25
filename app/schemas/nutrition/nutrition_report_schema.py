@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.domain.nutrition import GapaGroup, Macronutrient, PrioritizedNutrient
 from app.domain.nutrition_report import (
+    SCOPE_NOTE,
     SUMMARY_MAX_ITEMS,
     SUMMARY_TEXT_MAX_LENGTH,
     SummaryStatus,
@@ -72,6 +73,13 @@ class ReportNutrientSources(BaseModel):
     foods: list[ReportFoodSource]
 
 
+class ReportFoodWithoutConversion(BaseModel):
+    """A food received in the month that was left out for lacking a gram conversion."""
+
+    food_id: UUID
+    name: str
+
+
 class NutritionReportAnalysis(BaseModel):
     """The nutritional balance of a month, as calculated when the report was made.
 
@@ -91,6 +99,11 @@ class NutritionReportAnalysis(BaseModel):
     gapa_groups: list[ReportGapaGroup] = Field(default_factory=list)
     limits: list[ReportLimit] = Field(default_factory=list)
     top_sources: list[ReportNutrientSources] = Field(default_factory=list)
+    foods_without_conversion: list[ReportFoodWithoutConversion] = Field(
+        default_factory=list,
+        description="Foods received in the month and left out of the calculation "
+        "because they have no known conversion to grams.",
+    )
     warnings: list[str] = Field(
         default_factory=list,
         description="Data gaps found while calculating, such as foods left out.",
@@ -168,6 +181,10 @@ class NutritionReportResponse(BaseModel):
     summary: NutritionReportSummary | None = Field(
         default=None,
         description="Summary written by the AI, as returned. Null unless generated.",
+    )
+    scope_note: str = Field(
+        default=SCOPE_NOTE,
+        description="Fixed note on what the report assesses and what it does not.",
     )
     created_at: datetime
     updated_at: datetime

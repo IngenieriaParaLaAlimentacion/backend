@@ -143,12 +143,12 @@ class NutritionReportService:
         )
 
     async def _food_names(self, analysis: MonthlyIntakeAnalysis) -> dict[UUID, str]:
-        """Return the name of every food suggested in the analysis."""
+        """Return the name of every food the analysis suggests or leaves out."""
         food_ids = {
             source.food_id
             for sources in analysis.top_sources.values()
             for source in sources
-        }
+        } | set(analysis.foods_without_conversion)
         if not food_ids:
             return {}
         foods = await self.uow.food_repo.get_by_ids(food_ids)

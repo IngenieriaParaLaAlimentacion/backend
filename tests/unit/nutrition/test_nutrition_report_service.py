@@ -144,7 +144,9 @@ async def test_month_without_data_is_saved_without_calling_the_ai():
 
 
 async def test_month_whose_foods_cannot_be_converted_is_not_saved():
-    analysis = MonthlyIntakeAnalysis(has_data=False, foods_without_conversion=2)
+    analysis = MonthlyIntakeAnalysis(
+        has_data=False, foods_without_conversion=[uuid.uuid4(), uuid.uuid4()]
+    )
     service, uow, _, _ = make_service(analysis)
 
     with pytest.raises(NutritionReportConversionUnavailableError):
@@ -152,6 +154,19 @@ async def test_month_whose_foods_cannot_be_converted_is_not_saved():
 
     uow.nutrition_report_repo.create.assert_not_awaited()
     uow.commit.assert_not_awaited()
+
+
+async def test_foods_left_out_of_the_calculation_are_saved_with_their_names():
+    analysis, _ = monthly_analysis()
+    left_out = uuid.uuid4()
+    analysis.foods_without_conversion = [left_out]
+    service, _, _, _ = make_service(analysis)
+
+    report, _ = await service.get_or_generate_report(ESTABLISHMENT_ID, "2026-09", ADMIN)
+
+    assert report.analysis["foods_without_conversion"] == [
+        {"food_id": str(left_out), "name": "Leche"}
+    ]
 
 
 @pytest.mark.parametrize(

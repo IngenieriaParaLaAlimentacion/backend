@@ -220,7 +220,7 @@ class MonthlyIntakeAnalysis(NutritionResult):
     ``nutrients_at_risk`` because of a gap in the catalog; the matching entry of
     ``warnings`` says so.
 
-    ``foods_without_conversion`` counts the foods received that were left out of
+    ``foods_without_conversion`` lists the foods received that were left out of
     the balance for having no known conversion to grams.
     """
 
@@ -231,7 +231,7 @@ class MonthlyIntakeAnalysis(NutritionResult):
     top_sources: dict[PrioritizedNutrient, list[FoodSource]] = field(
         default_factory=dict
     )
-    foods_without_conversion: int = 0
+    foods_without_conversion: list[UUID] = field(default_factory=list)
 
 
 @dataclass(frozen=True)

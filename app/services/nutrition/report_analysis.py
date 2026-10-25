@@ -5,6 +5,7 @@ from app.domain.nutrition import MonthlyIntakeAnalysis, ReferenceProfile
 from app.schemas.nutrition.nutrition_report_schema import (
     NutritionReportAnalysis,
     ReportFoodSource,
+    ReportFoodWithoutConversion,
     ReportGapaGroup,
     ReportLimit,
     ReportMacro,
@@ -22,12 +23,19 @@ def build_analysis(
 ) -> NutritionReportAnalysis:
     """Return the report snapshot of a monthly analysis, with shares as percentages.
 
-    ``food_names`` names every food in ``analysis.top_sources``. A month with no
-    data gives a snapshot holding only the warnings.
+    ``food_names`` names every food in ``analysis.top_sources`` and every food left
+    out for lacking a conversion. A month with no data gives a snapshot holding
+    only the foods left out and the warnings.
     """
+    left_out = [
+        ReportFoodWithoutConversion(food_id=food_id, name=food_names[food_id])
+        for food_id in analysis.foods_without_conversion
+    ]
     indicators = analysis.indicators
     if indicators is None:
-        return NutritionReportAnalysis(warnings=analysis.warnings)
+        return NutritionReportAnalysis(
+            foods_without_conversion=left_out, warnings=analysis.warnings
+        )
 
     at_risk = set(analysis.nutrients_at_risk)
     out_of_range = {item.macro for item in analysis.macros_out_of_range}
@@ -81,5 +89,6 @@ def build_analysis(
             )
             for nutrient, sources in analysis.top_sources.items()
         ],
+        foods_without_conversion=left_out,
         warnings=analysis.warnings,
     )

@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 
 from app.domain.nutrition import (
@@ -43,6 +45,18 @@ def test_snapshot_names_the_suggested_foods():
     [calcium_sources] = snapshot.top_sources
     assert calcium_sources.nutrient == PrioritizedNutrient.CALCIUM
     assert [food.name for food in calcium_sources.foods] == ["Leche"]
+
+
+def test_snapshot_names_the_foods_left_out_for_lacking_a_conversion():
+    analysis, milk_id = monthly_analysis()
+    rice_id = uuid.uuid4()
+    analysis.foods_without_conversion = [rice_id]
+
+    snapshot = build_analysis(analysis, NINO_7_9, {milk_id: "Leche", rice_id: "Arroz"})
+
+    assert [(f.food_id, f.name) for f in snapshot.foods_without_conversion] == [
+        (rice_id, "Arroz")
+    ]
 
 
 def test_month_without_data_keeps_only_the_warnings():

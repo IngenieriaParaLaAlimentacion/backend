@@ -195,5 +195,7 @@ class NutritionService:
                 for nutrient in analysis.nutrients_at_risk
             }
         analysis.warnings.extend(warnings)
-        analysis.foods_without_conversion = len(received) - len(grams)
+        analysis.foods_without_conversion = [
+            food_id for food_id in received if food_id not in grams
+        ]
         return analysis

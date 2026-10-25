@@ -98,7 +98,7 @@ async def test_monthly_analysis_without_intakes_has_no_data():
 
     assert not result.has_data
     assert result.nutrients_at_risk == []
-    assert result.foods_without_conversion == 0
+    assert result.foods_without_conversion == []
 
 
 async def test_month_whose_foods_all_lack_conversion_is_told_apart_from_an_empty_one():
@@ -111,7 +111,7 @@ async def test_month_whose_foods_all_lack_conversion_is_told_apart_from_an_empty
     )
 
     assert not result.has_data
-    assert result.foods_without_conversion == 1
+    assert result.foods_without_conversion == [mystery_id]
 
 
 @pytest.mark.parametrize(

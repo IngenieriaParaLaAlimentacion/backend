@@ -23,7 +23,10 @@ def build_prompt(analysis: NutritionReportAnalysis) -> str:
     """
     context = analysis.model_dump(
         mode="json",
-        exclude={"top_sources": {"__all__": {"foods": {"__all__": {"food_id"}}}}},
+        exclude={
+            "top_sources": {"__all__": {"foods": {"__all__": {"food_id"}}}},
+            "foods_without_conversion": {"__all__": {"food_id"}},
+        },
     )
     return PROMPT.replace("{context}", json.dumps(context, ensure_ascii=False))
 

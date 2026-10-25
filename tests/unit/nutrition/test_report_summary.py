@@ -10,6 +10,7 @@ from app.domain.nutrition_report import SUMMARY_MAX_ITEMS, SUMMARY_TEXT_MAX_LENG
 from app.schemas.nutrition.nutrition_report_schema import (
     NutritionReportAnalysis,
     ReportFoodSource,
+    ReportFoodWithoutConversion,
     ReportNutrientSources,
 )
 from app.services.nutrition.report_summary import (
@@ -37,8 +38,12 @@ def context_of(prompt: str) -> dict:
 
 def test_prompt_gives_the_calculated_figures_without_internal_food_ids():
     food_id = uuid.uuid4()
+    left_out_id = uuid.uuid4()
     analysis = NutritionReportAnalysis(
         energy_kcal=1234.5,
+        foods_without_conversion=[
+            ReportFoodWithoutConversion(food_id=left_out_id, name="Arroz")
+        ],
         warnings=["2 food(s) have no conversion to grams and were left out"],
         top_sources=[
             ReportNutrientSources(
@@ -60,7 +65,9 @@ def test_prompt_gives_the_calculated_figures_without_internal_food_ids():
     assert context["top_sources"][0]["foods"] == [
         {"name": "Leche", "amount_per_100_kcal": 180.0}
     ]
+    assert context["foods_without_conversion"] == [{"name": "Arroz"}]
     assert str(food_id) not in prompt
+    assert str(left_out_id) not in prompt
 
 
 def test_summary_is_returned_exactly_as_written():
