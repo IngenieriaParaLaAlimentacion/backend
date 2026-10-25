@@ -2,7 +2,10 @@ import uuid
 from datetime import date, datetime, timezone
 
 from app.domain.nutrition_report import SummaryStatus
-from app.schemas.nutrition.nutrition_report_schema import NutritionReportResponse
+from app.schemas.nutrition.nutrition_report_schema import (
+    NutritionReportListItem,
+    NutritionReportResponse,
+)
 
 
 def stored_report() -> dict:
@@ -33,3 +36,17 @@ def test_response_always_carries_the_scope_note():
     response = NutritionReportResponse.model_validate(stored_report())
 
     assert response.scope_note.strip()
+
+
+def test_list_item_shows_the_basics_of_a_report_without_its_analysis_or_summary():
+    """A listed report has its month as YYYY-MM and nothing of the full report."""
+    item = NutritionReportListItem.model_validate(stored_report())
+
+    assert item.month == "2026-09"
+    assert set(item.model_dump()) == {
+        "id",
+        "month",
+        "has_data",
+        "summary_status",
+        "created_at",
+    }

@@ -5,14 +5,141 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/api/v1/establishments/{establishment_id}/nutrition-report/{month}": {
+    "/api/v1/establishments/{establishment_id}/nutrition-reports": {
+      "get": {
+        "tags": [
+          "Nutrition Report V1"
+        ],
+        "summary": "List the saved monthly nutrition reports of an establishment",
+        "description": "Returns the reports already generated for the establishment, a page at a time and ordered by month: newest first, or oldest first with sort_order=month_asc. Each item has only the basics; read the full report of a month with its own route. It never generates a report or calls the AI. Accessible by admins and analysts.",
+        "operationId": "list_nutrition_reports_api_v1_establishments__establishment_id__nutrition_reports_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "establishment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Establishment Id"
+            }
+          },
+          {
+            "name": "sort_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/NutritionReportSortOrder",
+              "description": "Order of the reports by month.",
+              "default": "month_desc"
+            },
+            "description": "Order of the reports by month."
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number, starting at 1.",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number, starting at 1."
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Results per page (max 100).",
+              "default": 20,
+              "title": "Page Size"
+            },
+            "description": "Results per page (max 100)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponse_NutritionReportListItem_"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication token",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Establishment not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/establishments/{establishment_id}/nutrition-reports/{month}": {
       "get": {
         "tags": [
           "Nutrition Report V1"
         ],
         "summary": "Get the saved monthly nutrition report of an establishment",
         "description": "Returns the report already generated for a calendar month. It never generates a report or calls the AI: a month without a saved report answers 404. Accessible by admins and analysts.",
-        "operationId": "get_nutrition_report_api_v1_establishments__establishment_id__nutrition_report__month__get",
+        "operationId": "get_nutrition_report_api_v1_establishments__establishment_id__nutrition_reports__month__get",
         "security": [
           {
             "HTTPBearer": []
@@ -118,6 +245,133 @@
       }
     },
     "schemas": {
+      "NutritionReportSortOrder": {
+        "type": "string",
+        "enum": [
+          "month_desc",
+          "month_asc"
+        ],
+        "title": "NutritionReportSortOrder",
+        "description": "Order in which the reports of an establishment are listed, by month."
+      },
+      "PaginatedResponse_NutritionReportListItem_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/NutritionReportListItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "total_pages": {
+            "type": "integer",
+            "title": "Total Pages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size",
+          "total_pages"
+        ],
+        "title": "PaginatedResponse[NutritionReportListItem]"
+      },
+      "NutritionReportListItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "month": {
+            "type": "string",
+            "title": "Month",
+            "description": "Calendar month of the report, formatted as `YYYY-MM`.",
+            "examples": [
+              "2026-09"
+            ]
+          },
+          "has_data": {
+            "type": "boolean",
+            "title": "Has Data",
+            "description": "False when there is no energy to judge in the month: no food was received, or only food without energy."
+          },
+          "summary_status": {
+            "$ref": "#/components/schemas/SummaryStatus"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "month",
+          "has_data",
+          "summary_status",
+          "created_at"
+        ],
+        "title": "NutritionReportListItem",
+        "description": "The basics of a saved monthly report, as listed for an establishment."
+      },
+      "SummaryStatus": {
+        "type": "string",
+        "enum": [
+          "generated",
+          "unavailable",
+          "not_applicable"
+        ],
+        "title": "SummaryStatus",
+        "description": "What became of the AI-written summary of a report."
+      },
+      "ProblemDetail": {
+        "type": "object",
+        "description": "RFC 7807 problem details. `type` is the stable machine-readable identifier clients should branch on; `title` and `detail` are human-readable prose and may change without notice.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "examples": [
+              "/errors/survey-locked"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "detail",
+          "instance"
+        ],
+        "additionalProperties": true
+      },
       "NutritionReportResponse": {
         "properties": {
           "id": {
@@ -495,16 +749,6 @@
         "title": "ReportFoodWithoutConversion",
         "description": "A food received in the month that was left out for lacking a gram conversion."
       },
-      "SummaryStatus": {
-        "type": "string",
-        "enum": [
-          "generated",
-          "unavailable",
-          "not_applicable"
-        ],
-        "title": "SummaryStatus",
-        "description": "What became of the AI-written summary of a report."
-      },
       "NutritionReportSummary": {
         "properties": {
           "overview": {
@@ -563,38 +807,6 @@
         ],
         "title": "NutritionReportSummary",
         "description": "The summary of a report, written by the AI in Spanish, one text per section.\n\nA section with nothing to say is an empty string or an empty list. The AI\nreturns this same shape."
-      },
-      "ProblemDetail": {
-        "type": "object",
-        "description": "RFC 7807 problem details. `type` is the stable machine-readable identifier clients should branch on; `title` and `detail` are human-readable prose and may change without notice.",
-        "properties": {
-          "type": {
-            "type": "string",
-            "examples": [
-              "/errors/survey-locked"
-            ]
-          },
-          "title": {
-            "type": "string"
-          },
-          "status": {
-            "type": "integer"
-          },
-          "detail": {
-            "type": "string"
-          },
-          "instance": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "type",
-          "title",
-          "status",
-          "detail",
-          "instance"
-        ],
-        "additionalProperties": true
       }
     }
   }

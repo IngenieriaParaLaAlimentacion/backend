@@ -16,6 +16,13 @@ SCOPE_NOTE = (
 )
 
 
+class NutritionReportSortOrder(StrEnum):
+    """Order in which the reports of an establishment are listed, by month."""
+
+    MONTH_DESC = "month_desc"
+    MONTH_ASC = "month_asc"
+
+
 class SummaryStatus(StrEnum):
     """What became of the AI-written summary of a report."""
 

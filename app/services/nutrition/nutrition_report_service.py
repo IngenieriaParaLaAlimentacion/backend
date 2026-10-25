@@ -7,7 +7,8 @@ from pydantic import ValidationError
 from app.core.interfaces.llm_client import ILlmClient
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.nutrition import MonthlyIntakeAnalysis, ReferenceProfile
-from app.domain.nutrition_report import SummaryStatus
+from app.domain.nutrition_report import NutritionReportSortOrder, SummaryStatus
+from app.domain.pagination import PaginatedResult
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
     LlmClientError,
@@ -134,6 +135,32 @@ class NutritionReportService:
         if report is None:
             raise NutritionReportNotFoundError(month)
         return report
+
+    async def list_reports(
+        self,
+        establishment_id: UUID,
+        actor: UserActor,
+        *,
+        sort_order: NutritionReportSortOrder,
+        page: int,
+        page_size: int,
+    ) -> PaginatedResult[NutritionReport]:
+        """Return a page of the saved reports of an establishment, ordered by month.
+
+        Raises:
+            EstablishmentNotFoundError: establishment_id does not exist.
+            EstablishmentAccessDeniedError: field worker lacks approved access.
+        """
+        await self._check_access(establishment_id, actor)
+        reports, total = await self.uow.nutrition_report_repo.list_by_establishment(
+            establishment_id,
+            sort_order=sort_order,
+            limit=page_size,
+            offset=(page - 1) * page_size,
+        )
+        return PaginatedResult.build(
+            items=reports, total=total, page=page, page_size=page_size
+        )
 
     async def _check_access(self, establishment_id: UUID, actor: UserActor) -> None:
         """Confirm the establishment exists and the actor may look at it."""

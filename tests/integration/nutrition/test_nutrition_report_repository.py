@@ -5,7 +5,7 @@ from datetime import date
 import pytest
 from sqlalchemy.exc import IntegrityError
 
-from app.domain.nutrition_report import SummaryStatus
+from app.domain.nutrition_report import NutritionReportSortOrder, SummaryStatus
 from tests.integration.nutrition.helpers import (
     GENERATED,
     NOT_APPLICABLE,
@@ -15,6 +15,7 @@ from tests.integration.nutrition.helpers import (
     UNAVAILABLE,
     make_report,
     save,
+    save_other_establishment,
 )
 
 pytestmark = pytest.mark.usefixtures("app")
@@ -114,3 +115,25 @@ async def test_timestamps_are_available_after_creating_and_updating_a_report(
 
         # Reading a timestamp the database set would fail if it were left expired.
         assert report.updated_at >= created_at
+
+
+async def test_listing_only_includes_the_establishments_own_reports(db_establishment):
+    from app.db.database import AsyncSessionLocal
+    from app.repositories.nutrition.nutrition_report_repository import (
+        NutritionReportRepository,
+    )
+
+    other = await save_other_establishment()
+    await save(make_report(db_establishment.id))
+    await save(make_report(other.id, month=OCTOBER))
+
+    async with AsyncSessionLocal() as session:
+        reports, total = await NutritionReportRepository(session).list_by_establishment(
+            db_establishment.id,
+            sort_order=NutritionReportSortOrder.MONTH_DESC,
+            limit=20,
+            offset=0,
+        )
+
+    assert [report.month for report in reports] == [SEPTEMBER]
+    assert total == 1

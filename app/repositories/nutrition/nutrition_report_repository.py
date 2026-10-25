@@ -5,7 +5,14 @@ from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.domain.nutrition_report import NutritionReportSortOrder
 from app.models.nutrition.nutrition_report import NutritionReport
+from app.utils.db import execute_paginated
+
+_SORT_CLAUSES = {
+    NutritionReportSortOrder.MONTH_DESC: NutritionReport.month.desc(),
+    NutritionReportSortOrder.MONTH_ASC: NutritionReport.month.asc(),
+}
 
 
 class NutritionReportRepository:
@@ -25,6 +32,25 @@ class NutritionReportRepository:
             )
         )
         return result.scalar_one_or_none()
+
+    async def list_by_establishment(
+        self,
+        establishment_id: UUID,
+        *,
+        sort_order: NutritionReportSortOrder,
+        limit: int,
+        offset: int,
+    ) -> tuple[list[NutritionReport], int]:
+        """Return a page of the establishment's reports by month, and the total."""
+        return await execute_paginated(
+            self.db,
+            select(NutritionReport),
+            select(func.count()).select_from(NutritionReport),
+            _SORT_CLAUSES[sort_order],
+            limit,
+            offset,
+            conditions=[NutritionReport.establishment_id == establishment_id],
+        )
 
     async def create(self, report: NutritionReport) -> NutritionReport:
         """Stage a new report for insertion."""

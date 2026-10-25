@@ -1,8 +1,10 @@
 from datetime import date
 
 from app.domain.nutrition_report import SummaryStatus
+from app.models.establishments.establishment import Establishment
 from app.models.nutrition.nutrition_report import NutritionReport
 
+AUGUST = date(2026, 8, 1)
 SEPTEMBER = date(2026, 9, 1)
 OCTOBER = date(2026, 10, 1)
 
@@ -41,3 +43,23 @@ async def save(report: NutritionReport) -> None:
     async with AsyncSessionLocal() as session:
         session.add(report)
         await session.commit()
+
+
+async def save_other_establishment() -> Establishment:
+    """Insert a second establishment, besides the ``db_establishment`` fixture."""
+    from app.db.database import AsyncSessionLocal
+
+    async with AsyncSessionLocal() as session:
+        establishment = Establishment(
+            name="Otro Centro",
+            formatted_address="Calle Otra 456",
+            latitude=-34.6037,
+            longitude=-58.3816,
+            place_id="place-test-002",
+            city="Buenos Aires",
+            province="Buenos Aires",
+        )
+        session.add(establishment)
+        await session.commit()
+        await session.refresh(establishment)
+        return establishment

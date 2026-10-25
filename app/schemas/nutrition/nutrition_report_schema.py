@@ -2,7 +2,7 @@ from datetime import date, datetime
 from typing import Annotated, Any
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, field_validator
 
 from app.domain.nutrition import GapaGroup, Macronutrient, PrioritizedNutrient
 from app.domain.nutrition_report import (
@@ -158,6 +158,41 @@ class NutritionReportSummary(BaseModel):
         return value
 
 
+def _format_month(value: Any) -> Any:
+    """Show the first day of the month a report is stored under as YYYY-MM."""
+    return value.strftime("%Y-%m") if isinstance(value, date) else value
+
+
+ReportMonth = Annotated[
+    str,
+    BeforeValidator(_format_month),
+    Field(
+        description="Calendar month of the report, formatted as `YYYY-MM`.",
+        examples=["2026-09"],
+    ),
+]
+
+ReportHasData = Annotated[
+    bool,
+    Field(
+        description="False when there is no energy to judge in the month: no food "
+        "was received, or only food without energy.",
+    ),
+]
+
+
+class NutritionReportListItem(BaseModel):
+    """The basics of a saved monthly report, as listed for an establishment."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    month: ReportMonth
+    has_data: ReportHasData
+    summary_status: SummaryStatus
+    created_at: datetime
+
+
 class NutritionReportResponse(BaseModel):
     """A monthly nutrition report of an establishment."""
 
@@ -165,14 +200,8 @@ class NutritionReportResponse(BaseModel):
 
     id: UUID
     establishment_id: UUID
-    month: str = Field(
-        description="Calendar month of the report, formatted as `YYYY-MM`.",
-        examples=["2026-09"],
-    )
-    has_data: bool = Field(
-        description="False when there is no energy to judge in the month: no food "
-        "was received, or only food without energy.",
-    )
+    month: ReportMonth
+    has_data: ReportHasData
     reference_profile: str = Field(
         description="Reference the intake was compared against, e.g. `nino_7_9`.",
     )
@@ -188,9 +217,3 @@ class NutritionReportResponse(BaseModel):
     )
     created_at: datetime
     updated_at: datetime
-
-    @field_validator("month", mode="before")
-    @classmethod
-    def _format_month(cls, value: Any) -> Any:
-        """Show the first day of the month the report is stored under as YYYY-MM."""
-        return value.strftime("%Y-%m") if isinstance(value, date) else value
