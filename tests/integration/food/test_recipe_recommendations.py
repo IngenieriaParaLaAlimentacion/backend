@@ -411,23 +411,6 @@ async def test_concurrent_different_choices_select_only_one(client, recipe_setup
     assert await counts() == [1, 1, 1]
 
 
-async def test_conversion_requires_admin_and_preserves_unknown_unit(
-    client, recipe_setup, foods, make_user_with_role
-):
-    headers, fake, _ = recipe_setup
-    url = f"{ROOT}/food-catalog/foods/{foods.eggs}/gram-conversion"
-    field_headers, _ = await make_user_with_role(UserRole.FIELD_WORKER)
-    assert (
-        await client.put(url, headers=field_headers, json={"grams_per_base_unit": 50})
-    ).status_code == 403
-    assert (
-        await client.put(url, headers=headers, json={"grams_per_base_unit": 0})
-    ).status_code == 422
-    assert (
-        await client.put(url, headers=headers, json={"grams_per_base_unit": None})
-    ).status_code == 200
-
-
 async def test_single_repair_then_success(client, recipe_setup):
     recipe_setup[1].repair_first = True
     result = await generate(client, recipe_setup)

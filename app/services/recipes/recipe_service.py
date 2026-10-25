@@ -9,14 +9,12 @@ import structlog
 from app.config.settings import settings
 from app.core.interfaces.llm_client import ILlmClient
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.domain.food_catalog import MeasurementUnit
 from app.domain.food_outflow import FoodOutflowCategory
 from app.domain.nutrition import (
     StockedFood,
 )
-from app.domain.user import UserActor, UserRole
+from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
-    FoodNotFoundError,
     InsufficientStockError,
     RecipeAlreadyChosenError,
     RecipeGenerationTimeoutError,
@@ -26,7 +24,6 @@ from app.exceptions.domain_exceptions import (
     RecipeNotFoundError,
     RecipeNoUsableStockError,
     RecipeScaleTooSmallError,
-    RoleNotAllowedError,
 )
 from app.models.recipes.recipe import (
     RecipeProposalRecord,
@@ -37,7 +34,6 @@ from app.schemas.food_intakes.food_intake_schema import FoodLineRequest
 from app.schemas.food_outflows.food_outflow_schema import FoodOutflowRequest
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.recipes.recipe_schema import (
-    GramConversionInput,
     RecipeHistoryItem,
     RecipeIngredient,
     RecipeProposal,
@@ -476,22 +472,3 @@ class RecipeService:
         await self._choose(record, proposal, actor)
         await self.uow.commit()
         return self._response(record), True
-
-    async def set_conversion(
-        self, food_id: UUID, data: GramConversionInput, actor: UserActor
-    ) -> GramConversionInput:
-        """Configure a reviewed stock-unit mass as an administrator."""
-        if actor.role not in (UserRole.ADMIN, UserRole.SUPERADMIN):
-            raise RoleNotAllowedError()
-        foods = await self.uow.food_repo.get_by_ids([food_id])
-        if not foods:
-            raise FoodNotFoundError(str(food_id))
-        food = foods[0]
-        value = (
-            Decimal(1000)
-            if food.base_unit == MeasurementUnit.KILOGRAMOS
-            else data.grams_per_base_unit
-        )
-        await self.uow.food_repo.set_gram_conversion(food, value)
-        await self.uow.commit()
-        return GramConversionInput(grams_per_base_unit=value)
