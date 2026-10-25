@@ -1327,3 +1327,20 @@ class NutritionReportConversionUnavailableError(ConflictError):
             "the report cannot be calculated yet.",
             extensions={"month": month},
         )
+
+
+class NutritionReportNotFoundError(NotFoundError):
+    """Raised when an establishment has no saved nutrition report for a month.
+
+    Args:
+        month (str): The requested month, formatted as ``YYYY-MM``.
+    """
+
+    error_type = "nutrition/report-not-found"
+
+    def __init__(self, month: str):
+        super().__init__(
+            "Report not found",
+            f"There is no saved nutrition report for {month}.",
+            extensions={"month": month},
+        )

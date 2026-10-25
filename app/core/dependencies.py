@@ -33,6 +33,7 @@ from app.services.health_service import HealthService
 from app.services.llm.openrouter_llm_client import OpenRouterLlmClient
 from app.services.measurements.measurement_service import MeasurementService
 from app.services.notifications.device_service import DeviceService
+from app.services.nutrition.nutrition_report_service import NutritionReportService
 from app.services.subjects.subject_service import SubjectService
 from app.services.surveys.survey_response_service import SurveyResponseService
 from app.services.surveys.survey_service import SurveyService
@@ -284,3 +285,11 @@ async def get_recipe_generation_service(
 
     async with UnitOfWork() as uow:
         yield RecipeService(uow, llm_client)
+
+
+async def get_nutrition_report_service() -> AsyncGenerator[
+    NutritionReportService, None
+]:
+    """Provide the saved-report operations without a calculator or an AI client."""
+    async with UnitOfWork() as uow:
+        yield NutritionReportService(uow)

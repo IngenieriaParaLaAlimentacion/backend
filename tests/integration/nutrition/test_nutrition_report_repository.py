@@ -6,41 +6,18 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 
 from app.domain.nutrition_report import SummaryStatus
-from app.models.nutrition.nutrition_report import NutritionReport
+from tests.integration.nutrition.helpers import (
+    GENERATED,
+    NOT_APPLICABLE,
+    OCTOBER,
+    SEPTEMBER,
+    SUMMARY,
+    UNAVAILABLE,
+    make_report,
+    save,
+)
 
 pytestmark = pytest.mark.usefixtures("app")
-
-SEPTEMBER = date(2026, 9, 1)
-OCTOBER = date(2026, 10, 1)
-
-SUMMARY = {"overview": "Resumen."}
-
-GENERATED = (True, SummaryStatus.GENERATED, SUMMARY)
-UNAVAILABLE = (True, SummaryStatus.UNAVAILABLE, None)
-NOT_APPLICABLE = (False, SummaryStatus.NOT_APPLICABLE, None)
-
-
-def make_report(
-    establishment_id, *, month=SEPTEMBER, state=GENERATED
-) -> NutritionReport:
-    has_data, summary_status, summary = state
-    return NutritionReport(
-        establishment_id=establishment_id,
-        month=month,
-        has_data=has_data,
-        analysis={},
-        reference_profile="nino_7_9",
-        summary_status=summary_status,
-        summary=summary,
-    )
-
-
-async def save(report: NutritionReport) -> None:
-    from app.db.database import AsyncSessionLocal
-
-    async with AsyncSessionLocal() as session:
-        session.add(report)
-        await session.commit()
 
 
 @pytest.mark.parametrize("state", [GENERATED, UNAVAILABLE, NOT_APPLICABLE])

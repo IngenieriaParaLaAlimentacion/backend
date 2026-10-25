@@ -67,6 +67,7 @@ to the first list index), never its value.
 | `/errors/nutrition/recipe-optimization-failed` | 500 | `RecipeOptimizationError` | Raised when the solver cannot return an optimal recipe. |
 | `/errors/nutrition/report-conversion-unavailable` | 409 | `NutritionReportConversionUnavailableError` | Raised when none of the foods received in a month converts to grams. |
 | `/errors/nutrition/report-month-not-over` | 422 | `NutritionReportMonthNotOverError` | Raised when a nutrition report is requested for a month that has not ended. |
+| `/errors/nutrition/report-not-found` | 404 | `NutritionReportNotFoundError` | Raised when an establishment has no saved nutrition report for a month. |
 | `/errors/nutrition/unknown-gapa-group` | 500 | `UnknownGapaGroupError` | Raised when the catalog holds a GAPA group the application does not know. |
 | `/errors/password-not-found` | 404 | `PasswordNotFoundError` | Exception raised when a user's password record is not found. |
 | `/errors/rate-limited` | 429 | `RateLimitedError` | Raised when a caller exceeds the rate limit of a public endpoint. |

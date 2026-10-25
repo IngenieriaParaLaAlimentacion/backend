@@ -1,0 +1,601 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Ingenieria para la Alimentación",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v1/establishments/{establishment_id}/nutrition-report/{month}": {
+      "get": {
+        "tags": [
+          "Nutrition Report V1"
+        ],
+        "summary": "Get the saved monthly nutrition report of an establishment",
+        "description": "Returns the report already generated for a calendar month. It never generates a report or calls the AI: a month without a saved report answers 404. Accessible by admins and analysts.",
+        "operationId": "get_nutrition_report_api_v1_establishments__establishment_id__nutrition_report__month__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "establishment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Establishment Id"
+            }
+          },
+          {
+            "name": "month",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "description": "Calendar month of the report, formatted as `YYYY-MM`.",
+              "examples": [
+                "2026-09"
+              ],
+              "title": "Month"
+            },
+            "description": "Calendar month of the report, formatted as `YYYY-MM`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NutritionReportResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication token",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Establishment not found, or no report for that month",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "NutritionReportResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "establishment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Establishment Id"
+          },
+          "month": {
+            "type": "string",
+            "title": "Month",
+            "description": "Calendar month of the report, formatted as `YYYY-MM`.",
+            "examples": [
+              "2026-09"
+            ]
+          },
+          "has_data": {
+            "type": "boolean",
+            "title": "Has Data",
+            "description": "False when there is no energy to judge in the month: no food was received, or only food without energy."
+          },
+          "reference_profile": {
+            "type": "string",
+            "title": "Reference Profile",
+            "description": "Reference the intake was compared against, e.g. `nino_7_9`."
+          },
+          "analysis": {
+            "$ref": "#/components/schemas/NutritionReportAnalysis"
+          },
+          "summary_status": {
+            "$ref": "#/components/schemas/SummaryStatus"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NutritionReportSummary"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Summary written by the AI, as returned. Null unless generated."
+          },
+          "scope_note": {
+            "type": "string",
+            "title": "Scope Note",
+            "description": "Fixed note on what the report assesses and what it does not.",
+            "default": "Este informe evalúa el equilibrio nutricional de los alimentos que llegaron al comedor durante el mes. No conoce la dieta completa de los chicos, no indica si la cantidad alcanza y no reemplaza la evaluación de un nutricionista."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "establishment_id",
+          "month",
+          "has_data",
+          "reference_profile",
+          "analysis",
+          "summary_status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "NutritionReportResponse",
+        "description": "A monthly nutrition report of an establishment."
+      },
+      "NutritionReportAnalysis": {
+        "properties": {
+          "energy_kcal": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Energy Kcal"
+          },
+          "mean_adequacy_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Adequacy Percent",
+            "description": "Mean of the capped adequacies of the prioritized nutrients."
+          },
+          "nutrients": {
+            "items": {
+              "$ref": "#/components/schemas/ReportNutrient"
+            },
+            "type": "array",
+            "title": "Nutrients"
+          },
+          "macros": {
+            "items": {
+              "$ref": "#/components/schemas/ReportMacro"
+            },
+            "type": "array",
+            "title": "Macros"
+          },
+          "gapa_groups": {
+            "items": {
+              "$ref": "#/components/schemas/ReportGapaGroup"
+            },
+            "type": "array",
+            "title": "Gapa Groups"
+          },
+          "limits": {
+            "items": {
+              "$ref": "#/components/schemas/ReportLimit"
+            },
+            "type": "array",
+            "title": "Limits"
+          },
+          "top_sources": {
+            "items": {
+              "$ref": "#/components/schemas/ReportNutrientSources"
+            },
+            "type": "array",
+            "title": "Top Sources"
+          },
+          "foods_without_conversion": {
+            "items": {
+              "$ref": "#/components/schemas/ReportFoodWithoutConversion"
+            },
+            "type": "array",
+            "title": "Foods Without Conversion",
+            "description": "Foods received in the month and left out of the calculation because they have no known conversion to grams."
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings",
+            "description": "Data gaps found while calculating, such as foods left out."
+          }
+        },
+        "type": "object",
+        "title": "NutritionReportAnalysis",
+        "description": "The nutritional balance of a month, as calculated when the report was made.\n\nShares and adequacies are percentages. It is stored with the report, so food\nnames are kept in it and the catalog is not read again. ``energy_kcal`` and\n``mean_adequacy_percent`` are null, and the lists empty, for a month with no\nintakes."
+      },
+      "ReportNutrient": {
+        "properties": {
+          "nutrient": {
+            "$ref": "#/components/schemas/PrioritizedNutrient"
+          },
+          "amount_per_1000_kcal": {
+            "type": "number",
+            "title": "Amount Per 1000 Kcal",
+            "description": "Amount of the nutrient per 1,000 kcal, in its own unit."
+          },
+          "adequacy_percent": {
+            "type": "number",
+            "title": "Adequacy Percent",
+            "description": "Share of the reference covered, without a ceiling."
+          },
+          "adequacy_capped_percent": {
+            "type": "number",
+            "title": "Adequacy Capped Percent",
+            "description": "Share of the reference covered, limited to 100."
+          },
+          "at_risk": {
+            "type": "boolean",
+            "title": "At Risk",
+            "description": "Whether the intake is at risk of not covering the nutrient."
+          }
+        },
+        "type": "object",
+        "required": [
+          "nutrient",
+          "amount_per_1000_kcal",
+          "adequacy_percent",
+          "adequacy_capped_percent",
+          "at_risk"
+        ],
+        "title": "ReportNutrient",
+        "description": "How much of a prioritized nutrient the month's intakes cover."
+      },
+      "PrioritizedNutrient": {
+        "type": "string",
+        "enum": [
+          "calcio",
+          "vitamina_a",
+          "folato",
+          "vitamina_b12",
+          "vitamina_c",
+          "hierro",
+          "zinc"
+        ],
+        "title": "PrioritizedNutrient",
+        "description": "The micronutrients that make up the composite adequacy indicator."
+      },
+      "ReportMacro": {
+        "properties": {
+          "macro": {
+            "$ref": "#/components/schemas/Macronutrient"
+          },
+          "energy_share_percent": {
+            "type": "number",
+            "title": "Energy Share Percent"
+          },
+          "min_percent": {
+            "type": "number",
+            "title": "Min Percent"
+          },
+          "max_percent": {
+            "type": "number",
+            "title": "Max Percent"
+          },
+          "in_range": {
+            "type": "boolean",
+            "title": "In Range"
+          }
+        },
+        "type": "object",
+        "required": [
+          "macro",
+          "energy_share_percent",
+          "min_percent",
+          "max_percent",
+          "in_range"
+        ],
+        "title": "ReportMacro",
+        "description": "Share of the energy a macronutrient provides and the range it should hold."
+      },
+      "Macronutrient": {
+        "type": "string",
+        "enum": [
+          "proteinas",
+          "lipidos",
+          "carbohidratos"
+        ],
+        "title": "Macronutrient",
+        "description": "Macronutrients whose share of the energy is checked against a range."
+      },
+      "ReportGapaGroup": {
+        "properties": {
+          "group": {
+            "$ref": "#/components/schemas/GapaGroup"
+          },
+          "energy_share_percent": {
+            "type": "number",
+            "title": "Energy Share Percent"
+          },
+          "missing": {
+            "type": "boolean",
+            "title": "Missing",
+            "description": "Whether the group provided no energy at all in the month."
+          }
+        },
+        "type": "object",
+        "required": [
+          "group",
+          "energy_share_percent",
+          "missing"
+        ],
+        "title": "ReportGapaGroup",
+        "description": "Share of the energy that comes from one GAPA group."
+      },
+      "GapaGroup": {
+        "type": "string",
+        "enum": [
+          "verduras_y_frutas",
+          "legumbres_cereales_papa_pan_y_pastas",
+          "leche_yogur_y_quesos",
+          "carnes_y_huevos",
+          "aceites_frutas_secas_y_semillas",
+          "consumo_opcional"
+        ],
+        "title": "GapaGroup",
+        "description": "The six GAPA food groups; values are the codes of ``gapa_food_categories``."
+      },
+      "ReportLimit": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code",
+            "description": "Nutrient code in the food catalog."
+          },
+          "amount_per_1000_kcal": {
+            "type": "number",
+            "title": "Amount Per 1000 Kcal"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "amount_per_1000_kcal"
+        ],
+        "title": "ReportLimit",
+        "description": "Intake of fiber, sodium, saturated fat or added sugar, shown as information."
+      },
+      "ReportNutrientSources": {
+        "properties": {
+          "nutrient": {
+            "$ref": "#/components/schemas/PrioritizedNutrient"
+          },
+          "foods": {
+            "items": {
+              "$ref": "#/components/schemas/ReportFoodSource"
+            },
+            "type": "array",
+            "title": "Foods"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nutrient",
+          "foods"
+        ],
+        "title": "ReportNutrientSources",
+        "description": "The foods that best cover a nutrient the intake is short of."
+      },
+      "ReportFoodSource": {
+        "properties": {
+          "food_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Food Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "amount_per_100_kcal": {
+            "type": "number",
+            "title": "Amount Per 100 Kcal"
+          }
+        },
+        "type": "object",
+        "required": [
+          "food_id",
+          "name",
+          "amount_per_100_kcal"
+        ],
+        "title": "ReportFoodSource",
+        "description": "A catalog food and how much of a nutrient it gives per 100 kcal."
+      },
+      "ReportFoodWithoutConversion": {
+        "properties": {
+          "food_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Food Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "food_id",
+          "name"
+        ],
+        "title": "ReportFoodWithoutConversion",
+        "description": "A food received in the month that was left out for lacking a gram conversion."
+      },
+      "SummaryStatus": {
+        "type": "string",
+        "enum": [
+          "generated",
+          "unavailable",
+          "not_applicable"
+        ],
+        "title": "SummaryStatus",
+        "description": "What became of the AI-written summary of a report."
+      },
+      "NutritionReportSummary": {
+        "properties": {
+          "overview": {
+            "type": "string",
+            "maxLength": 700,
+            "title": "Overview",
+            "description": "How balanced the food received in the month was, overall."
+          },
+          "at_risk_nutrients": {
+            "items": {
+              "type": "string",
+              "maxLength": 700
+            },
+            "type": "array",
+            "maxItems": 7,
+            "title": "At Risk Nutrients",
+            "description": "One item per nutrient at risk, saying what that shortfall means."
+          },
+          "macros": {
+            "type": "string",
+            "maxLength": 700,
+            "title": "Macros",
+            "description": "How the energy splits between proteins, lipids and carbohydrates."
+          },
+          "gapa_groups": {
+            "type": "string",
+            "maxLength": 700,
+            "title": "Gapa Groups",
+            "description": "Which food groups weigh most in the energy and which are missing."
+          },
+          "incorporate": {
+            "type": "string",
+            "maxLength": 700,
+            "title": "Incorporate",
+            "description": "A line on which foods to add for the nutrients at risk."
+          },
+          "limitations": {
+            "items": {
+              "type": "string",
+              "maxLength": 700
+            },
+            "type": "array",
+            "maxItems": 7,
+            "title": "Limitations",
+            "description": "One item per data gap to keep in mind when reading the report."
+          }
+        },
+        "type": "object",
+        "required": [
+          "overview",
+          "at_risk_nutrients",
+          "macros",
+          "gapa_groups",
+          "incorporate",
+          "limitations"
+        ],
+        "title": "NutritionReportSummary",
+        "description": "The summary of a report, written by the AI in Spanish, one text per section.\n\nA section with nothing to say is an empty string or an empty list. The AI\nreturns this same shape."
+      },
+      "ProblemDetail": {
+        "type": "object",
+        "description": "RFC 7807 problem details. `type` is the stable machine-readable identifier clients should branch on; `title` and `detail` are human-readable prose and may change without notice.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "examples": [
+              "/errors/survey-locked"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "detail",
+          "instance"
+        ],
+        "additionalProperties": true
+      }
+    }
+  }
+}

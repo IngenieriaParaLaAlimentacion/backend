@@ -13,6 +13,7 @@ from app.exceptions.domain_exceptions import (
     LlmClientError,
     NutritionReportConversionUnavailableError,
     NutritionReportMonthNotOverError,
+    NutritionReportNotFoundError,
 )
 from app.models.nutrition.nutrition_report import NutritionReport
 from app.reference_data.nutrition_references import NINO_7_9
@@ -253,12 +254,51 @@ async def test_month_that_is_not_over_is_rejected_before_any_work(month):
     nutrition.analyze_monthly_intake.assert_not_awaited()
 
 
-async def test_field_worker_without_approved_access_cannot_get_a_report():
+async def test_saved_report_is_read_without_generating_anything():
+    saved = saved_report(SummaryStatus.UNAVAILABLE)
+    service, uow, nutrition, llm = make_service(saved=saved)
+
+    report = await service.get_report(ESTABLISHMENT_ID, "2026-09", ADMIN)
+
+    # Reading never writes the unavailable summary again, as generating would.
+    assert report is saved
+    nutrition.analyze_monthly_intake.assert_not_awaited()
+    llm.complete.assert_not_awaited()
+    uow.nutrition_report_repo.lock.assert_not_awaited()
+    uow.commit.assert_not_awaited()
+
+
+async def test_saved_report_can_be_read_by_a_service_without_calculator_or_ai():
+    saved = saved_report(SummaryStatus.GENERATED, SUMMARY)
+    uow = AsyncMock()
+    uow.nutrition_report_repo.get_by_month = AsyncMock(return_value=saved)
+
+    report = await NutritionReportService(uow).get_report(
+        ESTABLISHMENT_ID, "2026-09", ADMIN
+    )
+
+    assert report is saved
+
+
+async def test_month_without_a_saved_report_is_not_found_and_not_generated():
+    service, uow, nutrition, llm = make_service()
+
+    with pytest.raises(NutritionReportNotFoundError):
+        await service.get_report(ESTABLISHMENT_ID, "2026-09", ADMIN)
+
+    nutrition.analyze_monthly_intake.assert_not_awaited()
+    llm.complete.assert_not_awaited()
+    uow.nutrition_report_repo.create.assert_not_awaited()
+
+
+@pytest.mark.parametrize("method", ["get_or_generate_report", "get_report"])
+async def test_field_worker_without_approved_access_cannot_get_a_report(method):
     service, uow, _, _ = make_service()
     uow.user_establishment_repo.get_relation = AsyncMock(return_value=None)
     worker = UserActor(user_id=uuid.uuid4(), role=UserRole.FIELD_WORKER)
 
     with pytest.raises(EstablishmentAccessDeniedError):
-        await service.get_or_generate_report(ESTABLISHMENT_ID, "2026-09", worker)
+        await getattr(service, method)(ESTABLISHMENT_ID, "2026-09", worker)
 
     uow.nutrition_report_repo.lock.assert_not_awaited()
+    uow.nutrition_report_repo.get_by_month.assert_not_awaited()

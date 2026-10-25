@@ -13,6 +13,7 @@ from app.exceptions.domain_exceptions import (
     LlmClientError,
     NutritionReportConversionUnavailableError,
     NutritionReportMonthNotOverError,
+    NutritionReportNotFoundError,
 )
 from app.models.nutrition.nutrition_report import NutritionReport
 from app.reference_data.nutrition_references import REFERENCE_PROFILES
@@ -53,6 +54,12 @@ def _log_summary_failure(
     )
 
 
+def _first_day_of(month: str) -> date:
+    """Return the first day of a month formatted as ``YYYY-MM``."""
+    year, number = map(int, month.split("-"))
+    return date(year, number, 1)
+
+
 def _profile_key(profile: ReferenceProfile) -> str:
     """Return the name a reference profile is known by."""
     return next(key for key, known in REFERENCE_PROFILES.items() if known == profile)
@@ -65,7 +72,7 @@ class NutritionReportService:
     def __init__(
         self,
         uow: IUnitOfWork,
-        nutrition: NutritionService,
+        nutrition: NutritionService | None = None,
         llm: ILlmClient | None = None,
     ) -> None:
         self.uow = uow
@@ -88,11 +95,9 @@ class NutritionReportService:
             NutritionReportConversionUnavailableError: the foods received have
                 no known conversion to grams.
         """
-        year, number = map(int, month.split("-"))
-        first_day = date(year, number, 1)
+        first_day = _first_day_of(month)
 
-        await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
-        await check_establishment_access(self.uow, actor, establishment_id)
+        await self._check_access(establishment_id, actor)
         if first_day >= today_in_argentina().replace(day=1):
             raise NutritionReportMonthNotOverError(month)
 
@@ -109,6 +114,31 @@ class NutritionReportService:
         if report.summary_status == SummaryStatus.UNAVAILABLE:
             await self._write_summary_again(report)
         return report, False
+
+    async def get_report(
+        self, establishment_id: UUID, month: str, actor: UserActor
+    ) -> NutritionReport:
+        """Return the saved report of a month, without generating anything.
+
+        ``month`` is formatted as ``YYYY-MM``.
+
+        Raises:
+            EstablishmentNotFoundError: establishment_id does not exist.
+            EstablishmentAccessDeniedError: field worker lacks approved access.
+            NutritionReportNotFoundError: the month has no saved report.
+        """
+        await self._check_access(establishment_id, actor)
+        report = await self.uow.nutrition_report_repo.get_by_month(
+            establishment_id, _first_day_of(month)
+        )
+        if report is None:
+            raise NutritionReportNotFoundError(month)
+        return report
+
+    async def _check_access(self, establishment_id: UUID, actor: UserActor) -> None:
+        """Confirm the establishment exists and the actor may look at it."""
+        await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
+        await check_establishment_access(self.uow, actor, establishment_id)
 
     async def _generate(
         self, establishment_id: UUID, first_day: date, month: str, actor: UserActor

@@ -247,6 +247,12 @@
       "description": "Raised when a nutrition report is requested for a month that has not ended."
     },
     {
+      "type": "/errors/nutrition/report-not-found",
+      "status": 404,
+      "exception": "NutritionReportNotFoundError",
+      "description": "Raised when an establishment has no saved nutrition report for a month."
+    },
+    {
       "type": "/errors/nutrition/unknown-gapa-group",
       "status": 500,
       "exception": "UnknownGapaGroupError",
