@@ -395,7 +395,9 @@ class EstablishmentService:
         await self.uow.commit()
 
         requester = await self.uow.user_repo.get_by_id(request.user_id)
-        await send_establishment_created_email(requester.email, establishment.name)
+        await send_establishment_created_email(
+            requester.email, establishment.name, requester.name
+        )
 
         return EstablishmentApprovalResult(
             EstablishmentDomain.from_db(establishment), reused
@@ -420,4 +422,6 @@ class EstablishmentService:
         await self.uow.commit()
 
         requester = await self.uow.user_repo.get_by_id(request.user_id)
-        await send_creation_denied_email(requester.email, request.name, reason)
+        await send_creation_denied_email(
+            requester.email, request.name, reason, requester.name
+        )

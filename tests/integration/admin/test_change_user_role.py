@@ -84,7 +84,9 @@ class TestChangeUserRoleAllowed:
         assert body["id"] == str(user_id)
         assert body["role"] == new_role.value
         assert await _get_role(user_id) == new_role
-        send_mail.assert_awaited_once_with(f"{user_id}@test.com", old_role, new_role)
+        send_mail.assert_awaited_once_with(
+            f"{user_id}@test.com", old_role, new_role, "Test"
+        )
 
     async def test_superadmin_demotes_admin(self, client, superadmin):
         headers, _ = superadmin

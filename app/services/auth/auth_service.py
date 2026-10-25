@@ -126,7 +126,9 @@ class AuthService:
                 user.id, establishment.id
             )
 
-        await self._generate_and_send_verification_email(user.id, str(user.email))
+        await self._generate_and_send_verification_email(
+            user.id, str(user.email), user.name
+        )
 
         return UserDomain(
             id=user.id,
@@ -276,7 +278,9 @@ class AuthService:
 
         await self.uow.commit()
         deeplink = build_recovery_deeplink(recovery_token)
-        await send_recovery_email(user.email, deeplink, created_token.expires_at)
+        await send_recovery_email(
+            user.email, deeplink, created_token.expires_at, user.name
+        )
 
     async def confirm_password_recovery(
         self, data: PasswordRecoveryConfirmRequest
@@ -383,7 +387,9 @@ class AuthService:
 
         await self.uow.email_verification_repo.revoke_active_for_user(user.id)
 
-        await self._generate_and_send_verification_email(user.id, str(user.email))
+        await self._generate_and_send_verification_email(
+            user.id, str(user.email), user.name
+        )
 
     async def create_recovery_token(
         self, user_id: UUID
@@ -401,7 +407,7 @@ class AuthService:
         return created, plain_token
 
     async def _generate_and_send_verification_email(
-        self, user_id: UUID, email: str
+        self, user_id: UUID, email: str, name: str | None
     ) -> None:
         """Generates a verification token, persists it and
         sends an email with deeplink"""
@@ -417,4 +423,4 @@ class AuthService:
         await self.uow.commit()
 
         deeplink = build_verification_deeplink(verification_token)
-        await send_verification_email(email, deeplink, created_token.expires_at)
+        await send_verification_email(email, deeplink, created_token.expires_at, name)

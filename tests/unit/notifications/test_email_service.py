@@ -4,16 +4,22 @@ from urllib.parse import parse_qs, urlparse
 
 import aiosmtplib
 import pytest
+from fastapi.testclient import TestClient
 
 from app.config.settings import settings
 from app.domain.user import UserRole
 from app.exceptions.domain_exceptions import EmailDeliveryError
+from app.main import app
 from app.services.email_service import (
     build_invite_deeplink,
     build_recovery_deeplink,
     send_access_granted_email,
+    send_creation_denied_email,
+    send_establishment_created_email,
     send_invite_email,
     send_recovery_email,
+    send_role_changed_email,
+    send_verification_email,
 )
 
 _FIXED_NOW = datetime(2024, 6, 1, 12, 0, 0, tzinfo=timezone.utc)
@@ -204,3 +210,173 @@ class TestSendInviteEmail:
                 await send_invite_email(
                     "invited@test.com", "https://backoffice/set?token=abc", _FIXED_NOW
                 )
+
+
+_EXPIRES_AT = datetime(2024, 6, 1, 15, 7, tzinfo=timezone.utc)
+_LINK = "https://backoffice.example.com/path?token=abc"
+
+
+@pytest.fixture
+def sent():
+    """Capture the arguments of the single SMTP dispatch made by the test."""
+    with patch(
+        "app.services.email_service._send_email", new_callable=AsyncMock
+    ) as mock_send:
+        yield mock_send
+
+
+def _sent_email(mock_send) -> dict:
+    mock_send.assert_awaited_once()
+    return mock_send.call_args.kwargs
+
+
+class TestEmailContent:
+    @pytest.mark.parametrize(
+        ("send", "subject"),
+        [
+            (
+                lambda: send_invite_email("a@b.c", _LINK, _EXPIRES_AT, UserRole.ADMIN),
+                "Te invitaron a Raíz",
+            ),
+            (
+                lambda: send_recovery_email("a@b.c", _LINK, _EXPIRES_AT),
+                "Restablecé tu contraseña de Raíz",
+            ),
+            (
+                lambda: send_verification_email("a@b.c", _LINK, _EXPIRES_AT),
+                "Confirmá tu correo para Raíz",
+            ),
+            (
+                lambda: send_access_granted_email("a@b.c", ["Centro A"]),
+                "Ya tenés acceso a 1 establecimiento",
+            ),
+            (
+                lambda: send_access_granted_email("a@b.c", ["Centro A", "Centro B"]),
+                "Ya tenés acceso a 2 establecimientos",
+            ),
+            (
+                lambda: send_role_changed_email(
+                    "a@b.c", UserRole.FIELD_WORKER, UserRole.ANALYST
+                ),
+                "Cambió tu rol en Raíz",
+            ),
+            (
+                lambda: send_establishment_created_email("a@b.c", "Centro A"),
+                "Creamos Centro A",
+            ),
+            (
+                lambda: send_creation_denied_email("a@b.c", "Centro A"),
+                "No aprobamos la solicitud de Centro A",
+            ),
+        ],
+    )
+    async def test_subject(self, sent, send, subject):
+        await send()
+
+        assert _sent_email(sent)["subject"] == subject
+
+    @pytest.mark.parametrize(
+        "send",
+        [
+            lambda: send_invite_email("a@b.c", _LINK, _EXPIRES_AT, UserRole.ADMIN),
+            lambda: send_recovery_email("a@b.c", _LINK, _EXPIRES_AT),
+            lambda: send_verification_email("a@b.c", _LINK, _EXPIRES_AT),
+        ],
+    )
+    async def test_link_and_expiry_in_argentina_time(self, sent, send):
+        await send()
+
+        email = _sent_email(sent)
+        for part in (email["html_body"], email["body"]):
+            assert "01/06/2024, 12:07" in part
+            assert "hora de Argentina" in part
+        assert _LINK in email["body"]
+        assert _LINK in email["html_body"]
+
+    @pytest.mark.parametrize(
+        "send",
+        [
+            lambda name: send_access_granted_email("a@b.c", [name]),
+            lambda name: send_establishment_created_email("a@b.c", name),
+            lambda name: send_creation_denied_email("a@b.c", "Centro", reason=name),
+        ],
+    )
+    async def test_dynamic_values_are_html_escaped(self, sent, send):
+        await send("<b>X</b>")
+
+        email = _sent_email(sent)
+        assert "<b>X</b>" not in email["html_body"]
+        assert "&lt;b&gt;X&lt;/b&gt;" in email["html_body"]
+        assert "<b>X</b>" in email["body"]
+
+    @pytest.mark.parametrize(
+        ("name", "greeting"), [("Lucía", "Hola, Lucía:"), (None, "Hola:")]
+    )
+    async def test_greeting(self, sent, name, greeting):
+        await send_recovery_email("a@b.c", _LINK, _EXPIRES_AT, name)
+
+        email = _sent_email(sent)
+        assert greeting in email["html_body"]
+        assert email["body"].startswith(greeting)
+
+    async def test_invite_shows_role(self, sent):
+        await send_invite_email("a@b.c", _LINK, _EXPIRES_AT, UserRole.ANALYST)
+
+        email = _sent_email(sent)
+        assert "Analista" in email["html_body"]
+        assert "analista" in email["body"]
+
+    @pytest.mark.parametrize(
+        ("new_role", "has_button"),
+        [
+            (UserRole.ADMIN, True),
+            (UserRole.ANALYST, True),
+            (UserRole.FIELD_WORKER, False),
+        ],
+    )
+    async def test_role_change_signin_button_only_for_backoffice_roles(
+        self, sent, monkeypatch, new_role, has_button
+    ):
+        monkeypatch.setattr(
+            settings, "backoffice_deeplink_base", "https://backoffice.example.com"
+        )
+        old_role = UserRole.ANALYST if new_role != UserRole.ANALYST else UserRole.ADMIN
+
+        await send_role_changed_email("a@b.c", old_role, new_role)
+
+        email = _sent_email(sent)
+        signin_url = "https://backoffice.example.com/signin"
+        assert (signin_url in email["html_body"]) is has_button
+        assert (signin_url in email["body"]) is has_button
+
+    @pytest.mark.parametrize(
+        ("reason", "expected"),
+        [
+            ("Datos incompletos", "Datos incompletos"),
+            (None, "El administrador no indicó un motivo."),
+        ],
+    )
+    async def test_creation_denied_reason(self, sent, reason, expected):
+        await send_creation_denied_email("a@b.c", "Centro A", reason)
+
+        email = _sent_email(sent)
+        assert expected in email["html_body"]
+        assert expected in email["body"]
+
+
+class TestEmailLogo:
+    async def test_logo_url_points_to_this_api(self, sent, monkeypatch):
+        monkeypatch.setattr(settings, "public_base_url", "https://api.example.com/")
+
+        await send_recovery_email("a@b.c", _LINK, _EXPIRES_AT)
+
+        assert (
+            'src="https://api.example.com/static/emails/raiz-logo.png"'
+            in _sent_email(sent)["html_body"]
+        )
+
+    def test_logo_is_served_as_a_static_file(self):
+        response = TestClient(app).get("/static/emails/raiz-logo.png")
+
+        assert response.status_code == 200
+        assert response.headers["content-type"] == "image/png"
