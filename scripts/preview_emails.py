@@ -1,7 +1,7 @@
 """Render every system email with sample data into HTML files, without SMTP.
 
 Usage: poetry run python -m scripts.preview_emails [out_dir]
-Set BACKOFFICE_DEEPLINK_BASE to a deployed backoffice so the logo loads.
+Set PUBLIC_BASE_URL to a deployed backend so the logo loads.
 """
 
 import asyncio

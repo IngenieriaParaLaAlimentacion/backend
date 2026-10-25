@@ -4,10 +4,12 @@ from urllib.parse import parse_qs, urlparse
 
 import aiosmtplib
 import pytest
+from fastapi.testclient import TestClient
 
 from app.config.settings import settings
 from app.domain.user import UserRole
 from app.exceptions.domain_exceptions import EmailDeliveryError
+from app.main import app
 from app.services.email_service import (
     build_invite_deeplink,
     build_recovery_deeplink,
@@ -360,3 +362,21 @@ class TestEmailContent:
         email = _sent_email(sent)
         assert expected in email["html_body"]
         assert expected in email["body"]
+
+
+class TestEmailLogo:
+    async def test_logo_url_points_to_this_api(self, sent, monkeypatch):
+        monkeypatch.setattr(settings, "public_base_url", "https://api.example.com/")
+
+        await send_recovery_email("a@b.c", _LINK, _EXPIRES_AT)
+
+        assert (
+            'src="https://api.example.com/static/emails/raiz-logo.png"'
+            in _sent_email(sent)["html_body"]
+        )
+
+    def test_logo_is_served_as_a_static_file(self):
+        response = TestClient(app).get("/static/emails/raiz-logo.png")
+
+        assert response.status_code == 200
+        assert response.headers["content-type"] == "image/png"
