@@ -23,7 +23,6 @@ from app.schemas.nutrition.nutrition_report_schema import (
     NutritionReportSummary,
 )
 from app.services.access import check_establishment_access
-from app.services.nutrition.grams import CatalogGramsConverter
 from app.services.nutrition.nutrition_service import NutritionService
 from app.services.nutrition.report_analysis import build_analysis
 from app.services.nutrition.report_summary import (
@@ -32,7 +31,7 @@ from app.services.nutrition.report_summary import (
     build_prompt,
     parse_summary,
 )
-from app.utils.dates import month_bounds, today_in_argentina
+from app.utils.dates import today_in_argentina
 
 logger = structlog.get_logger()
 
@@ -168,30 +167,11 @@ class NutritionReportService:
         await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
         await check_establishment_access(self.uow, actor, establishment_id)
 
-    async def _get_nutrition_service(
-        self, establishment_id: UUID, first_day: date
-    ) -> NutritionService:
-        """Return the calculator, built for the foods received in the month.
-
-        A calculator given to the service is used as it is.
-        """
-        if self.nutrition_service is not None:
-            return self.nutrition_service
-        start, end = month_bounds(first_day.year, first_day.month)
-        received = await self.uow.food_intake_repo.sum_quantities_by_food(
-            establishment_id, start, end
-        )
-        foods = await self.uow.food_repo.get_by_ids(received)
-        return NutritionService(self.uow, CatalogGramsConverter(foods))
-
     async def _generate(
         self, establishment_id: UUID, first_day: date, month: str, actor: UserActor
     ) -> NutritionReport:
         """Calculate the month and have the AI write its summary."""
-        nutrition_service = await self._get_nutrition_service(
-            establishment_id, first_day
-        )
-        analysis = await nutrition_service.analyze_monthly_intake(
+        analysis = await self.nutrition_service.analyze_monthly_intake(
             establishment_id, first_day.year, first_day.month, actor
         )
         # A month with foods but none convertible must not be saved as empty:
@@ -200,7 +180,7 @@ class NutritionReportService:
             raise NutritionReportConversionUnavailableError(month)
 
         snapshot = build_analysis(
-            analysis, nutrition_service.profile, await self._food_names(analysis)
+            analysis, self.nutrition_service.profile, await self._food_names(analysis)
         )
         summary = None
         summary_status = SummaryStatus.NOT_APPLICABLE
@@ -214,7 +194,7 @@ class NutritionReportService:
             month=first_day,
             has_data=analysis.has_data,
             analysis=snapshot.model_dump(mode="json"),
-            reference_profile=_profile_key(nutrition_service.profile),
+            reference_profile=_profile_key(self.nutrition_service.profile),
             summary=summary.model_dump(mode="json") if summary else None,
             summary_status=summary_status,
         )
