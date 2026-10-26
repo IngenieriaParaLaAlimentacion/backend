@@ -1,0 +1,12 @@
+# Used instead of the root .dockerignore when building tests/load/Dockerfile, which
+# needs the tests the root one leaves out. Only what the runner needs goes in.
+*
+!pyproject.toml
+!poetry.lock
+!app
+!tests/__init__.py
+!tests/load
+
+tests/load/.env
+tests/load/results
+**/__pycache__
