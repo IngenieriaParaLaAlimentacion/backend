@@ -190,7 +190,7 @@ From a machine, log in with a personal access token that has the `read:packages`
 
 #### Run it with its dependencies
 
-`e2e/compose.yml` starts the image next to PostgreSQL, applies the migrations and seeds, and waits until `/ready` answers:
+`e2e/compose.yml` starts the image next to PostgreSQL, applies the migrations and seeds, loads the [E2E reference data](#e2e-reference-data), and waits until `/ready` answers:
 
 ```bash
 # Start (BACKEND_IMAGE picks another tag; the default is develop)

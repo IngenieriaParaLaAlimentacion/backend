@@ -88,10 +88,9 @@ poetry run uvicorn app.main:app --reload
 The screenshots of the user manual are taken from this state, logged in as the users listed in
 `docs/commands.md`. To start over, drop the database and repeat.
 
-**In the E2E runs of the backoffice**, the step that prepares the database of `e2e/compose.yml`
-(introduced by PR #217) is to run it after the other two seeds. `e2e/.env.e2e` already sets
-`ENVIRONMENT=e2e`, which the script accepts. This is not wired yet: it needs both pull requests merged,
-so that the published image holds the script.
+**In the E2E runs of the backoffice**, `e2e/compose.yml` runs it after the migrations and the other two
+seeds, in a service of its own that the backend waits for. `e2e/.env.e2e` sets `ENVIRONMENT=e2e`, which
+the script accepts. It is the base under the tests, not their data: what a test changes it creates itself.
 
 **In a shared environment**, nothing runs it. It is in no deploy step, and whoever runs it there by
 hand has to set `ENVIRONMENT` knowing that what it adds cannot be removed through the API.
