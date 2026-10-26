@@ -77,7 +77,7 @@ ENVIRONMENT=test poetry run python seed_reference_e2e.py
 docker compose run --rm -e ENVIRONMENT=test backend python seed_reference_e2e.py
 ```
 
-It only runs when `ENVIRONMENT` is `test` or `e2e`, and says so otherwise. A deploy that does not set it falls back to `development`, so it cannot load this data by mistake. Running it again adds nothing that is already there. The API has almost no way to delete data, so to start over, use a new database.
+It only runs when `ENVIRONMENT` is `test` or `e2e`, and says so otherwise. A deploy that does not set it falls back to `development`, so it cannot load this data by mistake. Running it again adds nothing that is already there, but it does not restore the starting point: if a test changes a record (say, approves a pending request), the seed does not put it back. The API has almost no way to delete data, so to repeat a suite from the same state, use a new database, and give the tests that change these records data of their own.
 
 What it loads:
 

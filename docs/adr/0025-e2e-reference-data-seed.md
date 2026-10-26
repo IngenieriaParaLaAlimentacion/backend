@@ -98,7 +98,9 @@ hand has to set `ENVIRONMENT` knowing that what it adds cannot be removed throug
 
 ## Consequences
 
-- To start over, use a new database. Running the script again never changes what is there.
+- To start over, use a new database. Running the script again adds nothing and never changes what is
+  there, which is not the same as restoring the starting point: a record that a test changed, such as a
+  pending request it approved, stays changed. Tests that change these records need data of their own.
 - Dates are relative to the day of the first run, and the ages to the day each person is created. A
   later run does not move them. Nobody in the set is older than 25 on that day.
 - The script depends on the services' contracts, so a change to a request schema or a rule can break
