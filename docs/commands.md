@@ -65,6 +65,45 @@ poetry run alembic current
 
 ---
 
+## E2E reference data
+
+`seed_reference_e2e.py` loads a fictitious dataset, so E2E tests and the user manual's screenshots start from the same state. It is **never** run by the service startup or the deploy: run it by hand against a disposable database, after the migrations and the seeds of the superadmin and the food catalog.
+
+```bash
+# Locally
+ENVIRONMENT=test poetry run python seed_reference_e2e.py
+
+# With the development compose
+docker compose run --rm -e ENVIRONMENT=test backend python seed_reference_e2e.py
+```
+
+It only runs when `ENVIRONMENT` is `test` or `e2e`, and says so otherwise. A deploy that does not set it falls back to `development`, so it cannot load this data by mistake. Running it again adds nothing that is already there, but it does not restore the starting point: if a test changes a record (say, approves a pending request), the seed does not put it back. The API has almost no way to delete data, so to repeat a suite from the same state, use a new database, and give the tests that change these records data of their own.
+
+What it loads:
+
+| | |
+|---|---|
+| Establishments | 6 community kitchens, named after public squares in Buenos Aires, Córdoba, Mendoza, Salta, Resistencia and Bariloche |
+| Subjects | 15 people aged 25 or less, each with 3 measurements over the last year; some trigger alerts |
+| Stock | Deliveries and outflows at every establishment, registered through the services |
+| Survey | An active FIES survey, anonymous, with 10 responses |
+| Requests | 2 pending requests to create an establishment, and 1 user waiting for approval |
+
+Every user below has the same password, `Referencia-123!`. All the data is made up.
+
+| Role | Email | Works in |
+|---|---|---|
+| Admin | `admin.referencia@tpp.com` | all |
+| Analyst | `analista.referencia@tpp.com` | all |
+| Field worker | `relevador1.referencia@tpp.com` | Buenos Aires, Córdoba |
+| Field worker | `relevador2.referencia@tpp.com` | Mendoza, Salta |
+| Field worker | `relevador3.referencia@tpp.com` | Resistencia, Bariloche |
+| Field worker, pending | `pendiente.referencia@tpp.com` | awaits approval; cannot log in |
+
+The superadmin is the one the seed already creates.
+
+---
+
 ## Testing
 
 Integration tests use [Testcontainers](https://testcontainers.com/) to spin up a real PostgreSQL instance, and a Redis for the rate-limit tests. Docker must be running for those tests unless `TEST_POSTGRES_URL` points to a disposable PostgreSQL instance; Redis-backed tests still need Docker.
