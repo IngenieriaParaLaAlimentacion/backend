@@ -16,6 +16,25 @@ class FoodEquivalenceRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
+    async def create(self, equivalence: FoodEquivalence) -> FoodEquivalence:
+        """Stage a new food equivalence for insertion."""
+        self.db.add(equivalence)
+        return equivalence
+
+    async def update(self, equivalence: FoodEquivalence) -> FoodEquivalence:
+        """Persist changes made to an existing food equivalence."""
+        await self.db.flush()
+        return equivalence
+
+    async def get_all(self) -> list[FoodEquivalence]:
+        """Return every stored food equivalence.
+
+        Loads the whole table, so it belongs to the seed and not to request-time
+        code.
+        """
+        result = await self.db.execute(select(FoodEquivalence))
+        return list(result.scalars().all())
+
     async def get_factors_by_food_ids(
         self, food_ids: Collection[UUID]
     ) -> dict[UUID, ConversionFactors]:
