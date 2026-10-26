@@ -23,7 +23,7 @@ services:
 
   migrate:
     image: *backend-image
-    command: sh -c "alembic upgrade head && python seed_superadmin.py && python seed_food_catalog.py"
+    command: ["sh", "scripts/pre_deploy.sh"]
     env_file: .env.e2e
     depends_on:
       postgres:
