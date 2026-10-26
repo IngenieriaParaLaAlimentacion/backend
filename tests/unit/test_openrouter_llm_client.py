@@ -4,7 +4,6 @@ import asyncio
 import base64
 import copy
 import json
-import time
 from datetime import datetime, timedelta, timezone
 from email.utils import format_datetime
 from types import SimpleNamespace
@@ -22,16 +21,6 @@ from app.exceptions.domain_exceptions import (
 from app.services.llm.openrouter_llm_client import OpenRouterLlmClient
 from app.services.llm.retry_policy import retry_after_seconds
 from app.services.llm.structured_schema import structured_schema
-
-
-@pytest.fixture
-def eligible_model():
-    return {
-        "id": "synthetic/model:free",
-        "pricing": {"prompt": "0", "completion": "0", "request": "0", "image": "0"},
-        "supported_parameters": ["response_format", "structured_outputs"],
-        "architecture": {"input_modalities": ["text", "image"]},
-    }
 
 
 @pytest.fixture
@@ -57,25 +46,20 @@ def completion(content='{"lines": []}', **message):
     }
 
 
-def make_client(settings, model, handler):
-    def route(request):
-        if request.url.path.endswith("/models"):
-            return httpx.Response(200, json={"data": [model]})
-        return handler(request)
-
-    return OpenRouterLlmClient(settings=settings, transport=httpx.MockTransport(route))
+def make_client(settings, handler):
+    return OpenRouterLlmClient(
+        settings=settings, transport=httpx.MockTransport(handler)
+    )
 
 
-async def test_image_schema_and_routing_are_explicit(
-    configured_settings, eligible_model
-):
+async def test_image_schema_and_routing_are_explicit(configured_settings):
     calls = []
 
     def handler(request):
         calls.append(request)
         return httpx.Response(200, json=completion())
 
-    client = make_client(configured_settings, eligible_model, handler)
+    client = make_client(configured_settings, handler)
     try:
         assert await client.complete(
             prompt="synthetic",
@@ -109,10 +93,42 @@ async def test_image_schema_and_routing_are_explicit(
         await client.aclose()
 
 
+@pytest.mark.parametrize("has_image", [False, True])
+async def test_configured_models_are_used_without_catalogue_requests(
+    configured_settings,
+    has_image,
+):
+    configured_settings.openrouter_receipt_models = ["operator/receipt-model"]
+    configured_settings.openrouter_recipe_models = ["operator/recipe-model"]
+    requests = []
+
+    def handler(request):
+        requests.append(request)
+        assert request.method == "POST"
+        assert request.url.path == "/api/v1/chat/completions"
+        return httpx.Response(200, json=completion())
+
+    client = make_client(configured_settings, handler)
+    try:
+        await client.complete(
+            prompt="synthetic",
+            response_schema={},
+            image=b"image" if has_image else None,
+            image_content_type="image/png" if has_image else None,
+        )
+        assert len(requests) == 1
+        payload = json.loads(requests[0].content)
+        expected = "operator/receipt-model" if has_image else "operator/recipe-model"
+        assert payload["model"] == expected
+        assert all(price == 0 for price in payload["provider"]["max_price"].values())
+    finally:
+        await client.aclose()
+
+
 @pytest.mark.parametrize("status,body", [(429, {}), (200, {"error": {"code": 429}})])
 @pytest.mark.parametrize("retry,expected", [("12", 12), ("bad", None), (None, None)])
 async def test_quota_stops_without_fallback(
-    configured_settings, eligible_model, status, body, retry, expected
+    configured_settings, status, body, retry, expected
 ):
     calls = []
 
@@ -122,7 +138,7 @@ async def test_quota_stops_without_fallback(
             status, json=body, headers={"Retry-After": retry} if retry else {}
         )
 
-    client = make_client(configured_settings, eligible_model, handler)
+    client = make_client(configured_settings, handler)
     try:
         with pytest.raises(LlmQuotaExhaustedError) as caught:
             await client.complete(prompt="synthetic", response_schema={})
@@ -134,9 +150,7 @@ async def test_quota_stops_without_fallback(
 
 @pytest.mark.parametrize("status", [401, 402, 403])
 @pytest.mark.parametrize("embedded", [False, True])
-async def test_permanent_failure_does_not_retry(
-    configured_settings, eligible_model, status, embedded
-):
+async def test_permanent_failure_does_not_retry(configured_settings, status, embedded):
     calls = []
 
     def handler(request):
@@ -145,7 +159,7 @@ async def test_permanent_failure_does_not_retry(
             200 if embedded else status, json={"error": {"code": status}}
         )
 
-    client = make_client(configured_settings, eligible_model, handler)
+    client = make_client(configured_settings, handler)
     try:
         with pytest.raises(LlmUnavailableError):
             await client.complete(prompt="synthetic", response_schema={})
@@ -155,17 +169,15 @@ async def test_permanent_failure_does_not_retry(
 
 
 @pytest.mark.parametrize("failure", ["transport", "html503", "404", "embedded503"])
-async def test_shared_attempt_budget_and_approved_model_fallback(
-    configured_settings, eligible_model, failure
+async def test_shared_attempt_budget_and_configured_model_fallback(
+    configured_settings, failure
 ):
-    second = copy.deepcopy(eligible_model)
-    second["id"] = "synthetic/second:free"
-    configured_settings.openrouter_recipe_models.append(second["id"])
+    first = configured_settings.openrouter_recipe_models[0]
+    second = "synthetic/second:free"
+    configured_settings.openrouter_recipe_models.append(second)
     attempts = []
 
     def handler(request):
-        if request.url.path.endswith("/models"):
-            return httpx.Response(200, json={"data": [eligible_model, second]})
         attempts.append(json.loads(request.content))
         if len(attempts) == 1:
             if failure == "transport":
@@ -182,20 +194,20 @@ async def test_shared_attempt_budget_and_approved_model_fallback(
     )
     try:
         await client.complete(prompt="synthetic", response_schema={})
-        assert [p["model"] for p in attempts] == [eligible_model["id"], second["id"]]
+        assert [p["model"] for p in attempts] == [first, second]
         assert all(p["provider"]["max_price"]["prompt"] == 0 for p in attempts)
     finally:
         await client.aclose()
 
 
-async def test_transport_exhaustion_is_sanitized(configured_settings, eligible_model):
+async def test_transport_exhaustion_is_sanitized(configured_settings):
     calls = []
 
     def handler(request):
         calls.append(request)
         raise httpx.ReadError("PRIVATE upstream", request=request)
 
-    client = make_client(configured_settings, eligible_model, handler)
+    client = make_client(configured_settings, handler)
     try:
         with structlog.testing.capture_logs() as logs:
             with pytest.raises(LlmUnavailableError) as caught:
@@ -231,7 +243,7 @@ async def test_transport_exhaustion_is_sanitized(configured_settings, eligible_m
     ],
 )
 async def test_invalid_envelopes_do_not_retry_or_leak_content(
-    configured_settings, eligible_model, body
+    configured_settings, body
 ):
     calls = []
 
@@ -239,7 +251,7 @@ async def test_invalid_envelopes_do_not_retry_or_leak_content(
         calls.append(request)
         return httpx.Response(200, json=body)
 
-    client = make_client(configured_settings, eligible_model, handler)
+    client = make_client(configured_settings, handler)
     try:
         with structlog.testing.capture_logs() as logs:
             with pytest.raises(LlmClientError) as caught:
@@ -253,78 +265,18 @@ async def test_invalid_envelopes_do_not_retry_or_leak_content(
 
 
 @pytest.mark.parametrize("status", [400, 422])
-async def test_bad_schema_request_never_loosens_or_retries(
-    configured_settings, eligible_model, status
-):
+async def test_bad_schema_request_never_loosens_or_retries(configured_settings, status):
     calls = []
 
     def handler(request):
         calls.append(request)
         return httpx.Response(status, json={"error": {"code": status}})
 
-    client = make_client(configured_settings, eligible_model, handler)
+    client = make_client(configured_settings, handler)
     try:
         with pytest.raises(LlmClientError):
             await client.complete(prompt="synthetic", response_schema={})
         assert len(calls) == 1
-    finally:
-        await client.aclose()
-
-
-@pytest.mark.parametrize(
-    "change",
-    [
-        "paid_id",
-        "paid_prompt",
-        "paid_completion",
-        "paid_request",
-        "paid_image",
-        "missing_price",
-        "missing_parameters",
-        "no_structured",
-        "no_text",
-        "no_image",
-        "invalid_price",
-        "malformed_modalities",
-        "malformed_pricing",
-    ],
-)
-async def test_ineligible_metadata_prevents_inference(
-    configured_settings, eligible_model, change
-):
-    if change == "paid_id":
-        eligible_model["id"] = "synthetic/model"
-        configured_settings.openrouter_recipe_models = [eligible_model["id"]]
-        configured_settings.openrouter_receipt_models = [eligible_model["id"]]
-    elif change.startswith("paid_"):
-        eligible_model["pricing"][change[5:]] = "0.01"
-    elif change == "missing_price":
-        eligible_model["pricing"].pop("prompt")
-    elif change == "missing_parameters":
-        eligible_model.pop("supported_parameters")
-    elif change == "no_structured":
-        eligible_model["supported_parameters"] = ["response_format"]
-    elif change == "malformed_pricing":
-        eligible_model["pricing"] = None
-    elif change == "invalid_price":
-        eligible_model["pricing"]["prompt"] = "not-a-number"
-    elif change == "malformed_modalities":
-        eligible_model["architecture"]["input_modalities"] = "text,image"
-    else:
-        eligible_model["architecture"]["input_modalities"].remove(change[3:])
-
-    def handler(request):
-        pytest.fail("Ineligible metadata must not reach inference")
-
-    client = make_client(configured_settings, eligible_model, handler)
-    try:
-        with pytest.raises(LlmUnavailableError):
-            await client.complete(
-                prompt="synthetic",
-                response_schema={},
-                image=b"x",
-                image_content_type="image/png",
-            )
     finally:
         await client.aclose()
 
@@ -355,91 +307,9 @@ async def test_missing_config_is_lazy_and_makes_no_network_calls(
         await client.aclose()
 
 
-@pytest.mark.parametrize(
-    "body", [{}, {"data": {}}, {"data": [None]}, {"data": [{"id": []}]}]
-)
-async def test_malformed_catalogue_fails_closed(configured_settings, body):
-    calls = []
-
-    def handler(request):
-        calls.append(request)
-        return httpx.Response(200, json=body)
-
-    client = OpenRouterLlmClient(
-        settings=configured_settings, transport=httpx.MockTransport(handler)
-    )
-    try:
-        with pytest.raises(LlmUnavailableError):
-            await client.complete(prompt="synthetic", response_schema={})
-        assert len(calls) == 1
-    finally:
-        await client.aclose()
-
-
-@pytest.mark.parametrize("refresh", ["failure", "price", "retirement"])
-async def test_expired_catalogue_is_not_used_after_refresh(
-    configured_settings, eligible_model, refresh
-):
-    calls = []
-    refreshes = 0
-
-    def handler(request):
-        nonlocal refreshes
-        calls.append(request.url.path)
-        if request.url.path.endswith("/models"):
-            refreshes += 1
-            if refreshes == 2:
-                if refresh == "failure":
-                    return httpx.Response(503)
-                if refresh == "retirement":
-                    return httpx.Response(200, json={"data": []})
-                model = copy.deepcopy(eligible_model)
-                model["pricing"]["prompt"] = "1"
-                return httpx.Response(200, json={"data": [model]})
-            return httpx.Response(200, json={"data": [eligible_model]})
-        return httpx.Response(200, json=completion())
-
-    client = OpenRouterLlmClient(
-        settings=configured_settings, transport=httpx.MockTransport(handler)
-    )
-    try:
-        await client.complete(prompt="synthetic", response_schema={})
-        client._catalog_until = time.monotonic() - 1
-        with pytest.raises(LlmUnavailableError):
-            await client.complete(prompt="synthetic", response_schema={})
-        assert calls.count("/api/v1/chat/completions") == 1
-    finally:
-        await client.aclose()
-
-
-async def test_concurrent_calls_share_one_catalogue_refresh(
-    configured_settings, eligible_model
-):
-    gets = 0
-
-    async def handler(request):
-        nonlocal gets
-        if request.url.path.endswith("/models"):
-            gets += 1
-            await asyncio.sleep(0)
-            return httpx.Response(200, json={"data": [eligible_model]})
-        return httpx.Response(200, json=completion())
-
-    client = OpenRouterLlmClient(
-        settings=configured_settings, transport=httpx.MockTransport(handler)
-    )
-    try:
-        await asyncio.gather(
-            *(client.complete(prompt="synthetic", response_schema={}) for _ in range(5))
-        )
-        assert gets == 1
-    finally:
-        await client.aclose()
-
-
-@pytest.mark.parametrize("stage", ["metadata", "inference", "backoff"])
+@pytest.mark.parametrize("stage", ["inference", "backoff"])
 async def test_total_deadline_cancels_all_stages_without_more_attempts(
-    configured_settings, eligible_model, stage, monkeypatch
+    configured_settings, stage, monkeypatch
 ):
     monkeypatch.setattr(
         "app.services.llm.openrouter_llm_client.random.uniform", lambda *_: 1
@@ -451,15 +321,11 @@ async def test_total_deadline_cancels_all_stages_without_more_attempts(
 
     async def handler(request):
         calls.append(request.url.path)
-        if (stage == "metadata" and request.url.path.endswith("/models")) or (
-            stage == "inference" and request.url.path.endswith("/completions")
-        ):
+        if stage == "inference":
             try:
                 await asyncio.Event().wait()
             finally:
                 cancelled.set()
-        if request.url.path.endswith("/models"):
-            return httpx.Response(200, json={"data": [eligible_model]})
         return httpx.Response(503)
 
     client = OpenRouterLlmClient(
@@ -477,7 +343,7 @@ async def test_total_deadline_cancels_all_stages_without_more_attempts(
         await client.aclose()
 
 
-async def test_external_cancellation_propagates(configured_settings, eligible_model):
+async def test_external_cancellation_propagates(configured_settings):
     async def handler(request):
         raise asyncio.CancelledError
 
@@ -547,13 +413,11 @@ def test_malformed_embedded_error_code_is_a_controlled_failure(code):
         OpenRouterLlmClient._read_response(response)
 
 
-async def test_unsupported_image_type_never_reaches_inference(
-    configured_settings, eligible_model
-):
+async def test_unsupported_image_type_never_reaches_inference(configured_settings):
     def handler(request):
         pytest.fail("Unsupported images must not reach inference")
 
-    client = make_client(configured_settings, eligible_model, handler)
+    client = make_client(configured_settings, handler)
     try:
         with pytest.raises(LlmClientError):
             await client.complete(
@@ -570,7 +434,6 @@ async def test_unsupported_image_type_never_reaches_inference(
 @pytest.mark.parametrize("embedded_code", [429, 503, 401])
 async def test_http_schema_rejection_takes_precedence_over_embedded_code(
     configured_settings,
-    eligible_model,
     status,
     embedded_code,
 ):
@@ -580,7 +443,7 @@ async def test_http_schema_rejection_takes_precedence_over_embedded_code(
         calls.append(request)
         return httpx.Response(status, json={"error": {"code": embedded_code}})
 
-    client = make_client(configured_settings, eligible_model, handler)
+    client = make_client(configured_settings, handler)
     try:
         with pytest.raises(LlmClientError) as caught:
             await client.complete(prompt="synthetic", response_schema={})

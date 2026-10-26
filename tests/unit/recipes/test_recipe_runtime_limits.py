@@ -124,24 +124,6 @@ async def test_request_deadline_includes_backoff_and_prevents_fallback(monkeypat
     calls = []
 
     def handler(request):
-        if request.url.path.endswith("/models"):
-            return httpx.Response(
-                200,
-                json={
-                    "data": [
-                        {
-                            "id": model,
-                            "pricing": {"prompt": "0", "completion": "0"},
-                            "supported_parameters": [
-                                "response_format",
-                                "structured_outputs",
-                            ],
-                            "architecture": {"input_modalities": ["text"]},
-                        }
-                        for model in config.openrouter_recipe_models
-                    ]
-                },
-            )
         calls.append(request)
         return httpx.Response(503)
 

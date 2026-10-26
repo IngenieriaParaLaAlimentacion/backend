@@ -2,8 +2,6 @@ import asyncio
 import base64
 import json
 import random
-import time
-from decimal import Decimal, InvalidOperation
 from typing import Any
 
 import httpx
@@ -26,7 +24,7 @@ class _PermanentUnavailable(LlmUnavailableError):
 
 
 class OpenRouterLlmClient(ILlmClient):
-    """Structured text and image completions through eligible free endpoints."""
+    """Structured text and image completions through configured OpenRouter models."""
 
     def __init__(self, *, settings, transport=None):
         self.settings = settings
@@ -36,9 +34,6 @@ class OpenRouterLlmClient(ILlmClient):
             follow_redirects=False,
             transport=transport,
         )
-        self._catalog: dict[str, dict] = {}
-        self._catalog_until = 0.0
-        self._catalog_lock = asyncio.Lock()
 
     async def aclose(self) -> None:
         """Close reusable network connections."""
@@ -48,58 +43,6 @@ class OpenRouterLlmClient(ILlmClient):
             await self._http.aclose()
         except Exception:
             raise LlmClientError("Inference transport cleanup failed") from None
-
-    async def _models(self) -> dict[str, dict]:
-        async with self._catalog_lock:
-            if time.monotonic() < self._catalog_until:
-                return self._catalog
-            try:
-                response = await self._http.get("models", timeout=5)
-                response.raise_for_status()
-                data = response.json()["data"]
-                if not isinstance(data, list):
-                    raise ValueError("Invalid model catalogue")
-                if any(
-                    not isinstance(row, dict) or not isinstance(row.get("id"), str)
-                    for row in data
-                ):
-                    raise ValueError("Invalid model catalogue entry")
-                catalog = {row["id"]: row for row in data}
-                if len(catalog) != len(data):
-                    raise ValueError("Duplicate model catalogue entry")
-            except (httpx.HTTPError, KeyError, TypeError, ValueError):
-                raise LlmUnavailableError("Model catalogue unavailable") from None
-            self._catalog = catalog
-            self._catalog_until = time.monotonic() + 300
-            return catalog
-
-    @staticmethod
-    def _eligible(row: dict, *, image: bool) -> bool:
-        try:
-            if not row["id"].endswith(":free"):
-                return False
-            pricing = row["pricing"]
-            if not isinstance(pricing, dict):
-                return False
-            if any(
-                Decimal(str(pricing.get(key, "0"))) != 0
-                for key in ("prompt", "completion", "request", "image")
-            ):
-                return False
-            # Prompt/completion prices must be present rather than assumed free.
-            if "prompt" not in pricing or "completion" not in pricing:
-                return False
-            parameters = set(row["supported_parameters"])
-            if not {"response_format", "structured_outputs"} <= parameters:
-                return False
-            modalities = row["architecture"]["input_modalities"]
-            return (
-                isinstance(modalities, list)
-                and "text" in modalities
-                and (not image or "image" in modalities)
-            )
-        except (KeyError, TypeError, InvalidOperation, ValueError):
-            return False
 
     @staticmethod
     def _read_response(response: httpx.Response) -> dict[str, Any]:
@@ -188,14 +131,7 @@ class OpenRouterLlmClient(ILlmClient):
         providers = settings.openrouter_allowed_providers
         if not key or not configured or not providers:
             raise LlmUnavailableError("Inference is not configured")
-        catalog = await self._models()
-        models = [
-            model
-            for model in dict.fromkeys(configured)
-            if self._eligible(catalog.get(model, {}), image=image is not None)
-        ]
-        if not models:
-            raise LlmUnavailableError("No eligible free endpoint")
+        models = list(dict.fromkeys(configured))
         content = [{"type": "text", "text": prompt}]
         if image is not None:
             if image_content_type not in {"image/jpeg", "image/png", "image/webp"}:

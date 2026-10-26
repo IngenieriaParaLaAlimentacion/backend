@@ -428,11 +428,11 @@ and client timeout above that budget; the repository does not establish the
 live gateway's timeout. This deadline does not add generation idempotency.
 
 OpenRouter output is capped by `OPENROUTER_MAX_OUTPUT_TOKENS` (8192 by default).
-Only explicitly configured, qualified `:free` models and approved hosting providers
-are eligible. Every request requires strict structured outputs, denies provider
+Model IDs are taken directly from the workload environment arrays. Every request
+requires strict structured outputs, restricts hosting providers, denies provider
 data collection and limits prompt, completion, request and image prices to zero.
-There is no paid fallback. Model capability/price metadata is refreshed every
-300 seconds and expired metadata cannot authorize inference if refresh fails.
+There is no catalogue fetch or local metadata cache. Select suitable free models
+operationally; the gateway enforces the request constraints.
 Empty AI configuration leaves inference unavailable while non-AI routes still run.
 
 Recipe generation provider usage limits return `429 /errors/ai/quota-exhausted`,

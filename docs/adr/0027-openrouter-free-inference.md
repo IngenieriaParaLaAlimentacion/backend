@@ -12,10 +12,11 @@ switching and strictly free inference.
 
 Use OpenRouter through httpx behind ILlmClient. Select explicit, qualified
 :free models and hosting providers through environment configuration.
-Validate current catalogue capabilities and zero prices before inference;
-send zero price limits and explicit provider restrictions on every request.
-No eligible endpoint means AI unavailable. There is no paid or direct-service
-fallback. Gemini can be configured only if an eligible free variant exists.
+Call the configured model IDs directly; send zero price limits and explicit
+provider restrictions on every request. There is no runtime catalogue fetch,
+metadata cache or refresh lock. Verify workload support when configuring models.
+No endpoint satisfying request constraints means AI unavailable. There is no
+paid or direct-service fallback. Gemini can be configured only if an eligible free variant exists.
 
 Do not enable random free-model routing. Receipt images and recipe context
 must satisfy the selected endpoint's current data policy before qualification.
