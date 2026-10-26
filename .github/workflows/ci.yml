@@ -84,21 +84,6 @@ jobs:
       packages: write
     env:
       PUBLISH: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' }}
-    services:
-      # Same credentials as DATABASE_* in e2e/.env.e2e.
-      postgres:
-        image: postgres:17.9-bookworm
-        env:
-          POSTGRES_DB: db
-          POSTGRES_USER: admin
-          POSTGRES_PASSWORD: password
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U admin -d db"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
         with:
@@ -137,38 +122,18 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # The container shares the runner's network to reach the PostgreSQL service.
-      - name: Prepare the database
-        run: >-
-          docker run --rm --network host
-          --env-file e2e/.env.e2e -e DATABASE_HOST=localhost
-          ${{ env.IMAGE }}:sha-${{ github.sha }}
-          sh scripts/pre_deploy.sh
+      - name: Start the backend with its dependencies
+        # The compose is what the E2E runs use: it prepares the database, loads the
+        # reference data and waits until the backend answers /ready.
+        env:
+          BACKEND_IMAGE: ${{ env.IMAGE }}:sha-${{ github.sha }}
+        run: docker compose -f e2e/compose.yml up --wait
 
-      - name: Start the backend
-        run: >-
-          docker run -d --name backend --network host
-          --env-file e2e/.env.e2e -e DATABASE_HOST=localhost
-          ${{ env.IMAGE }}:sha-${{ github.sha }}
-
-      - name: Wait for the backend to be ready
-        run: |
-          for _ in $(seq 1 60); do
-            curl -fsS http://localhost:8080/ready && exit 0
-            if [ "$(docker inspect -f '{{.State.Running}}' backend)" != "true" ]; then
-              echo "The backend stopped before it was ready" >&2
-              exit 1
-            fi
-            sleep 2
-          done
-          echo "The backend did not become ready" >&2
-          exit 1
-
-      - name: Show the backend logs
+      - name: Show the logs
         if: failure()
-        # The container does not exist when an earlier step failed, and that must not hide
-        # the failure being reported.
-        run: docker logs backend || true
+        env:
+          BACKEND_IMAGE: ${{ env.IMAGE }}:sha-${{ github.sha }}
+        run: docker compose -f e2e/compose.yml logs
 
       - name: Push Docker image (only from develop and main)
         if: env.PUBLISH == 'true'

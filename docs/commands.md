@@ -165,7 +165,7 @@ All configuration is passed via environment variables (see `.env.example`). If `
 
 ### Published image
 
-Every push to `develop` and `main` publishes the image to GitHub Container Registry, once the lint, the tests and the security scan pass and the image has started and answered `/ready` against an empty PostgreSQL. A push to any other branch, which is what a pull request is built from, publishes nothing.
+Every push to `develop` and `main` publishes the image to GitHub Container Registry, once the lint, the tests and the security scan pass and `e2e/compose.yml` has started the image with its dependencies and the backend answers `/ready`. A push to any other branch, which is what a pull request is built from, publishes nothing.
 
 | | |
 |---|---|
