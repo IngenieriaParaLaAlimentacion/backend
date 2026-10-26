@@ -103,7 +103,6 @@ def llm_client():
         {"lines": [None]},
         {"lines": ["item"]},
         {"lines": [{"description": 5}]},
-        {"lines": [{"description": "Arroz", "unknown": "private output"}]},
     ],
 )
 async def test_invalid_extraction_safely_falls_back_without_catalog_access(
@@ -127,6 +126,39 @@ async def test_invalid_extraction_safely_falls_back_without_catalog_access(
     uow.food_repo.find_best_match.assert_not_awaited()
     uow.commit.assert_not_awaited()
     storage.save.assert_not_awaited()
+
+
+async def test_extra_ai_fields_do_not_discard_receipt_lines(
+    uow,
+    storage,
+    food_intake_service,
+    llm_client,
+    admin_actor,
+):
+    llm_client.complete.return_value = {
+        "confidence": 0.9,
+        "lines": [
+            {
+                "description": "Arroz",
+                "raw_quantity": "1,5",
+                "raw_unit_text": "kg",
+                "confidence": 0.8,
+            }
+        ],
+    }
+    service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+    response = await service.propose_from_photo(
+        establishment_id=uuid.uuid4(),
+        content_type="image/png",
+        image=PNG_BYTES,
+        actor=admin_actor,
+    )
+    assert response.message is None
+    assert len(response.lines) == 1
+    assert response.lines[0].description == "Arroz"
+    assert response.lines[0].raw_quantity == Decimal("1.5")
+    assert "confidence" not in response.model_dump()
+    assert "confidence" not in response.lines[0].model_dump()
 
 
 @pytest.mark.parametrize(

@@ -81,7 +81,7 @@ class ReceiptProposalResponse(BaseModel):
 class ExtractedReceiptLine(BaseModel):
     """A locally validated line read before catalog matching."""
 
-    model_config = ConfigDict(extra="forbid", strict=True)
+    model_config = ConfigDict(extra="ignore", strict=True)
     description: str
     raw_quantity: FiniteFloat | None = None
     raw_unit_text: str | None = None
@@ -96,5 +96,5 @@ class ExtractedReceiptLine(BaseModel):
 class ReceiptExtraction(BaseModel):
     """A validated receipt extraction envelope."""
 
-    model_config = ConfigDict(extra="forbid", strict=True)
+    model_config = ConfigDict(extra="ignore", strict=True)
     lines: list[ExtractedReceiptLine]

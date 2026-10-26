@@ -71,3 +71,8 @@ Agustina's PR #211: numeric text with comma/dot decimals and dot thousands
 separators is accepted, while unusable quantities become null without losing
 valid receipt lines. Provider requests still ask for numeric or null quantities.
 The shared quantity parser remains authoritative for normalization and rounding.
+
+Local extraction ignores extra model fields, preserving existing receipt
+compatibility. Malformed required line structure still returns the manual-entry
+fallback. The strict provider request schema remains closed independently of
+this tolerant local parsing.

@@ -443,7 +443,8 @@ endpoint or exhausted temporary failures return `503 /errors/ai/unavailable`.
 Neither error exposes provider prose. Clients must not automatically resubmit.
 
 Receipt success remains an HTTP 200 proposal without `needs_review`. All lines
-require local review before confirmation. Invalid extraction content still returns
+require local review before confirmation. Extra AI response fields are ignored;
+invalid required extraction structure still returns
 an empty proposal with a manual-entry hint. Provider quota, unavailable endpoints
 and missing AI configuration use that same HTTP 200 manual fallback, preserving
 the existing receipt UX. The app opens the review form directly with the captured
