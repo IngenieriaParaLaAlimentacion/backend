@@ -30,13 +30,23 @@ services:
         condition: service_healthy
     restart: "no"
 
+  # The seed only runs when ENVIRONMENT is test or e2e, which .env.e2e sets.
+  reference-data:
+    image: *backend-image
+    command: ["python", "seed_reference_e2e.py"]
+    env_file: .env.e2e
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+
   backend:
     image: *backend-image
     env_file: .env.e2e
     ports:
       - "8080:8080"
     depends_on:
-      migrate:
+      reference-data:
         condition: service_completed_successfully
     healthcheck:
       test:

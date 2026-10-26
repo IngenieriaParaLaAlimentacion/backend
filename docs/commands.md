@@ -67,7 +67,7 @@ poetry run alembic current
 
 ## E2E reference data
 
-`seed_reference_e2e.py` loads a fictitious dataset, so E2E tests and the user manual's screenshots start from the same state. It is **never** run by the service startup or the deploy: run it by hand against a disposable database, after the migrations and the seeds of the superadmin and the food catalog.
+`seed_reference_e2e.py` loads a fictitious dataset, so E2E tests and the user manual's screenshots start from the same state. It is **never** run by the service startup or the deploy. Run it by hand against a disposable database, after the migrations and the seeds of the superadmin and the food catalog; the E2E compose does that for you.
 
 ```bash
 # Locally
@@ -165,7 +165,7 @@ All configuration is passed via environment variables (see `.env.example`). If `
 
 ### Published image
 
-Every push to `develop` and `main` publishes the image to GitHub Container Registry, once the lint, the tests and the security scan pass and the image has started and answered `/ready` against an empty PostgreSQL. A push to any other branch, which is what a pull request is built from, publishes nothing.
+Every push to `develop` and `main` publishes the image to GitHub Container Registry, once the lint, the tests and the security scan pass and `e2e/compose.yml` has started the image with its dependencies and the backend answers `/ready`. A push to any other branch, which is what a pull request is built from, publishes nothing.
 
 | | |
 |---|---|
@@ -190,7 +190,7 @@ From a machine, log in with a personal access token that has the `read:packages`
 
 #### Run it with its dependencies
 
-`e2e/compose.yml` starts the image next to PostgreSQL, applies the migrations and seeds, and waits until `/ready` answers:
+`e2e/compose.yml` starts the image next to PostgreSQL, applies the migrations and seeds, loads the [E2E reference data](#e2e-reference-data), and waits until `/ready` answers:
 
 ```bash
 # Start (BACKEND_IMAGE picks another tag; the default is develop)

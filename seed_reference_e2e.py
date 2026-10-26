@@ -365,7 +365,10 @@ async def seed_reference_e2e() -> None:
 
         admin = UserActor(user_id=user_ids["admin"], role=UserRole.ADMIN)
         survey_id = await _seed_fies_survey(uow, admin)
-        await _seed_fies_responses(survey_id, list(actors.values()))
+        # Response n is submitted by the field worker of the n-th establishment. A
+        # replay has to come from the same user, so this assignment must not change.
+        submitters = [actors[spec.key] for spec in ESTABLISHMENTS]
+        await _seed_fies_responses(survey_id, submitters)
     logger.info("Reference data loaded")
 
 

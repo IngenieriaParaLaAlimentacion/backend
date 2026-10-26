@@ -10,8 +10,8 @@
 
 The E2E tests and the user manual's screenshots need the same starting state: users of every role,
 establishments on the map, people with measurements, stock with movements and a FIES survey with
-responses. Today only the superadmin and the food catalog are seeded, and both run in the `CMD` of the
-image, so in production too.
+responses. Today only the superadmin and the food catalog are seeded, and both run in the
+pre-deploy step (`scripts/pre_deploy.sh`), so in production too.
 
 The state has to come from somewhere that is neither production nor a test's own fixtures: the
 integration tests build their data per test and truncate every table between tests, and the E2E tests
@@ -27,11 +27,12 @@ Two facts of the codebase shape the solution:
 
 ## Decision
 
-### A script, run by hand, never in startup or deploy
+### A script that the startup and the deploy never run
 
 `seed_reference_e2e.py` is a script like `seed_superadmin.py` and `seed_food_catalog.py`, not an
 endpoint: it adds no door to the API and cannot be exposed in production by mistake. It is not in the
-`CMD` of the image or in any deploy step. It runs after the migrations and the other two seeds.
+`CMD` of the image or in any deploy step. The E2E compose runs it, after the migrations and the
+other two seeds, and a person can run it by hand.
 
 ### It only runs when `ENVIRONMENT` is `test` or `e2e`
 
@@ -88,10 +89,9 @@ poetry run uvicorn app.main:app --reload
 The screenshots of the user manual are taken from this state, logged in as the users listed in
 `docs/commands.md`. To start over, drop the database and repeat.
 
-**In the E2E runs of the backoffice**, the step that prepares the database of `e2e/compose.yml`
-(introduced by PR #217) is to run it after the other two seeds. `e2e/.env.e2e` already sets
-`ENVIRONMENT=e2e`, which the script accepts. This is not wired yet: it needs both pull requests merged,
-so that the published image holds the script.
+**In the E2E runs of the backoffice**, `e2e/compose.yml` runs it after the migrations and the other two
+seeds, in a service of its own that the backend waits for. `e2e/.env.e2e` sets `ENVIRONMENT=e2e`, which
+the script accepts. It is the base under the tests, not their data: what a test changes it creates itself.
 
 **In a shared environment**, nothing runs it. It is in no deploy step, and whoever runs it there by
 hand has to set `ENVIRONMENT` knowing that what it adds cannot be removed through the API.
@@ -105,9 +105,6 @@ hand has to set `ENVIRONMENT` knowing that what it adds cannot be removed throug
   later run does not move them. Nobody in the set is older than 25 on that day.
 - The script depends on the services' contracts, so a change to a request schema or a rule can break
   it. The integration test runs it twice and logs in as every user, so the CI shows it.
-- `ENVIRONMENT` is not only a label: only `development` marks the email of a newly registered field
-  worker as verified, and it switches the logs to a console format. The environments the seed accepts
-  are not `development`, and an E2E run that sets `e2e` gets neither.
 - Anyone who runs it locally has to set `ENVIRONMENT=test` for that command. That friction is the
   barrier.
 
