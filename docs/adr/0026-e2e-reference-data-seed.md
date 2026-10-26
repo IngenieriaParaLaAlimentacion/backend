@@ -1,4 +1,4 @@
-# ADR-0025: E2E reference data as a guarded, repeatable seed script
+# ADR-0026: E2E reference data as a guarded, repeatable seed script
 
 - **Status**: Accepted
 - **Date**: 2026-10-24
