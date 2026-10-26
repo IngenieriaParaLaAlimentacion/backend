@@ -3,7 +3,7 @@
 - **Status**: Accepted
 - **Date**: 2026-10-23
 - **Deciders**: Backend team
-- **Related**: Issue #192 (unit conversion module), ADR-0012, ADR-0017, ADR-0021, ADR-0024
+- **Related**: Issue #192 (unit conversion module), ADR-0012, ADR-0017, ADR-0021, ADR-0024, ADR-0027
 
 ## Context
 
@@ -113,7 +113,7 @@ edible portion (ADR-0012): an egg is weighed without its shell. A weight with sh
 overstate every nutrient computed from it, with nothing to flag the error.
 
 The repository reads the factors of many foods in one query and returns them as `ConversionFactors` per food.
-Loading the real values is a separate task; tests use made-up factors. Until then no endpoint writes the table.
+The real values are loaded by a seed from a CSV (ADR-0027); tests use made-up factors. No endpoint writes the table.
 
 ## Consequences
 
