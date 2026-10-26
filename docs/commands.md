@@ -163,6 +163,8 @@ docker compose -f e2e/compose.yml down -v
 
 The API listens on `http://localhost:8080`. The configuration is `e2e/.env.e2e`, which holds throwaway test values only: no real secret goes in it. With it the backend needs no file storage, Gemini, SMTP or Redis, and the rate limits are high enough for the same user to log in repeatedly. The seeded superadmin is the `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` of that file.
 
+The image and `e2e/compose.yml` are versioned together. From another repository, check this one out at the commit the image was built from and set `BACKEND_IMAGE` to the matching `sha-<commit>` tag, so that both match. The default, `develop`, moves with every merge: it is fine on a machine, but two runs of a CI can then use different images, and the compose they downloaded may not fit the one they run.
+
 ### Migration rollback limits
 
 CI checks that the current head can run `upgrade head`, downgrade to its parent revision (or both parents for a merge head), and `upgrade head` on a fresh PostgreSQL Testcontainer. This checks command success and revision movement, but it does not prove that every historical migration restores data or schema exactly. Known exceptions include:
