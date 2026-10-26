@@ -407,7 +407,8 @@ it. Cultural inspiration never adds ingredients or alters calculated quantities.
 
 Normal generation uses two logical model calls, with at most one repair call
 for invalid/duplicate candidate sets. Each completion shares at most two
-inference attempts across approved free models, with one total deadline.
+inference attempts across configured models, with one total deadline. Retry
+count (two) and jittered backoff (up to two seconds) are adapter constants.
 Invalid AI content returns the standard
 `/errors/recipes/generation-failed` domain error; no incomplete proposals are saved.
 History uses the standard `items`, `total`, `page`, `page_size`, `total_pages`
@@ -429,8 +430,10 @@ live gateway's timeout. This deadline does not add generation idempotency.
 
 OpenRouter output is capped by `OPENROUTER_MAX_OUTPUT_TOKENS` (8192 by default).
 Model IDs are taken directly from the workload environment arrays. Every request
-requires strict structured outputs, restricts hosting providers, denies provider
-data collection and limits prompt, completion, request and image prices to zero.
+requires strict structured outputs, denies provider data collection and limits
+prompt, completion, request and image prices to zero. OPENROUTER_ALLOWED_PROVIDERS
+is optional: an empty list lets OpenRouter choose the hosting provider; a nonempty
+list restricts routing to those hosts.
 There is no catalogue fetch or local metadata cache. Select suitable free models
 operationally; the gateway enforces the request constraints.
 Empty AI configuration leaves inference unavailable while non-AI routes still run.

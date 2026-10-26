@@ -117,10 +117,8 @@ def test_model_and_provider_environment_uses_json_arrays(monkeypatch):
 @pytest.mark.parametrize(
     ("field", "minimum", "maximum"),
     [
-        ("openrouter_max_attempts", 1, 2),
         ("openrouter_request_timeout_seconds", 0.1, 25),
         ("openrouter_completion_timeout_seconds", 0.1, 40),
-        ("openrouter_retry_backoff_max_seconds", 0, 2),
         ("receipt_generation_timeout_seconds", 0.1, 60),
         ("recipe_generation_timeout_seconds", 0.1, 240),
         ("openrouter_max_output_tokens", 256, 65536),

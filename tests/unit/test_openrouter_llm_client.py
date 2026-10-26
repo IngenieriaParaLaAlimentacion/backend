@@ -24,16 +24,17 @@ from app.services.llm.structured_schema import structured_schema
 
 
 @pytest.fixture
-def configured_settings():
+def configured_settings(monkeypatch):
+    monkeypatch.setattr(
+        "app.services.llm.openrouter_llm_client.random.uniform", lambda *_: 0
+    )
     return SimpleNamespace(
         openrouter_api_key=SecretStr("test-key"),
         openrouter_receipt_models=["synthetic/model:free"],
         openrouter_recipe_models=["synthetic/model:free"],
         openrouter_allowed_providers=["synthetic-host"],
-        openrouter_max_attempts=2,
         openrouter_request_timeout_seconds=25,
         openrouter_completion_timeout_seconds=40,
-        openrouter_retry_backoff_max_seconds=0,
         openrouter_max_output_tokens=8192,
     )
 
@@ -94,10 +95,13 @@ async def test_image_schema_and_routing_are_explicit(configured_settings):
 
 
 @pytest.mark.parametrize("has_image", [False, True])
+@pytest.mark.parametrize("providers", [[], ["synthetic-host"]])
 async def test_configured_models_are_used_without_catalogue_requests(
     configured_settings,
     has_image,
+    providers,
 ):
+    configured_settings.openrouter_allowed_providers = providers
     configured_settings.openrouter_receipt_models = ["operator/receipt-model"]
     configured_settings.openrouter_recipe_models = ["operator/recipe-model"]
     requests = []
@@ -120,6 +124,10 @@ async def test_configured_models_are_used_without_catalogue_requests(
         payload = json.loads(requests[0].content)
         expected = "operator/receipt-model" if has_image else "operator/recipe-model"
         assert payload["model"] == expected
+        if providers:
+            assert payload["provider"]["only"] == providers
+        else:
+            assert "only" not in payload["provider"]
         assert all(price == 0 for price in payload["provider"]["max_price"].values())
     finally:
         await client.aclose()
@@ -286,7 +294,6 @@ async def test_bad_schema_request_never_loosens_or_retries(configured_settings, 
     [
         ("openrouter_api_key", None),
         ("openrouter_recipe_models", []),
-        ("openrouter_allowed_providers", []),
     ],
 )
 async def test_missing_config_is_lazy_and_makes_no_network_calls(
@@ -315,7 +322,6 @@ async def test_total_deadline_cancels_all_stages_without_more_attempts(
         "app.services.llm.openrouter_llm_client.random.uniform", lambda *_: 1
     )
     configured_settings.openrouter_completion_timeout_seconds = 0.02
-    configured_settings.openrouter_retry_backoff_max_seconds = 1
     calls = []
     cancelled = asyncio.Event()
 

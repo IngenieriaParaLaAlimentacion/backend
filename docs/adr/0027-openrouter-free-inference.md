@@ -11,18 +11,19 @@ switching and strictly free inference.
 ### Decision
 
 Use OpenRouter through httpx behind ILlmClient. Select explicit, qualified
-:free models and hosting providers through environment configuration.
-Call the configured model IDs directly; send zero price limits and explicit
-provider restrictions on every request. There is no runtime catalogue fetch,
+:free models through environment configuration. Hosting-provider restrictions
+are optional; an empty list lets OpenRouter choose the host. Call configured
+model IDs directly and send zero price limits on every request. There is no runtime catalogue fetch,
 metadata cache or refresh lock. Verify workload support when configuring models.
 No endpoint satisfying request constraints means AI unavailable. There is no
 paid or direct-service fallback. Gemini can be configured only if an eligible free variant exists.
 
 Do not enable random free-model routing. Receipt images and recipe context
 must satisfy the selected endpoint's current data policy before qualification.
-No model or provider is enabled by default.
+No workload model is configured by default.
 
-Retry/fallback attempts share one small completion budget. Receipt processing
+Retry/fallback attempts share a fixed two-attempt budget with jittered backoff
+up to two seconds. These are adapter constants. Receipt processing
 has a 60-second backend deadline; recipe generation retains its 90-second
 default total deadline. Cancellation propagates without starting new attempts.
 HTTP deadlines cannot guarantee cancellation of work already accepted upstream.

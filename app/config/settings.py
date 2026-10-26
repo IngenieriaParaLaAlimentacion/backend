@@ -117,11 +117,8 @@ class Settings(BaseSettings):
     openrouter_recipe_models: list[str] = Field(default_factory=list, max_length=2)
     openrouter_allowed_providers: list[str] = Field(default_factory=list)
     openrouter_max_output_tokens: int = Field(default=8192, ge=256, le=65536)
-    # Includes the first request, retries and model fallback together.
-    openrouter_max_attempts: int = Field(default=2, ge=1, le=2)
     openrouter_request_timeout_seconds: float = Field(default=25, gt=0, le=25)
     openrouter_completion_timeout_seconds: float = Field(default=40, gt=0, le=40)
-    openrouter_retry_backoff_max_seconds: float = Field(default=2, ge=0, le=2)
     receipt_generation_timeout_seconds: float = Field(default=60, gt=0, le=60)
     recipe_generation_timeout_seconds: float = Field(default=90, gt=0, le=240)
 

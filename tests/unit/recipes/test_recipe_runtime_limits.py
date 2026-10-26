@@ -115,10 +115,8 @@ async def test_request_deadline_includes_backoff_and_prevents_fallback(monkeypat
         openrouter_api_key=SecretStr("synthetic"),
         openrouter_recipe_models=["synthetic/a:free", "synthetic/b:free"],
         openrouter_allowed_providers=["synthetic-host"],
-        openrouter_max_attempts=2,
         openrouter_request_timeout_seconds=25,
         openrouter_completion_timeout_seconds=40,
-        openrouter_retry_backoff_max_seconds=1,
         openrouter_max_output_tokens=8192,
     )
     calls = []

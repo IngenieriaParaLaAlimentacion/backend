@@ -18,6 +18,9 @@ from app.services.llm.structured_schema import structured_schema
 
 logger = structlog.get_logger()
 
+_MAX_ATTEMPTS = 2
+_RETRY_BACKOFF_MAX_SECONDS = 2
+
 
 class _PermanentUnavailable(LlmUnavailableError):
     pass
@@ -46,36 +49,30 @@ class OpenRouterLlmClient(ILlmClient):
 
     @staticmethod
     def _read_response(response: httpx.Response) -> dict[str, Any]:
-        if response.status_code == 429:
-            raise LlmQuotaExhaustedError(
-                retry_after_seconds(response.headers.get("Retry-After"))
-            )
-        if response.status_code in {401, 402, 403}:
-            raise _PermanentUnavailable("Provider configuration unavailable")
-        if response.status_code in {404, 408} or response.status_code >= 500:
-            raise LlmUnavailableError("Provider unavailable")
-        try:
-            body = response.json()
-        except ValueError:
-            raise LlmClientError("Provider returned invalid response JSON") from None
-        if not isinstance(body, dict):
-            raise LlmClientError("Provider returned a non-object response")
-        has_error = "error" in body
-        error = body.get("error")
-        error = error if isinstance(error, dict) else {}
-        try:
-            code = (
-                response.status_code
-                if response.status_code >= 400
-                else int(error.get("code", response.status_code))
-            )
-        except (OverflowError, TypeError, ValueError):
-            code = response.status_code
-        if code == 429:
-            raise LlmQuotaExhaustedError(
-                retry_after_seconds(response.headers.get("Retry-After"))
-            )
-        if response.status_code >= 400 or has_error:
+        code = response.status_code
+        has_error = code >= 400
+        body = {}
+        if not has_error:
+            try:
+                body = response.json()
+            except ValueError:
+                raise LlmClientError(
+                    "Provider returned invalid response JSON"
+                ) from None
+            if not isinstance(body, dict):
+                raise LlmClientError("Provider returned a non-object response")
+            has_error = "error" in body
+            error = body.get("error")
+            if isinstance(error, dict):
+                try:
+                    code = int(error.get("code", code))
+                except (OverflowError, TypeError, ValueError):
+                    pass
+        if has_error:
+            if code == 429:
+                raise LlmQuotaExhaustedError(
+                    retry_after_seconds(response.headers.get("Retry-After"))
+                )
             if code in {401, 402, 403}:
                 raise _PermanentUnavailable("Provider configuration unavailable")
             if code in {404, 408} or code >= 500:
@@ -129,7 +126,7 @@ class OpenRouterLlmClient(ILlmClient):
             else settings.openrouter_recipe_models
         )
         providers = settings.openrouter_allowed_providers
-        if not key or not configured or not providers:
+        if not key or not configured:
             raise LlmUnavailableError("Inference is not configured")
         models = list(dict.fromkeys(configured))
         content = [{"type": "text", "text": prompt}]
@@ -144,7 +141,7 @@ class OpenRouterLlmClient(ILlmClient):
                 }
             )
         schema = structured_schema(response_schema)
-        for attempt in range(settings.openrouter_max_attempts):
+        for attempt in range(_MAX_ATTEMPTS):
             model = models[min(attempt, len(models) - 1)]
             payload = {
                 "model": model,
@@ -160,7 +157,6 @@ class OpenRouterLlmClient(ILlmClient):
                     },
                 },
                 "provider": {
-                    "only": providers,
                     "allow_fallbacks": False,
                     "require_parameters": True,
                     "data_collection": "deny",
@@ -172,6 +168,8 @@ class OpenRouterLlmClient(ILlmClient):
                     },
                 },
             }
+            if providers:
+                payload["provider"]["only"] = providers
             logger.info(
                 "llm.call",
                 gateway="openrouter",
@@ -196,9 +194,7 @@ class OpenRouterLlmClient(ILlmClient):
                     attempt=attempt + 1,
                     error_type=type(exc).__name__,
                 )
-                if attempt + 1 == settings.openrouter_max_attempts:
+                if attempt + 1 == _MAX_ATTEMPTS:
                     raise LlmUnavailableError("Inference attempts exhausted") from None
-                await asyncio.sleep(
-                    random.uniform(0, settings.openrouter_retry_backoff_max_seconds)
-                )
+                await asyncio.sleep(random.uniform(0, _RETRY_BACKOFF_MAX_SECONDS))
         raise LlmUnavailableError("Inference attempts exhausted")
