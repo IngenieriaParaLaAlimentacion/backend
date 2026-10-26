@@ -124,6 +124,47 @@ Before deploying this change in Railway, set the backend service's **Pre-Deploy 
 
 All configuration is passed via environment variables (see `.env.example`). If `DATABASE_URL` is set, it takes precedence over the individual database fields, including Compose's `DATABASE_HOST=postgres` override.
 
+### Published image
+
+Every push to `develop` and `main` publishes the image to GitHub Container Registry, once the lint, the tests and the security scan pass and the image has started and answered `/ready` against an empty PostgreSQL. A push to any other branch, which is what a pull request is built from, publishes nothing.
+
+| | |
+|---|---|
+| Image | `ghcr.io/ingenieriaparalaalimentacion/backend` |
+| `develop`, `main` | The latest commit of that branch |
+| `sha-<commit>` | That exact commit (the full 40-character hash); never changes |
+
+The image is private. From a workflow of another repository of the organization, log in with its own token; the package grants that repository read access:
+
+```yaml
+permissions:
+  packages: read
+steps:
+  - uses: docker/login-action@v3
+    with:
+      registry: ghcr.io
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
+```
+
+From a machine, log in with a personal access token that has the `read:packages` scope.
+
+#### Run it with its dependencies
+
+`e2e/compose.yml` starts the image next to PostgreSQL, applies the migrations and seeds, and waits until `/ready` answers:
+
+```bash
+# Start (BACKEND_IMAGE picks another tag; the default is develop)
+docker compose -f e2e/compose.yml up --wait
+
+# Stop and drop the database
+docker compose -f e2e/compose.yml down -v
+```
+
+The API listens on `http://localhost:8080`. The configuration is `e2e/.env.e2e`, which holds throwaway test values only: no real secret goes in it. With it the backend needs no file storage, Gemini, SMTP or Redis, and the rate limits are high enough for the same user to log in repeatedly. The seeded superadmin is the `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` of that file.
+
+The image and `e2e/compose.yml` are versioned together. From another repository, check this one out at the commit the image was built from and set `BACKEND_IMAGE` to the matching `sha-<commit>` tag, so that both match. The default, `develop`, moves with every merge: it is fine on a machine, but two runs of a CI can then use different images, and the compose they downloaded may not fit the one they run.
+
 ### Migration rollback limits
 
 CI checks that the current head can run `upgrade head`, downgrade to its parent revision (or both parents for a merge head), and `upgrade head` on a fresh PostgreSQL Testcontainer. This checks command success and revision movement, but it does not prove that every historical migration restores data or schema exactly. Known exceptions include:

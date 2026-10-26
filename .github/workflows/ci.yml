@@ -72,18 +72,104 @@ jobs:
 
   docker-build:
     runs-on: ubuntu-latest
+    # The image is published from this job, so it waits for everything that can fail.
+    needs: [lint, unit-tests, integration-tests, semgrep]
+    # Two pushes to develop or main must not race to move the branch's tag, so their
+    # runs publish in turn. Any other branch gets a group of its own and never waits.
+    concurrency:
+      group: ${{ (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main') && format('publish-{0}', github.ref) || github.run_id }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      packages: write
+    env:
+      PUBLISH: ${{ github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' }}
+    services:
+      # Same credentials as DATABASE_* in e2e/.env.e2e.
+      postgres:
+        image: postgres:17.9-bookworm
+        env:
+          POSTGRES_DB: db
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U admin -d db"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
         with:
           fetch-depth: 1
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Compute image name
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
 
-      - name: Build Docker image (verify only, no push)
-        uses: docker/build-push-action@v5
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f #v3
+
+      - name: Log in to GHCR
+        if: env.PUBLISH == 'true'
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 #v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 #v5
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=sha-,format=long
+
+      - name: Build Docker image
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 #v5
         with:
           context: .
-          push: false
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # The container shares the runner's network to reach the PostgreSQL service.
+      - name: Prepare the database
+        run: >-
+          docker run --rm --network host
+          --env-file e2e/.env.e2e -e DATABASE_HOST=localhost
+          ${{ env.IMAGE }}:sha-${{ github.sha }}
+          sh scripts/pre_deploy.sh
+
+      - name: Start the backend
+        run: >-
+          docker run -d --name backend --network host
+          --env-file e2e/.env.e2e -e DATABASE_HOST=localhost
+          ${{ env.IMAGE }}:sha-${{ github.sha }}
+
+      - name: Wait for the backend to be ready
+        run: |
+          for _ in $(seq 1 60); do
+            curl -fsS http://localhost:8080/ready && exit 0
+            if [ "$(docker inspect -f '{{.State.Running}}' backend)" != "true" ]; then
+              echo "The backend stopped before it was ready" >&2
+              exit 1
+            fi
+            sleep 2
+          done
+          echo "The backend did not become ready" >&2
+          exit 1
+
+      - name: Show the backend logs
+        if: failure()
+        run: docker logs backend
+
+      - name: Push Docker image (only from develop and main)
+        if: env.PUBLISH == 'true'
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+        run: echo "$TAGS" | xargs -n1 docker push
