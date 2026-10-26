@@ -73,14 +73,6 @@ def test_openrouter_defaults_disable_inference_without_breaking_settings():
     assert config.openrouter_allowed_providers == []
 
 
-@pytest.mark.parametrize(
-    "model", ["google/gemini-paid", "openrouter/free", "x/y:free "]
-)
-def test_paid_or_implicit_model_selection_is_rejected(model):
-    with pytest.raises(ValidationError):
-        Settings(_env_file=None, openrouter_receipt_models=[model])
-
-
 def test_openrouter_key_is_secret_and_blank_is_unset():
     assert Settings(_env_file=None, openrouter_api_key="").openrouter_api_key is None
     config = Settings(_env_file=None, openrouter_api_key="test-secret")
@@ -94,11 +86,10 @@ def test_openrouter_key_is_secret_and_blank_is_unset():
 @pytest.mark.parametrize(
     "models",
     [
-        ["x/y:free", "x/y:free"],
         ["x/a:free", "x/b:free", "x/c:free"],
     ],
 )
-def test_unreachable_or_duplicate_model_chain_is_rejected(field, models):
+def test_model_chain_exceeding_attempt_budget_is_rejected(field, models):
     with pytest.raises(ValidationError):
         Settings(_env_file=None, **{field: models})
 
@@ -110,12 +101,16 @@ def test_unauditable_provider_ids_are_rejected(providers):
 
 
 def test_model_and_provider_environment_uses_json_arrays(monkeypatch):
-    monkeypatch.setenv("OPENROUTER_RECEIPT_MODELS", json.dumps(["x/vision:free"]))
-    monkeypatch.setenv("OPENROUTER_RECIPE_MODELS", json.dumps(["x/text:free"]))
+    monkeypatch.setenv(
+        "OPENROUTER_RECEIPT_MODELS", json.dumps(["operator/vision-model"])
+    )
+    monkeypatch.setenv(
+        "OPENROUTER_RECIPE_MODELS", json.dumps(["operator/recipe-model"])
+    )
     monkeypatch.setenv("OPENROUTER_ALLOWED_PROVIDERS", json.dumps(["host"]))
     config = Settings(_env_file=None)
-    assert config.openrouter_receipt_models == ["x/vision:free"]
-    assert config.openrouter_recipe_models == ["x/text:free"]
+    assert config.openrouter_receipt_models == ["operator/vision-model"]
+    assert config.openrouter_recipe_models == ["operator/recipe-model"]
     assert config.openrouter_allowed_providers == ["host"]
 
 

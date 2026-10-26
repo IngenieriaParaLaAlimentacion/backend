@@ -33,8 +33,10 @@ cp .env.example .env
 AI credentials are backend-only. Configure OPENROUTER_API_KEY, ordered JSON
 arrays OPENROUTER_RECEIPT_MODELS / OPENROUTER_RECIPE_MODELS, and audited
 OPENROUTER_ALLOWED_PROVIDERS. Defaults leave inference unavailable while
-non-AI flows still run. Only qualified, current :free variants are accepted;
-there is no paid fallback. The gateway's account quota is shared across models.
+non-AI flows still run. Model IDs are read from these environment arrays without
+a startup naming restriction. Runtime eligibility and zero-price request caps
+permit only qualified, current :free variants; there is no paid fallback.
+The gateway's account quota is shared across models.
 
 Before enabling a model, verify its live model/endpoint prices, image support
 where needed, strict schema behavior, Spanish task quality, latency and data

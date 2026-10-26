@@ -200,21 +200,6 @@ class Settings(BaseSettings):
             return None
         return value
 
-    @field_validator("openrouter_receipt_models", "openrouter_recipe_models")
-    @classmethod
-    def explicit_free_model_ids(cls, values: list[str]) -> list[str]:
-        """Accept only unique, explicit free model IDs."""
-        if len(set(values)) != len(values):
-            raise ValueError("Model IDs must be unique")
-        for value in values:
-            if (
-                value != value.strip()
-                or "/" not in value
-                or not value.endswith(":free")
-            ):
-                raise ValueError("Only explicit OpenRouter :free model IDs are allowed")
-        return values
-
     @field_validator("openrouter_allowed_providers")
     @classmethod
     def provider_ids_are_nonempty(cls, values: list[str]) -> list[str]:
