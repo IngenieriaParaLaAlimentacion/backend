@@ -67,7 +67,7 @@ poetry run alembic current
 
 ## E2E reference data
 
-`seed_reference_e2e.py` loads a fictitious dataset, so E2E tests and the user manual's screenshots start from the same state. It is **never** run by the service startup or the deploy: run it by hand against a disposable database, after the migrations and the seeds of the superadmin and the food catalog.
+`seed_reference_e2e.py` loads a fictitious dataset, so E2E tests and the user manual's screenshots start from the same state. It is **never** run by the service startup or the deploy. Run it by hand against a disposable database, after the migrations and the seeds of the superadmin and the food catalog; the E2E compose does that for you.
 
 ```bash
 # Locally
