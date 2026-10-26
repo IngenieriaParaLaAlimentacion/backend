@@ -1,9 +1,25 @@
+x-backend-build: &backend-build
+  context: .
+  dockerfile: Dockerfile
+
 services:
 
+  migrate:
+    build: *backend-build
+    command: ["sh", "scripts/pre_deploy.sh"]
+    env_file:
+      - .env
+    environment:
+      - DATABASE_HOST=postgres
+    networks:
+      - backend-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: *backend-build
 
     ports:
       - "8080:${PORT}"
@@ -20,6 +36,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
 
     healthcheck:
       test:

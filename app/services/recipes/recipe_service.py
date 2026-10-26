@@ -9,14 +9,12 @@ import structlog
 from app.config.settings import settings
 from app.core.interfaces.llm_client import ILlmClient
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.domain.food_catalog import MeasurementUnit
 from app.domain.food_outflow import FoodOutflowCategory
 from app.domain.nutrition import (
     StockedFood,
 )
-from app.domain.user import UserActor, UserRole
+from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
-    FoodNotFoundError,
     InsufficientStockError,
     RecipeAlreadyChosenError,
     RecipeGenerationTimeoutError,
@@ -26,7 +24,6 @@ from app.exceptions.domain_exceptions import (
     RecipeNotFoundError,
     RecipeNoUsableStockError,
     RecipeScaleTooSmallError,
-    RoleNotAllowedError,
 )
 from app.models.recipes.recipe import (
     RecipeProposalRecord,
@@ -37,7 +34,6 @@ from app.schemas.food_intakes.food_intake_schema import FoodLineRequest
 from app.schemas.food_outflows.food_outflow_schema import FoodOutflowRequest
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.recipes.recipe_schema import (
-    GramConversionInput,
     RecipeHistoryItem,
     RecipeIngredient,
     RecipeProposal,
@@ -49,7 +45,7 @@ from app.schemas.recipes.recipe_schema import (
 from app.services.access import check_establishment_access, check_field_work_access
 from app.services.food_outflows.food_outflow_service import FoodOutflowService
 from app.services.nutrition.compositions import composition_from_food
-from app.services.nutrition.grams import CatalogGramsConverter
+from app.services.nutrition.grams import GramsConverter
 from app.services.nutrition.indicators import ENERGY
 from app.services.nutrition.nutrition_service import NutritionService
 from app.services.recipes.calculations import calculate_proposal
@@ -125,7 +121,7 @@ class RecipeService:
         """Load one plain snapshot, then release the database connection."""
         establishment = await self._access(data.establishment_id, actor)
         rows = await self.uow.food_stock_repo.stocked_foods(data.establishment_id)
-        converter = CatalogGramsConverter([food for food, _ in rows])
+        converter = await GramsConverter.load(self.uow, [food for food, _ in rows])
         foods = {
             food.id: food
             for food, quantity in rows
@@ -226,7 +222,7 @@ class RecipeService:
         """Prepare one snapshot, generate without DB connections, then save."""
         snapshot = await self._generation_snapshot(data, actor)
         proposals = await RecipeGenerator(
-            self.llm, NutritionService(self.uow, snapshot.converter)
+            self.llm, NutritionService(self.uow)
         ).generate(data, snapshot)
         request = RecipeRequestRecord(
             id=uuid4(),
@@ -376,7 +372,7 @@ class RecipeService:
                 item for item in source.ingredients if item.food_id not in foods
             )
             raise RecipeIngredientUnavailableError(str(missing.food_id), missing.name)
-        converter = CatalogGramsConverter(rows)
+        converter = await GramsConverter.load(self.uow, rows)
         # Preserve stock-unit quantities when reviewed gram metadata changes.
         ratio = Decimal(children_count) / Decimal(original.children_count)
         ingredients = []
@@ -400,7 +396,7 @@ class RecipeService:
                     unit=item.unit,
                 )
             )
-        nutrition = NutritionService(self.uow, converter)
+        nutrition = NutritionService(self.uow)
         target = nutrition.target_energy_kcal(children_count, original.meal_type)
         proposal = calculate_proposal(
             uuid4(),
@@ -476,22 +472,3 @@ class RecipeService:
         await self._choose(record, proposal, actor)
         await self.uow.commit()
         return self._response(record), True
-
-    async def set_conversion(
-        self, food_id: UUID, data: GramConversionInput, actor: UserActor
-    ) -> GramConversionInput:
-        """Configure a reviewed stock-unit mass as an administrator."""
-        if actor.role not in (UserRole.ADMIN, UserRole.SUPERADMIN):
-            raise RoleNotAllowedError()
-        foods = await self.uow.food_repo.get_by_ids([food_id])
-        if not foods:
-            raise FoodNotFoundError(str(food_id))
-        food = foods[0]
-        value = (
-            Decimal(1000)
-            if food.base_unit == MeasurementUnit.KILOGRAMOS
-            else data.grams_per_base_unit
-        )
-        await self.uow.food_repo.set_gram_conversion(food, value)
-        await self.uow.commit()
-        return GramConversionInput(grams_per_base_unit=value)

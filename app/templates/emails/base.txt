@@ -1,0 +1,10 @@
+Hola{% if name %}, {{ name }}{% endif %}:
+
+{% block content %}{% endblock %}
+
+--
+{% block footer_reason %}{% endblock %}
+
+
+Este correo se envía automáticamente; las respuestas a esta dirección no se leen.
+Raíz · Ingeniería Para La Alimentación

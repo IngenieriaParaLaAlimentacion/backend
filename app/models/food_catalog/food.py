@@ -1,12 +1,10 @@
 import uuid
 
 from sqlalchemy import (
-    CheckConstraint,
     Column,
     DateTime,
     ForeignKey,
     Index,
-    Numeric,
     SmallInteger,
     String,
     func,
@@ -25,9 +23,6 @@ class Food(Base):
 
     __tablename__ = "foods"
     __table_args__ = (
-        CheckConstraint(
-            "grams_per_base_unit > 0", name="ck_foods_positive_gram_conversion"
-        ),
         Index("ix_foods_category_id", "category_id"),
         Index("ix_foods_gapa_category_id", "gapa_category_id"),
     )
@@ -50,7 +45,6 @@ class Food(Base):
         SAEnum(MeasurementUnit, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
     )
-    grams_per_base_unit = Column(Numeric(12, 3), nullable=True)
     source_page = Column(SmallInteger, nullable=True)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

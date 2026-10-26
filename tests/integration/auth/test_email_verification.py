@@ -38,7 +38,7 @@ async def _get_user_by_email(email: str):
 def capture_verification_deeplink(monkeypatch):
     captured = {"deeplink": None}
 
-    async def _fake(to_email, deeplink, expires_at):
+    async def _fake(to_email, deeplink, expires_at, name):
         captured["deeplink"] = deeplink
 
     monkeypatch.setattr("app.services.auth.auth_service.send_verification_email", _fake)

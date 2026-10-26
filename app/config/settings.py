@@ -89,6 +89,9 @@ class Settings(BaseSettings):
     password_recovery_path: str = "/reset-password"
     email_verification_path: str = "/verify-email"
     invite_path: str = "/invite"
+    backoffice_signin_path: str = "/signin"
+    # Public URL of this API; email images are served from its /static mount.
+    public_base_url: AnyUrl = "http://localhost:8000"
 
     # Receipt upload
     receipt_image_max_bytes: int = 10 * 1024 * 1024  # 10 MiB
@@ -174,6 +177,20 @@ class Settings(BaseSettings):
         """Derived email verification deeplink URL from the backoffice base URL."""
         return self._build_deeplink(
             self.backoffice_deeplink_base, self.email_verification_path
+        )
+
+    @property
+    def backoffice_signin_url(self) -> str:
+        """Derived backoffice sign-in URL from the backoffice base URL."""
+        return self._build_deeplink(
+            self.backoffice_deeplink_base, self.backoffice_signin_path
+        )
+
+    @property
+    def email_logo_url(self) -> str:
+        """Derived URL of the logo shown in system emails."""
+        return self._build_deeplink(
+            self.public_base_url, "/static/emails/raiz-logo.png"
         )
 
     def invite_deeplink_url(self, role: UserRole) -> str:

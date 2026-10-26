@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from datetime import datetime
-from enum import Enum, StrEnum
+from enum import StrEnum
 from uuid import UUID
 
 from app.domain.common_domains import normalize_optional_str
 
 
-class ResponseType(str, Enum):
+class ResponseType(StrEnum):
     """Response types a survey question can accept."""
 
     TEXT = "text"
@@ -16,14 +16,14 @@ class ResponseType(str, Enum):
     DATE = "date"
 
 
-class SurveyInstrumentType(str, Enum):
+class SurveyInstrumentType(StrEnum):
     """Whether a survey is the canonical FAO FIES instrument or a custom one."""
 
     CUSTOM = "custom"
     FIES = "fies"
 
 
-class SurveyResponseTarget(str, Enum):
+class SurveyResponseTarget(StrEnum):
     """What entity a survey's responses are about."""
 
     SUBJECT = "subject"

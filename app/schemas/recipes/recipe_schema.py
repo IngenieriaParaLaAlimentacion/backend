@@ -47,13 +47,6 @@ class ReuseInput(BaseModel):
     children_count: ChildrenCount
 
 
-class GramConversionInput(BaseModel):
-    """Reviewed mass of one catalog base unit; null removes the conversion."""
-
-    model_config = ConfigDict(extra="forbid")
-    grams_per_base_unit: Decimal | None = Field(gt=0, max_digits=12, decimal_places=3)
-
-
 class RecipeIngredient(BaseModel):
     """Ingredient quantities for the entire meal, in grams and stock units."""
 

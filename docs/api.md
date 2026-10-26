@@ -309,7 +309,6 @@ Regenerate with `poetry run python docs/generate_openapi.py recipes --tag "Recip
 | POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/choose` | 201 selection; identical replay 200; another choice 409 |
 | POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/reuse-preview` | 200 read-only rescaled proposal; current stock checked; body `{"children_count":45}` |
 | POST | `/recipe-recommendations/{request_id}/proposals/{proposal_id}/reuse` | 201 new selected request, or 200 replay of its client-generated id |
-| PUT | `/food-catalog/foods/{food_id}/gram-conversion` | Admin-only grams per litre/unit; kilograms always use 1000 |
 
 Generation body (no additional fields, no free text):
 
@@ -335,9 +334,9 @@ Nutritional and energy shortfalls do **not** prevent offering a recipe: clients
 must display `unmet_constraints`, energy and warnings. Empty stock, no usable
 energy or quantities below stock precision return 409
 `/errors/recipes/no-usable-stock` **before any model call**. Foods in litres or
-units require a reviewed gram conversion; absent conversions are excluded and
-reported, never guessed. Configure with `{"grams_per_base_unit":50}` (e.g. one
-egg); `null` clears it. All final quantities are rounded down to stock precision,
+units need the food's density or unit weight from its food equivalences
+(ADR-0025); foods without it are excluded and reported, never guessed. All final
+quantities are rounded down to stock precision,
 and indicators are recalculated from the amounts actually offered.
 
 Choosing has no body. It creates a kitchen outflow and selection atomically.
@@ -414,11 +413,9 @@ History uses the standard `items`, `total`, `page`, `page_size`, `total_pages`
 envelope, ordered by date and id descending. Ingredient amounts and steps are
 immutable snapshots; prompt templates are versioned in the repository.
 
-The gram-conversion endpoint is a temporary adapter pending #192. Its shared
-conversion module and food-equivalence management will replace this adapter and
-endpoint; existing reviewed factors must be transferred before retiring the
-catalog field. Kilogram conversions remain exact and missing mass/density factors
-are never guessed.
+Recipes convert stock to grams with the shared conversion module (ADR-0025).
+Kilogram conversions are exact and missing density or unit-weight factors are
+never guessed.
 
 Recipe generation has a total service budget, configured by
 `RECIPE_GENERATION_TIMEOUT_SECONDS` (90 seconds by default). It includes context

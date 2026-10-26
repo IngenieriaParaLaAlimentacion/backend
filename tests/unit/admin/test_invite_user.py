@@ -19,6 +19,7 @@ def _make_user(email="admin@test.com"):
     user = MagicMock()
     user.id = uuid.uuid4()
     user.email = email
+    user.name = ""
     user.role = UserRole.ADMIN
     user.status = UserStatus.ACTIVE
     return user
@@ -28,6 +29,7 @@ def _make_pending_user(email="invitee@test.com"):
     user = MagicMock()
     user.id = uuid.uuid4()
     user.email = email
+    user.name = ""
     user.role = UserRole.ADMIN
     user.status = UserStatus.PENDING_VALIDATION
     return user
@@ -217,6 +219,7 @@ class TestInviteAdmin:
                 "https://deeplink/xyz",
                 expires_at,
                 UserRole.ADMIN,
+                None,
             )
 
     async def test_builds_deeplink_with_plain_token_and_role(
@@ -398,6 +401,7 @@ class TestResendInvite:
                 "https://deeplink/resend",
                 expires_at,
                 UserRole.ADMIN,
+                None,
             )
 
     async def test_builds_deeplink_with_plain_token_and_user_role(

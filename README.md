@@ -45,6 +45,11 @@ Crear un archivo `.env` en la raíz del directorio `backend/` basándose en el `
 ## Ejecución
 
 ```bash
+# Con PostgreSQL local y DATABASE_HOST=localhost en .env:
+poetry run alembic upgrade head
+poetry run python seed_superadmin.py
+poetry run python seed_food_catalog.py
+
 # Servidor de desarrollo con hot-reload
 poetry run uvicorn app.main:app --reload
 
@@ -56,8 +61,8 @@ uvicorn app.main:app --reload
 docker compose up --build
 ```
 
-La API queda disponible en `http://localhost:8000`.  
-La documentación interactiva (Swagger UI) se encuentra en `http://localhost:8000/docs`.
+La API queda disponible en `http://localhost:8080`.
+La documentación interactiva (Swagger UI) se encuentra en `http://localhost:8080/docs`.
 
 ---
 
@@ -103,10 +108,13 @@ poetry run pre-commit run --all-files
 
 ## Migraciones de base de datos
 
-Las migraciones se ejecutan automáticamente al iniciar mediante el entrypoint de Docker.
-Para ejecutarlas manualmente:
+`docker compose up --build` ejecuta primero el servicio `migrate` y después inicia el backend. Reiniciar el backend no vuelve a migrar ni sembrar datos.
+
+En Railway, configurar el **Pre-Deploy Command** del servicio backend en los ambientes de test y producción como `sh scripts/pre_deploy.sh`. Este comando aplica las migraciones y ejecuta los seeds de superadmin y catálogo de alimentos; si falla, el nuevo deploy no arranca. El `Dockerfile` inicia solo Uvicorn.
+
+Para ejecutar el paso manualmente:
 ```bash
-poetry run alembic upgrade head
+poetry run alembic upgrade head && poetry run python seed_superadmin.py && poetry run python seed_food_catalog.py
 ```
 
 ---

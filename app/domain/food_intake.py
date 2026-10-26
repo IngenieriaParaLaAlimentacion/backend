@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
-from enum import Enum
+from enum import StrEnum
 from uuid import UUID
 
 from app.domain.common_domains import IdentifierRefDomain
@@ -9,15 +9,15 @@ from app.domain.food_catalog import MeasurementUnit
 from app.domain.measurement import EstablishmentRefDomain
 
 
-class FoodIntakeSource(str, Enum):
+class FoodIntakeSource(StrEnum):
     """How a food intake was loaded into the system."""
 
     MANUAL = "manual"
     PHOTO = "photo"
 
 
-class FoodIntakeOriginType(str, Enum):
-    """The kind of source that supplied an intake."""
+class FoodIntakeOriginType(StrEnum):
+    """The organization type that supplied an intake."""
 
     NATIONAL_GOVERNMENT = "national_government"
     PROVINCIAL_GOVERNMENT = "provincial_government"
