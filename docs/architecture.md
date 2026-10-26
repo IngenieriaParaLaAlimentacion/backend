@@ -91,9 +91,9 @@ All external API calls are orchestrated by the services layer. Credentials are n
 
 The structured LLM adapter is created lazily and shared within one application.
 Application lifespan closes its pooled HTTP transport. Missing AI configuration
-does not prevent startup or non-inference operations. Select workload models through environment configuration. Hosting-provider
-restriction is optional; request price caps remain zero. See
-[ADR-0027](adr/0027-openrouter-free-inference.md).
+does not prevent startup or non-inference operations. Select workload models
+through environment configuration. Hosting-provider restriction is optional;
+request price caps remain zero.
 
 Services call centralized establishment-access helpers explicitly before scoped
 work. Routes parse and delegate, and do not duplicate those permission rules.

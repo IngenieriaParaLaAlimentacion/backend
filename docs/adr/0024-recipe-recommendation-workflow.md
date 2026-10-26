@@ -1,9 +1,5 @@
 # ADR-0024: Recipe recommendations with Gemini and the nutrition LP
 
-> The direct Gemini transport choice is superseded by
-> [ADR-0027](0027-openrouter-free-inference.md). The recipe workflow,
-> deterministic nutrition optimizer and persistence rules still apply.
-
 - **Status**: Accepted
 - **Date**: 2026-10-17
 - **Related**: #170, #169, ADR-0022, ADR-0021, ADR-0014, ADR-0004
