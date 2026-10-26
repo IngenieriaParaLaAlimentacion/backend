@@ -26,8 +26,9 @@ has a 60-second backend deadline; recipe generation retains its 90-second
 default total deadline. Cancellation propagates without starting new attempts.
 HTTP deadlines cannot guarantee cancellation of work already accepted upstream.
 
-Provider quota exhaustion and temporary unavailability have canonical API
-errors. Invalid receipt extraction retains manual entry; invalid recipe output
+Recipe generation quota exhaustion and temporary unavailability have canonical
+API errors. Receipt provider failures and deadline expiry retain HTTP 200 with
+an empty proposal and manual-entry guidance. Invalid recipe output
 retains domain validation and existing generation failure behavior.
 
 ### Consequences

@@ -16,13 +16,9 @@ from app.domain.printed_quantity import parse_printed_quantity
 from app.domain.unit_conversion import ConversionFactors, prefill_from_printed
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
-    AiQuotaExhaustedError,
-    AiUnavailableError,
     ImageContentMismatchError,
     ImageTooLargeError,
     LlmClientError,
-    LlmQuotaExhaustedError,
-    LlmUnavailableError,
     ObjectStorageError,
     ReceiptPhotoStorageError,
     UnsupportedImageTypeError,
@@ -218,11 +214,15 @@ class ReceiptIntakeService:
                     image=image,
                     actor=actor,
                 )
-        except TimeoutError as exc:
+        except TimeoutError:
             if not deadline.expired():
                 raise
             await self.uow.rollback()
-            raise AiUnavailableError() from exc
+            return ReceiptProposalResponse(
+                establishment_id=establishment_id,
+                lines=[],
+                message=self._MANUAL_FALLBACK_MESSAGE,
+            )
 
     async def _propose_from_photo(
         self,
@@ -244,7 +244,7 @@ class ReceiptIntakeService:
         ``None`` otherwise. On a match, ``quantity`` and ``unit`` are
         prefilled from the printed quantity converted to the food's base
         unit, when it can be. Callers must review all lines locally before
-        confirmation. When the extractor finds nothing or returns invalid content, the
+        confirmation. When the extractor finds nothing or the LLM fails, the
         response falls back to an empty proposal with a hint to enter the
         intake manually rather than surfacing the failure as an error.
 
@@ -270,10 +270,6 @@ class ReceiptIntakeService:
                 image_content_type=content_type,
             )
             extracted = ReceiptExtraction.model_validate(result)
-        except LlmQuotaExhaustedError as exc:
-            raise AiQuotaExhaustedError(exc.retry_after) from exc
-        except LlmUnavailableError as exc:
-            raise AiUnavailableError() from exc
         except (LlmClientError, ValidationError) as exc:
             logger.warning(
                 "receipt_intake_llm_failed",

@@ -276,34 +276,26 @@ class TestAuthAndAccess:
 
 
 @pytest.mark.parametrize(
-    "failure,status,slug,delay",
+    "failure",
     [
-        (LlmQuotaExhaustedError(12), 429, "ai/quota-exhausted", 12),
-        (LlmQuotaExhaustedError(), 429, "ai/quota-exhausted", None),
-        (LlmUnavailableError("private provider failure"), 503, "ai/unavailable", None),
+        LlmQuotaExhaustedError(12),
+        LlmQuotaExhaustedError(),
+        LlmUnavailableError("private provider failure"),
     ],
 )
-async def test_provider_errors_have_canonical_safe_contract(
+async def test_provider_errors_preserve_manual_entry_contract(
     client,
     admin_headers,
     db_establishment,
     fake_llm_client,
     failure,
-    status,
-    slug,
-    delay,
 ):
     fake_llm_client.error = failure
     response = await client.post(
         URL, headers=admin_headers, **_upload(db_establishment.id)
     )
-    assert response.status_code == status
-    assert response.headers["content-type"] == "application/problem+json"
-    assert response.json()["type"] == f"/errors/{slug}"
+    assert response.status_code == 200
+    assert response.json()["lines"] == []
+    assert response.json()["message"]
     assert "private" not in response.text
-    if delay:
-        assert response.headers["retry-after"] == str(delay)
-        assert response.json()["retry_after"] == delay
-    else:
-        assert "retry-after" not in response.headers
-        assert "retry_after" not in response.json()
+    assert "retry-after" not in response.headers

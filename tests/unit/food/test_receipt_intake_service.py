@@ -13,8 +13,6 @@ from app.domain.food_intake import FoodIntakeOriginType
 from app.domain.unit_conversion import ConversionFactors
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
-    AiQuotaExhaustedError,
-    AiUnavailableError,
     EstablishmentAccessDeniedError,
     EstablishmentNotFoundError,
     ImageContentMismatchError,
@@ -176,15 +174,11 @@ async def test_printed_quantity_parsing_preserves_proposal_lines(
 
 
 @pytest.mark.parametrize(
-    "failure,expected",
-    [
-        (LlmQuotaExhaustedError(12), AiQuotaExhaustedError),
-        (LlmUnavailableError("unavailable"), AiUnavailableError),
-    ],
+    "failure",
+    [LlmQuotaExhaustedError(12), LlmUnavailableError("unavailable")],
 )
-async def test_provider_failures_are_distinct_from_invalid_content(
+async def test_provider_failures_preserve_manual_fallback(
     failure,
-    expected,
     uow,
     storage,
     food_intake_service,
@@ -193,16 +187,14 @@ async def test_provider_failures_are_distinct_from_invalid_content(
 ):
     llm_client.complete.side_effect = failure
     service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
-    with pytest.raises(expected) as caught:
-        await service.propose_from_photo(
-            establishment_id=uuid.uuid4(),
-            content_type="image/png",
-            image=PNG_BYTES,
-            actor=admin_actor,
-        )
-    if isinstance(failure, LlmQuotaExhaustedError):
-        assert caught.value.extensions == {"retry_after": 12}
-        assert caught.value.headers == {"Retry-After": "12"}
+    response = await service.propose_from_photo(
+        establishment_id=uuid.uuid4(),
+        content_type="image/png",
+        image=PNG_BYTES,
+        actor=admin_actor,
+    )
+    assert response.lines == []
+    assert response.message == service._MANUAL_FALLBACK_MESSAGE
     uow.commit.assert_not_awaited()
     uow.food_repo.find_best_match.assert_not_awaited()
     storage.save.assert_not_awaited()
@@ -227,16 +219,17 @@ async def test_proposal_deadline_cancels_work_and_rolls_back(
 
     llm_client.complete.side_effect = blocked
     service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
-    with pytest.raises(AiUnavailableError):
-        await asyncio.wait_for(
-            service.propose_from_photo(
-                establishment_id=uuid.uuid4(),
-                content_type="image/png",
-                image=PNG_BYTES,
-                actor=admin_actor,
-            ),
-            1,
-        )
+    response = await asyncio.wait_for(
+        service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        ),
+        1,
+    )
+    assert response.lines == []
+    assert response.message == service._MANUAL_FALLBACK_MESSAGE
     assert cancelled.is_set()
     uow.rollback.assert_awaited_once()
     uow.commit.assert_not_awaited()

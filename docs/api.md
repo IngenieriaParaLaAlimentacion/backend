@@ -435,8 +435,8 @@ There is no paid fallback. Model capability/price metadata is refreshed every
 300 seconds and expired metadata cannot authorize inference if refresh fails.
 Empty AI configuration leaves inference unavailable while non-AI routes still run.
 
-Provider usage limits return `429 /errors/ai/quota-exhausted`, distinct from the
-inbound caller limit `429 /errors/rate-limited`. A known, validated provider delay
+Recipe generation provider usage limits return `429 /errors/ai/quota-exhausted`,
+distinct from the inbound caller limit `429 /errors/rate-limited`. A known, validated provider delay
 appears in both `Retry-After` and integer `retry_after`; otherwise both are absent.
 No reset time or daily allowance is promised. Missing credentials, no eligible
 endpoint or exhausted temporary failures return `503 /errors/ai/unavailable`.
@@ -444,10 +444,13 @@ Neither error exposes provider prose. Clients must not automatically resubmit.
 
 Receipt success remains an HTTP 200 proposal without `needs_review`. All lines
 require local review before confirmation. Invalid extraction content still returns
-an empty proposal with a manual-entry hint; provider quota and availability now
-use the canonical errors above. Manual intake and confirmation remain usable
-without inference. The entire receipt proposal service has a 60-second budget
-(`RECEIPT_GENERATION_TIMEOUT_SECONDS`); expiry returns AI unavailable after rollback.
+an empty proposal with a manual-entry hint. Provider quota, unavailable endpoints
+and missing AI configuration use that same HTTP 200 manual fallback, preserving
+the existing receipt UX. The app opens the review form directly with the captured
+photo. Inbound caller rate limits remain HTTP 429. Manual intake and confirmation
+remain usable without inference. The entire receipt proposal service has a
+60-second budget (`RECEIPT_GENERATION_TIMEOUT_SECONDS`); expiry rolls back and
+returns the same manual fallback.
 
 Receipts and recipes share one lazy OpenRouter client per application instance,
 closed at lifespan shutdown. Logs contain controlled model, attempt and error-type
