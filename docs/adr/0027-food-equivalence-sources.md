@@ -18,7 +18,7 @@ SARA 2 gives nutrients per 100 g of edible portion, in the raw state, and nothin
 | | FAO/INFOODS Density Database v2.0 | UBA weight/volume table |
 | --- | --- | --- |
 | What it gives | Density and specific gravity of 638 foods, in English | Weight per unit of Argentine foods and products, in Spanish |
-| Used for | `density_g_ml` (139 rows) | `unit_weight_g` (24 rows) |
+| Used for | `density_g_ml` (139 rows) | `unit_weight_g` (32 rows) |
 | Reference | Charrondière UR, Haytowitz D, Stadlmayr B. *FAO/INFOODS Density Database Version 2.0*. Rome: FAO; 2012. E-ISBN 978-92-5-107346-9. <http://www.fao.org/4/ap815e/ap815e.pdf> | *Medidas, equivalencias y porciones de alimentos* (`Peso-Volumen-Medidas fmed.pdf`), which complements Vázquez MB, Witriw AM. *Modelos visuales de alimentos. Tablas de relación peso/volumen*, 1997, and López LB, Suárez MM. *Alimentación saludable. Guía práctica para su realización*, 2005 |
 | Copy used | `density_FAO_INFOODS.xlsx`, in the team's Drive (dated 2026-10-08) | `Peso-Volumen-Medidas fmed.pdf`, in the same Drive folder |
 | Checked against | The FAO PDF, as a spot check of the beverage rows | The PDF itself, page by page, since the text extraction mixes up its columns |
@@ -44,6 +44,7 @@ The PDF carries this notice: *"All rights reserved. FAO encourages reproduction 
 7. **A unit weight is loaded only where a receipt's `unidad` is that unit.** The table gives the weight of one piece for biscuits, sweets, burgers and nuggets, and a receipt prints those by the package. Loading the weight of one biscuit would turn a packet of biscuits into 8 g.
 8. **Boiled eggs reuse the raw weights** (50, 15 and 35 g) as `family`, because the table gives only raw ones.
 9. **No food gets more than one value per kind**, and none gets a guessed one: a food that no source describes stays without a row.
+10. **When the table gives several sizes of one product, the team picks the one loaded**: Danonino firme grande (80 g, the small one weighs 45) for the postre tipo Danonino, and Danonino bebible chico (90 g, the large one weighs 190) for the postre de leche bebible infantil.
 
 ### Values accepted after review
 
@@ -73,24 +74,26 @@ An unknown `food_code` fails the seed, so a typo breaks the deploy and does not 
 
 ## Coverage
 
-163 rows: 139 densities (86 `direct`, 53 `family`) and 24 unit weights (20 `direct`, 4 `family`).
+171 rows: 139 densities (86 `direct`, 53 `family`) and 32 unit weights (25 `direct`, 7 `family`).
 
 | Base unit | Foods | With an equivalence | Without |
 | --- | --- | --- | --- |
-| `litros` | 94 | 64 | 30 |
+| `litros` | 94 | 67 | 27 |
 | `unidades` | 37 | 6 | 31 |
-| `kilogramos` | 767 | 89 | 678 |
+| `kilogramos` | 767 | 91 | 676 |
 
-A food stocked in `kilogramos` needs no factor, except when a receipt prints it in `ml` or per unit, so the 678 without one are not a gap in the nutrition service.
+A food stocked in `kilogramos` needs no factor, except when a receipt prints it in `ml` or per unit, so the 676 without one are not a gap in the nutrition service.
+
+Converting a food stocked in `litros` to grams needs its density, so 64 of the 94 convert. Three of the 67 with a row have only a unit weight: Leche fórmula inicio, Leche fórmula seguimiento and Postre de leche bebible infantil.
 
 ## Foods without an equivalence
 
-### Stocked in `litros` (30)
+### Stocked in `litros` with no density (30)
 
 | Reason | Foods |
 | --- | --- |
-| FAO has no infant formula, and the one nearby entry is a different product | Leche fórmula etapa 3, etapa 4, inicio, seguimiento, para prematuros etapa 1 y etapa 2 (all fluida); Leche seguimiento etapa 3, sabor vainilla |
-| No entry that describes them | Postre de leche bebible infantil; Alimento a base de almendras (leche de almendras); Aceto balsámico; Vinagre; Jugo de limón, envasado |
+| FAO has no infant formula, and the one nearby entry is a different product (inicio and seguimiento have a unit weight from the UBA table) | Leche fórmula etapa 3, etapa 4, inicio, seguimiento, para prematuros etapa 1 y etapa 2 (all fluida); Leche seguimiento etapa 3, sabor vainilla |
+| No entry that describes them (the postre has a unit weight from the UBA table) | Postre de leche bebible infantil; Alimento a base de almendras (leche de almendras); Aceto balsámico; Vinagre; Jugo de limón, envasado |
 | FAO has flavoured water only without sugar, and no bitters | Agua saborizada Aquarius, Awafrut, Levité, tipo Manaos / Sierra de los Padres, "con azúcar, PROMEDIO"; Amargo serrano; Amargo serrano light |
 | Their only close entry is the soy drink, whose value is in doubt, or the juice is of an unknown kind | Bebida a base de soja y jugo (sabores varios, y light); Jugo congelado con azúcar en sachet |
 | Alcoholic drinks with no entry that fits, or with variants that differ and a food that does not say which (vermouth: 1.005 dry, 1.046 sweet) | Sidra; Vermouth; Aperitivo, tipo Gancia; Vino Mistela; Chicha; Cerveza sin alcohol |
@@ -104,7 +107,7 @@ A food stocked in `kilogramos` needs no factor, except when a receipt prints it 
 ### Stocked in `kilogramos` and not loaded
 
 - **FAO has contradictory values**: Harina de maíz (0.55 to 0.82), Harina de soja (0.64 and 0.70), Almidón de maíz (0.54 loose, 0.63 packed), leche en polvo (0.21 and 0.56), porotos, zanahoria (chopped and grated), ají y morrón (cubes and rings), copos de maíz, puré de papa instantáneo, aceituna verde (FAO weighs it with the stone, SARA without).
-- **The UBA table gives several sizes**: alfajores, galletitas de agua, grisines, pan francés, quesos, masa de tarta, dulce de membrillo y de batata, Danonino, chorizo.
+- **The UBA table gives several sizes, or several products that SARA names as one**: alfajores, galletitas de agua, grisines, pan francés, quesos, masa de tarta, dulce de membrillo y de batata, chorizo, probióticos (Activia 120 g, Actimel 100 g), yogur entero saborizado (pote chico 125 g, pote 200 g).
 - **The UBA table gives the weight of a piece** (criterion 7): galletitas dulces, caramelos, hamburguesas industrializadas, nuggets.
 - **Meats and fish**: the only FAO entries are bulk measurements of pieces with bone and are of no use to convert a volume.
 
