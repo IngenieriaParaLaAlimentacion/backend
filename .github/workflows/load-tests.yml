@@ -1,0 +1,77 @@
+name: Load tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      flow:
+        description: "Flow to run: all, or a file name in tests/load/flows/ without .js"
+        type: string
+        default: all
+  # TEMPORARY: lets the workflow be tried from its own PR, since workflow_dispatch only
+  # shows up once the file is on the default branch. Remove before merging.
+  pull_request:
+    paths:
+      - tests/load/**
+      - .github/workflows/load-tests.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: load-tests
+  cancel-in-progress: false
+
+jobs:
+  load-tests:
+    # TEMPORARY: only this branch's PR runs it; remove together with the trigger.
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'chore/load-tests'
+    runs-on: ubuntu-latest
+    environment: load-tests
+    timeout-minutes: 120
+    env:
+      LOAD_TEST_IMAGE: tpp-load-runner:ci
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
+        with:
+          fetch-depth: 1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f #v3
+
+      - name: Build the runner image
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 #v5
+        with:
+          context: .
+          file: tests/load/Dockerfile
+          load: true
+          tags: ${{ env.LOAD_TEST_IMAGE }}
+          # A scope of its own, so this cache and the backend image's do not evict each other.
+          cache-from: type=gha,scope=load-runner
+          cache-to: type=gha,mode=max,scope=load-runner
+
+      - name: Run the load tests
+        env:
+          BASE_URL: ${{ vars.LOAD_TEST_BASE_URL }}
+          DATABASE_URL: ${{ secrets.LOAD_TEST_DATABASE_URL }}
+          LOAD_TEST_PASSWORD: ${{ secrets.LOAD_TEST_PASSWORD }}
+          # A pull_request run has no inputs, so it falls back to every flow.
+          FLOW: ${{ inputs.flow || 'all' }}
+        run: docker compose -f tests/load/compose.yml run --rm runner "$FLOW"
+
+      - name: Write the job summary
+        if: always()
+        run: |
+          if [ -s tests/load/results/summary.md ]; then
+            cat tests/load/results/summary.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No results were written; see the logs of the run step." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload the results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 #v7.0.2
+        with:
+          name: load-test-results
+          path: tests/load/results/
+          retention-days: 30
+          if-no-files-found: ignore
