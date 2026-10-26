@@ -95,7 +95,16 @@ async def register_food_intake(
     ),
     responses={
         **AUTH_RESPONSES,
-        429: {"description": "AI quota exceeded; retry after Retry-After"},
+        429: {
+            "description": (
+                "Caller rate limit (/errors/rate-limited) or provider usage limit "
+                "(/errors/ai/quota-exhausted). Retry-After is present only when known."
+            )
+        },
+        503: {
+            "description": "No eligible AI endpoint currently available "
+            "(/errors/ai/unavailable)"
+        },
         status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
         status.HTTP_422_UNPROCESSABLE_CONTENT: {
             "description": "Unsupported image type, file over the size limit, "

@@ -14,7 +14,12 @@ from pydantic import BaseModel, ValidationError
 from app.core.interfaces.llm_client import ILlmClient
 from app.domain.food_catalog import MeasurementUnit
 from app.domain.nutrition import FoodComposition, RecipeRequest, StockedFood
-from app.exceptions.domain_exceptions import LlmClientError, RecipeGenerationError
+from app.exceptions.domain_exceptions import (
+    LlmClientError,
+    LlmQuotaExhaustedError,
+    LlmUnavailableError,
+    RecipeGenerationError,
+)
 from app.schemas.recipes.recipe_schema import (
     Candidate,
     CandidateBatch,
@@ -150,6 +155,8 @@ class RecipeGenerator:
                 else schema.model_json_schema(),
             )
             return parser.model_validate(result)
+        except (LlmQuotaExhaustedError, LlmUnavailableError):
+            raise
         except LlmClientError as exc:
             cause = exc
             timeout = False

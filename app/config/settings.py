@@ -1,5 +1,5 @@
 import enum
-from typing import Literal, Optional
+from typing import Optional
 
 from limits import parse as parse_limit
 from pydantic import (
@@ -111,26 +111,19 @@ class Settings(BaseSettings):
     storage_secret_access_key: Optional[str] = None
     storage_region: str = "auto"
 
-    # LLM
-    gemini_api_key: Optional[str] = None
-    gemini_max_output_tokens: int = Field(default=8192, ge=256, le=65536)
-    # None preserves the provider default, recommended for Gemini 3.
-    gemini_temperature: float | None = Field(default=None, ge=0, le=2)
-    gemini_seed: int | None = None
-    gemini_thinking_level: Literal["low", "medium", "high"] = "low"
+    # LLM: only explicit, qualified OpenRouter free variants are eligible.
+    openrouter_api_key: SecretStr | None = None
+    openrouter_receipt_models: list[str] = Field(default_factory=list, max_length=2)
+    openrouter_recipe_models: list[str] = Field(default_factory=list, max_length=2)
+    openrouter_allowed_providers: list[str] = Field(default_factory=list)
+    openrouter_max_output_tokens: int = Field(default=8192, ge=256, le=65536)
+    # Includes the first request, retries and model fallback together.
+    openrouter_max_attempts: int = Field(default=2, ge=1, le=2)
+    openrouter_request_timeout_seconds: float = Field(default=25, gt=0, le=25)
+    openrouter_completion_timeout_seconds: float = Field(default=40, gt=0, le=40)
+    openrouter_retry_backoff_max_seconds: float = Field(default=2, ge=0, le=2)
+    receipt_generation_timeout_seconds: float = Field(default=60, gt=0, le=60)
     recipe_generation_timeout_seconds: float = Field(default=90, gt=0, le=240)
-    gemini_model: str = "gemini-3.6-flash"
-    # Total attempts (first call + retries)
-    gemini_max_attempts: int = Field(default=3, ge=1)
-    gemini_retry_backoff_initial_seconds: float = 1
-    gemini_retry_backoff_max_seconds: float = 8
-    # Per-request HTTP timeout, so a stalled connection fails fast instead of
-    # hanging forever and never reaching the retry/fallback logic.
-    gemini_request_timeout_seconds: float = 120
-    # Secondary model tried after the primary exhausts its attempts on a
-    # retryable failure. Unset disables the fallback.
-    gemini_fallback_model: Optional[str] = None
-    gemini_fallback_max_attempts: int = Field(default=2, ge=1)
 
     # Rate limiting - each limit is "<count>/<period>", e.g. "5/minute".
     rate_limit_redis_url: str = "redis://localhost:6379/0"
@@ -198,6 +191,39 @@ class Settings(BaseSettings):
         return self._build_deeplink(
             self.backoffice_deeplink_base, f"{self.invite_path}/{role}"
         )
+
+    @field_validator("openrouter_api_key", mode="before")
+    @classmethod
+    def empty_openrouter_key_is_unset(cls, value):
+        """Return no credential for an empty deployment variable."""
+        if value is None or value == "":
+            return None
+        return value
+
+    @field_validator("openrouter_receipt_models", "openrouter_recipe_models")
+    @classmethod
+    def explicit_free_model_ids(cls, values: list[str]) -> list[str]:
+        """Accept only unique, explicit free model IDs."""
+        if len(set(values)) != len(values):
+            raise ValueError("Model IDs must be unique")
+        for value in values:
+            if (
+                value != value.strip()
+                or "/" not in value
+                or not value.endswith(":free")
+            ):
+                raise ValueError("Only explicit OpenRouter :free model IDs are allowed")
+        return values
+
+    @field_validator("openrouter_allowed_providers")
+    @classmethod
+    def provider_ids_are_nonempty(cls, values: list[str]) -> list[str]:
+        """Accept only unique, nonempty, trimmed provider IDs."""
+        if any(not value.strip() or value != value.strip() for value in values):
+            raise ValueError("Provider IDs must be nonempty and trimmed")
+        if len(set(values)) != len(values):
+            raise ValueError("Provider IDs must be unique")
+        return values
 
     @field_validator("internal_service_token")
     @classmethod

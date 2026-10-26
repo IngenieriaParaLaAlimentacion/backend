@@ -1,31 +1,20 @@
-import httpx
-import structlog
-from google.genai.errors import ClientError, ServerError
-from tenacity import RetryCallState
-
-logger = structlog.get_logger()
-
-# Raw transport failures below the SDK's APIError layer (connection reset,
-# socket timeout) -- retried the same as a 5xx/429 response from the API.
-TRANSIENT_TRANSPORT_ERRORS = (httpx.TimeoutException, httpx.ConnectError)
+import math
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 
 
-def log_retry(retry_state: RetryCallState, *, model: str) -> None:
-    """Log a Gemini call attempt that failed and will be retried."""
-    exc = retry_state.outcome.exception() if retry_state.outcome else None
-    logger.warning(
-        "gemini_llm_call_retrying",
-        model=model,
-        attempt=retry_state.attempt_number,
-        error_type=type(exc).__name__,
-        status_code=getattr(exc, "code", None),
-    )
-
-
-def is_retryable(exc: Exception) -> bool:
-    """Classify transient Gemini HTTP and transport errors."""
-    if isinstance(exc, ServerError):
-        return True
-    if isinstance(exc, ClientError):
-        return exc.code in (408, 429)
-    return isinstance(exc, TRANSIENT_TRANSPORT_ERRORS)
+def retry_after_seconds(value: str | None) -> int | None:
+    """Parse an upstream Retry-After value without inventing a reset time."""
+    if not value:
+        return None
+    try:
+        if value.strip().isdigit():
+            seconds = int(value)
+        else:
+            parsed = parsedate_to_datetime(value)
+            if parsed.tzinfo is None:
+                parsed = parsed.replace(tzinfo=timezone.utc)
+            seconds = math.ceil((parsed - datetime.now(timezone.utc)).total_seconds())
+        return seconds if 0 < seconds <= 604800 else None
+    except (ValueError, OverflowError, TypeError):
+        return None

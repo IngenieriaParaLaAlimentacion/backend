@@ -9,7 +9,13 @@ import structlog
 
 from app.config.settings import settings
 from app.domain.user import UserActor, UserRole
-from app.exceptions.domain_exceptions import RecipeGenerationTimeoutError
+from app.exceptions.domain_exceptions import (
+    AiQuotaExhaustedError,
+    AiUnavailableError,
+    LlmQuotaExhaustedError,
+    LlmUnavailableError,
+    RecipeGenerationTimeoutError,
+)
 from app.schemas.recipes.recipe_schema import RecommendationInput
 from app.services.recipes.generation import _AMOUNT_IN_PROSE
 from app.services.recipes.recipe_service import RecipeService
@@ -94,21 +100,53 @@ async def test_external_cancellation_is_not_changed_to_a_timeout():
 
 
 async def test_request_deadline_includes_backoff_and_prevents_fallback(monkeypatch):
-    from unittest.mock import Mock
+    from types import SimpleNamespace
 
-    from google.genai.errors import ServerError
+    import httpx
+    from pydantic import SecretStr
 
-    from app.services.llm.gemini_llm_client import GeminiLlmClient
+    from app.services.llm.openrouter_llm_client import OpenRouterLlmClient
 
     monkeypatch.setattr(settings, "recipe_generation_timeout_seconds", 0.02)
-    monkeypatch.setattr(settings, "gemini_retry_backoff_initial_seconds", 1)
-    monkeypatch.setattr(settings, "gemini_retry_backoff_max_seconds", 1)
-    monkeypatch.setattr(settings, "gemini_max_attempts", 3)
-    monkeypatch.setattr(settings, "gemini_fallback_model", "fallback-model")
-    client = object.__new__(GeminiLlmClient)
-    client._client = Mock()
-    client._client.aio.models.generate_content = AsyncMock(
-        side_effect=ServerError(503, {"message": "busy"})
+    monkeypatch.setattr(
+        "app.services.llm.openrouter_llm_client.random.uniform", lambda *_: 1
+    )
+    config = SimpleNamespace(
+        openrouter_api_key=SecretStr("synthetic"),
+        openrouter_recipe_models=["synthetic/a:free", "synthetic/b:free"],
+        openrouter_allowed_providers=["synthetic-host"],
+        openrouter_max_attempts=2,
+        openrouter_request_timeout_seconds=25,
+        openrouter_completion_timeout_seconds=40,
+        openrouter_retry_backoff_max_seconds=1,
+        openrouter_max_output_tokens=8192,
+    )
+    calls = []
+
+    def handler(request):
+        if request.url.path.endswith("/models"):
+            return httpx.Response(
+                200,
+                json={
+                    "data": [
+                        {
+                            "id": model,
+                            "pricing": {"prompt": "0", "completion": "0"},
+                            "supported_parameters": [
+                                "response_format",
+                                "structured_outputs",
+                            ],
+                            "architecture": {"input_modalities": ["text"]},
+                        }
+                        for model in config.openrouter_recipe_models
+                    ]
+                },
+            )
+        calls.append(request)
+        return httpx.Response(503)
+
+    client = OpenRouterLlmClient(
+        settings=config, transport=httpx.MockTransport(handler)
     )
     service = RecipeService(AsyncMock())
 
@@ -116,6 +154,53 @@ async def test_request_deadline_includes_backoff_and_prevents_fallback(monkeypat
         return await client.complete(prompt="p", response_schema={})
 
     service._generate = generate
-    with pytest.raises(RecipeGenerationTimeoutError):
-        await asyncio.wait_for(service.generate(None, None), timeout=1)
-    assert client._client.aio.models.generate_content.await_count == 1
+    try:
+        with pytest.raises(RecipeGenerationTimeoutError):
+            await asyncio.wait_for(service.generate(None, None), timeout=1)
+        assert len(calls) == 1
+    finally:
+        await client.aclose()
+
+
+@pytest.mark.parametrize(
+    "failure,expected",
+    [
+        (LlmQuotaExhaustedError(12), AiQuotaExhaustedError),
+        (LlmUnavailableError("unavailable"), AiUnavailableError),
+    ],
+)
+async def test_provider_failures_roll_back_and_map_to_canonical_errors(
+    failure, expected
+):
+    service = RecipeService(AsyncMock())
+    service._generate = AsyncMock(side_effect=failure)
+    with pytest.raises(expected) as caught:
+        await service.generate(None, None)
+    service.uow.rollback.assert_awaited_once()
+    service.uow.commit.assert_not_awaited()
+    service.uow.recipe_repo.create.assert_not_awaited()
+    if isinstance(failure, LlmQuotaExhaustedError):
+        assert caught.value.headers == {"Retry-After": "12"}
+
+
+@pytest.mark.parametrize(
+    "failure", [LlmQuotaExhaustedError(12), LlmUnavailableError("unavailable")]
+)
+async def test_generator_preserves_typed_provider_failures(failure):
+    from app.schemas.recipes.recipe_schema import CandidateBatch, CandidateEnvelope
+    from app.services.recipes.generation import RecipeGenerator
+
+    generator = RecipeGenerator(AsyncMock(), AsyncMock())
+    generator.llm.complete.side_effect = failure
+    with pytest.raises(type(failure)):
+        await generator._completion(
+            "selection", "select.txt", {}, CandidateBatch, CandidateEnvelope
+        )
+
+
+async def test_unrelated_timeout_is_not_reclassified():
+    service = RecipeService(AsyncMock())
+    service._generate = AsyncMock(side_effect=TimeoutError)
+    with pytest.raises(TimeoutError) as caught:
+        await service.generate(None, None)
+    assert not isinstance(caught.value, RecipeGenerationTimeoutError)

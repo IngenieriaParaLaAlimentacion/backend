@@ -30,7 +30,7 @@ from app.services.food_intakes.receipt_intake_service import ReceiptIntakeServic
 from app.services.food_outflows.food_outflow_service import FoodOutflowService
 from app.services.food_stock.food_stock_service import FoodStockService
 from app.services.health_service import HealthService
-from app.services.llm.gemini_llm_client import GeminiLlmClient
+from app.services.llm.openrouter_llm_client import OpenRouterLlmClient
 from app.services.measurements.measurement_service import MeasurementService
 from app.services.notifications.device_service import DeviceService
 from app.services.subjects.subject_service import SubjectService
@@ -130,7 +130,7 @@ async def get_llm_client(request: Request) -> ILlmClient:
     if client is None:
         # No await between lookup and assignment: concurrent requests cannot
         # create two clients on the application event loop.
-        client = GeminiLlmClient()
+        client = OpenRouterLlmClient(settings=settings)
         request.app.state.llm_client = client
     return client
 

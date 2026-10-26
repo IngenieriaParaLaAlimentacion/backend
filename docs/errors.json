@@ -13,6 +13,18 @@
       "description": "Raised when inviting an address that already has a pending invitation."
     },
     {
+      "type": "/errors/ai/quota-exhausted",
+      "status": 429,
+      "exception": "AiQuotaExhaustedError",
+      "description": "Inference is temporarily blocked by a provider usage limit."
+    },
+    {
+      "type": "/errors/ai/unavailable",
+      "status": 503,
+      "exception": "AiUnavailableError",
+      "description": "An eligible AI processing endpoint is currently unavailable."
+    },
+    {
       "type": "/errors/auth/invalid-recovery-token",
       "status": 401,
       "exception": "InvalidRecoveryTokenError",

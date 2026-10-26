@@ -1252,3 +1252,43 @@ class RecipeGenerationTimeoutError(BaseError):
             "Recipe generation timed out",
             "Recipe generation exceeded its total time budget.",
         )
+
+
+class LlmQuotaExhaustedError(LlmClientError):
+    """The inference provider rejected a call because of a usage limit."""
+
+    def __init__(self, retry_after: int | None = None):
+        self.retry_after = retry_after
+        super().__init__("Inference usage limit reached")
+
+
+class LlmUnavailableError(LlmClientError):
+    """No eligible inference endpoint completed the request."""
+
+
+class AiQuotaExhaustedError(BaseError):
+    """Inference is temporarily blocked by a provider usage limit."""
+
+    error_type = "ai/quota-exhausted"
+    status = 429
+
+    def __init__(self, retry_after: int | None = None):
+        known = retry_after is not None and retry_after > 0
+        super().__init__(
+            "AI usage limit reached",
+            "AI processing is temporarily limited. Try again later.",
+            extensions={"retry_after": retry_after} if known else None,
+            headers={"Retry-After": str(retry_after)} if known else None,
+        )
+
+
+class AiUnavailableError(BaseError):
+    """An eligible AI processing endpoint is currently unavailable."""
+
+    error_type = "ai/unavailable"
+    status = 503
+
+    def __init__(self):
+        super().__init__(
+            "AI unavailable", "AI processing is temporarily unavailable. Try later."
+        )

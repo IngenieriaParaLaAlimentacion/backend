@@ -28,6 +28,26 @@ Edit `.env` and set any values that differ from the defaults. To copy all neded 
 cp .env.example .env
 ```
 
+### AI configuration
+
+AI credentials are backend-only. Configure OPENROUTER_API_KEY, ordered JSON
+arrays OPENROUTER_RECEIPT_MODELS / OPENROUTER_RECIPE_MODELS, and audited
+OPENROUTER_ALLOWED_PROVIDERS. Defaults leave inference unavailable while
+non-AI flows still run. Only qualified, current :free variants are accepted;
+there is no paid fallback. The gateway's account quota is shared across models.
+
+Before enabling a model, verify its live model/endpoint prices, image support
+where needed, strict schema behavior, Spanish task quality, latency and data
+policy using synthetic inputs. Never qualify by catalogue metadata alone.
+Recheck after model/provider changes or expiry. Do not send personal receipt
+images to endpoints whose terms prohibit them. If no acceptable endpoint exists,
+keep receipt AI unavailable and preserve manual intake.
+
+Deploy with these settings present in each target environment. The application
+does not consume legacy GEMINI_* settings. Roll back the application artifact
+and its matching environment snapshot together if needed; no schema downgrade
+is introduced by this feature. Config changes require restarting the service.
+
 ---
 
 ## Development

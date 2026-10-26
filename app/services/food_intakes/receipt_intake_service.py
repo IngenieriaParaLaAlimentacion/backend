@@ -1,9 +1,11 @@
+import asyncio
 import uuid
 from collections.abc import Mapping
 from typing import Any
 from uuid import UUID
 
 import structlog
+from pydantic import ValidationError
 
 from app.config.settings import settings
 from app.core.interfaces.llm_client import ILlmClient
@@ -14,9 +16,13 @@ from app.domain.printed_quantity import parse_printed_quantity
 from app.domain.unit_conversion import ConversionFactors, prefill_from_printed
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
+    AiQuotaExhaustedError,
+    AiUnavailableError,
     ImageContentMismatchError,
     ImageTooLargeError,
     LlmClientError,
+    LlmQuotaExhaustedError,
+    LlmUnavailableError,
     ObjectStorageError,
     ReceiptPhotoStorageError,
     UnsupportedImageTypeError,
@@ -26,6 +32,7 @@ from app.schemas.common import IdentifierRefSchema
 from app.schemas.food_intakes.food_intake_schema import FoodIntakeRequest
 from app.schemas.food_intakes.receipt_schema import (
     ProposedFoodLine,
+    ReceiptExtraction,
     ReceiptProposalResponse,
 )
 from app.services.access import check_establishment_access
@@ -53,24 +60,7 @@ _EXTRACTION_PROMPT = (
     "when the line does not state a quantity."
 )
 
-_EXTRACTION_RESPONSE_SCHEMA: dict[str, Any] = {
-    "type": "object",
-    "properties": {
-        "lines": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "description": {"type": "string"},
-                    "raw_quantity": {"type": "number", "nullable": True},
-                    "raw_unit_text": {"type": "string", "nullable": True},
-                },
-                "required": ["description", "raw_quantity", "raw_unit_text"],
-            },
-        }
-    },
-    "required": ["lines"],
-}
+_EXTRACTION_RESPONSE_SCHEMA = ReceiptExtraction.model_json_schema()
 
 
 class ReceiptIntakeService:
@@ -218,6 +208,30 @@ class ReceiptIntakeService:
         image: bytes,
         actor: UserActor,
     ) -> ReceiptProposalResponse:
+        """Return a receipt proposal within the total service time budget."""
+        deadline = asyncio.timeout(settings.receipt_generation_timeout_seconds)
+        try:
+            async with deadline:
+                return await self._propose_from_photo(
+                    establishment_id=establishment_id,
+                    content_type=content_type,
+                    image=image,
+                    actor=actor,
+                )
+        except TimeoutError as exc:
+            if not deadline.expired():
+                raise
+            await self.uow.rollback()
+            raise AiUnavailableError() from exc
+
+    async def _propose_from_photo(
+        self,
+        *,
+        establishment_id: UUID,
+        content_type: str | None,
+        image: bytes,
+        actor: UserActor,
+    ) -> ReceiptProposalResponse:
         """Validate a receipt photo and return the LLM-proposed food lines.
 
         Nothing is stored here: the image is only held in memory for this
@@ -229,10 +243,8 @@ class ReceiptIntakeService:
         (ADR-0017); ``food`` is set when a confident match is found, and left
         ``None`` otherwise. On a match, ``quantity`` and ``unit`` are
         prefilled from the printed quantity converted to the food's base
-        unit, when it can be. ``needs_review`` is always ``True`` --
-        matching never marks a line as resolved, since the last validation
-        before this data hits establishment stock is always the user's. When
-        the extractor finds nothing, or the LLM call itself fails, the
+        unit, when it can be. Callers must review all lines locally before
+        confirmation. When the extractor finds nothing or returns invalid content, the
         response falls back to an empty proposal with a hint to enter the
         intake manually rather than surfacing the failure as an error.
 
@@ -257,11 +269,16 @@ class ReceiptIntakeService:
                 image=image,
                 image_content_type=content_type,
             )
-        except LlmClientError as exc:
+            extracted = ReceiptExtraction.model_validate(result)
+        except LlmQuotaExhaustedError as exc:
+            raise AiQuotaExhaustedError(exc.retry_after) from exc
+        except LlmUnavailableError as exc:
+            raise AiUnavailableError() from exc
+        except (LlmClientError, ValidationError) as exc:
             logger.warning(
                 "receipt_intake_llm_failed",
                 establishment_id=str(establishment_id),
-                error=str(exc),
+                error_type=type(exc).__name__,
             )
             return ReceiptProposalResponse(
                 establishment_id=establishment_id,
@@ -269,7 +286,7 @@ class ReceiptIntakeService:
                 message=self._MANUAL_FALLBACK_MESSAGE,
             )
 
-        lines = await self._build_lines(result["lines"])
+        lines = await self._build_lines([line.model_dump() for line in extracted.lines])
         if not lines:
             logger.info(
                 "receipt_intake_no_lines_found",

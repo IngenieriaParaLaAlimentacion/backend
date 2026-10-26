@@ -293,7 +293,7 @@ Nobody may change a `superadmin` or their own role.
 
 ## Recipe recommendations (Nutrir, #170)
 
-Generation uses Gemini → the existing nutrition LP → Gemini.
+Generation uses OpenRouter → the existing nutrition LP → OpenRouter.
 The backend owns quantities, nutrient indicators, permissions and stock changes.
 All routes below require Bearer authentication and establishment access. Missing
 establishments return 404; denied access returns 403; invalid input uses the
@@ -406,8 +406,9 @@ Generation includes the last ten chosen recipes, asks for cultural inspiration w
 it. Cultural inspiration never adds ingredients or alters calculated quantities.
 
 Normal generation uses two logical model calls, with at most one repair call
-for invalid/duplicate candidate sets. Transport retries and fallback reuse the
-existing Gemini policy. Invalid/failing AI returns the standard
+for invalid/duplicate candidate sets. Each completion shares at most two
+inference attempts across approved free models, with one total deadline.
+Invalid AI content returns the standard
 `/errors/recipes/generation-failed` domain error; no incomplete proposals are saved.
 History uses the standard `items`, `total`, `page`, `page_size`, `total_pages`
 envelope, ordered by date and id descending. Ingredient amounts and steps are
@@ -426,20 +427,34 @@ proxy timeouts are outside this service budget. Configure the deployment proxy
 and client timeout above that budget; the repository does not establish the
 live gateway's timeout. This deadline does not add generation idempotency.
 
-Gemini output is capped by `GEMINI_MAX_OUTPUT_TOKENS` (8192 by default).
-Gemini 3 uses `GEMINI_THINKING_LEVEL=low`. Temperature is unset by default, in
-line with Google's recommendation for Gemini 3; `GEMINI_TEMPERATURE` and
-`GEMINI_SEED` are optional overrides, not reproducibility guarantees. Older-model
-fallbacks omit the Gemini-3-specific thinking configuration. The SDK's own retry
-budget is disabled: the existing Tenacity policy owns retries.
+OpenRouter output is capped by `OPENROUTER_MAX_OUTPUT_TOKENS` (8192 by default).
+Only explicitly configured, qualified `:free` models and approved hosting providers
+are eligible. Every request requires strict structured outputs, denies provider
+data collection and limits prompt, completion, request and image prices to zero.
+There is no paid fallback. Model capability/price metadata is refreshed every
+300 seconds and expired metadata cannot authorize inference if refresh fails.
+Empty AI configuration leaves inference unavailable while non-AI routes still run.
 
-Receipts and recipes share one lazy Gemini client per application instance,
-closed at lifespan shutdown (including the supplied HTTP client). Logs contain
-response length/model/token metadata and controlled error types/status codes;
-response text, prompts and raw provider error bodies are not logged. The Spanish
-quantity detector covers common numeric/word amounts, fractions and ingredient
-units while allowing cooking times and temperatures; it remains a heuristic,
-not a general natural-language guarantee.
+Provider usage limits return `429 /errors/ai/quota-exhausted`, distinct from the
+inbound caller limit `429 /errors/rate-limited`. A known, validated provider delay
+appears in both `Retry-After` and integer `retry_after`; otherwise both are absent.
+No reset time or daily allowance is promised. Missing credentials, no eligible
+endpoint or exhausted temporary failures return `503 /errors/ai/unavailable`.
+Neither error exposes provider prose. Clients must not automatically resubmit.
+
+Receipt success remains an HTTP 200 proposal without `needs_review`. All lines
+require local review before confirmation. Invalid extraction content still returns
+an empty proposal with a manual-entry hint; provider quota and availability now
+use the canonical errors above. Manual intake and confirmation remain usable
+without inference. The entire receipt proposal service has a 60-second budget
+(`RECEIPT_GENERATION_TIMEOUT_SECONDS`); expiry returns AI unavailable after rollback.
+
+Receipts and recipes share one lazy OpenRouter client per application instance,
+closed at lifespan shutdown. Logs contain controlled model, attempt and error-type
+metadata; response text, prompts, images, keys and raw provider error bodies are
+excluded. The Spanish quantity detector covers common numeric/word amounts,
+fractions and ingredient units while allowing cooking times and temperatures;
+it remains a heuristic, not a general natural-language guarantee.
 
 Generation aims for 2–3 alternatives but returns even one independently valid
 recipe. Invalid candidate entries are skipped; a selection repair is attempted

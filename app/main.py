@@ -47,7 +47,7 @@ async def lifespan(app: FastAPI):
             try:
                 await client.aclose()
             except Exception:
-                logger.exception("Failed to close Gemini client")
+                logger.exception("Failed to close LLM client")
 
         logger.info("Shutting down service, flushing telemetry")
 

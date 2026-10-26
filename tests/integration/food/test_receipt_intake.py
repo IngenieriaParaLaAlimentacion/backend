@@ -1,9 +1,14 @@
 import uuid
 
+import pytest
 import pytest_asyncio
 
 from app.config.settings import settings
-from app.exceptions.domain_exceptions import LlmClientError
+from app.exceptions.domain_exceptions import (
+    LlmClientError,
+    LlmQuotaExhaustedError,
+    LlmUnavailableError,
+)
 
 URL = "/api/v1/food-intakes/from-photo"
 PNG_BYTES = b"\x89PNG\r\n\x1a\n" + b"0" * 64
@@ -114,6 +119,7 @@ class TestAcceptedUpload:
             "Leche 1L",
         ]
         assert all(line["food"] is None for line in body["lines"])
+        assert all("needs_review" not in line for line in body["lines"])
         assert body["message"] is None
 
     async def test_llm_failure_falls_back_to_manual_entry(
@@ -267,3 +273,37 @@ class TestAuthAndAccess:
 
         assert response.status_code == 404
         assert response.json()["type"] == "/errors/establishment-not-found"
+
+
+@pytest.mark.parametrize(
+    "failure,status,slug,delay",
+    [
+        (LlmQuotaExhaustedError(12), 429, "ai/quota-exhausted", 12),
+        (LlmQuotaExhaustedError(), 429, "ai/quota-exhausted", None),
+        (LlmUnavailableError("private provider failure"), 503, "ai/unavailable", None),
+    ],
+)
+async def test_provider_errors_have_canonical_safe_contract(
+    client,
+    admin_headers,
+    db_establishment,
+    fake_llm_client,
+    failure,
+    status,
+    slug,
+    delay,
+):
+    fake_llm_client.error = failure
+    response = await client.post(
+        URL, headers=admin_headers, **_upload(db_establishment.id)
+    )
+    assert response.status_code == status
+    assert response.headers["content-type"] == "application/problem+json"
+    assert response.json()["type"] == f"/errors/{slug}"
+    assert "private" not in response.text
+    if delay:
+        assert response.headers["retry-after"] == str(delay)
+        assert response.json()["retry_after"] == delay
+    else:
+        assert "retry-after" not in response.headers
+        assert "retry_after" not in response.json()

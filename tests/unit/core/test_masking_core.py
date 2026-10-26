@@ -75,6 +75,7 @@ def test_mask_email_keeps_first_letter_and_domain(value, expected):
         "reason",
         "jwt_secret_access",
         "gemini_api_key",
+        "openrouter_api_key",
         "storage_secret_access_key",
         "fcm_private_key",
         "smtp_password",

@@ -23,8 +23,8 @@ Layering is horizontal (one set of directories for the whole app). Module bounda
 ```
 app/
   main.py                        # FastAPI app entry point, router registration
-  core/
-    config.py                    # Settings loaded from environment / .env
+  config/
+    settings.py                  # Settings loaded from environment / .env
   db/
     database.py                  # Async SQLAlchemy engine and session factory
   models/
@@ -59,7 +59,7 @@ alembic/
 
 **`db/`**: Engine and session factory. Used only by repositories and Alembic.
 
-**`core/`**: Application settings only (`config.py`). No business logic.
+**`config/`**: Application settings (`settings.py`) and observability configuration.
 
 ### Module summary
 
@@ -83,11 +83,20 @@ alembic/
 
 | Integration | Used by |
 |---|---|
-| LLM API (provider TBD) | `nutrir` (meal planning agent), `dashboard` (natural language analysis) |
+| OpenRouter free structured/vision completions | Receipt extraction and recipe selection/writing |
 | Vision / Speech-to-text API | `nutrir` (ingredient input via image or voice) |
 | Storage service | `nutrir`, `valores_de_hierro` |
 
 All external API calls are orchestrated by the services layer. Credentials are never exposed to clients.
+
+The structured LLM adapter is created lazily and shared within one application.
+Application lifespan closes its pooled HTTP transport. Missing AI configuration
+does not prevent startup or non-inference operations. Only explicitly qualified
+free models and audited hosting providers can be enabled; see
+[ADR-0027](adr/0027-openrouter-free-inference.md).
+
+Services call centralized establishment-access helpers explicitly before scoped
+work. Routes parse and delegate, and do not duplicate those permission rules.
 
 ## Deployment
 
