@@ -93,7 +93,6 @@ async def test_users_log_in_according_to_their_status(catalog, client):
     }
 
 
-# "development" gets the load-test data, which this dataset is kept apart from.
 @pytest.mark.parametrize("environment", ["production", "development"])
 async def test_refuses_to_run_outside_the_e2e_environment(
     app, monkeypatch, environment

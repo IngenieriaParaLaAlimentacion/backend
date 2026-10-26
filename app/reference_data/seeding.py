@@ -1,8 +1,7 @@
 """Building blocks shared by the seeds that load fictitious datasets.
 
-Each function takes the specs it loads, so the reference data and the load-test
-data are seeded the same way. Running any of them again adds nothing that is
-already there.
+Each function takes the specs it loads, so any dataset is seeded the same way.
+Running any of them again adds nothing that is already there.
 """
 
 from collections.abc import Callable, Iterable

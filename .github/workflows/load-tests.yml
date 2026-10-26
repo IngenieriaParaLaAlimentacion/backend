@@ -22,9 +22,22 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  load-tests:
+  data-tests:
     # TEMPORARY: only this branch's PR runs it; remove together with the trigger.
     if: github.event_name == 'workflow_dispatch' || github.head_ref == 'chore/load-tests'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
+        with:
+          fetch-depth: 1
+
+      - uses: ./.github/actions/setup-python-env
+
+      - name: Test the load-test seed and cleanup
+        run: poetry run pytest tests/load/tests
+
+  load-tests:
+    needs: data-tests
     runs-on: ubuntu-latest
     environment: load-tests
     timeout-minutes: 120

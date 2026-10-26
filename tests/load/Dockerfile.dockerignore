@@ -9,4 +9,5 @@
 
 tests/load/.env
 tests/load/results
+tests/load/tests
 **/__pycache__
