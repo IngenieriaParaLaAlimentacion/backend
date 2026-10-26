@@ -5,8 +5,8 @@ data are seeded the same way. Running any of them again adds nothing that is
 already there.
 """
 
-from collections.abc import Iterable
-from datetime import datetime, timezone
+from collections.abc import Callable, Iterable
+from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 from sqlalchemy import select
@@ -21,20 +21,21 @@ from app.models.surveys.survey import Survey
 from app.reference_data.fies_template import build_fies_template
 from app.reference_data.reference_e2e_dataset import (
     ReferenceEstablishment,
+    ReferenceSubject,
     ReferenceUser,
 )
 from app.schemas.establishments.establishment_schema import EstablishmentRequest
+from app.schemas.measurements.measurement_schema import MeasurementRequest
+from app.schemas.subjects.subject_schema import SubjectRequest
 from app.schemas.surveys.survey_schema import (
     OptionInput,
     QuestionInput,
     SurveyCreateRequest,
 )
 from app.services.establishments.establishment_service import EstablishmentService
+from app.services.measurements.measurement_service import MeasurementService
+from app.services.subjects.subject_service import SubjectService
 from app.services.surveys.survey_service import SurveyService
-
-# Named on purpose: an environment that was never set defaults to "development",
-# so refusing only "production" would let a seed run wherever ENVIRONMENT is missing.
-_ALLOWED_ENVIRONMENTS = {"development", "e2e"}
 
 
 def position(item) -> int:
@@ -42,11 +43,11 @@ def position(item) -> int:
     return item.position
 
 
-def refuse_outside_test_environments(dataset_name: str) -> None:
-    """Exit unless ENVIRONMENT names one of the environments a seed may run in."""
-    if settings.environment.lower() not in _ALLOWED_ENVIRONMENTS:
+def refuse_outside_environment(environment: str, dataset_name: str) -> None:
+    """Exit unless ENVIRONMENT is the one environment the dataset belongs to."""
+    if settings.environment.lower() != environment:
         raise SystemExit(
-            f"The {dataset_name} only loads when ENVIRONMENT is test or e2e, "
+            f"The {dataset_name} only loads when ENVIRONMENT is {environment}, "
             f"not {settings.environment!r}."
         )
 
@@ -138,6 +139,51 @@ def field_workers_by_establishment(
         for key in spec.approved_establishments:
             actors.setdefault(key, actor)
     return actors
+
+
+async def seed_subjects_and_measurements(
+    uow: UnitOfWork,
+    subjects: Iterable[ReferenceSubject],
+    establishment_ids: dict[str, UUID],
+    actors: dict[str, UserActor],
+    make_id: Callable[..., UUID],
+) -> None:
+    """Register the subjects and their measurements; registered ones are kept.
+
+    ``make_id`` turns the parts naming a record into its id, so each dataset keeps
+    ids of its own.
+    """
+    subject_service = SubjectService(uow)
+    measurement_service = MeasurementService(uow)
+    now = datetime.now(timezone.utc)
+    for spec in subjects:
+        actor = actors[spec.establishment]
+        subject_id = make_id("subject", spec.key)
+        await subject_service.create_subject(
+            SubjectRequest(
+                id=subject_id,
+                dni=spec.dni,
+                sex=spec.sex,
+                name=spec.name,
+                last_name=spec.last_name,
+                birth_date=spec.birth_date(now.date()),
+                is_rural=spec.is_rural,
+                is_indigenous=spec.is_indigenous,
+            ),
+            actor.user_id,
+        )
+        for number, reading in enumerate(spec.readings):
+            await measurement_service.register(
+                MeasurementRequest(
+                    id=make_id("measurement", spec.key, str(number)),
+                    subject_id=subject_id,
+                    establishment_id=establishment_ids[spec.establishment],
+                    weight_kg=reading.weight_kg,
+                    height_cm=reading.height_cm,
+                    measured_at=now - timedelta(days=reading.days_ago),
+                ),
+                actor,
+            )
 
 
 async def seed_fies_survey(uow: UnitOfWork, admin: UserActor, name: str) -> UUID:

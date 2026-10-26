@@ -2,7 +2,7 @@
 
 Run it by hand against a disposable database, once the migrations and the other seeds
 have run. It is not part of the service startup or the deploy, and it only runs when
-ENVIRONMENT is test or e2e. Running it again adds nothing that is already there.
+ENVIRONMENT is e2e. Running it again is idempotent.
 """
 
 import asyncio
@@ -37,10 +37,11 @@ from app.reference_data.reference_e2e_dataset import (
 from app.reference_data.seeding import (
     field_workers_by_establishment,
     position,
-    refuse_outside_test_environments,
+    refuse_outside_environment,
     seed_access,
     seed_establishments,
     seed_fies_survey,
+    seed_subjects_and_measurements,
     seed_users,
 )
 from app.schemas.food_intakes.food_intake_schema import (
@@ -48,13 +49,9 @@ from app.schemas.food_intakes.food_intake_schema import (
     FoodLineRequest,
 )
 from app.schemas.food_outflows.food_outflow_schema import FoodOutflowRequest
-from app.schemas.measurements.measurement_schema import MeasurementRequest
-from app.schemas.subjects.subject_schema import SubjectRequest
 from app.schemas.surveys.survey_response_schema import SurveyResponseRequest
 from app.services.food_intakes.food_intake_service import FoodIntakeService
 from app.services.food_outflows.food_outflow_service import FoodOutflowService
-from app.services.measurements.measurement_service import MeasurementService
-from app.services.subjects.subject_service import SubjectService
 from app.services.surveys.survey_response_service import SurveyResponseService
 
 setup_logging()
@@ -81,45 +78,6 @@ async def _seed_establishment_requests(
             )
         )
     await uow.commit()
-
-
-async def _seed_subjects_and_measurements(
-    uow: UnitOfWork,
-    establishment_ids: dict[str, UUID],
-    actors: dict[str, UserActor],
-) -> None:
-    """Register the subjects and their measurements; registered ones are kept."""
-    subjects = SubjectService(uow)
-    measurements = MeasurementService(uow)
-    now = datetime.now(timezone.utc)
-    for spec in SUBJECTS:
-        actor = actors[spec.establishment]
-        subject_id = reference_id("subject", spec.key)
-        await subjects.create_subject(
-            SubjectRequest(
-                id=subject_id,
-                dni=spec.dni,
-                sex=spec.sex,
-                name=spec.name,
-                last_name=spec.last_name,
-                birth_date=spec.birth_date(now.date()),
-                is_rural=spec.is_rural,
-                is_indigenous=spec.is_indigenous,
-            ),
-            actor.user_id,
-        )
-        for number, reading in enumerate(spec.readings):
-            await measurements.register(
-                MeasurementRequest(
-                    id=reference_id("measurement", spec.key, str(number)),
-                    subject_id=subject_id,
-                    establishment_id=establishment_ids[spec.establishment],
-                    weight_kg=reading.weight_kg,
-                    height_cm=reading.height_cm,
-                    measured_at=now - timedelta(days=reading.days_ago),
-                ),
-                actor,
-            )
 
 
 async def _food_ids_by_code(uow: UnitOfWork) -> dict[str, UUID]:
@@ -214,7 +172,7 @@ async def _seed_fies_responses(survey_id: UUID, actors: list[UserActor]) -> None
 
 async def seed_reference_e2e() -> None:
     """Load the whole reference dataset."""
-    refuse_outside_test_environments("reference data")
+    refuse_outside_environment("e2e", "reference data")
     async with UnitOfWork() as uow:
         user_ids = await seed_users(uow, USERS, PASSWORD)
         establishment_ids = await seed_establishments(uow, ESTABLISHMENTS)
@@ -222,7 +180,9 @@ async def seed_reference_e2e() -> None:
         await _seed_establishment_requests(uow, user_ids)
 
         actors = field_workers_by_establishment(USERS, user_ids)
-        await _seed_subjects_and_measurements(uow, establishment_ids, actors)
+        await seed_subjects_and_measurements(
+            uow, SUBJECTS, establishment_ids, actors, reference_id
+        )
         await _seed_stock_movements(uow, establishment_ids, actors)
 
         admin = UserActor(user_id=user_ids["admin"], role=UserRole.ADMIN)
