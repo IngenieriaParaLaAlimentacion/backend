@@ -80,7 +80,7 @@ def build_context(
     context: dict[str, Any] = {
         "establishment_name": establishment_name,
         "month_label": f"{_MONTHS[month - 1]} de {year}",
-        "generated_label": _date(report.created_at.astimezone(ARGENTINA_TZ)),
+        "generated_label": _date(report.updated_at.astimezone(ARGENTINA_TZ)),
         "logo_data_uri": _logo_data_uri(),
         "has_data": report.has_data,
         "scope_note": report.scope_note,

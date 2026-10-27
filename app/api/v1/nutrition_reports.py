@@ -26,7 +26,7 @@ router = APIRouter(prefix="/establishments")
 ReportMonthPath = Annotated[
     str,
     Path(
-        pattern=r"^\d{4}-(0[1-9]|1[0-2])$",
+        pattern=r"^[1-9]\d{3}-(0[1-9]|1[0-2])$",
         description="Calendar month of the report, formatted as `YYYY-MM`.",
         examples=["2026-09"],
     ),
@@ -59,7 +59,6 @@ async def list_nutrition_reports(
     actor: UserActor = Depends(require_admin_or_analyst),
     service: NutritionReportService = Depends(get_nutrition_report_service),
 ) -> PaginatedResponse[NutritionReportListItem]:
-    """List the saved reports of an establishment, a page at a time."""
     result = await service.list_reports(
         establishment_id,
         actor,
@@ -99,7 +98,6 @@ async def get_nutrition_report(
     actor: UserActor = Depends(require_admin_or_analyst),
     service: NutritionReportService = Depends(get_nutrition_report_service),
 ) -> NutritionReportResponse:
-    """Return the saved report of a month."""
     report = await service.get_report(establishment_id, month, actor)
     return NutritionReportResponse.model_validate(report)
 
@@ -114,7 +112,8 @@ async def get_nutrition_report(
         "Returns the nutrition report of the establishment for a calendar month. "
         "A report that was already generated is returned as saved, without calling "
         "the AI (200). Otherwise it is calculated, written up by the AI and saved "
-        "(201). A month with no intakes is saved as no data, without calling the AI. "
+        "(201). A month with no intakes is saved as no data, without calling the AI, "
+        "and asking again calculates it again in case intakes were loaded since (200). "
         "If the AI fails, the calculated data is still saved and the summary is "
         "marked unavailable: asking again for that month writes only the summary "
         "again (200). The current month and future months are rejected (422), and "
@@ -141,7 +140,7 @@ async def get_nutrition_report(
             "description": "AI quota exceeded; retry after Retry-After"
         },
         status.HTTP_504_GATEWAY_TIMEOUT: {
-            "description": "The request exceeded its time budget; nothing is saved"
+            "description": "The request exceeded its time budget; ask again"
         },
     },
 )
@@ -152,7 +151,6 @@ async def put_nutrition_report(
     actor: UserActor = Depends(require_admin_or_analyst),
     service: NutritionReportService = Depends(get_nutrition_report_generation_service),
 ) -> NutritionReportResponse:
-    """Return the report of a month, generating it first if it does not exist."""
     report, created = await service.get_or_generate_report(
         establishment_id, month, actor
     )
@@ -192,7 +190,6 @@ async def download_nutrition_report_pdf(
     actor: UserActor = Depends(require_admin_or_analyst),
     service: NutritionReportService = Depends(get_nutrition_report_service),
 ) -> Response:
-    """Return the saved report of a month as a PDF file."""
     pdf = await service.get_report_pdf(establishment_id, month, actor)
     filename = f"nutrition-report-{month}.pdf"
     return Response(

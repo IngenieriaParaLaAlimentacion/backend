@@ -95,7 +95,8 @@ class NutritionReportService:
 
         ``month`` is formatted as ``YYYY-MM``. Returns a ``(report, created)``
         tuple: ``created`` is True for a report generated now and False for one
-        already saved, including one whose unavailable summary was written again.
+        already saved, including one whose unavailable summary was written again
+        and one saved without data that now has intakes.
 
         Raises:
             EstablishmentNotFoundError: establishment_id does not exist.
@@ -128,7 +129,7 @@ class NutritionReportService:
         """Check access, then return the saved report or generate and save one."""
         first_day = _first_day_of(month)
 
-        await self._check_access(establishment_id, actor)
+        await self._get_accessible_establishment(establishment_id, actor)
         if first_day >= today_in_argentina().replace(day=1):
             raise NutritionReportMonthNotOverError(month)
 
@@ -142,7 +143,9 @@ class NutritionReportService:
             await repo.create(report)
             await self.uow.commit()
             return report, True
-        if report.summary_status == SummaryStatus.UNAVAILABLE:
+        if not report.has_data:
+            await self._calculate_empty_month_again(report, first_day, month, actor)
+        elif report.summary_status == SummaryStatus.UNAVAILABLE:
             await self._write_summary_again(report)
         return report, False
 
@@ -203,7 +206,7 @@ class NutritionReportService:
             EstablishmentNotFoundError: establishment_id does not exist.
             EstablishmentAccessDeniedError: field worker lacks approved access.
         """
-        await self._check_access(establishment_id, actor)
+        await self._get_accessible_establishment(establishment_id, actor)
         reports, total = await self.uow.nutrition_report_repo.list_by_establishment(
             establishment_id,
             sort_order=sort_order,
@@ -214,7 +217,7 @@ class NutritionReportService:
             items=reports, total=total, page=page, page_size=page_size
         )
 
-    async def _check_access(
+    async def _get_accessible_establishment(
         self, establishment_id: UUID, actor: UserActor
     ) -> Establishment:
         """Return the establishment, once it exists and the actor may look at it."""
@@ -228,7 +231,9 @@ class NutritionReportService:
         self, establishment_id: UUID, month: str, actor: UserActor
     ) -> tuple[Establishment, NutritionReport]:
         """Return the establishment and its saved report of a month."""
-        establishment = await self._check_access(establishment_id, actor)
+        establishment = await self._get_accessible_establishment(
+            establishment_id, actor
+        )
         report = await self.uow.nutrition_report_repo.get_by_month(
             establishment_id, _first_day_of(month)
         )
@@ -279,6 +284,24 @@ class NutritionReportService:
             return {}
         foods = await self.uow.food_repo.get_by_ids(food_ids)
         return {food.id: food.name for food in foods}
+
+    async def _calculate_empty_month_again(
+        self, report: NutritionReport, first_day: date, month: str, actor: UserActor
+    ) -> None:
+        """Calculate a month saved without data again, keeping the report as it is
+        unless the month now has intakes."""
+        # Asking before the intakes were loaded must not leave the month empty
+        # for good. A report with data is never calculated again.
+        fresh = await self._generate(report.establishment_id, first_day, month, actor)
+        if not fresh.has_data:
+            return
+        report.has_data = True
+        report.analysis = fresh.analysis
+        report.reference_profile = fresh.reference_profile
+        report.summary = fresh.summary
+        report.summary_status = fresh.summary_status
+        await self.uow.nutrition_report_repo.update(report)
+        await self.uow.commit()
 
     async def _write_summary_again(self, report: NutritionReport) -> None:
         """Ask the AI again for the summary of a saved report, keeping its analysis."""

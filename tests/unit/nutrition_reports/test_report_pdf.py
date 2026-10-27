@@ -61,6 +61,16 @@ def test_the_month_is_written_out_and_the_generation_date_is_argentine():
     assert context["generated_label"] == "14 de octubre de 2026"
 
 
+def test_the_generation_date_is_the_last_time_the_report_was_calculated():
+    # An empty month calculated again days later is printed with that later date.
+    first = datetime(2026, 10, 1, 15, 0, tzinfo=timezone.utc)
+    later = datetime(2026, 10, 14, 15, 0, tzinfo=timezone.utc)
+
+    context = build_context(make_report(created_at=first, updated_at=later), "Test")
+
+    assert context["generated_label"] == "14 de octubre de 2026"
+
+
 def test_numbers_follow_the_argentine_format():
     context = build_context(make_report(), "Comedor Test")
 

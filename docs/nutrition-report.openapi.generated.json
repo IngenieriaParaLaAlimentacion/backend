@@ -162,7 +162,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "pattern": "^[1-9]\\d{3}-(0[1-9]|1[0-2])$",
               "description": "Calendar month of the report, formatted as `YYYY-MM`.",
               "examples": [
                 "2026-09"
@@ -240,7 +240,7 @@
           "Nutrition Report V1"
         ],
         "summary": "Get or generate the monthly nutrition report of an establishment",
-        "description": "Returns the nutrition report of the establishment for a calendar month. A report that was already generated is returned as saved, without calling the AI (200). Otherwise it is calculated, written up by the AI and saved (201). A month with no intakes is saved as no data, without calling the AI. If the AI fails, the calculated data is still saved and the summary is marked unavailable: asking again for that month writes only the summary again (200). The current month and future months are rejected (422), and a month whose foods have no known conversion to grams answers 409 and is not saved. Every call counts toward the AI quota. Accessible by admins and analysts.",
+        "description": "Returns the nutrition report of the establishment for a calendar month. A report that was already generated is returned as saved, without calling the AI (200). Otherwise it is calculated, written up by the AI and saved (201). A month with no intakes is saved as no data, without calling the AI, and asking again calculates it again in case intakes were loaded since (200). If the AI fails, the calculated data is still saved and the summary is marked unavailable: asking again for that month writes only the summary again (200). The current month and future months are rejected (422), and a month whose foods have no known conversion to grams answers 409 and is not saved. Every call counts toward the AI quota. Accessible by admins and analysts.",
         "operationId": "put_nutrition_report_api_v1_establishments__establishment_id__nutrition_reports__month__put",
         "security": [
           {
@@ -264,7 +264,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "pattern": "^[1-9]\\d{3}-(0[1-9]|1[0-2])$",
               "description": "Calendar month of the report, formatted as `YYYY-MM`.",
               "examples": [
                 "2026-09"
@@ -346,7 +346,7 @@
             }
           },
           "504": {
-            "description": "The request exceeded its time budget; nothing is saved",
+            "description": "The request exceeded its time budget; ask again",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -408,7 +408,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "pattern": "^[1-9]\\d{3}-(0[1-9]|1[0-2])$",
               "description": "Calendar month of the report, formatted as `YYYY-MM`.",
               "examples": [
                 "2026-09"

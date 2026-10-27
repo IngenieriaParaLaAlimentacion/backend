@@ -189,6 +189,56 @@ async def test_month_without_data_is_saved_without_calling_the_ai():
     uow.commit.assert_awaited_once()
 
 
+def saved_empty_report() -> NutritionReport:
+    return NutritionReport(
+        id=uuid.uuid4(),
+        establishment_id=ESTABLISHMENT_ID,
+        month=SEPTEMBER,
+        has_data=False,
+        analysis=build_analysis(
+            MonthlyIntakeAnalysis(has_data=False), NINO_7_9, {}
+        ).model_dump(mode="json"),
+        reference_profile="nino_7_9",
+        summary=None,
+        summary_status=SummaryStatus.NOT_APPLICABLE,
+    )
+
+
+async def test_month_saved_without_data_is_calculated_again_and_filled_in():
+    saved = saved_empty_report()
+    analysis, _ = monthly_analysis()
+    service, uow, _, llm = make_service(analysis, saved=saved)
+
+    report, created = await service.get_or_generate_report(
+        ESTABLISHMENT_ID, "2026-09", ADMIN
+    )
+
+    assert (report, created) == (saved, False)
+    assert report.has_data is True
+    assert report.summary_status == SummaryStatus.GENERATED
+    assert report.summary == SUMMARY
+    assert report.analysis["energy_kcal"] == analysis.indicators.energy_kcal
+    llm.complete.assert_awaited_once()
+    uow.nutrition_report_repo.update.assert_awaited_once_with(saved)
+    uow.nutrition_report_repo.create.assert_not_awaited()
+    uow.commit.assert_awaited_once()
+
+
+async def test_month_saved_without_data_stays_so_while_it_has_no_intakes():
+    saved = saved_empty_report()
+    service, uow, _, llm = make_service(MonthlyIntakeAnalysis(has_data=False), saved)
+
+    report, created = await service.get_or_generate_report(
+        ESTABLISHMENT_ID, "2026-09", ADMIN
+    )
+
+    assert (report, created) == (saved, False)
+    assert report.has_data is False
+    llm.complete.assert_not_awaited()
+    uow.nutrition_report_repo.update.assert_not_awaited()
+    uow.commit.assert_not_awaited()
+
+
 async def test_month_whose_foods_cannot_be_converted_is_not_saved():
     analysis = MonthlyIntakeAnalysis(
         has_data=False, foods_without_conversion=[uuid.uuid4(), uuid.uuid4()]

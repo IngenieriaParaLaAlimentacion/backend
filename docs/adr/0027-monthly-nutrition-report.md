@@ -27,7 +27,11 @@ A fixed `scope_note` states what the report does and does not assess. It is part
 
 A generated report is stored as a JSONB snapshot of the analysis, with the AI's summary exactly as written and a `summary_status`: `generated`, `unavailable` (the AI failed) or `not_applicable` (a month without intakes, which never calls the AI). It also keeps each nutrient's reference and minimum, so the figures stay readable if the reference data changes later. The prompt version is logged, not stored.
 
-Intakes loaded afterwards for a month that already has a report do not change it, and there is no regeneration. A report is a statement of what was known when it was generated.
+Intakes loaded afterwards for a month that already has data do not change its report, and there is no regeneration. A report is a statement of what was known when it was generated.
+
+The exception is a month saved without data. A month is reportable from the first day of the next one, which can be before its last intakes are loaded, and an empty report would then stay empty for good. Asking again for such a month calculates it again: if it now has intakes the report is filled in (same row, answered 200), and if it still has none nothing is written. This costs no AI call while the month stays empty and loses nothing.
+
+A month loaded only in part when it is first reported is still saved as it was found. The scope note is what tells the reader what the report covers.
 
 ### Generating is idempotent and serialized
 
@@ -35,9 +39,9 @@ Intakes loaded afterwards for a month that already has a report do not change it
 
 If the AI fails, the calculated data is saved with the summary `unavailable`, and the next `PUT` of that month writes only the summary again.
 
-Every `PUT` counts toward the per-user AI quota, even when it returns a saved report. Listing, reading and downloading the PDF do not.
+Every `PUT` counts toward the per-user AI quota, even when it returns a saved report. The limit is a route dependency, as in recipes, and it runs before the service knows whether the AI will be called. Counting only real AI calls would need the limiter inside the service, away from the shared pattern. Clients read a report with the `GET` routes, which never count; listing, reading and downloading the PDF do not.
 
-The whole `PUT` is bounded by its own time budget, like recipes and receipts. When it runs out, the request answers 504 and nothing is saved. The report uses its own AI models (`OPENROUTER_REPORT_MODELS`), passed per call to the shared client.
+The whole `PUT` is bounded by its own time budget, like recipes and receipts. When it runs out, the request answers 504 and the transaction is rolled back, so normally nothing is saved. A timeout that lands during the commit itself may leave the report saved; asking again returns it, because the `PUT` is idempotent. The report uses its own AI models (`OPENROUTER_REPORT_MODELS`), passed per call to the shared client.
 
 ### The PDF is rendered from saved data, with WeasyPrint
 
@@ -57,6 +61,8 @@ Display names and units (nutrients, limits, macros, GAPA groups) live in `app/do
 | --- | --- |
 | Compute the figures with the AI | Not reproducible or auditable, and a wrong number would look authoritative |
 | Regenerate the report when intakes change | Two reads of the same month would disagree, each regeneration costs AI quota, and users lose what they already read |
+| Freeze a month saved without data | Asking on the first day of the next month, before the intakes are loaded, would leave the month empty with no way out |
+| Wait some days after the month ends before allowing the report | The number of days is arbitrary, and a late load brings the problem back |
 | Store only the AI text and recalculate the figures on read | A change in references or conversions would silently rewrite old reports |
 | PDF without a text when the AI failed | Looks complete while missing its main section |
 | `wkhtmltopdf` | The project is archived |
@@ -69,4 +75,5 @@ Display names and units (nutrients, limits, macros, GAPA groups) live in `app/do
 - The Docker image and the CI setup install Pango, HarfBuzz and the DejaVu fonts (about 20 MB). Only DejaVu fonts exist in the image, so the stylesheet falls back to them after the brand fonts.
 - A deployment must set `OPENROUTER_REPORT_MODELS`. With it empty, no report gets its AI text (`unavailable`) and no PDF can be downloaded until it is configured.
 - The quality of the write-up depends on the model. The prompt is versioned (`v2`) and the output is validated, but its wording is not guaranteed.
-- A report cannot be refreshed after new intakes arrive. If that becomes a need, it is a new feature that decides which version of a month is the current one.
+- A report with data cannot be refreshed after new intakes arrive. If that becomes a need, it is a new feature that decides which version of a month is the current one.
+- The advisory lock is held until the commit, and the request holds a database connection while the AI writes (up to the completion timeout). Requests for the same month wait for the lock with a connection each, bounded by the request time budget. Recipes release the connection around the AI call. It is accepted here because the wait is limited to one month of one establishment and by the quota; releasing the connection during the AI call is the way out if the pool ever runs short.

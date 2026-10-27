@@ -231,6 +231,41 @@ async def test_report_is_generated_once_and_then_returned_as_saved(
     assert len(report_llm.calls) == 1
 
 
+async def test_month_saved_without_data_is_filled_in_once_intakes_are_loaded(
+    client,
+    admin_headers,
+    db_establishment,
+    energy_values,
+    foods,
+    make_user_with_role,
+    report_llm,
+):
+    url = report_url(db_establishment.id, MARCH)
+    first = await client.put(url, headers=admin_headers)
+    _, responsible_id = await make_user_with_role(UserRole.FIELD_WORKER)
+    await add_intake(
+        db_establishment.id, responsible_id, MARCH_INTAKE, [(foods.rice, "2")]
+    )
+
+    second = await client.put(url, headers=admin_headers)
+
+    assert (first.status_code, first.json()["has_data"]) == (201, False)
+    assert (second.status_code, second.json()["has_data"]) == (200, True)
+    assert second.json()["id"] == first.json()["id"]
+    assert second.json()["summary_status"] == "generated"
+    assert len(report_llm.calls) == 1
+
+
+async def test_year_zero_is_rejected_as_an_invalid_month(
+    client, admin_headers, db_establishment
+):
+    response = await client.get(
+        report_url(db_establishment.id, "0000-01"), headers=admin_headers
+    )
+
+    assert response.status_code == 422
+
+
 async def test_generation_over_its_time_budget_returns_504_and_saves_nothing(
     client, admin_headers, db_establishment, rice_in_march, report_llm, monkeypatch
 ):
