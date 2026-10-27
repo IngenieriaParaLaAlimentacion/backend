@@ -20,7 +20,7 @@ from app.exceptions.domain_exceptions import (
 )
 from app.services.llm.openrouter_llm_client import OpenRouterLlmClient
 from app.services.llm.retry_policy import retry_after_seconds
-from app.services.llm.structured_schema import structured_schema
+from app.services.llm.structured_schema import structured_schema, without_bounds
 
 
 @pytest.fixture
@@ -492,3 +492,54 @@ async def test_http_schema_rejection_takes_precedence_over_embedded_code(
         assert len(calls) == 1
     finally:
         await client.aclose()
+
+
+def test_bounds_are_left_out_of_every_nested_schema_without_mutation():
+    schema = {
+        "type": "object",
+        "title": "Summary",
+        "properties": {
+            "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 5,
+                "format": "uuid",
+            },
+            "items": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 3,
+                "items": {"$ref": "#/$defs/Line"},
+            },
+        },
+        "$defs": {"Line": {"type": "string", "maxLength": 9, "default": "x"}},
+    }
+    original = copy.deepcopy(schema)
+
+    assert without_bounds(schema) == {
+        "type": "object",
+        "properties": {
+            "text": {"type": "string"},
+            "items": {"type": "array", "items": {"$ref": "#/$defs/Line"}},
+        },
+        "$defs": {"Line": {"type": "string"}},
+    }
+    assert schema == original
+
+
+@pytest.mark.parametrize("field_name", ["format", "default", "title", "maxLength"])
+def test_bounds_keep_fields_named_like_a_bound_and_literal_values(field_name):
+    literal = {"maxLength": 3}
+    schema = {
+        "type": "object",
+        "properties": {
+            field_name: {"type": "string", "maxLength": 9, "enum": [literal]}
+        },
+        "required": [field_name],
+    }
+
+    assert without_bounds(schema) == {
+        "type": "object",
+        "properties": {field_name: {"type": "string", "enum": [literal]}},
+        "required": [field_name],
+    }

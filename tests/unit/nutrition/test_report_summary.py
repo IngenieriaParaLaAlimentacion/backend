@@ -2,13 +2,13 @@ import json
 import uuid
 
 import pytest
-from google.genai import types
 from pydantic import ValidationError
 
 from app.domain.nutrition import PrioritizedNutrient
 from app.domain.nutrition_report import SUMMARY_MAX_ITEMS, SUMMARY_TEXT_MAX_LENGTH
 from app.schemas.nutrition.nutrition_report_schema import (
     NutritionReportAnalysis,
+    NutritionReportSummary,
     ReportFoodSource,
     ReportFoodWithoutConversion,
     ReportNutrientSources,
@@ -108,7 +108,8 @@ def test_unusable_summary_is_rejected(overrides):
         parse_summary(summary_of(**overrides))
 
 
-def test_response_schema_is_one_the_gemini_client_accepts():
-    # The client sends the schema as Gemini's native response schema, which
-    # rejects nested or optional fields; this fails if the output grows any.
-    types.Schema.model_validate(RESPONSE_SCHEMA)
+def test_response_schema_keeps_every_field_and_leaves_the_bounds_to_the_parser():
+    sent = json.dumps(RESPONSE_SCHEMA)
+
+    assert set(RESPONSE_SCHEMA["required"]) == set(NutritionReportSummary.model_fields)
+    assert "maxLength" not in sent and "maxItems" not in sent

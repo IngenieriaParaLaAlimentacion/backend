@@ -30,6 +30,7 @@ from app.schemas.recipes.recipe_schema import (
     WritingBatch,
     WritingEnvelope,
 )
+from app.services.llm.structured_schema import without_bounds
 from app.services.nutrition.grams import GramsConverter
 from app.services.nutrition.nutrition_service import NutritionService
 from app.services.recipes.calculations import calculate_proposal, stock_ingredients
@@ -87,32 +88,8 @@ class GenerationSnapshot:
 
 
 def writing_response_schema() -> dict:
-    """Keep the wire schema small; enforce all bounds with WritingBatch locally.
-
-    Large bounds on nested arrays can exceed provider structured-output
-    complexity limits. Do not encode text lengths, UUID formats or array
-    cardinalities in the decoder; validation below still rejects invalid output.
-    """
-    omitted = {
-        "minLength",
-        "maxLength",
-        "minItems",
-        "maxItems",
-        "format",
-        "title",
-        "default",
-    }
-
-    def simplify(value):
-        if isinstance(value, dict):
-            return {
-                key: simplify(item) for key, item in value.items() if key not in omitted
-            }
-        if isinstance(value, list):
-            return [simplify(item) for item in value]
-        return value
-
-    return simplify(WritingBatch.model_json_schema())
+    """Return the wire schema of WritingBatch; the model enforces its bounds."""
+    return without_bounds(WritingBatch.model_json_schema())
 
 
 class RecipeGenerator:

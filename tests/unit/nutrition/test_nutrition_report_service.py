@@ -11,6 +11,8 @@ from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentAccessDeniedError,
     LlmClientError,
+    LlmQuotaExhaustedError,
+    LlmUnavailableError,
     NutritionReportConversionUnavailableError,
     NutritionReportMonthNotOverError,
     NutritionReportNotFoundError,
@@ -172,8 +174,13 @@ async def test_foods_left_out_of_the_calculation_are_saved_with_their_names():
 
 @pytest.mark.parametrize(
     "llm_result",
-    [LlmClientError("provider down"), {**SUMMARY, "overview": "  "}],
-    ids=["ai-fails", "ai-answers-badly"],
+    [
+        LlmClientError("provider down"),
+        LlmQuotaExhaustedError(30),
+        LlmUnavailableError("provider down"),
+        {**SUMMARY, "overview": "  "},
+    ],
+    ids=["ai-fails", "quota-exhausted", "ai-unavailable", "ai-answers-badly"],
 )
 async def test_analysis_is_saved_even_when_the_summary_cannot_be_had(llm_result):
     analysis, _ = monthly_analysis()
@@ -195,9 +202,11 @@ async def test_analysis_is_saved_even_when_the_summary_cannot_be_had(llm_result)
     ("llm_result", "reason"),
     [
         (LlmClientError("secret provider detail"), "provider_error"),
+        (LlmQuotaExhaustedError(30), "quota_exhausted"),
+        (LlmUnavailableError("secret provider detail"), "unavailable"),
         ({**SUMMARY, "overview": "  "}, "invalid_output"),
     ],
-    ids=["ai-fails", "ai-answers-badly"],
+    ids=["ai-fails", "quota-exhausted", "ai-unavailable", "ai-answers-badly"],
 )
 async def test_failed_summary_is_logged_by_reason_without_the_providers_message(
     llm_result, reason
@@ -212,6 +221,21 @@ async def test_failed_summary_is_logged_by_reason_without_the_providers_message(
     assert (entry["stage"], entry["reason"]) == ("summary", reason)
     assert entry["prompt_version"] == "v1"
     assert "secret provider detail" not in str(logs)
+
+
+async def test_report_generated_without_an_ai_client_keeps_the_summary_unavailable():
+    analysis, _ = monthly_analysis()
+    service, _, _, _ = make_service(analysis)
+    service.llm = None
+
+    with capture_logs() as logs:
+        report, created = await service.get_or_generate_report(
+            ESTABLISHMENT_ID, "2026-09", ADMIN
+        )
+
+    [entry] = [log for log in logs if log["event"] == "nutrition_report.summary_failed"]
+    assert (created, report.summary_status) == (True, SummaryStatus.UNAVAILABLE)
+    assert entry["reason"] == "client_unavailable"
 
 
 async def test_unavailable_summary_is_written_again_without_recalculating():

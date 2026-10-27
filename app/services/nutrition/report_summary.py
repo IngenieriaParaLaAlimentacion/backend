@@ -6,13 +6,16 @@ from app.schemas.nutrition.nutrition_report_schema import (
     NutritionReportAnalysis,
     NutritionReportSummary,
 )
+from app.services.llm.structured_schema import without_bounds
 
 PROMPT_VERSION = "v1"
 PROMPT = (
     Path(__file__).parent / "prompts" / PROMPT_VERSION / "report_summary.txt"
 ).read_text()
 
-RESPONSE_SCHEMA: dict[str, Any] = NutritionReportSummary.model_json_schema()
+RESPONSE_SCHEMA: dict[str, Any] = without_bounds(
+    NutritionReportSummary.model_json_schema()
+)
 
 
 def build_prompt(analysis: NutritionReportAnalysis) -> str:

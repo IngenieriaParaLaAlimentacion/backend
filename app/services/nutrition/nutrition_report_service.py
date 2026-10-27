@@ -12,6 +12,8 @@ from app.domain.pagination import PaginatedResult
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
     LlmClientError,
+    LlmQuotaExhaustedError,
+    LlmUnavailableError,
     NutritionReportConversionUnavailableError,
     NutritionReportMonthNotOverError,
     NutritionReportNotFoundError,
@@ -228,11 +230,18 @@ class NutritionReportService:
         self, snapshot: NutritionReportAnalysis, establishment_id: UUID, month: date
     ) -> NutritionReportSummary | None:
         """Return the AI's summary of the analysis, or None if it could not be had."""
+        if self.llm is None:
+            _log_summary_failure(establishment_id, month, "client_unavailable")
+            return None
         try:
             raw = await self.llm.complete(
                 prompt=build_prompt(snapshot), response_schema=RESPONSE_SCHEMA
             )
             return parse_summary(raw)
+        except LlmQuotaExhaustedError:
+            _log_summary_failure(establishment_id, month, "quota_exhausted")
+        except LlmUnavailableError:
+            _log_summary_failure(establishment_id, month, "unavailable")
         except LlmClientError:
             _log_summary_failure(establishment_id, month, "provider_error")
         except ValidationError as exc:
