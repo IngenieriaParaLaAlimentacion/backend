@@ -253,6 +253,12 @@
       "description": "Raised when an establishment has no saved nutrition report for a month."
     },
     {
+      "type": "/errors/nutrition/report-summary-unavailable",
+      "status": 409,
+      "exception": "NutritionReportSummaryUnavailableError",
+      "description": "Raised when a report's PDF is requested while its AI summary is missing."
+    },
+    {
       "type": "/errors/nutrition/unknown-gapa-group",
       "status": 500,
       "exception": "UnknownGapaGroupError",

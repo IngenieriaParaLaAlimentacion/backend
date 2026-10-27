@@ -37,6 +37,20 @@ def test_snapshot_shows_shares_as_percentages_and_flags_what_is_off():
     assert snapshot.warnings == analysis.warnings
 
 
+def test_snapshot_keeps_the_reference_and_the_minimum_of_each_nutrient():
+    analysis, milk_id = monthly_analysis()
+
+    snapshot = build_analysis(analysis, NINO_7_9, {milk_id: "Leche"})
+
+    calcium, iron = snapshot.nutrients
+    reference = NINO_7_9.nutrient_per_1000_kcal(PrioritizedNutrient.CALCIUM)
+    assert calcium.reference_per_1000_kcal == pytest.approx(reference)
+    assert calcium.minimum_per_1000_kcal == pytest.approx(reference * 2 / 3)
+    assert iron.reference_per_1000_kcal == pytest.approx(
+        NINO_7_9.nutrient_per_1000_kcal(PrioritizedNutrient.IRON)
+    )
+
+
 def test_snapshot_names_the_suggested_foods():
     analysis, milk_id = monthly_analysis()
 

@@ -20,6 +20,16 @@ class ReportNutrient(BaseModel):
     amount_per_1000_kcal: float = Field(
         description="Amount of the nutrient per 1,000 kcal, in its own unit.",
     )
+    reference_per_1000_kcal: float | None = Field(
+        default=None,
+        description="Amount 1,000 kcal of food should provide, in the nutrient's own "
+        "unit. Null in reports saved before it was stored.",
+    )
+    minimum_per_1000_kcal: float | None = Field(
+        default=None,
+        description="Amount per 1,000 kcal below which the nutrient is at risk. "
+        "Null in reports saved before it was stored.",
+    )
     adequacy_percent: float = Field(
         description="Share of the reference covered, without a ceiling.",
     )
@@ -121,20 +131,28 @@ class NutritionReportSummary(BaseModel):
     """
 
     overview: SummaryText = Field(
-        description="How balanced the food received in the month was, overall.",
+        description="The story of the month: how balanced the food was and which "
+        "pattern stands out.",
     )
     at_risk_nutrients: list[SummaryText] = Field(
         max_length=SUMMARY_MAX_ITEMS,
-        description="One item per nutrient at risk, saying what that shortfall means.",
+        description="One item per nutrient at risk, saying what falling short of it "
+        "means and why it matters.",
     )
     macros: SummaryText = Field(
-        description="How the energy splits between proteins, lipids and carbohydrates.",
+        description="What the split of the energy between proteins, lipids and "
+        "carbohydrates suggests.",
     )
     gapa_groups: SummaryText = Field(
-        description="Which food groups weigh most in the energy and which are missing.",
+        description="What the weight of each food group says, and why a missing group "
+        "matters.",
     )
     incorporate: SummaryText = Field(
         description="A line on which foods to add for the nutrients at risk.",
+    )
+    conclusion: SummaryText = Field(
+        default="",
+        description="What deserves attention first and why, closing the report.",
     )
     limitations: list[SummaryText] = Field(
         max_length=SUMMARY_MAX_ITEMS,

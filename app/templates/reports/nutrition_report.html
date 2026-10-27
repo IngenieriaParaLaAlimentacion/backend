@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Reporte nutricional {{ month_label }} · {{ establishment_name }}</title>
+<style>{% include "nutrition_report.css" %}</style>
+</head>
+<body>
+<header class="masthead">
+  <img src="{{ logo_data_uri }}" alt="">
+  <span class="brand-name">Raíz</span>
+  <span class="brand-org">Ingeniería Para La Alimentación</span>
+</header>
+
+<p class="eyebrow">Reporte nutricional mensual</p>
+<h1>{{ establishment_name }}</h1>
+<p class="period">{{ month_label }} · generado el {{ generated_label }}</p>
+
+{% if not has_data %}
+<div class="note muted">
+  <p>No se registraron ingresos de alimentos con energía en este mes, por eso no hay nada que evaluar.</p>
+</div>
+{% else %}
+<section class="block">
+<h2>Resumen general</h2>
+<div class="figures">
+  <div class="figure"><span class="value">{{ energy_kcal }} kcal</span><span class="caption">Energía total que ingresó</span></div>
+  <div class="figure"><span class="value">{{ mean_adequacy }} %</span><span class="caption">Adecuación media de los nutrientes prioritarios</span></div>
+  <div class="figure"><span class="value">{{ at_risk_count }} de {{ nutrient_count }}</span><span class="caption">Nutrientes en riesgo</span></div>
+</div>
+<p class="text">{{ summary.overview }}</p>
+</section>
+
+<section class="block">
+<h2>Nutrientes prioritarios</h2>
+<table>
+  <thead><tr><th>Nutriente</th><th class="num">Aporte</th><th class="num">Referencia</th><th class="num">Mínimo</th><th class="num">Adecuación</th><th>Estado</th></tr></thead>
+  <tbody>
+  {% for n in nutrients %}
+    <tr class="{{ 'risk' if n.at_risk else '' }}">
+      <td>{{ n.name }}</td>
+      <td class="num">{{ n.amount }} {{ n.unit }}</td>
+      <td class="num">{{ (n.reference ~ ' ' ~ n.unit) if n.reference else '—' }}</td>
+      <td class="num">{{ (n.minimum ~ ' ' ~ n.unit) if n.minimum else '—' }}</td>
+      <td class="num">{{ n.adequacy }} %</td>
+      <td>{% if n.at_risk %}<span class="status alert">En riesgo</span>{% else %}<span class="status ok">Adecuado</span>{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p class="small">Los valores son por cada 1.000 kcal de alimentos recibidos. La referencia es lo que ese aporte debería tener para un niño de 7 a 9 años. Un nutriente está en riesgo cuando queda por debajo del mínimo, que es dos tercios de la referencia. Para la adecuación media, cada nutriente cuenta hasta un máximo de 100 %.{% if nutrient_notes %} {{ nutrient_notes | join(" ") }}{% endif %}</p>
+{% if summary.at_risk_nutrients %}
+<ul>{% for item in summary.at_risk_nutrients %}<li>{{ item }}</li>{% endfor %}</ul>
+{% endif %}
+</section>
+
+<section class="block">
+<h2>Macronutrientes</h2>
+<table>
+  <thead><tr><th>Macronutriente</th><th class="num">% de la energía</th><th class="num">Rango recomendado</th><th>Estado</th></tr></thead>
+  <tbody>
+  {% for m in macros %}
+    <tr class="{{ '' if m.in_range else 'risk' }}">
+      <td>{{ m.name }}</td>
+      <td class="num">{{ m.share }} %</td>
+      <td class="num">{{ m.min }} a {{ m.max }} %</td>
+      <td>{% if m.in_range %}<span class="status ok">Dentro del rango</span>{% else %}<span class="status alert">Fuera del rango</span>{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% if summary.macros %}<p class="text">{{ summary.macros }}</p>{% endif %}
+</section>
+
+<section class="block">
+<h2>Grupos de alimentos</h2>
+<table>
+  <thead><tr><th>Grupo</th><th class="num">% de la energía</th><th>Estado</th></tr></thead>
+  <tbody>
+  {% for g in groups %}
+    <tr>
+      <td>{{ g.name }}</td>
+      <td class="num">{{ g.share }} %</td>
+      <td>{% if g.missing %}<span class="status alert">Sin aportes</span>{% else %}<span class="status info">Presente</span>{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% if summary.gapa_groups %}<p class="text">{{ summary.gapa_groups }}</p>{% endif %}
+</section>
+
+{% if sources %}
+<h2>Alimentos para incorporar</h2>
+{% for s in sources %}
+<div class="source">
+  <h3>{{ s.nutrient }}</h3>
+  <table>
+    <thead><tr><th>Alimento</th><th class="num">Aporte cada 100 kcal</th></tr></thead>
+    <tbody>{% for f in s.foods %}<tr><td>{{ f.name }}</td><td class="num">{{ f.amount }} {{ s.unit }}</td></tr>{% endfor %}</tbody>
+  </table>
+</div>
+{% endfor %}
+{% if summary.incorporate %}<p class="text">{{ summary.incorporate }}</p>{% endif %}
+{% endif %}
+
+{% if summary.conclusion %}
+<section class="block">
+<h2>Conclusiones</h2>
+<p class="text">{{ summary.conclusion }}</p>
+</section>
+{% endif %}
+
+{% if limits %}
+<section class="block">
+<h2>Otros nutrientes</h2>
+<table>
+  <thead><tr><th>Nutriente</th><th class="num">Aporte por 1.000 kcal</th></tr></thead>
+  <tbody>{% for l in limits %}<tr><td>{{ l.name }}</td><td class="num">{{ l.amount }} {{ l.unit }}</td></tr>{% endfor %}</tbody>
+</table>
+<p class="small">Se muestran como información, sin valor de referencia.</p>
+</section>
+{% endif %}
+
+{% if left_out %}
+<section class="block">
+<h2>Alimentos fuera del cálculo</h2>
+<p class="text">Ingresaron, pero no se conoce su equivalencia en gramos: {{ left_out | join(", ") }}.</p>
+</section>
+{% endif %}
+{% endif %}
+
+{% if has_data %}
+<p class="scope"><strong>Alcance de este informe.</strong> {{ scope_note }}</p>
+{% endif %}
+</body>
+</html>

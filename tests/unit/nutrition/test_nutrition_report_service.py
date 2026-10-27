@@ -1,5 +1,7 @@
+import sys
 import uuid
-from datetime import date
+from datetime import date, datetime, timezone
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -16,6 +18,7 @@ from app.exceptions.domain_exceptions import (
     NutritionReportConversionUnavailableError,
     NutritionReportMonthNotOverError,
     NutritionReportNotFoundError,
+    NutritionReportSummaryUnavailableError,
 )
 from app.models.nutrition.nutrition_report import NutritionReport
 from app.reference_data.nutrition_references import NINO_7_9
@@ -33,6 +36,7 @@ SUMMARY = {
     "macros": "Lípidos por encima del rango.",
     "gapa_groups": "Faltan los lácteos.",
     "incorporate": "Sumar leche.",
+    "conclusion": "Conviene empezar por el calcio.",
     "limitations": [],
 }
 
@@ -219,7 +223,7 @@ async def test_failed_summary_is_logged_by_reason_without_the_providers_message(
 
     [entry] = [log for log in logs if log["event"] == "nutrition_report.summary_failed"]
     assert (entry["stage"], entry["reason"]) == ("summary", reason)
-    assert entry["prompt_version"] == "v1"
+    assert entry["prompt_version"] == "v2"
     assert "secret provider detail" not in str(logs)
 
 
@@ -320,6 +324,7 @@ async def test_month_without_a_saved_report_is_not_found_and_not_generated():
     [
         ("get_or_generate_report", ("2026-09",), {}),
         ("get_report", ("2026-09",), {}),
+        ("get_report_pdf", ("2026-09",), {}),
         (
             "list_reports",
             (),
@@ -345,3 +350,82 @@ async def test_field_worker_without_approved_access_cannot_get_a_report(
     repo.lock.assert_not_awaited()
     repo.get_by_month.assert_not_awaited()
     repo.list_by_establishment.assert_not_awaited()
+
+
+@pytest.fixture
+def renderer(monkeypatch):
+    """Stand in for the PDF rendering, so these tests need no PDF libraries.
+
+    The fixture is the list of what happened, in order.
+    """
+    events = []
+
+    def render(report, establishment_name):
+        events.append(("render", report.month, establishment_name))
+        return b"%PDF-fake"
+
+    monkeypatch.setitem(
+        sys.modules,
+        "app.services.nutrition.report_pdf",
+        SimpleNamespace(render_report_pdf=render),
+    )
+    return events
+
+
+def report_to_print(summary_status=SummaryStatus.GENERATED, summary=SUMMARY):
+    saved = saved_report(summary_status, summary)
+    saved.created_at = saved.updated_at = datetime(2026, 10, 15, tzinfo=timezone.utc)
+    return saved
+
+
+async def test_saved_report_is_printed_for_its_establishment(renderer):
+    service, uow, _, llm = make_service(saved=report_to_print())
+    uow.establishment_repo.get_by_id_or_raise = AsyncMock(
+        return_value=SimpleNamespace(name="Comedor Test")
+    )
+
+    pdf = await service.get_report_pdf(ESTABLISHMENT_ID, "2026-09", ADMIN)
+
+    assert pdf == b"%PDF-fake"
+    assert renderer == [("render", "2026-09", "Comedor Test")]
+    llm.complete.assert_not_awaited()
+    uow.nutrition_report_repo.lock.assert_not_awaited()
+    uow.commit.assert_not_awaited()
+
+
+async def test_the_connection_is_released_before_the_pdf_is_rendered(renderer):
+    service, uow, _, _ = make_service(saved=report_to_print())
+    uow.rollback = AsyncMock(side_effect=lambda: renderer.append(("rollback",)))
+
+    await service.get_report_pdf(ESTABLISHMENT_ID, "2026-09", ADMIN)
+
+    assert [event[0] for event in renderer] == ["rollback", "render"]
+
+
+async def test_month_without_a_saved_report_has_no_pdf(renderer):
+    service, _, _, _ = make_service()
+
+    with pytest.raises(NutritionReportNotFoundError):
+        await service.get_report_pdf(ESTABLISHMENT_ID, "2026-09", ADMIN)
+
+    assert renderer == []
+
+
+async def test_report_whose_summary_is_unavailable_has_no_pdf_yet(renderer):
+    saved = report_to_print(SummaryStatus.UNAVAILABLE, None)
+    service, _, _, _ = make_service(saved=saved)
+
+    with pytest.raises(NutritionReportSummaryUnavailableError):
+        await service.get_report_pdf(ESTABLISHMENT_ID, "2026-09", ADMIN)
+
+    assert renderer == []
+
+
+async def test_month_without_intakes_is_printed_as_it_is(renderer):
+    saved = report_to_print(SummaryStatus.NOT_APPLICABLE, None)
+    saved.has_data, saved.analysis = False, {}
+    service, _, _, _ = make_service(saved=saved)
+
+    pdf = await service.get_report_pdf(ESTABLISHMENT_ID, "2026-09", ADMIN)
+
+    assert pdf == b"%PDF-fake"

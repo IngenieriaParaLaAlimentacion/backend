@@ -1347,3 +1347,21 @@ class NutritionReportNotFoundError(NotFoundError):
             f"There is no saved nutrition report for {month}.",
             extensions={"month": month},
         )
+
+
+class NutritionReportSummaryUnavailableError(ConflictError):
+    """Raised when a report's PDF is requested while its AI summary is missing.
+
+    Args:
+        month (str): The requested month, formatted as ``YYYY-MM``.
+    """
+
+    error_type = "nutrition/report-summary-unavailable"
+
+    def __init__(self, month: str):
+        super().__init__(
+            "Report summary unavailable",
+            f"The summary of the report for {month} is not available yet. Request "
+            "the report again to write it.",
+            extensions={"month": month},
+        )

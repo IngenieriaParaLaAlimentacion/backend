@@ -367,6 +367,119 @@
           }
         }
       }
+    },
+    "/api/v1/establishments/{establishment_id}/nutrition-reports/{month}/pdf": {
+      "get": {
+        "tags": [
+          "Nutrition Report V1"
+        ],
+        "summary": "Download a saved monthly nutrition report as a PDF",
+        "description": "Returns an already generated report as a PDF file. It never generates a report or calls the AI: a month without a saved report answers 404, and a report whose AI summary is not available yet answers 409 until the summary is written again by requesting the report with the PUT route. A month without intakes is printed as it is. Accessible by admins and analysts.",
+        "operationId": "download_nutrition_report_pdf_api_v1_establishments__establishment_id__nutrition_reports__month__pdf_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "establishment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Establishment Id"
+            }
+          },
+          {
+            "name": "month",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "description": "Calendar month of the report, formatted as `YYYY-MM`.",
+              "examples": [
+                "2026-09"
+              ],
+              "title": "Month"
+            },
+            "description": "Calendar month of the report, formatted as `YYYY-MM`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The report as a PDF file",
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "application/pdf": {}
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication token",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Establishment not found, or no report for that month",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The AI summary of the report is not available yet",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected internal error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -674,6 +787,30 @@
             "title": "Amount Per 1000 Kcal",
             "description": "Amount of the nutrient per 1,000 kcal, in its own unit."
           },
+          "reference_per_1000_kcal": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Per 1000 Kcal",
+            "description": "Amount 1,000 kcal of food should provide, in the nutrient's own unit. Null in reports saved before it was stored."
+          },
+          "minimum_per_1000_kcal": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum Per 1000 Kcal",
+            "description": "Amount per 1,000 kcal below which the nutrient is at risk. Null in reports saved before it was stored."
+          },
           "adequacy_percent": {
             "type": "number",
             "title": "Adequacy Percent",
@@ -885,42 +1022,49 @@
         "properties": {
           "overview": {
             "type": "string",
-            "maxLength": 700,
+            "maxLength": 1500,
             "title": "Overview",
-            "description": "How balanced the food received in the month was, overall."
+            "description": "The story of the month: how balanced the food was and which pattern stands out."
           },
           "at_risk_nutrients": {
             "items": {
               "type": "string",
-              "maxLength": 700
+              "maxLength": 1500
             },
             "type": "array",
             "maxItems": 7,
             "title": "At Risk Nutrients",
-            "description": "One item per nutrient at risk, saying what that shortfall means."
+            "description": "One item per nutrient at risk, saying what falling short of it means and why it matters."
           },
           "macros": {
             "type": "string",
-            "maxLength": 700,
+            "maxLength": 1500,
             "title": "Macros",
-            "description": "How the energy splits between proteins, lipids and carbohydrates."
+            "description": "What the split of the energy between proteins, lipids and carbohydrates suggests."
           },
           "gapa_groups": {
             "type": "string",
-            "maxLength": 700,
+            "maxLength": 1500,
             "title": "Gapa Groups",
-            "description": "Which food groups weigh most in the energy and which are missing."
+            "description": "What the weight of each food group says, and why a missing group matters."
           },
           "incorporate": {
             "type": "string",
-            "maxLength": 700,
+            "maxLength": 1500,
             "title": "Incorporate",
             "description": "A line on which foods to add for the nutrients at risk."
+          },
+          "conclusion": {
+            "type": "string",
+            "maxLength": 1500,
+            "title": "Conclusion",
+            "description": "What deserves attention first and why, closing the report.",
+            "default": ""
           },
           "limitations": {
             "items": {
               "type": "string",
-              "maxLength": 700
+              "maxLength": 1500
             },
             "type": "array",
             "maxItems": 7,

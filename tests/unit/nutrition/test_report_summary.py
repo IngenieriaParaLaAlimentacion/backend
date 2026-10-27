@@ -13,7 +13,9 @@ from app.schemas.nutrition.nutrition_report_schema import (
     ReportFoodWithoutConversion,
     ReportNutrientSources,
 )
+from app.services.llm.structured_schema import structured_schema
 from app.services.nutrition.report_summary import (
+    PROMPT,
     RESPONSE_SCHEMA,
     build_prompt,
     parse_summary,
@@ -27,6 +29,7 @@ def summary_of(**overrides) -> dict:
         "macros": "Dentro de los rangos.",
         "gapa_groups": "Falta el grupo de lácteos.",
         "incorporate": "Sumar leche.",
+        "conclusion": "Conviene empezar por el calcio.",
         "limitations": [],
         **overrides,
     }
@@ -92,6 +95,7 @@ def test_sections_with_nothing_to_say_may_be_empty():
         {"at_risk_nutrients": ["Calcio: bajo.", "  "]},
         {"overview": "x" * (SUMMARY_TEXT_MAX_LENGTH + 1)},
         {"limitations": ["x" * (SUMMARY_TEXT_MAX_LENGTH + 1)]},
+        {"conclusion": "x" * (SUMMARY_TEXT_MAX_LENGTH + 1)},
         {"limitations": ["Un dato."] * (SUMMARY_MAX_ITEMS + 1)},
     ],
     ids=[
@@ -100,6 +104,7 @@ def test_sections_with_nothing_to_say_may_be_empty():
         "blank-item",
         "overview-too-long",
         "item-too-long",
+        "conclusion-too-long",
         "too-many-items",
     ],
 )
@@ -111,5 +116,26 @@ def test_unusable_summary_is_rejected(overrides):
 def test_response_schema_keeps_every_field_and_leaves_the_bounds_to_the_parser():
     sent = json.dumps(RESPONSE_SCHEMA)
 
-    assert set(RESPONSE_SCHEMA["required"]) == set(NutritionReportSummary.model_fields)
+    assert set(RESPONSE_SCHEMA["properties"]) == set(
+        NutritionReportSummary.model_fields
+    )
     assert "maxLength" not in sent and "maxItems" not in sent
+
+
+def test_the_ai_must_write_every_field_including_the_conclusion():
+    # The client closes the schema, which makes every property required.
+    required = structured_schema(RESPONSE_SCHEMA)["required"]
+
+    assert set(required) == set(NutritionReportSummary.model_fields)
+
+
+def test_summary_saved_without_a_conclusion_still_loads():
+    raw = summary_of()
+    del raw["conclusion"]
+
+    assert parse_summary(raw).conclusion == ""
+
+
+@pytest.mark.parametrize("field", list(NutritionReportSummary.model_fields))
+def test_prompt_asks_for_every_field_of_the_summary(field):
+    assert f"- {field}:" in PROMPT

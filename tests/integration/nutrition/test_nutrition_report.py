@@ -59,6 +59,10 @@ def list_url(establishment_id) -> str:
     return f"{ROOT}/establishments/{establishment_id}/nutrition-reports"
 
 
+def pdf_url(establishment_id, month="2026-09") -> str:
+    return report_url(establishment_id, month) + "/pdf"
+
+
 @pytest.mark.parametrize("headers", ["admin_headers", "analyst_headers"])
 async def test_admin_and_analyst_get_the_saved_report(
     headers, request, client, db_establishment
@@ -117,8 +121,8 @@ async def test_report_of_another_establishment_is_not_returned(
 
 ROUTES = pytest.mark.parametrize(
     ("method", "url_for"),
-    [("GET", report_url), ("GET", list_url), ("PUT", report_url)],
-    ids=["detail", "list", "put"],
+    [("GET", report_url), ("GET", list_url), ("PUT", report_url), ("GET", pdf_url)],
+    ids=["detail", "list", "put", "pdf"],
 )
 
 
@@ -134,13 +138,15 @@ async def test_unknown_establishment_returns_404(
 
 
 @ROUTES
-async def test_field_worker_returns_403(
-    method, url_for, client, field_worker_headers, db_establishment, report_llm
+async def test_field_worker_returns_403_even_with_approved_access_to_the_establishment(
+    method, url_for, client, field_worker_with_access, db_establishment, report_llm
 ):
+    # Only the role can keep them out: the establishment access check lets them in.
+    headers, _ = field_worker_with_access
     await save(make_report(db_establishment.id))
 
     response = await client.request(
-        method, url_for(db_establishment.id), headers=field_worker_headers
+        method, url_for(db_establishment.id), headers=headers
     )
 
     assert response.status_code == 403
@@ -325,3 +331,48 @@ async def test_every_request_counts_toward_the_ai_quota_even_for_a_saved_report(
     assert (first.status_code, second.status_code) == (201, 429)
     assert "retry-after" in second.headers
     assert len(report_llm.calls) == 1
+
+
+async def test_saved_report_downloads_as_a_pdf_file(
+    client, admin_headers, db_establishment
+):
+    await save(make_report(db_establishment.id, analysis=ANALYSIS))
+
+    response = await client.get(pdf_url(db_establishment.id), headers=admin_headers)
+
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.headers["content-disposition"] == (
+        'attachment; filename="nutrition-report-2026-09.pdf"'
+    )
+    assert response.content.startswith(b"%PDF-")
+
+
+async def test_month_without_intakes_downloads_as_a_pdf_file(
+    client, admin_headers, db_establishment
+):
+    await save(make_report(db_establishment.id, state=NOT_APPLICABLE))
+
+    response = await client.get(pdf_url(db_establishment.id), headers=admin_headers)
+
+    assert response.status_code == 200
+    assert response.content.startswith(b"%PDF-")
+
+
+async def test_pdf_of_a_month_without_a_saved_report_returns_404(
+    client, admin_headers, db_establishment
+):
+    response = await client.get(pdf_url(db_establishment.id), headers=admin_headers)
+
+    assert response.status_code == 404
+
+
+async def test_pdf_of_a_report_whose_summary_is_unavailable_returns_409(
+    client, admin_headers, db_establishment
+):
+    await save(make_report(db_establishment.id, analysis=ANALYSIS, state=UNAVAILABLE))
+
+    response = await client.get(pdf_url(db_establishment.id), headers=admin_headers)
+
+    assert response.status_code == 409
+    assert response.json()["type"].endswith("/nutrition/report-summary-unavailable")

@@ -21,6 +21,7 @@ SUMMARY = {
     "macros": "Dentro de los rangos.",
     "gapa_groups": "Falta el grupo de lácteos.",
     "incorporate": "Sumar leche.",
+    "conclusion": "Conviene empezar por el calcio.",
     "limitations": [],
 }
 

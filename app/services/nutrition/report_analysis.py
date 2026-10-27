@@ -12,6 +12,7 @@ from app.schemas.nutrition.nutrition_report_schema import (
     ReportNutrient,
     ReportNutrientSources,
 )
+from app.services.nutrition.intake_analysis import RISK_ADEQUACY_THRESHOLD
 
 _PERCENT = 100
 
@@ -40,6 +41,10 @@ def build_analysis(
     at_risk = set(analysis.nutrients_at_risk)
     out_of_range = {item.macro for item in analysis.macros_out_of_range}
     missing_groups = set(analysis.missing_gapa_groups)
+    reference = {
+        item.nutrient: profile.nutrient_per_1000_kcal(item.nutrient)
+        for item in indicators.nutrients
+    }
     return NutritionReportAnalysis(
         energy_kcal=indicators.energy_kcal,
         mean_adequacy_percent=indicators.mean_adequacy_ratio * _PERCENT,
@@ -47,6 +52,9 @@ def build_analysis(
             ReportNutrient(
                 nutrient=item.nutrient,
                 amount_per_1000_kcal=item.amount_per_1000_kcal,
+                reference_per_1000_kcal=reference[item.nutrient],
+                minimum_per_1000_kcal=reference[item.nutrient]
+                * RISK_ADEQUACY_THRESHOLD,
                 adequacy_percent=item.adequacy_uncapped * _PERCENT,
                 adequacy_capped_percent=item.adequacy_capped * _PERCENT,
                 at_risk=item.nutrient in at_risk,

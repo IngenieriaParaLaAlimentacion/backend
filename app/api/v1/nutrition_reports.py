@@ -154,3 +154,44 @@ async def put_nutrition_report(
     if not created:
         response.status_code = status.HTTP_200_OK
     return NutritionReportResponse.model_validate(report)
+
+
+@router.get(
+    "/{establishment_id}/nutrition-reports/{month}/pdf",
+    status_code=status.HTTP_200_OK,
+    summary="Download a saved monthly nutrition report as a PDF",
+    description=(
+        "Returns an already generated report as a PDF file. It never generates a "
+        "report or calls the AI: a month without a saved report answers 404, and a "
+        "report whose AI summary is not available yet answers 409 until the summary "
+        "is written again by requesting the report with the PUT route. A month "
+        "without intakes is printed as it is. Accessible by admins and analysts."
+    ),
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_200_OK: {
+            "description": "The report as a PDF file",
+            "content": {"application/pdf": {}},
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Establishment not found, or no report for that month"
+        },
+        status.HTTP_409_CONFLICT: {
+            "description": "The AI summary of the report is not available yet"
+        },
+    },
+)
+async def download_nutrition_report_pdf(
+    establishment_id: UUID,
+    month: ReportMonthPath,
+    actor: UserActor = Depends(require_admin_or_analyst),
+    service: NutritionReportService = Depends(get_nutrition_report_service),
+) -> Response:
+    """Return the saved report of a month as a PDF file."""
+    pdf = await service.get_report_pdf(establishment_id, month, actor)
+    filename = f"nutrition-report-{month}.pdf"
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )

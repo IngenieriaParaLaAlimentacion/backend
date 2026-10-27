@@ -1,3 +1,4 @@
+import asyncio
 from datetime import date
 from uuid import UUID
 
@@ -17,11 +18,14 @@ from app.exceptions.domain_exceptions import (
     NutritionReportConversionUnavailableError,
     NutritionReportMonthNotOverError,
     NutritionReportNotFoundError,
+    NutritionReportSummaryUnavailableError,
 )
+from app.models.establishments.establishment import Establishment
 from app.models.nutrition.nutrition_report import NutritionReport
 from app.reference_data.nutrition_references import REFERENCE_PROFILES
 from app.schemas.nutrition.nutrition_report_schema import (
     NutritionReportAnalysis,
+    NutritionReportResponse,
     NutritionReportSummary,
 )
 from app.services.access import check_establishment_access
@@ -130,13 +134,35 @@ class NutritionReportService:
             EstablishmentAccessDeniedError: field worker lacks approved access.
             NutritionReportNotFoundError: the month has no saved report.
         """
-        await self._check_access(establishment_id, actor)
-        report = await self.uow.nutrition_report_repo.get_by_month(
-            establishment_id, _first_day_of(month)
-        )
-        if report is None:
-            raise NutritionReportNotFoundError(month)
+        _, report = await self._find_saved(establishment_id, month, actor)
         return report
+
+    async def get_report_pdf(
+        self, establishment_id: UUID, month: str, actor: UserActor
+    ) -> bytes:
+        """Return the saved report of a month as a PDF file.
+
+        A month without intakes has no AI summary by design and is printed as it is.
+
+        Raises:
+            EstablishmentNotFoundError: establishment_id does not exist.
+            EstablishmentAccessDeniedError: field worker lacks approved access.
+            NutritionReportNotFoundError: the month has no saved report.
+            NutritionReportSummaryUnavailableError: the AI could not write the
+                summary yet, so the report is not complete.
+        """
+        # The PDF libraries are only needed from here: the app starts without them.
+        from app.services.nutrition.report_pdf import render_report_pdf
+
+        establishment, saved = await self._find_saved(establishment_id, month, actor)
+        if saved.summary_status == SummaryStatus.UNAVAILABLE:
+            raise NutritionReportSummaryUnavailableError(month)
+        report = NutritionReportResponse.model_validate(saved)
+        name = establishment.name
+        # Everything printed is plain data now, so the connection goes back to the
+        # pool before the rendering, which takes a while.
+        await self.uow.rollback()
+        return await asyncio.to_thread(render_report_pdf, report, name)
 
     async def list_reports(
         self,
@@ -164,10 +190,27 @@ class NutritionReportService:
             items=reports, total=total, page=page, page_size=page_size
         )
 
-    async def _check_access(self, establishment_id: UUID, actor: UserActor) -> None:
-        """Confirm the establishment exists and the actor may look at it."""
-        await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
+    async def _check_access(
+        self, establishment_id: UUID, actor: UserActor
+    ) -> Establishment:
+        """Return the establishment, once it exists and the actor may look at it."""
+        establishment = await self.uow.establishment_repo.get_by_id_or_raise(
+            establishment_id
+        )
         await check_establishment_access(self.uow, actor, establishment_id)
+        return establishment
+
+    async def _find_saved(
+        self, establishment_id: UUID, month: str, actor: UserActor
+    ) -> tuple[Establishment, NutritionReport]:
+        """Return the establishment and its saved report of a month."""
+        establishment = await self._check_access(establishment_id, actor)
+        report = await self.uow.nutrition_report_repo.get_by_month(
+            establishment_id, _first_day_of(month)
+        )
+        if report is None:
+            raise NutritionReportNotFoundError(month)
+        return establishment, report
 
     async def _generate(
         self, establishment_id: UUID, first_day: date, month: str, actor: UserActor

@@ -3,6 +3,7 @@ from datetime import date, datetime, timezone
 
 from app.domain.nutrition_report import SummaryStatus
 from app.schemas.nutrition.nutrition_report_schema import (
+    NutritionReportAnalysis,
     NutritionReportListItem,
     NutritionReportResponse,
 )
@@ -50,3 +51,24 @@ def test_list_item_shows_the_basics_of_a_report_without_its_analysis_or_summary(
         "summary_status",
         "created_at",
     }
+
+
+def test_analysis_saved_before_the_reference_was_stored_still_loads():
+    old = {
+        "nutrients": [
+            {
+                "nutrient": "calcio",
+                "amount_per_1000_kcal": 200.0,
+                "adequacy_percent": 51.0,
+                "adequacy_capped_percent": 51.0,
+                "at_risk": True,
+            }
+        ]
+    }
+
+    [calcium] = NutritionReportAnalysis.model_validate(old).nutrients
+
+    assert (calcium.reference_per_1000_kcal, calcium.minimum_per_1000_kcal) == (
+        None,
+        None,
+    )

@@ -8,7 +8,7 @@ from app.schemas.nutrition.nutrition_report_schema import (
 )
 from app.services.llm.structured_schema import without_bounds
 
-PROMPT_VERSION = "v1"
+PROMPT_VERSION = "v2"
 PROMPT = (
     Path(__file__).parent / "prompts" / PROMPT_VERSION / "report_summary.txt"
 ).read_text()

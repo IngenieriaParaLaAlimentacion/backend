@@ -1,0 +1,137 @@
+{% from "_theme.html" import c %}
+:root {
+  --papel: {{ c.papel }};
+  --tinta: {{ c.tinta }};
+  --tinta-suave: {{ c.tinta_suave }};
+  --banda: {{ c.banda }};
+  --linea: {{ c.linea }};
+  --tierra: {{ c.tierra }};
+  --papel-atenuado: {{ c.papel_atenuado }};
+  --mostaza: {{ c.mostaza }};
+  --mostaza-oscura: {{ c.mostaza_oscura }};
+  --mostaza-clara: {{ c.mostaza_clara }};
+  --salvia: {{ c.salvia_profunda }};
+  --salvia-palida: {{ c.salvia_palida }};
+  --ladrillo: {{ c.ladrillo }};
+  --ladrillo-claro: {{ c.ladrillo_claro }};
+}
+
+@page {
+  size: A4;
+  margin: 24mm 16mm 20mm;
+  @bottom-left {
+    content: "Raíz · Ingeniería Para La Alimentación";
+    font: 8pt "DejaVu Sans", sans-serif;
+    color: var(--tinta-suave);
+  }
+  @bottom-right {
+    content: "Página " counter(page) " de " counter(pages);
+    font: 8pt "DejaVu Sans", sans-serif;
+    color: var(--tinta-suave);
+  }
+}
+
+body {
+  margin: 0;
+  font: 9.5pt/1.5 "Work Sans", "DejaVu Sans", sans-serif;
+  color: var(--tinta);
+}
+
+h1, h2 {
+  font-family: "Fraunces", "DejaVu Serif", serif;
+  font-weight: 600;
+  color: var(--tierra);
+}
+
+.masthead {
+  /* The negative margins stretch the band over the page margins. */
+  margin: -24mm -16mm 10mm;
+  padding: 7mm 16mm;
+  background: var(--tierra);
+  color: var(--papel);
+  overflow: hidden;
+}
+.masthead img { float: left; width: 11mm; height: 11mm; border-radius: 1.6mm; margin-right: 3mm; }
+.brand-name { display: block; font: 600 15pt "Fraunces", "DejaVu Serif", serif; }
+.brand-org { display: block; font-size: 8pt; color: var(--papel-atenuado); }
+
+.eyebrow { margin: 0; font-size: 8pt; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mostaza-oscura); }
+h1 { margin: 1mm 0 0; font-size: 21pt; line-height: 1.2; }
+.period { margin: 1mm 0 7mm; font-size: 12pt; color: var(--tinta-suave); }
+
+h2 {
+  margin: 8mm 0 3mm;
+  padding-bottom: 1.5mm;
+  font-size: 13pt;
+  border-bottom: 0.6mm solid var(--mostaza);
+  break-after: avoid;
+}
+
+.block { break-inside: avoid; }
+
+p { margin: 0 0 3mm; }
+p.text { text-align: left; }
+
+.figures { display: flex; gap: 4mm; margin: 0 0 4mm; }
+.figure {
+  flex: 1;
+  padding: 3mm 4mm;
+  background: var(--banda);
+  border: 0.3mm solid var(--linea);
+  border-radius: 1.6mm;
+  break-inside: avoid;
+}
+.figure .value { display: block; font: 600 15pt "Fraunces", "DejaVu Serif", serif; color: var(--tierra); }
+.figure .caption { display: block; font-size: 8pt; color: var(--tinta-suave); }
+
+table { width: 100%; border-collapse: collapse; margin: 0 0 3mm; }
+thead { display: table-header-group; }
+th {
+  padding: 1.8mm 2.5mm;
+  text-align: left;
+  font-size: 7.5pt;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+  background: var(--banda);
+  border-bottom: 0.3mm solid var(--linea);
+}
+td { padding: 2mm 2.5mm; border-bottom: 0.3mm solid var(--linea); vertical-align: top; }
+tr { break-inside: avoid; }
+.num { text-align: right; white-space: nowrap; }
+
+tr.risk td { background: var(--ladrillo-claro); }
+.status {
+  display: inline-block;
+  padding: 0.4mm 2mm;
+  font-size: 8pt;
+  font-weight: 700;
+  border-radius: 1mm;
+}
+.status.ok { color: var(--salvia); background: var(--salvia-palida); }
+.status.alert { color: var(--ladrillo); background: var(--ladrillo-claro); border: 0.3mm solid var(--ladrillo); }
+.status.info { color: var(--tinta-suave); background: var(--banda); }
+
+ul { margin: 0 0 3mm; padding-left: 5mm; }
+li { margin-bottom: 1mm; }
+
+.note {
+  margin: 0 0 3mm;
+  padding: 2.5mm 3.5mm;
+  background: var(--mostaza-clara);
+  border-left: 1.2mm solid var(--mostaza);
+  break-inside: avoid;
+}
+.note.muted { background: var(--banda); border-left-color: var(--linea); color: var(--tinta-suave); }
+.small { font-size: 8.5pt; color: var(--tinta-suave); }
+.scope {
+  margin: 14mm 0 0;
+  padding-top: 3mm;
+  border-top: 0.3mm solid var(--linea);
+  font-size: 8pt;
+  line-height: 1.45;
+  color: var(--tinta-suave);
+  break-inside: avoid;
+}
+.source { break-inside: avoid; margin-bottom: 3mm; }
+.source h3 { margin: 0 0 1mm; font-size: 10pt; color: var(--tierra); }
