@@ -33,7 +33,7 @@ jobs:
 
       - uses: ./.github/actions/setup-python-env
 
-      - name: Test the load-test seed and cleanup
+      - name: Test the load-test cleanup
         run: poetry run pytest tests/load/tests
 
   load-tests:

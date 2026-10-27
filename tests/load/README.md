@@ -147,9 +147,9 @@ The flows write the same marker in what they create.
 
 The cleanup only removes rows tied to the load-test establishments and users, and keeps the seeded ones, all in one transaction. Each run starts from the same data, so runs can be compared. Removing the whole dataset by hand starts from the same marker. The cleanup is the reference for the order, because some foreign keys restrict deletes.
 
-## Tests of the seed and cleanup
+## Test of the cleanup
 
-`tests/load/tests/` checks the dataset, that the seed can run twice, and that the cleanup removes a run's writes and nothing else. The app's suites never collect them, because `testpaths` only lists `tests/unit` and `tests/integration`. Run them by path (Docker must be running, as for the integration tests):
+`tests/load/tests/` checks that the cleanup removes a run's writes and nothing else, since it deletes rows on a shared database. Its fixture runs the seed, so the seed is covered too. The app's suites never collect them, because `testpaths` only lists `tests/unit` and `tests/integration`. Run them by path (Docker must be running, as for the integration tests):
 
 ```bash
 poetry run pytest tests/load/tests
