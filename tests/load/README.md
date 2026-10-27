@@ -155,7 +155,7 @@ Files:
 
 k6 doesn't see the replica's CPU and memory. Read them from Railway's metrics for the run's time window.
 
-To turn a run into a written report, give an AI the results zip together with [`REPORT_PROMPT.md`](REPORT_PROMPT.md), after filling in its fields: the Railway plan, the CPU and memory read from Railway, and the run's time window.
+After a run that passed, the workflow's `report` job gives Claude the results and [`REPORT_PROMPT.md`](REPORT_PROMPT.md), and adds the report to the job summary and to a `load-test-report` artifact. Claude only sees the results and the prompt: the base URL is removed from `run.json`, and nothing names where the API runs. The job uses the repository's `CLAUDE_CODE_OAUTH_TOKEN` secret, the one `claude.yml` uses, and a failure in it never fails the run. The same prompt works by hand with any AI and the contents of `tests/load/results/`.
 
 ## The load-test data
 

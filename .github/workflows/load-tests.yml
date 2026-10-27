@@ -88,3 +88,60 @@ jobs:
           path: tests/load/results/
           retention-days: 30
           if-no-files-found: ignore
+
+  # Only after a run that passed: a failed run's numbers are not worth a report.
+  report:
+    needs: load-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      # Only the prompt, so the results and the prompt are all Claude can read.
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
+        with:
+          fetch-depth: 1
+          sparse-checkout: tests/load/REPORT_PROMPT.md
+          sparse-checkout-cone-mode: false
+
+      - name: Download the results
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 #v8.0.2
+        with:
+          name: load-test-results
+          path: report-input
+
+      - name: Prepare the report input
+        # The base URL names the target, which the report does not need.
+        run: |
+          jq 'del(.base_url)' report-input/run.json > report-input/run.tmp
+          mv report-input/run.tmp report-input/run.json
+          mv tests/load/REPORT_PROMPT.md report-input/PROMPT.md
+
+      - name: Write the report
+        continue-on-error: true
+        uses: anthropics/claude-code-action@1d6de8cb0c237e7c15e9e1bdf973826ebae490cc #v1.0.248
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          claude_args: "--allowed-tools Read,Write,Glob"
+          prompt: |
+            Follow the instructions in report-input/PROMPT.md, everything after its "---" line.
+            The run's results are the other files in report-input/. Read only files in that
+            folder, and write the report, in Markdown, to report.md at the workspace root.
+
+      - name: Add the report to the job summary
+        run: |
+          if [ -s report.md ]; then
+            cat report.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Claude did not write a report; see the logs of the previous step." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload the report
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 #v7.0.2
+        with:
+          name: load-test-report
+          path: report.md
+          retention-days: 30
+          if-no-files-found: ignore

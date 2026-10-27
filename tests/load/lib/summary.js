@@ -51,9 +51,13 @@ export function writeSummary(flow, data, withReplays = false) {
     "",
   ].join("\n");
 
+  // setup_data holds the users' access tokens, which must not reach the results.
+  const { setup_data: _tokens, ...results } = data;
+  const full = { ...results, profile: { steps: STEPS, step_seconds: STEP_SECONDS } };
+
   return {
     stdout: `${table}\n`,
     [`tests/load/results/${flow}.md`]: table,
-    [`tests/load/results/${flow}.json`]: JSON.stringify(data, null, 2),
+    [`tests/load/results/${flow}.json`]: JSON.stringify(full, null, 2),
   };
 }
