@@ -289,6 +289,44 @@ async def test_bad_schema_request_never_loosens_or_retries(configured_settings, 
         await client.aclose()
 
 
+@pytest.mark.parametrize("has_image", [False, True])
+async def test_models_given_for_the_call_replace_the_configured_ones(
+    configured_settings, has_image
+):
+    requests = []
+
+    def handler(request):
+        requests.append(request)
+        return httpx.Response(200, json=completion())
+
+    client = make_client(configured_settings, handler)
+    try:
+        await client.complete(
+            prompt="synthetic",
+            response_schema={},
+            image=b"image" if has_image else None,
+            image_content_type="image/png" if has_image else None,
+            models=["operator/report-model"],
+        )
+        assert json.loads(requests[0].content)["model"] == "operator/report-model"
+    finally:
+        await client.aclose()
+
+
+async def test_no_models_given_for_the_call_makes_no_network_calls(
+    configured_settings,
+):
+    def handler(request):
+        pytest.fail("Missing models must not make HTTP requests")
+
+    client = make_client(configured_settings, handler)
+    try:
+        with pytest.raises(LlmUnavailableError):
+            await client.complete(prompt="synthetic", response_schema={}, models=[])
+    finally:
+        await client.aclose()
+
+
 @pytest.mark.parametrize(
     "field,value",
     [

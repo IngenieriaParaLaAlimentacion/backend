@@ -5,6 +5,7 @@ from uuid import UUID
 import structlog
 from pydantic import ValidationError
 
+from app.config.settings import settings
 from app.core.interfaces.llm_client import ILlmClient
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.nutrition import MonthlyIntakeAnalysis, ReferenceProfile
@@ -16,6 +17,7 @@ from app.exceptions.domain_exceptions import (
     LlmQuotaExhaustedError,
     LlmUnavailableError,
     NutritionReportConversionUnavailableError,
+    NutritionReportGenerationTimeoutError,
     NutritionReportMonthNotOverError,
     NutritionReportNotFoundError,
     NutritionReportSummaryUnavailableError,
@@ -101,7 +103,29 @@ class NutritionReportService:
             NutritionReportMonthNotOverError: the month is not over yet.
             NutritionReportConversionUnavailableError: the foods received have
                 no known conversion to grams.
+            NutritionReportGenerationTimeoutError: the whole request exceeded
+                its time budget; nothing is saved.
         """
+        deadline = asyncio.timeout(settings.report_generation_timeout_seconds)
+        try:
+            async with deadline:
+                return await self._get_or_generate(establishment_id, month, actor)
+        except TimeoutError as exc:
+            if not deadline.expired():
+                raise
+            logger.warning(
+                "nutrition_report.generation_failed",
+                establishment_id=str(establishment_id),
+                month=month,
+                reason="total_deadline_exceeded",
+            )
+            await self.uow.rollback()
+            raise NutritionReportGenerationTimeoutError() from exc
+
+    async def _get_or_generate(
+        self, establishment_id: UUID, month: str, actor: UserActor
+    ) -> tuple[NutritionReport, bool]:
+        """Check access, then return the saved report or generate and save one."""
         first_day = _first_day_of(month)
 
         await self._check_access(establishment_id, actor)
@@ -278,7 +302,9 @@ class NutritionReportService:
             return None
         try:
             raw = await self.llm.complete(
-                prompt=build_prompt(snapshot), response_schema=RESPONSE_SCHEMA
+                prompt=build_prompt(snapshot),
+                response_schema=RESPONSE_SCHEMA,
+                models=settings.openrouter_report_models,
             )
             return parse_summary(raw)
         except LlmQuotaExhaustedError:

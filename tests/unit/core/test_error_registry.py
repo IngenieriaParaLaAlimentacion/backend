@@ -14,6 +14,7 @@ EXPECTED: dict[str, int] = {
     "recipes/idempotency-conflict": 409,
     "recipes/generation-failed": 502,
     "recipes/generation-timeout": 504,
+    "nutrition/report-generation-timeout": 504,
     "recipes/ingredient-unavailable": 409,
     "recipes/ingredient-unit-changed": 409,
     "recipes/scale-too-small": 409,

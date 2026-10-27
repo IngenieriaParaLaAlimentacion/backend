@@ -345,6 +345,16 @@
               }
             }
           },
+          "504": {
+            "description": "The request exceeded its time budget; nothing is saved",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request payload",
             "content": {

@@ -231,6 +231,21 @@ async def test_report_is_generated_once_and_then_returned_as_saved(
     assert len(report_llm.calls) == 1
 
 
+async def test_generation_over_its_time_budget_returns_504_and_saves_nothing(
+    client, admin_headers, db_establishment, rice_in_march, report_llm, monkeypatch
+):
+    monkeypatch.setattr(settings, "report_generation_timeout_seconds", 0.1)
+    report_llm.delay = 5
+    url = report_url(db_establishment.id, MARCH)
+
+    response = await asyncio.wait_for(client.put(url, headers=admin_headers), 2)
+    saved = await client.get(url, headers=admin_headers)
+
+    assert response.status_code == 504
+    assert response.json()["type"] == "/errors/nutrition/report-generation-timeout"
+    assert saved.status_code == 404
+
+
 async def test_month_without_intakes_is_saved_as_no_data_without_calling_the_ai(
     client, admin_headers, db_establishment, report_llm
 ):

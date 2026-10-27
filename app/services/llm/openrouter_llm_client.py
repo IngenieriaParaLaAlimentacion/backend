@@ -114,6 +114,7 @@ class OpenRouterLlmClient(ILlmClient):
         response_schema: dict[str, Any],
         image: bytes | None = None,
         image_content_type: str | None = None,
+        models: list[str] | None = None,
     ) -> dict[str, Any]:
         """Return one parsed JSON object within a single completion budget."""
         try:
@@ -125,18 +126,22 @@ class OpenRouterLlmClient(ILlmClient):
                     response_schema=response_schema,
                     image=image,
                     image_content_type=image_content_type,
+                    models=models,
                 )
         except TimeoutError:
             raise LlmUnavailableError("Completion deadline exceeded") from None
 
-    async def _complete(self, *, prompt, response_schema, image, image_content_type):
+    async def _complete(
+        self, *, prompt, response_schema, image, image_content_type, models
+    ):
         settings = self.settings
         key = settings.openrouter_api_key
-        configured = (
-            settings.openrouter_receipt_models
-            if image is not None
-            else settings.openrouter_recipe_models
-        )
+        if models is not None:
+            configured = models
+        elif image is not None:
+            configured = settings.openrouter_receipt_models
+        else:
+            configured = settings.openrouter_recipe_models
         providers = settings.openrouter_allowed_providers
         if not key or not configured:
             raise LlmUnavailableError("Inference is not configured")

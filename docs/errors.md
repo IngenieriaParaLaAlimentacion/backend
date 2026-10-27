@@ -66,6 +66,7 @@ to the first list index), never its value.
 | `/errors/nutrition/invalid-children-count` | 422 | `InvalidChildrenCountError` | Raised when a recipe is requested for no children or a negative number. |
 | `/errors/nutrition/recipe-optimization-failed` | 500 | `RecipeOptimizationError` | Raised when the solver cannot return an optimal recipe. |
 | `/errors/nutrition/report-conversion-unavailable` | 409 | `NutritionReportConversionUnavailableError` | Raised when none of the foods received in a month converts to grams. |
+| `/errors/nutrition/report-generation-timeout` | 504 | `NutritionReportGenerationTimeoutError` | Report generation exceeded its total request time budget. |
 | `/errors/nutrition/report-month-not-over` | 422 | `NutritionReportMonthNotOverError` | Raised when a nutrition report is requested for a month that has not ended. |
 | `/errors/nutrition/report-not-found` | 404 | `NutritionReportNotFoundError` | Raised when an establishment has no saved nutrition report for a month. |
 | `/errors/nutrition/report-summary-unavailable` | 409 | `NutritionReportSummaryUnavailableError` | Raised when a report's PDF is requested while its AI summary is missing. |

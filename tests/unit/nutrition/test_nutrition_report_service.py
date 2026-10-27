@@ -1,3 +1,4 @@
+import asyncio
 import sys
 import uuid
 from datetime import date, datetime, timezone
@@ -7,6 +8,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from structlog.testing import capture_logs
 
+from app.config.settings import settings
 from app.domain.nutrition import MonthlyIntakeAnalysis
 from app.domain.nutrition_report import NutritionReportSortOrder, SummaryStatus
 from app.domain.user import UserActor, UserRole
@@ -16,6 +18,7 @@ from app.exceptions.domain_exceptions import (
     LlmQuotaExhaustedError,
     LlmUnavailableError,
     NutritionReportConversionUnavailableError,
+    NutritionReportGenerationTimeoutError,
     NutritionReportMonthNotOverError,
     NutritionReportNotFoundError,
     NutritionReportSummaryUnavailableError,
@@ -109,6 +112,40 @@ async def test_new_month_is_calculated_written_up_and_saved():
     llm.complete.assert_awaited_once()
     uow.nutrition_report_repo.create.assert_awaited_once_with(report)
     uow.commit.assert_awaited_once()
+
+
+async def test_summary_is_asked_of_the_models_configured_for_reports(monkeypatch):
+    monkeypatch.setattr(settings, "openrouter_report_models", ["report/model"])
+    analysis, _ = monthly_analysis()
+    service, _, _, llm = make_service(analysis)
+
+    await service.get_or_generate_report(ESTABLISHMENT_ID, "2026-09", ADMIN)
+
+    assert llm.complete.await_args.kwargs["models"] == ["report/model"]
+
+
+async def test_generation_over_its_time_budget_saves_nothing(monkeypatch):
+    monkeypatch.setattr(settings, "report_generation_timeout_seconds", 0.02)
+    service, uow, _, _ = make_service()
+    cancelled = asyncio.Event()
+
+    async def blocked(*_):
+        try:
+            await asyncio.Event().wait()
+        finally:
+            cancelled.set()
+
+    service._get_or_generate = blocked
+
+    with pytest.raises(NutritionReportGenerationTimeoutError):
+        await asyncio.wait_for(
+            service.get_or_generate_report(ESTABLISHMENT_ID, "2026-09", ADMIN),
+            timeout=1,
+        )
+
+    assert cancelled.is_set()
+    uow.rollback.assert_awaited_once()
+    uow.commit.assert_not_awaited()
 
 
 async def test_report_is_looked_up_only_after_taking_the_lock():

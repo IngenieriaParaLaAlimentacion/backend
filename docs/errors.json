@@ -241,6 +241,12 @@
       "description": "Raised when none of the foods received in a month converts to grams."
     },
     {
+      "type": "/errors/nutrition/report-generation-timeout",
+      "status": 504,
+      "exception": "NutritionReportGenerationTimeoutError",
+      "description": "Report generation exceeded its total request time budget."
+    },
+    {
       "type": "/errors/nutrition/report-month-not-over",
       "status": 422,
       "exception": "NutritionReportMonthNotOverError",

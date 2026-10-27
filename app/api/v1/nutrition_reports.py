@@ -138,6 +138,9 @@ async def get_nutrition_report(
         status.HTTP_429_TOO_MANY_REQUESTS: {
             "description": "AI quota exceeded; retry after Retry-After"
         },
+        status.HTTP_504_GATEWAY_TIMEOUT: {
+            "description": "The request exceeded its time budget; nothing is saved"
+        },
     },
 )
 async def put_nutrition_report(

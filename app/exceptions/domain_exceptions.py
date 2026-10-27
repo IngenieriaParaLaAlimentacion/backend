@@ -1285,6 +1285,19 @@ class AiQuotaExhaustedError(BaseError):
         )
 
 
+class NutritionReportGenerationTimeoutError(BaseError):
+    """Report generation exceeded its total request time budget."""
+
+    error_type = "nutrition/report-generation-timeout"
+    status = status.HTTP_504_GATEWAY_TIMEOUT
+
+    def __init__(self):
+        super().__init__(
+            "Report generation timed out",
+            "Report generation exceeded its total time budget.",
+        )
+
+
 class AiUnavailableError(BaseError):
     """An eligible AI processing endpoint is currently unavailable."""
 

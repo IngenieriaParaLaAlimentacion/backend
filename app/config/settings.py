@@ -115,12 +115,14 @@ class Settings(BaseSettings):
     openrouter_api_key: SecretStr | None = None
     openrouter_receipt_models: list[str] = Field(default_factory=list, max_length=2)
     openrouter_recipe_models: list[str] = Field(default_factory=list, max_length=2)
+    openrouter_report_models: list[str] = Field(default_factory=list, max_length=2)
     openrouter_allowed_providers: list[str] = Field(default_factory=list)
     openrouter_max_output_tokens: int = Field(default=8192, ge=256, le=65536)
     openrouter_request_timeout_seconds: float = Field(default=25, gt=0, le=25)
     openrouter_completion_timeout_seconds: float = Field(default=40, gt=0, le=40)
     receipt_generation_timeout_seconds: float = Field(default=60, gt=0, le=60)
     recipe_generation_timeout_seconds: float = Field(default=90, gt=0, le=240)
+    report_generation_timeout_seconds: float = Field(default=90, gt=0, le=240)
 
     # Rate limiting - each limit is "<count>/<period>", e.g. "5/minute".
     rate_limit_redis_url: str = "redis://localhost:6379/0"
