@@ -16,6 +16,9 @@ services:
       LOAD_TEST_PASSWORD: ${LOAD_TEST_PASSWORD:-}
       # Recorded in the results, to know which commit was measured.
       TARGET_REVISION: ${TARGET_REVISION:-}
+      # Optional load profile overrides, e.g. STEPS=2,5 STEP_DURATION=15s for a quick run.
+      STEPS: ${STEPS:-}
+      STEP_DURATION: ${STEP_DURATION:-}
     volumes:
       - ./results:/app/tests/load/results
     extra_hosts:

@@ -36,6 +36,8 @@ Exit codes: `0` everything passed, `1` a flow failed, `2` missing configuration 
 | `DATABASE_URL` | URL of that backend's Postgres, for the seed and the cleanup. `postgresql://` works as is |
 | `LOAD_TEST_PASSWORD` | Password of every load-test user. The seed sets it the first time it runs against a database, so later runs against that database must use the same one |
 | `TARGET_REVISION` | Optional. The commit deployed on the target, recorded in `run.json` |
+| `STEPS` | Optional. Concurrent users at each step, comma separated. Default `5,10,25,50` |
+| `STEP_DURATION` | Optional. How long each step lasts, as `30s` or `2m`. Default `2m` |
 
 The variables come from the shell or from `tests/load/.env`, which is gitignored. Start from `tests/load/.env.example`.
 
@@ -116,6 +118,27 @@ Runs queue and never overlap, because two runs against the single replica would 
    gh secret set LOAD_TEST_PASSWORD --env load-tests
    ```
 
+## Flows
+
+| Flow | What it does | Logs in as |
+|---|---|---|
+| `smoke` | Checks the backend is ready, a load-test user logs in and a listing answers. Runs first | a field worker |
+| `listings` | GETs random pages of establishments, subjects and measurements | the analyst |
+| `subject_sync` | POST `/subjects` with ids made on the device | the 10 field workers |
+| `measurement_sync` | POST `/measurements` for seeded subjects of the worker's establishment | the 10 field workers |
+| `food_intake_sync` | POST `/food-intakes` with 3 catalog foods, to the worker's establishment | the 10 field workers |
+| `survey_response_sync` | POST responses to the `LOADTEST` FIES survey | the 10 field workers |
+
+Every flow except smoke runs the same stepped profile: one step per value of `STEPS`, back to back, each holding that many VUs for `STEP_DURATION`. With the defaults, a flow takes 8 minutes plus about 30 s of logins. The VUs send requests back to back, with no pause, so each step shows the most the backend serves at that concurrency.
+
+In the sync flows, 20% of the writes resend a record the VU already sent, as a worker does when a sync is retried. The `replays → 200` column is the share that came back as the idempotent 200.
+
+For a quick run, shorten the profile:
+
+```bash
+STEPS=2,5 STEP_DURATION=15s docker compose -f tests/load/compose.yml run --rm --build runner all
+```
+
 ## Results
 
 | Where | What |
@@ -131,6 +154,8 @@ Files:
 - `run.json`: when the run finished, `base_url`, `target_revision`, the flows run and the ones that failed
 
 k6 doesn't see the replica's CPU and memory. Read them from Railway's metrics for the run's time window.
+
+To turn a run into a written report, give an AI the results zip together with [`REPORT_PROMPT.md`](REPORT_PROMPT.md), after filling in its fields: the Railway plan, the CPU and memory read from Railway, and the run's time window.
 
 ## The load-test data
 

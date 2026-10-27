@@ -1,2 +1,5 @@
 # Written by run.sh on every run
 results/
+
+# The root .gitignore ignores every lib/ directory; this one holds the flows' shared code.
+!lib/
