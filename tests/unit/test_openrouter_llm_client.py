@@ -1,4 +1,4 @@
-"""Free inference transport, bounded work and privacy contracts."""
+"""Inference transport, bounded work and privacy contracts."""
 
 import asyncio
 import base64
@@ -76,7 +76,6 @@ async def test_image_schema_and_routing_are_explicit(configured_settings):
             "allow_fallbacks": False,
             "require_parameters": True,
             "data_collection": "deny",
-            "max_price": {"prompt": 0, "completion": 0, "request": 0, "image": 0},
         }
         assert payload["stream"] is False
         assert payload["max_tokens"] == 8192
@@ -102,7 +101,7 @@ async def test_configured_models_are_used_without_catalogue_requests(
     providers,
 ):
     configured_settings.openrouter_allowed_providers = providers
-    configured_settings.openrouter_receipt_models = ["operator/receipt-model"]
+    configured_settings.openrouter_receipt_models = ["google/gemini-2.5-flash-lite"]
     configured_settings.openrouter_recipe_models = ["operator/recipe-model"]
     requests = []
 
@@ -122,13 +121,15 @@ async def test_configured_models_are_used_without_catalogue_requests(
         )
         assert len(requests) == 1
         payload = json.loads(requests[0].content)
-        expected = "operator/receipt-model" if has_image else "operator/recipe-model"
+        expected = (
+            "google/gemini-2.5-flash-lite" if has_image else "operator/recipe-model"
+        )
         assert payload["model"] == expected
         if providers:
             assert payload["provider"]["only"] == providers
         else:
             assert "only" not in payload["provider"]
-        assert all(price == 0 for price in payload["provider"]["max_price"].values())
+        assert "max_price" not in payload["provider"]
     finally:
         await client.aclose()
 
@@ -203,7 +204,6 @@ async def test_shared_attempt_budget_and_configured_model_fallback(
     try:
         await client.complete(prompt="synthetic", response_schema={})
         assert [p["model"] for p in attempts] == [first, second]
-        assert all(p["provider"]["max_price"]["prompt"] == 0 for p in attempts)
     finally:
         await client.aclose()
 

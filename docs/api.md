@@ -430,12 +430,15 @@ live gateway's timeout. This deadline does not add generation idempotency.
 
 OpenRouter output is capped by `OPENROUTER_MAX_OUTPUT_TOKENS` (8192 by default).
 Model IDs are taken directly from the workload environment arrays. Every request
-requires strict structured outputs, denies provider data collection and limits
-prompt, completion, request and image prices to zero. OPENROUTER_ALLOWED_PROVIDERS
+requires strict structured outputs and denies provider data collection.
+Configured models may incur charges; manage spending limits in the OpenRouter
+account or API key. OPENROUTER_ALLOWED_PROVIDERS
 is optional: an empty list lets OpenRouter choose the hosting provider; a nonempty
 list restricts routing to those hosts.
-There is no catalogue fetch or local metadata cache. Select suitable free models
-operationally; the gateway enforces the request constraints.
+There is no catalogue fetch or local metadata cache. The example configuration
+uses `google/gemini-2.5-flash-lite` for both workloads. Each array accepts a primary
+model and an optional fallback; validate models with the workload's schemas and
+images before configuring them.
 Empty AI configuration leaves inference unavailable while non-AI routes still run.
 
 Recipe generation provider usage limits return `429 /errors/ai/quota-exhausted`,

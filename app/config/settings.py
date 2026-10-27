@@ -111,7 +111,7 @@ class Settings(BaseSettings):
     storage_secret_access_key: Optional[str] = None
     storage_region: str = "auto"
 
-    # LLM: only explicit, qualified OpenRouter free variants are eligible.
+    # LLM: use the explicitly configured OpenRouter models for each workload.
     openrouter_api_key: SecretStr | None = None
     openrouter_receipt_models: list[str] = Field(default_factory=list, max_length=2)
     openrouter_recipe_models: list[str] = Field(default_factory=list, max_length=2)

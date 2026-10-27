@@ -172,12 +172,6 @@ class OpenRouterLlmClient(ILlmClient):
                     "allow_fallbacks": False,
                     "require_parameters": True,
                     "data_collection": "deny",
-                    "max_price": {
-                        "prompt": 0,
-                        "completion": 0,
-                        "request": 0,
-                        "image": 0,
-                    },
                 },
             }
             if providers:

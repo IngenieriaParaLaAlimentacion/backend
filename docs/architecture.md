@@ -83,7 +83,7 @@ alembic/
 
 | Integration | Used by |
 |---|---|
-| OpenRouter free structured/vision completions | Receipt extraction and recipe selection/writing |
+| OpenRouter structured/vision completions | Receipt extraction and recipe selection/writing |
 | Vision / Speech-to-text API | `nutrir` (ingredient input via image or voice) |
 | Storage service | `nutrir`, `valores_de_hierro` |
 
