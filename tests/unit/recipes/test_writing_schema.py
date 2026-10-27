@@ -6,7 +6,21 @@ import pytest
 from pydantic import ValidationError
 
 from app.schemas.recipes.recipe_schema import WritingBatch
+from app.services.llm.structured_schema import structured_schema
 from app.services.recipes.generation import writing_response_schema
+
+
+def test_strict_wire_schema_keeps_refs_nulls_and_local_sibling_validation():
+    schema = structured_schema(writing_response_schema())
+    recipe = schema["$defs"]["RecipeWriting"]
+    step = schema["$defs"]["PreparationStep"]
+    assert schema["additionalProperties"] is False
+    assert recipe["additionalProperties"] is False
+    assert step["additionalProperties"] is False
+    assert "cultural_identity" in recipe["required"]
+    assert {"type": "null"} in recipe["properties"]["cultural_identity"]["anyOf"]
+    assert recipe["properties"]["steps"]["items"] == {"$ref": "#/$defs/PreparationStep"}
+    assert "maxItems" not in recipe["properties"]["steps"]
 
 
 def test_wire_schema_omits_nested_bounds_but_retains_required_fields_and_enums():

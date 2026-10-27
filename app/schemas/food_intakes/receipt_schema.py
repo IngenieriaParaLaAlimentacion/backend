@@ -1,9 +1,10 @@
 from decimal import Decimal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, FiniteFloat, field_validator
 
 from app.domain.food_catalog import MeasurementUnit
+from app.domain.printed_quantity import parse_printed_quantity
 from app.schemas.common import IdentifierRefSchema
 
 
@@ -75,3 +76,25 @@ class ReceiptProposalResponse(BaseModel):
             "when no items were detected."
         ),
     )
+
+
+class ExtractedReceiptLine(BaseModel):
+    """A locally validated line read before catalog matching."""
+
+    model_config = ConfigDict(extra="ignore", strict=True)
+    description: str
+    raw_quantity: FiniteFloat | None = None
+    raw_unit_text: str | None = None
+
+    @field_validator("raw_quantity", mode="before")
+    @classmethod
+    def normalize_printed_quantity(cls, value):
+        """Parse printed quantities and discard unusable amounts."""
+        return parse_printed_quantity(value)
+
+
+class ReceiptExtraction(BaseModel):
+    """A validated receipt extraction envelope."""
+
+    model_config = ConfigDict(extra="ignore", strict=True)
+    lines: list[ExtractedReceiptLine]

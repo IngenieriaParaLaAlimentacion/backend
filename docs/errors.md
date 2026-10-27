@@ -28,6 +28,8 @@ to the first list index), never its value.
 |---|---|---|---|
 | `/errors/account-pending-validation` | 403 | `PendingValidationError` | Exception raised when a user attempts to log in with a pending account. |
 | `/errors/admin/invite-already-pending` | 409 | `InvitePendingError` | Raised when inviting an address that already has a pending invitation. |
+| `/errors/ai/quota-exhausted` | 429 | `AiQuotaExhaustedError` | Inference is temporarily blocked by a provider usage limit. |
+| `/errors/ai/unavailable` | 503 | `AiUnavailableError` | An eligible AI processing endpoint is currently unavailable. |
 | `/errors/auth/invalid-recovery-token` | 401 | `InvalidRecoveryTokenError` | Raised when a password recovery token is unusable. |
 | `/errors/auth/invalid-refresh-token` | 401 | `InvalidRefreshTokenError` | Raised when a refresh token is unknown, expired or already revoked. |
 | `/errors/auth/invalid-verification-token` | 401 | `InvalidVerificationTokenError` | Raised when an email verification token is unusable. |

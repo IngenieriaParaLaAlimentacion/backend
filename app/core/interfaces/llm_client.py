@@ -3,13 +3,11 @@ from typing import Any
 
 
 class ILlmClient(ABC):
-    """Port for a structured, optionally multimodal LLM completion.
+    """Port for structured text and optional image completions.
 
-    Knows nothing about receipts, catalogs, or meal plans -- callers build
-    their own prompt and JSON schema and are responsible for validating the
-    parsed result. This keeps every module that needs an LLM call (receipt
-    extraction today, nutrir meal planning later) swappable to a different
-    provider by replacing the one class that implements this port.
+    Receipt and recipe callers supply prompts and wire schemas. The adapter
+    validates the response envelope and JSON object shape; callers retain
+    authoritative domain and per-item validation.
     """
 
     @abstractmethod
@@ -21,10 +19,15 @@ class ILlmClient(ABC):
         image: bytes | None = None,
         image_content_type: str | None = None,
     ) -> dict[str, Any]:
-        """Return a JSON object matching ``response_schema``.
+        """Return a parsed JSON object requested through response_schema.
 
         Raises:
-            LlmClientError: the provider call failed or returned content that
-                does not match ``response_schema``.
+            LlmQuotaExhaustedError: provider usage limit prevented completion.
+            LlmUnavailableError: no eligible endpoint completed the request.
+            LlmClientError: invalid, refused or incomplete structured content.
         """
         ...
+
+    async def aclose(self) -> None:
+        """Release resources owned by this client."""
+        return None

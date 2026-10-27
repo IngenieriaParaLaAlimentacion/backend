@@ -38,7 +38,16 @@ _RESPONSES = {
     status_code=201,
     responses={
         **_RESPONSES,
-        429: {"description": "AI quota exceeded; retry after Retry-After"},
+        429: {
+            "description": (
+                "Caller rate limit (/errors/rate-limited) or provider usage limit "
+                "(/errors/ai/quota-exhausted). Retry-After is present only when known."
+            )
+        },
+        503: {
+            "description": "No eligible AI endpoint currently available "
+            "(/errors/ai/unavailable)"
+        },
         502: {"description": "Model failed or returned invalid proposals"},
         504: {"description": "Total generation time budget exceeded"},
     },

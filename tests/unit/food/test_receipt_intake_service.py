@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -17,6 +18,8 @@ from app.exceptions.domain_exceptions import (
     ImageContentMismatchError,
     ImageTooLargeError,
     LlmClientError,
+    LlmQuotaExhaustedError,
+    LlmUnavailableError,
     ObjectStorageError,
     ReceiptPhotoStorageError,
     UnsupportedImageTypeError,
@@ -90,6 +93,198 @@ def llm_client():
     client = AsyncMock()
     client.complete = AsyncMock(return_value={"lines": []})
     return client
+
+
+@pytest.mark.parametrize(
+    "result",
+    [
+        {},
+        {"lines": None},
+        {"lines": [None]},
+        {"lines": ["item"]},
+        {"lines": [{"description": 5}]},
+    ],
+)
+async def test_invalid_extraction_safely_falls_back_without_catalog_access(
+    result,
+    uow,
+    storage,
+    food_intake_service,
+    llm_client,
+    admin_actor,
+):
+    llm_client.complete.return_value = result
+    service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+    response = await service.propose_from_photo(
+        establishment_id=uuid.uuid4(),
+        content_type="image/png",
+        image=PNG_BYTES,
+        actor=admin_actor,
+    )
+    assert response.lines == []
+    assert response.message
+    uow.food_repo.find_best_match.assert_not_awaited()
+    uow.commit.assert_not_awaited()
+    storage.save.assert_not_awaited()
+
+
+async def test_extra_ai_fields_do_not_discard_receipt_lines(
+    uow,
+    storage,
+    food_intake_service,
+    llm_client,
+    admin_actor,
+):
+    llm_client.complete.return_value = {
+        "confidence": 0.9,
+        "lines": [
+            {
+                "description": "Arroz",
+                "raw_quantity": "1,5",
+                "raw_unit_text": "kg",
+                "confidence": 0.8,
+            }
+        ],
+    }
+    service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+    response = await service.propose_from_photo(
+        establishment_id=uuid.uuid4(),
+        content_type="image/png",
+        image=PNG_BYTES,
+        actor=admin_actor,
+    )
+    assert response.message is None
+    assert len(response.lines) == 1
+    assert response.lines[0].description == "Arroz"
+    assert response.lines[0].raw_quantity == Decimal("1.5")
+    assert "confidence" not in response.model_dump()
+    assert "confidence" not in response.lines[0].model_dump()
+
+
+@pytest.mark.parametrize(
+    "quantity,expected",
+    [
+        ("1,5", Decimal("1.5")),
+        ("1.000,5", Decimal("1000.5")),
+        ("1.000.000", Decimal("1000000")),
+        ("1.2345", Decimal("1.235")),
+        ("9999999.999", Decimal("9999999.999")),
+        ("invalid", None),
+        (float("nan"), None),
+        (float("inf"), None),
+        (7791234567890, None),
+    ],
+)
+async def test_printed_quantity_parsing_preserves_proposal_lines(
+    quantity,
+    expected,
+    uow,
+    storage,
+    food_intake_service,
+    llm_client,
+    admin_actor,
+):
+    llm_client.complete.return_value = {
+        "lines": [{"description": "Arroz", "raw_quantity": quantity}],
+    }
+    service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+    response = await service.propose_from_photo(
+        establishment_id=uuid.uuid4(),
+        content_type="image/png",
+        image=PNG_BYTES,
+        actor=admin_actor,
+    )
+    assert len(response.lines) == 1
+    assert response.lines[0].raw_quantity == expected
+    schema = llm_client.complete.call_args.kwargs["response_schema"]
+    assert schema["$defs"]["ExtractedReceiptLine"]["properties"]["raw_quantity"][
+        "anyOf"
+    ] == [
+        {"type": "number"},
+        {"type": "null"},
+    ]
+
+
+@pytest.mark.parametrize(
+    "failure",
+    [LlmQuotaExhaustedError(12), LlmUnavailableError("unavailable")],
+)
+async def test_provider_failures_preserve_manual_fallback(
+    failure,
+    uow,
+    storage,
+    food_intake_service,
+    llm_client,
+    admin_actor,
+):
+    llm_client.complete.side_effect = failure
+    service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+    response = await service.propose_from_photo(
+        establishment_id=uuid.uuid4(),
+        content_type="image/png",
+        image=PNG_BYTES,
+        actor=admin_actor,
+    )
+    assert response.lines == []
+    assert response.message == service._MANUAL_FALLBACK_MESSAGE
+    uow.commit.assert_not_awaited()
+    uow.food_repo.find_best_match.assert_not_awaited()
+    storage.save.assert_not_awaited()
+
+
+async def test_proposal_deadline_cancels_work_and_rolls_back(
+    monkeypatch,
+    uow,
+    storage,
+    food_intake_service,
+    llm_client,
+    admin_actor,
+):
+    monkeypatch.setattr(settings, "receipt_generation_timeout_seconds", 0.02)
+    cancelled = asyncio.Event()
+
+    async def blocked(**kwargs):
+        try:
+            await asyncio.Event().wait()
+        finally:
+            cancelled.set()
+
+    llm_client.complete.side_effect = blocked
+    service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+    response = await asyncio.wait_for(
+        service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        ),
+        1,
+    )
+    assert response.lines == []
+    assert response.message == service._MANUAL_FALLBACK_MESSAGE
+    assert cancelled.is_set()
+    uow.rollback.assert_awaited_once()
+    uow.commit.assert_not_awaited()
+
+
+@pytest.mark.parametrize("failure", [asyncio.CancelledError, TimeoutError])
+async def test_proposal_preserves_cancellation_and_unrelated_timeout(
+    failure,
+    uow,
+    storage,
+    food_intake_service,
+    llm_client,
+    admin_actor,
+):
+    llm_client.complete.side_effect = failure
+    service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+    with pytest.raises(failure):
+        await service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        )
 
 
 class TestImageValidation:

@@ -6,6 +6,8 @@ from fastapi import status
 from app.exceptions.domain_exceptions import ERROR_REGISTRY
 
 EXPECTED: dict[str, int] = {
+    "ai/quota-exhausted": 429,
+    "ai/unavailable": 503,
     "recipes/no-usable-stock": 409,
     "recipes/not-found": 404,
     "recipes/already-chosen": 409,

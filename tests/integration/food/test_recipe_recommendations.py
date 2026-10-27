@@ -15,7 +15,11 @@ from app.domain.food_catalog import (
     NutrientGroup,
 )
 from app.domain.user import UserRole
-from app.exceptions.domain_exceptions import LlmClientError
+from app.exceptions.domain_exceptions import (
+    LlmClientError,
+    LlmQuotaExhaustedError,
+    LlmUnavailableError,
+)
 from app.models.food_catalog.food_equivalence import FoodEquivalence
 from app.models.food_catalog.food_nutrient_value import FoodNutrientValue
 from app.models.food_catalog.nutrient import Nutrient
@@ -42,6 +46,8 @@ class RecipeLlm(ILlmClient):
 
     async def complete(self, *, prompt, **kwargs):
         self.calls.append(prompt)
+        if isinstance(self.error, Exception):
+            raise self.error
         if self.error:
             raise LlmClientError("provider unavailable")
         context = json.loads(prompt.split("Context:\n")[1])
@@ -516,3 +522,53 @@ async def test_recipe_specific_culture_endpoints_are_absent(client, recipe_setup
     assert (
         await client.put(url, headers=headers, json={"identities": []})
     ).status_code == 404
+
+
+@pytest.mark.parametrize(
+    "failure,status,slug,delay",
+    [
+        (LlmQuotaExhaustedError(12), 429, "ai/quota-exhausted", 12),
+        (LlmQuotaExhaustedError(), 429, "ai/quota-exhausted", None),
+        (LlmUnavailableError("private provider failure"), 503, "ai/unavailable", None),
+    ],
+)
+async def test_provider_failure_preserves_stock_and_has_no_partial_records(
+    client,
+    recipe_setup,
+    failure,
+    status,
+    slug,
+    delay,
+):
+    from app.db.database import AsyncSessionLocal
+    from app.models.recipes.recipe import RecipeProposalRecord
+
+    async def stock():
+        async with AsyncSessionLocal() as db:
+            return dict(
+                (await db.execute(select(FoodStock.food_id, FoodStock.quantity))).all()
+            )
+
+    headers, fake, body = recipe_setup
+    before = await stock()
+    fake.error = failure
+    response = await client.post(
+        f"{ROOT}/recipe-recommendations", headers=headers, json=body
+    )
+    assert response.status_code == status
+    assert response.headers["content-type"] == "application/problem+json"
+    assert response.json()["type"] == f"/errors/{slug}"
+    assert "private" not in response.text
+    assert len(fake.calls) == 1
+    assert await counts() == [0, 0, 0]
+    assert await stock() == before
+    async with AsyncSessionLocal() as db:
+        assert (
+            await db.scalar(select(func.count()).select_from(RecipeProposalRecord)) == 0
+        )
+    if delay:
+        assert response.headers["retry-after"] == str(delay)
+        assert response.json()["retry_after"] == delay
+    else:
+        assert "retry-after" not in response.headers
+        assert "retry_after" not in response.json()

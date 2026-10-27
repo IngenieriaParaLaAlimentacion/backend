@@ -15,7 +15,11 @@ from app.domain.nutrition import (
 )
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
+    AiQuotaExhaustedError,
+    AiUnavailableError,
     InsufficientStockError,
+    LlmQuotaExhaustedError,
+    LlmUnavailableError,
     RecipeAlreadyChosenError,
     RecipeGenerationTimeoutError,
     RecipeIdempotencyConflictError,
@@ -203,6 +207,12 @@ class RecipeService:
         try:
             async with deadline:
                 return await self._generate(data, actor)
+        except LlmQuotaExhaustedError as exc:
+            await self.uow.rollback()
+            raise AiQuotaExhaustedError(exc.retry_after) from exc
+        except LlmUnavailableError as exc:
+            await self.uow.rollback()
+            raise AiUnavailableError() from exc
         except TimeoutError as exc:
             if not deadline.expired():
                 raise

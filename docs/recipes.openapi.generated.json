@@ -75,7 +75,17 @@
             }
           },
           "429": {
-            "description": "AI quota exceeded; retry after Retry-After",
+            "description": "Caller rate limit (/errors/rate-limited) or provider usage limit (/errors/ai/quota-exhausted). Retry-After is present only when known.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "No eligible AI endpoint currently available (/errors/ai/unavailable)",
             "content": {
               "application/problem+json": {
                 "schema": {
