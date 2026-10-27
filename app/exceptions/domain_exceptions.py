@@ -15,6 +15,9 @@ ERROR_REGISTRY: dict[str, type["BaseError"]] = {}
 
 _SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*")
 
+# A Retry-After of zero would invite an immediate retry, so it is at least one second.
+MIN_RETRY_AFTER_SECONDS = 1
+
 
 class BaseError(Exception):
     """Base exception class for domain errors.
@@ -195,7 +198,7 @@ class RateLimitedError(BaseError):
     status = status.HTTP_429_TOO_MANY_REQUESTS
 
     def __init__(self, limit: int, reset_at: float):
-        retry_after = max(1, math.ceil(reset_at - time.time()))
+        retry_after = max(MIN_RETRY_AFTER_SECONDS, math.ceil(reset_at - time.time()))
         super().__init__(
             "Too many requests",
             f"Too many attempts. Try again in {retry_after} seconds.",
@@ -1270,7 +1273,7 @@ class AiQuotaExhaustedError(BaseError):
     """Inference is temporarily blocked by a provider usage limit."""
 
     error_type = "ai/quota-exhausted"
-    status = 429
+    status = status.HTTP_429_TOO_MANY_REQUESTS
 
     def __init__(self, retry_after: int | None = None):
         known = retry_after is not None and retry_after > 0
@@ -1286,7 +1289,7 @@ class AiUnavailableError(BaseError):
     """An eligible AI processing endpoint is currently unavailable."""
 
     error_type = "ai/unavailable"
-    status = 503
+    status = status.HTTP_503_SERVICE_UNAVAILABLE
 
     def __init__(self):
         super().__init__(
