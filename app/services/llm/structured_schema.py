@@ -9,11 +9,38 @@ def structured_schema(source: dict[str, Any]) -> dict[str, Any]:
             return [visit(child) for child in value]
         if not isinstance(value, dict):
             return value
-        result = {
-            key: visit(child)
-            for key, child in value.items()
-            if key not in {"nullable", "default", "title"}
-        }
+        result = {}
+        for key, child in value.items():
+            if key in {"nullable", "default", "title"}:
+                continue
+            if key in {
+                "properties",
+                "$defs",
+                "definitions",
+                "patternProperties",
+                "dependentSchemas",
+            }:
+                result[key] = {name: visit(schema) for name, schema in child.items()}
+            elif key in {
+                "items",
+                "prefixItems",
+                "additionalItems",
+                "contains",
+                "additionalProperties",
+                "unevaluatedProperties",
+                "unevaluatedItems",
+                "propertyNames",
+                "allOf",
+                "anyOf",
+                "oneOf",
+                "not",
+                "if",
+                "then",
+                "else",
+            }:
+                result[key] = visit(child)
+            else:
+                result[key] = child
         if result.get("type") == "object" or "properties" in result:
             result["additionalProperties"] = False
             result["required"] = list(result.get("properties", {}))

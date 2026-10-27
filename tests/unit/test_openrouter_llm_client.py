@@ -388,6 +388,41 @@ def test_schema_closes_nested_objects_preserves_refs_and_nullable_without_mutati
     assert normalized["$defs"]["Line"]["additionalProperties"] is False
 
 
+@pytest.mark.parametrize("field_name", ["title", "default", "nullable", "properties"])
+def test_schema_preserves_field_and_definition_names(field_name):
+    schema = {
+        "type": "object",
+        "properties": {
+            field_name: {"$ref": f"#/$defs/{field_name}"},
+        },
+        "$defs": {
+            field_name: {
+                "type": "object",
+                "title": "Metadata to remove",
+                "properties": {
+                    field_name: {"type": "string", "default": "example"},
+                },
+            },
+        },
+    }
+    original = copy.deepcopy(schema)
+    normalized = structured_schema(schema)
+    assert schema == original
+    assert normalized["required"] == [field_name]
+    assert normalized["properties"][field_name] == {"$ref": f"#/$defs/{field_name}"}
+    definition = normalized["$defs"][field_name]
+    assert "title" not in definition
+    assert definition["required"] == [field_name]
+    assert definition["properties"][field_name] == {"type": "string"}
+    assert definition["additionalProperties"] is False
+
+
+def test_schema_preserves_literal_object_values():
+    literal = {"title": "Example", "nullable": True, "default": "value"}
+    schema = {"type": "object", "properties": {}, "enum": [literal]}
+    assert structured_schema(schema)["enum"] == [literal]
+
+
 @pytest.mark.parametrize(
     "value,expected",
     [

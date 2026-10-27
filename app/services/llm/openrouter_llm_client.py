@@ -6,6 +6,7 @@ from typing import Any
 
 import httpx
 import structlog
+from fastapi import status
 
 from app.core.interfaces.llm_client import ILlmClient
 from app.exceptions.domain_exceptions import (
@@ -50,7 +51,7 @@ class OpenRouterLlmClient(ILlmClient):
     @staticmethod
     def _read_response(response: httpx.Response) -> dict[str, Any]:
         code = response.status_code
-        has_error = code >= 400
+        has_error = code >= status.HTTP_400_BAD_REQUEST
         body = {}
         if not has_error:
             try:
@@ -69,13 +70,24 @@ class OpenRouterLlmClient(ILlmClient):
                 except (OverflowError, TypeError, ValueError):
                     pass
         if has_error:
-            if code == 429:
+            if code == status.HTTP_429_TOO_MANY_REQUESTS:
                 raise LlmQuotaExhaustedError(
                     retry_after_seconds(response.headers.get("Retry-After"))
                 )
-            if code in {401, 402, 403}:
+            if code in {
+                status.HTTP_401_UNAUTHORIZED,
+                status.HTTP_402_PAYMENT_REQUIRED,
+                status.HTTP_403_FORBIDDEN,
+            }:
                 raise _PermanentUnavailable("Provider configuration unavailable")
-            if code in {404, 408} or code >= 500:
+            if (
+                code
+                in {
+                    status.HTTP_404_NOT_FOUND,
+                    status.HTTP_408_REQUEST_TIMEOUT,
+                }
+                or code >= status.HTTP_500_INTERNAL_SERVER_ERROR
+            ):
                 raise LlmUnavailableError("Provider unavailable")
             raise LlmClientError("Provider rejected structured completion")
         try:
