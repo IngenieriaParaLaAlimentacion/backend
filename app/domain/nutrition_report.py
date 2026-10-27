@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import StrEnum
 from typing import NamedTuple
 
@@ -10,9 +11,6 @@ from app.domain.nutrition import (
 
 # Longest text of a summary section or of one of its list items, in characters.
 SUMMARY_TEXT_MAX_LENGTH = 1500
-
-# Most items a list of the summary may hold.
-SUMMARY_MAX_ITEMS = 7
 
 
 # Shown with every report. It is fixed text: the AI does not write it and it is not
@@ -29,6 +27,13 @@ class NutritionReportSortOrder(StrEnum):
 
     MONTH_DESC = "month_desc"
     MONTH_ASC = "month_asc"
+
+
+@dataclass
+class NutritionReportListingParams:
+    """Query parameters for the listing of an establishment's reports."""
+
+    sort_order: NutritionReportSortOrder = NutritionReportSortOrder.MONTH_DESC
 
 
 class SummaryStatus(StrEnum):

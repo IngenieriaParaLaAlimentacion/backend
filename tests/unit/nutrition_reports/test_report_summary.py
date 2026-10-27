@@ -5,7 +5,7 @@ import pytest
 from pydantic import ValidationError
 
 from app.domain.nutrition import PrioritizedNutrient
-from app.domain.nutrition_report import SUMMARY_MAX_ITEMS, SUMMARY_TEXT_MAX_LENGTH
+from app.domain.nutrition_report import SUMMARY_TEXT_MAX_LENGTH
 from app.schemas.nutrition_reports.nutrition_report_schema import (
     NutritionReportAnalysis,
     NutritionReportSummary,
@@ -96,7 +96,7 @@ def test_sections_with_nothing_to_say_may_be_empty():
         {"overview": "x" * (SUMMARY_TEXT_MAX_LENGTH + 1)},
         {"limitations": ["x" * (SUMMARY_TEXT_MAX_LENGTH + 1)]},
         {"conclusion": "x" * (SUMMARY_TEXT_MAX_LENGTH + 1)},
-        {"limitations": ["Un dato."] * (SUMMARY_MAX_ITEMS + 1)},
+        {"at_risk_nutrients": ["Calcio: bajo."] * (len(PrioritizedNutrient) + 1)},
     ],
     ids=[
         "empty-overview",
@@ -105,12 +105,19 @@ def test_sections_with_nothing_to_say_may_be_empty():
         "overview-too-long",
         "item-too-long",
         "conclusion-too-long",
-        "too-many-items",
+        "more-at-risk-items-than-nutrients",
     ],
 )
 def test_unusable_summary_is_rejected(overrides):
     with pytest.raises(ValidationError):
         parse_summary(summary_of(**overrides))
+
+
+def test_every_data_gap_can_be_listed_however_many_there_are():
+    # One limitation is written per food left out, and there is no fixed number.
+    limitations = [f"Alimento {number} sin conversión." for number in range(30)]
+
+    assert parse_summary(summary_of(limitations=limitations)).limitations == limitations
 
 
 def test_response_schema_keeps_every_field_and_leaves_the_bounds_to_the_parser():

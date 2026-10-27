@@ -9,7 +9,7 @@ from app.config.settings import settings
 from app.core.interfaces.llm_client import ILlmClient
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.nutrition import MonthlyIntakeAnalysis, ReferenceProfile
-from app.domain.nutrition_report import NutritionReportSortOrder, SummaryStatus
+from app.domain.nutrition_report import NutritionReportListingParams, SummaryStatus
 from app.domain.pagination import PaginatedResult
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
@@ -195,10 +195,9 @@ class NutritionReportService:
         self,
         establishment_id: UUID,
         actor: UserActor,
-        *,
-        sort_order: NutritionReportSortOrder,
         page: int,
         page_size: int,
+        params: NutritionReportListingParams,
     ) -> PaginatedResult[NutritionReport]:
         """Return a page of the saved reports of an establishment, ordered by month.
 
@@ -209,9 +208,9 @@ class NutritionReportService:
         await self._get_accessible_establishment(establishment_id, actor)
         reports, total = await self.uow.nutrition_report_repo.list_by_establishment(
             establishment_id,
-            sort_order=sort_order,
             limit=page_size,
             offset=(page - 1) * page_size,
+            params=params,
         )
         return PaginatedResult.build(
             items=reports, total=total, page=page, page_size=page_size

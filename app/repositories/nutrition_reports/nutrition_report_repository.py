@@ -5,7 +5,10 @@ from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.nutrition_report import NutritionReportSortOrder
+from app.domain.nutrition_report import (
+    NutritionReportListingParams,
+    NutritionReportSortOrder,
+)
 from app.models.nutrition_reports.nutrition_report import NutritionReport
 from app.utils.db import execute_paginated
 
@@ -36,17 +39,16 @@ class NutritionReportRepository:
     async def list_by_establishment(
         self,
         establishment_id: UUID,
-        *,
-        sort_order: NutritionReportSortOrder,
         limit: int,
         offset: int,
+        params: NutritionReportListingParams,
     ) -> tuple[list[NutritionReport], int]:
         """Return a page of the establishment's reports by month, and the total."""
         return await execute_paginated(
             self.db,
             select(NutritionReport),
             select(func.count()).select_from(NutritionReport),
-            _SORT_CLAUSES[sort_order],
+            _SORT_CLAUSES[params.sort_order],
             limit,
             offset,
             conditions=[NutritionReport.establishment_id == establishment_id],

@@ -7,7 +7,6 @@ from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, field_valida
 from app.domain.nutrition import GapaGroup, Macronutrient, PrioritizedNutrient
 from app.domain.nutrition_report import (
     SCOPE_NOTE,
-    SUMMARY_MAX_ITEMS,
     SUMMARY_TEXT_MAX_LENGTH,
     SummaryStatus,
 )
@@ -135,7 +134,8 @@ class NutritionReportSummary(BaseModel):
         "pattern stands out.",
     )
     at_risk_nutrients: list[SummaryText] = Field(
-        max_length=SUMMARY_MAX_ITEMS,
+        # One item per nutrient at risk, so never more than there are nutrients.
+        max_length=len(PrioritizedNutrient),
         description="One item per nutrient at risk, saying what falling short of it "
         "means and why it matters.",
     )
@@ -155,7 +155,6 @@ class NutritionReportSummary(BaseModel):
         description="What deserves attention first and why, closing the report.",
     )
     limitations: list[SummaryText] = Field(
-        max_length=SUMMARY_MAX_ITEMS,
         description="One item per data gap to keep in mind when reading the report.",
     )
 

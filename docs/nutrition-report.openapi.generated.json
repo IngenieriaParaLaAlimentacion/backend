@@ -35,10 +35,8 @@
             "required": false,
             "schema": {
               "$ref": "#/components/schemas/NutritionReportSortOrder",
-              "description": "Order of the reports by month.",
               "default": "month_desc"
-            },
-            "description": "Order of the reports by month."
+            }
           },
           {
             "name": "page",
@@ -1077,7 +1075,6 @@
               "maxLength": 1500
             },
             "type": "array",
-            "maxItems": 7,
             "title": "Limitations",
             "description": "One item per data gap to keep in mind when reading the report."
           }

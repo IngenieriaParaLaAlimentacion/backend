@@ -10,7 +10,7 @@ from structlog.testing import capture_logs
 
 from app.config.settings import settings
 from app.domain.nutrition import MonthlyIntakeAnalysis
-from app.domain.nutrition_report import NutritionReportSortOrder, SummaryStatus
+from app.domain.nutrition_report import NutritionReportListingParams, SummaryStatus
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentAccessDeniedError,
@@ -418,9 +418,9 @@ async def test_month_without_a_saved_report_is_not_found_and_not_generated():
             "list_reports",
             (),
             {
-                "sort_order": NutritionReportSortOrder.MONTH_DESC,
                 "page": 1,
                 "page_size": 20,
+                "params": NutritionReportListingParams(),
             },
         ),
     ],

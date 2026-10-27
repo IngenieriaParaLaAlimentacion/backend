@@ -6,6 +6,7 @@ from fastapi.responses import StreamingResponse
 from app.api.v1.exports import CSV_EXPORT_RESPONSES, csv_stream_response
 from app.api.v1.params import (
     AUTH_RESPONSES,
+    ESTABLISHMENT_NOT_FOUND_RESPONSES,
     FoodMovementListingQuery,
     FoodStockListingQuery,
     PaginatedQueryParams,
@@ -23,8 +24,6 @@ from app.services.food_stock.food_stock_service import FoodStockService
 
 router = APIRouter(prefix="/establishments")
 
-_NOT_FOUND = {status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"}}
-
 
 @router.get(
     "/{establishment_id}/stock",
@@ -36,7 +35,7 @@ _NOT_FOUND = {status.HTTP_404_NOT_FOUND: {"description": "Establishment not foun
         "having received it and having run out are different answers. Pass "
         "`only_available=true` to see just what is on hand."
     ),
-    responses={**AUTH_RESPONSES, **_NOT_FOUND},
+    responses={**AUTH_RESPONSES, **ESTABLISHMENT_NOT_FOUND_RESPONSES},
 )
 async def list_establishment_stock(
     establishment_id: UUID,
@@ -64,7 +63,7 @@ async def list_establishment_stock(
 @router.get(
     "/{establishment_id}/stock/export",
     summary="Export an establishment's stock as CSV",
-    responses={**CSV_EXPORT_RESPONSES, **_NOT_FOUND},
+    responses={**CSV_EXPORT_RESPONSES, **ESTABLISHMENT_NOT_FOUND_RESPONSES},
 )
 async def export_establishment_stock(
     establishment_id: UUID,
@@ -104,7 +103,7 @@ async def export_establishment_stock(
             "after occurred_to"
         },
         **AUTH_RESPONSES,
-        **_NOT_FOUND,
+        **ESTABLISHMENT_NOT_FOUND_RESPONSES,
     },
 )
 async def list_establishment_movements(

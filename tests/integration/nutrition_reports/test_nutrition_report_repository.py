@@ -5,7 +5,7 @@ from datetime import date
 import pytest
 from sqlalchemy.exc import IntegrityError
 
-from app.domain.nutrition_report import NutritionReportSortOrder, SummaryStatus
+from app.domain.nutrition_report import NutritionReportListingParams, SummaryStatus
 from tests.integration.nutrition_reports.helpers import (
     GENERATED,
     NOT_APPLICABLE,
@@ -130,9 +130,9 @@ async def test_listing_only_includes_the_establishments_own_reports(db_establish
     async with AsyncSessionLocal() as session:
         reports, total = await NutritionReportRepository(session).list_by_establishment(
             db_establishment.id,
-            sort_order=NutritionReportSortOrder.MONTH_DESC,
             limit=20,
             offset=0,
+            params=NutritionReportListingParams(),
         )
 
     assert [report.month for report in reports] == [SEPTEMBER]

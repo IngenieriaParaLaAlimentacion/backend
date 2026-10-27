@@ -1,9 +1,14 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Path, Query, Response, status
+from fastapi import APIRouter, Depends, Path, Response, status
 
-from app.api.v1.params import AUTH_RESPONSES, PaginatedQueryParams
+from app.api.v1.params import (
+    AUTH_RESPONSES,
+    ESTABLISHMENT_NOT_FOUND_RESPONSES,
+    NutritionReportListingQuery,
+    PaginatedQueryParams,
+)
 from app.core.dependencies import (
     get_nutrition_report_generation_service,
     get_nutrition_report_service,
@@ -11,7 +16,6 @@ from app.core.dependencies import (
 )
 from app.core.rate_limit import limit_by_user
 from app.domain import UserActor
-from app.domain.nutrition_report import NutritionReportSortOrder
 from app.schemas.nutrition_reports.nutrition_report_schema import (
     NutritionReportListItem,
     NutritionReportResponse,
@@ -22,6 +26,12 @@ from app.services.nutrition_reports.nutrition_report_service import (
 )
 
 router = APIRouter(prefix="/establishments")
+
+_REPORT_NOT_FOUND = {
+    status.HTTP_404_NOT_FOUND: {
+        "description": "Establishment not found, or no report for that month"
+    }
+}
 
 ReportMonthPath = Annotated[
     str,
@@ -45,16 +55,11 @@ ReportMonthPath = Annotated[
         "of a month with its own route. It never generates a report or calls the "
         "AI. Accessible by admins and analysts."
     ),
-    responses={
-        **AUTH_RESPONSES,
-        status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
-    },
+    responses={**AUTH_RESPONSES, **ESTABLISHMENT_NOT_FOUND_RESPONSES},
 )
 async def list_nutrition_reports(
     establishment_id: UUID,
-    sort_order: Annotated[
-        NutritionReportSortOrder, Query(description="Order of the reports by month.")
-    ] = NutritionReportSortOrder.MONTH_DESC,
+    query: NutritionReportListingQuery = Depends(),
     pagination: PaginatedQueryParams = Depends(),
     actor: UserActor = Depends(require_admin_or_analyst),
     service: NutritionReportService = Depends(get_nutrition_report_service),
@@ -62,9 +67,9 @@ async def list_nutrition_reports(
     result = await service.list_reports(
         establishment_id,
         actor,
-        sort_order=sort_order,
         page=pagination.page,
         page_size=pagination.page_size,
+        params=query.to_domain(),
     )
     return PaginatedResponse[NutritionReportListItem](
         items=[NutritionReportListItem.model_validate(item) for item in result.items],
@@ -85,12 +90,7 @@ async def list_nutrition_reports(
         "generates a report or calls the AI: a month without a saved report "
         "answers 404. Accessible by admins and analysts."
     ),
-    responses={
-        **AUTH_RESPONSES,
-        status.HTTP_404_NOT_FOUND: {
-            "description": "Establishment not found, or no report for that month"
-        },
-    },
+    responses={**AUTH_RESPONSES, **_REPORT_NOT_FOUND},
 )
 async def get_nutrition_report(
     establishment_id: UUID,
@@ -128,7 +128,7 @@ async def get_nutrition_report(
             "written again",
             "model": NutritionReportResponse,
         },
-        status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
+        **ESTABLISHMENT_NOT_FOUND_RESPONSES,
         status.HTTP_409_CONFLICT: {
             "description": "None of the foods received in the month has a known "
             "conversion to grams"
@@ -176,9 +176,7 @@ async def put_nutrition_report(
             "description": "The report as a PDF file",
             "content": {"application/pdf": {}},
         },
-        status.HTTP_404_NOT_FOUND: {
-            "description": "Establishment not found, or no report for that month"
-        },
+        **_REPORT_NOT_FOUND,
         status.HTTP_409_CONFLICT: {
             "description": "The AI summary of the report is not available yet"
         },
