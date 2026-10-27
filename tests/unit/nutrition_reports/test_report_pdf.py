@@ -5,9 +5,11 @@ import pytest
 
 from app.domain.nutrition_report import SummaryStatus
 from app.reference_data.nutrition_references import NINO_7_9
-from app.schemas.nutrition.nutrition_report_schema import NutritionReportResponse
-from app.services.nutrition.report_analysis import build_analysis
-from app.services.nutrition.report_pdf import (
+from app.schemas.nutrition_reports.nutrition_report_schema import (
+    NutritionReportResponse,
+)
+from app.services.nutrition_reports.analysis import build_analysis
+from app.services.nutrition_reports.pdf import (
     _FETCHER,
     _logo_data_uri,
     build_context,

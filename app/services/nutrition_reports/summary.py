@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from app.schemas.nutrition.nutrition_report_schema import (
+from app.schemas.nutrition_reports.nutrition_report_schema import (
     NutritionReportAnalysis,
     NutritionReportSummary,
 )

@@ -14,7 +14,9 @@ from app.domain.nutrition_report import (
     NUTRIENT_LABELS,
     NUTRIENT_NOTES,
 )
-from app.schemas.nutrition.nutrition_report_schema import NutritionReportResponse
+from app.schemas.nutrition_reports.nutrition_report_schema import (
+    NutritionReportResponse,
+)
 from app.utils.dates import ARGENTINA_TZ
 
 _APP = Path(__file__).resolve().parents[2]

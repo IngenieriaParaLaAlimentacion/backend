@@ -51,7 +51,7 @@ from app.repositories.notifications import (
     StaleEstablishmentCycleRepository,
     UserPushDeviceRepository,
 )
-from app.repositories.nutrition.nutrition_report_repository import (
+from app.repositories.nutrition_reports.nutrition_report_repository import (
     NutritionReportRepository,
 )
 from app.repositories.recipes.recipe_repository import RecipeRepository

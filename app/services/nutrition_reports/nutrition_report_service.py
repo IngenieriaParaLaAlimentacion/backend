@@ -23,17 +23,17 @@ from app.exceptions.domain_exceptions import (
     NutritionReportSummaryUnavailableError,
 )
 from app.models.establishments.establishment import Establishment
-from app.models.nutrition.nutrition_report import NutritionReport
+from app.models.nutrition_reports.nutrition_report import NutritionReport
 from app.reference_data.nutrition_references import REFERENCE_PROFILES
-from app.schemas.nutrition.nutrition_report_schema import (
+from app.schemas.nutrition_reports.nutrition_report_schema import (
     NutritionReportAnalysis,
     NutritionReportResponse,
     NutritionReportSummary,
 )
 from app.services.access import check_establishment_access
 from app.services.nutrition.nutrition_service import NutritionService
-from app.services.nutrition.report_analysis import build_analysis
-from app.services.nutrition.report_summary import (
+from app.services.nutrition_reports.analysis import build_analysis
+from app.services.nutrition_reports.summary import (
     PROMPT_VERSION,
     RESPONSE_SCHEMA,
     build_prompt,
@@ -176,7 +176,7 @@ class NutritionReportService:
                 summary yet, so the report is not complete.
         """
         # The PDF libraries are only needed from here: the app starts without them.
-        from app.services.nutrition.report_pdf import render_report_pdf
+        from app.services.nutrition_reports.pdf import render_report_pdf
 
         establishment, saved = await self._find_saved(establishment_id, month, actor)
         if saved.summary_status == SummaryStatus.UNAVAILABLE:

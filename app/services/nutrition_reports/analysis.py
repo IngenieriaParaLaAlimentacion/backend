@@ -2,7 +2,7 @@ from collections.abc import Mapping
 from uuid import UUID
 
 from app.domain.nutrition import MonthlyIntakeAnalysis, ReferenceProfile
-from app.schemas.nutrition.nutrition_report_schema import (
+from app.schemas.nutrition_reports.nutrition_report_schema import (
     NutritionReportAnalysis,
     ReportFoodSource,
     ReportFoodWithoutConversion,

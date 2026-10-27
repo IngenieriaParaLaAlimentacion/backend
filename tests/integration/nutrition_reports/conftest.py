@@ -3,7 +3,11 @@ import pytest_asyncio
 from app.core.dependencies import get_llm_client
 from app.domain.food_catalog import NutrientGroup
 from app.domain.user import UserRole
-from tests.integration.nutrition.helpers import MARCH_INTAKE, ReportLlm, add_intake
+from tests.integration.nutrition_reports.helpers import (
+    MARCH_INTAKE,
+    ReportLlm,
+    add_intake,
+)
 
 
 @pytest_asyncio.fixture

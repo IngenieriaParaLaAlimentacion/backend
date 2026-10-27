@@ -9,7 +9,7 @@ from app.domain.nutrition import (
     PrioritizedNutrient,
 )
 from app.reference_data.nutrition_references import NINO_7_9
-from app.services.nutrition.report_analysis import build_analysis
+from app.services.nutrition_reports.analysis import build_analysis
 from tests.unit.nutrition.helpers import monthly_analysis
 
 

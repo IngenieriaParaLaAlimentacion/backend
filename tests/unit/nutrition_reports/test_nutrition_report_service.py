@@ -23,10 +23,12 @@ from app.exceptions.domain_exceptions import (
     NutritionReportNotFoundError,
     NutritionReportSummaryUnavailableError,
 )
-from app.models.nutrition.nutrition_report import NutritionReport
+from app.models.nutrition_reports.nutrition_report import NutritionReport
 from app.reference_data.nutrition_references import NINO_7_9
-from app.services.nutrition.nutrition_report_service import NutritionReportService
-from app.services.nutrition.report_analysis import build_analysis
+from app.services.nutrition_reports.analysis import build_analysis
+from app.services.nutrition_reports.nutrition_report_service import (
+    NutritionReportService,
+)
 from tests.unit.nutrition.helpers import monthly_analysis
 
 ESTABLISHMENT_ID = uuid.uuid4()
@@ -47,7 +49,7 @@ SUMMARY = {
 @pytest.fixture(autouse=True)
 def october_18(monkeypatch):
     monkeypatch.setattr(
-        "app.services.nutrition.nutrition_report_service.today_in_argentina",
+        "app.services.nutrition_reports.nutrition_report_service.today_in_argentina",
         lambda: date(2026, 10, 18),
     )
 
@@ -403,7 +405,7 @@ def renderer(monkeypatch):
 
     monkeypatch.setitem(
         sys.modules,
-        "app.services.nutrition.report_pdf",
+        "app.services.nutrition_reports.pdf",
         SimpleNamespace(render_report_pdf=render),
     )
     return events

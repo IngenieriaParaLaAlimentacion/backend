@@ -6,7 +6,7 @@ from pydantic import ValidationError
 
 from app.domain.nutrition import PrioritizedNutrient
 from app.domain.nutrition_report import SUMMARY_MAX_ITEMS, SUMMARY_TEXT_MAX_LENGTH
-from app.schemas.nutrition.nutrition_report_schema import (
+from app.schemas.nutrition_reports.nutrition_report_schema import (
     NutritionReportAnalysis,
     NutritionReportSummary,
     ReportFoodSource,
@@ -14,7 +14,7 @@ from app.schemas.nutrition.nutrition_report_schema import (
     ReportNutrientSources,
 )
 from app.services.llm.structured_schema import structured_schema
-from app.services.nutrition.report_summary import (
+from app.services.nutrition_reports.summary import (
     PROMPT,
     RESPONSE_SCHEMA,
     build_prompt,

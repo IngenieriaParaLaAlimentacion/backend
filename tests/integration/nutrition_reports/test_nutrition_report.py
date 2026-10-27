@@ -9,13 +9,13 @@ from app.config.settings import settings
 from app.core import rate_limit
 from app.domain.nutrition import PrioritizedNutrient
 from app.domain.user import UserRole
-from app.schemas.nutrition.nutrition_report_schema import (
+from app.schemas.nutrition_reports.nutrition_report_schema import (
     NutritionReportAnalysis,
     ReportFoodWithoutConversion,
     ReportNutrient,
 )
 from app.utils.dates import today_in_argentina
-from tests.integration.nutrition.helpers import (
+from tests.integration.nutrition_reports.helpers import (
     AUGUST,
     GENERATED,
     MARCH,

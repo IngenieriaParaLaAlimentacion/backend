@@ -9,7 +9,7 @@ from app.exceptions.domain_exceptions import LlmClientError
 from app.models.establishments.establishment import Establishment
 from app.models.food_intakes.food_intake import FoodIntake
 from app.models.food_intakes.food_intake_item import FoodIntakeItem
-from app.models.nutrition.nutrition_report import NutritionReport
+from app.models.nutrition_reports.nutrition_report import NutritionReport
 
 AUGUST = date(2026, 8, 1)
 SEPTEMBER = date(2026, 9, 1)

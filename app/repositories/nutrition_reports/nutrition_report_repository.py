@@ -6,7 +6,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.nutrition_report import NutritionReportSortOrder
-from app.models.nutrition.nutrition_report import NutritionReport
+from app.models.nutrition_reports.nutrition_report import NutritionReport
 from app.utils.db import execute_paginated
 
 _SORT_CLAUSES = {

@@ -6,7 +6,7 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 
 from app.domain.nutrition_report import NutritionReportSortOrder, SummaryStatus
-from tests.integration.nutrition.helpers import (
+from tests.integration.nutrition_reports.helpers import (
     GENERATED,
     NOT_APPLICABLE,
     OCTOBER,
@@ -62,7 +62,7 @@ async def test_second_report_for_the_same_month_is_rejected(db_establishment):
 
 async def test_get_by_month_returns_only_that_months_report(db_establishment):
     from app.db.database import AsyncSessionLocal
-    from app.repositories.nutrition.nutrition_report_repository import (
+    from app.repositories.nutrition_reports.nutrition_report_repository import (
         NutritionReportRepository,
     )
 
@@ -78,7 +78,7 @@ async def test_get_by_month_returns_only_that_months_report(db_establishment):
 
 async def test_lock_makes_a_second_transaction_wait_until_the_first_ends(app):
     from app.db.database import AsyncSessionLocal
-    from app.repositories.nutrition.nutrition_report_repository import (
+    from app.repositories.nutrition_reports.nutrition_report_repository import (
         NutritionReportRepository,
     )
 
@@ -100,7 +100,7 @@ async def test_timestamps_are_available_after_creating_and_updating_a_report(
     db_establishment,
 ):
     from app.db.database import AsyncSessionLocal
-    from app.repositories.nutrition.nutrition_report_repository import (
+    from app.repositories.nutrition_reports.nutrition_report_repository import (
         NutritionReportRepository,
     )
 
@@ -119,7 +119,7 @@ async def test_timestamps_are_available_after_creating_and_updating_a_report(
 
 async def test_listing_only_includes_the_establishments_own_reports(db_establishment):
     from app.db.database import AsyncSessionLocal
-    from app.repositories.nutrition.nutrition_report_repository import (
+    from app.repositories.nutrition_reports.nutrition_report_repository import (
         NutritionReportRepository,
     )
 

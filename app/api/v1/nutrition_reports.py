@@ -12,12 +12,14 @@ from app.core.dependencies import (
 from app.core.rate_limit import limit_by_user
 from app.domain import UserActor
 from app.domain.nutrition_report import NutritionReportSortOrder
-from app.schemas.nutrition.nutrition_report_schema import (
+from app.schemas.nutrition_reports.nutrition_report_schema import (
     NutritionReportListItem,
     NutritionReportResponse,
 )
 from app.schemas.pagination import PaginatedResponse
-from app.services.nutrition.nutrition_report_service import NutritionReportService
+from app.services.nutrition_reports.nutrition_report_service import (
+    NutritionReportService,
+)
 
 router = APIRouter(prefix="/establishments")
 

@@ -2,7 +2,7 @@ import uuid
 from datetime import date, datetime, timezone
 
 from app.domain.nutrition_report import SummaryStatus
-from app.schemas.nutrition.nutrition_report_schema import (
+from app.schemas.nutrition_reports.nutrition_report_schema import (
     NutritionReportAnalysis,
     NutritionReportListItem,
     NutritionReportResponse,
