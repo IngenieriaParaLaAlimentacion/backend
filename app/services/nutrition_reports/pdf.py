@@ -94,14 +94,13 @@ def build_context(
     nutrients = []
     for item in analysis.nutrients:
         label = NUTRIENT_LABELS[item.nutrient]
-        reference, minimum = item.reference_per_1000_kcal, item.minimum_per_1000_kcal
         nutrients.append(
             {
                 "name": label.name,
                 "unit": label.unit,
                 "amount": _number(item.amount_per_1000_kcal),
-                "reference": None if reference is None else _number(reference),
-                "minimum": None if minimum is None else _number(minimum),
+                "reference": _number(item.reference_per_1000_kcal),
+                "minimum": _number(item.minimum_per_1000_kcal),
                 "adequacy": _number(item.adequacy_percent, 0),
                 "at_risk": item.at_risk,
             }

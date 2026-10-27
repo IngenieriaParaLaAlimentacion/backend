@@ -136,13 +136,6 @@ def test_the_ai_must_write_every_field_including_the_conclusion():
     assert set(required) == set(NutritionReportSummary.model_fields)
 
 
-def test_summary_saved_without_a_conclusion_still_loads():
-    raw = summary_of()
-    del raw["conclusion"]
-
-    assert parse_summary(raw).conclusion == ""
-
-
 @pytest.mark.parametrize("field", list(NutritionReportSummary.model_fields))
 def test_prompt_asks_for_every_field_of_the_summary(field):
     assert f"- {field}:" in PROMPT

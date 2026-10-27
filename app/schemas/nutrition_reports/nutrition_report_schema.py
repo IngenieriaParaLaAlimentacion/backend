@@ -19,15 +19,12 @@ class ReportNutrient(BaseModel):
     amount_per_1000_kcal: float = Field(
         description="Amount of the nutrient per 1,000 kcal, in its own unit.",
     )
-    reference_per_1000_kcal: float | None = Field(
-        default=None,
+    reference_per_1000_kcal: float = Field(
         description="Amount 1,000 kcal of food should provide, in the nutrient's own "
-        "unit. Null in reports saved before it was stored.",
+        "unit.",
     )
-    minimum_per_1000_kcal: float | None = Field(
-        default=None,
-        description="Amount per 1,000 kcal below which the nutrient is at risk. "
-        "Null in reports saved before it was stored.",
+    minimum_per_1000_kcal: float = Field(
+        description="Amount per 1,000 kcal below which the nutrient is at risk.",
     )
     adequacy_percent: float = Field(
         description="Share of the reference covered, without a ceiling.",
@@ -151,7 +148,6 @@ class NutritionReportSummary(BaseModel):
         description="A line on which foods to add for the nutrients at risk.",
     )
     conclusion: SummaryText = Field(
-        default="",
         description="What deserves attention first and why, closing the report.",
     )
     limitations: list[SummaryText] = Field(

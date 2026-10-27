@@ -40,8 +40,8 @@
     <tr class="{{ 'risk' if n.at_risk else '' }}">
       <td>{{ n.name }}</td>
       <td class="num">{{ n.amount }} {{ n.unit }}</td>
-      <td class="num">{{ (n.reference ~ ' ' ~ n.unit) if n.reference else '—' }}</td>
-      <td class="num">{{ (n.minimum ~ ' ' ~ n.unit) if n.minimum else '—' }}</td>
+      <td class="num">{{ n.reference ~ ' ' ~ n.unit }}</td>
+      <td class="num">{{ n.minimum ~ ' ' ~ n.unit }}</td>
       <td class="num">{{ n.adequacy }} %</td>
       <td>{% if n.at_risk %}<span class="status alert">En riesgo</span>{% else %}<span class="status ok">Adecuado</span>{% endif %}</td>
     </tr>

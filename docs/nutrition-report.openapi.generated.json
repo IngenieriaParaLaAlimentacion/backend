@@ -796,28 +796,14 @@
             "description": "Amount of the nutrient per 1,000 kcal, in its own unit."
           },
           "reference_per_1000_kcal": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "number",
             "title": "Reference Per 1000 Kcal",
-            "description": "Amount 1,000 kcal of food should provide, in the nutrient's own unit. Null in reports saved before it was stored."
+            "description": "Amount 1,000 kcal of food should provide, in the nutrient's own unit."
           },
           "minimum_per_1000_kcal": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "number",
             "title": "Minimum Per 1000 Kcal",
-            "description": "Amount per 1,000 kcal below which the nutrient is at risk. Null in reports saved before it was stored."
+            "description": "Amount per 1,000 kcal below which the nutrient is at risk."
           },
           "adequacy_percent": {
             "type": "number",
@@ -839,6 +825,8 @@
         "required": [
           "nutrient",
           "amount_per_1000_kcal",
+          "reference_per_1000_kcal",
+          "minimum_per_1000_kcal",
           "adequacy_percent",
           "adequacy_capped_percent",
           "at_risk"
@@ -1066,8 +1054,7 @@
             "type": "string",
             "maxLength": 1500,
             "title": "Conclusion",
-            "description": "What deserves attention first and why, closing the report.",
-            "default": ""
+            "description": "What deserves attention first and why, closing the report."
           },
           "limitations": {
             "items": {
@@ -1086,6 +1073,7 @@
           "macros",
           "gapa_groups",
           "incorporate",
+          "conclusion",
           "limitations"
         ],
         "title": "NutritionReportSummary",

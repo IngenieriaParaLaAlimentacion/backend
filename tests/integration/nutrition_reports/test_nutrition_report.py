@@ -40,6 +40,8 @@ ANALYSIS = NutritionReportAnalysis(
         ReportNutrient(
             nutrient=PrioritizedNutrient.CALCIUM,
             amount_per_1000_kcal=310.0,
+            reference_per_1000_kcal=705.0,
+            minimum_per_1000_kcal=470.0,
             adequacy_percent=44.0,
             adequacy_capped_percent=44.0,
             at_risk=True,
@@ -100,10 +102,11 @@ async def test_report_shows_the_state_of_its_summary(
     )
 
 
+@pytest.mark.parametrize("url_for", [report_url, pdf_url], ids=["detail", "pdf"])
 async def test_month_without_a_saved_report_returns_404(
-    client, admin_headers, db_establishment
+    url_for, client, admin_headers, db_establishment
 ):
-    response = await client.get(report_url(db_establishment.id), headers=admin_headers)
+    response = await client.get(url_for(db_establishment.id), headers=admin_headers)
 
     assert response.status_code == 404
 
@@ -407,14 +410,6 @@ async def test_month_without_intakes_downloads_as_a_pdf_file(
 
     assert response.status_code == 200
     assert response.content.startswith(b"%PDF-")
-
-
-async def test_pdf_of_a_month_without_a_saved_report_returns_404(
-    client, admin_headers, db_establishment
-):
-    response = await client.get(pdf_url(db_establishment.id), headers=admin_headers)
-
-    assert response.status_code == 404
 
 
 async def test_pdf_of_a_report_whose_summary_is_unavailable_returns_409(

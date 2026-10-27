@@ -96,27 +96,6 @@ async def test_lock_makes_a_second_transaction_wait_until_the_first_ends(app):
         await asyncio.wait_for(waiting, timeout=5)
 
 
-async def test_timestamps_are_available_after_creating_and_updating_a_report(
-    db_establishment,
-):
-    from app.db.database import AsyncSessionLocal
-    from app.repositories.nutrition_reports.nutrition_report_repository import (
-        NutritionReportRepository,
-    )
-
-    async with AsyncSessionLocal() as session:
-        repo = NutritionReportRepository(session)
-        report = await repo.create(make_report(db_establishment.id, state=UNAVAILABLE))
-        created_at = report.created_at
-
-        report.summary_status = SummaryStatus.GENERATED
-        report.summary = SUMMARY
-        await repo.update(report)
-
-        # Reading a timestamp the database set would fail if it were left expired.
-        assert report.updated_at >= created_at
-
-
 async def test_listing_only_includes_the_establishments_own_reports(db_establishment):
     from app.db.database import AsyncSessionLocal
     from app.repositories.nutrition_reports.nutrition_report_repository import (

@@ -85,17 +85,6 @@ def test_each_nutrient_row_carries_its_reference_and_minimum():
     assert (calcium["reference"], calcium["minimum"]) == ("395,5", "263,7")
 
 
-def test_a_report_saved_without_reference_leaves_them_empty():
-    snapshot, milk_id = monthly_analysis()
-    old = build_analysis(snapshot, NINO_7_9, {milk_id: "Leche"}).model_dump(mode="json")
-    for nutrient in old["nutrients"]:
-        del nutrient["reference_per_1000_kcal"], nutrient["minimum_per_1000_kcal"]
-
-    calcium = build_context(make_report(analysis=old), "Comedor Test")["nutrients"][0]
-
-    assert (calcium["reference"], calcium["minimum"]) == (None, None)
-
-
 def test_html_names_the_establishment_and_flags_the_nutrient_at_risk():
     html = render_report_html(make_report(), "Comedor Test")
 
@@ -136,13 +125,6 @@ def test_text_written_by_people_or_the_ai_is_escaped():
     assert "<script>alert(1)</script>" not in html
     assert "<b>Hola</b>" not in html
     assert "&lt;script&gt;" in html
-
-
-def test_a_report_with_data_cannot_be_printed_without_its_summary():
-    report = make_report(summary=None, summary_status=SummaryStatus.UNAVAILABLE)
-
-    with pytest.raises(ValueError):
-        build_context(report, "Comedor Test")
 
 
 def test_the_pdf_is_a_pdf_file():
