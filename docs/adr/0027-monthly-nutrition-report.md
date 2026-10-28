@@ -51,7 +51,7 @@ The whole `PUT` is bounded by its own time budget, like recipes and receipts. Wh
 - A report whose summary is `unavailable` answers 409 with an error that asks to request the report again. A PDF without its text would look complete and is not.
 - A month without intakes is delivered as a short PDF without the scope note, because there is nothing to qualify.
 
-The PDF is built from Jinja2 HTML and CSS templates (`app/templates/reports/`) in the same palette as the emails, converted by WeasyPrint. The render is CPU-bound, so it runs in a worker thread after the database connection is released. WeasyPrint is imported only when a PDF is requested, so the application starts on a machine without its native libraries. Its URL fetcher accepts only `data:` URIs, so a template can never reach a file or the network.
+The PDF is built from Jinja2 HTML and CSS templates (`app/templates/reports/`) in the same palette as the emails, converted by WeasyPrint. The render is CPU-bound, so it runs in a worker thread after the database connection is released. Its URL fetcher accepts only `data:` URIs, so a template can never reach a file or the network.
 
 Display names and units (nutrients, limits, macros, GAPA groups) live in `app/domain/nutrition_report.py`, as pure data checked against the nutrient catalog by tests.
 
@@ -72,7 +72,7 @@ Display names and units (nutrients, limits, macros, GAPA groups) live in `app/do
 
 ## Consequences
 
-- The Docker image and the CI setup install Pango, HarfBuzz and the DejaVu fonts (about 20 MB). Only DejaVu fonts exist in the image, so the stylesheet falls back to them after the brand fonts.
+- The Docker image and the CI setup install Pango, HarfBuzz and the DejaVu fonts (about 20 MB), and so must a development machine: WeasyPrint is imported when the application starts, so the application does not start without them. CI starts the built image before publishing it, so an image missing them fails the build. Only DejaVu fonts exist in the image, so the PDF is set in them and not in the brand fonts of the shared theme (Fraunces and Work Sans); showing those needs installing them in the image.
 - A deployment must set `OPENROUTER_REPORT_MODELS`. With it empty, no report gets its AI text (`unavailable`) and no PDF can be downloaded until it is configured.
 - The quality of the write-up depends on the model. The prompt is versioned (`v3`) and the output is validated, but its wording is not guaranteed.
 - A report with data cannot be refreshed after new intakes arrive. If that becomes a need, it is a new feature that decides which version of a month is the current one.

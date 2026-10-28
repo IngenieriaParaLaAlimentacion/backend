@@ -1,5 +1,4 @@
 import asyncio
-import sys
 import uuid
 from datetime import date, datetime, timezone
 from types import SimpleNamespace
@@ -443,7 +442,7 @@ async def test_field_worker_without_approved_access_cannot_get_a_report(
 
 @pytest.fixture
 def renderer(monkeypatch):
-    """Stand in for the PDF rendering, so these tests need no PDF libraries.
+    """Stand in for the PDF rendering, so these tests do not render a real PDF.
 
     The fixture is the list of what happened, in order.
     """
@@ -453,10 +452,9 @@ def renderer(monkeypatch):
         events.append(("render", report.month, establishment_name))
         return b"%PDF-fake"
 
-    monkeypatch.setitem(
-        sys.modules,
-        "app.services.nutrition_reports.pdf",
-        SimpleNamespace(render_report_pdf=render),
+    monkeypatch.setattr(
+        "app.services.nutrition_reports.nutrition_report_service.render_report_pdf",
+        render,
     )
     return events
 

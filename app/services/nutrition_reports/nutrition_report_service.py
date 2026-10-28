@@ -33,6 +33,7 @@ from app.schemas.nutrition_reports.nutrition_report_schema import (
 from app.services.access import check_establishment_access
 from app.services.nutrition.nutrition_service import NutritionService
 from app.services.nutrition_reports.analysis import build_analysis
+from app.services.nutrition_reports.pdf import render_report_pdf
 from app.services.nutrition_reports.summary import (
     PROMPT_VERSION,
     RESPONSE_SCHEMA,
@@ -64,7 +65,7 @@ def _log_summary_failure(
 
 
 def _first_day_of(month: str) -> date:
-    """Return the first day of a month formatted as ``YYYY-MM``."""
+    """Return the first day of ``YYYY-MM``, the date a report is stored under."""
     year, number = map(int, month.split("-"))
     return date(year, number, 1)
 
@@ -178,9 +179,6 @@ class NutritionReportService:
             NutritionReportSummaryUnavailableError: the AI could not write the
                 summary yet, so the report is not complete.
         """
-        # The PDF libraries are only needed from here: the app starts without them.
-        from app.services.nutrition_reports.pdf import render_report_pdf
-
         establishment, saved = await self._find_saved(establishment_id, month, actor)
         if saved.summary_status == SummaryStatus.UNAVAILABLE:
             raise NutritionReportSummaryUnavailableError(month)
