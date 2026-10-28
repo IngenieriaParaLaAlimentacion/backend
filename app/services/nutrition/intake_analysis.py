@@ -26,9 +26,10 @@ RISK_ADEQUACY_THRESHOLD = 2 / 3
 # How many foods are suggested for each nutrient at risk.
 TOP_SOURCES_COUNT = 5
 
-# The catalog writes a cooking state as the last comma part or the last parenthesis
-# of a name ("Acelga, hervida", "Riñón (horno/parrilla)"). Other trailing parts,
-# like "fortificada con hierro" or "prefrita", name a different product and stay.
+# Matches the cooking state at the end of a catalog name, so that the same food in
+# several states ("Hígado, crudo", "Hígado (rehogado/plancha)") counts as one.
+# Other endings, like "fortificada con hierro" or "prefrita", name a different
+# product and do not match.
 _COOKING_STATE = re.compile(
     r"(?:,\s*|\s*\()"
     r"(?:(?:crud|hervid|cocid|rehogad)[oa]s?|(?:al )?horno|a la parrilla)"
