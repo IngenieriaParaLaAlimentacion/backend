@@ -99,10 +99,12 @@ Converting a food stocked in `litros` to grams needs its density, so 64 of the 9
 | Alcoholic drinks with no entry that fits, or with variants that differ and a food that does not say which (vermouth: 1.005 dry, 1.046 sweet) | Sidra; Vermouth; Aperitivo, tipo Gancia; Vino Mistela; Chicha; Cerveza sin alcohol |
 | Soft drinks with 4 % of alcohol, which no entry describes | Ananá Fizz; Dr. Lemon |
 
+The alcoholic drinks in the table (sidra, vermouth, aperitivo, vino mistela, chicha, Ananá Fizz and Dr. Lemon) are not a gap to close. The team was told in a meeting that alcoholic drinks will never be loaded, so they stay without a density. Cerveza sin alcohol is not covered by this, and its only obstacle is the one in the table.
+
 ### Stocked in `unidades` (31)
 
-- Huevo de codorniz, entero, crudo y hervido, and Huevo de chocolate tipo Kinder: no source gives their weight.
-- The 28 products of McDonald's: no source gives their weight. Whether they belong to Nutrir's stock is still open.
+- Huevo de codorniz, entero, crudo y hervido: no source gives their weight.
+- Huevo de chocolate tipo Kinder and the 28 products of McDonald's: no source gives their weight, and it is not a gap to close. They would not be part of a recipe, so they stay without a unit weight.
 
 ### Stocked in `kilogramos` and not loaded
 
