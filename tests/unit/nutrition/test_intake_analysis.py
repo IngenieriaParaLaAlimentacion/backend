@@ -96,6 +96,42 @@ def test_sources_skip_optional_ungrouped_and_energyless_foods():
     assert [s.food_id for s in ranked] == [good.food_id]
 
 
+def test_a_food_in_several_cooking_states_is_suggested_once_in_its_best_one():
+    def liver(name, calcium):
+        return composition(
+            {"valor_energetico": 100, "calcio": calcium}, GapaGroup.MEAT_AND_EGGS, name
+        )
+
+    best = liver("Hígado (rehogado/plancha)", 90)
+    candidates = [
+        best,
+        liver("Hígado, crudo", 80),
+        liver("Hígado de pollo, crudo", 70),
+        liver("Hígado de pollo, cocido", 60),
+        liver("Pulpo, crudo", 50),
+    ]
+
+    ranked = top_sources(CALCIUM, catalog_by_id(candidates))
+
+    assert [round(s.amount_per_100_kcal) for s in ranked] == [90, 70, 50]
+    assert ranked[0].food_id == best.food_id
+
+
+def test_foods_that_differ_beyond_the_cooking_state_are_all_suggested():
+    candidates = [
+        composition({"valor_energetico": 100, "calcio": 90}, GapaGroup.DAIRY, name)
+        for name in (
+            "Leche entera fluida, fortificada con hierro",
+            "Leche entera fluida, con vitaminas A y D",
+            "Papa, prefrita",
+        )
+    ]
+
+    ranked = top_sources(CALCIUM, catalog_by_id(candidates))
+
+    assert len(ranked) == 3
+
+
 def test_warnings_of_the_analysis_do_not_alias_those_of_the_indicators():
     rice = composition({"valor_energetico": 100})
 

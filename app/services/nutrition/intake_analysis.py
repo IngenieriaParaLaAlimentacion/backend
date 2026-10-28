@@ -1,3 +1,4 @@
+import re
 from collections.abc import Iterable, Mapping
 from uuid import UUID
 
@@ -24,6 +25,16 @@ RISK_ADEQUACY_THRESHOLD = 2 / 3
 
 # How many foods are suggested for each nutrient at risk.
 TOP_SOURCES_COUNT = 5
+
+# The catalog writes a cooking state as the last comma part or the last parenthesis
+# of a name ("Acelga, hervida", "Riñón (horno/parrilla)"). Other trailing parts,
+# like "fortificada con hierro" or "prefrita", name a different product and stay.
+_COOKING_STATE = re.compile(
+    r"(?:,\s*|\s*\()"
+    r"(?:(?:crud|hervid|cocid|rehogad)[oa]s?|(?:al )?horno|a la parrilla)"
+    r"(?:\s*/\s*(?:plancha|parrilla))?\)?$",
+    re.IGNORECASE,
+)
 
 
 def analyze_intake(
@@ -77,7 +88,8 @@ def top_sources(
     """Return the foods giving the most of a nutrient per 100 kcal, best first.
 
     Foods without energy, without the nutrient, outside every GAPA group or in
-    the optional group are left out.
+    the optional group are left out. A food listed in several cooking states
+    appears once, in the state that gives the most.
     """
     sources = []
     for food_id, composition in catalog.items():
@@ -94,4 +106,25 @@ def top_sources(
             FoodSource(food_id=food_id, amount_per_100_kcal=(amount / energy * 100))
         )
     sources.sort(key=lambda s: s.amount_per_100_kcal, reverse=True)
-    return sources[:count]
+
+    chosen: list[FoodSource] = []
+    seen: set[str | UUID] = set()
+    for source in sources:
+        name = catalog[source.food_id].name
+        # A food with no known name has no variants to fold, so it keys on its id.
+        key = food_without_cooking_state(name) if name else source.food_id
+        if key in seen:
+            continue
+        seen.add(key)
+        chosen.append(source)
+        if len(chosen) == count:
+            break
+    return chosen
+
+
+def food_without_cooking_state(name: str) -> str:
+    """Return a catalog name without its trailing cooking state.
+
+    "Hígado, crudo" and "Hígado (rehogado/plancha)" both give "Hígado".
+    """
+    return _COOKING_STATE.sub("", name).strip().casefold()

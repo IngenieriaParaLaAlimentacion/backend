@@ -8,10 +8,12 @@ REFERENCE_DATA = Path(__file__).parents[3] / "app" / "reference_data"
 
 
 def composition(
-    per_100g: dict[str, float], group: GapaGroup | None = None
+    per_100g: dict[str, float], group: GapaGroup | None = None, name: str = ""
 ) -> FoodComposition:
-    """A catalog food with the given nutrients per 100 g and an optional group."""
-    return FoodComposition(food_id=uuid.uuid4(), gapa_group=group, per_100g=per_100g)
+    """A catalog food with the given nutrients per 100 g, an optional group and name."""
+    return FoodComposition(
+        food_id=uuid.uuid4(), gapa_group=group, per_100g=per_100g, name=name
+    )
 
 
 def read_reference_csv(name: str) -> list[dict]:

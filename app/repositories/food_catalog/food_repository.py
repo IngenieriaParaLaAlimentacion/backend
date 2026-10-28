@@ -202,6 +202,7 @@ class FoodRepository:
                 GapaFoodCategory.code,
                 Nutrient.code,
                 FoodNutrientValue.amount_per_100g,
+                Food.name,
             )
             .join(FoodNutrientValue, FoodNutrientValue.food_id == Food.id)
             .join(Nutrient, Nutrient.id == FoodNutrientValue.nutrient_id)

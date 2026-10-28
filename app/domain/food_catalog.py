@@ -128,6 +128,7 @@ class FoodNutrientRow(NamedTuple):
     gapa_category_code: str | None
     nutrient_code: str
     amount_per_100g: Decimal
+    food_name: str = ""
 
 
 # SARA 2's own table split: macronutrients (fatty acids as their sub-list)

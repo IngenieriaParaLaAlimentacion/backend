@@ -74,12 +74,13 @@ class FoodComposition:
 
     ``per_100g`` maps a catalog nutrient code to its amount per 100 g; a nutrient
     the catalog has no reading for is absent. ``gapa_group`` is None when the food
-    belongs to no group.
+    belongs to no group. ``name`` is the catalog name, empty when it is not known.
     """
 
     food_id: UUID
     gapa_group: GapaGroup | None
     per_100g: dict[str, float]
+    name: str = ""
 
 
 @dataclass
