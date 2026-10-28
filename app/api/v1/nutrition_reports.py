@@ -118,7 +118,8 @@ async def get_nutrition_report(
         "marked unavailable: asking again for that month writes only the summary "
         "again (200). The current month and future months are rejected (422), and "
         "a month whose foods have no known conversion to grams answers 409 and is "
-        "not saved. Every call counts toward the AI quota. Accessible by admins and "
+        "not saved. Every call counts toward the user's AI rate limit, even one that "
+        "returns a saved report without calling the AI. Accessible by admins and "
         "analysts."
     ),
     responses={
