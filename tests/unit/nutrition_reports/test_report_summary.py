@@ -4,13 +4,17 @@ import uuid
 import pytest
 from pydantic import ValidationError
 
-from app.domain.nutrition import PrioritizedNutrient
+from app.domain.nutrition import GapaGroup, Macronutrient, PrioritizedNutrient
 from app.domain.nutrition_report import SUMMARY_TEXT_MAX_LENGTH
 from app.schemas.nutrition_reports.nutrition_report_schema import (
     NutritionReportAnalysis,
     NutritionReportSummary,
     ReportFoodSource,
     ReportFoodWithoutConversion,
+    ReportGapaGroup,
+    ReportLimit,
+    ReportMacro,
+    ReportNutrient,
     ReportNutrientSources,
 )
 from app.services.llm.structured_schema import structured_schema
@@ -37,6 +41,60 @@ def summary_of(**overrides) -> dict:
 
 def context_of(prompt: str) -> dict:
     return json.loads(prompt.split("Context:\n")[1])
+
+
+def test_prompt_names_nutrients_macros_and_groups_instead_of_giving_their_codes():
+    analysis = NutritionReportAnalysis(
+        energy_kcal=1000.0,
+        nutrients=[
+            ReportNutrient(
+                nutrient=PrioritizedNutrient.VITAMIN_B12,
+                amount_per_1000_kcal=1.0,
+                reference_per_1000_kcal=2.0,
+                minimum_per_1000_kcal=1.3,
+                adequacy_percent=50.0,
+                adequacy_capped_percent=50.0,
+                at_risk=True,
+            )
+        ],
+        macros=[
+            ReportMacro(
+                macro=Macronutrient.PROTEIN,
+                energy_share_percent=10.0,
+                min_percent=10.0,
+                max_percent=15.0,
+                in_range=True,
+            )
+        ],
+        gapa_groups=[
+            ReportGapaGroup(
+                group=GapaGroup.DAIRY, energy_share_percent=0.0, missing=True
+            )
+        ],
+        limits=[ReportLimit(code="sodio", amount_per_1000_kcal=900.0)],
+        top_sources=[
+            ReportNutrientSources(
+                nutrient=PrioritizedNutrient.VITAMIN_B12,
+                foods=[
+                    ReportFoodSource(
+                        food_id=uuid.uuid4(), name="Hígado", amount_per_100_kcal=49.0
+                    )
+                ],
+            )
+        ],
+    )
+
+    prompt = build_prompt(analysis)
+
+    context = context_of(prompt)
+    assert context["nutrients"][0]["name"] == "Vitamina B-12"
+    assert context["nutrients"][0]["unit"] == "µg"
+    assert context["macros"][0]["name"] == "Proteínas"
+    assert context["gapa_groups"][0]["name"] == "Leche, yogur y quesos"
+    assert context["limits"][0]["name"] == "Sodio"
+    assert context["top_sources"][0]["name"] == "Vitamina B-12"
+    for code in ("vitamina_b12", "proteinas", "leche_yogur_y_quesos", "sodio"):
+        assert code not in prompt.split("Context:\n")[1]
 
 
 def test_prompt_gives_the_calculated_figures_without_internal_food_ids():

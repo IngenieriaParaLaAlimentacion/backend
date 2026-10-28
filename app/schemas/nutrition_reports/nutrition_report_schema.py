@@ -2,10 +2,26 @@ from datetime import date, datetime
 from typing import Annotated, Any
 from uuid import UUID
 
-from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, field_validator
+from pydantic import (
+    BaseModel,
+    BeforeValidator,
+    ConfigDict,
+    Field,
+    computed_field,
+    field_validator,
+)
 
-from app.domain.nutrition import GapaGroup, Macronutrient, PrioritizedNutrient
+from app.domain.nutrition import (
+    GapaGroup,
+    LimitedNutrient,
+    Macronutrient,
+    PrioritizedNutrient,
+)
 from app.domain.nutrition_report import (
+    GAPA_GROUP_LABELS,
+    LIMIT_LABELS,
+    MACRO_LABELS,
+    NUTRIENT_LABELS,
     SCOPE_NOTE,
     SUMMARY_TEXT_MAX_LENGTH,
     SummaryStatus,
@@ -36,6 +52,16 @@ class ReportNutrient(BaseModel):
         description="Whether the intake is at risk of not covering the nutrient.",
     )
 
+    @computed_field(description="Spanish name of the nutrient.")
+    @property
+    def name(self) -> str:
+        return NUTRIENT_LABELS[self.nutrient].name
+
+    @computed_field(description="Unit the amounts of the nutrient are given in.")
+    @property
+    def unit(self) -> str:
+        return NUTRIENT_LABELS[self.nutrient].unit
+
 
 class ReportMacro(BaseModel):
     """Share of the energy a macronutrient provides and the range it should hold."""
@@ -45,6 +71,11 @@ class ReportMacro(BaseModel):
     min_percent: float
     max_percent: float
     in_range: bool
+
+    @computed_field(description="Spanish name of the macronutrient.")
+    @property
+    def name(self) -> str:
+        return MACRO_LABELS[self.macro]
 
 
 class ReportGapaGroup(BaseModel):
@@ -56,12 +87,27 @@ class ReportGapaGroup(BaseModel):
         description="Whether the group provided no energy at all in the month.",
     )
 
+    @computed_field(description="Spanish name of the GAPA group.")
+    @property
+    def name(self) -> str:
+        return GAPA_GROUP_LABELS[self.group]
+
 
 class ReportLimit(BaseModel):
     """Intake of fiber, sodium, saturated fat or added sugar, shown as information."""
 
     code: str = Field(description="Nutrient code in the food catalog.")
     amount_per_1000_kcal: float
+
+    @computed_field(description="Spanish name of the nutrient.")
+    @property
+    def name(self) -> str:
+        return LIMIT_LABELS[LimitedNutrient(self.code)].name
+
+    @computed_field(description="Unit the amount is given in.")
+    @property
+    def unit(self) -> str:
+        return LIMIT_LABELS[LimitedNutrient(self.code)].unit
 
 
 class ReportFoodSource(BaseModel):
@@ -77,6 +123,11 @@ class ReportNutrientSources(BaseModel):
 
     nutrient: PrioritizedNutrient
     foods: list[ReportFoodSource]
+
+    @computed_field(description="Spanish name of the nutrient.")
+    @property
+    def name(self) -> str:
+        return NUTRIENT_LABELS[self.nutrient].name
 
 
 class ReportFoodWithoutConversion(BaseModel):

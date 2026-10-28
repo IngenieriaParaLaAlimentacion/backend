@@ -8,7 +8,7 @@ from app.schemas.nutrition_reports.nutrition_report_schema import (
 )
 from app.services.llm.structured_schema import without_bounds
 
-PROMPT_VERSION = "v2"
+PROMPT_VERSION = "v3"
 PROMPT = (
     Path(__file__).parent / "prompts" / PROMPT_VERSION / "report_summary.txt"
 ).read_text()
@@ -21,13 +21,19 @@ RESPONSE_SCHEMA: dict[str, Any] = without_bounds(
 def build_prompt(analysis: NutritionReportAnalysis) -> str:
     """Return the prompt asking the AI to write the summary of an analysis.
 
-    The context holds the calculated figures and leaves out the internal ids of
-    the foods.
+    The context holds the calculated figures. Nutrients, macros and groups go by
+    their Spanish name, and the internal codes and food ids are left out.
     """
     context = analysis.model_dump(
         mode="json",
         exclude={
-            "top_sources": {"__all__": {"foods": {"__all__": {"food_id"}}}},
+            "nutrients": {"__all__": {"nutrient"}},
+            "macros": {"__all__": {"macro"}},
+            "gapa_groups": {"__all__": {"group"}},
+            "limits": {"__all__": {"code"}},
+            "top_sources": {
+                "__all__": {"nutrient": True, "foods": {"__all__": {"food_id"}}}
+            },
             "foods_without_conversion": {"__all__": {"food_id"}},
         },
     )

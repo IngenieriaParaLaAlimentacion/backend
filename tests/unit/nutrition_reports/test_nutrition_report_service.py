@@ -312,7 +312,7 @@ async def test_failed_summary_is_logged_by_reason_without_the_providers_message(
 
     [entry] = [log for log in logs if log["event"] == "nutrition_report.summary_failed"]
     assert (entry["stage"], entry["reason"]) == ("summary", reason)
-    assert entry["prompt_version"] == "v2"
+    assert entry["prompt_version"] == "v3"
     assert "secret provider detail" not in str(logs)
 
 

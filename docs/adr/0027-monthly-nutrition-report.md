@@ -74,6 +74,6 @@ Display names and units (nutrients, limits, macros, GAPA groups) live in `app/do
 
 - The Docker image and the CI setup install Pango, HarfBuzz and the DejaVu fonts (about 20 MB). Only DejaVu fonts exist in the image, so the stylesheet falls back to them after the brand fonts.
 - A deployment must set `OPENROUTER_REPORT_MODELS`. With it empty, no report gets its AI text (`unavailable`) and no PDF can be downloaded until it is configured.
-- The quality of the write-up depends on the model. The prompt is versioned (`v2`) and the output is validated, but its wording is not guaranteed.
+- The quality of the write-up depends on the model. The prompt is versioned (`v3`) and the output is validated, but its wording is not guaranteed.
 - A report with data cannot be refreshed after new intakes arrive. If that becomes a need, it is a new feature that decides which version of a month is the current one.
 - The advisory lock is held until the commit, and the request holds a database connection while the AI writes (up to the completion timeout). Requests for the same month wait for the lock with a connection each, bounded by the request time budget. Recipes release the connection around the AI call. It is accepted here because the wait is limited to one month of one establishment and by the quota; releasing the connection during the AI call is the way out if the pool ever runs short.

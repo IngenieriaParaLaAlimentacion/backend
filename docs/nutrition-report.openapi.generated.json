@@ -819,6 +819,18 @@
             "type": "boolean",
             "title": "At Risk",
             "description": "Whether the intake is at risk of not covering the nutrient."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Spanish name of the nutrient.",
+            "readOnly": true
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit",
+            "description": "Unit the amounts of the nutrient are given in.",
+            "readOnly": true
           }
         },
         "type": "object",
@@ -829,7 +841,9 @@
           "minimum_per_1000_kcal",
           "adequacy_percent",
           "adequacy_capped_percent",
-          "at_risk"
+          "at_risk",
+          "name",
+          "unit"
         ],
         "title": "ReportNutrient",
         "description": "How much of a prioritized nutrient the month's intakes cover."
@@ -868,6 +882,12 @@
           "in_range": {
             "type": "boolean",
             "title": "In Range"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Spanish name of the macronutrient.",
+            "readOnly": true
           }
         },
         "type": "object",
@@ -876,7 +896,8 @@
           "energy_share_percent",
           "min_percent",
           "max_percent",
-          "in_range"
+          "in_range",
+          "name"
         ],
         "title": "ReportMacro",
         "description": "Share of the energy a macronutrient provides and the range it should hold."
@@ -904,13 +925,20 @@
             "type": "boolean",
             "title": "Missing",
             "description": "Whether the group provided no energy at all in the month."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Spanish name of the GAPA group.",
+            "readOnly": true
           }
         },
         "type": "object",
         "required": [
           "group",
           "energy_share_percent",
-          "missing"
+          "missing",
+          "name"
         ],
         "title": "ReportGapaGroup",
         "description": "Share of the energy that comes from one GAPA group."
@@ -938,12 +966,26 @@
           "amount_per_1000_kcal": {
             "type": "number",
             "title": "Amount Per 1000 Kcal"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Spanish name of the nutrient.",
+            "readOnly": true
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit",
+            "description": "Unit the amount is given in.",
+            "readOnly": true
           }
         },
         "type": "object",
         "required": [
           "code",
-          "amount_per_1000_kcal"
+          "amount_per_1000_kcal",
+          "name",
+          "unit"
         ],
         "title": "ReportLimit",
         "description": "Intake of fiber, sodium, saturated fat or added sugar, shown as information."
@@ -959,12 +1001,19 @@
             },
             "type": "array",
             "title": "Foods"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Spanish name of the nutrient.",
+            "readOnly": true
           }
         },
         "type": "object",
         "required": [
           "nutrient",
-          "foods"
+          "foods",
+          "name"
         ],
         "title": "ReportNutrientSources",
         "description": "The foods that best cover a nutrient the intake is short of."
