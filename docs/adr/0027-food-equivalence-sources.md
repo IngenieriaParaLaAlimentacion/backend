@@ -18,14 +18,14 @@ SARA 2 gives nutrients per 100 g of edible portion, in the raw state, and nothin
 | | FAO/INFOODS Density Database v2.0 | UBA weight/volume table |
 | --- | --- | --- |
 | What it gives | Density and specific gravity of 638 foods, in English | Weight per unit of Argentine foods and products, in Spanish |
-| Used for | `density_g_ml` (139 rows) | `unit_weight_g` (32 rows) |
+| Used for | `density_g_ml` (139 rows) | `unit_weight_g` (41 rows) |
 | Reference | Charrondière UR, Haytowitz D, Stadlmayr B. *FAO/INFOODS Density Database Version 2.0*. Rome: FAO; 2012. E-ISBN 978-92-5-107346-9. <http://www.fao.org/4/ap815e/ap815e.pdf> | *Medidas, equivalencias y porciones de alimentos* (`Peso-Volumen-Medidas fmed.pdf`), which complements Vázquez MB, Witriw AM. *Modelos visuales de alimentos. Tablas de relación peso/volumen*, 1997, and López LB, Suárez MM. *Alimentación saludable. Guía práctica para su realización*, 2005 |
 | Copy used | `density_FAO_INFOODS.xlsx`, in the team's Drive (dated 2026-10-08) | `Peso-Volumen-Medidas fmed.pdf`, in the same Drive folder |
 | Checked against | The FAO PDF, as a spot check of the beverage rows | The PDF itself, page by page, since the text extraction mixes up its columns |
 
 **Why FAO for density.** It is the one reference that covers the liquids and powders the catalog holds, and every value carries a code to its own bibliography (USDA, McCance and Widdowson, the Danish databank and others), so the origin of each number can be traced. It is also the source the issue proposed.
 
-**Why the UBA table for unit weight.** It is in Spanish, uses Argentine products and sizes, and states that its values are net raw weight, which matches the edible portion SARA 2 uses (ADR-0025).
+**Why the UBA table for unit weight.** It is in Spanish, uses Argentine products and sizes, and states that its values are net raw weight, which matches the edible portion SARA 2 uses (ADR-0025). Its fruit and vegetable tables are the exception: they give gross weight (criterion 5).
 
 **USDA FoodData Central (`food_portion`)** was not used. It stays available as a fallback for the foods listed under "Foods without an equivalence".
 
@@ -39,12 +39,12 @@ The PDF carries this notice: *"All rights reserved. FAO encourages reproduction 
 2. **A range takes its midpoint** (`0.56-0.72` gives `0.64`).
 3. **Priority between sources**: USDA, then UK 6th (McCance and Widdowson), then DK (Danish databank), then FNDDS 4.1, then the others. ASI (an industrial materials catalogue) and KEN (unpublished measurements taken at 1,350 m of altitude) are the weakest. When several entries match a food, the one named closest to it is used and the others are written in `notes`.
 4. **`direct`** means the entry describes that food, including a generic entry that explicitly covers it and a fortified version of a milk (fortification does not change the kind of milk). **`family`** means the entry is a similar food or a generic category, and the `notes` column says which.
-5. **Unit weight is the weight of the edible portion**, as ADR-0025 requires. The fruit and vegetable tables of the UBA document are gross weight (`P. Bruto`, with peel and stone) and were left out.
+5. **Unit weight is the weight of the edible portion**, as ADR-0025 requires, with one exception. The fruit and vegetable tables of the UBA document are gross weight (`P. Bruto`, with peel, core and stone). The ones that lose little when prepared are loaded anyway, and their `source_ref` says `P. Bruto`: apple with skin, round tomato, cucumber, zapallito, the two raw peppers, plum, peach and eggplant. Only the raw food is loaded, since the gross weight is that of the raw piece. The ones that lose a large share (see "Stocked in `kilogramos` and not loaded") stay out.
 6. **Only the `g/unidad` column of the UBA table is used.** Its spoon-measure columns (`g/15 ml`, `g/10 ml`, `g/5 ml`, `g/100 ml`) are not, since densities already come from FAO.
 7. **A unit weight is loaded only where a receipt's `unidad` is that unit.** The table gives the weight of one piece for biscuits, sweets, burgers and nuggets, and a receipt prints those by the package. Loading the weight of one biscuit would turn a packet of biscuits into 8 g.
 8. **Boiled eggs reuse the raw weights** (50, 15 and 35 g) as `family`, because the table gives only raw ones.
 9. **No food gets more than one value per kind**, and none gets a guessed one: a food that no source describes stays without a row.
-10. **When the table gives several sizes of one product, the team picks the one loaded**: Danonino firme grande (80 g, the small one weighs 45) for the postre tipo Danonino, and Danonino bebible chico (90 g, the large one weighs 190) for the postre de leche bebible infantil.
+10. **When the table gives several sizes of one product, the team picks the one loaded**: Danonino firme grande (80 g, the small one weighs 45) for the postre tipo Danonino, and Danonino bebible chico (90 g, the large one weighs 190) for the postre de leche bebible infantil. For the fruits and vegetables the medium unit is loaded, and the other two sizes are written in `notes`.
 
 ### Values accepted after review
 
@@ -74,15 +74,15 @@ An unknown `food_code` fails the seed, so a typo breaks the deploy and does not 
 
 ## Coverage
 
-171 rows: 139 densities (86 `direct`, 53 `family`) and 32 unit weights (25 `direct`, 7 `family`).
+180 rows: 139 densities (86 `direct`, 53 `family`) and 41 unit weights (34 `direct`, 7 `family`).
 
 | Base unit | Foods | With an equivalence | Without |
 | --- | --- | --- | --- |
 | `litros` | 94 | 67 | 27 |
 | `unidades` | 37 | 6 | 31 |
-| `kilogramos` | 767 | 91 | 676 |
+| `kilogramos` | 767 | 100 | 667 |
 
-A food stocked in `kilogramos` needs no factor, except when a receipt prints it in `ml` or per unit, so the 676 without one are not a gap in the nutrition service.
+A food stocked in `kilogramos` needs no factor, except when a receipt prints it in `ml` or per unit, so the 667 without one are not a gap in the nutrition service.
 
 Converting a food stocked in `litros` to grams needs its density, so 64 of the 94 convert. Three of the 67 with a row have only a unit weight: Leche fórmula inicio, Leche fórmula seguimiento and Postre de leche bebible infantil.
 
@@ -108,6 +108,7 @@ Converting a food stocked in `litros` to grams needs its density, so 64 of the 9
 
 - **FAO has contradictory values**: Harina de maíz (0.55 to 0.82), Harina de soja (0.64 and 0.70), Almidón de maíz (0.54 loose, 0.63 packed), leche en polvo (0.21 and 0.56), porotos, zanahoria (chopped and grated), ají y morrón (cubes and rings), copos de maíz, puré de papa instantáneo, aceituna verde (FAO weighs it with the stone, SARA without).
 - **The UBA table gives several sizes, or several products that SARA names as one**: alfajores, galletitas de agua, grisines, pan francés, quesos, masa de tarta, dulce de membrillo y de batata, chorizo, probióticos (Activia 120 g, Actimel 100 g), yogur entero saborizado (pote chico 125 g, pote 200 g).
+- **The UBA fruit and vegetable weights lose a large share when the food is peeled or shelled**: banana, naranja, mandarina and pomelo (peel), choclo (cob), palmitos, and the roots and bulbs that are usually peeled (batata, papa, zanahoria, remolacha, cebolla, calabaza). Damasco and frutilla were not part of this load. None of them gets a value until there is a waste factor with a source.
 - **The UBA table gives the weight of a piece** (criterion 7): galletitas dulces, caramelos, hamburguesas industrializadas, nuggets.
 - **Meats and fish**: the only FAO entries are bulk measurements of pieces with bone and are of no use to convert a volume.
 
@@ -117,12 +118,13 @@ Converting a food stocked in `litros` to grams needs its density, so 64 of the 9
 - Every row says where its value comes from and how close the match is, and a reviewer can read the Spanish name of each FAO entry in `notes`.
 - A `family` value is an approximation of a similar food. A milk-based drink with sugar or a formula would weigh somewhat more than the value taken from common milk.
 - The seed only creates and updates. A row removed from the CSV stays in the table until it is deleted by hand or by a migration, and in this table a stale value keeps converting without anyone noticing.
+- The 9 gross unit weights overstate the edible quantity by the share that is cored or stoned (the core of the apple, the stone of the plum and the peach). Nothing in the table tells them apart from the edible ones except the `P. Bruto` in `source_ref`.
 - Many FAO values for powders and cut vegetables are bulk densities, and depend on how the food was packed or cut when it was measured.
 - Using the values beyond non-commercial purposes requires FAO's authorization (see "Licence of the FAO database").
 
 ## Alternatives considered
 
 - **Load the UBA fruit and vegetable weights with a waste factor.** Rejected: SARA 2 has no waste factors, and applying one from elsewhere would add a second unsourced number.
-- **Load the gross weights as they are.** Rejected: they would overstate every nutrient computed from them, with nothing to flag the error (ADR-0025).
+- **Load all the gross weights as they are.** Not chosen: for banana, citrus, choclo and the peeled roots they would overstate the nutrients by a large share (ADR-0025). Only the low-waste ones are loaded, marked as gross weight (criterion 5).
 - **Fill the remaining gaps with a default** (1 g/ml, an average unit weight). Rejected for the same reason as in ADR-0025.
 - **Delete from the table the rows that the CSV no longer has.** Not chosen: the other catalog seeds do not delete either, and it needs a decision of its own.
