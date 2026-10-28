@@ -13,6 +13,7 @@ import pytest
 import pytest_asyncio
 from fastapi import status
 
+from app.services.exporters.csv.columns import build_subject_listing_export
 from tests.integration.helpers import bmi_for
 
 BOM = b"\xef\xbb\xbf"
@@ -21,10 +22,15 @@ BOM = b"\xef\xbb\xbf"
 @pytest.fixture
 def fixed_export_date(monkeypatch) -> date:
     """Use one deterministic date for filename generation and its expectation."""
-    fixed_date = date(2026, 8, 24)
+    reference = datetime(2026, 8, 24, 15, tzinfo=timezone.utc)
+    fixed_date = reference.date()
     monkeypatch.setattr(
         "app.services.exporters.csv.csv_exporter.today_in_argentina",
         lambda: fixed_date,
+    )
+    monkeypatch.setattr(
+        "app.api.v1.subjects.build_subject_listing_export",
+        lambda: build_subject_listing_export(reference),
     )
     return fixed_date
 
@@ -228,6 +234,18 @@ class TestFileShape:
 
 
 class TestSubjectsExport:
+    async def test_exports_current_age_and_elapsed_time(
+        self, client, admin_headers, scenario, fixed_export_date
+    ):
+        response = await client.get(
+            SUBJECTS_EXPORT_URL, params={"sex": "female"}, headers=admin_headers
+        )
+        assert _lines(response) == [
+            "Nombre;Documento;Fecha de nacimiento;Edad;Último relevamiento;"
+            "Tiempo desde el último relevamiento",
+            "Ana Alvarez;20000001;14/03/2015;11 a 5 m;14/03/2026 07:30;hace 5 meses",
+        ]
+
     async def test_respects_a_filter(self, client, admin_headers, scenario):
         response = await client.get(
             SUBJECTS_EXPORT_URL, params={"sex": "female"}, headers=admin_headers
@@ -248,13 +266,13 @@ class TestSubjectsExport:
         assert _first_cells(ascending) == list(reversed(_first_cells(descending)))
         assert _first_cells(ascending)[0] == "Ana Alvarez"
 
-    async def test_never_measured_subject_keeps_a_blank_cell(
-        self, client, admin_headers, scenario
+    async def test_never_measured_subject_keeps_blank_timestamp_and_elapsed_placeholder(
+        self, client, admin_headers, scenario, fixed_export_date
     ):
         response = await client.get(
             SUBJECTS_EXPORT_URL, params={"search": "Ceferino"}, headers=admin_headers
         )
-        assert _data_rows(response) == ["Ceferino Cruz;20000003;01/01/2017;"]
+        assert _data_rows(response) == ["Ceferino Cruz;20000003;01/01/2017;9 a 7 m;;—"]
 
     async def test_matches_the_listing_endpoint_row_for_row(
         self, client, admin_headers, scenario
@@ -346,6 +364,19 @@ class TestSurveysExport:
 class TestEstablishmentSubjectsExport:
     def _url(self, establishment_id) -> str:
         return ESTABLISHMENT_SUBJECTS_EXPORT_URL.format(id=establishment_id)
+
+    async def test_age_remains_at_the_measurement_date(
+        self, client, admin_headers, scenario, fixed_export_date
+    ):
+        response = await client.get(
+            self._url(scenario.establishment_rosario), headers=admin_headers
+        )
+        assert _lines(response)[0] == (
+            "Nombre;Documento;Edad;Último relevamiento;Peso (kg);Talla (cm);IMC;Estado"
+        )
+        assert _data_rows(response)[0].startswith(
+            "Ana Alvarez;20000001;11a 0m;14/03/2026 07:30;"
+        )
 
     async def test_only_exports_subjects_of_that_establishment(
         self, client, admin_headers, scenario
@@ -485,6 +516,10 @@ class TestStreamingContract:
 
         assert response.headers["x-export-row-count"] == "0"
         assert _data_rows(response) == []
+        assert _lines(response) == [
+            "Nombre;Documento;Fecha de nacimiento;Edad;Último relevamiento;"
+            "Tiempo desde el último relevamiento"
+        ]
 
     async def test_is_chunked_not_content_length(self, client, admin_headers, scenario):
         response = await client.get(SUBJECTS_EXPORT_URL, headers=admin_headers)

@@ -46,9 +46,9 @@ Content-Disposition: attachment; filename="sujetos_2026-08-24.csv"
 Transfer-Encoding: chunked
 X-Export-Row-Count: 2
 
-Nombre;Documento;Fecha de nacimiento;Último relevamiento
-Ana Alvarez;20000001;14/03/2015;14/03/2026 07:30
-Beto Benitez;20000002;01/07/2016;01/04/2026 07:00
+Nombre;Documento;Fecha de nacimiento;Edad;Último relevamiento;Tiempo desde el último relevamiento
+Ana Alvarez;20000001;14/03/2015;11 a 5 m;14/03/2026 07:30;hace 5 meses
+Beto Benitez;20000002;01/07/2016;10 a 1 m;01/04/2026 07:00;hace 4 meses
 ```
 
 El body es un archivo completo, no un envelope JSON. **Se envía por streaming**: no hay
@@ -140,8 +140,24 @@ that is expected — it is not a bug.
 
 Headers and their order mirror the on-screen table.
 
-**Sujetos** — `Nombre` · `Documento` · `Fecha de nacimiento` · `Último relevamiento`
-A subject who has never been measured is still exported, with `Último relevamiento` blank.
+**Sujetos** — `Nombre` · `Documento` · `Fecha de nacimiento` · `Edad` ·
+`Último relevamiento` · `Tiempo desde el último relevamiento`
+
+`Edad` is current age in completed months, formatted like the web's `formatAgeMonths`
+(`18 a 6 m`, `2 a`, `3 m`, `0 m`). The reference instant is captured once when the
+export begins; its Argentina calendar day is used for every row and the filename,
+even when streaming crosses midnight. Future birth dates clamp to `0 m`.
+
+Elapsed time uses Argentina calendar days and completed months: `hoy` on the same
+day, `hace N días` before one full month, `hace N meses` before twelve full months,
+and `hace N años` thereafter, with singular forms for one. Missing or future
+measurement instants render `—` in the new elapsed column. A subject who has never
+been measured is still exported, with `Último relevamiento` blank and elapsed `—`.
+The existing timestamp retains its `DD/MM/YYYY HH:MM` format.
+
+The two added fields intentionally expand the subject CSV from four to six columns;
+positional CSV imports must account for the inserted age and appended elapsed value.
+Establishment subjects keep their existing age-at-measurement column and format.
 
 **Establecimientos** — `Nombre` · `Dirección` · `Ciudad` · `Provincia`
 
