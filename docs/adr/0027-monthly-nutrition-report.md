@@ -64,6 +64,7 @@ Display names and units (nutrients, limits, macros, GAPA groups) live in `app/do
 | Freeze a month saved without data | Asking on the first day of the next month, before the intakes are loaded, would leave the month empty with no way out |
 | Wait some days after the month ends before allowing the report | The number of days is arbitrary, and a late load brings the problem back |
 | Store only the AI text and recalculate the figures on read | A change in references or conversions would silently rewrite old reports |
+| Generate without the advisory lock | Two concurrent requests for the same month would both call the AI and one insert would fail on the unique key, so a paid call would be thrown away. Avoiding it with a "generating" state needs its own cleanup when a request dies halfway. A report is generated once per establishment and month, by few users and under the AI rate limit, so holding a connection during the call is accepted |
 | PDF without a text when the AI failed | Looks complete while missing its main section |
 | `wkhtmltopdf` | The project is archived |
 | Headless Chromium | Heavy to ship and run for a static page |
