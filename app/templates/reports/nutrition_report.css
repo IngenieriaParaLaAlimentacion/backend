@@ -1,5 +1,7 @@
-{% from "_theme.html" import c %}
+{% from "_theme.html" import c, f %}
 :root {
+  --font-heading: {{ f.display }};
+  --font-sans: {{ f.body }};
   --papel: {{ c.papel }};
   --tinta: {{ c.tinta }};
   --tinta-suave: {{ c.tinta_suave }};
@@ -21,24 +23,24 @@
   margin: 24mm 16mm 20mm;
   @bottom-left {
     content: "Raíz · Ingeniería Para La Alimentación";
-    font: 8pt "DejaVu Sans", sans-serif;
+    font: 8pt var(--font-sans);
     color: var(--tinta-suave);
   }
   @bottom-right {
     content: "Página " counter(page) " de " counter(pages);
-    font: 8pt "DejaVu Sans", sans-serif;
+    font: 8pt var(--font-sans);
     color: var(--tinta-suave);
   }
 }
 
 body {
   margin: 0;
-  font: 9.5pt/1.5 "Work Sans", "DejaVu Sans", sans-serif;
+  font: 9.5pt/1.5 var(--font-sans);
   color: var(--tinta);
 }
 
 h1, h2 {
-  font-family: "Fraunces", "DejaVu Serif", serif;
+  font-family: var(--font-heading);
   font-weight: 600;
   color: var(--tierra);
 }
@@ -52,7 +54,7 @@ h1, h2 {
   overflow: hidden;
 }
 .masthead img { float: left; width: 11mm; height: 11mm; border-radius: 1.6mm; margin-right: 3mm; }
-.brand-name { display: block; font: 600 15pt "Fraunces", "DejaVu Serif", serif; }
+.brand-name { display: block; font: 600 15pt var(--font-heading); }
 .brand-org { display: block; font-size: 8pt; color: var(--papel-atenuado); }
 
 .eyebrow { margin: 0; font-size: 8pt; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mostaza-oscura); }
@@ -81,7 +83,7 @@ p.text { text-align: left; }
   border-radius: 1.6mm;
   break-inside: avoid;
 }
-.figure .value { display: block; font: 600 15pt "Fraunces", "DejaVu Serif", serif; color: var(--tierra); }
+.figure .value { display: block; font: 600 15pt var(--font-heading); color: var(--tierra); }
 .figure .caption { display: block; font-size: 8pt; color: var(--tinta-suave); }
 
 table { width: 100%; border-collapse: collapse; margin: 0 0 3mm; }

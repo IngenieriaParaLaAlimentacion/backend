@@ -22,11 +22,11 @@ from app.utils.dates import ARGENTINA_TZ
 _APP = Path(__file__).resolve().parents[2]
 _LOGO = _APP / "static" / "emails" / "raiz-logo.png"
 
-# The palette lives in the email theme, which the backoffice's styles mirror, so
-# the report looks in it too instead of repeating the colors.
+# The palette and fonts live in the shared theme, which the backoffice's styles
+# mirror, so the report takes them from it instead of repeating them.
 _ENV = Environment(
     loader=FileSystemLoader(
-        [_APP / "templates" / "reports", _APP / "templates" / "emails"]
+        [_APP / "templates" / "reports", _APP / "templates" / "shared"]
     ),
     autoescape=select_autoescape(["html"]),
     undefined=StrictUndefined,
