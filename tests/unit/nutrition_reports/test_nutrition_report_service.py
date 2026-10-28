@@ -238,6 +238,24 @@ async def test_month_saved_without_data_stays_so_while_it_has_no_intakes():
     uow.commit.assert_not_awaited()
 
 
+async def test_month_saved_without_data_is_returned_if_new_foods_have_no_grams():
+    saved = saved_empty_report()
+    analysis = MonthlyIntakeAnalysis(
+        has_data=False, foods_without_conversion=[uuid.uuid4()]
+    )
+    service, uow, _, llm = make_service(analysis, saved)
+
+    report, created = await service.get_or_generate_report(
+        ESTABLISHMENT_ID, "2026-09", ADMIN
+    )
+
+    assert (report, created) == (saved, False)
+    assert report.has_data is False
+    llm.complete.assert_not_awaited()
+    uow.nutrition_report_repo.update.assert_not_awaited()
+    uow.commit.assert_not_awaited()
+
+
 async def test_month_whose_foods_cannot_be_converted_is_not_saved():
     analysis = MonthlyIntakeAnalysis(
         has_data=False, foods_without_conversion=[uuid.uuid4(), uuid.uuid4()]

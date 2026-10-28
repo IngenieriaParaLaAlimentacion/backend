@@ -289,7 +289,14 @@ class NutritionReportService:
         unless the month now has intakes."""
         # Asking before the intakes were loaded must not leave the month empty
         # for good. A report with data is never calculated again.
-        fresh = await self._generate(report.establishment_id, first_day, month, actor)
+        try:
+            fresh = await self._generate(
+                report.establishment_id, first_day, month, actor
+            )
+        except NutritionReportConversionUnavailableError:
+            # The report exists, so the request returns it as saved instead of
+            # failing like a month that was never saved.
+            return
         if not fresh.has_data:
             return
         report.has_data = True
