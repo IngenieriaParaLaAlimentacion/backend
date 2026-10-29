@@ -11,13 +11,13 @@ Write the report in Spanish (Argentina), for the development team, with a summar
 ## The system under test
 
 - REST API for a nutrition and food-security platform used by community kitchens in Argentina. Field workers use a mobile app that works offline and syncs when it gets signal back: each sync is a series of idempotent POSTs, keyed by an id generated on the device, so resending a record returns `200` with the stored record instead of creating a duplicate (`201`).
-- Python, FastAPI, async SQLAlchemy with asyncpg, PostgreSQL. Unless configured otherwise, the database connection pool holds 5 connections plus 10 overflow.
+- Python, FastAPI, async SQLAlchemy with asyncpg, PostgreSQL. Unless configured otherwise, the API runs as a single uvicorn process (one worker), and the database connection pool holds 5 connections plus 10 overflow.
 
 ## How the test works
 
 - Every request comes from one load generator, from a single IP.
 - Before the flows, the database holds a fixed seeded dataset: 10 establishments, 10 field workers (one per establishment), 1 analyst, 2,000 subjects with 3 measurements each. Everything a run writes is removed afterwards, so every run starts from the same data.
-- Each flow logs its users in once and then runs a stepped profile: one step per concurrency level, each held for the same time, back to back. The levels and the step length are in `profile` in each `<flow>.json` (`steps`, `step_seconds`).
+- Each flow logs its users in once and then runs a stepped profile: one step per concurrency level, each held for the same time, one after another, with a 5-second pause between steps so the last requests of one step finish before the next starts. Requests that finish during that pause count in their step. The levels and the step length are in `profile` in each `<flow>.json` (`steps`, `step_seconds`).
 - Virtual users (VUs) send requests back to back with no pause, so a step measures the most the API served at that concurrency, not the behaviour of that many people with think time.
 - Flows:
   - `smoke`: one pass over login and a listing; a gate before the others. It has no per-step table.
@@ -26,10 +26,11 @@ Write the report in Spanish (Argentina), for the development team, with a summar
 
 ## The attached files
 
-- `summary.md`: one table per flow, one row per step.
+- `summary.md`: one table per flow, one row per step, each followed by how many k6 checks passed and failed.
 - `<flow>.md`: the same table for a single flow.
 - `<flow>.json`: k6's summary data. Per-step values are under `metrics`, in keys such as `http_req_duration{step:025}` (`values` holds `avg`, `p(50)`, `p(95)`, `p(99)`, `max`, in milliseconds), `http_reqs{step:025}` (`count`), `http_req_failed{step:025}` (`rate`) and `replay_returned_200{step:025}` (`rate`). Step tags are zero-padded VU counts. `http_req_duration{kind:write}` and `http_req_duration{kind:replay}` separate first writes from replays over the whole flow. `checks` holds `passes` and `fails`.
 - `run.json`: when the run finished, the deployed commit if known, the flows run and the ones that failed.
+- `baseline.md`: the report of an earlier run that the team keeps as the reference, reviewed by hand. Take its numbers as that run's, not this one's.
 
 Table columns: `VUs` concurrent users; `req/s` requests per second over the step; `p50`/`p95`/`p99` latency percentiles; `errors` share of responses that were not 2xx/3xx; `replays → 200` share of resent records answered with the idempotent `200`.
 
@@ -42,6 +43,7 @@ Table columns: `VUs` concurrent users; `req/s` requests per second over the step
 5. **Capacity**: translate the saturation point into an approximate number of field workers syncing at the same time, stating the assumptions. Remember VUs do not pause, so one VU is more load than one person.
 6. **Likely bottlenecks**: hypotheses consistent with the data, such as the connection pool size or specific queries. Mark them as hypotheses and say what measurement would confirm each one.
 7. **Recommendations**: concrete next steps, ordered by expected impact, and the latency/error budget per flow you would propose based on these numbers.
-8. **Limitations of this run**: a single load generator, no think time, dataset size, step length, no resource metrics (CPU, memory, database connections) in the files, anything in `run.json` marked as failed.
+8. **Change since the baseline**: if `baseline.md` is attached, a table per flow with this run's and the baseline's req/s and p95 at each step, and which changes stand out. Run-to-run noise is unknown, so call a change significant only when it is large and consistent across steps.
+9. **Limitations of this run**: a single load generator, no think time, dataset size, step length, no resource metrics (CPU, memory, database connections) in the files, anything in `run.json` marked as failed.
 
 Use tables where they help, keep numbers with their units, and round latencies to milliseconds.

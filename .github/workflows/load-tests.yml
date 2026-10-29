@@ -98,11 +98,13 @@ jobs:
       contents: read
       id-token: write
     steps:
-      # Only the prompt, so the results and the prompt are all Claude can read.
+      # Only the prompt and the baseline, so they and the results are all Claude can read.
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
         with:
           fetch-depth: 1
-          sparse-checkout: tests/load/REPORT_PROMPT.md
+          sparse-checkout: |
+            tests/load/REPORT_PROMPT.md
+            tests/load/baseline.md
           sparse-checkout-cone-mode: false
 
       - name: Download the results
@@ -117,6 +119,7 @@ jobs:
           jq 'del(.base_url)' report-input/run.json > report-input/run.tmp
           mv report-input/run.tmp report-input/run.json
           mv tests/load/REPORT_PROMPT.md report-input/PROMPT.md
+          mv tests/load/baseline.md report-input/baseline.md
 
       - name: Write the report
         continue-on-error: true

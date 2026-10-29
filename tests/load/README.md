@@ -148,13 +148,15 @@ STEPS=2,5 STEP_DURATION=15s docker compose -f tests/load/compose.yml run --rm --
 
 Files:
 
-- `summary.md`: every flow's table, in run order
+- `summary.md`: every flow's table, in run order, each followed by its passed and failed checks
 - `<flow>.md`: one flow's table, written by its `handleSummary`
 - `run.json`: when the run finished, `base_url`, `target_revision`, the flows run and the ones that failed
 
 k6 doesn't see the replica's CPU and memory. Read them from Railway's metrics for the run's time window.
 
-After a run that passed, the workflow's `report` job gives Claude the results and [`REPORT_PROMPT.md`](REPORT_PROMPT.md), and adds the report to the job summary and to a `load-test-report` artifact. Claude only sees the results and the prompt: the base URL is removed from `run.json`, and nothing names where the API runs. The job uses the repository's `CLAUDE_CODE_OAUTH_TOKEN` secret, the one `claude.yml` uses, and a failure in it never fails the run. The same prompt works by hand with any AI and the contents of `tests/load/results/`.
+After a run that passed, the workflow's `report` job gives Claude the results, [`REPORT_PROMPT.md`](REPORT_PROMPT.md) and [`baseline.md`](baseline.md), and adds the report to the job summary and to a `load-test-report` artifact. Claude only sees the results and the prompt: the base URL is removed from `run.json`, and nothing names where the API runs. The job uses the repository's `CLAUDE_CODE_OAUTH_TOKEN` secret, the one `claude.yml` uses, and a failure in it never fails the run. The same prompt works by hand with any AI and the contents of `tests/load/results/`.
+
+`baseline.md` is the reviewed report of the run the team compares against, so each report says what changed since then. Replace it when a new run becomes the reference, after checking its numbers against that run's `load-test-results` artifact.
 
 ## The load-test data
 

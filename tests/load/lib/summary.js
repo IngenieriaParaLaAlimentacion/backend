@@ -36,6 +36,14 @@ function row(data, vus, withReplays) {
   return `| ${cells.join(" | ")} |`;
 }
 
+function checksLine(data) {
+  const checks = data.metrics.checks;
+  if (!checks) {
+    return "Checks: none ran.";
+  }
+  return `Checks: ${checks.values.passes} passed, ${checks.values.fails} failed.`;
+}
+
 // `withReplays` adds the share of resent records that came back as 200.
 export function writeSummary(flow, data, withReplays = false) {
   const header = ["VUs", "req/s", "p50", "p95", "p99", "errors"];
@@ -48,6 +56,8 @@ export function writeSummary(flow, data, withReplays = false) {
     `| ${header.join(" | ")} |`,
     `|${header.map(() => "---").join("|")}|`,
     ...STEPS.map((vus) => row(data, vus, withReplays)),
+    "",
+    checksLine(data),
     "",
   ].join("\n");
 
