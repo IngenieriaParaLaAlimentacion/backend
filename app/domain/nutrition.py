@@ -74,12 +74,13 @@ class FoodComposition:
 
     ``per_100g`` maps a catalog nutrient code to its amount per 100 g; a nutrient
     the catalog has no reading for is absent. ``gapa_group`` is None when the food
-    belongs to no group.
+    belongs to no group. ``name`` is the catalog name, empty when it is not known.
     """
 
     food_id: UUID
     gapa_group: GapaGroup | None
     per_100g: dict[str, float]
+    name: str = ""
 
 
 @dataclass
@@ -219,6 +220,9 @@ class MonthlyIntakeAnalysis(NutritionResult):
     A nutrient a food has no reading for counts as 0, so it can be in
     ``nutrients_at_risk`` because of a gap in the catalog; the matching entry of
     ``warnings`` says so.
+
+    ``foods_without_conversion`` lists the foods received that were left out of
+    the balance for having no known conversion to grams.
     """
 
     indicators: NutritionIndicators | None = None
@@ -228,6 +232,7 @@ class MonthlyIntakeAnalysis(NutritionResult):
     top_sources: dict[PrioritizedNutrient, list[FoodSource]] = field(
         default_factory=dict
     )
+    foods_without_conversion: list[UUID] = field(default_factory=list)
 
 
 @dataclass(frozen=True)

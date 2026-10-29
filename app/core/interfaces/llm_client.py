@@ -18,8 +18,12 @@ class ILlmClient(ABC):
         response_schema: dict[str, Any],
         image: bytes | None = None,
         image_content_type: str | None = None,
+        models: list[str] | None = None,
     ) -> dict[str, Any]:
         """Return a parsed JSON object requested through response_schema.
+
+        ``models`` picks the models for this call; without it the adapter picks
+        them by whether an image is sent.
 
         Raises:
             LlmQuotaExhaustedError: provider usage limit prevented completion.

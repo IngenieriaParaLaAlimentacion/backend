@@ -7,6 +7,7 @@
 - Docker (required for Testcontainers-based integration tests)
 - A running PostgreSQL instance (for local dev without Docker)
 - A running Redis instance for rate limiting (for local dev without Docker; `docker compose up redis`)
+- Pango and HarfBuzz, the native libraries WeasyPrint needs to render the nutrition report PDF; the app does not start without them (macOS: `brew install pango`; Debian/Ubuntu: `apt install libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz0b libharfbuzz-subset0 fonts-dejavu-core`)
 
 ---
 

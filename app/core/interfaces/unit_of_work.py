@@ -51,6 +51,9 @@ from app.repositories.notifications import (
     StaleEstablishmentCycleRepository,
     UserPushDeviceRepository,
 )
+from app.repositories.nutrition_reports.nutrition_report_repository import (
+    NutritionReportRepository,
+)
 from app.repositories.recipes.recipe_repository import RecipeRepository
 from app.repositories.subjects.subject_event_repository import SubjectEventRepository
 from app.repositories.subjects.subject_repository import SubjectRepository
@@ -89,6 +92,7 @@ class IUnitOfWork(ABC):
     food_intake_repo: FoodIntakeRepository
     food_outflow_repo: FoodOutflowRepository
     food_stock_repo: FoodStockRepository
+    nutrition_report_repo: NutritionReportRepository
     push_device_repo: UserPushDeviceRepository
     stale_cycle_repo: StaleEstablishmentCycleRepository
     push_delivery_job_repo: PushDeliveryJobRepository

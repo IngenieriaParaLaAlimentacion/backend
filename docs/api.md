@@ -297,8 +297,7 @@ Generation uses OpenRouter → the existing nutrition LP → OpenRouter.
 The backend owns quantities, nutrient indicators, permissions and stock changes.
 All routes below require Bearer authentication and establishment access. Missing
 establishments return 404; denied access returns 403; invalid input uses the
-standard 422 problem response. The [recipe OpenAPI contract](recipes.openapi.generated.json) includes request examples.
-Regenerate with `poetry run python docs/generate_openapi.py recipes --tag "Recipes V1"`.
+standard 422 problem response.
 
 | Method | Path (under `/api/v1`) | Result |
 |---|---|---|

@@ -98,6 +98,27 @@ async def test_monthly_analysis_without_intakes_has_no_data():
 
     assert not result.has_data
     assert result.nutrients_at_risk == []
+    assert result.foods_without_conversion == []
+
+
+async def test_month_whose_foods_all_lack_conversion_is_told_apart_from_an_empty_one():
+    milk_id = uuid.uuid4()
+    # Milk is kept in litres and has no density, so it has no weight in grams.
+    uow = make_uow(
+        received={milk_id: Decimal("5")},
+        foods=[
+            food_with(
+                milk_id, {"valor_energetico": 100}, base_unit=MeasurementUnit.LITROS
+            )
+        ],
+    )
+
+    result = await NutritionService(uow).analyze_monthly_intake(
+        ESTABLISHMENT_ID, 2026, 3, ADMIN
+    )
+
+    assert not result.has_data
+    assert result.foods_without_conversion == [milk_id]
 
 
 @pytest.mark.parametrize(

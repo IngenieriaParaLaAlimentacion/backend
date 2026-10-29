@@ -15,6 +15,9 @@ ERROR_REGISTRY: dict[str, type["BaseError"]] = {}
 
 _SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*")
 
+# A Retry-After of zero would invite an immediate retry, so it is at least one second.
+MIN_RETRY_AFTER_SECONDS = 1
+
 
 class BaseError(Exception):
     """Base exception class for domain errors.
@@ -195,7 +198,7 @@ class RateLimitedError(BaseError):
     status = status.HTTP_429_TOO_MANY_REQUESTS
 
     def __init__(self, limit: int, reset_at: float):
-        retry_after = max(1, math.ceil(reset_at - time.time()))
+        retry_after = max(MIN_RETRY_AFTER_SECONDS, math.ceil(reset_at - time.time()))
         super().__init__(
             "Too many requests",
             f"Too many attempts. Try again in {retry_after} seconds.",
@@ -1270,7 +1273,7 @@ class AiQuotaExhaustedError(BaseError):
     """Inference is temporarily blocked by a provider usage limit."""
 
     error_type = "ai/quota-exhausted"
-    status = 429
+    status = status.HTTP_429_TOO_MANY_REQUESTS
 
     def __init__(self, retry_after: int | None = None):
         known = retry_after is not None and retry_after > 0
@@ -1282,13 +1285,96 @@ class AiQuotaExhaustedError(BaseError):
         )
 
 
+class NutritionReportGenerationTimeoutError(BaseError):
+    """Report generation exceeded its total request time budget."""
+
+    error_type = "nutrition/report-generation-timeout"
+    status = status.HTTP_504_GATEWAY_TIMEOUT
+
+    def __init__(self):
+        super().__init__(
+            "Report generation timed out",
+            "Report generation exceeded its total time budget.",
+        )
+
+
 class AiUnavailableError(BaseError):
     """An eligible AI processing endpoint is currently unavailable."""
 
     error_type = "ai/unavailable"
-    status = 503
+    status = status.HTTP_503_SERVICE_UNAVAILABLE
 
     def __init__(self):
         super().__init__(
             "AI unavailable", "AI processing is temporarily unavailable. Try later."
+        )
+
+
+class NutritionReportMonthNotOverError(UnprocessableEntityError):
+    """Raised when a nutrition report is requested for a month that has not ended.
+
+    Args:
+        month (str): The requested month, formatted as ``YYYY-MM``.
+    """
+
+    error_type = "nutrition/report-month-not-over"
+
+    def __init__(self, month: str):
+        super().__init__(
+            "Report month not over",
+            f"The report for {month} can only be generated once the month is over.",
+            extensions={"month": month},
+        )
+
+
+class NutritionReportConversionUnavailableError(ConflictError):
+    """Raised when none of the foods received in a month converts to grams.
+
+    Args:
+        month (str): The requested month, formatted as ``YYYY-MM``.
+    """
+
+    error_type = "nutrition/report-conversion-unavailable"
+
+    def __init__(self, month: str):
+        super().__init__(
+            "Report conversion unavailable",
+            f"The foods received in {month} have no known conversion to grams, so "
+            "the report cannot be calculated yet.",
+            extensions={"month": month},
+        )
+
+
+class NutritionReportNotFoundError(NotFoundError):
+    """Raised when an establishment has no saved nutrition report for a month.
+
+    Args:
+        month (str): The requested month, formatted as ``YYYY-MM``.
+    """
+
+    error_type = "nutrition/report-not-found"
+
+    def __init__(self, month: str):
+        super().__init__(
+            "Report not found",
+            f"There is no saved nutrition report for {month}.",
+            extensions={"month": month},
+        )
+
+
+class NutritionReportSummaryUnavailableError(ConflictError):
+    """Raised when a report's PDF is requested while its AI summary is missing.
+
+    Args:
+        month (str): The requested month, formatted as ``YYYY-MM``.
+    """
+
+    error_type = "nutrition/report-summary-unavailable"
+
+    def __init__(self, month: str):
+        super().__init__(
+            "Report summary unavailable",
+            f"The summary of the report for {month} is not available yet. Request "
+            "the report again to write it.",
+            extensions={"month": month},
         )

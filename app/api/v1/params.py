@@ -31,6 +31,10 @@ from app.domain.food_stock import (
     FoodStockSortOrder,
 )
 from app.domain.measurement import MeasurementListingParams, MeasurementSortOrder
+from app.domain.nutrition_report import (
+    NutritionReportListingParams,
+    NutritionReportSortOrder,
+)
 from app.domain.subject import Sex, SubjectListingParams, SubjectSortOrder
 from app.domain.survey import (
     NAME_MAX,
@@ -58,6 +62,10 @@ AUTH_RESPONSES: dict[int | str, dict[str, str]] = {
         "description": "Missing or invalid authentication token"
     },
     status.HTTP_403_FORBIDDEN: {"description": "Insufficient permissions"},
+}
+
+ESTABLISHMENT_NOT_FOUND_RESPONSES: dict[int | str, dict[str, str]] = {
+    status.HTTP_404_NOT_FOUND: {"description": "Establishment not found"},
 }
 
 RATE_LIMITED_RESPONSES: dict[int | str, dict[str, str]] = {
@@ -283,6 +291,14 @@ class FoodListingQuery:
             category_id=self.category_id,
             sort_order=self.sort_order,
         )
+
+
+@dataclass
+class NutritionReportListingQuery:
+    sort_order: NutritionReportSortOrder = NutritionReportSortOrder.MONTH_DESC
+
+    def to_domain(self) -> NutritionReportListingParams:
+        return NutritionReportListingParams(sort_order=self.sort_order)
 
 
 @dataclass

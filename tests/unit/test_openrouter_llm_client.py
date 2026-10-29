@@ -20,7 +20,7 @@ from app.exceptions.domain_exceptions import (
 )
 from app.services.llm.openrouter_llm_client import OpenRouterLlmClient
 from app.services.llm.retry_policy import retry_after_seconds
-from app.services.llm.structured_schema import structured_schema
+from app.services.llm.structured_schema import structured_schema, without_bounds
 
 
 @pytest.fixture
@@ -289,6 +289,44 @@ async def test_bad_schema_request_never_loosens_or_retries(configured_settings, 
         await client.aclose()
 
 
+@pytest.mark.parametrize("has_image", [False, True])
+async def test_models_given_for_the_call_replace_the_configured_ones(
+    configured_settings, has_image
+):
+    requests = []
+
+    def handler(request):
+        requests.append(request)
+        return httpx.Response(200, json=completion())
+
+    client = make_client(configured_settings, handler)
+    try:
+        await client.complete(
+            prompt="synthetic",
+            response_schema={},
+            image=b"image" if has_image else None,
+            image_content_type="image/png" if has_image else None,
+            models=["operator/report-model"],
+        )
+        assert json.loads(requests[0].content)["model"] == "operator/report-model"
+    finally:
+        await client.aclose()
+
+
+async def test_no_models_given_for_the_call_makes_no_network_calls(
+    configured_settings,
+):
+    def handler(request):
+        pytest.fail("Missing models must not make HTTP requests")
+
+    client = make_client(configured_settings, handler)
+    try:
+        with pytest.raises(LlmUnavailableError):
+            await client.complete(prompt="synthetic", response_schema={}, models=[])
+    finally:
+        await client.aclose()
+
+
 @pytest.mark.parametrize(
     "field,value",
     [
@@ -492,3 +530,54 @@ async def test_http_schema_rejection_takes_precedence_over_embedded_code(
         assert len(calls) == 1
     finally:
         await client.aclose()
+
+
+def test_bounds_are_left_out_of_every_nested_schema_without_mutation():
+    schema = {
+        "type": "object",
+        "title": "Summary",
+        "properties": {
+            "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 5,
+                "format": "uuid",
+            },
+            "items": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 3,
+                "items": {"$ref": "#/$defs/Line"},
+            },
+        },
+        "$defs": {"Line": {"type": "string", "maxLength": 9, "default": "x"}},
+    }
+    original = copy.deepcopy(schema)
+
+    assert without_bounds(schema) == {
+        "type": "object",
+        "properties": {
+            "text": {"type": "string"},
+            "items": {"type": "array", "items": {"$ref": "#/$defs/Line"}},
+        },
+        "$defs": {"Line": {"type": "string"}},
+    }
+    assert schema == original
+
+
+@pytest.mark.parametrize("field_name", ["format", "default", "title", "maxLength"])
+def test_bounds_keep_fields_named_like_a_bound_and_literal_values(field_name):
+    literal = {"maxLength": 3}
+    schema = {
+        "type": "object",
+        "properties": {
+            field_name: {"type": "string", "maxLength": 9, "enum": [literal]}
+        },
+        "required": [field_name],
+    }
+
+    assert without_bounds(schema) == {
+        "type": "object",
+        "properties": {field_name: {"type": "string", "enum": [literal]}},
+        "required": [field_name],
+    }

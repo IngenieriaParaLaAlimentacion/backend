@@ -44,13 +44,14 @@ class SnapshotLogExporter(LogRecordExporter):
 
 # Columns that are neither identifiers nor timestamps and hold no personal data:
 # catalog and nutrient data, survey structure, stock quantities, notification
-# bookkeeping and establishment data. Adding a column to the schema fails
-# `test_every_schema_column_is_masked_or_allowed` until it is masked in `rules.py`
-# or listed here on purpose.
+# bookkeeping, establishment data and monthly nutrition reports. Adding a column
+# to the schema fails `test_every_schema_column_is_masked_or_allowed` until it is
+# masked in `rules.py` or listed here on purpose.
 NON_SENSITIVE_COLUMNS = frozenset(
     {
         "alerttype",
         "amountper100g",
+        "analysis",
         "attemptcount",
         "baseunit",
         "category",
@@ -60,6 +61,7 @@ NON_SENSITIVE_COLUMNS = frozenset(
         "deviceid",
         "eventtype",
         "group",
+        "hasdata",
         "instrumenttype",
         "isactive",
         "isrecurring",
@@ -70,6 +72,7 @@ NON_SENSITIVE_COLUMNS = frozenset(
         "longitude",
         "matchtype",
         "mealtype",
+        "month",
         "nextthresholdhours",
         "origintype",
         "photokey",
@@ -78,6 +81,7 @@ NON_SENSITIVE_COLUMNS = frozenset(
         "position",
         "province",
         "quantity",
+        "referenceprofile",
         "requiresresponsenumber",
         "responsecount",
         "responsenumber",
@@ -90,6 +94,8 @@ NON_SENSITIVE_COLUMNS = frozenset(
         "sourcepage",
         "sourceref",
         "status",
+        "summary",
+        "summarystatus",
         "text",
         "thresholdhours",
         "unit",

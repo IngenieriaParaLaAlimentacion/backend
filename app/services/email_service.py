@@ -32,8 +32,10 @@ _ROLE_DESCRIPTIONS = {
     ),
 }
 
+_TEMPLATES = Path(__file__).parent.parent / "templates"
+
 _env = Environment(
-    loader=FileSystemLoader(Path(__file__).parent.parent / "templates" / "emails"),
+    loader=FileSystemLoader([_TEMPLATES / "emails", _TEMPLATES / "shared"]),
     autoescape=select_autoescape(["html"]),
     undefined=StrictUndefined,
     trim_blocks=True,

@@ -31,6 +31,7 @@ def composition_from_food(food: Food) -> FoodComposition:
             value.nutrient.code: float(value.amount_per_100g)
             for value in food.nutrient_values
         },
+        name=food.name,
     )
 
 
@@ -43,7 +44,10 @@ def compositions_from_rows(
         composition = compositions.get(row.food_id)
         if composition is None:
             composition = FoodComposition(
-                row.food_id, gapa_group_from_code(row.gapa_category_code), {}
+                row.food_id,
+                gapa_group_from_code(row.gapa_category_code),
+                {},
+                row.food_name,
             )
             compositions[row.food_id] = composition
         composition.per_100g[row.nutrient_code] = float(row.amount_per_100g)
