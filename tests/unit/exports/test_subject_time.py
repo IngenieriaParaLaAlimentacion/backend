@@ -15,12 +15,12 @@ REFERENCE = datetime(2026, 10, 28, 15, tzinfo=timezone.utc)
 @pytest.mark.parametrize(
     "birth_date,expected",
     [
-        (date(2008, 4, 28), "18 a 6 m"),
-        (date(2008, 4, 29), "18 a 5 m"),
-        (date(2024, 10, 28), "2 a"),
-        (date(2026, 7, 28), "3 m"),
-        (date(2026, 10, 28), "0 m"),
-        (date(2027, 1, 1), "0 m"),
+        (date(2008, 4, 28), "18a 6m"),
+        (date(2008, 4, 29), "18a 5m"),
+        (date(2024, 10, 28), "2a 0m"),
+        (date(2026, 7, 28), "0a 3m"),
+        (date(2026, 10, 28), "0a 0m"),
+        (date(2027, 1, 1), "0a 0m"),
         (None, ""),
     ],
 )
@@ -31,19 +31,19 @@ def test_current_age(birth_date, expected):
 @pytest.mark.parametrize(
     "birth_date,reference,expected",
     [
-        (date(2026, 1, 31), datetime(2026, 2, 28, 15, tzinfo=timezone.utc), "0 m"),
-        (date(2026, 1, 31), datetime(2026, 3, 1, 15, tzinfo=timezone.utc), "1 m"),
-        (date(2024, 2, 29), datetime(2025, 2, 28, 15, tzinfo=timezone.utc), "11 m"),
-        (date(2024, 2, 29), datetime(2025, 3, 1, 15, tzinfo=timezone.utc), "1 a"),
+        (date(2026, 1, 31), datetime(2026, 2, 28, 15, tzinfo=timezone.utc), "0a 0m"),
+        (date(2026, 1, 31), datetime(2026, 3, 1, 15, tzinfo=timezone.utc), "0a 1m"),
+        (date(2024, 2, 29), datetime(2025, 2, 28, 15, tzinfo=timezone.utc), "0a 11m"),
+        (date(2024, 2, 29), datetime(2025, 3, 1, 15, tzinfo=timezone.utc), "1a 0m"),
         (
             date(2008, 4, 28),
             datetime(2026, 10, 29, 1, 30, tzinfo=timezone.utc),
-            "18 a 6 m",
+            "18a 6m",
         ),
         (
             date(2008, 4, 28),
             datetime(2026, 10, 28, 2, 59, tzinfo=timezone.utc),
-            "18 a 5 m",
+            "18a 5m",
         ),
     ],
 )

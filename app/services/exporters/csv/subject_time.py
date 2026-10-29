@@ -2,23 +2,20 @@
 
 from datetime import date, datetime, timezone
 
+from app.services.exporters.csv.formatters import format_age
 from app.utils.dates import ARGENTINA_TZ, completed_months_between
 
 EMPTY_VALUE = ""
 
 
 def format_current_age(birth_date: date | None, reference: datetime) -> str:
-    """Render current age in completed months as ``18 a 6 m``, ``2 a`` or ``3 m``."""
+    """Render current age in completed months as ``18a 6m`` or ``2a 0m``."""
     if birth_date is None:
         return EMPTY_VALUE
     months = completed_months_between(
         birth_date, reference.astimezone(ARGENTINA_TZ).date()
     )
-    # Match web formatAgeMonths while preserving format_age for establishment CSVs.
-    years, rest = divmod(months, 12)
-    if years == 0:
-        return f"{rest} m"
-    return f"{years} a" if rest == 0 else f"{years} a {rest} m"
+    return format_age(months)
 
 
 def format_measurement_elapsed(

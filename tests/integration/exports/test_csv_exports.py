@@ -243,7 +243,7 @@ class TestSubjectsExport:
         assert _lines(response) == [
             "Nombre;Documento;Fecha de nacimiento;Edad;Último relevamiento;"
             "Tiempo desde el último relevamiento",
-            "Ana Alvarez;20000001;14/03/2015;11 a 5 m;14/03/2026 07:30;hace 5 meses",
+            "Ana Alvarez;20000001;14/03/2015;11a 5m;14/03/2026 07:30;hace 5 meses",
         ]
 
     async def test_respects_a_filter(self, client, admin_headers, scenario):
@@ -272,7 +272,7 @@ class TestSubjectsExport:
         response = await client.get(
             SUBJECTS_EXPORT_URL, params={"search": "Ceferino"}, headers=admin_headers
         )
-        assert _data_rows(response) == ["Ceferino Cruz;20000003;01/01/2017;9 a 7 m;;"]
+        assert _data_rows(response) == ["Ceferino Cruz;20000003;01/01/2017;9a 7m;;"]
 
     async def test_matches_the_listing_endpoint_row_for_row(
         self, client, admin_headers, scenario

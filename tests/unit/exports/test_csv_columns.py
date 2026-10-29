@@ -106,13 +106,13 @@ class TestSubjectColumns:
         exporter, _ = build_subject_listing_export(self.REFERENCE)
         _, row = _rows(exporter, [_subject_detail()])
         assert row == (
-            "Ana Pérez;30123456;14/03/2015;11 a 3 m;14/03/2026 07:30;hace 3 meses"
+            "Ana Pérez;30123456;14/03/2015;11a 3m;14/03/2026 07:30;hace 3 meses"
         )
 
     def test_never_measured_subject_keeps_blank_timestamp_and_elapsed(self):
         exporter, _ = build_subject_listing_export(self.REFERENCE)
         _, row = _rows(exporter, [_subject_detail(measured=False)])
-        assert row == "Ana Pérez;30123456;14/03/2015;11 a 3 m;;"
+        assert row == "Ana Pérez;30123456;14/03/2015;11a 3m;;"
 
     def test_empty_export_has_all_six_headers(self):
         exporter, _ = build_subject_listing_export(self.REFERENCE)
@@ -147,8 +147,8 @@ class TestSubjectColumns:
         assert data == exporter.export([subject, subject])
         parsed = list(csv.reader(io.StringIO(data.decode("utf-8-sig")), delimiter=";"))
         assert [row[3:] for row in parsed[1:]] == [
-            ["18 a 5 m", "28/10/2026 12:00", "hoy"],
-            ["18 a 5 m", "28/10/2026 12:00", "hoy"],
+            ["18a 5m", "28/10/2026 12:00", "hoy"],
+            ["18a 5m", "28/10/2026 12:00", "hoy"],
         ]
         assert filename == "sujetos_2026-10-28.csv"
         assert len(samples) == 1
@@ -174,8 +174,8 @@ class TestSubjectColumns:
             return b"".join([chunk async for chunk in exporter.stream(rows())])
 
         before_data, after_data = await asyncio.gather(render(before), render(after))
-        assert b"18 a 5 m;28/10/2026 12:00;hoy" in before_data
-        assert b"18 a 6 m;28/10/2026 12:00;hace 1 d" in after_data
+        assert b"18a 5m;28/10/2026 12:00;hoy" in before_data
+        assert b"18a 6m;28/10/2026 12:00;hace 1 d" in after_data
         assert before_name == "sujetos_2026-10-28.csv"
         assert after_name == "sujetos_2026-10-29.csv"
 
