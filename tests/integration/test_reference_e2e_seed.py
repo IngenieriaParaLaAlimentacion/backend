@@ -37,7 +37,7 @@ SEEDED_MODELS = (
 @pytest.fixture(autouse=True)
 def test_environment(monkeypatch):
     """Run the seed in an environment it is allowed in."""
-    monkeypatch.setattr(settings, "environment", "test")
+    monkeypatch.setattr(settings, "environment", "e2e")
 
 
 @pytest.fixture
@@ -60,13 +60,8 @@ async def _row_counts() -> dict[str, int]:
         }
 
 
-@pytest.mark.parametrize("environment", ["test", "e2e"])
-async def test_loads_every_kind_of_record_and_a_rerun_adds_nothing(
-    catalog, monkeypatch, environment
-):
+async def test_loads_every_kind_of_record_and_a_rerun_adds_nothing(catalog):
     import seed_reference_e2e
-
-    monkeypatch.setattr(settings, "environment", environment)
 
     await seed_reference_e2e.seed_reference_e2e()
     first = await _row_counts()
@@ -98,8 +93,10 @@ async def test_users_log_in_according_to_their_status(catalog, client):
     }
 
 
-@pytest.mark.parametrize("environment", ["development", "production"])
-async def test_refuses_to_run_outside_test_environments(app, monkeypatch, environment):
+@pytest.mark.parametrize("environment", ["production", "development"])
+async def test_refuses_to_run_outside_the_e2e_environment(
+    app, monkeypatch, environment
+):
     import seed_reference_e2e
 
     monkeypatch.setattr(settings, "environment", environment)

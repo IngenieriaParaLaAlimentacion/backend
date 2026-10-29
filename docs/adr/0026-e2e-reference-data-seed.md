@@ -34,11 +34,9 @@ endpoint: it adds no door to the API and cannot be exposed in production by mist
 `CMD` of the image or in any deploy step. The E2E compose runs it, after the migrations and the
 other two seeds, and a person can run it by hand.
 
-### It only runs when `ENVIRONMENT` is `test` or `e2e`
+### It only runs when `ENVIRONMENT` is `e2e`
 
-The script exits unless `ENVIRONMENT` is one of those two values. `ENVIRONMENT` defaults to
-`development`, so refusing only `production` would let the seed run wherever the variable was never set.
-Naming the allowed values makes it fail closed: a deploy that does not set it is refused.
+The script exits unless `ENVIRONMENT` is `e2e`. Currently we host two different environments. The `ENVIRONMENT` envar can be `production` or `development` and this seed should not modify either of them.
 
 ### The data lives apart from the code that loads it
 

@@ -1,0 +1,141 @@
+name: Load tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      flow:
+        description: "Flow to run: all, or a file name in tests/load/flows/ without .js"
+        type: string
+        default: all
+
+permissions:
+  contents: read
+
+concurrency:
+  group: load-tests
+  cancel-in-progress: false
+
+jobs:
+  data-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
+        with:
+          fetch-depth: 1
+
+      - uses: ./.github/actions/setup-python-env
+
+      - name: Test the load-test cleanup
+        run: poetry run pytest tests/load/tests
+
+  load-tests:
+    needs: data-tests
+    runs-on: ubuntu-latest
+    environment: load-tests
+    timeout-minutes: 120
+    env:
+      LOAD_TEST_IMAGE: tpp-load-runner:ci
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
+        with:
+          fetch-depth: 1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f #v3
+
+      - name: Build the runner image
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 #v5
+        with:
+          context: .
+          file: tests/load/Dockerfile
+          load: true
+          tags: ${{ env.LOAD_TEST_IMAGE }}
+          # A scope of its own, so this cache and the backend image's do not evict each other.
+          cache-from: type=gha,scope=load-runner
+          cache-to: type=gha,mode=max,scope=load-runner
+
+      - name: Run the load tests
+        env:
+          BASE_URL: ${{ vars.LOAD_TEST_BASE_URL }}
+          DATABASE_URL: ${{ secrets.LOAD_TEST_DATABASE_URL }}
+          LOAD_TEST_PASSWORD: ${{ secrets.LOAD_TEST_PASSWORD }}
+          FLOW: ${{ inputs.flow }}
+        run: docker compose -f tests/load/compose.yml run --rm runner "$FLOW"
+
+      - name: Write the job summary
+        if: always()
+        run: |
+          if [ -s tests/load/results/summary.md ]; then
+            cat tests/load/results/summary.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No results were written; see the logs of the run step." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload the results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 #v7.0.2
+        with:
+          name: load-test-results
+          path: tests/load/results/
+          retention-days: 30
+          if-no-files-found: ignore
+
+  # Only after a run that passed: a failed run's numbers are not worth a report.
+  report:
+    needs: load-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      # Only the prompt and the baseline, so they and the results are all Claude can read.
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            tests/load/REPORT_PROMPT.md
+            tests/load/baseline.md
+          sparse-checkout-cone-mode: false
+
+      - name: Download the results
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 #v8.0.2
+        with:
+          name: load-test-results
+          path: report-input
+
+      - name: Prepare the report input
+        # The base URL names the target, which the report does not need.
+        run: |
+          jq 'del(.base_url)' report-input/run.json > report-input/run.tmp
+          mv report-input/run.tmp report-input/run.json
+          mv tests/load/REPORT_PROMPT.md report-input/PROMPT.md
+          mv tests/load/baseline.md report-input/baseline.md
+
+      - name: Write the report
+        continue-on-error: true
+        uses: anthropics/claude-code-action@1d6de8cb0c237e7c15e9e1bdf973826ebae490cc #v1.0.248
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          claude_args: "--allowed-tools Read,Write,Glob"
+          prompt: |
+            Follow the instructions in report-input/PROMPT.md, everything after its "---" line.
+            The run's results are the other files in report-input/. Read only files in that
+            folder, and write the report, in Markdown, to report.md at the workspace root.
+
+      - name: Add the report to the job summary
+        run: |
+          if [ -s report.md ]; then
+            cat report.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Claude did not write a report; see the logs of the previous step." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload the report
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 #v7.0.2
+        with:
+          name: load-test-report
+          path: report.md
+          retention-days: 30
+          if-no-files-found: ignore

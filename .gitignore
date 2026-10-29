@@ -225,3 +225,6 @@ __marimo__/
 docs/plans/
 docs/reviews/
 user-stories/
+
+# Load-test results, written by tests/load/run.sh
+tests/load/results/
