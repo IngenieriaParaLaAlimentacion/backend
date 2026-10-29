@@ -7,12 +7,6 @@ on:
         description: "Flow to run: all, or a file name in tests/load/flows/ without .js"
         type: string
         default: all
-  # TEMPORARY: lets the workflow be tried from its own PR, since workflow_dispatch only
-  # shows up once the file is on the default branch. Remove before merging.
-  pull_request:
-    paths:
-      - tests/load/**
-      - .github/workflows/load-tests.yml
 
 permissions:
   contents: read
@@ -23,8 +17,6 @@ concurrency:
 
 jobs:
   data-tests:
-    # TEMPORARY: only this branch's PR runs it; remove together with the trigger.
-    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'chore/load-tests'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
@@ -67,8 +59,7 @@ jobs:
           BASE_URL: ${{ vars.LOAD_TEST_BASE_URL }}
           DATABASE_URL: ${{ secrets.LOAD_TEST_DATABASE_URL }}
           LOAD_TEST_PASSWORD: ${{ secrets.LOAD_TEST_PASSWORD }}
-          # A pull_request run has no inputs, so it falls back to every flow.
-          FLOW: ${{ inputs.flow || 'all' }}
+          FLOW: ${{ inputs.flow }}
         run: docker compose -f tests/load/compose.yml run --rm runner "$FLOW"
 
       - name: Write the job summary
