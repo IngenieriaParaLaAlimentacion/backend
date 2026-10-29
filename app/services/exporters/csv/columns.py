@@ -5,9 +5,10 @@ UI table, so an exported file lines up with the screen it came from. Keeping
 them all in one module makes that correspondence reviewable at a glance.
 
 Every ``latest_measurement`` is optional on the subject listing — a subject who
-has never been measured exports blank measurement cells rather than being
-dropped from the file.
+has never been measured exports blank timestamp and elapsed-time cells.
 """
+
+from datetime import datetime, timezone
 
 from app.domain.establishment import EstablishmentDomain
 from app.domain.establishment_dashboard import EstablishmentSubjectItemDomain
@@ -29,6 +30,11 @@ from app.services.exporters.csv.formatters import (
     format_survey_target,
     normalize_cell,
 )
+from app.services.exporters.csv.subject_time import (
+    format_current_age,
+    format_measurement_elapsed,
+)
+from app.utils.dates import ARGENTINA_TZ
 
 
 def _latest(subject: SubjectDetailDomain, attribute: str):
@@ -37,15 +43,29 @@ def _latest(subject: SubjectDetailDomain, attribute: str):
     return getattr(measurement, attribute) if measurement is not None else None
 
 
-SUBJECT_COLUMNS: tuple[CsvColumn[SubjectDetailDomain], ...] = (
-    CsvColumn("Nombre", lambda s: format_person(s.name, s.last_name)),
-    CsvColumn("Documento", lambda s: format_int(s.dni)),
-    CsvColumn("Fecha de nacimiento", lambda s: format_date(s.birth_date)),
-    CsvColumn(
-        "Último relevamiento",
-        lambda s: format_datetime(_latest(s, "measured_at")),
-    ),
-)
+def build_subject_listing_export(
+    reference: datetime | None = None,
+) -> tuple[CsvExporter[SubjectDetailDomain], str]:
+    """Build a subject exporter and filename for one reference instant."""
+    reference = reference if reference is not None else datetime.now(timezone.utc)
+    columns: tuple[CsvColumn[SubjectDetailDomain], ...] = (
+        CsvColumn("Nombre", lambda s: format_person(s.name, s.last_name)),
+        CsvColumn("Documento", lambda s: format_int(s.dni)),
+        CsvColumn("Fecha de nacimiento", lambda s: format_date(s.birth_date)),
+        CsvColumn("Edad", lambda s: format_current_age(s.birth_date, reference)),
+        CsvColumn(
+            "Último relevamiento",
+            lambda s: format_datetime(_latest(s, "measured_at")),
+        ),
+        CsvColumn(
+            "Tiempo desde el último relevamiento",
+            lambda s: format_measurement_elapsed(_latest(s, "measured_at"), reference),
+        ),
+    )
+    day = reference.astimezone(ARGENTINA_TZ).date()
+    exporter = CsvExporter(columns, entity_name="sujetos")
+    return exporter, exporter.filename(day=day)
+
 
 ESTABLISHMENT_COLUMNS: tuple[CsvColumn[EstablishmentDomain], ...] = (
     CsvColumn("Nombre", lambda e: normalize_cell(e.name)),
@@ -95,7 +115,6 @@ ESTABLISHMENT_SUBJECT_COLUMNS: tuple[CsvColumn[EstablishmentSubjectItemDomain], 
 )
 
 
-SUBJECT_LISTING_EXPORTER = CsvExporter(SUBJECT_COLUMNS, entity_name="sujetos")
 ESTABLISHMENT_LISTING_EXPORTER = CsvExporter(
     ESTABLISHMENT_COLUMNS, entity_name="establecimientos"
 )

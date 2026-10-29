@@ -4,6 +4,7 @@ from datetime import date, datetime
 from app.domain.measurement import AlertSeverity, AlertType
 from app.domain.subject import Sex
 from app.reference_data.who_bmi_for_age import WHO_BMI_LMS
+from app.utils.dates import completed_months_between
 
 # The LMS z-score formula divides by L, which is undefined at L=0. WHO's LMS
 # method defines a separate log-based formula for that case. L is a fitted
@@ -29,15 +30,6 @@ BMI_SEVERE_UNDERWEIGHT = 16.0
 BMI_UNDERWEIGHT = 18.5
 BMI_OVERWEIGHT = 25.0
 BMI_OBESE = 30.0
-
-
-def age_in_months(birth_date: date, measured_at: datetime) -> int:
-    """Return completed months between birth_date and the measurement date."""
-    ref = measured_at.date()
-    months = (ref.year - birth_date.year) * 12 + (ref.month - birth_date.month)
-    if ref.day < birth_date.day:
-        months -= 1
-    return max(0, months)
 
 
 def compute_bmi_z_score(bmi: float, sex: Sex, months: int) -> float | None:
@@ -142,7 +134,7 @@ def evaluate_alerts(
     Returns an empty list when no nutritional risk is detected or when
     WHO reference data is unavailable for the subject's age.
     """
-    months = age_in_months(birth_date, measured_at)
+    months = completed_months_between(birth_date, measured_at.date())
     if months <= MAX_CHILD_AGE_MONTHS:
         return _child_alerts(bmi, sex, months)
     return _adult_alerts(bmi)
