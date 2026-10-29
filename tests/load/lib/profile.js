@@ -1,5 +1,5 @@
-// The stepped load profile: one constant-VUs scenario per step, run back to back, each
-// tagged with its step so every metric can be read per step.
+// The stepped load profile: one constant-VUs scenario per step, run one after another,
+// each tagged with its step so every metric can be read per step.
 import { STEPS, STEP_DURATION } from "./config.js";
 
 export function stepTag(vus) {
@@ -15,6 +15,7 @@ function seconds(duration) {
 }
 
 export const STEP_SECONDS = seconds(STEP_DURATION);
+const GRACEFUL_STOP_SECONDS = 5;
 
 function scenarios() {
   return Object.fromEntries(
@@ -24,8 +25,9 @@ function scenarios() {
         executor: "constant-vus",
         vus,
         duration: STEP_DURATION,
-        startTime: `${index * STEP_SECONDS}s`,
-        gracefulStop: "5s",
+        // Each step waits out the previous one's graceful stop, so two never overlap.
+        startTime: `${index * (STEP_SECONDS + GRACEFUL_STOP_SECONDS)}s`,
+        gracefulStop: `${GRACEFUL_STOP_SECONDS}s`,
         tags: { step: stepTag(vus) },
       },
     ]),
@@ -56,7 +58,11 @@ function reportingThresholds(extraMetrics) {
 export function flowOptions(extraMetrics = []) {
   return {
     scenarios: scenarios(),
-    thresholds: reportingThresholds(extraMetrics),
+    thresholds: {
+      ...reportingThresholds(extraMetrics),
+      // k6 does not fail a run on failed checks unless a threshold says so.
+      checks: ["rate==1"],
+    },
     summaryTrendStats: ["avg", "p(50)", "p(95)", "p(99)", "max"],
     // setup() logs every user in at the pace the login rate limit allows.
     setupTimeout: "2m",

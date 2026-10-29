@@ -74,8 +74,7 @@ To point a local run at another target, such as Railway development, change `BAS
 
 `.github/workflows/load-tests.yml` builds the same runner image, with a GitHub Actions cache, and runs the same compose command against Railway development.
 
-- **Manual run:** Actions → *Load tests* → *Run workflow*, with `flow` set to `all` or a flow name. A manual workflow only appears in the Actions tab once the file is on the repository's default branch.
-- **From this branch's PR (temporary):** while the workflow is being tried out, a PR from `chore/load-tests` that touches `tests/load/**` or the workflow runs `all`. This trigger is marked `TEMPORARY` in the workflow and is removed before merging.
+Run it from Actions → *Load tests* → *Run workflow*, with `flow` set to `all` or a flow name. A manual workflow only appears in the Actions tab once the file is on the repository's default branch.
 
 Runs queue and never overlap, because two runs against the single replica would skew each other's numbers.
 
@@ -101,7 +100,7 @@ Runs queue and never overlap, because two runs against the single replica would 
 
 **GitHub**
 
-1. Settings → Environments → **New environment** `load-tests`. Leave branch restrictions off while the PR trigger exists; a PR run's ref is `refs/pull/N/merge`.
+1. Settings → Environments → **New environment** `load-tests`. Optionally, require a reviewer or limit it to `develop` and `main`.
 2. In that environment, add:
 
    | Kind | Name | Value |
@@ -129,7 +128,7 @@ Runs queue and never overlap, because two runs against the single replica would 
 | `food_intake_sync` | POST `/food-intakes` with 3 catalog foods, to the worker's establishment | the 10 field workers |
 | `survey_response_sync` | POST responses to the `LOADTEST` FIES survey | the 10 field workers |
 
-Every flow except smoke runs the same stepped profile: one step per value of `STEPS`, back to back, each holding that many VUs for `STEP_DURATION`. With the defaults, a flow takes 8 minutes plus about 30 s of logins. The VUs send requests back to back, with no pause, so each step shows the most the backend serves at that concurrency.
+Every flow except smoke runs the same stepped profile: one step per value of `STEPS`, one after another, each holding that many VUs for `STEP_DURATION`. A step starts 5 s after the previous one ends, once its last requests have finished, so two steps never overlap. With the defaults, a flow takes about 8 minutes plus about 30 s of logins. The VUs send requests back to back, with no pause, so each step shows the most the backend serves at that concurrency.
 
 In the sync flows, 20% of the writes resend a record the VU already sent, as a worker does when a sync is retried. The `replays → 200` column is the share that came back as the idempotent 200.
 
