@@ -103,6 +103,21 @@ def test_the_conclusions_section_appears_only_when_the_ai_wrote_one(conclusion, 
     assert ("Conclusiones" in html) is shown
 
 
+@pytest.mark.parametrize(
+    ("limitations", "shown"),
+    [(["Faltan datos de hierro en 3 alimentos."], True), ([], False)],
+)
+def test_the_limitations_section_appears_only_when_the_ai_wrote_some(
+    limitations, shown
+):
+    report = make_report(summary={**SUMMARY, "limitations": limitations})
+
+    html = render_report_html(report, "Comedor Test")
+
+    assert ("Limitaciones de los datos" in html) is shown
+    assert ("Faltan datos de hierro en 3 alimentos." in html) is shown
+
+
 def test_a_month_without_data_has_no_scope_note():
     report = make_report(
         has_data=False,

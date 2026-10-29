@@ -121,6 +121,13 @@
 </section>
 {% endif %}
 
+{% if summary.limitations %}
+<section class="block">
+<h2>Limitaciones de los datos</h2>
+<ul>{% for item in summary.limitations %}<li>{{ item }}</li>{% endfor %}</ul>
+</section>
+{% endif %}
+
 {% if left_out %}
 <section class="block">
 <h2>Alimentos fuera del cálculo</h2>
