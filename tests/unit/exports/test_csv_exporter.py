@@ -73,6 +73,16 @@ def fixed_today(monkeypatch):
 
 
 class TestFilename:
+    @pytest.mark.parametrize(
+        "scope,expected",
+        [
+            (None, "sujetos_2026-10-28.csv"),
+            ("Comedor La Unión", "sujetos_comedor-la-union_2026-10-28.csv"),
+        ],
+    )
+    def test_explicit_day_overrides_today(self, fixed_today, scope, expected):
+        assert _exporter().filename(scope=scope, day=date(2026, 10, 28)) == expected
+
     def test_carries_entity_and_export_date(self, fixed_today):
         assert _exporter("mediciones").filename() == "mediciones_2026-08-24.csv"
 

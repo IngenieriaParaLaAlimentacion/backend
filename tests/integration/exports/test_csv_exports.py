@@ -266,13 +266,13 @@ class TestSubjectsExport:
         assert _first_cells(ascending) == list(reversed(_first_cells(descending)))
         assert _first_cells(ascending)[0] == "Ana Alvarez"
 
-    async def test_never_measured_subject_keeps_blank_timestamp_and_elapsed_placeholder(
+    async def test_never_measured_subject_keeps_blank_timestamp_and_elapsed(
         self, client, admin_headers, scenario, fixed_export_date
     ):
         response = await client.get(
             SUBJECTS_EXPORT_URL, params={"search": "Ceferino"}, headers=admin_headers
         )
-        assert _data_rows(response) == ["Ceferino Cruz;20000003;01/01/2017;9 a 7 m;;—"]
+        assert _data_rows(response) == ["Ceferino Cruz;20000003;01/01/2017;9 a 7 m;;"]
 
     async def test_matches_the_listing_endpoint_row_for_row(
         self, client, admin_headers, scenario

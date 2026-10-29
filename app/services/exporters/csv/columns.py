@@ -5,7 +5,7 @@ UI table, so an exported file lines up with the screen it came from. Keeping
 them all in one module makes that correspondence reviewable at a glance.
 
 Every ``latest_measurement`` is optional on the subject listing — a subject who
-has never been measured exports a blank timestamp and an elapsed-time placeholder.
+has never been measured exports blank timestamp and elapsed-time cells.
 """
 
 from datetime import datetime, timezone
@@ -63,7 +63,8 @@ def build_subject_listing_export(
         ),
     )
     day = reference.astimezone(ARGENTINA_TZ).date()
-    return CsvExporter(columns, entity_name="sujetos"), f"sujetos_{day.isoformat()}.csv"
+    exporter = CsvExporter(columns, entity_name="sujetos")
+    return exporter, exporter.filename(day=day)
 
 
 ESTABLISHMENT_COLUMNS: tuple[CsvColumn[EstablishmentDomain], ...] = (

@@ -150,9 +150,11 @@ even when streaming crosses midnight. Future birth dates clamp to `0 m`.
 
 Elapsed time uses Argentina calendar days and completed months: `hoy` on the same
 day, `hace N días` before one full month, `hace N meses` before twelve full months,
-and `hace N años` thereafter, with singular forms for one. Missing or future
-measurement instants render `—` in the new elapsed column. A subject who has never
-been measured is still exported, with `Último relevamiento` blank and elapsed `—`.
+and `hace N años` thereafter, with singular forms for one. Missing measurements or
+measurements dated after the reference day leave the elapsed column blank.
+Any time on the reference Argentina day renders `hoy`, including a timestamp later
+than the export's captured instant. A subject who has never been measured is still
+exported, with both `Último relevamiento` and elapsed time blank.
 The existing timestamp retains its `DD/MM/YYYY HH:MM` format.
 
 The two added fields intentionally expand the subject CSV from four to six columns;

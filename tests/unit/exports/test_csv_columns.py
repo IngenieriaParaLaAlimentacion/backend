@@ -109,10 +109,10 @@ class TestSubjectColumns:
             "Ana Pérez;30123456;14/03/2015;11 a 3 m;14/03/2026 07:30;hace 3 meses"
         )
 
-    def test_never_measured_subject_keeps_blank_timestamp_and_elapsed_placeholder(self):
+    def test_never_measured_subject_keeps_blank_timestamp_and_elapsed(self):
         exporter, _ = build_subject_listing_export(self.REFERENCE)
         _, row = _rows(exporter, [_subject_detail(measured=False)])
-        assert row == "Ana Pérez;30123456;14/03/2015;11 a 3 m;;—"
+        assert row == "Ana Pérez;30123456;14/03/2015;11 a 3 m;;"
 
     def test_empty_export_has_all_six_headers(self):
         exporter, _ = build_subject_listing_export(self.REFERENCE)

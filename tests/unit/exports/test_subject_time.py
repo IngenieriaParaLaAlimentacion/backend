@@ -21,7 +21,7 @@ REFERENCE = datetime(2026, 10, 28, 15, tzinfo=timezone.utc)
         (date(2026, 7, 28), "3 m"),
         (date(2026, 10, 28), "0 m"),
         (date(2027, 1, 1), "0 m"),
-        (None, "—"),
+        (None, ""),
     ],
 )
 def test_current_age(birth_date, expected):
@@ -56,9 +56,11 @@ def test_current_age_uses_completed_argentina_calendar_months(
 @pytest.mark.parametrize(
     "measured_at,expected",
     [
-        (None, "—"),
-        (REFERENCE + timedelta(seconds=1), "—"),
-        (REFERENCE + timedelta(days=1), "—"),
+        (None, ""),
+        (REFERENCE + timedelta(seconds=1), "hoy"),
+        (REFERENCE + timedelta(days=1), ""),
+        (datetime(2026, 10, 29, 2, 59, tzinfo=timezone.utc), "hoy"),
+        (datetime(2026, 10, 29, 3, tzinfo=timezone.utc), ""),
         (REFERENCE, "hoy"),
         (datetime(2026, 10, 28, 3, tzinfo=timezone.utc), "hoy"),
         (datetime(2026, 10, 28, 1, 30, tzinfo=timezone.utc), "hace 1 día"),

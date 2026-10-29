@@ -13,6 +13,7 @@ import re
 import unicodedata
 from collections.abc import AsyncIterable, AsyncIterator, Callable, Iterable, Sequence
 from dataclasses import dataclass
+from datetime import date
 from typing import Generic, TypeVar
 
 from app.utils.dates import today_in_argentina
@@ -136,17 +137,18 @@ class CsvExporter(Generic[T]):
         if pending or prefix:
             yield prefix + "".join(pending).encode("utf-8")
 
-    def filename(self, scope: str | None = None) -> str:
+    def filename(self, scope: str | None = None, *, day: date | None = None) -> str:
         """Build the download filename, e.g. ``mediciones_2026-08-24.csv``.
 
         ``scope`` names what the export was narrowed to — an establishment, for
         the per-establishment subject listing — and is slugified into the
         middle of the name: ``sujetos_comedor-la-union_2026-08-24.csv``.
+        ``day`` defaults to today in Argentina when omitted.
         """
         parts = [self._entity_name]
         if scope:
             slug = slugify(scope)
             if slug:
                 parts.append(slug)
-        parts.append(today_in_argentina().isoformat())
+        parts.append((day if day is not None else today_in_argentina()).isoformat())
         return f"{'_'.join(parts)}.{self.file_extension}"

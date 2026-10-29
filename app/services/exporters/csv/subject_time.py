@@ -5,14 +5,15 @@ from datetime import date, datetime, timezone
 from app.reference_data.anthropometry import age_in_months
 from app.utils.dates import ARGENTINA_TZ
 
-EMPTY_VALUE = "—"
+EMPTY_VALUE = ""
 
 
 def format_current_age(birth_date: date | None, reference: datetime) -> str:
-    """Render completed age at the reference instant's Argentine calendar day."""
+    """Render current age in completed months as ``18 a 6 m``, ``2 a`` or ``3 m``."""
     if birth_date is None:
         return EMPTY_VALUE
     months = age_in_months(birth_date, reference.astimezone(ARGENTINA_TZ))
+    # Match web formatAgeMonths while preserving format_age for establishment CSVs.
     years, rest = divmod(months, 12)
     if years == 0:
         return f"{rest} m"
@@ -22,16 +23,16 @@ def format_current_age(birth_date: date | None, reference: datetime) -> str:
 def format_measurement_elapsed(
     measured_at: datetime | None, reference: datetime
 ) -> str:
-    """Render elapsed Argentine calendar time, or an em dash for absent/future data."""
+    """Render elapsed Argentine calendar time, leaving absent/future days blank."""
     if measured_at is None:
         return EMPTY_VALUE
     if measured_at.tzinfo is None:
         measured_at = measured_at.replace(tzinfo=timezone.utc)
-    if measured_at > reference:
-        return EMPTY_VALUE
     local_reference = reference.astimezone(ARGENTINA_TZ)
     measured_day = measured_at.astimezone(ARGENTINA_TZ).date()
     days = (local_reference.date() - measured_day).days
+    if days < 0:
+        return EMPTY_VALUE
     if days == 0:
         return "hoy"
     months = age_in_months(measured_day, local_reference)
