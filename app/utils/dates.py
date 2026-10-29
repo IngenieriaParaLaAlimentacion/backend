@@ -7,6 +7,14 @@ from zoneinfo import ZoneInfo
 ARGENTINA_TZ = ZoneInfo("America/Argentina/Buenos_Aires")
 
 
+def completed_months_between(start: date, end: date) -> int:
+    """Return nonnegative completed months between two calendar dates."""
+    months = (end.year - start.year) * 12 + (end.month - start.month)
+    if end.day < start.day:
+        months -= 1
+    return max(0, months)
+
+
 def today_in_argentina() -> date:
     return datetime.now(ARGENTINA_TZ).date()
 

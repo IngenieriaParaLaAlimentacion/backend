@@ -2,8 +2,7 @@
 
 from datetime import date, datetime, timezone
 
-from app.reference_data.anthropometry import age_in_months
-from app.utils.dates import ARGENTINA_TZ
+from app.utils.dates import ARGENTINA_TZ, completed_months_between
 
 EMPTY_VALUE = ""
 
@@ -12,7 +11,9 @@ def format_current_age(birth_date: date | None, reference: datetime) -> str:
     """Render current age in completed months as ``18 a 6 m``, ``2 a`` or ``3 m``."""
     if birth_date is None:
         return EMPTY_VALUE
-    months = age_in_months(birth_date, reference.astimezone(ARGENTINA_TZ))
+    months = completed_months_between(
+        birth_date, reference.astimezone(ARGENTINA_TZ).date()
+    )
     # Match web formatAgeMonths while preserving format_age for establishment CSVs.
     years, rest = divmod(months, 12)
     if years == 0:
@@ -35,7 +36,7 @@ def format_measurement_elapsed(
         return EMPTY_VALUE
     if days == 0:
         return "hoy"
-    months = age_in_months(measured_day, local_reference)
+    months = completed_months_between(measured_day, local_reference.date())
     if months >= 12:
         years = months // 12
         return f"hace {years} {'año' if years == 1 else 'años'}"
