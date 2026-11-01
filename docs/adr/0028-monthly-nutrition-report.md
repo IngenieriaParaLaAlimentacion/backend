@@ -1,4 +1,4 @@
-# ADR-0027: Monthly nutrition report and its PDF
+# ADR-0028: Monthly nutrition report and its PDF
 
 - **Status**: Accepted
 - **Date**: 2026-10-27

@@ -26,7 +26,6 @@ The backend is the sole orchestrator of LLM calls, image/audio processing, and e
 |---|---|
 | `talla_y_peso` | Height/weight registration with georeferencing per establishment (Module 1) |
 | `encuesta_alimentaria` | Configurable surveys, includes FAO FIES instrument (Module 2) |
-| `valores_de_hierro` | Blood hemoglobin recording with WHO alerts and informed consent (Module 3) |
 | `nutrir` | AI-assisted meal planning based on available ingredients and household needs (Module 4) |
 | `dashboard` | Cross-module analytics panel for technical profiles |
 | `auth` | Users, roles, and per-establishment permissions |

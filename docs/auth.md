@@ -23,15 +23,15 @@ Authorization has two levels:
 
 ### Access token
 
-- Format: JWT, signed with `JWT_SECRET_USER`, `JWT_SECRET_ADMIN` or `JWT_SECRET_ANALYST`.
+- Format: JWT, signed with `JWT_SECRET_FIELD_WORKER`, `JWT_SECRET_ADMIN` or `JWT_SECRET_ANALYST`, depending on the role. `superadmin` uses the admin secret.
 - Payload contains: `user_id`, `role`.
-- Short-lived (TTL TBD).
+- Short-lived: 15 minutes (`ACCESS_TOKEN_EXPIRE_MINUTES`).
 - Sent by the client in the `Authorization: Bearer <token>` header.
 - Stateless — not stored in the DB. Validation is signature-only.
 
 ### Refresh token
 
-- Long-lived (7 days).
+- Long-lived: 7 days (`REFRESH_TOKEN_EXPIRE_DAYS`).
 - Stored **hashed** in the `user_tokens` table — the raw token is never persisted.
 - Bound to a `device_id` so sessions can be managed per device.
 - Can be revoked individually (sets `revoked = true`).
@@ -60,6 +60,7 @@ and alternatives: [ADR-0019](adr/0019-auth-rate-limiting.md).
 | `POST /auth/refresh` | — | `RATE_LIMIT_TOKEN_IP` |
 | `POST /auth/password-recovery/confirm` | — | `RATE_LIMIT_TOKEN_IP` |
 | `POST /auth/verify-email/confirm` | — | `RATE_LIMIT_TOKEN_IP` |
+| `POST /auth/invite/accept` | — | `RATE_LIMIT_TOKEN_IP` |
 
 - Each endpoint has its own counters. The only shared one is the per-email counter of password
   recovery and email verification resend, since both send mail to the same person.

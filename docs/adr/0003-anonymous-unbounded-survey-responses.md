@@ -82,7 +82,7 @@ established:
   needs submission confirmation, it would be a net-new addition (there is no partial
   implementation to build on).
 - **Responses cannot be attributed to a person for individual-level follow-up or
-  cross-referencing with `talla_y_peso`/`valores_de_hierro` records.** Only aggregate,
+  cross-referencing with `talla_y_peso` records.** Only aggregate,
   comedor-level analysis is possible from this data. This is an accepted trade-off, not
   an oversight — see Context above.
 

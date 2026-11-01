@@ -149,8 +149,6 @@ row), and no acceptance criterion currently depends on rejecting that specific m
 - Abandoning the flow at any point before confirming leaves nothing behind in R2.
 - A retried or duplicated confirmation (same client id, per ADR-0004) never uploads a second copy
   of the photo.
-- `IObjectStorage`'s genericity means `valores_de_hierro`'s consent PDFs can reuse the same port
-  and bucket later with no new infrastructure.
 - The whole path — upload, idempotent replay, establishment/access checks, and the no-reupload
   guarantee — is verified against a real S3-compatible backend (MinIO, via testcontainers) and a
   real Postgres instance, not only mocks. Both containers are ephemeral and torn down at the end

@@ -24,10 +24,7 @@ poetry run pre-commit install
 cp .env.example .env
 ```
 
-Edit `.env` and set any values that differ from the defaults. To copy all neded env vars easily:
-```
-cp .env.example .env
-```
+Edit `.env` and set any values that differ from the defaults.
 
 ---
 
@@ -160,7 +157,7 @@ For local Compose, run:
 docker compose up --build
 ```
 
-Before deploying this change in Railway, set the backend service's **Pre-Deploy Command** to `sh scripts/pre_deploy.sh` in both test and production. The script logs each step, applies `alembic upgrade head`, and runs `seed_superadmin.py` and `seed_food_catalog.py`; a failure stops the new deployment. This setting must be checked in both Railway environments because this checkout has no linked Railway project. If a seed fails after Alembic succeeds, the earlier database migration is not automatically undone.
+In Railway, set the backend service's **Pre-Deploy Command** to `sh scripts/pre_deploy.sh` in both test and production. The script logs each step, applies `alembic upgrade head`, and runs `seed_superadmin.py` and `seed_food_catalog.py`; a failure stops the new deployment. This setting must be checked in both Railway environments because this checkout has no linked Railway project. If a seed fails after Alembic succeeds, the earlier database migration is not automatically undone.
 
 All configuration is passed via environment variables (see `.env.example`). If `DATABASE_URL` is set, it takes precedence over the individual database fields, including Compose's `DATABASE_HOST=postgres` override.
 
