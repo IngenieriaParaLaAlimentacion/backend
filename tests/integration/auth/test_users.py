@@ -269,6 +269,34 @@ class TestProfileEdit:
 
         assert response.status_code == 400
 
+    async def test_explicit_null_clears_only_that_optional_field(
+        self, client, analyst_user
+    ):
+        await client.patch(
+            ME_URL,
+            json={"locality": "Cordoba", "description": "Bio"},
+            headers=_headers_for(analyst_user),
+        )
+
+        response = await client.patch(
+            ME_URL, json={"locality": None}, headers=_headers_for(analyst_user)
+        )
+
+        assert response.status_code == 200
+        stored = await _fetch_user(analyst_user.id)
+        assert stored.locality is None
+        assert stored.description == "Bio"
+
+    @pytest.mark.parametrize("field", ["name", "last_name"])
+    async def test_null_required_name_returns_422(self, client, analyst_user, field):
+        response = await client.patch(
+            ME_URL, json={field: None}, headers=_headers_for(analyst_user)
+        )
+
+        assert response.status_code == 422
+        stored = await _fetch_user(analyst_user.id)
+        assert getattr(stored, field) == getattr(analyst_user, field)
+
     @pytest.mark.parametrize(
         "payload",
         [

@@ -1,18 +1,67 @@
 # API Conventions
 
+General conventions that apply to every endpoint of the API: URLs, authentication, formats, errors, pagination and exports.
+
+The contract of each endpoint (parameters, bodies and responses) is not repeated here. It lives in:
+
+- The interactive documentation (Swagger UI) that the backend serves at `/docs`, generated from the code. Locally: `http://localhost:8080/docs`.
+- Guides for features whose behavior needs more than the schema: [`csv-exports.md`](csv-exports.md) and [`subjects-offline-sync.md`](subjects-offline-sync.md).
+
 ## Base URL
 
-All endpoints are prefixed with `/api/v1/`:
+All endpoints are prefixed with the API version, currently `/api/v1/`:
 
 ```
-/api/v1/<module>/<resource>
+/api/v1/<resource>
 ```
 
 Examples:
 ```
 /api/v1/auth/login
-/api/v1/talla-y-peso/measurements
-/api/v1/nutrir/plans
+/api/v1/measurements
+/api/v1/food-intakes
+```
+
+The only exceptions are the operational probes below.
+
+---
+
+## Health probes
+
+Two public endpoints, outside the versioned prefix, for the platform rather than for clients. Neither
+requires authentication, and neither produces traces or HTTP metrics, so they do not skew
+the latency dashboards.
+
+| Endpoint | Checks | Used by |
+|---|---|---|
+| `GET /health` | Nothing: the process answers. | Docker Compose `healthcheck`, post-deploy smoke tests |
+| `GET /ready` | PostgreSQL answers `SELECT 1` within `READINESS_DB_TIMEOUT_SECONDS` (default 2 s, connection included). | Railway Healthcheck Path (`railway.toml`) |
+
+`/health` always answers `200` while the process runs, even with the database down:
+
+```json
+{ "status": "ok" }
+```
+
+`/ready` answers `200` when every check passes:
+
+```json
+{ "status": "ready", "checks": { "database": "ok" } }
+```
+
+and `503` with type `/errors/service-not-ready` when one fails. The `checks` extension
+member names the failing check; the cause (host, driver error, traceback) is logged, never
+returned:
+
+```json
+{
+  "type": "/errors/service-not-ready",
+  "title": "Service not ready",
+  "status": 503,
+  "detail": "One or more dependencies required to serve requests are unavailable.",
+  "instance": "/ready",
+  "checks": { "database": "unavailable" }
+}
 ```
 
 ---
@@ -71,7 +120,11 @@ The full list of `type` values is generated from the exception registry into
 FastAPI returns `422 Unprocessable Entity` by default when Pydantic rejects a request body or query parameter. The OpenAPI contract exposed to clients maps these to `400 Bad Request` instead (see `app/core/openapi.py`), which is the semantically correct code for malformed client input.
 
 The response body is the same envelope as any other error, with a string `detail`.
-Individual field failures are not reported.
+Individual field failures are not reported, except on routes marked
+`x-invalid-field-extension`: there the envelope also carries `field`, the name
+of the first body field that failed (dotted when nested, such as
+`characterization.premises_other`; never its value), so a client can flag the
+input without clearing the form.
 
 ### Extension members
 
@@ -97,71 +150,46 @@ These headers appear only on the 429. Which endpoints are limited, and how, is d
 
 ## Pagination
 
-Use pagination on all list endpoints that may return unbounded results. Choose the strategy based on the use case:
+List endpoints that may return unbounded results are paginated by page.
 
-### Offset-based
+Query params:
 
-Use for paginated views where the user can jump to a specific page (e.g., backoffice tables).
-
-Query params: `?limit=<int>&offset=<int>`
+| Param | Type | Default | Notes |
+|---|---|---|---|
+| `page` | integer ≥ 1 | `1` | Page number, starting at 1. |
+| `page_size` | integer 1–100 | `20` | Results per page. |
 
 Response envelope:
+
 ```json
 {
-  "data": [...],
+  "items": [...],
   "total": 120,
-  "limit": 20,
-  "offset": 40
+  "page": 3,
+  "page_size": 20,
+  "total_pages": 6
 }
 ```
 
-### Cursor-based
-
-Use for infinite scroll or time-ordered feeds where consistency matters (e.g., mobile lists).
-
-Query params: `?limit=<int>&cursor=<opaque_string>`
-
-Response envelope:
-```json
-{
-  "data": [...],
-  "next_cursor": "eyJpZCI6IjEyMyJ9"
-}
-```
-
-`next_cursor` is `null` when there are no more results.
+`total_pages` is `0` when there are no results.
 
 ---
 
 ## File exports
 
-List endpoints that support a "Exportar CSV" action expose a sibling `/export` route
+List endpoints that support an "Exportar CSV" action expose a sibling `/export` route
 (`GET /api/v1/subjects/export`, `GET /api/v1/measurements/export`, …).
 
-- The export accepts **exactly the same filter and sort query params as its listing**,
-  reusing the same query dataclass. It takes **no pagination params** and returns the
-  whole filtered set.
-- Declare the `/export` route **above** any `/{id}` route in the same router, or the
-  literal is matched as an id.
-- Response is `text/csv; charset=utf-8`, **streamed** (chunked, no `Content-Length`),
-  with `Content-Disposition: attachment; filename="<entidad>[_<scope>]_<YYYY-MM-DD>.csv"`
-  and `X-Export-Row-Count` stating how many data rows to expect.
-- Anything that can fail predictably — validation, a missing parent resource, the row
-  count — runs in a **pre-flight** before the response starts, so 4xx still carry a real
-  `problem+json` body. Once bytes are on the wire the status is already `200`, and a
-  failure aborts the connection instead of completing; clients detect that by reading the
-  body rather than linking to the URL.
-- The streaming generator owns its own `UnitOfWork`. A `Depends`-provided session is
-  closed when the *handler* returns, which is before a streamed body is produced.
-- A filter matching nothing returns **`200` with only the header line** — an export that
-  matched no rows is a successful export, not an error. Clients disable the button from
-  the listing's `total`.
-- No cell may contain a newline (`normalize_cell` in `formatters.py`), so a client can
-  compare parsed lines against `X-Export-Row-Count`.
-- CSV dialect is Argentine/Excel-first: `;` delimiter, decimal comma, `dd/mm/aaaa` dates
-  in `America/Argentina/Buenos_Aires`, CRLF, and a leading UTF-8 BOM.
+- The export accepts the same filter and sort query params as its listing, takes no
+  pagination params, and returns the whole filtered set.
+- The response is `text/csv; charset=utf-8`, streamed, with a
+  `Content-Disposition: attachment` filename and an `X-Export-Row-Count` header stating how
+  many data rows to expect.
+- A filter matching nothing returns `200` with only the header line: an export that matched
+  no rows is a successful export, not an error.
 
-See ADR-0009 for the rationale and `app/services/exporters/csv/` for the implementation.
+Using the exports from a client: [`csv-exports.md`](csv-exports.md).
+Dialect, streaming and implementation: [ADR-0009](adr/0009-generic-csv-exporter-for-listings.md).
 
 ---
 
@@ -176,70 +204,15 @@ See ADR-0009 for the rationale and `app/services/exporters/csv/` for the impleme
 
 ## Endpoint naming
 
-- Use **kebab-case** for URL segments: `/talla-y-peso/`, `/valores-de-hierro/`.
+- Use **kebab-case** for URL segments: `/food-catalog/`, `/food-intakes/`.
 - Use **plural nouns** for resource collections: `/measurements`, `/users`.
-- Use **path parameters** for resource identity: `/measurements/{measurement_id}`.
+- Use **path parameters** for resource identity: `/subjects/{subject_id}`.
 - Avoid verbs in URLs — use the HTTP method to express the action.
 
 ```
 POST   /api/v1/auth/login
-GET    /api/v1/talla-y-peso/measurements
-POST   /api/v1/talla-y-peso/measurements
-GET    /api/v1/talla-y-peso/measurements/{measurement_id}
-DELETE /api/v1/talla-y-peso/measurements/{measurement_id}
+GET    /api/v1/subjects
+POST   /api/v1/subjects
+GET    /api/v1/subjects/{subject_id}
+PATCH  /api/v1/subjects/{subject_id}
 ```
-
----
-
-## Admin: change a user's role
-
-```
-PATCH /api/v1/admin/users/{user_id}/role
-```
-
-Restricted to `admin` and `superadmin`. Changes only `users.role`: status, profile
-data and establishment relations are untouched. On a real change the user's refresh
-tokens are revoked (they must log in again) and they get an email with the old and new
-role. Requesting the role the user already has is a no-op: `200`, no email, sessions
-kept.
-
-Request:
-
-```json
-{ "role": "analyst" }
-```
-
-`role` is one of `field_worker`, `analyst`, `admin`. `superadmin` is never assignable.
-
-Response `200` — same shape as `GET /api/v1/admin/users/{user_id}`:
-
-```json
-{
-  "id": "6b1f...",
-  "email": "ana@example.com",
-  "name": "Ana",
-  "last_name": "Pérez",
-  "role": "analyst",
-  "status": "active",
-  "locality": null,
-  "description": null,
-  "contact_phone": null,
-  "establishments": []
-}
-```
-
-Who may change whom (see `docs/auth.md`):
-
-| Actor | May change users with role | To |
-|---|---|---|
-| `admin` | `field_worker`, `analyst` | `field_worker`, `analyst`, `admin` |
-| `superadmin` | `field_worker`, `analyst`, `admin` | `field_worker`, `analyst`, `admin` |
-
-Nobody may change a `superadmin` or their own role.
-
-| Status | `type` | When |
-|---|---|---|
-| `400` | `/errors/user-is-not-active` | The user is pending (invitation not accepted, field worker not validated) or inactive. |
-| `403` | `/errors/role-not-allowed` | Target is a `superadmin`, the actor themselves, or an `admin` changed by an `admin`. Also returned when the caller is not an admin. |
-| `404` | `/errors/user-not-found` | No user with that id. |
-| `422` | `/errors/validation-failed` | `role` missing or not one of the allowed values (including `superadmin`). |

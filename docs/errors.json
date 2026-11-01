@@ -13,6 +13,18 @@
       "description": "Raised when inviting an address that already has a pending invitation."
     },
     {
+      "type": "/errors/ai/quota-exhausted",
+      "status": 429,
+      "exception": "AiQuotaExhaustedError",
+      "description": "Inference is temporarily blocked by a provider usage limit."
+    },
+    {
+      "type": "/errors/ai/unavailable",
+      "status": 503,
+      "exception": "AiUnavailableError",
+      "description": "An eligible AI processing endpoint is currently unavailable."
+    },
+    {
       "type": "/errors/auth/invalid-recovery-token",
       "status": 401,
       "exception": "InvalidRecoveryTokenError",
@@ -211,6 +223,54 @@
       "description": "Raised when scheduled notifications are not fully configured."
     },
     {
+      "type": "/errors/nutrition/invalid-children-count",
+      "status": 422,
+      "exception": "InvalidChildrenCountError",
+      "description": "Raised when a recipe is requested for no children or a negative number."
+    },
+    {
+      "type": "/errors/nutrition/recipe-optimization-failed",
+      "status": 500,
+      "exception": "RecipeOptimizationError",
+      "description": "Raised when the solver cannot return an optimal recipe."
+    },
+    {
+      "type": "/errors/nutrition/report-conversion-unavailable",
+      "status": 409,
+      "exception": "NutritionReportConversionUnavailableError",
+      "description": "Raised when none of the foods received in a month converts to grams."
+    },
+    {
+      "type": "/errors/nutrition/report-generation-timeout",
+      "status": 504,
+      "exception": "NutritionReportGenerationTimeoutError",
+      "description": "Report generation exceeded its total request time budget."
+    },
+    {
+      "type": "/errors/nutrition/report-month-not-over",
+      "status": 422,
+      "exception": "NutritionReportMonthNotOverError",
+      "description": "Raised when a nutrition report is requested for a month that has not ended."
+    },
+    {
+      "type": "/errors/nutrition/report-not-found",
+      "status": 404,
+      "exception": "NutritionReportNotFoundError",
+      "description": "Raised when an establishment has no saved nutrition report for a month."
+    },
+    {
+      "type": "/errors/nutrition/report-summary-unavailable",
+      "status": 409,
+      "exception": "NutritionReportSummaryUnavailableError",
+      "description": "Raised when a report's PDF is requested while its AI summary is missing."
+    },
+    {
+      "type": "/errors/nutrition/unknown-gapa-group",
+      "status": 500,
+      "exception": "UnknownGapaGroupError",
+      "description": "Raised when the catalog holds a GAPA group the application does not know."
+    },
+    {
       "type": "/errors/password-not-found",
       "status": 404,
       "exception": "PasswordNotFoundError",
@@ -229,10 +289,70 @@
       "description": "Raised when a receipt photo cannot be persisted to object storage."
     },
     {
+      "type": "/errors/recipes/already-chosen",
+      "status": 409,
+      "exception": "RecipeAlreadyChosenError",
+      "description": "A different proposal was already chosen for this request."
+    },
+    {
+      "type": "/errors/recipes/generation-failed",
+      "status": 502,
+      "exception": "RecipeGenerationError",
+      "description": "The model failed to produce complete valid recipe proposals."
+    },
+    {
+      "type": "/errors/recipes/generation-timeout",
+      "status": 504,
+      "exception": "RecipeGenerationTimeoutError",
+      "description": "Recipe generation exceeded its total request time budget."
+    },
+    {
+      "type": "/errors/recipes/idempotency-conflict",
+      "status": 409,
+      "exception": "RecipeIdempotencyConflictError",
+      "description": "A reuse id was already used with different input."
+    },
+    {
+      "type": "/errors/recipes/ingredient-unavailable",
+      "status": 409,
+      "exception": "RecipeIngredientUnavailableError",
+      "description": "A saved recipe ingredient is no longer in the catalog."
+    },
+    {
+      "type": "/errors/recipes/ingredient-unit-changed",
+      "status": 409,
+      "exception": "RecipeIngredientUnitChangedError",
+      "description": "A saved ingredient's stock unit changed since generation."
+    },
+    {
+      "type": "/errors/recipes/no-usable-stock",
+      "status": 409,
+      "exception": "RecipeNoUsableStockError",
+      "description": "No stocked food with known mass and positive energy can form a recipe."
+    },
+    {
+      "type": "/errors/recipes/not-found",
+      "status": 404,
+      "exception": "RecipeNotFoundError",
+      "description": "The requested recommendation or proposal does not exist."
+    },
+    {
+      "type": "/errors/recipes/scale-too-small",
+      "status": 409,
+      "exception": "RecipeScaleTooSmallError",
+      "description": "Scaling would round a required ingredient down to zero."
+    },
+    {
       "type": "/errors/role-not-allowed",
       "status": 403,
       "exception": "RoleNotAllowedError",
       "description": "Raised when the actor's role is not permitted to perform the operation."
+    },
+    {
+      "type": "/errors/service-not-ready",
+      "status": 503,
+      "exception": "ServiceNotReadyError",
+      "description": "Raised when a dependency the service needs to serve requests is down."
     },
     {
       "type": "/errors/subject-already-exists",

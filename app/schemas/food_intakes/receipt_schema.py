@@ -1,9 +1,10 @@
 from decimal import Decimal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, FiniteFloat, field_validator
 
 from app.domain.food_catalog import MeasurementUnit
+from app.domain.printed_quantity import parse_printed_quantity
 from app.schemas.common import IdentifierRefSchema
 
 
@@ -11,8 +12,8 @@ class ProposedFoodLine(BaseModel):
     """One food line the extractor proposes from the receipt.
 
     ``food`` is the catalog match. When it is null the line was read but not
-    recognised, ``needs_review`` is true, and the user has to pick a catalog
-    food (or drop the line) before the intake can be confirmed.
+    recognised, and the user has to pick a catalog food (or drop the line)
+    before the intake can be confirmed.
     """
 
     model_config = ConfigDict(from_attributes=True)
@@ -28,11 +29,17 @@ class ProposedFoodLine(BaseModel):
         default=None,
         max_digits=10,
         decimal_places=3,
-        description="Detected quantity in the matched food's base unit, if any.",
+        description=(
+            "Quantity prefilled from the receipt, in the matched food's base "
+            "unit. Null whenever unit is null."
+        ),
     )
     unit: MeasurementUnit | None = Field(
         default=None,
-        description="Base unit of the matched catalog food; null when unmatched.",
+        description=(
+            "Base unit of the matched catalog food. Null when the line is "
+            "unmatched or the printed quantity could not be prefilled as-is."
+        ),
     )
     raw_quantity: Decimal | None = Field(
         default=None,
@@ -52,9 +59,6 @@ class ProposedFoodLine(BaseModel):
             "or the receipt gives a bare count with no unit."
         ),
     )
-    needs_review: bool = Field(
-        description="True when the user must fix this line before confirming.",
-    )
 
 
 class ReceiptProposalResponse(BaseModel):
@@ -72,3 +76,25 @@ class ReceiptProposalResponse(BaseModel):
             "when no items were detected."
         ),
     )
+
+
+class ExtractedReceiptLine(BaseModel):
+    """A locally validated line read before catalog matching."""
+
+    model_config = ConfigDict(extra="ignore", strict=True)
+    description: str
+    raw_quantity: FiniteFloat | None = None
+    raw_unit_text: str | None = None
+
+    @field_validator("raw_quantity", mode="before")
+    @classmethod
+    def normalize_printed_quantity(cls, value):
+        """Parse printed quantities and discard unusable amounts."""
+        return parse_printed_quantity(value)
+
+
+class ReceiptExtraction(BaseModel):
+    """A validated receipt extraction envelope."""
+
+    model_config = ConfigDict(extra="ignore", strict=True)
+    lines: list[ExtractedReceiptLine]

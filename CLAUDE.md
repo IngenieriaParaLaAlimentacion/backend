@@ -4,7 +4,7 @@
 
 REST API for the integral nutritional management and food security platform aimed at community kitchens, health teams, and social organizations in Argentina.
 
-The backend is the sole orchestrator of LLM calls, image/audio processing, and external storage. Mobile app and backoffice web clients consume this REST API — they never call external services directly.
+The backend is the sole orchestrator of LLM calls, image processing, and external storage. Mobile app and backoffice web clients consume this REST API — they never call external services directly.
 
 ## Stack
 
@@ -16,44 +16,54 @@ The backend is the sole orchestrator of LLM calls, image/audio processing, and e
 | DB Driver | asyncpg |
 | Database | PostgreSQL |
 | Migrations | Alembic |
+| Rate limiting | Redis (falls back to in-memory counters) |
+| LLM | OpenRouter |
+| Object storage | Cloudflare R2 (S3-compatible) |
 | Dependencies | Poetry 2.0 |
 | Linting/format | Ruff |
 | Tests | pytest + Testcontainers |
+| Deploy | Docker on Railway |
 
 ## Functional modules
 
-| Module | Description |
-|---|---|
-| `talla_y_peso` | Height/weight registration with georeferencing per establishment (Module 1) |
-| `encuesta_alimentaria` | Configurable surveys, includes FAO FIES instrument (Module 2) |
-| `valores_de_hierro` | Blood hemoglobin recording with WHO alerts and informed consent (Module 3) |
-| `nutrir` | AI-assisted meal planning based on available ingredients and household needs (Module 4) |
-| `dashboard` | Cross-module analytics panel for technical profiles |
-| `auth` | Users, roles, and per-establishment permissions |
+| Module | Code modules | Description |
+|---|---|---|
+| `talla_y_peso` | `subjects`, `measurements` | Subjects and height/weight registration with georeferencing per establishment |
+| `encuesta_alimentaria` | `surveys` | Configurable surveys, includes FAO FIES instrument |
+| `nutrir` | `food_catalog`, `food_intakes`, `food_outflows`, `food_stock`, `recipes` | Food catalog and stock movements, AI-assisted recipe proposals |
+| `dashboard` | analytics routes and services | Cross-module analytics panel for technical profiles |
+| `auth` | `auth`, `establishments` | Users, roles, and per-establishment permissions |
+
+`nutrition_reports` (monthly report PDF) and `notifications` (push) are also code modules.
 
 ## Project structure
 
 ```
 app/
   main.py                     # FastAPI app entry point
-  core/config.py              # Settings (pydantic-settings, loaded from .env)
-  db/database.py              # Async SQLAlchemy engine and session factory
-  models/<module>/            # SQLAlchemy ORM models, one subdir per module
-  repositories/<module>/      # DB access layer, one subdir per module
+  api/                        # Route handlers, grouped by API version
   services/<module>/          # Business logic, one subdir per module
-  api/<module>/               # Route handlers, one subdir per module
+  repositories/<module>/      # DB access layer, one subdir per module
+  models/<module>/            # SQLAlchemy ORM models
+  schemas/<module>/           # Pydantic request and response models
+  domain/                     # Enums and plain domain types
+  core/                       # Ports (core/interfaces), dependencies, security, rate limiting
+  config/settings.py          # Settings (pydantic-settings, loaded from .env)
+  db/                         # Async engine, session factory, unit of work
+  exceptions/                 # Domain exceptions and their HTTP handlers
+  reference_data/             # Reference datasets and seeding helpers
 alembic/
   versions/                   # Migration files
 tests/
-  conftest.py                 # Testcontainers fixtures (requires Docker)
-  unit/
+  unit/, integration/, load/  # Integration tests need Docker (Testcontainers)
 ```
 
 ## Quick commands
 
 ```bash
 poetry run uvicorn app.main:app --reload    # dev server
-poetry run pytest                           # tests (requires Docker)
+poetry run pytest                           # tests (integration needs Docker)
+poetry run pytest tests/unit                # unit tests only
 poetry run alembic upgrade head             # apply migrations
 poetry run ruff check . --fix && poetry run ruff format .  # lint + format
 ```
@@ -73,16 +83,33 @@ poetry run ruff check . --fix && poetry run ruff format .  # lint + format
 
 - Access token contains `user_id` and `role`. Per-establishment access is **not** in the token — resolved at request time via DB query.
 - Establishment permission checks live in one shared service helper, `app/services/access.py::check_establishment_access` — services call it explicitly; **never re-implement the rule inline**.
-- Roles: `admin`, `analyst`, `field_worker`.
+- Roles: `superadmin`, `admin`, `analyst`, `field_worker`.
 
 → Full auth model, token flow, and data model: `docs/auth.md`
 
 ## Conventions
 
-- **Commits**: Conventional Commits — `feat:`, `fix:`, `chore:`, `docs:`, `test:`.
-- **Branches**: `main` (production), `feature/<ticket>` (development).
+- **Commits**: Conventional Commits — `feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`, `ci:`.
+- **Branches**: `develop` (integration) and `main` (release). Work on `feat/`, `feature/`, `fix/`, `refactor/`, `docs/` or `chore/` branches and open PRs into `develop`; CI enforces this.
 - **Language**: English for all code, comments, and documentation.
 - **Docstrings**: describe *what* the code does, never why it was built that way. Rationale belongs in an inline `#` comment on the line it guards.
 - **Format**: Ruff, double quotes, line length 88. Pre-commit hooks run automatically.
 
-→ Full conventions (naming, layers, docstrings, PRs): `docs/conventions.md`
+→ Full conventions (naming, layers, docstrings, PRs): `docs/conventions.md` and `CONTRIBUTING.md`
+
+## Documentation
+
+Project documentation lives in `docs/`. Keep temporary plans and reviews in the git-ignored `docs/plans/` and `docs/reviews/`.
+
+| Document | Read it when |
+|---|---|
+| `docs/commands.md` | Setting up, running, migrating, Docker, E2E data |
+| `docs/architecture.md` | Changing layers, modules, integrations, deployment |
+| `docs/auth.md` | Touching tokens, roles, rate limiting, establishment access |
+| `docs/api.md` | Adding or changing endpoints (general API conventions) |
+| `docs/errors.md` | Looking up an error type. Generated: after changing errors run `poetry run python docs/generate_error_catalog.py` (a unit test checks it) |
+| `docs/adr/` | Understanding why a design decision was made. Number new ADRs sequentially, without repeating numbers |
+| `docs/csv-exports.md`, `docs/subjects-offline-sync.md` | Guides for the web and mobile clients: consuming the CSV exports, and offline-first subject sync |
+| `CONTRIBUTING.md` | Branches, commits, PR rules, CI |
+
+When you add, rename, or remove a document under `docs/`, update this table and the documentation list in the READMEs.

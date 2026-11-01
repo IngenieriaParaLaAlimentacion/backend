@@ -13,9 +13,3 @@ comment:
   layout: "header,diff,flags,files"
   behavior: default
   require_changes: false
-
-ignore:
-  - "**/*.test.*"
-  - "**/app/repositories/**"
-  - "**/app/api/**"
-  - "**/app/models/**"

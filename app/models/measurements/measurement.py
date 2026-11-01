@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Index, func, text
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Index, Text, func, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -38,6 +38,7 @@ class Measurement(Base):
     weight_kg = Column(Float, nullable=False)
     height_cm = Column(Float, nullable=False)
     bmi = Column(Float, nullable=False)
+    observation = Column(Text, nullable=True)
     measured_at = Column(DateTime(timezone=True), nullable=False)
     synced_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(

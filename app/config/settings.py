@@ -48,6 +48,14 @@ class Settings(BaseSettings):
     # Database - DATABASE_URL is set
     database_url: Optional[str] = None
 
+    database_connect_timeout_seconds: float = Field(default=10, gt=0)
+    database_pool_size: int = Field(default=5, ge=1)
+    database_max_overflow: int = Field(default=10, ge=0)
+
+    # Upper bound for the readiness probe's database round trip, connection
+    # included, so a hung database fails the probe instead of stalling it.
+    readiness_db_timeout_seconds: float = Field(default=2, gt=0)
+
     # JWT
     jwt_secret_field_worker: str = "secret_field_worker"
     jwt_secret_admin: str = "secret_admin"
@@ -81,6 +89,9 @@ class Settings(BaseSettings):
     password_recovery_path: str = "/reset-password"
     email_verification_path: str = "/verify-email"
     invite_path: str = "/invite"
+    backoffice_signin_path: str = "/signin"
+    # Public URL of this API; email images are served from its /static mount.
+    public_base_url: AnyUrl = "http://localhost:8000"
 
     # Receipt upload
     receipt_image_max_bytes: int = 10 * 1024 * 1024  # 10 MiB
@@ -100,20 +111,18 @@ class Settings(BaseSettings):
     storage_secret_access_key: Optional[str] = None
     storage_region: str = "auto"
 
-    # LLM
-    gemini_api_key: Optional[str] = None
-    gemini_model: str = "gemini-3.6-flash"
-    # Total attempts (first call + retries)
-    gemini_max_attempts: int = Field(default=3, ge=1)
-    gemini_retry_backoff_initial_seconds: float = 1
-    gemini_retry_backoff_max_seconds: float = 8
-    # Per-request HTTP timeout, so a stalled connection fails fast instead of
-    # hanging forever and never reaching the retry/fallback logic.
-    gemini_request_timeout_seconds: float = 30
-    # Secondary model tried after the primary exhausts its attempts on a
-    # retryable failure. Unset disables the fallback.
-    gemini_fallback_model: Optional[str] = None
-    gemini_fallback_max_attempts: int = Field(default=2, ge=1)
+    # LLM: use the explicitly configured OpenRouter models for each workload.
+    openrouter_api_key: SecretStr | None = None
+    openrouter_receipt_models: list[str] = Field(default_factory=list, max_length=2)
+    openrouter_recipe_models: list[str] = Field(default_factory=list, max_length=2)
+    openrouter_report_models: list[str] = Field(default_factory=list, max_length=2)
+    openrouter_allowed_providers: list[str] = Field(default_factory=list)
+    openrouter_max_output_tokens: int = Field(default=8192, ge=256, le=65536)
+    openrouter_request_timeout_seconds: float = Field(default=25, gt=0, le=25)
+    openrouter_completion_timeout_seconds: float = Field(default=40, gt=0, le=40)
+    receipt_generation_timeout_seconds: float = Field(default=60, gt=0, le=60)
+    recipe_generation_timeout_seconds: float = Field(default=90, gt=0, le=240)
+    report_generation_timeout_seconds: float = Field(default=90, gt=0, le=240)
 
     # Rate limiting - each limit is "<count>/<period>", e.g. "5/minute".
     rate_limit_redis_url: str = "redis://localhost:6379/0"
@@ -125,6 +134,7 @@ class Settings(BaseSettings):
     rate_limit_mail_sending_ip: str = "10/hour"
     rate_limit_token_ip: str = "20/minute"
     rate_limit_register_ip: str = "5/hour"
+    rate_limit_ai_user: str = "20/hour"
     # Header where the edge proxy writes the address the connection came from.
     rate_limit_client_ip_header: str = "x-real-ip"
     # Shared with the backoffice, which reports its users' addresses. Unset
@@ -161,11 +171,43 @@ class Settings(BaseSettings):
             self.backoffice_deeplink_base, self.email_verification_path
         )
 
+    @property
+    def backoffice_signin_url(self) -> str:
+        """Derived backoffice sign-in URL from the backoffice base URL."""
+        return self._build_deeplink(
+            self.backoffice_deeplink_base, self.backoffice_signin_path
+        )
+
+    @property
+    def email_logo_url(self) -> str:
+        """Derived URL of the logo shown in system emails."""
+        return self._build_deeplink(
+            self.public_base_url, "/static/emails/raiz-logo.png"
+        )
+
     def invite_deeplink_url(self, role: UserRole) -> str:
         """Derived invitation deeplink URL for a backoffice role."""
         return self._build_deeplink(
             self.backoffice_deeplink_base, f"{self.invite_path}/{role}"
         )
+
+    @field_validator("openrouter_api_key", mode="before")
+    @classmethod
+    def empty_openrouter_key_is_unset(cls, value):
+        """Return no credential for an empty deployment variable."""
+        if value is None or value == "":
+            return None
+        return value
+
+    @field_validator("openrouter_allowed_providers")
+    @classmethod
+    def provider_ids_are_nonempty(cls, values: list[str]) -> list[str]:
+        """Accept only unique, nonempty, trimmed provider IDs."""
+        if any(not value.strip() or value != value.strip() for value in values):
+            raise ValueError("Provider IDs must be nonempty and trimmed")
+        if len(set(values)) != len(values):
+            raise ValueError("Provider IDs must be unique")
+        return values
 
     @field_validator("internal_service_token")
     @classmethod
@@ -184,6 +226,7 @@ class Settings(BaseSettings):
         "rate_limit_mail_sending_ip",
         "rate_limit_token_ip",
         "rate_limit_register_ip",
+        "rate_limit_ai_user",
     )
     @classmethod
     def validate_rate_limit(cls, value: str) -> str:

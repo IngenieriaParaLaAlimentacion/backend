@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.schemas.common import ProfileFields
 from app.schemas.establishments.establishment_schema import EstablishmentResponse
@@ -17,6 +17,13 @@ class ProfileUpdateRequest(ProfileFields):
 
     name: ValidStr | None = None
     last_name: ValidStr | None = None
+
+    @field_validator("name", "last_name")
+    @classmethod
+    def validate_not_null(cls, v: str | None) -> str | None:
+        if v is None:
+            raise ValueError("Field cannot be null")
+        return v
 
 
 class EstablishmentIdsRequest(BaseModel):

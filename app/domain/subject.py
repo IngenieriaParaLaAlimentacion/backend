@@ -1,13 +1,13 @@
 from dataclasses import dataclass, fields
 from datetime import date
-from enum import Enum, StrEnum
+from enum import StrEnum
 from typing import Self
 from uuid import UUID
 
 from app.domain.common_domains import normalize_optional_str
 
 
-class Sex(str, Enum):
+class Sex(StrEnum):
     """Biological sex of a subject."""
 
     MALE = "male"

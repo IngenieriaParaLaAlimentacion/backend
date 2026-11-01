@@ -26,7 +26,7 @@ from app.db.unit_of_work import UnitOfWork
 from app.services.exporters.csv.csv_exporter import CsvExporter
 
 #: Header naming how many data rows the file should carry. A client that counts
-#: fewer has a truncated download -- see docs/frontend/csv-exports.md.
+#: fewer has a truncated download -- see docs/csv-exports.md.
 ROW_COUNT_HEADER = "X-Export-Row-Count"
 
 CSV_EXPORT_RESPONSES: dict[int | str, dict] = {

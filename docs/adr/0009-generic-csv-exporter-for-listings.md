@@ -131,6 +131,8 @@ reporting action rather than a lookup.
   client occupies a pool connection longer than a normal request would. Not
   currently bounded; a statement/idle timeout or a separate export pool is the
   next thing to consider if it bites.
+- An `/export` route has to be declared above any `/{id}` route in the same router,
+  or the literal `export` is matched as an id.
 - `export(rows) -> bytes` is kept alongside `stream`, sharing the row rendering,
   so column specs stay testable without an event loop and the two paths are
   provably byte-identical.

@@ -576,6 +576,7 @@ class TestSubjectListing:
             "height_cm",
             "bmi",
             "alerts",
+            "observation",
         } == item["latest_measurement"].keys()
 
     async def test_latest_measurement_supersedes_older_ones(self, body):

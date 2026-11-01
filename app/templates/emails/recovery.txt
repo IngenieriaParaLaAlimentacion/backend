@@ -1,0 +1,10 @@
+{% extends "base.txt" %}
+{% block content %}
+Recibimos un pedido para cambiar la contraseña de la cuenta {{ account_email }}. Elegí una nueva desde este enlace:
+{{ url }}
+
+Cuando la cambies, vamos a cerrar tu sesión en todos los dispositivos.
+
+El enlace vence el {{ expires_at }} (hora de Argentina). Después vas a tener que pedir uno nuevo.
+{% endblock %}
+{% block footer_reason %}Si no pediste este cambio, ignorá este correo: tu contraseña actual sigue funcionando y nadie puede usar el enlace sin acceso a tu casilla.{% endblock %}

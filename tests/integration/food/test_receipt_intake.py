@@ -1,9 +1,14 @@
 import uuid
 
+import pytest
 import pytest_asyncio
 
 from app.config.settings import settings
-from app.exceptions.domain_exceptions import LlmClientError
+from app.exceptions.domain_exceptions import (
+    LlmClientError,
+    LlmQuotaExhaustedError,
+    LlmUnavailableError,
+)
 
 URL = "/api/v1/food-intakes/from-photo"
 PNG_BYTES = b"\x89PNG\r\n\x1a\n" + b"0" * 64
@@ -19,7 +24,7 @@ def _upload(establishment_id, *, filename="receipt.png", content_type="image/png
 @pytest_asyncio.fixture
 async def db_food(app):
     """Seed a single real catalog food ("Arroz") to exercise trigram matching
-    (ADR-0016) against a real Postgres instance, not a mock."""
+    (ADR-0017) against a real Postgres instance, not a mock."""
     from app.db.database import AsyncSessionLocal
     from app.domain.food_catalog import MeasurementUnit
     from app.models.food_catalog.food import Food
@@ -45,7 +50,7 @@ async def db_food(app):
 @pytest_asyncio.fixture
 async def db_foods(app):
     """Seed a small, varied catalog to exercise the word-similarity + whole-string
-    floor combination (ADR-0016) against a real Postgres instance.
+    floor combination (ADR-0017) against a real Postgres instance.
 
     Includes "Sal" -- a short name that a naive word-similarity match would score
     deceptively high against an unrelated, noisy receipt line -- to prove the
@@ -96,7 +101,7 @@ class TestAcceptedUpload:
         assert body["lines"] == []
         assert body["message"]
 
-    async def test_detected_items_are_returned_needing_review(
+    async def test_detected_items_are_returned(
         self, client, admin_headers, db_establishment, fake_llm_client
     ):
         fake_llm_client.response = {
@@ -114,7 +119,7 @@ class TestAcceptedUpload:
             "Leche 1L",
         ]
         assert all(line["food"] is None for line in body["lines"])
-        assert all(line["needs_review"] for line in body["lines"])
+        assert all("needs_review" not in line for line in body["lines"])
         assert body["message"] is None
 
     async def test_llm_failure_falls_back_to_manual_entry(
@@ -144,7 +149,7 @@ class TestAcceptedUpload:
 
 
 class TestCatalogMatching:
-    """Trigram-similarity matching against the real catalog (ADR-0016)."""
+    """Trigram-similarity matching against the real catalog (ADR-0017)."""
 
     async def test_close_description_matches_the_catalog_food(
         self, client, admin_headers, db_establishment, db_food, fake_llm_client
@@ -158,7 +163,6 @@ class TestCatalogMatching:
         assert response.status_code == 200
         (line,) = response.json()["lines"]
         assert line["food"] == {"id": str(db_food.id), "name": db_food.name}
-        assert line["needs_review"] is True
 
     async def test_unrelated_description_leaves_food_null(
         self, client, admin_headers, db_establishment, db_food, fake_llm_client
@@ -172,7 +176,6 @@ class TestCatalogMatching:
         assert response.status_code == 200
         (line,) = response.json()["lines"]
         assert line["food"] is None
-        assert line["needs_review"] is True
 
     async def test_brand_and_pack_size_noise_still_matches_the_catalog_food(
         self, client, admin_headers, db_establishment, db_foods, fake_llm_client
@@ -193,7 +196,6 @@ class TestCatalogMatching:
         (line,) = response.json()["lines"]
         ketchup = db_foods["ketchup"]
         assert line["food"] == {"id": str(ketchup.id), "name": ketchup.name}
-        assert line["needs_review"] is True
 
     async def test_short_catalog_name_does_not_false_positive_on_unrelated_noise(
         self, client, admin_headers, db_establishment, db_foods, fake_llm_client
@@ -213,7 +215,6 @@ class TestCatalogMatching:
         assert response.status_code == 200
         (line,) = response.json()["lines"]
         assert line["food"] is None
-        assert line["needs_review"] is True
 
 
 class TestImageValidation:
@@ -272,3 +273,29 @@ class TestAuthAndAccess:
 
         assert response.status_code == 404
         assert response.json()["type"] == "/errors/establishment-not-found"
+
+
+@pytest.mark.parametrize(
+    "failure",
+    [
+        LlmQuotaExhaustedError(12),
+        LlmQuotaExhaustedError(),
+        LlmUnavailableError("private provider failure"),
+    ],
+)
+async def test_provider_errors_preserve_manual_entry_contract(
+    client,
+    admin_headers,
+    db_establishment,
+    fake_llm_client,
+    failure,
+):
+    fake_llm_client.error = failure
+    response = await client.post(
+        URL, headers=admin_headers, **_upload(db_establishment.id)
+    )
+    assert response.status_code == 200
+    assert response.json()["lines"] == []
+    assert response.json()["message"]
+    assert "private" not in response.text
+    assert "retry-after" not in response.headers

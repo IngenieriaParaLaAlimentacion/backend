@@ -149,6 +149,18 @@ async def _seed_establishments(n: int, app) -> list:
     return created
 
 
+async def _set_characterization(
+    establishment_id: uuid.UUID, characterization: dict | None
+) -> None:
+    from app.db.database import AsyncSessionLocal
+    from app.models.establishments.establishment import Establishment
+
+    async with AsyncSessionLocal() as session:
+        establishment = await session.get(Establishment, establishment_id)
+        establishment.characterization = characterization
+        await session.commit()
+
+
 class TestGetEstablishmentsPaginated:
     async def test_empty_list_returns_200(self, client, analyst_headers):
         """No establishments in the DB returns an empty list with zeroed metadata."""
@@ -169,6 +181,7 @@ class TestGetEstablishmentsPaginated:
         assert item["id"] == str(db_establishment.id)
         assert item["name"] == db_establishment.name
         assert item["formatted_address"] == db_establishment.formatted_address
+        assert item["characterization_status"] == "pending"
 
     async def test_pagination_metadata(self, client, app, analyst_headers):
         """With 5 establishments and page_size=2, total_pages should be 3."""
@@ -380,6 +393,50 @@ class TestCreateEstablishment:
         assert data["formatted_address"] == "Av. Cabildo 100"
         assert "id" in data
 
+    async def test_profile_sent_on_create_is_stored(self, client, admin_headers):
+        """The profile is stored with the new establishment and the dashboard
+        reads it back."""
+        profile = {"meals": ["lunch"], "premises": "other", "premises_other": "Club"}
+
+        response = await client.post(
+            ESTABLISHMENT_URL,
+            json=_make_payload(characterization=profile),
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.json()["characterization_status"] == "complete"
+        dashboard = await client.get(
+            f"{ESTABLISHMENT_URL}/{response.json()['id']}/dashboard",
+            headers=admin_headers,
+        )
+        stored = dashboard.json()["characterization"]
+        assert {key: stored[key] for key in profile} == profile
+
+    @pytest.mark.parametrize(
+        "extra", [{}, {"characterization": None}, {"characterization": {"meals": []}}]
+    )
+    async def test_create_without_answers_is_pending(
+        self, client, admin_headers, extra
+    ):
+        response = await client.post(
+            ESTABLISHMENT_URL, json=_make_payload(**extra), headers=admin_headers
+        )
+
+        assert response.json()["characterization_status"] == "pending"
+
+    async def test_invalid_profile_returns_422_naming_the_field(
+        self, client, admin_headers
+    ):
+        response = await client.post(
+            ESTABLISHMENT_URL,
+            json=_make_payload(characterization={"premises_other": "Club"}),
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+        assert response.json()["field"] == "characterization.premises_other"
+
     async def test_field_worker_cannot_create_establishment(
         self, client, field_worker_headers
     ):
@@ -437,6 +494,35 @@ class TestCreateEstablishment:
 
 
 class TestGetEstablishmentById:
+    @pytest.mark.parametrize(
+        ("characterization", "expected_status"),
+        [
+            (None, "pending"),
+            ({"meals": [], "district": None}, "pending"),
+            ({"meals": ["lunch"], "contact_phone": "11 4567-8901"}, "complete"),
+        ],
+    )
+    async def test_returns_characterization_status_without_the_profile(
+        self,
+        client,
+        db_establishment,
+        admin_headers,
+        characterization,
+        expected_status,
+    ):
+        """The detail reports whether the profile holds any answer, but not
+        the profile itself."""
+        await _set_characterization(db_establishment.id, characterization)
+
+        response = await client.get(
+            f"{ESTABLISHMENT_URL}/{db_establishment.id}", headers=admin_headers
+        )
+
+        data = response.json()
+        assert data["characterization_status"] == expected_status
+        # The profile carries a private phone; only the dashboard returns it.
+        assert "characterization" not in data
+
     async def test_existing_establishment_returns_200(
         self, client, db_establishment, admin_headers
     ):
@@ -662,6 +748,47 @@ class TestCreateEstablishmentRequest:
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    async def test_proposed_profile_is_shown_to_the_admin(
+        self, client, make_user_with_role, admin_headers
+    ):
+        """A profile sent with the request reaches the admin's request listing."""
+        headers, _ = await make_user_with_role(UserRole.FIELD_WORKER)
+        profile = {"meals": ["lunch"], "premises": "other", "premises_other": "Club"}
+
+        await client.post(
+            REQUESTS_URL,
+            headers=headers,
+            json={
+                "name": "Comedor Esperanza",
+                "formatted_address": "Av. Siempre Viva 742",
+                "characterization": profile,
+            },
+        )
+
+        listing = await client.get(
+            "/api/v1/admin/establishment-requests", headers=admin_headers
+        )
+        [item] = listing.json()["items"]
+        assert {key: item["characterization"][key] for key in profile} == profile
+
+    async def test_invalid_proposed_profile_returns_422_naming_the_field(
+        self, client, make_user_with_role
+    ):
+        headers, _ = await make_user_with_role(UserRole.FIELD_WORKER)
+
+        response = await client.post(
+            REQUESTS_URL,
+            headers=headers,
+            json={
+                "name": "Comedor Esperanza",
+                "formatted_address": "Av. Siempre Viva 742",
+                "characterization": {"premises_other": "Club"},
+            },
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+        assert response.json()["field"] == "characterization.premises_other"
 
     async def test_blank_field_returns_422(self, client, make_user_with_role):
         """Whitespace-only fields are rejected with 422."""

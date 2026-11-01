@@ -15,6 +15,9 @@ ERROR_REGISTRY: dict[str, type["BaseError"]] = {}
 
 _SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*")
 
+# A Retry-After of zero would invite an immediate retry, so it is at least one second.
+MIN_RETRY_AFTER_SECONDS = 1
+
 
 class BaseError(Exception):
     """Base exception class for domain errors.
@@ -195,7 +198,7 @@ class RateLimitedError(BaseError):
     status = status.HTTP_429_TOO_MANY_REQUESTS
 
     def __init__(self, limit: int, reset_at: float):
-        retry_after = max(1, math.ceil(reset_at - time.time()))
+        retry_after = max(MIN_RETRY_AFTER_SECONDS, math.ceil(reset_at - time.time()))
         super().__init__(
             "Too many requests",
             f"Too many attempts. Try again in {retry_after} seconds.",
@@ -219,6 +222,24 @@ class NotificationConfigurationError(BaseError):
         super().__init__(
             "Notification configuration invalid",
             "Stale-establishment notifications are not fully configured.",
+        )
+
+
+class ServiceNotReadyError(BaseError):
+    """Raised when a dependency the service needs to serve requests is down.
+
+    Args:
+        checks (dict[str, str]): Outcome of each readiness check, by check name.
+    """
+
+    error_type = "service-not-ready"
+    status = status.HTTP_503_SERVICE_UNAVAILABLE
+
+    def __init__(self, checks: dict[str, str]):
+        super().__init__(
+            "Service not ready",
+            "One or more dependencies required to serve requests are unavailable.",
+            {"checks": checks},
         )
 
 
@@ -1057,4 +1078,303 @@ class ImageContentMismatchError(UnprocessableEntityError):
             f"The uploaded file's content does not match the declared type "
             f"{content_type!r}.",
             extensions={"content_type": content_type},
+        )
+
+
+class InvalidChildrenCountError(UnprocessableEntityError):
+    """Raised when a recipe is requested for no children or a negative number.
+
+    Args:
+        children_count (int): The rejected number of children.
+    """
+
+    error_type = "nutrition/invalid-children-count"
+
+    def __init__(self, children_count: int):
+        super().__init__(
+            "Invalid number of children",
+            f"A recipe needs at least one child, got {children_count}.",
+            extensions={"children_count": children_count},
+        )
+
+
+class RecipeOptimizationError(BaseError):
+    """Raised when the solver cannot return an optimal recipe.
+
+    The stock check makes the program feasible, so this means the solver itself
+    failed rather than that the request cannot be met.
+
+    Args:
+        solver_status (str): The status the solver ended with.
+    """
+
+    error_type = "nutrition/recipe-optimization-failed"
+    status = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+    def __init__(self, solver_status: str):
+        super().__init__(
+            "Recipe optimization failed",
+            f"The solver ended as {solver_status!r} instead of finding a recipe.",
+            extensions={"solver_status": solver_status},
+        )
+
+
+class UnknownGapaGroupError(BaseError):
+    """Raised when the catalog holds a GAPA group the application does not know.
+
+    Args:
+        code (str): The code of the unknown group.
+    """
+
+    error_type = "nutrition/unknown-gapa-group"
+    status = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+    def __init__(self, code: str):
+        super().__init__(
+            "Unknown GAPA group",
+            f"The catalog has a GAPA group with code {code!r}, which is not one of "
+            "the six the service knows.",
+            extensions={"code": code},
+        )
+
+
+class RecipeNoUsableStockError(BaseError):
+    """No stocked food with known mass and positive energy can form a recipe."""
+
+    error_type = "recipes/no-usable-stock"
+    status = status.HTTP_409_CONFLICT
+
+    def __init__(self):
+        super().__init__(
+            "No usable stock",
+            "No recipe can be built from stock with known gram conversions "
+            "and usable energy.",
+        )
+
+
+class RecipeNotFoundError(NotFoundError):
+    """The requested recommendation or proposal does not exist."""
+
+    error_type = "recipes/not-found"
+
+    def __init__(self):
+        super().__init__(
+            "Recipe not found", "The recommendation or proposal does not exist."
+        )
+
+
+class RecipeAlreadyChosenError(BaseError):
+    """A different proposal was already chosen for this request."""
+
+    error_type = "recipes/already-chosen"
+    status = status.HTTP_409_CONFLICT
+
+    def __init__(self):
+        super().__init__(
+            "Recipe already chosen", "Only one proposal may be chosen per request."
+        )
+
+
+class RecipeIdempotencyConflictError(BaseError):
+    """A reuse id was already used with different input."""
+
+    error_type = "recipes/idempotency-conflict"
+    status = status.HTTP_409_CONFLICT
+
+    def __init__(self):
+        super().__init__(
+            "Reuse id conflict",
+            "This id was already used for a different recipe, establishment "
+            "or portion count.",
+        )
+
+
+class RecipeGenerationError(BaseError):
+    """The model failed to produce complete valid recipe proposals."""
+
+    error_type = "recipes/generation-failed"
+    status = status.HTTP_502_BAD_GATEWAY
+
+    def __init__(self):
+        super().__init__(
+            "Recipe generation failed",
+            "Could not generate valid recommendations. Please try again.",
+        )
+
+
+class RecipeIngredientUnavailableError(BaseError):
+    """A saved recipe ingredient is no longer in the catalog."""
+
+    error_type = "recipes/ingredient-unavailable"
+    status = status.HTTP_409_CONFLICT
+
+    def __init__(self, food_id: str, ingredient: str):
+        super().__init__(
+            "Recipe ingredient unavailable",
+            f"{ingredient} is no longer available in the food catalog.",
+            extensions={"food_id": food_id, "ingredient": ingredient},
+        )
+
+
+class RecipeIngredientUnitChangedError(BaseError):
+    """A saved ingredient's stock unit changed since generation."""
+
+    error_type = "recipes/ingredient-unit-changed"
+    status = status.HTTP_409_CONFLICT
+
+    def __init__(self, food_id: str, ingredient: str):
+        super().__init__(
+            "Recipe ingredient unit changed",
+            f"The stock unit for {ingredient} changed; generate a new recipe.",
+            extensions={"food_id": food_id, "ingredient": ingredient},
+        )
+
+
+class RecipeScaleTooSmallError(BaseError):
+    """Scaling would round a required ingredient down to zero."""
+
+    error_type = "recipes/scale-too-small"
+    status = status.HTTP_409_CONFLICT
+
+    def __init__(self, food_id: str, ingredient: str):
+        super().__init__(
+            "Recipe scale too small",
+            f"The portion count is too small for {ingredient} at stock precision.",
+            extensions={"food_id": food_id, "ingredient": ingredient},
+        )
+
+
+class RecipeGenerationTimeoutError(BaseError):
+    """Recipe generation exceeded its total request time budget."""
+
+    error_type = "recipes/generation-timeout"
+    status = status.HTTP_504_GATEWAY_TIMEOUT
+
+    def __init__(self):
+        super().__init__(
+            "Recipe generation timed out",
+            "Recipe generation exceeded its total time budget.",
+        )
+
+
+class LlmQuotaExhaustedError(LlmClientError):
+    """The inference provider rejected a call because of a usage limit."""
+
+    def __init__(self, retry_after: int | None = None):
+        self.retry_after = retry_after
+        super().__init__("Inference usage limit reached")
+
+
+class LlmUnavailableError(LlmClientError):
+    """No eligible inference endpoint completed the request."""
+
+
+class AiQuotaExhaustedError(BaseError):
+    """Inference is temporarily blocked by a provider usage limit."""
+
+    error_type = "ai/quota-exhausted"
+    status = status.HTTP_429_TOO_MANY_REQUESTS
+
+    def __init__(self, retry_after: int | None = None):
+        known = retry_after is not None and retry_after > 0
+        super().__init__(
+            "AI usage limit reached",
+            "AI processing is temporarily limited. Try again later.",
+            extensions={"retry_after": retry_after} if known else None,
+            headers={"Retry-After": str(retry_after)} if known else None,
+        )
+
+
+class NutritionReportGenerationTimeoutError(BaseError):
+    """Report generation exceeded its total request time budget."""
+
+    error_type = "nutrition/report-generation-timeout"
+    status = status.HTTP_504_GATEWAY_TIMEOUT
+
+    def __init__(self):
+        super().__init__(
+            "Report generation timed out",
+            "Report generation exceeded its total time budget.",
+        )
+
+
+class AiUnavailableError(BaseError):
+    """An eligible AI processing endpoint is currently unavailable."""
+
+    error_type = "ai/unavailable"
+    status = status.HTTP_503_SERVICE_UNAVAILABLE
+
+    def __init__(self):
+        super().__init__(
+            "AI unavailable", "AI processing is temporarily unavailable. Try later."
+        )
+
+
+class NutritionReportMonthNotOverError(UnprocessableEntityError):
+    """Raised when a nutrition report is requested for a month that has not ended.
+
+    Args:
+        month (str): The requested month, formatted as ``YYYY-MM``.
+    """
+
+    error_type = "nutrition/report-month-not-over"
+
+    def __init__(self, month: str):
+        super().__init__(
+            "Report month not over",
+            f"The report for {month} can only be generated once the month is over.",
+            extensions={"month": month},
+        )
+
+
+class NutritionReportConversionUnavailableError(ConflictError):
+    """Raised when none of the foods received in a month converts to grams.
+
+    Args:
+        month (str): The requested month, formatted as ``YYYY-MM``.
+    """
+
+    error_type = "nutrition/report-conversion-unavailable"
+
+    def __init__(self, month: str):
+        super().__init__(
+            "Report conversion unavailable",
+            f"The foods received in {month} have no known conversion to grams, so "
+            "the report cannot be calculated yet.",
+            extensions={"month": month},
+        )
+
+
+class NutritionReportNotFoundError(NotFoundError):
+    """Raised when an establishment has no saved nutrition report for a month.
+
+    Args:
+        month (str): The requested month, formatted as ``YYYY-MM``.
+    """
+
+    error_type = "nutrition/report-not-found"
+
+    def __init__(self, month: str):
+        super().__init__(
+            "Report not found",
+            f"There is no saved nutrition report for {month}.",
+            extensions={"month": month},
+        )
+
+
+class NutritionReportSummaryUnavailableError(ConflictError):
+    """Raised when a report's PDF is requested while its AI summary is missing.
+
+    Args:
+        month (str): The requested month, formatted as ``YYYY-MM``.
+    """
+
+    error_type = "nutrition/report-summary-unavailable"
+
+    def __init__(self, month: str):
+        super().__init__(
+            "Report summary unavailable",
+            f"The summary of the report for {month} is not available yet. Request "
+            "the report again to write it.",
+            extensions={"month": month},
         )

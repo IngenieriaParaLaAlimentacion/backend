@@ -1,0 +1,25 @@
+# Runs the load tests from a container, against a target defined by BASE_URL and DATABASE_URL.
+#
+#   docker compose -f tests/load/compose.yml run --rm runner [all|<flow>]
+#
+
+services:
+  runner:
+    # A prebuilt image can be passed in, so CI builds it once with its own cache.
+    image: ${LOAD_TEST_IMAGE:-tpp-load-runner:local}
+    build:
+      context: ../..
+      dockerfile: tests/load/Dockerfile
+    environment:
+      BASE_URL: ${BASE_URL:-}
+      DATABASE_URL: ${DATABASE_URL:-}
+      LOAD_TEST_PASSWORD: ${LOAD_TEST_PASSWORD:-}
+      # Recorded in the results, to know which commit was measured.
+      TARGET_REVISION: ${TARGET_REVISION:-}
+      # Optional load profile overrides, e.g. STEPS=2,5 STEP_DURATION=15s for a quick run.
+      STEPS: ${STEPS:-}
+      STEP_DURATION: ${STEP_DURATION:-}
+    volumes:
+      - ./results:/app/tests/load/results
+    extra_hosts:
+      - host.docker.internal:host-gateway

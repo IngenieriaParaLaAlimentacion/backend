@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "_macros.html" import box, steps %}
+{% block preheader %}Tu acceso a {{ establishment_name }} está en revisión.{% endblock %}
+{% block title %}Aprobamos tu solicitud{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">Un administrador aprobó la creación del establecimiento que pediste:</p>
+{% call box("Establecimiento") %}<p style="margin:0;font-weight:600;">{{ establishment_name }}</p>{% endcall %}
+{{ steps([
+  ("done", "Solicitud enviada", ""),
+  ("done", "Establecimiento creado", ""),
+  ("now", "Tu acceso, en revisión", "Te avisamos por correo cuando un administrador lo apruebe."),
+]) }}
+{% endblock %}
+{% block footer_reason %}Recibiste este correo porque pediste dar de alta este establecimiento en Raíz.{% endblock %}

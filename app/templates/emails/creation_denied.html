@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% from "_macros.html" import banner, box %}
+{% block preheader %}Motivo: {{ reason or "el administrador no indicó un motivo." }}{% endblock %}
+{% block title %}Tu solicitud no fue aprobada{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">Un administrador revisó tu pedido de alta y no lo aprobó.</p>
+{% call box("Establecimiento") %}<p style="margin:0;font-weight:600;">{{ establishment_name }}</p>{% endcall %}
+{% call banner("danger") %}<strong>Motivo:</strong> {{ reason or "El administrador no indicó un motivo." }}{% endcall %}
+<p style="margin:0;">Podés revisar los datos y enviar una nueva solicitud desde la app.</p>
+{% endblock %}
+{% block footer_reason %}Recibiste este correo porque pediste dar de alta este establecimiento en Raíz.{% endblock %}

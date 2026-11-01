@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% from "_macros.html" import banner, button, expiry %}
+{% block preheader %}El enlace vale {{ valid_minutes }} minutos. Si no lo pediste, no hagas nada.{% endblock %}
+{% block title %}Restablecé tu contraseña{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">Recibimos un pedido para cambiar la contraseña de la cuenta <strong>{{ account_email }}</strong>. Elegí una nueva desde este botón:</p>
+{{ button("Elegir contraseña nueva", url) }}
+{% call banner("neutral") %}Cuando la cambies, vamos a cerrar tu sesión en todos los dispositivos.{% endcall %}
+{{ expiry(expires_at) }}
+{% endblock %}
+{% block footer_reason %}Si no pediste este cambio, ignorá este correo: tu contraseña actual sigue funcionando y nadie puede usar el enlace sin acceso a tu casilla.{% endblock %}

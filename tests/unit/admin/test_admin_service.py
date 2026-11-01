@@ -317,7 +317,9 @@ class TestApproveEstablishments:
         ) as mock_email:
             await service.approve_establishments(user.id, [estab1.id, estab2.id])
 
-        mock_email.assert_awaited_once_with(user.email, ["Centro A", "Centro B"])
+        mock_email.assert_awaited_once_with(
+            user.email, ["Centro A", "Centro B"], user.name
+        )
 
 
 class TestRejectEstablishments:

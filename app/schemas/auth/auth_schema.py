@@ -52,6 +52,13 @@ class PasswordRecoveryConfirmRequest(BaseModel):
     new_password: PasswordStr
 
 
+class AcceptInviteRequest(ProfileFields):
+    token: Annotated[str, StringConstraints(strict=True, min_length=1)]
+    new_password: PasswordStr
+    name: ValidStr
+    last_name: ValidStr
+
+
 class VerifyEmailRequest(BaseModel):
     token: Annotated[str, StringConstraints(strict=True, min_length=1)]
 

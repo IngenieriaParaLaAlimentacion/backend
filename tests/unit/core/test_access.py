@@ -6,7 +6,10 @@ import pytest
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import EstablishmentAccessDeniedError
-from app.services.access import check_field_work_access
+from app.services.access import (
+    check_establishment_access,
+    check_field_work_access,
+)
 
 
 def _make_uow(*, relation_status=None, approved_ids=()):
@@ -72,3 +75,30 @@ class TestCheckFieldWorkAccess:
         else:
             with pytest.raises(EstablishmentAccessDeniedError):
                 await check_field_work_access(uow, _actor(UserRole.ANALYST), None)
+
+
+class TestCheckEstablishmentAccess:
+    @pytest.mark.parametrize(
+        "role", [UserRole.ADMIN, UserRole.SUPERADMIN, UserRole.ANALYST]
+    )
+    async def test_admins_and_analysts_are_allowed_without_a_relation(self, role):
+        await check_establishment_access(_make_uow(), _actor(role), uuid.uuid4())
+
+    async def test_field_worker_approved_on_the_establishment_is_allowed(self):
+        uow = _make_uow(relation_status=UserEstablishmentStatus.APPROVED)
+        await check_establishment_access(
+            uow, _actor(UserRole.FIELD_WORKER), uuid.uuid4()
+        )
+
+    @pytest.mark.parametrize(
+        "relation_status",
+        [None, UserEstablishmentStatus.PENDING, UserEstablishmentStatus.REVOKED],
+    )
+    async def test_field_worker_without_approved_access_is_denied(
+        self, relation_status
+    ):
+        uow = _make_uow(relation_status=relation_status)
+        with pytest.raises(EstablishmentAccessDeniedError):
+            await check_establishment_access(
+                uow, _actor(UserRole.FIELD_WORKER), uuid.uuid4()
+            )

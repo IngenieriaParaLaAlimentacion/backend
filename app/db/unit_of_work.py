@@ -25,16 +25,23 @@ from app.repositories.establishments.establishment_request_repository import (
 from app.repositories.food_catalog.food_category_repository import (
     FoodCategoryRepository,
 )
+from app.repositories.food_catalog.food_equivalence_repository import (
+    FoodEquivalenceRepository,
+)
 from app.repositories.food_catalog.food_nutrient_value_repository import (
     FoodNutrientValueRepository,
 )
 from app.repositories.food_catalog.food_repository import FoodRepository
+from app.repositories.food_catalog.gapa_food_category_repository import (
+    GapaFoodCategoryRepository,
+)
 from app.repositories.food_catalog.nutrient_repository import NutrientRepository
 from app.repositories.food_intakes.food_intake_repository import FoodIntakeRepository
 from app.repositories.food_outflows.food_outflow_repository import (
     FoodOutflowRepository,
 )
 from app.repositories.food_stock.food_stock_repository import FoodStockRepository
+from app.repositories.health_repository import HealthRepository
 from app.repositories.measurements.measurement_alert_repository import (
     MeasurementAlertRepository,
 )
@@ -44,6 +51,10 @@ from app.repositories.notifications import (
     StaleEstablishmentCycleRepository,
     UserPushDeviceRepository,
 )
+from app.repositories.nutrition_reports.nutrition_report_repository import (
+    NutritionReportRepository,
+)
+from app.repositories.recipes.recipe_repository import RecipeRepository
 from app.repositories.subjects.subject_event_repository import SubjectEventRepository
 from app.repositories.subjects.subject_repository import SubjectRepository
 from app.repositories.surveys.survey_repository import SurveyRepository
@@ -65,6 +76,7 @@ class UnitOfWork(IUnitOfWork):
     async def __aenter__(self):
         """Open a new async session and initialize all repositories."""
         self.session = _db.AsyncSessionLocal()
+        self.recipe_repo = RecipeRepository(self.session)
         self.user_repo = UserRepository(self.session)
         self.password_repo = UserPasswordRepository(self.session)
         self.token_repo = TokenRepository(self.session)
@@ -85,15 +97,19 @@ class UnitOfWork(IUnitOfWork):
             self.session
         )
         self.food_category_repo = FoodCategoryRepository(self.session)
+        self.gapa_food_category_repo = GapaFoodCategoryRepository(self.session)
         self.nutrient_repo = NutrientRepository(self.session)
         self.food_repo = FoodRepository(self.session)
         self.food_nutrient_value_repo = FoodNutrientValueRepository(self.session)
+        self.food_equivalence_repo = FoodEquivalenceRepository(self.session)
         self.food_intake_repo = FoodIntakeRepository(self.session)
         self.food_outflow_repo = FoodOutflowRepository(self.session)
         self.food_stock_repo = FoodStockRepository(self.session)
+        self.nutrition_report_repo = NutritionReportRepository(self.session)
         self.push_device_repo = UserPushDeviceRepository(self.session)
         self.stale_cycle_repo = StaleEstablishmentCycleRepository(self.session)
         self.push_delivery_job_repo = PushDeliveryJobRepository(self.session)
+        self.health_repo = HealthRepository(self.session)
         return self
 
     async def commit(self) -> None:

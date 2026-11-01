@@ -402,6 +402,48 @@ class TestApproveEstablishmentRequest:
             )
             assert len(result.scalars().all()) == 1
 
+    async def test_new_establishment_gets_the_approved_profile(
+        self, client, make_user_with_role, app
+    ):
+        """The final profile sent on approval is stored on the new
+        establishment and reported as complete."""
+        admin_headers, _ = await make_user_with_role(UserRole.ADMIN)
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        request_id = await _insert_establishment_request(user_id)
+
+        response = await client.patch(
+            APPROVE_ESTABLISHMENT_REQUEST_URL.format(request_id=request_id),
+            json=_approve_body(characterization={"meals": ["lunch"]}),
+            headers=admin_headers,
+        )
+
+        assert response.json()["characterization_status"] == "complete"
+        async with db_module.AsyncSessionLocal() as session:
+            establishment = await session.get(Establishment, response.json()["id"])
+        assert establishment.characterization["meals"] == ["lunch"]
+
+    async def test_reused_establishment_keeps_its_answered_profile(
+        self, client, make_user_with_role, app
+    ):
+        admin_headers, _ = await make_user_with_role(UserRole.ADMIN)
+        existing = await _insert_db_establishment(
+            place_id="place-existing-002", characterization={"meals": ["dinner"]}
+        )
+        user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
+        request_id = await _insert_establishment_request(user_id)
+
+        await client.patch(
+            APPROVE_ESTABLISHMENT_REQUEST_URL.format(request_id=request_id),
+            json=_approve_body(
+                place_id="place-existing-002", characterization={"meals": ["lunch"]}
+            ),
+            headers=admin_headers,
+        )
+
+        async with db_module.AsyncSessionLocal() as session:
+            establishment = await session.get(Establishment, existing.id)
+        assert establishment.characterization == {"meals": ["dinner"]}
+
     async def test_unknown_request_returns_404(self, client, admin_headers):
         """Approving a nonexistent request id returns 404."""
         response = await client.patch(

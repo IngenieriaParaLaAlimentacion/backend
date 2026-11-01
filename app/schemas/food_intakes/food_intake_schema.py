@@ -37,7 +37,7 @@ class FoodIntakeRequest(BaseModel):
     comments: str | None = Field(default=None, max_length=500)
     source: FoodIntakeSource = FoodIntakeSource.MANUAL
     origin_type: FoodIntakeOriginType = Field(
-        description="Type of food supplier or donor."
+        description="Kind of source the food came from: a supplier, donor or event."
     )
     is_recurring: StrictBool = Field(
         description="Whether this is a recurring contribution."

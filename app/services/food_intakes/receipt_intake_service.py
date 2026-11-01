@@ -1,15 +1,19 @@
+import asyncio
 import uuid
-from decimal import Decimal, InvalidOperation
+from collections.abc import Mapping
 from typing import Any
 from uuid import UUID
 
 import structlog
+from pydantic import ValidationError
 
 from app.config.settings import settings
 from app.core.interfaces.llm_client import ILlmClient
 from app.core.interfaces.object_storage import IObjectStorage
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.food_intake import FoodIntakeDomain
+from app.domain.printed_quantity import parse_printed_quantity
+from app.domain.unit_conversion import ConversionFactors, prefill_from_printed
 from app.domain.user import UserActor
 from app.exceptions.domain_exceptions import (
     ImageContentMismatchError,
@@ -19,10 +23,12 @@ from app.exceptions.domain_exceptions import (
     ReceiptPhotoStorageError,
     UnsupportedImageTypeError,
 )
+from app.models.food_catalog.food import Food
 from app.schemas.common import IdentifierRefSchema
 from app.schemas.food_intakes.food_intake_schema import FoodIntakeRequest
 from app.schemas.food_intakes.receipt_schema import (
     ProposedFoodLine,
+    ReceiptExtraction,
     ReceiptProposalResponse,
 )
 from app.services.access import check_establishment_access
@@ -50,24 +56,7 @@ _EXTRACTION_PROMPT = (
     "when the line does not state a quantity."
 )
 
-_EXTRACTION_RESPONSE_SCHEMA: dict[str, Any] = {
-    "type": "object",
-    "properties": {
-        "lines": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "description": {"type": "string"},
-                    "raw_quantity": {"type": "number", "nullable": True},
-                    "raw_unit_text": {"type": "string", "nullable": True},
-                },
-                "required": ["description", "raw_quantity", "raw_unit_text"],
-            },
-        }
-    },
-    "required": ["lines"],
-}
+_EXTRACTION_RESPONSE_SCHEMA = ReceiptExtraction.model_json_schema()
 
 
 class ReceiptIntakeService:
@@ -136,35 +125,64 @@ class ReceiptIntakeService:
         if not self._validate_magic_bytes(data, content_type):
             raise ImageContentMismatchError(content_type)
 
-    @staticmethod
-    def _to_decimal(value: Any) -> Decimal | None:
-        """Convert an LLM-returned number to Decimal, via its string form to
-        avoid binary float artifacts (e.g. ``0.1`` -> ``Decimal("0.1")``).
+    async def _build_lines(
+        self, raw_lines: list[dict[str, Any]]
+    ) -> list[ProposedFoodLine]:
+        """Build the proposed lines from the extracted receipt items.
 
-        Returns None for a missing/null value or one the model returned in
-        an unparsable shape, rather than letting a malformed extraction
-        break the whole proposal.
+        The catalog match of each item is delegated entirely to
+        ``FoodRepository.find_best_match`` (trigram similarity, ADR-0017). The
+        conversion factors of every matched food are read in one query.
         """
-        if value is None:
-            return None
-        try:
-            return Decimal(str(value))
-        except InvalidOperation:
-            return None
-
-    async def _match_food(self, description: str) -> IdentifierRefSchema | None:
-        """Return the catalog food that best matches ``description``, if any.
-
-        Delegates the confidence decision entirely to
-        ``FoodRepository.find_best_match`` (trigram similarity, ADR-0016) --
-        this only shapes the result for ``ProposedFoodLine.food``.
-        """
-        food = await self.uow.food_repo.find_best_match(
-            description,
-            settings.receipt_food_match_min_word_similarity,
-            settings.receipt_food_match_min_similarity,
+        foods = [
+            await self.uow.food_repo.find_best_match(
+                raw["description"],
+                settings.receipt_food_match_min_word_similarity,
+                settings.receipt_food_match_min_similarity,
+            )
+            for raw in raw_lines
+        ]
+        factors = await self.uow.food_equivalence_repo.get_factors_by_food_ids(
+            {food.id for food in foods if food is not None}
         )
-        return IdentifierRefSchema.model_validate(food) if food is not None else None
+        return [
+            self._build_line(raw, food, factors)
+            for raw, food in zip(raw_lines, foods, strict=True)
+        ]
+
+    @staticmethod
+    def _build_line(
+        raw: dict[str, Any],
+        food: Food | None,
+        factors: Mapping[UUID, ConversionFactors],
+    ) -> ProposedFoodLine:
+        """Build one proposed line from an extracted receipt item and its match.
+
+        For a matched line, ``quantity`` and ``unit`` are prefilled together
+        with the printed quantity converted to the food's base unit (see
+        ``prefill_from_printed``), and both stay None when it cannot be.
+        ``factors`` holds the conversion factors of the matched food.
+        """
+        raw_quantity = parse_printed_quantity(raw.get("raw_quantity"))
+        raw_unit_text = raw.get("raw_unit_text")
+
+        quantity = None
+        unit = None
+        if food is not None:
+            prefill = prefill_from_printed(
+                raw_quantity, raw_unit_text, food.base_unit, factors[food.id]
+            )
+            if prefill is not None:
+                quantity, unit = prefill
+
+        return ProposedFoodLine(
+            description=raw["description"],
+            food=IdentifierRefSchema.model_validate(food) if food is not None else None,
+            quantity=quantity,
+            unit=unit,
+            raw_quantity=raw_quantity,
+            raw_unit_text=raw_unit_text,
+        )
 
     @staticmethod
     def _build_photo_key(establishment_id: UUID, content_type: str) -> str:
@@ -186,6 +204,34 @@ class ReceiptIntakeService:
         image: bytes,
         actor: UserActor,
     ) -> ReceiptProposalResponse:
+        """Return a receipt proposal within the total service time budget."""
+        deadline = asyncio.timeout(settings.receipt_generation_timeout_seconds)
+        try:
+            async with deadline:
+                return await self._propose_from_photo(
+                    establishment_id=establishment_id,
+                    content_type=content_type,
+                    image=image,
+                    actor=actor,
+                )
+        except TimeoutError:
+            if not deadline.expired():
+                raise
+            await self.uow.rollback()
+            return ReceiptProposalResponse(
+                establishment_id=establishment_id,
+                lines=[],
+                message=self._MANUAL_FALLBACK_MESSAGE,
+            )
+
+    async def _propose_from_photo(
+        self,
+        *,
+        establishment_id: UUID,
+        content_type: str | None,
+        image: bytes,
+        actor: UserActor,
+    ) -> ReceiptProposalResponse:
         """Validate a receipt photo and return the LLM-proposed food lines.
 
         Nothing is stored here: the image is only held in memory for this
@@ -194,11 +240,11 @@ class ReceiptIntakeService:
         rejected proposal never leaves an orphaned object in storage.
 
         Each line is matched against the food catalog by name similarity
-        (ADR-0016); ``food`` is set when a confident match is found, and left
-        ``None`` otherwise. ``needs_review`` is always ``True`` regardless --
-        matching never marks a line as resolved, since the last validation
-        before this data hits establishment stock is always the user's. When
-        the extractor finds nothing, or the LLM call itself fails, the
+        (ADR-0017); ``food`` is set when a confident match is found, and left
+        ``None`` otherwise. On a match, ``quantity`` and ``unit`` are
+        prefilled from the printed quantity converted to the food's base
+        unit, when it can be. Callers must review all lines locally before
+        confirmation. When the extractor finds nothing or the LLM fails, the
         response falls back to an empty proposal with a hint to enter the
         intake manually rather than surfacing the failure as an error.
 
@@ -223,11 +269,12 @@ class ReceiptIntakeService:
                 image=image,
                 image_content_type=content_type,
             )
-        except LlmClientError as exc:
+            extracted = ReceiptExtraction.model_validate(result)
+        except (LlmClientError, ValidationError) as exc:
             logger.warning(
                 "receipt_intake_llm_failed",
                 establishment_id=str(establishment_id),
-                error=str(exc),
+                error_type=type(exc).__name__,
             )
             return ReceiptProposalResponse(
                 establishment_id=establishment_id,
@@ -235,16 +282,7 @@ class ReceiptIntakeService:
                 message=self._MANUAL_FALLBACK_MESSAGE,
             )
 
-        lines = [
-            ProposedFoodLine(
-                description=raw["description"],
-                food=await self._match_food(raw["description"]),
-                raw_quantity=self._to_decimal(raw.get("raw_quantity")),
-                raw_unit_text=raw.get("raw_unit_text"),
-                needs_review=True,
-            )
-            for raw in result["lines"]
-        ]
+        lines = await self._build_lines([line.model_dump() for line in extracted.lines])
         if not lines:
             logger.info(
                 "receipt_intake_no_lines_found",

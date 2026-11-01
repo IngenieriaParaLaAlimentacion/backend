@@ -184,6 +184,26 @@ class TestMovements:
         assert items[1]["origin_type"] == "other"
         assert items[1]["is_recurring"] is False
 
+    @pytest.mark.parametrize("origin_type", ["private_donation", "collection_event"])
+    async def test_new_intake_origins_are_stored_and_listed(
+        self, client, field_worker_with_access, db_establishment, foods, origin_type
+    ) -> None:
+        headers, _ = field_worker_with_access
+        created = await client.post(
+            INTAKES_URL,
+            json=_intake_body(
+                db_establishment.id, [(foods.rice, "10")], origin_type=origin_type
+            ),
+            headers=headers,
+        )
+
+        response = await client.get(
+            _movements_url(db_establishment.id), headers=headers
+        )
+
+        assert created.status_code == 201
+        assert response.json()["items"][0]["origin_type"] == origin_type
+
     async def test_an_entry_is_the_summary_shape(
         self, client, field_worker_with_access, db_establishment, foods
     ) -> None:

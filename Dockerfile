@@ -31,6 +31,13 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpango-1.0-0 \
+    libpangoft2-1.0-0 \
+    libharfbuzz-subset0 \
+    fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /app/.venv .venv
 COPY . .
 
@@ -38,4 +45,4 @@ RUN useradd --create-home appuser && chown -R appuser:appuser /app
 USER appuser
 
 EXPOSE 8080
- CMD ["sh", "-c", "alembic upgrade head  && python seed_superadmin.py && python seed_food_catalog.py && uvicorn app.main:app --host ${HOST:-0.0.0.0} --port ${PORT:-8080}"]
+CMD ["sh", "-c", "exec uvicorn app.main:app --host ${HOST:-0.0.0.0} --port ${PORT:-8080}"]

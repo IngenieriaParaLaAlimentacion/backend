@@ -1,7 +1,20 @@
+import json
+import os
+
 import pytest
 from pydantic import ValidationError
 
 from app.config.settings import Settings
+
+
+@pytest.fixture(autouse=True)
+def clear_ai_environment(monkeypatch):
+    for key in os.environ:
+        if key.startswith("OPENROUTER_") or key in {
+            "RECEIPT_GENERATION_TIMEOUT_SECONDS",
+            "RECIPE_GENERATION_TIMEOUT_SECONDS",
+        }:
+            monkeypatch.delenv(key)
 
 
 def test_build_database_url_from_parts():
@@ -50,3 +63,73 @@ def test_an_empty_service_token_counts_as_unset(value):
         Settings(_env_file=None, internal_service_token=value).internal_service_token
         is None
     )
+
+
+def test_openrouter_defaults_disable_inference_without_breaking_settings():
+    config = Settings(_env_file=None)
+    assert config.openrouter_api_key is None
+    assert config.openrouter_receipt_models == []
+    assert config.openrouter_recipe_models == []
+    assert config.openrouter_allowed_providers == []
+
+
+def test_openrouter_key_is_secret_and_blank_is_unset():
+    assert Settings(_env_file=None, openrouter_api_key="").openrouter_api_key is None
+    config = Settings(_env_file=None, openrouter_api_key="test-secret")
+    assert "test-secret" not in repr(config)
+    assert config.openrouter_api_key.get_secret_value() == "test-secret"
+
+
+@pytest.mark.parametrize(
+    "field", ["openrouter_receipt_models", "openrouter_recipe_models"]
+)
+@pytest.mark.parametrize(
+    "models",
+    [
+        ["x/a:free", "x/b:free", "x/c:free"],
+    ],
+)
+def test_model_chain_exceeding_attempt_budget_is_rejected(field, models):
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None, **{field: models})
+
+
+@pytest.mark.parametrize("providers", [[""], [" host"], ["host "], ["host", "host"]])
+def test_unauditable_provider_ids_are_rejected(providers):
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None, openrouter_allowed_providers=providers)
+
+
+def test_model_and_provider_environment_uses_json_arrays(monkeypatch):
+    monkeypatch.setenv(
+        "OPENROUTER_RECEIPT_MODELS", json.dumps(["operator/vision-model"])
+    )
+    monkeypatch.setenv(
+        "OPENROUTER_RECIPE_MODELS", json.dumps(["operator/recipe-model"])
+    )
+    monkeypatch.setenv("OPENROUTER_ALLOWED_PROVIDERS", json.dumps(["host"]))
+    config = Settings(_env_file=None)
+    assert config.openrouter_receipt_models == ["operator/vision-model"]
+    assert config.openrouter_recipe_models == ["operator/recipe-model"]
+    assert config.openrouter_allowed_providers == ["host"]
+
+
+@pytest.mark.parametrize(
+    ("field", "minimum", "maximum"),
+    [
+        ("openrouter_request_timeout_seconds", 0.1, 25),
+        ("openrouter_completion_timeout_seconds", 0.1, 40),
+        ("receipt_generation_timeout_seconds", 0.1, 60),
+        ("recipe_generation_timeout_seconds", 0.1, 240),
+        ("openrouter_max_output_tokens", 256, 65536),
+    ],
+)
+def test_inference_limits_accept_boundaries_and_reject_outside(field, minimum, maximum):
+    assert getattr(Settings(_env_file=None, **{field: minimum}), field) == minimum
+    assert getattr(Settings(_env_file=None, **{field: maximum}), field) == maximum
+    for invalid in [-1, maximum + 1]:
+        with pytest.raises(ValidationError):
+            Settings(_env_file=None, **{field: invalid})
+    if minimum > 0:
+        with pytest.raises(ValidationError):
+            Settings(_env_file=None, **{field: 0})

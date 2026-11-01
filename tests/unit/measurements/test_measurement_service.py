@@ -54,6 +54,7 @@ def make_measurement():
         m.measured_at = datetime(2024, 6, 1, tzinfo=timezone.utc)
         m.created_at = datetime(2024, 6, 1, tzinfo=timezone.utc)
         m.alerts = []
+        m.observation = None
         return m
 
     return _make
@@ -446,3 +447,36 @@ class TestExportMeasurementListing:
 
         assert await MeasurementService(uow).count_measurement_export(params) == 42
         uow.measurement_repo.count_for_export.assert_awaited_once_with(params)
+
+
+async def test_register_persists_optional_observation(
+    make_uow, valid_request, admin_actor, make_measurement
+):
+    measurement = make_measurement()
+    measurement.observation = "Sin calzado."
+    uow = make_uow(measurement=measurement)
+    data = valid_request.model_copy(update={"observation": "Sin calzado."})
+
+    result, created = await MeasurementService(uow).register(data, admin_actor)
+
+    assert created is True
+    assert result.observation == "Sin calzado."
+    assert uow.measurement_repo.create.call_args.kwargs["observation"] == "Sin calzado."
+
+
+async def test_replay_does_not_replace_original_observation(
+    make_uow, valid_request, admin_actor, make_measurement
+):
+    original = make_measurement()
+    original.observation = "Original"
+    uow = make_uow()
+    uow.measurement_repo.get_by_id.return_value = original
+    data = valid_request.model_copy(
+        update={"id": original.id, "observation": "Changed"}
+    )
+
+    result, created = await MeasurementService(uow).register(data, admin_actor)
+
+    assert created is False
+    assert result.observation == "Original"
+    uow.measurement_repo.create.assert_not_called()

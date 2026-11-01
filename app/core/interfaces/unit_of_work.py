@@ -25,16 +25,23 @@ from app.repositories.establishments.establishment_request_repository import (
 from app.repositories.food_catalog.food_category_repository import (
     FoodCategoryRepository,
 )
+from app.repositories.food_catalog.food_equivalence_repository import (
+    FoodEquivalenceRepository,
+)
 from app.repositories.food_catalog.food_nutrient_value_repository import (
     FoodNutrientValueRepository,
 )
 from app.repositories.food_catalog.food_repository import FoodRepository
+from app.repositories.food_catalog.gapa_food_category_repository import (
+    GapaFoodCategoryRepository,
+)
 from app.repositories.food_catalog.nutrient_repository import NutrientRepository
 from app.repositories.food_intakes.food_intake_repository import FoodIntakeRepository
 from app.repositories.food_outflows.food_outflow_repository import (
     FoodOutflowRepository,
 )
 from app.repositories.food_stock.food_stock_repository import FoodStockRepository
+from app.repositories.health_repository import HealthRepository
 from app.repositories.measurements.measurement_alert_repository import (
     MeasurementAlertRepository,
 )
@@ -44,6 +51,10 @@ from app.repositories.notifications import (
     StaleEstablishmentCycleRepository,
     UserPushDeviceRepository,
 )
+from app.repositories.nutrition_reports.nutrition_report_repository import (
+    NutritionReportRepository,
+)
+from app.repositories.recipes.recipe_repository import RecipeRepository
 from app.repositories.subjects.subject_event_repository import SubjectEventRepository
 from app.repositories.subjects.subject_repository import SubjectRepository
 from app.repositories.surveys.survey_repository import SurveyRepository
@@ -54,6 +65,7 @@ from app.repositories.surveys.survey_response_repository import SurveyResponseRe
 
 
 class IUnitOfWork(ABC):
+    recipe_repo: RecipeRepository
     activity_repo: ActivityRepository
     user_repo: UserRepository
     password_repo: UserPasswordRepository
@@ -72,15 +84,19 @@ class IUnitOfWork(ABC):
     survey_response_edit_repo: SurveyResponseEditRepository
     establishment_dashboard_repo: EstablishmentDashboardRepository
     food_category_repo: FoodCategoryRepository
+    gapa_food_category_repo: GapaFoodCategoryRepository
     nutrient_repo: NutrientRepository
     food_repo: FoodRepository
     food_nutrient_value_repo: FoodNutrientValueRepository
+    food_equivalence_repo: FoodEquivalenceRepository
     food_intake_repo: FoodIntakeRepository
     food_outflow_repo: FoodOutflowRepository
     food_stock_repo: FoodStockRepository
+    nutrition_report_repo: NutritionReportRepository
     push_device_repo: UserPushDeviceRepository
     stale_cycle_repo: StaleEstablishmentCycleRepository
     push_delivery_job_repo: PushDeliveryJobRepository
+    health_repo: HealthRepository
 
     @abstractmethod
     async def commit(self) -> None: ...

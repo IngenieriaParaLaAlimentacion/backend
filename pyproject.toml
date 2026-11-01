@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "backend"
-version = "0.2.0"
+version = "1.0.0"
 description = ""
 authors = ["grupo-193"]
 readme = "README.md"
@@ -29,13 +29,15 @@ structlog = "^26.1.0"
 opentelemetry-instrumentation-logging = "^0.65b0"
 python-multipart = "^0.0.32"
 aioboto3 = "^15.5.0"
-google-genai = "^2.23.0"
 httpx = "^0.28.1"
 google-auth = {extras = ["requests"], version = "^2.0"}
 apscheduler = "^3.11.0"
-tenacity = "^9.1.4"
 redis = "^8.1.0"
 limits = "^5.8.0"
+pulp = "^3.3"
+highspy = "^1.15"
+jinja2 = "^3.1.6"
+weasyprint = "^70.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = ">=0.15.8,<0.16.0"
@@ -69,11 +71,13 @@ select = [
 quote-style = "double"
 
 [tool.pytest.ini_options]
+testpaths = ["tests/unit", "tests/integration"]
 asyncio_mode = "auto"
 asyncio_default_test_loop_scope = "session"
 asyncio_default_fixture_loop_scope = "session"
 
 [tool.coverage.run]
+source = ["app"]
 omit = [
     "alembic/*",
     "alembic/versions/*",

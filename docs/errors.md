@@ -19,10 +19,17 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 `/errors/not-found` (404, unrouted path), `/errors/method-not-allowed` (405) and
 `/errors/internal-error` (500).
 
+`/errors/validation-failed` does not name the fields that failed, except on routes
+marked `x-invalid-field-extension` in the OpenAPI document: there it also carries
+`field`, the path of the first body field that failed (dotted when nested, down
+to the first list index), never its value.
+
 | `type` | Status | Exception | Description |
 |---|---|---|---|
 | `/errors/account-pending-validation` | 403 | `PendingValidationError` | Exception raised when a user attempts to log in with a pending account. |
 | `/errors/admin/invite-already-pending` | 409 | `InvitePendingError` | Raised when inviting an address that already has a pending invitation. |
+| `/errors/ai/quota-exhausted` | 429 | `AiQuotaExhaustedError` | Inference is temporarily blocked by a provider usage limit. |
+| `/errors/ai/unavailable` | 503 | `AiUnavailableError` | An eligible AI processing endpoint is currently unavailable. |
 | `/errors/auth/invalid-recovery-token` | 401 | `InvalidRecoveryTokenError` | Raised when a password recovery token is unusable. |
 | `/errors/auth/invalid-refresh-token` | 401 | `InvalidRefreshTokenError` | Raised when a refresh token is unknown, expired or already revoked. |
 | `/errors/auth/invalid-verification-token` | 401 | `InvalidVerificationTokenError` | Raised when an email verification token is unusable. |
@@ -56,10 +63,28 @@ exception and so are not in the registry: `/errors/validation-failed` (422),
 | `/errors/no-fields-to-update` | 400 | `EmptyUpdateRequestError` | Exception raised when an update has no attributes to be updated. |
 | `/errors/not-resource-owner` | 403 | `NotResourceOwnerError` | Raised when a non-admin acts on a resource somebody else created. |
 | `/errors/notification-configuration-invalid` | 503 | `NotificationConfigurationError` | Raised when scheduled notifications are not fully configured. |
+| `/errors/nutrition/invalid-children-count` | 422 | `InvalidChildrenCountError` | Raised when a recipe is requested for no children or a negative number. |
+| `/errors/nutrition/recipe-optimization-failed` | 500 | `RecipeOptimizationError` | Raised when the solver cannot return an optimal recipe. |
+| `/errors/nutrition/report-conversion-unavailable` | 409 | `NutritionReportConversionUnavailableError` | Raised when none of the foods received in a month converts to grams. |
+| `/errors/nutrition/report-generation-timeout` | 504 | `NutritionReportGenerationTimeoutError` | Report generation exceeded its total request time budget. |
+| `/errors/nutrition/report-month-not-over` | 422 | `NutritionReportMonthNotOverError` | Raised when a nutrition report is requested for a month that has not ended. |
+| `/errors/nutrition/report-not-found` | 404 | `NutritionReportNotFoundError` | Raised when an establishment has no saved nutrition report for a month. |
+| `/errors/nutrition/report-summary-unavailable` | 409 | `NutritionReportSummaryUnavailableError` | Raised when a report's PDF is requested while its AI summary is missing. |
+| `/errors/nutrition/unknown-gapa-group` | 500 | `UnknownGapaGroupError` | Raised when the catalog holds a GAPA group the application does not know. |
 | `/errors/password-not-found` | 404 | `PasswordNotFoundError` | Exception raised when a user's password record is not found. |
 | `/errors/rate-limited` | 429 | `RateLimitedError` | Raised when a caller exceeds the rate limit of a public endpoint. |
 | `/errors/receipt-photo-storage-failed` | 502 | `ReceiptPhotoStorageError` | Raised when a receipt photo cannot be persisted to object storage. |
+| `/errors/recipes/already-chosen` | 409 | `RecipeAlreadyChosenError` | A different proposal was already chosen for this request. |
+| `/errors/recipes/generation-failed` | 502 | `RecipeGenerationError` | The model failed to produce complete valid recipe proposals. |
+| `/errors/recipes/generation-timeout` | 504 | `RecipeGenerationTimeoutError` | Recipe generation exceeded its total request time budget. |
+| `/errors/recipes/idempotency-conflict` | 409 | `RecipeIdempotencyConflictError` | A reuse id was already used with different input. |
+| `/errors/recipes/ingredient-unavailable` | 409 | `RecipeIngredientUnavailableError` | A saved recipe ingredient is no longer in the catalog. |
+| `/errors/recipes/ingredient-unit-changed` | 409 | `RecipeIngredientUnitChangedError` | A saved ingredient's stock unit changed since generation. |
+| `/errors/recipes/no-usable-stock` | 409 | `RecipeNoUsableStockError` | No stocked food with known mass and positive energy can form a recipe. |
+| `/errors/recipes/not-found` | 404 | `RecipeNotFoundError` | The requested recommendation or proposal does not exist. |
+| `/errors/recipes/scale-too-small` | 409 | `RecipeScaleTooSmallError` | Scaling would round a required ingredient down to zero. |
 | `/errors/role-not-allowed` | 403 | `RoleNotAllowedError` | Raised when the actor's role is not permitted to perform the operation. |
+| `/errors/service-not-ready` | 503 | `ServiceNotReadyError` | Raised when a dependency the service needs to serve requests is down. |
 | `/errors/subject-already-exists` | 409 | `SubjectAlreadyExistsError` | Exception raised when trying to register a subject with an existing DNI. |
 | `/errors/subject-not-found` | 404 | `SubjectNotFoundError` | Exception raised when a subject cannot be found. |
 | `/errors/survey-already-exists` | 409 | `SurveyAlreadyExistsError` | Exception raised when a survey name collides with an existing one. |

@@ -7,7 +7,7 @@ from fastapi import status
 
 from app.core.security import create_access_token
 from app.domain.user import UserRole
-from tests.integration.urls import MEASUREMENTS_URL
+from tests.integration.urls import MEASUREMENTS_URL, SUBJECTS_URL
 
 
 @pytest_asyncio.fixture
@@ -411,3 +411,148 @@ class TestAlerts:
             rows = result.scalars().all()
 
         assert len(rows) == 1
+
+
+class TestObservation:
+    @pytest.mark.parametrize(
+        ("observation", "expected"),
+        [
+            (None, None),
+            (" \n ", None),
+            ("  Sin calzado.\nRepetir control.  ", "Sin calzado.\nRepetir control."),
+        ],
+    )
+    async def test_round_trip_and_listing(
+        self,
+        client,
+        db_adult_subject,
+        db_establishment,
+        db_admin_headers,
+        observation,
+        expected,
+    ):
+        from app.db.database import AsyncSessionLocal
+        from app.models.measurements.measurement import Measurement
+
+        response = await _upload(
+            client,
+            db_adult_subject.id,
+            db_establishment.id,
+            db_admin_headers,
+            observation=observation,
+        )
+        assert response.status_code == status.HTTP_201_CREATED
+        data = response.json()
+        assert data["observation"] == expected
+        async with AsyncSessionLocal() as session:
+            stored = await session.get(Measurement, uuid.UUID(data["id"]))
+            assert stored.observation == expected
+
+        listing = await client.get(
+            MEASUREMENTS_URL,
+            params={"subject_id": str(db_adult_subject.id)},
+            headers=db_admin_headers,
+        )
+        assert listing.status_code == status.HTTP_200_OK
+        assert listing.json()["items"][0]["observation"] == expected
+
+        detail = await client.get(
+            f"{SUBJECTS_URL}/{db_adult_subject.id}", headers=db_admin_headers
+        )
+        assert detail.status_code == status.HTTP_200_OK
+        assert detail.json()["latest_measurement"]["observation"] == expected
+
+        evolution = await client.get(
+            f"{SUBJECTS_URL}/{db_adult_subject.id}/measurements/evolution",
+            headers=db_admin_headers,
+        )
+        assert evolution.status_code == status.HTTP_200_OK
+        assert evolution.json()["points"][0]["observation"] == expected
+
+    async def test_replay_keeps_original_note(
+        self,
+        client,
+        db_adult_subject,
+        db_establishment,
+        db_admin_headers,
+    ):
+        measurement_id = uuid.uuid4()
+        first = await _upload_with_id(
+            client,
+            measurement_id,
+            db_adult_subject.id,
+            db_establishment.id,
+            db_admin_headers,
+            observation="Original",
+        )
+        replay = await _upload_with_id(
+            client,
+            measurement_id,
+            db_adult_subject.id,
+            db_establishment.id,
+            db_admin_headers,
+            observation="Changed",
+        )
+        assert first.status_code == status.HTTP_201_CREATED
+        assert replay.status_code == status.HTTP_200_OK
+        assert replay.json()["observation"] == "Original"
+
+    async def test_rejects_overlong_observation(
+        self,
+        client,
+        db_adult_subject,
+        db_establishment,
+        db_admin_headers,
+    ):
+        response = await _upload(
+            client,
+            db_adult_subject.id,
+            db_establishment.id,
+            db_admin_headers,
+            observation="x" * 501,
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+def test_observation_migration_preserves_legacy_rows(postgres_url, monkeypatch):
+    """Upgrade and downgrade a legacy measurement table in an isolated schema."""
+    from importlib.util import module_from_spec, spec_from_file_location
+    from pathlib import Path
+
+    from alembic.operations import Operations
+    from alembic.runtime.migration import MigrationContext
+    from sqlalchemy import create_engine, text
+
+    revision_path = Path(__file__).resolve().parents[3] / (
+        "alembic/versions/a8c4f6d2e901_add_measurement_observation.py"
+    )
+    spec = spec_from_file_location("observation_revision", revision_path)
+    assert spec is not None and spec.loader is not None
+    revision = module_from_spec(spec)
+    spec.loader.exec_module(revision)
+    schema = f"test_observation_{uuid.uuid4().hex}"
+    engine = create_engine(postgres_url)
+    try:
+        with engine.begin() as conn:
+            conn.exec_driver_sql(f'CREATE SCHEMA "{schema}"')
+            conn.exec_driver_sql(f'SET LOCAL search_path TO "{schema}"')
+            conn.exec_driver_sql("CREATE TABLE measurements (id int PRIMARY KEY)")
+            conn.exec_driver_sql("INSERT INTO measurements (id) VALUES (1)")
+            monkeypatch.setattr(
+                revision, "op", Operations(MigrationContext.configure(conn))
+            )
+            revision.upgrade()
+            assert conn.execute(
+                text("SELECT id, observation FROM measurements")
+            ).one() == (1, None)
+            conn.exec_driver_sql("UPDATE measurements SET observation = 'Sin calzado.'")
+            assert (
+                conn.execute(text("SELECT observation FROM measurements")).scalar_one()
+                == "Sin calzado."
+            )
+            revision.downgrade()
+            assert conn.execute(text("SELECT * FROM measurements")).one() == (1,)
+    finally:
+        with engine.begin() as conn:
+            conn.exec_driver_sql(f'DROP SCHEMA IF EXISTS "{schema}" CASCADE')
+        engine.dispose()

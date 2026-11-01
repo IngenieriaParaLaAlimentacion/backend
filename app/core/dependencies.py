@@ -1,9 +1,10 @@
 from collections.abc import AsyncGenerator
 
-from fastapi import Depends
+from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 
+from app.config.settings import settings
 from app.core.interfaces.llm_client import ILlmClient
 from app.core.security import decode_token
 from app.db.unit_of_work import UnitOfWork
@@ -28,9 +29,14 @@ from app.services.food_intakes.food_intake_service import FoodIntakeService
 from app.services.food_intakes.receipt_intake_service import ReceiptIntakeService
 from app.services.food_outflows.food_outflow_service import FoodOutflowService
 from app.services.food_stock.food_stock_service import FoodStockService
-from app.services.llm.gemini_llm_client import GeminiLlmClient
+from app.services.health_service import HealthService
+from app.services.llm.openrouter_llm_client import OpenRouterLlmClient
 from app.services.measurements.measurement_service import MeasurementService
 from app.services.notifications.device_service import DeviceService
+from app.services.nutrition.nutrition_service import NutritionService
+from app.services.nutrition_reports.nutrition_report_service import (
+    NutritionReportService,
+)
 from app.services.subjects.subject_service import SubjectService
 from app.services.surveys.survey_response_service import SurveyResponseService
 from app.services.surveys.survey_service import SurveyService
@@ -122,13 +128,15 @@ async def get_food_intake_service() -> AsyncGenerator[FoodIntakeService, None]:
         yield FoodIntakeService(uow)
 
 
-async def get_llm_client() -> AsyncGenerator[ILlmClient, None]:
-    """Provide the LLM client used for receipt extraction.
-
-    Its own dependency (rather than inlined in ``get_receipt_intake_service``)
-    so tests can swap in a scripted double instead of calling Gemini for real.
-    """
-    yield GeminiLlmClient()
+async def get_llm_client(request: Request) -> ILlmClient:
+    """Lazily share one structured client per app; lifespan owns its cleanup."""
+    client = getattr(request.app.state, "llm_client", None)
+    if client is None:
+        # No await between lookup and assignment: concurrent requests cannot
+        # create two clients on the application event loop.
+        client = OpenRouterLlmClient(settings=settings)
+        request.app.state.llm_client = client
+    return client
 
 
 async def get_receipt_intake_service(
@@ -172,6 +180,12 @@ async def get_establishment_dashboard_service() -> AsyncGenerator[
     """Provide a DashboardService backed by a fresh UnitOfWork."""
     async with UnitOfWork() as uow:
         yield EstablishmentDashboardService(uow)
+
+
+async def get_health_service() -> AsyncGenerator[HealthService, None]:
+    """Provide a HealthService backed by a fresh UnitOfWork."""
+    async with UnitOfWork() as uow:
+        yield HealthService(uow, settings.readiness_db_timeout_seconds)
 
 
 def _decode_verified_payload(token: str) -> dict:
@@ -256,3 +270,37 @@ async def require_admin_or_analyst(
     return await _get_authenticated_actor(
         token, {UserRole.ADMIN, UserRole.ANALYST, UserRole.SUPERADMIN}
     )
+
+
+async def get_recipe_service():
+    """Provide history and selection operations without constructing an LLM."""
+    from app.services.recipes.recipe_service import RecipeService
+
+    async with UnitOfWork() as uow:
+        yield RecipeService(uow)
+
+
+async def get_recipe_generation_service(
+    llm_client: ILlmClient = Depends(get_llm_client),
+):
+    """Provide the recommendation workflow with an injectable structured client."""
+    from app.services.recipes.recipe_service import RecipeService
+
+    async with UnitOfWork() as uow:
+        yield RecipeService(uow, llm_client)
+
+
+async def get_nutrition_report_service() -> AsyncGenerator[
+    NutritionReportService, None
+]:
+    """Provide the saved-report operations without a calculator or an AI client."""
+    async with UnitOfWork() as uow:
+        yield NutritionReportService(uow)
+
+
+async def get_nutrition_report_generation_service(
+    llm_client: ILlmClient = Depends(get_llm_client),
+) -> AsyncGenerator[NutritionReportService, None]:
+    """Provide the report operations with the AI client and the nutrition balance."""
+    async with UnitOfWork() as uow:
+        yield NutritionReportService(uow, NutritionService(uow), llm_client)

@@ -1,12 +1,13 @@
 import asyncio
 import logging
 
+from app.config.logging import setup_logging
 from app.config.settings import settings
 from app.core.security import hash_password
 from app.db.unit_of_work import UnitOfWork
 from app.domain.user import UserRole, UserStatus
 
-logging.basicConfig(level=settings.log_level)
+setup_logging()
 logger = logging.getLogger(__name__)
 
 
@@ -14,7 +15,7 @@ async def create_super_admin() -> None:
     async with UnitOfWork() as uow:
         try:
             if await uow.user_repo.get_by_email(settings.seed_admin_email):
-                logger.error("Super admin already exists")
+                logger.info("Super admin already exists; skipping seed")
                 return
 
             logger.info("Creating super admin")
@@ -31,10 +32,10 @@ async def create_super_admin() -> None:
                 password_hashed=hash_password(settings.seed_admin_password),
             )
             await uow.commit()
-            logger.info(f"Super admin created: {settings.seed_admin_email}")
+            logger.info("Super admin created")
 
-        except Exception as error:
-            logger.error(f"Error creating super admin: {error}")
+        except Exception:
+            logger.exception("Error creating super admin")
             raise
 
 

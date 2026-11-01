@@ -1,6 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime
-from enum import Enum, StrEnum
+from enum import StrEnum
 from typing import Self
 from uuid import UUID
 
@@ -26,7 +26,7 @@ class EvolutionOrder(StrEnum):
     NEWEST_FIRST = "newest_first"
 
 
-class AlertType(str, Enum):
+class AlertType(StrEnum):
     SEVERELY_WASTED = "severely_wasted"
     WASTED = "wasted"
     OVERWEIGHT = "overweight"
@@ -35,7 +35,7 @@ class AlertType(str, Enum):
     UNDERWEIGHT = "underweight"
 
 
-class AlertSeverity(str, Enum):
+class AlertSeverity(StrEnum):
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
@@ -132,6 +132,7 @@ class MeasurementBase:
     height_cm: float
     bmi: float
     alerts: list[AlertDomain]
+    observation: str | None = field(default=None, kw_only=True)
 
     @classmethod
     def _base_kwargs(cls, obj) -> dict:
@@ -142,6 +143,7 @@ class MeasurementBase:
             height_cm=obj.height_cm,
             bmi=obj.bmi,
             alerts=[AlertDomain.from_db(a) for a in obj.alerts],
+            observation=obj.observation,
         )
 
     @classmethod
@@ -168,6 +170,7 @@ class MeasurementDomain:
     measured_at: datetime
     created_at: datetime
     alerts: list[AlertDomain]
+    observation: str | None = None
 
     @classmethod
     def from_db(cls, obj) -> "MeasurementDomain":
@@ -183,6 +186,7 @@ class MeasurementDomain:
             measured_at=obj.measured_at,
             created_at=obj.created_at,
             alerts=[AlertDomain.from_db(a) for a in obj.alerts],
+            observation=obj.observation,
         )
 
 

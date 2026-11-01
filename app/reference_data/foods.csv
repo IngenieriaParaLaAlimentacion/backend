@@ -1,899 +1,899 @@
-code,name,category,base_unit,source_page
-acelga_cruda,"Acelga, cruda",verduras,kilogramos,18
-acelga_hervida,"Acelga, hervida",verduras,kilogramos,18
-acelga_pencas_crudas,"Acelga, pencas, crudas",verduras,kilogramos,18
-acelga_pencas_hervidas,"Acelga, pencas, hervidas",verduras,kilogramos,18
-achicoria_cruda,"Achicoria, cruda",verduras,kilogramos,18
-achicoria_hervida,"Achicoria, hervida",verduras,kilogramos,18
-aji_en_conserva,Ají en conserva,verduras,kilogramos,18
-aji_rojo_morron_rojo_crudo,"Ají rojo / morrón rojo, crudo",verduras,kilogramos,18
-aji_rojo_morron_rojo_rehogado,"Ají rojo / morrón rojo, rehogado",verduras,kilogramos,18
-aji_verde_o_amarillo_morron_verde_o_amarillo_rehogado,"Ají verde o amarillo / morrón verde o amarillo, rehogado",verduras,kilogramos,18
-aji_verde_o_amarillo_morron_verde_o_amarillo_crudo,"Ají verde o amarillo / morrón verde o amarillo, crudo",verduras,kilogramos,18
-ajo_crudo,"Ajo, crudo",verduras,kilogramos,18
-albahaca_cruda,"Albahaca, cruda",verduras,kilogramos,18
-alcaparras_encurtido,"Alcaparras, encurtido",verduras,kilogramos,18
-alcaucil_crudo,"Alcaucil, crudo",verduras,kilogramos,18
-alcaucil_hervido,"Alcaucil, hervido",verduras,kilogramos,18
-apio_crudo,"Apio, crudo",verduras,kilogramos,18
-apio_hervido,"Apio, hervido",verduras,kilogramos,18
-arveja_enlatada,"Arveja, enlatada",verduras,kilogramos,18
-arveja_fresca_cruda,"Arveja, fresca, cruda",verduras,kilogramos,18
-arveja_fresca_hervida,"Arveja, fresca, hervida",verduras,kilogramos,20
-berenjena_cruda,"Berenjena, cruda",verduras,kilogramos,20
-berenjena_hervida,"Berenjena, hervida",verduras,kilogramos,20
-berro_crudo,"Berro, crudo",verduras,kilogramos,20
-brocoli_crudo,"Brócoli, crudo",verduras,kilogramos,20
-brocoli_hervido,"Brócoli, hervido",verduras,kilogramos,20
-brotes_de_soja_crudo,"Brotes de soja, crudo",verduras,kilogramos,20
-brotes_de_soja_rehogado,"Brotes de soja, rehogado",verduras,kilogramos,20
-cebolla_de_verdeo_cruda,"Cebolla de verdeo, cruda",verduras,kilogramos,20
-cebolla_de_verdeo_rehogada,"Cebolla de verdeo, rehogada",verduras,kilogramos,20
-cebolla_cruda,"Cebolla, cruda",verduras,kilogramos,20
-cebolla_rehogada,"Cebolla, rehogada",verduras,kilogramos,20
-champignones_enlatados,"Champignones, enlatados",verduras,kilogramos,20
-champignones_frescos_crudos,"Champignones, frescos, crudos",verduras,kilogramos,20
-chaucha_fresca_cruda,"Chaucha, fresca, cruda",verduras,kilogramos,20
-chaucha_fresca_hervida,"Chaucha, fresca, hervida",verduras,kilogramos,20
-chuchu_o_chayote_crudo,"Chuchu o chayote, crudo",verduras,kilogramos,20
-coliflor_crudo,"Coliflor, crudo",verduras,kilogramos,20
-coliflor_hervido,"Coliflor, hervido",verduras,kilogramos,20
-escarola_cruda,"Escarola, cruda",verduras,kilogramos,20
-esparrago_crudo,"Espárrago, crudo",verduras,kilogramos,22
-esparrago_hervido,"Espárrago, hervido",verduras,kilogramos,22
-espinaca_cruda,"Espinaca, cruda",verduras,kilogramos,22
-espinaca_hervida,"Espinaca, hervida",verduras,kilogramos,22
-habas_cruda,"Habas, cruda",verduras,kilogramos,22
-habas_hervida,"Habas, hervida",verduras,kilogramos,22
-hakusai_o_col_china_crudo,"Hakusai o col china, crudo",verduras,kilogramos,22
-hinojo_crudo,"Hinojo, crudo",verduras,kilogramos,22
-hinojo_hervido,"Hinojo, hervido",verduras,kilogramos,22
-hongos_enlatados,"Hongos, enlatados",verduras,kilogramos,22
-hongos_frescos_crudos,"Hongos, frescos, crudos",verduras,kilogramos,22
-hongos_frescos_rehogados,"Hongos, frescos, rehogados",verduras,kilogramos,22
-hongos_secos,"Hongos, secos",verduras,kilogramos,22
-jardinera_enlatada,"Jardinera, enlatada",verduras,kilogramos,22
-jengibre,Jengibre,verduras,kilogramos,22
-kale_crudo,"Kale, crudo",verduras,kilogramos,22
-lechuga_cruda,"Lechuga, cruda",verduras,kilogramos,22
-mandioca_cruda,"Mandioca, cruda",verduras,kilogramos,22
-mandioca_hervida,"Mandioca, hervida",verduras,kilogramos,22
-medallones_de_industrializados_verdura_congelados,Medallones de industrializados verdura congelados,verduras,kilogramos,22
-palmitos_enlatados,"Palmitos, enlatados",verduras,kilogramos,24
-pepino_crudo,"Pepino, crudo",verduras,kilogramos,24
-perejil_crudo,"Perejil, crudo",verduras,kilogramos,24
-pickles_en_vinagre,"Pickles, en vinagre",verduras,kilogramos,24
-prefritos_espinaca_congelados_patitas_de_vegetales,"Prefritos (espinaca) congelados, patitas de vegetales",verduras,kilogramos,24
-puerro_crudo,"Puerro, crudo",verduras,kilogramos,24
-puerro_hervido,"Puerro, hervido",verduras,kilogramos,24
-rabanito_crudo,"Rabanito, crudo",verduras,kilogramos,24
-radicheta_cruda,"Radicheta, cruda",verduras,kilogramos,24
-remolacha_cruda,"Remolacha, cruda",verduras,kilogramos,24
-remolacha_hervida,"Remolacha, hervida",verduras,kilogramos,24
-repollito_de_bruselas_crudos,"Repollito de Bruselas, crudos",verduras,kilogramos,24
-repollito_de_bruselas_hervidos,"Repollito de Bruselas, hervidos",verduras,kilogramos,24
-repollo_crudo,"Repollo, crudo",verduras,kilogramos,24
-repollo_hervido,"Repollo, hervido",verduras,kilogramos,24
-rucula_cruda,"Rúcula, cruda",verduras,kilogramos,24
-tomate_crudo,"Tomate, crudo",verduras,kilogramos,24
-tomate_desecado,"Tomate, desecado",verduras,kilogramos,24
-tomate_enlatado,"Tomate, enlatado",verduras,kilogramos,24
-tomate_hervido,"Tomate, hervido",verduras,kilogramos,26
-tomate_pure_de_tomate,"Tomate, puré de tomate",verduras,kilogramos,26
-tomate_pure_de_tomate_hervido,"Tomate, puré de tomate, hervido",verduras,kilogramos,26
-tomates_cherry_crudos,"Tomates cherry, crudos",verduras,kilogramos,26
-verdolaga_cruda,"Verdolaga, cruda",verduras,kilogramos,26
-verdolaga_hervida,"Verdolaga, hervida",verduras,kilogramos,26
-zanahoria_cruda,"Zanahoria, cruda",verduras,kilogramos,26
-zanahoria_hervida,"Zanahoria, hervida",verduras,kilogramos,26
-zapallito_crudo,"Zapallito, crudo",verduras,kilogramos,26
-zapallito_hervido,"Zapallito, hervido",verduras,kilogramos,26
-zapallo_crudo,"Zapallo, crudo",verduras,kilogramos,26
-zapallo_hervido,"Zapallo, hervido",verduras,kilogramos,26
-zucchini_crudo,"Zucchini, crudo",verduras,kilogramos,26
-zucchini_hervido,"Zucchini, hervido",verduras,kilogramos,26
-aceituna_negra,Aceituna negra,frutas,kilogramos,28
-aceituna_verde,Aceituna verde,frutas,kilogramos,28
-acerola,Acerola,frutas,kilogramos,28
-anana,Ananá,frutas,kilogramos,28
-anana_enlatado_fruta_y_almibar,"Ananá, enlatado (fruta y almíbar)",frutas,kilogramos,28
-arandanos,Arándanos,frutas,kilogramos,28
-banana,Banana,frutas,kilogramos,28
-cereza,Cereza,frutas,kilogramos,28
-ciruela,Ciruela,frutas,kilogramos,28
-ciruela_pasa_ciruela_seca,Ciruela pasa / ciruela seca,frutas,kilogramos,28
-coco_rallado,Coco rallado,frutas,kilogramos,28
-coctail_de_frutas_enlatado_fruta_y_almibar,"Coctail de frutas, enlatado (fruta y almíbar)",frutas,kilogramos,28
-damasco,Damasco,frutas,kilogramos,28
-datiles,Dátiles,frutas,kilogramos,28
-durazno,Durazno,frutas,kilogramos,28
-durazno_orejon,Durazno orejón,frutas,kilogramos,28
-durazno_enlatado_fruta_y_almibar,"Durazno, enlatado (fruta y almíbar)",frutas,kilogramos,28
-durazno_enlatado_light_fruta_y_almibar,"Durazno, enlatado light (fruta y almíbar)",frutas,kilogramos,28
-frambuesa,Frambuesa,frutas,kilogramos,28
-frutas_abrillantadas,Frutas abrillantadas,frutas,kilogramos,28
-frutilla,Frutilla,frutas,kilogramos,30
-granada,Granada,frutas,kilogramos,30
-guayaba,Guayaba,frutas,kilogramos,30
-higo,Higo,frutas,kilogramos,30
-higo_desecado,Higo desecado,frutas,kilogramos,30
-kaki,Kaki,frutas,kilogramos,30
-kinoto,Kinoto,frutas,kilogramos,30
-kiwi,Kiwi,frutas,kilogramos,30
-limon,Limón,frutas,kilogramos,30
-mamon,Mamón,frutas,kilogramos,30
-mandarina,Mandarina,frutas,kilogramos,30
-mango,Mango,frutas,kilogramos,30
-manzana_con_piel,Manzana con piel,frutas,kilogramos,30
-manzana_sin_piel,Manzana sin piel,frutas,kilogramos,30
-maracuya,Maracuyá,frutas,kilogramos,30
-melon,Melón,frutas,kilogramos,30
-membrillo,Membrillo,frutas,kilogramos,30
-mora,Mora,frutas,kilogramos,30
-naranja,Naranja,frutas,kilogramos,30
-nispero,Níspero,frutas,kilogramos,30
-palta,Palta,frutas,kilogramos,32
-papaya,Papaya,frutas,kilogramos,32
-pera,Pera,frutas,kilogramos,32
-pera_orejon,Pera orejón,frutas,kilogramos,32
-pera_enlatada_fruta_y_almibar,"Pera, enlatada (fruta y almíbar)",frutas,kilogramos,32
-pera_enlatada_light_fruta_y_almibar,"Pera, enlatada light (fruta y almíbar)",frutas,kilogramos,32
-pomelo,Pomelo,frutas,kilogramos,32
-pure_de_frutas_envasado_alimento_infantil,Puré de frutas envasado (alimento infantil),frutas,kilogramos,32
-sandia,Sandía,frutas,kilogramos,32
-uva,Uva,frutas,kilogramos,32
-uva_pasa,Uva pasa,frutas,kilogramos,32
-almidon_de_maiz_crudo,"Almidón de maíz, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-almidon_de_mandioca_crudo,"Almidón de mandioca, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-amaranto_crudo,"Amaranto, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-amaranto_hervido,"Amaranto, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-anchi,Anchi,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-arroz_blanco_crudo,"Arroz blanco, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-arroz_blanco_hervido,"Arroz blanco, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-arroz_envasado_deshidratado_listo_para_preparar_con_salsa_u_otros_ingredientes_tipo_cuatro_quesos_primavera_etc,"Arroz envasado deshidratado listo para preparar con salsa u otros ingredientes (tipo cuatro quesos, primavera, etc.)",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-arroz_inflado_azucarado,Arroz inflado azucarado,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-arroz_integral_crudo,"Arroz integral, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-arroz_integral_hervido,"Arroz integral, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-arroz_yamani_crudo,"Arroz yamaní, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-arroz_yamani_hervido,"Arroz yamaní, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-arveja_semilla_seca_entera_partida_cruda,"Arveja, semilla seca entera / partida, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-arveja_semilla_seca_entera_partida_hervida,"Arveja, semilla seca entera / partida, hervida",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-avena_almohaditas,"Avena, almohaditas",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-avena_arrollada_cruda,"Avena, arrollada, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,34
-avena_arrollada_hervida,"Avena, arrollada, hervida",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-barra_crocante_de_arroz,Barra crocante de arroz,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-barra_de_cereal_fortificada,Barra de cereal fortificada,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-barra_de_cereal_light,Barra de cereal light,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-barra_de_cereales_promedio,"Barra de cereales, PROMEDIO",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-batata_cruda,"Batata, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-batata_hervida,"Batata, hervida",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-bizcochitos_de_arroz_envasados_tipo_galletita,Bizcochitos de arroz envasados (tipo galletita),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-bizcochitos_de_grasa_envasados,Bizcochitos de grasa envasados,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-bizcochitos_de_grasa_envasados_light,Bizcochitos de grasa envasados light,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-bizcochos_de_grasa_panaderia_criollitos_libritos_pan_con_grasa,"Bizcochos de grasa (panadería) / Criollitos, Libritos (pan con grasa)",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-bizcochos_tipo_bay_biscuit,Bizcochos tipo Bay Biscuit,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-bizcochuelo_preparado_panaderia,Bizcochuelo preparado (panadería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-bizcochuelo_premezcla_preparado_a_partir_de_polvo,Bizcochuelo premezcla preparado a partir de polvo,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-bizcochuelo_premezcla_sin_preparado_a_tacc_partir_de_polvo,"Bizcochuelo premezcla, SIN preparado a TACC partir de polvo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-bollitos_de_anis,Bollitos de anís,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-brownie_panaderia,Brownie (panadería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,36
-budin_industrializado,Budín industrializado,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-budin_industrializado_con_nueces_tipo_navideno,"Budín industrializado con nueces, tipo navideño",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-capelettis_capelettinis_deshidratados_envasados_crudos,"Capelettis / capelettinis deshidratados, envasados, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-capelettis_capelettinis_deshidratados_envasados_hervidos,"Capelettis / capelettinis deshidratados, envasados, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-capelettis_frescos_artesanal_crudo,"Capelettis frescos, artesanal, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-capelettis_frescos_artesanal_hervido,"Capelettis frescos, artesanal, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-cereal_desayuno_aritos_frutales,"Cereal desayuno, aritos frutales",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-cereal_desayuno_aritos_sabor_miel,"Cereal desayuno, aritos sabor miel",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-cereal_desayuno_bolitas_de_chocolate,"Cereal desayuno, bolitas de chocolate",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-cereal_desayuno_copos_azucarados_fortificados,"Cereal desayuno, copos azucarados, fortificados",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-cereal_desayuno_copos_azucarados_sin_fortificar,"Cereal desayuno, copos azucarados, sin fortificar",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-cereal_desayuno_copos_de_cereal_integral_arroz_y_maiz_fortificados,"Cereal desayuno, copos de cereal integral (arroz y maíz), fortificados",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-cereal_desayuno_copos_de_maiz_sin_azucar_sin_fortificar,"Cereal desayuno, copos de maíz sin azúcar, sin fortificar",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-cereal_desayuno_salvado_de_trigo_tipo_bastoncitos,"Cereal desayuno, salvado de trigo tipo bastoncitos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-cereal_infantil_para_papilla,Cereal infantil para papilla,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-cheesecake_panaderia_confiteria,Cheesecake (panadería / confitería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-chipa,Chipá,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,38
-chipa_premezcla_preparado_a_partir_de_polvo,Chipá premezcla preparado a partir de polvo,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-chipaco_o_pan_con_chicharron_comprado,"Chipaco o pan con chicharrón, comprado",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-choclo_crudo,"Choclo, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-choclo_enlatado_cremoso,"Choclo, enlatado cremoso",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-choclo_enlatado_en_grano,"Choclo, enlatado en grano",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-choclo_hervido,"Choclo, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-churros,Churros,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-coquitos_panaderia,Coquitos (panadería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-cous_cous_cocido,"Cous Cous, cocido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-cous_cous_crudo,"Cous Cous, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-cucurucho_cubanito,Cucurucho / cubanito,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-empanaditas_chinas_restaurant,Empanaditas chinas (restaurant),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-facturas_rellenas,Facturas rellenas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-facturas_simples,Facturas simples,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-fideos_de_arroz_sin_tacc_crudos,"Fideos de arroz, SIN TACC, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-fideos_de_arroz_sin_tacc_hervidos,"Fideos de arroz, SIN TACC, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-fideos_frescos_al_huevo_crudos,"Fideos frescos, al huevo, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,40
-fideos_frescos_al_huevo_hervidos,"Fideos frescos, al huevo, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,42
-fideos_secos_integrales_fideos_secos_de_semola_y_harina_de_legumbres_crudos,"Fideos secos integrales / fideos secos de sémola y harina de legumbres, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,42
-fideos_secos_integrales_fideos_secos_de_semola_y_harina_de_legumbres_hervidos,"Fideos secos integrales / fideos secos de sémola y harina de legumbres, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,42
-fideos_secos_crudos,"Fideos secos, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,42
-fideos_secos_fortificados_crudos,"Fideos secos, fortificados, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,42
-fideos_secos_fortificados_hervidos,"Fideos secos, fortificados, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,42
-fideos_secos_hervidos,"Fideos secos, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,42
-frangollo_maiz_seco_pisado,Frangollo (maíz seco pisado),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,42
-galleta_de_campo,Galleta de campo,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,42
-galleta_de_grasa_con_chicharron,Galleta de grasa con chicharrón,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,42
-galleta_marinera,Galleta marinera,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,42
-galleta_marinera_con_semillas_galletitas_crackers_con_semillas,Galleta marinera con semillas / galletitas crackers con semillas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,42
-galleta_marinera_integral,Galleta marinera integral,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,42
-galleta_marinera_light_en_grasas,"Galleta marinera, light en grasas",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,42
-galletas_de_arroz,Galletas de arroz,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,42
-galletas_de_arroz_horneadas_tipo_snack_varios_sabores,Galletas de arroz horneadas tipo snack varios sabores,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,42
-galletas_de_arroz_sin_sal,Galletas de arroz sin sal,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_de_agua_con_girasol_alto_oleico,Galletitas de agua con girasol alto oleico,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_de_agua_con_grasa_vacuna,Galletitas de agua con grasa vacuna,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_de_agua_light,Galletitas de agua light,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_de_agua_sin_sal,Galletitas de agua sin sal,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_de_agua_sin_sal_con_chia_y_lino,Galletitas de agua sin sal con chía y lino,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_de_agua_promedio,"Galletitas de agua, PROMEDIO",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_de_salvado_o_integrales,Galletitas de salvado o integrales,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_dulces_con_centro_de_membrillo_o_similar_tipo_pepas,Galletitas dulces con centro de membrillo o similar (tipo Pepas),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_dulces_con_chips_de_chocolate,Galletitas dulces con chips de chocolate,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_dulces_de_almidon_de_maiz_tapita_de_alfajor,Galletitas dulces de almidón de maíz (tapita de alfajor),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_dulces_hojaldradas,Galletitas dulces hojaldradas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_dulces_obleas,Galletitas dulces obleas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_dulces_rellenas,Galletitas dulces rellenas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_dulces_rellenas_banadas_en_chocolate,Galletitas dulces rellenas bañadas en chocolate,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_dulces_simples,Galletitas dulces simples,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_dulces_tipo_frutigran,Galletitas dulces tipo Frutigran,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_dulces_sin_tacc,"Galletitas dulces, SIN TACC",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,44
-galletitas_integrales_sin_sal,Galletitas integrales sin sal,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-galletitas_tipo_copetin,Galletitas tipo copetín,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-galletitas_tipo_talitas_o_fajitas,Galletitas tipo talitas o fajitas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-garbanzos_crudos,"Garbanzos, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-garbanzos_enlatados,"Garbanzos, enlatados",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-garbanzos_hervidos,"Garbanzos, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-germen_de_trigo,Gérmen de trigo,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-granola,Granola,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-grisines,Grisines,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-grisines_sin_sal,Grisines sin sal,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-hamburguesa_de_soja_congelada,Hamburguesa de soja congelada,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-harina_de_algarrobo,Harina de algarrobo,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-harina_de_arroz_cruda,"Harina de arroz, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-harina_de_cebada_cruda,"Harina de cebada, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-harina_de_centeno_cruda,"Harina de centeno, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-harina_de_chia,Harina de chía,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-harina_de_garbanzos_cruda,"Harina de garbanzos, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-harina_de_maiz_cruda,"Harina de maíz, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-harina_de_maiz_hervida,"Harina de maíz, hervida",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,46
-harina_de_quinoa_cruda,"Harina de quinoa, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-harina_de_soja_cruda,"Harina de soja, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-harina_de_trigo_con_levadura_para_pizza_cruda,"Harina de trigo con levadura para pizza, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-harina_de_trigo_fortificada_cruda,"Harina de trigo fortificada, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-harina_de_trigo_integral_cruda,"Harina de trigo integral, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-harina_de_trigo_cruda,"Harina de trigo, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-harina_leudante_cruda,"Harina leudante, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-lentejas_crudas,"Lentejas, crudas",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-lentejas_enlatadas,"Lentejas, enlatadas",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-lentejas_hervidas,"Lentejas, hervidas",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-levadura_en_polvo,Levadura en polvo,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-levadura_fresca,Levadura fresca,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-madalenas,Madalenas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-madalenas_fortificadas,Madalenas fortificadas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-madalenas_rellenas,Madalenas rellenas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-maiz_grano_entero_crudo,"Maíz, grano entero, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-maiz_grano_entero_hervido,"Maíz, grano entero, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-masa_de_pizza_premezcla_preparada_a_partir_de_polvo,"Masa de pizza, premezcla preparada a partir de polvo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,48
-masa_de_pizza_preparada_a_partir_de_polvo_premezcla_sin_tacc,"Masa de pizza, preparada a partir de polvo premezcla, SIN TACC",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-masa_de_prepizza_de_panaderia_o_envasada,Masa de prepizza de panadería o envasada,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-masa_de_tarta_o_empanada_integral,"Masa de tarta o empanada, integral",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-masa_de_tarta_o_empanadas,Masa de tarta o empanadas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-masa_de_tarta_o_empanadas_light,Masa de tarta o empanadas light,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-masa_de_tarta_sin_tacc,"Masa de tarta, SIN TACC",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-masas_finas_surtidas_panaderia_confiteria,Masas finas surtidas (panadería / confitería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-masas_secas_surtidas_panaderia_confiteria,Masas secas surtidas (panadería / confitería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-milanesa_de_arroz_prefrita,"Milanesa de arroz, prefrita",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-milanesa_de_soja_prefrita,"Milanesa de soja, prefrita",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-noquis_de_papa_frescos_artesanal_crudos,"Ñoquis de papa frescos, artesanal, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-noquis_de_papa_frescos_artesanal_hervidos,"Ñoquis de papa frescos, artesanal, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-noquis_de_papa_envasados_crudos,"Ñoquis de papa, envasados, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-noquis_de_papa_envasados_hervidos,"Ñoquis de papa, envasados, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-noquis_premezcla_preparados_a_partir_de_polvo,Ñoquis premezcla preparados a partir de polvo,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-noquis_preparados_a_partir_de_polvo_premezcla_sin_tacc,"Ñoquis preparados a partir de polvo premezcla, SIN TACC",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-pan_arabe,Pan árabe,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,50
-pan_blanco_tipo_molde_lacteado,"Pan blanco, tipo molde, lacteado",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_cacho_tipo_pan_casero_de_campo_sin_grasa,"Pan cacho (tipo pan casero de campo, sin grasa)",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_con_grasa_tipo_pan_cordero,"Pan con grasa (tipo pan ""cordero"")",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_criollo_semita_tortillas_bollos_harinitas,Pan criollo / semita / tortillas / bollos / harinitas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_de_centeno,Pan de Centeno,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_de_gluten,Pan de gluten,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_de_maiz,Pan de maíz,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_de_miga,Pan de miga,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_de_molde_con_salvado,Pan de molde con salvado,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_de_molde_con_salvado_sin_sal,Pan de molde con salvado sin sal,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_de_salvado,Pan de salvado,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_de_salvado_con_semillas,Pan de salvado con semillas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_de_salvado_sin_sal_panaderia,Pan de salvado sin sal (panadería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_de_viena,Pan de viena,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_dulce,Pan dulce,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_figacita_de_manteca,Pan figacita de manteca,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_frances_o_pan_casero_sin_agregado_de_grasa_o_aceite,Pan francés o pan casero sin agregado de grasa o aceite,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_frances_sin_sal,Pan francés sin sal,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,52
-pan_lactal_sin_tacc,"Pan lactal, SIN TACC",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-pan_negro_sin_levadura,Pan negro sin levadura,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-pan_para_panchos_o_hamburguesas_envasado,"Pan para panchos o hamburguesas, envasado",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-pan_paraguayo_galleta_paraguaya_bollitos_con_levadura_harina_grasa_o_manteca_leche_huevos_y_anis,"Pan paraguayo / galleta paraguaya (bollitos con levadura, harina, grasa o manteca, leche, huevos y anís)",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-pan_rallado,Pan rallado,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-pan_rallado_fortificado,"Pan rallado, fortificado",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-pan_rallado_sin_tacc,"Pan rallado, SIN TACC",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-panko_pan_rallado_japones,Panko (pan rallado japonés),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-papa_croquetas_u_otro_preformado_de_papa_rebozado_prefrito_congelado,"Papa, croquetas u otro preformado de papa rebozado, prefrito, congelado",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-papa_cruda,"Papa, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-papa_hervida,"Papa, hervida",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-papa_pure_instantaneo_polvo,"Papa, puré instantáneo (polvo)",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-papas_prefritas_congeladas_envasadas,Papas prefritas congeladas envasadas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-pastas_secas_sin_tacc_crudas,"Pastas secas, SIN TACC, crudas",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-pastelitos_rellenos_de_dulce_de_membrillo_o_batata_panaderia_confiteria,Pastelitos rellenos de dulce de membrillo o batata (panadería / confitería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-patay,Patay,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-pionono,Pionono,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,54
-pochoclo_acaramelado,Pochoclo acaramelado,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-pochoclo_salado,Pochoclo salado,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-polvo_de_hornear,Polvo de hornear,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-polvo_para_preparar_brownie,Polvo para preparar brownie,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-porotos_crudos,"Porotos, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-porotos_enlatados,"Porotos, enlatados",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-porotos_hervidos,"Porotos, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-premezcla_para_bizcochuelo_sin_tacc,"Premezcla para bizcochuelo, SIN TACC",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-premezcla_para_panificados_pastas_y_postres_sin_tacc,"Premezcla para panificados, pastas y postres, SIN TACC",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-puflito,Puflito,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-quinoa_inflada,Quinoa inflada,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-quinoa_semilla_cruda,"Quinoa, semilla, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-quinoa_semilla_hervida,"Quinoa, semilla, hervida",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-ravioles_deshidratados_envasados_crudos,"Ravioles deshidratados, envasados, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-ravioles_frescos_artesanal_crudos,"Ravioles frescos, artesanal, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-ravioles_frescos_artesanal_hervidos,"Ravioles frescos, artesanal, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-ravioles_frescos_envasados_crudos,"Ravioles frescos, envasados, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-rosca_de_pascuas_panaderia_confiteria,Rosca de pascuas (panadería / confitería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,56
-rosquete,Rosquete,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-rosquita_tipo_doughtnut,Rosquita tipo Doughtnut,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-rosquita_tipo_doughtnut_de_chocolate,Rosquita tipo Doughtnut de chocolate,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-rosquito_de_vino_cuyano,Rosquito de vino (cuyano),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-salvado_de_avena,Salvado de avena,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-salvado_de_trigo,Salvado de trigo,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-semola_fortificada_cruda,"Sémola fortificada, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-semola_fortificada_hervida,"Sémola fortificada, hervida",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-semola_cruda,"Sémola, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-semola_hervida,"Sémola, hervida",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-soja_texturizada,Soja texturizada,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-soja_porotos_crudos,"Soja, porotos, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-soja_porotos_hervidos,"Soja, porotos, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-sushi_promedio,"Sushi, PROMEDIO",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-tapas_para_lasagna_pasta_seca,"Tapas para lasagna, pasta seca",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-tapioca_almidon_de_mandioca_crudo,"Tapioca (almidón de mandioca), crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-tofu,Tofu,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-torta_de_coco_panaderia,Torta de coco (panadería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,58
-torta_de_manzana_panaderia,Torta de manzana (panadería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-torta_de_ricotta_panaderia,Torta de ricotta (panadería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-torta_frita,Torta frita,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-torta_mil_hojas,Torta mil hojas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-tortillas_de_trigo_envasadas,"Tortillas de trigo, envasadas",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-tortitas_jachaleras,Tortitas Jachaleras,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-tostadas_de_gluten,Tostadas de gluten,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-tostadas_de_mesa,Tostadas de mesa,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-tostadas_integrales,Tostadas integrales,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-tostadas_light,Tostadas light,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-tostadas_sin_sal,Tostadas sin sal,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-tostaditas_saladas_saborizadas_producto_tipo_copetin,"Tostaditas saladas, saborizadas, producto tipo copetín",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-trigo_burgol_crudo,"Trigo burgol, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-trigo_burgol_hervido,"Trigo burgol, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-trigo_inflado_azucarado,Trigo inflado azucarado,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-trigo_grano_entero_crudo,"Trigo, grano entero, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-trigo_grano_entero_hervido,"Trigo, grano entero, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-turron_de_mani_con_oblea_tipo_golosina,Turrón de maní con oblea tipo golosina,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-turron_tipo_navideno,Turrón tipo navideño,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-tutuca,Tutuca,legumbres_cereales_papa_choclo_batata_pan_y_pastas,kilogramos,60
-alimento_a_base_de_leche_entera_y_cafe_fortificado_con_calcio_varios_sabores_listo_para_consumir,"Alimento a base de leche entera y café, fortificado con calcio, varios sabores, listo para consumir",leche_y_postres_de_leche,litros,62
-bebida_lactea_parcialmente_descremada_fluida_baja_en_lactosa_fortificada_con_vitaminas_a_d_b2_b9_y_zinc,"Bebida láctea parcialmente descremada fluida, baja en lactosa, fortificada con vitaminas A, D, B2, B9 y Zinc",leche_y_postres_de_leche,litros,62
-flan_envasado_listo_para_consumir,Flan envasado listo para consumir,leche_y_postres_de_leche,kilogramos,62
-flan_light_envasado_listo_para_consumir,Flan light envasado listo para consumir,leche_y_postres_de_leche,kilogramos,62
-leche_condensada,Leche condensada,leche_y_postres_de_leche,kilogramos,62
-leche_de_cabra_entera_en_polvo,"Leche de cabra, entera, en polvo",leche_y_postres_de_leche,kilogramos,62
-leche_de_cabra_entera_fluida,"Leche de cabra, entera, fluida",leche_y_postres_de_leche,litros,62
-leche_de_oveja_entera_fluida,"Leche de oveja, entera, fluida",leche_y_postres_de_leche,litros,62
-leche_de_vaca_ordenada_sin_ningun_tipo_de_procesamiento,"Leche de vaca, ordeñada (sin ningún tipo de procesamiento)",leche_y_postres_de_leche,litros,62
-leche_descremada_fortificada_con_vitaminas_a_y_d_en_polvo,"Leche descremada fortificada con vitaminas A y D, en polvo",leche_y_postres_de_leche,kilogramos,62
-leche_descremada_en_polvo_tipo_nido_buen_dia_fortificada_con_hierro_y_calcio,"Leche descremada en polvo, tipo Nido Buen Día, fortificada con hierro y calcio",leche_y_postres_de_leche,kilogramos,62
-leche_descremada_fluida_con_50_mas_de_proteinas,"Leche descremada fluida, con 50% más de proteínas",leche_y_postres_de_leche,litros,62
-leche_en_polvo_25_menos_de_grasas_saturadas_fortificada_con_vitaminas_a_d_c_calcio_y_zinc,"Leche en polvo, 25% menos de grasas saturadas, fortificada con vitaminas A, D, C, calcio y zinc",leche_y_postres_de_leche,kilogramos,64
-leche_fortigrow_entera_en_polvo_tipo_nido,Leche Fortigrow entera en polvo tipo Nido,leche_y_postres_de_leche,kilogramos,64
-leche_entera_en_polvo_deslactosada_fortificada_con_vitaminas_a_y_d,"Leche entera en polvo, deslactosada, fortificada con vitaminas A y D *",leche_y_postres_de_leche,kilogramos,64
-leche_entera_en_polvo_fortificada_con_hierro,"Leche entera en polvo, fortificada con hierro",leche_y_postres_de_leche,kilogramos,64
-leche_entera_en_polvo_fortificada_con_vitaminas_a_y_d,"Leche entera en polvo, fortificada con vitaminas A y D",leche_y_postres_de_leche,kilogramos,64
-leche_entera_en_polvo_plan_materno_infantil_programas_sociales_otros_fortificada_con_hierro_zinc_y_ac_ascorbico,"Leche entera en polvo, Plan Materno Infantil / Programas Sociales / otros, fortificada con hierro, zinc y ác. ascórbico",leche_y_postres_de_leche,kilogramos,64
-leche_entera_en_polvo_plan_materno_infantil_sin_fortificacion,"Leche entera en polvo, Plan Materno Infantil, sin fortificación",leche_y_postres_de_leche,kilogramos,64
-leche_entera_en_polvo_plan_vida_ministerio_de_desarrollo_social_pcia_de_bs_as_fortificada_con_vitaminas_a_y_d,"Leche entera en polvo, Plan Vida, Ministerio de Desarrollo Social Pcia. de Bs. As., fortificada con vitaminas A y D",leche_y_postres_de_leche,kilogramos,64
-leche_entera_en_polvo_sin_fortificacion,"Leche entera en polvo, sin fortificación",leche_y_postres_de_leche,kilogramos,64
-leche_entera_fluida_fortificada_con_hierro,"Leche entera fluida, fortificada con hierro",leche_y_postres_de_leche,litros,64
-leche_entera_fluida_con_azucar_lista_para_consumir,"Leche entera fluida, con azúcar, lista para consumir",leche_y_postres_de_leche,litros,66
-leche_entera_fluida_con_cla_fortificada_con_vitaminas_a_y_d,"Leche entera fluida, con CLA, fortificada con vitaminas A y D",leche_y_postres_de_leche,litros,66
-leche_entera_fluida_con_vitaminas_a_y_d,"Leche entera fluida, con vitaminas A y D",leche_y_postres_de_leche,litros,66
-leche_entera_fluida_deslactosada_fortificada_con_vitaminas_a_y_d,"Leche entera fluida, deslactosada, fortificada con vitaminas A y D",leche_y_postres_de_leche,litros,66
-leche_entera_fluida_fortificada_con_vitaminas_a_d_y_b9,"Leche entera fluida, fortificada con vitaminas A, D y B9",leche_y_postres_de_leche,litros,66
-leche_entera_fluida_fortificada_con_vitaminas_a_d_c_b9_y_extra_calcio,"Leche entera fluida, fortificada con vitaminas A, D, C, B9 y extra calcio",leche_y_postres_de_leche,litros,66
-leche_entera_fluida_sin_fortificacion,"Leche entera fluida, sin fortificación",leche_y_postres_de_leche,litros,66
-leche_formula_0_12_meses_hipoalergenica_tipo_nutrilon_ha_nan_ha_en_polvo,"Leche fórmula 0-12 meses, hipoalergénica, tipo Nutrilón HA, NAN HA, en polvo",leche_y_postres_de_leche,kilogramos,66
-leche_formula_0_12_meses_sin_lactosa_en_polvo,"Leche fórmula 0-12 meses, sin lactosa, en polvo",leche_y_postres_de_leche,kilogramos,66
-leche_formula_antireflujo_en_polvo,"Leche fórmula antireflujo, en polvo",leche_y_postres_de_leche,kilogramos,66
-leche_formula_etapa_3_en_polvo,"Leche fórmula etapa 3, en polvo",leche_y_postres_de_leche,kilogramos,66
-leche_formula_etapa_3_fluida,"Leche fórmula etapa 3, fluida",leche_y_postres_de_leche,litros,66
-leche_formula_etapa_3_sin_lactosa_en_polvo,"Leche fórmula etapa 3, sin lactosa, en polvo",leche_y_postres_de_leche,kilogramos,66
-leche_formula_etapa_4_en_polvo,"Leche fórmula etapa 4, en polvo",leche_y_postres_de_leche,kilogramos,66
-leche_formula_etapa_4_fluida,"Leche fórmula etapa 4, fluida",leche_y_postres_de_leche,litros,68
-leche_formula_inicio_en_polvo,"Leche fórmula inicio, en polvo",leche_y_postres_de_leche,kilogramos,68
-leche_formula_inicio_fluida,"Leche fórmula inicio, fluida",leche_y_postres_de_leche,litros,68
-leche_formula_para_prematuros_etapa_1_en_polvo,"Leche fórmula para prematuros etapa 1, en polvo",leche_y_postres_de_leche,kilogramos,68
-leche_formula_para_prematuros_etapa_1_fluida,"Leche fórmula para prematuros etapa 1, fluida",leche_y_postres_de_leche,litros,68
-leche_formula_para_prematuros_etapa_2_en_polvo,"Leche fórmula para prematuros etapa 2, en polvo",leche_y_postres_de_leche,kilogramos,68
-leche_formula_para_prematuros_etapa_2_fluida,"Leche fórmula para prematuros etapa 2, fluida",leche_y_postres_de_leche,litros,68
-leche_formula_seguimiento_en_polvo,"Leche fórmula seguimiento, en polvo",leche_y_postres_de_leche,kilogramos,68
-leche_formula_seguimiento_fluida,"Leche fórmula seguimiento, fluida",leche_y_postres_de_leche,litros,68
-leche_formula_tipo_alfare_en_polvo,"Leche fórmula, tipo Alfaré, en polvo**",leche_y_postres_de_leche,kilogramos,68
-leche_formula_tipo_enfabebe_confort_en_polvo,"Leche fórmula, tipo Enfabebe Confort, en polvo",leche_y_postres_de_leche,kilogramos,68
-leche_formula_tipo_ga1_anamix_infant_en_polvo,"Leche fórmula, tipo GA1 Anamix Infant, en polvo",leche_y_postres_de_leche,kilogramos,68
-leche_formula_tipo_nutrilon_pepti_junior_he_en_polvo,"Leche fórmula, tipo Nutrilon Pepti junior HE, en polvo",leche_y_postres_de_leche,kilogramos,68
-leche_parcialmente_descremada_fluida_con_fitoesteroles_y_ac_grasos_omega_3_fortificada_con_calcio_y_vitaminas_a_d_y_e,"Leche parcialmente descremada fluida, con Fitoesteroles y Ác. Grasos Omega 3, fortificada con calcio y vitaminas A, D y E",leche_y_postres_de_leche,litros,70
-leche_parcialmente_descremada_fluida_deslactosada_fortificada_con_vitaminas_a_y_d,"Leche parcialmente descremada fluida, deslactosada, fortificada con vitaminas A y D",leche_y_postres_de_leche,litros,70
-leche_parcialmente_descremada_fluida_fortificada_con_hierro,"Leche parcialmente descremada fluida, fortificada con hierro",leche_y_postres_de_leche,litros,70
-leche_parcialmente_descremada_fluida_fortificada_con_vitaminas_a_y_d,"Leche parcialmente descremada fluida, fortificada con vitaminas A y D",leche_y_postres_de_leche,litros,70
-leche_parcialmente_descremada_fluida_fortificada_con_vitaminas_a_d_c_y_ac_folico,"Leche parcialmente descremada fluida, fortificada con vitaminas A, D, C y ác. fólico",leche_y_postres_de_leche,litros,70
-leche_parcialmente_descremada_fluida_sin_fortificacion,"Leche parcialmente descremada fluida, sin fortificación",leche_y_postres_de_leche,litros,70
-leche_parcialmente_descremada_sabor_chocolate_o_dulce_de_leche_fortificada_con_vitaminas_a_y_d_lista_para_consumir,"Leche parcialmente descremada, sabor chocolate o dulce de leche, fortificada con vitaminas A y D, lista para consumir",leche_y_postres_de_leche,litros,70
-leche_seguimiento_etapa_3_sabor_vainilla,"Leche seguimiento etapa 3, sabor vainilla",leche_y_postres_de_leche,litros,70
-leche_semidescremada_en_polvo_deslactosada,"Leche semidescremada en polvo, deslactosada",leche_y_postres_de_leche,kilogramos,72
-postre_de_leche_bebible_infantil,Postre de leche bebible infantil,leche_y_postres_de_leche,litros,72
-postre_light_de_leche_listo_para_consumir,Postre light de leche listo para consumir,leche_y_postres_de_leche,kilogramos,72
-postre_de_leche_listo_para_consumir_tipo_danonino,Postre de leche listo para consumir tipo Danonino,leche_y_postres_de_leche,kilogramos,72
-postre_de_leche_listo_para_consumir_tipo_serenito,Postre de leche listo para consumir tipo Serenito,leche_y_postres_de_leche,kilogramos,72
-probioticos_descremados,Probióticos descremados,leche_y_postres_de_leche,kilogramos,72
-probioticos_enteros,Probióticos enteros,leche_y_postres_de_leche,kilogramos,72
-yogur_con_fitoesteroles,Yogur con fitoesteroles,yogures,kilogramos,74
-yogur_descremado,Yogur descremado,yogures,kilogramos,74
-yogur_descremado_bebible,Yogur descremado bebible,yogures,litros,74
-yogur_descremado_con_cereales,Yogur descremado con cereales,yogures,kilogramos,74
-yogur_descremado_con_frutas,Yogur descremado con frutas,yogures,kilogramos,74
-yogur_descremado_con_frutas_y_cereales,Yogur descremado con frutas y cereales,yogures,kilogramos,74
-yogur_descremado_fortificado_con_calcio,Yogur descremado fortificado con calcio,yogures,kilogramos,74
-yogur_entero_bebible_saborizado,Yogur entero bebible saborizado,yogures,litros,74
-yogur_entero_con_cereales,Yogur entero con cereales,yogures,kilogramos,74
-yogur_entero_con_frutas,Yogur entero con frutas,yogures,kilogramos,74
-yogur_entero_con_frutas_y_cereales,Yogur entero con frutas y cereales,yogures,kilogramos,74
-yogur_entero_natural,Yogur entero natural,yogures,kilogramos,74
-yogur_entero_saborizado,Yogur entero saborizado,yogures,kilogramos,74
-yogur_fortificado_con_hierro,Yogur fortificado con hierro,yogures,kilogramos,74
-muzzarella_rebozada_sin_freir_polleria_o_granja,Muzzarella rebozada sin freir (pollería o granja),quesos,kilogramos,76
-queso_pategras,Queso Pategrás,quesos,kilogramos,76
-queso_azul,Queso Azul,quesos,kilogramos,76
-queso_blanco_descremado_untable,"Queso blanco descremado, untable",quesos,kilogramos,76
-queso_blanco_semidescremado_untable,"Queso blanco semidescremado, untable",quesos,kilogramos,76
-queso_cheddar,Queso Cheddar,quesos,kilogramos,76
-queso_chubut,Queso Chubut,quesos,kilogramos,76
-queso_crema_entero_untable,"Queso crema entero, untable",quesos,kilogramos,76
-queso_cremoso,Queso Cremoso,quesos,kilogramos,76
-queso_cuartirolo,Queso Cuartirolo,quesos,kilogramos,76
-queso_de_cabra,Queso de cabra,quesos,kilogramos,76
-queso_de_maquina,Queso de máquina,quesos,kilogramos,76
-queso_en_hebras,Queso en hebras,quesos,kilogramos,76
-queso_en_hebras_light,Queso en hebras light,quesos,kilogramos,76
-queso_fontina,Queso Fontina,quesos,kilogramos,76
-queso_fontina_fundido_light,Queso Fontina fundido light,quesos,kilogramos,76
-queso_fresco_sin_sal,Queso fresco sin sal,quesos,kilogramos,76
-queso_fundido,Queso fundido,quesos,kilogramos,76
-queso_gruyere,Queso Gruyére,quesos,kilogramos,76
-queso_holanda,Queso Holanda,quesos,kilogramos,76
-queso_mar_del_plata,Queso Mar del Plata,quesos,kilogramos,78
-queso_mascarpone,Queso Mascarpone,quesos,kilogramos,78
-queso_muzzarella,Queso Muzzarella,quesos,kilogramos,78
-queso_parmesano,Queso Parmesano,quesos,kilogramos,78
-queso_pasta_blanda_descremado,Queso pasta blanda descremado,quesos,kilogramos,78
-queso_pasta_blanda_doble_crema,Queso pasta blanda doble crema,quesos,kilogramos,78
-queso_pasta_blanda_promedio,"Queso pasta blanda, PROMEDIO *",quesos,kilogramos,78
-queso_pasta_dura_promedio,"Queso pasta dura, PROMEDIO **",quesos,kilogramos,78
-queso_pasta_semidura_promedio,"*** Queso pasta semidura, PROMEDIO",quesos,kilogramos,78
-queso_porsalut_sin_sal_light,Queso porsalut sin sal light,quesos,kilogramos,78
-queso_provolone,Queso Provolone,quesos,kilogramos,78
-queso_rallado_envasado,Queso rallado envasado,quesos,kilogramos,78
-queso_reggianito,Queso Reggianito,quesos,kilogramos,78
-queso_roquefort,Queso Roquefort,quesos,kilogramos,78
-queso_sardo,Queso Sardo,quesos,kilogramos,78
-queso_sbrinz,Queso Sbrinz,quesos,kilogramos,78
-queso_untable_tipo_finlandia,Queso untable tipo Finlandia,quesos,kilogramos,80
-queso_untable_tipo_finlandia_light,Queso untable tipo Finlandia light,quesos,kilogramos,80
-queso_untable_tipo_tholem,Queso untable tipo Tholem,quesos,kilogramos,80
-queso_untable_tipo_tholem_light,Queso untable tipo Tholem light,quesos,kilogramos,80
-queso_untable_promedio,"Queso untable, PROMEDIO",quesos,kilogramos,80
-quesos_de_pasta_semidura_descremados,Quesos de pasta semidura descremados,quesos,kilogramos,80
-ricota,Ricota,quesos,kilogramos,80
-ricota_descremada,Ricota descremada,quesos,kilogramos,80
-bondiola_fiambre,Bondiola (fiambre),carnes,kilogramos,82
-butifarra,Butifarra,carnes,kilogramos,82
-cabra_cruda,"Cabra, cruda",carnes,kilogramos,82
-cabra_al_horno,"Cabra, al horno",carnes,kilogramos,82
-cantimpalo_fiambre,Cantimpalo (fiambre),carnes,kilogramos,82
-carpincho_crudo,"Carpincho, crudo",carnes,kilogramos,82
-cerdo_promedio_crudo,"Cerdo, PROMEDIO, crudo",carnes,kilogramos,82
-cerdo_promedio_horno_parrilla,"Cerdo, PROMEDIO (horno/parrilla)",carnes,kilogramos,82
-chinchulines_tripa_gorda_crudos,"Chinchulines, tripa gorda, crudos",carnes,kilogramos,82
-chinchulines_tripa_gorda_horno_parrilla,"Chinchulines, tripa gorda (horno/ parrilla)",carnes,kilogramos,82
-chivito_crudo,"Chivito, crudo",carnes,kilogramos,82
-chivito_horno_parrilla,Chivito (horno/parrilla),carnes,kilogramos,82
-chorizo_crudo,"Chorizo, crudo",carnes,kilogramos,82
-chorizo_horno_parrilla,Chorizo (horno/parrilla),carnes,kilogramos,82
-chorizo_seco,Chorizo seco,carnes,kilogramos,82
-conejo_crudo,"Conejo, crudo",carnes,kilogramos,82
-conejo_hervido,"Conejo, hervido",carnes,kilogramos,82
-corazon_vacuno_crudo,"Corazón, vacuno, crudo",carnes,kilogramos,82
-cordero_promedio_crudo,"Cordero, PROMEDIO, crudo",carnes,kilogramos,82
-cordero_promedio_horno_parrilla,"Cordero, PROMEDIO (horno/parrilla)",carnes,kilogramos,82
-cuerito_de_cerdo,Cuerito de cerdo,carnes,kilogramos,84
-fiambre_de_cerdo,Fiambre de cerdo,carnes,kilogramos,84
-hamburguesa_de_carne_vacuna_carniceria,Hamburguesa de carne vacuna (carnicería),carnes,kilogramos,84
-hamburguesa_de_carne_vacuna_industrializada,"Hamburguesa de carne vacuna, industrializada",carnes,kilogramos,84
-hamburguesa_de_carne_vacuna_industrializada_light,"Hamburguesa de carne vacuna, industrializada, light",carnes,kilogramos,84
-hamburguesa_de_carne_vacuna_industrializada_rebozada,"Hamburguesa de carne vacuna, industrializada, rebozada",carnes,kilogramos,84
-hamburguesa_de_pollo_polleria_granja,Hamburguesa de pollo (pollería / granja),carnes,kilogramos,84
-hamburguesa_de_pollo_industrializada,"Hamburguesa de pollo, industrializada",carnes,kilogramos,84
-higado_crudo,"Hígado, crudo",carnes,kilogramos,84
-higado_rehogado_plancha,Hígado (rehogado/plancha),carnes,kilogramos,84
-higado_de_pollo_crudo,"Hígado de pollo, crudo",carnes,kilogramos,84
-higado_de_pollo_cocido,"Hígado de pollo, cocido",carnes,kilogramos,84
-jabali_crudo,"Jabalí, crudo",carnes,kilogramos,84
-jamon_cocido,Jamón cocido,carnes,kilogramos,84
-jamon_crudo,Jamón crudo,carnes,kilogramos,84
-leberwurst,Leberwurst,carnes,kilogramos,84
-lengua_cruda,"Lengua, cruda",carnes,kilogramos,84
-lengua_hervida,"Lengua, hervida",carnes,kilogramos,84
-lomito_ahumado,Lomito ahumado,carnes,kilogramos,86
-longaniza,Longaniza,carnes,kilogramos,86
-matambre_fiambre,Matambre (fiambre),carnes,kilogramos,86
-milanesa_de_carne_vacuna_rebozada_carniceria,Milanesa de carne vacuna rebozada (carnicería),carnes,kilogramos,86
-milanesa_de_pollo_rebozada_polleria_granja,Milanesa de pollo rebozada (pollería / granja),carnes,kilogramos,86
-milanesa_de_pollo_prefrita_congelada,"Milanesa de pollo, prefrita congelada",carnes,kilogramos,86
-mollejas_crudas,"Mollejas, crudas",carnes,kilogramos,86
-mollejas_a_la_parrilla,"Mollejas, a la parrilla",carnes,kilogramos,86
-mondongo_crudo,"Mondongo, crudo",carnes,kilogramos,86
-mondongo_hervido,"Mondongo, hervido",carnes,kilogramos,86
-morcilla,Morcilla,carnes,kilogramos,86
-mortadela,Mortadela,carnes,kilogramos,86
-nuggets_o_patitas_de_pollo,Nuggets o patitas de pollo,carnes,kilogramos,86
-osobuco_crudo,"Osobuco, crudo",carnes,kilogramos,86
-osobuco_hervido,"Osobuco, hervido",carnes,kilogramos,86
-paleta_fiambre,Paleta (fiambre),carnes,kilogramos,86
-panceta,Panceta,carnes,kilogramos,86
-pastron,Pastrón,carnes,kilogramos,86
-pate_picadillo,Paté / picadillo,carnes,kilogramos,88
-pato_crudo,"Pato, crudo",carnes,kilogramos,88
-pato_al_horno,"Pato, al horno",carnes,kilogramos,88
-pavo_crudo,"Pavo, crudo",carnes,kilogramos,88
-pavo_al_horno,"Pavo, al horno",carnes,kilogramos,88
-pollo_con_piel_crudo,"Pollo con piel, crudo",carnes,kilogramos,88
-pollo_con_piel_horno_parrilla,Pollo con piel (horno/parrilla),carnes,kilogramos,88
-pollo_sin_piel_crudo,"Pollo sin piel, crudo",carnes,kilogramos,88
-pollo_sin_piel_horno_parrilla,Pollo sin piel (horno/parrilla),carnes,kilogramos,88
-pollo_menudos_crudos,"Pollo, menudos, crudos",carnes,kilogramos,88
-pollo_menudos_cocidos,"Pollo, menudos, cocidos",carnes,kilogramos,88
-pollo_pechuga_sin_piel_crudo,"Pollo, pechuga sin piel, crudo",carnes,kilogramos,88
-pollo_pechuga_sin_piel_horno_parrilla,"Pollo, pechuga sin piel (horno/parrilla)",carnes,kilogramos,88
-rana_cruda,"Rana, cruda",carnes,kilogramos,88
-rinon_crudo,"Riñón, crudo",carnes,kilogramos,88
-rinon_horno_parrilla,Riñón (horno/parrilla),carnes,kilogramos,88
-salame,Salame,carnes,kilogramos,88
-salchicha_de_viena,Salchicha de viena,carnes,kilogramos,88
-salchicha_de_viena_light,Salchicha de viena light,carnes,kilogramos,90
-salchicha_parrillera_cruda,"Salchicha parrillera, cruda",carnes,kilogramos,90
-salchicha_parrillera_a_la_parrilla,"Salchicha parrillera, a la parrilla",carnes,kilogramos,90
-salchichon,Salchichón,carnes,kilogramos,90
-sesos_crudos,"Sesos, crudos",carnes,kilogramos,90
-sesos_hervidos,"Sesos, hervidos",carnes,kilogramos,90
-ubre_cruda,"Ubre, cruda",carnes,kilogramos,90
-vacuno_cortes_grasos_promedio_crudo,"Vacuno, cortes grasos*, PROMEDIO, crudo",carnes,kilogramos,90
-vacuno_cortes_grasos_promedio_hervido,"Vacuno, cortes grasos*, PROMEDIO, hervido",carnes,kilogramos,90
-vacuno_cortes_grasos_promedio_horno_parrilla,"Vacuno, cortes grasos*, PROMEDIO, horno/parrilla",carnes,kilogramos,90
-vacuno_cortes_magros_promedio_crudo,"Vacuno, cortes magros**, PROMEDIO, crudo",carnes,kilogramos,90
-vacuno_cortes_magros_promedio_hervido,"Vacuno, cortes magros**, PROMEDIO, hervido",carnes,kilogramos,90
-vacuno_cortes_magros_promedio_horno_parrilla,"Vacuno, cortes magros**, PROMEDIO, horno/parrilla",carnes,kilogramos,90
-vacuno_cortes_semigrasos_promedio_crudo,"Vacuno, cortes semigrasos***, PROMEDIO, crudo",carnes,kilogramos,90
-vacuno_cortes_semigrasos_promedio_hervido,"Vacuno, cortes semigrasos***, PROMEDIO, hervido",carnes,kilogramos,90
-vacuno_cortes_semigrasos_ej_lomo_carne_picada_especial_roast_beef_paleta_bife_angosto_tortuguita_palomita_promedio_horno_parrilla,"Vacuno, cortes semigrasos, (ej: lomo, carne picada especial, roast beef, paleta, bife angosto, tortuguita, palomita), PROMEDIO, horno/parrilla",carnes,kilogramos,91
-vizcacha_cruda,"Vizcacha, cruda",carnes,kilogramos,91
-huevo_de_codorniz_entero_crudo,"Huevo de codorníz, entero, crudo",huevos,unidades,93
-huevo_de_codorniz_entero_hervido,"Huevo de codorníz, entero, hervido",huevos,unidades,93
-huevo_de_gallina_clara_cruda,"Huevo de gallina, clara, cruda",huevos,unidades,93
-huevo_de_gallina_clara_hervida,"Huevo de gallina, clara, hervida",huevos,unidades,93
-huevo_de_gallina_entero_crudo,"Huevo de gallina, entero, crudo",huevos,unidades,93
-huevo_de_gallina_entero_hervido,"Huevo de gallina, entero, hervido",huevos,unidades,93
-huevo_de_gallina_yema_cruda,"Huevo de gallina, yema, cruda",huevos,unidades,93
-huevo_de_gallina_yema_hervida,"Huevo de gallina, yema, hervida",huevos,unidades,93
-abadejo_crudo,"Abadejo, crudo",pescados_y_mariscos,kilogramos,95
-almeja_cruda,"Almeja, cruda",pescados_y_mariscos,kilogramos,95
-anchoa_enlatada_en_aceite,"Anchoa, enlatada en aceite",pescados_y_mariscos,kilogramos,95
-atun_enlatado_al_natural,"Atún, enlatado al natural",pescados_y_mariscos,kilogramos,95
-atun_enlatado_en_aceite,"Atún, enlatado en aceite",pescados_y_mariscos,kilogramos,95
-atun_lomito_fresco_crudo,"Atún, lomito fresco, crudo",pescados_y_mariscos,kilogramos,95
-bocaditos_de_pescado_prefritos,"Bocaditos de pescado, prefritos",pescados_y_mariscos,kilogramos,95
-brotola_cruda,"Brótola, cruda",pescados_y_mariscos,kilogramos,95
-caballa_enlatada,"Caballa, enlatada",pescados_y_mariscos,kilogramos,95
-calamar_crudo,"Calamar, crudo",pescados_y_mariscos,kilogramos,95
-camaron,Camarón,pescados_y_mariscos,kilogramos,95
-cornalitos_crudos,"Cornalitos, crudos",pescados_y_mariscos,kilogramos,95
-corvina_cruda,"Corvina, cruda",pescados_y_mariscos,kilogramos,95
-dorado_crudo,"Dorado, crudo",pescados_y_mariscos,kilogramos,95
-gatuzo_crudo,"Gatuzo, crudo",pescados_y_mariscos,kilogramos,95
-hamburguesa_de_pescado_pescaderia,Hamburguesa de pescado (pescadería),pescados_y_mariscos,kilogramos,95
-kani_kama,Kani Kama,pescados_y_mariscos,kilogramos,95
-langostino,Langostino,pescados_y_mariscos,kilogramos,95
-lenguado_crudo,"Lenguado, crudo",pescados_y_mariscos,kilogramos,95
-mejillon_crudo,"Mejillón, crudo",pescados_y_mariscos,kilogramos,97
-merluza_cruda,"Merluza, cruda",pescados_y_mariscos,kilogramos,97
-merluza,Merluza,pescados_y_mariscos,kilogramos,97
-merluza_enlatada_en_agua_y_aceite,"Merluza, enlatada en agua y aceite",pescados_y_mariscos,kilogramos,97
-milanesa_de_pescado_prefrita,"Milanesa de pescado, prefrita",pescados_y_mariscos,kilogramos,97
-pacu_crudo,"Pacú, crudo",pescados_y_mariscos,kilogramos,97
-pacu,Pacú,pescados_y_mariscos,kilogramos,97
-palometa_cruda,"Palometa, cruda",pescados_y_mariscos,kilogramos,97
-palometa,Palometa,pescados_y_mariscos,kilogramos,97
-pejerrey_crudo,"Pejerrey, crudo",pescados_y_mariscos,kilogramos,97
-pejerrey,Pejerrey,pescados_y_mariscos,kilogramos,97
-pescados_de_mar_ej_brotola_corvina_blanca_gatuso_lenguado_merluza_etc_promedio_crudo,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",pescados_y_mariscos,kilogramos,97
-pescados_de_rio_ej_dorado_palometa_surubi_trucha_etc_promedio_crudo,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",pescados_y_mariscos,kilogramos,97
-pollo_de_mar_crudo,"Pollo de mar, crudo",pescados_y_mariscos,kilogramos,97
-pulpo_crudo,"Pulpo, crudo",pescados_y_mariscos,kilogramos,97
-rabas_restaurant,Rabas (restaurant),pescados_y_mariscos,kilogramos,97
-sabalo_crudo,"Sábalo, crudo",pescados_y_mariscos,kilogramos,97
-salmon_blanco_crudo,"Salmón blanco, crudo",pescados_y_mariscos,kilogramos,96
-salmon_rosado_crudo,"Salmón rosado, crudo",pescados_y_mariscos,kilogramos,97
-sardinas_enlatadas_al_natural,"Sardinas, enlatadas al natural",pescados_y_mariscos,kilogramos,98
-sardinas_enlatadas_en_aceite,"Sardinas, enlatadas en aceite",pescados_y_mariscos,kilogramos,98
-surubi_crudo,"Surubí, crudo",pescados_y_mariscos,kilogramos,98
-trucha_cruda,"Trucha, cruda",pescados_y_mariscos,kilogramos,98
-aceite_comestible_mezcla,Aceite comestible mezcla,aceites,litros,100
-aceite_de_canola,Aceite de canola,aceites,litros,100
-aceite_de_chia,Aceite de chía,aceites,litros,100
-aceite_de_coco,Aceite de coco,aceites,litros,100
-aceite_de_girasol,Aceite de girasol,aceites,litros,100
-aceite_de_girasol_alto_oleico,Aceite de girasol alto oleico,aceites,litros,100
-aceite_de_maiz,Aceite de maíz,aceites,litros,100
-aceite_de_oliva,Aceite de oliva,aceites,litros,100
-aceite_de_sesamo,Aceite de sésamo,aceites,litros,100
-aceite_de_soja,Aceite de soja,aceites,litros,100
-aceite_de_uva,Aceite de uva,aceites,litros,100
-aceite_mezcla_con_oliva,Aceite mezcla con oliva,aceites,litros,100
-rocio_vegetal,Rocío vegetal,aceites,kilogramos,100
-alimento_a_base_de_almendras_leche_de_almendras,Alimento a base de almendras (leche de almendras),frutas_secas_y_semillas,litros,102
-almendra,Almendra,frutas_secas_y_semillas,kilogramos,102
-avellana,Avellana,frutas_secas_y_semillas,kilogramos,102
-mani_tostado_salado,Maní tostado salado,frutas_secas_y_semillas,kilogramos,102
-mani_tostado_sin_sal,Maní tostado sin sal,frutas_secas_y_semillas,kilogramos,102
-mantequilla_de_mani,Mantequilla de maní,frutas_secas_y_semillas,kilogramos,102
-mix_de_frutos_secos_semillas_y_pasas_de_uva,"Mix de frutos secos, semillas y pasas de uva",frutas_secas_y_semillas,kilogramos,102
-nuez,Nuez,frutas_secas_y_semillas,kilogramos,102
-pistacho_salado,Pistacho salado,frutas_secas_y_semillas,kilogramos,102
-semilla_de_amapola,Semilla de amapola,frutas_secas_y_semillas,kilogramos,102
-semilla_de_chia,Semilla de chía,frutas_secas_y_semillas,kilogramos,102
-semilla_de_girasol,Semilla de girasol,frutas_secas_y_semillas,kilogramos,102
-semilla_de_girasol_con_sal_y_con_cascara,Semilla de girasol con sal y con cáscara,frutas_secas_y_semillas,kilogramos,102
-semilla_de_lino,Semilla de lino,frutas_secas_y_semillas,kilogramos,102
-semilla_de_sesamo,Semilla de sésamo,frutas_secas_y_semillas,kilogramos,102
-semilla_de_zapallo,Semilla de zapallo,frutas_secas_y_semillas,kilogramos,102
-azucar_blanca_molida,Azúcar blanca molida,azucares_mermeladas_y_dulces,kilogramos,104
-azucar_impalpable,Azúcar impalpable,azucares_mermeladas_y_dulces,kilogramos,104
-azucar_morena_azucar_mascabo,Azúcar morena / azúcar mascabo,azucares_mermeladas_y_dulces,kilogramos,104
-dulce_de_batata,Dulce de batata,azucares_mermeladas_y_dulces,kilogramos,104
-dulce_de_batata_light,Dulce de batata light,azucares_mermeladas_y_dulces,kilogramos,104
-dulce_de_leche,Dulce de leche,azucares_mermeladas_y_dulces,kilogramos,104
-dulce_de_leche_light,Dulce de leche light,azucares_mermeladas_y_dulces,kilogramos,104
-dulce_de_membrillo,Dulce de membrillo,azucares_mermeladas_y_dulces,kilogramos,104
-dulce_de_membrillo_light,Dulce de membrillo light,azucares_mermeladas_y_dulces,kilogramos,104
-glucosa,Glucosa,azucares_mermeladas_y_dulces,kilogramos,104
-jalea_tipo_membrillo,Jalea tipo membrillo,azucares_mermeladas_y_dulces,kilogramos,104
-kero_o_melaza,Kero o melaza,azucares_mermeladas_y_dulces,kilogramos,104
-mermelada_de_frutas,Mermelada de frutas,azucares_mermeladas_y_dulces,kilogramos,104
-mermelada_de_frutas_light,Mermelada de frutas light,azucares_mermeladas_y_dulces,kilogramos,104
-miel,Miel,azucares_mermeladas_y_dulces,kilogramos,104
-alfajor_de_arroz,Alfajor de arroz,golosinas_y_chocolates,kilogramos,106
-alfajor_de_chocolate,Alfajor de chocolate,golosinas_y_chocolates,kilogramos,106
-alfajor_de_chocolate_con_relleno_tipo_mousse,Alfajor de chocolate con relleno tipo mousse,golosinas_y_chocolates,kilogramos,106
-alfajor_de_dulce_de_leche,Alfajor de dulce de leche,golosinas_y_chocolates,kilogramos,106
-alfajor_de_fruta,Alfajor de fruta,golosinas_y_chocolates,kilogramos,106
-alfajor_de_maicena,Alfajor de maicena,golosinas_y_chocolates,kilogramos,106
-alfajor_de_miel,Alfajor de miel,golosinas_y_chocolates,kilogramos,106
-alfajor_light,Alfajor light,golosinas_y_chocolates,kilogramos,106
-bananita_con_cobertura_de_chocolate,Bananita con cobertura de chocolate,golosinas_y_chocolates,kilogramos,106
-bano_de_reposteria_para_cubrir_tortas,Baño de repostería para cubrir tortas,golosinas_y_chocolates,kilogramos,106
-barra_de_arroz_rellena_banada,Barra de arroz rellena bañada,golosinas_y_chocolates,kilogramos,106
-barra_de_chocolate_tipo_kinder,Barra de chocolate tipo Kinder,golosinas_y_chocolates,kilogramos,106
-bocadito_con_dulce_de_leche_tipo_cabsha,Bocadito con dulce de leche tipo Cabsha,golosinas_y_chocolates,kilogramos,106
-bombon_tipo_bon_o_bon,Bombón tipo Bon O Bon,golosinas_y_chocolates,kilogramos,106
-bombones_de_fruta,Bombones de fruta,golosinas_y_chocolates,kilogramos,106
-cacao_amargo,Cacao amargo*,golosinas_y_chocolates,kilogramos,106
-cacao_en_polvo_sin_fortificar,Cacao en polvo sin fortificar*,golosinas_y_chocolates,kilogramos,106
-cacao_en_polvo_tipo_nesquick,Cacao en polvo tipo Nesquick*,golosinas_y_chocolates,kilogramos,106
-caramelos_duros,Caramelos duros,golosinas_y_chocolates,kilogramos,106
-caramelos_duros_light,Caramelos duros light,golosinas_y_chocolates,kilogramos,106
-caramelos_masticables,Caramelos masticables,golosinas_y_chocolates,kilogramos,108
-caramelos_rellenos,Caramelos rellenos,golosinas_y_chocolates,kilogramos,108
-chicles,Chicles,golosinas_y_chocolates,kilogramos,108
-chicles_sin_azucar,Chicles sin azúcar,golosinas_y_chocolates,kilogramos,108
-chocolate_60_cacao_o_mas,Chocolate 60% cacao o más,golosinas_y_chocolates,kilogramos,108
-chocolate_amargo,Chocolate amargo,golosinas_y_chocolates,kilogramos,108
-chocolate_blanco,Chocolate blanco,golosinas_y_chocolates,kilogramos,108
-chocolate_con_almendras,Chocolate con almendras,golosinas_y_chocolates,kilogramos,108
-chocolate_con_mani,Chocolate con maní,golosinas_y_chocolates,kilogramos,108
-chocolate_light,Chocolate light,golosinas_y_chocolates,kilogramos,108
-chocolate_para_taza,Chocolate para taza,golosinas_y_chocolates,kilogramos,108
-chocolatin_chocolate_con_leche,Chocolatín / chocolate con leche,golosinas_y_chocolates,kilogramos,108
-chupetin,Chupetín,golosinas_y_chocolates,kilogramos,108
-conito_de_dulce_de_leche_envasado,Conito de dulce de leche envasado,golosinas_y_chocolates,kilogramos,108
-cubanito_relleno,Cubanito relleno,golosinas_y_chocolates,kilogramos,108
-garrapinada_de_mani,Garrapiñada de maní,golosinas_y_chocolates,kilogramos,108
-gomitas_de_gelatina,Gomitas de gelatina,golosinas_y_chocolates,kilogramos,108
-huevo_de_chocolate_tipo_kinder,Huevo de chocolate tipo Kinder,golosinas_y_chocolates,unidades,108
-lentejas_de_chocolate,Lentejas de chocolate,golosinas_y_chocolates,kilogramos,108
-mani_con_chocolate,Maní con chocolate,golosinas_y_chocolates,kilogramos,108
-medallon_de_menta_y_chocolate,Medallón de menta y chocolate,golosinas_y_chocolates,kilogramos,110
-merengues_merenguitos,Merengues / merenguitos,golosinas_y_chocolates,kilogramos,110
-minitorta_banada,Minitorta bañada,golosinas_y_chocolates,kilogramos,110
-oblea_banada_tipo_kit_kat,Oblea bañada tipo Kit Kat,golosinas_y_chocolates,kilogramos,110
-obleas_banadas_tipo_nugaton,Obleas bañadas tipo Nugaton,golosinas_y_chocolates,kilogramos,110
-pasas_de_uva_con_chocolate,Pasas de uva con chocolate,golosinas_y_chocolates,kilogramos,110
-pastillas,Pastillas,golosinas_y_chocolates,kilogramos,110
-pastillas_sin_azucar,Pastillas sin azúcar,golosinas_y_chocolates,kilogramos,110
-postre_a_base_de_pasta_de_mani_tipo_mantecol,"Postre a base de pasta de maní, tipo Mantecol",golosinas_y_chocolates,kilogramos,110
-rhodesia,Rhodesia,golosinas_y_chocolates,kilogramos,110
-tableta_de_dulce_de_leche,Tableta de dulce de leche,golosinas_y_chocolates,kilogramos,110
-tableta_de_dulce_de_leche_light,Tableta de dulce de leche light,golosinas_y_chocolates,kilogramos,110
-tita,Tita,golosinas_y_chocolates,kilogramos,110
-crema_chantilly_lista_para_consumir_aerosol_o_industrial_preparada,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",grasas,kilogramos,112
-crema_de_leche,Crema de leche,grasas,litros,112
-crema_light,Crema light,grasas,kilogramos,112
-grasa_de_cerdo,Grasa de cerdo,grasas,kilogramos,112
-grasa_de_pollo,Grasa de pollo,grasas,kilogramos,112
-grasa_vacuna,Grasa vacuna,grasas,kilogramos,112
-manteca,Manteca,grasas,kilogramos,112
-manteca_light,Manteca light,grasas,kilogramos,112
-margarina_en_pote_y_en_pan,Margarina (en pote y en pan),grasas,kilogramos,112
-margarina_untable_light,Margarina untable light,grasas,kilogramos,112
-chicharron,Chicharrón,snacks_salados,kilogramos,114
-mani_japones,Maní japonés,snacks_salados,kilogramos,114
-nachos,Nachos,snacks_salados,kilogramos,114
-palitos_aireados_de_harina_de_maiz_o_de_colores,Palitos aireados de harina de maíz o de colores,snacks_salados,kilogramos,114
-palitos_salados,Palitos salados,snacks_salados,kilogramos,114
-papas_fritas_de_copetin,Papas fritas de copetín,snacks_salados,kilogramos,114
-snacks_saborizados_salados_a_base_de_maiz,Snacks saborizados salados a base de maíz,snacks_salados,kilogramos,114
-snacks_saborizados_salados_a_base_de_semola_de_arroz_horneados_tipo_palitos_de_arroz_aros_de_cebolla,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",snacks_salados,kilogramos,114
-aceto_balsamico,Aceto balsámico,aderezos,litros,116
-aderezo_caesar_o_ranch,Aderezo Caesar o Ranch,aderezos,litros,116
-aderezo_para_ensaladas_light,Aderezo para ensaladas light,aderezos,litros,116
-jugo_de_limon_envasado,"Jugo de limón, envasado",aderezos,litros,116
-ketchup,Ketchup,aderezos,kilogramos,116
-mayonesa,Mayonesa,aderezos,kilogramos,116
-mayonesa_de_soja,Mayonesa de soja,aderezos,kilogramos,116
-mayonesa_light,Mayonesa light,aderezos,kilogramos,116
-mostaza,Mostaza,aderezos,kilogramos,116
-salsa_a_base_de_tomate_en_tetra_brick_o_sachet_lista_para_consumir_ej_pomarola_napolitana_con_o_sin_verdeo_etc,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",aderezos,kilogramos,116
-salsa_agridulce,Salsa agridulce,aderezos,kilogramos,116
-salsa_barbacoa,Salsa barbacoa,aderezos,kilogramos,116
-salsa_blanca_en_polvo_envasada,Salsa blanca en polvo envasada,aderezos,kilogramos,116
-salsa_chimichurri_envasada,Salsa chimichurri envasada,aderezos,kilogramos,116
-salsa_de_soja,Salsa de soja,aderezos,litros,116
-salsa_deshidratada_varios_sabores_polvo,"Salsa deshidratada varios sabores, polvo",aderezos,kilogramos,116
-salsa_golf,Salsa Golf,aderezos,kilogramos,116
-vinagre,Vinagre,aderezos,litros,116
-caldos_en_cubo,Caldos en cubo,caldos_y_sopas_industriales,kilogramos,118
-caldos_en_polvo,Caldos en polvo,caldos_y_sopas_industriales,kilogramos,118
-caldos_en_polvo_light,Caldos en polvo light,caldos_y_sopas_industriales,kilogramos,118
-caldos_en_polvo_sin_sal_light,Caldos en polvo sin sal light,caldos_y_sopas_industriales,kilogramos,118
-saborizador_en_cubos,Saborizador en cubos,caldos_y_sopas_industriales,kilogramos,118
-saborizador_en_polvo,Saborizador en polvo,caldos_y_sopas_industriales,kilogramos,118
-sopa_crema_instantanea_preparada,Sopa crema instantánea preparada,caldos_y_sopas_industriales,kilogramos,118
-sopa_crema_instantanea_polvo_para_preparar_sabores_varios,"Sopa crema instantánea, polvo para preparar (sabores varios)",caldos_y_sopas_industriales,kilogramos,118
-sopa_crema_instantanea_polvo_para_preparar_light_sabores_varios,"Sopa crema instantánea, polvo para preparar light (sabores varios)",caldos_y_sopas_industriales,kilogramos,118
-sopa_crema_premezcla_light_preparada_a_partir_de_polvo,Sopa crema premezcla light preparada a partir de polvo,caldos_y_sopas_industriales,kilogramos,118
-sopa_de_fideos_deshidratada_envasada_para_preparar,Sopa de fideos deshidratada envasada para preparar,caldos_y_sopas_industriales,kilogramos,118
-sopa_de_vegetales_instantanea_polvo_para_preparar,"Sopa de vegetales instantánea, polvo para preparar",caldos_y_sopas_industriales,kilogramos,118
-sopa_crema_preparada_a_partir_de_polvo_premezcla_sin_sal_light,Sopa crema preparada a partir de polvo premezcla sin sal light,caldos_y_sopas_industriales,kilogramos,118
-arroz_con_leche_envasado_listo_para_consumir,Arroz con leche envasado listo para consumir,postres_industriales_y_helados,kilogramos,120
-bombon_helado,Bombón helado,postres_industriales_y_helados,kilogramos,120
-gelatina_envasada_lista_para_consumir,Gelatina envasada lista para consumir,postres_industriales_y_helados,kilogramos,120
-gelatina_light_preparada_a_partir_de_polvo,"Gelatina light, preparada a partir de polvo",postres_industriales_y_helados,kilogramos,120
-gelatina_preparada_a_partir_de_polvo,Gelatina preparada a partir de polvo,postres_industriales_y_helados,kilogramos,120
-helado_de_agua_heladeria,Helado de agua (heladería),postres_industriales_y_helados,kilogramos,120
-helado_de_agua_palito,Helado de agua (palito),postres_industriales_y_helados,kilogramos,120
-helado_de_crema_heladeria,Helado de crema (heladería),postres_industriales_y_helados,kilogramos,120
-helado_de_crema_envasado,Helado de crema envasado,postres_industriales_y_helados,kilogramos,120
-helado_envasado_con_cucurucho_promedio,"Helado envasado con cucurucho, PROMEDIO",postres_industriales_y_helados,kilogramos,120
-polvo_para_preparar_helado,Polvo para preparar helado,postres_industriales_y_helados,kilogramos,120
-polvo_para_preparar_postre_lacteo,Polvo para preparar postre lácteo,postres_industriales_y_helados,kilogramos,120
-polvo_para_preparar_postre_lacteo_light,"Polvo para preparar postre lácteo, light",postres_industriales_y_helados,kilogramos,120
-sal,Sal,sales,kilogramos,121
-sal_dietetica_o_modificada_promedio,"Sal, dietética o modificada, PROMEDIO",sales,kilogramos,121
-sal_dietetica_sin_sodio,"Sal dietética, sin sodio",sales,kilogramos,121
-sal_marina,Sal Marina,sales,kilogramos,121
-sal_modificada_33_cloruro_de_sodio,"Sal modificada, 33% cloruro de sodio",sales,kilogramos,121
-sal_modificada_66_cloruro_de_sodio,"Sal modificada, 66% cloruro de sodio",sales,kilogramos,121
-agua_sabores_saborizada_aquarius_varios,"Agua sabores saborizada Aquarius, varios",bebidas_con_azucar,litros,123
-agua_saborizada_awafrut_varios_sabores,"Agua saborizada Awafrut, varios sabores",bebidas_con_azucar,litros,123
-agua_saborizada_con_azucar_promedio,"Agua saborizada con azúcar, PROMEDIO",bebidas_con_azucar,litros,123
-agua_saborizada_levite_varios_sabores,"Agua saborizada Levité, varios sabores",bebidas_con_azucar,litros,123
-agua_saborizada_tipo_manaos_sierra_de_los_padres_otros,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",bebidas_con_azucar,litros,123
-amargo_serrano,Amargo serrano,bebidas_con_azucar,litros,123
-bebida_a_base_de_soja_sabor_natural,Bebida a base de soja sabor natural,bebidas_con_azucar,litros,123
-bebida_a_base_de_soja_y_jugo_sabores_varios,"Bebida a base de soja y jugo, sabores varios",bebidas_con_azucar,litros,123
-bebida_a_base_de_soja_y_jugo_varios_sabores_light,"Bebida a base de soja y jugo, varios sabores light",bebidas_con_azucar,litros,123
-gaseosa_con_azucar_promedio,"Gaseosa con azúcar, PROMEDIO",bebidas_con_azucar,litros,123
-gatorade_varios_sabores,"Gatorade, varios sabores",bebidas_con_azucar,litros,123
-jugo_concentrado_con_azucar_para_diluir,"Jugo concentrado con azúcar, para diluir",bebidas_con_azucar,litros,123
-jugo_congelado_con_azucar_en_sachet,Jugo congelado con azúcar en sachet,bebidas_con_azucar,litros,123
-jugo_de_fruta_envasado_varios_sabores,"Jugo de fruta envasado, varios sabores",bebidas_con_azucar,litros,123
-jugo_en_polvo_con_azucar,Jugo en polvo con azúcar,bebidas_con_azucar,kilogramos,123
-powerade_varios_sabores,"Powerade, varios sabores",bebidas_con_azucar,litros,123
-agua_saborizada_flip_light,Agua saborizada Flip light,bebidas_sin_azucar,litros,125
-agua_saborizada_h2o_varios_sabores,"Agua saborizada H2O, varios sabores",bebidas_sin_azucar,litros,125
-agua_saborizada_levite_cero_varios_sabores_light,"Agua saborizada Levité Cero, varios sabores light",bebidas_sin_azucar,litros,125
-agua_saborizada_light_promedio,"Agua saborizada light, PROMEDIO",bebidas_sin_azucar,litros,125
-agua_saborizada_we_o_ser_ligth,Agua saborizada We o Ser ligth,bebidas_sin_azucar,litros,125
-amargo_serrano_light,Amargo serrano light,bebidas_sin_azucar,litros,125
-gaseosa_light_promedio,"Gaseosa light, PROMEDIO",bebidas_sin_azucar,litros,125
-gatorade_zero_varios_sabores_sin_azucar,"Gatorade Zero, varios sabores (sin azúcar)",bebidas_sin_azucar,litros,125
-jugo_en_polvo_bc,Jugo en polvo BC,bebidas_sin_azucar,kilogramos,125
-jugo_en_polvo_light,Jugo en polvo light,bebidas_sin_azucar,kilogramos,125
-jugo_tipo_bc_varios_sabores_alimento_liquido_dietetico_con_50_de_jugo_y_pulpa,"Jugo tipo BC, varios sabores (alimento líquido dietético con 50% de jugo y pulpa)",bebidas_sin_azucar,litros,125
-powerade_zero_varios_sabores_sin_azucar,"Powerade Zero, varios sabores (sin azúcar)",bebidas_sin_azucar,litros,125
-anana_fizz,Ananá Fizz,bebidas_alcoholicas_y_energizantes,litros,127
-aperitivo_tipo_gancia,"Aperitivo, tipo Gancia",bebidas_alcoholicas_y_energizantes,litros,127
-bebida_destilada_promedio,"Bebida destilada, PROMEDIO",bebidas_alcoholicas_y_energizantes,litros,127
-bebida_energizante,Bebida energizante,bebidas_alcoholicas_y_energizantes,litros,127
-cerveza_con_alcohol,Cerveza con alcohol,bebidas_alcoholicas_y_energizantes,litros,127
-cerveza_sin_alcohol,Cerveza sin alcohol,bebidas_alcoholicas_y_energizantes,litros,127
-champagne,Champagne,bebidas_alcoholicas_y_energizantes,litros,127
-chicha_bebida_tradicional_obtenida_por_fermentacion_del_maiz,"Chicha, bebida tradicional obtenida por fermentación del maíz",bebidas_alcoholicas_y_energizantes,litros,127
-dr_lemon,Dr. Lemon,bebidas_alcoholicas_y_energizantes,litros,127
-fernet,Fernet,bebidas_alcoholicas_y_energizantes,litros,127
-licor_promedio,"Licor, PROMEDIO",bebidas_alcoholicas_y_energizantes,litros,127
-sidra,Sidra,bebidas_alcoholicas_y_energizantes,litros,127
-vermouth,Vermouth,bebidas_alcoholicas_y_energizantes,litros,127
-vino_blanco,Vino blanco,bebidas_alcoholicas_y_energizantes,litros,127
-vino_espumante_tipo_frizze,"Vino espumante, tipo Frizze",bebidas_alcoholicas_y_energizantes,litros,127
-vino_mistela,Vino Mistela,bebidas_alcoholicas_y_energizantes,litros,127
-vino_tinto,Vino tinto,bebidas_alcoholicas_y_energizantes,litros,127
-vodka,Vodka,bebidas_alcoholicas_y_energizantes,litros,127
-cafe_instantaneo_polvo_o_granulado_para_preparar,Café instantáneo (polvo o granulado para preparar),infusiones,kilogramos,131
-cafe_instantaneo_descafeinado_polvo_o_granulado_para_preparar,Café instantáneo descafeinado (polvo o granulado para preparar),infusiones,kilogramos,131
-cafe_preparado_a_partir_de_grano_molido_tipo_cafe_de_filtro,Café preparado a partir de grano molido (tipo café de filtro),infusiones,kilogramos,131
-capucchino_preparado,Capucchino preparado,infusiones,kilogramos,131
-malta_instantanea_en_polvo,Malta instantánea en polvo,infusiones,kilogramos,131
-mcdonald_s_bigmc,"McDonald's, BigMc",alimentos_de_locales_de_comidas_rapidas,unidades,133
-mcdonald_s_cajita_feliz_hamburguesa_con_queso_grill,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",alimentos_de_locales_de_comidas_rapidas,unidades,133
-mcdonald_s_cajita_feliz_hamburguesa_grill,"McDonald's, Cajita Feliz, Hamburguesa Grill",alimentos_de_locales_de_comidas_rapidas,unidades,133
-mcdonald_s_cajita_feliz_mc_tostado,"McDonald's, Cajita Feliz, Mc Tostado",alimentos_de_locales_de_comidas_rapidas,unidades,133
-mcdonald_s_cajita_feliz_mcnuggets_x4,"McDonald's, Cajita Feliz, McNuggets X4",alimentos_de_locales_de_comidas_rapidas,unidades,133
-mcdonald_s_cajita_feliz_papas_kids,"McDonald's, Cajita Feliz, Papas Kids",alimentos_de_locales_de_comidas_rapidas,unidades,133
-mcdonald_s_cajita_feliz_papas_pequenas,"McDonald's, Cajita Feliz, Papas pequeñas",alimentos_de_locales_de_comidas_rapidas,unidades,133
-mcdonald_s_cajita_feliz_tomate_cherry_50g,"McDonald's, Cajita Feliz, Tomate cherry 50g",alimentos_de_locales_de_comidas_rapidas,unidades,133
-mcdonald_s_club_house,"McDonald's, Club House",alimentos_de_locales_de_comidas_rapidas,unidades,133
-mcdonald_s_clubhouse_guacamole_cryspi_onion_bbq_con_pollo_crispy,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",alimentos_de_locales_de_comidas_rapidas,unidades,133
-mcdonald_s_clubhouse_guacamole_cryspi_onion_bbq_con_pollo_grill,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",alimentos_de_locales_de_comidas_rapidas,unidades,133
-mcdonald_s_cono,"McDonald's, Cono",alimentos_de_locales_de_comidas_rapidas,unidades,133
-mcdonald_s_cuarto_de_libra,"McDonald's, Cuarto de Libra",alimentos_de_locales_de_comidas_rapidas,unidades,133
-mcdonald_s_doble_cuarto_de_libra_con_queso,"McDonald's, Doble Cuarto de Libra con queso",alimentos_de_locales_de_comidas_rapidas,unidades,135
-mcdonald_s_hamburguesa,"McDonald's, Hamburguesa",alimentos_de_locales_de_comidas_rapidas,unidades,135
-mcdonald_s_hamburguesa_con_queso,"McDonald's, Hamburguesa con queso",alimentos_de_locales_de_comidas_rapidas,unidades,135
-mcdonald_s_mc_flurry_oreo,"McDonald's, Mc Flurry Oreo",alimentos_de_locales_de_comidas_rapidas,unidades,135
-mcdonald_s_mcnifica,"McDonald's, McNífica",alimentos_de_locales_de_comidas_rapidas,unidades,135
-mcdonald_s_mcnuggets_x_10,"McDonald's, McNuggets x 10",alimentos_de_locales_de_comidas_rapidas,unidades,135
-mcdonald_s_mcpollo_grill,"McDonald's, McPollo Grill",alimentos_de_locales_de_comidas_rapidas,unidades,135
-mcdonald_s_papas_grandes,"McDonald's, Papas grandes",alimentos_de_locales_de_comidas_rapidas,unidades,135
-mcdonald_s_papas_medianas,"McDonald's, Papas medianas",alimentos_de_locales_de_comidas_rapidas,unidades,135
-mcdonald_s_papas_pequenas,"McDonald's, Papas pequeñas",alimentos_de_locales_de_comidas_rapidas,unidades,135
-mcdonald_s_pollo_jr,"McDonald's, Pollo Jr.",alimentos_de_locales_de_comidas_rapidas,unidades,135
-mcdonald_s_sundae_chocolate,"McDonald's, Sundae chocolate",alimentos_de_locales_de_comidas_rapidas,unidades,135
-mcdonald_s_sundae_dulce_de_leche,"McDonald's, Sundae dulce de leche",alimentos_de_locales_de_comidas_rapidas,unidades,135
-mcdonald_s_sundae_frutilla,"McDonald's, Sundae frutilla",alimentos_de_locales_de_comidas_rapidas,unidades,135
-mcdonald_s_triple_mac,"McDonald's, Triple Mac",alimentos_de_locales_de_comidas_rapidas,unidades,135
+code,name,category,gapa_category,base_unit,source_page
+acelga_cruda,"Acelga, cruda",verduras,verduras_y_frutas,kilogramos,18
+acelga_hervida,"Acelga, hervida",verduras,verduras_y_frutas,kilogramos,18
+acelga_pencas_crudas,"Acelga, pencas, crudas",verduras,verduras_y_frutas,kilogramos,18
+acelga_pencas_hervidas,"Acelga, pencas, hervidas",verduras,verduras_y_frutas,kilogramos,18
+achicoria_cruda,"Achicoria, cruda",verduras,verduras_y_frutas,kilogramos,18
+achicoria_hervida,"Achicoria, hervida",verduras,verduras_y_frutas,kilogramos,18
+aji_en_conserva,Ají en conserva,verduras,verduras_y_frutas,kilogramos,18
+aji_rojo_morron_rojo_crudo,"Ají rojo / morrón rojo, crudo",verduras,verduras_y_frutas,kilogramos,18
+aji_rojo_morron_rojo_rehogado,"Ají rojo / morrón rojo, rehogado",verduras,verduras_y_frutas,kilogramos,18
+aji_verde_o_amarillo_morron_verde_o_amarillo_rehogado,"Ají verde o amarillo / morrón verde o amarillo, rehogado",verduras,verduras_y_frutas,kilogramos,18
+aji_verde_o_amarillo_morron_verde_o_amarillo_crudo,"Ají verde o amarillo / morrón verde o amarillo, crudo",verduras,verduras_y_frutas,kilogramos,18
+ajo_crudo,"Ajo, crudo",verduras,verduras_y_frutas,kilogramos,18
+albahaca_cruda,"Albahaca, cruda",verduras,verduras_y_frutas,kilogramos,18
+alcaparras_encurtido,"Alcaparras, encurtido",verduras,verduras_y_frutas,kilogramos,18
+alcaucil_crudo,"Alcaucil, crudo",verduras,verduras_y_frutas,kilogramos,18
+alcaucil_hervido,"Alcaucil, hervido",verduras,verduras_y_frutas,kilogramos,18
+apio_crudo,"Apio, crudo",verduras,verduras_y_frutas,kilogramos,18
+apio_hervido,"Apio, hervido",verduras,verduras_y_frutas,kilogramos,18
+arveja_enlatada,"Arveja, enlatada",verduras,verduras_y_frutas,kilogramos,18
+arveja_fresca_cruda,"Arveja, fresca, cruda",verduras,verduras_y_frutas,kilogramos,18
+arveja_fresca_hervida,"Arveja, fresca, hervida",verduras,verduras_y_frutas,kilogramos,20
+berenjena_cruda,"Berenjena, cruda",verduras,verduras_y_frutas,kilogramos,20
+berenjena_hervida,"Berenjena, hervida",verduras,verduras_y_frutas,kilogramos,20
+berro_crudo,"Berro, crudo",verduras,verduras_y_frutas,kilogramos,20
+brocoli_crudo,"Brócoli, crudo",verduras,verduras_y_frutas,kilogramos,20
+brocoli_hervido,"Brócoli, hervido",verduras,verduras_y_frutas,kilogramos,20
+brotes_de_soja_crudo,"Brotes de soja, crudo",verduras,verduras_y_frutas,kilogramos,20
+brotes_de_soja_rehogado,"Brotes de soja, rehogado",verduras,verduras_y_frutas,kilogramos,20
+cebolla_de_verdeo_cruda,"Cebolla de verdeo, cruda",verduras,verduras_y_frutas,kilogramos,20
+cebolla_de_verdeo_rehogada,"Cebolla de verdeo, rehogada",verduras,verduras_y_frutas,kilogramos,20
+cebolla_cruda,"Cebolla, cruda",verduras,verduras_y_frutas,kilogramos,20
+cebolla_rehogada,"Cebolla, rehogada",verduras,verduras_y_frutas,kilogramos,20
+champignones_enlatados,"Champignones, enlatados",verduras,verduras_y_frutas,kilogramos,20
+champignones_frescos_crudos,"Champignones, frescos, crudos",verduras,verduras_y_frutas,kilogramos,20
+chaucha_fresca_cruda,"Chaucha, fresca, cruda",verduras,verduras_y_frutas,kilogramos,20
+chaucha_fresca_hervida,"Chaucha, fresca, hervida",verduras,verduras_y_frutas,kilogramos,20
+chuchu_o_chayote_crudo,"Chuchu o chayote, crudo",verduras,verduras_y_frutas,kilogramos,20
+coliflor_crudo,"Coliflor, crudo",verduras,verduras_y_frutas,kilogramos,20
+coliflor_hervido,"Coliflor, hervido",verduras,verduras_y_frutas,kilogramos,20
+escarola_cruda,"Escarola, cruda",verduras,verduras_y_frutas,kilogramos,20
+esparrago_crudo,"Espárrago, crudo",verduras,verduras_y_frutas,kilogramos,22
+esparrago_hervido,"Espárrago, hervido",verduras,verduras_y_frutas,kilogramos,22
+espinaca_cruda,"Espinaca, cruda",verduras,verduras_y_frutas,kilogramos,22
+espinaca_hervida,"Espinaca, hervida",verduras,verduras_y_frutas,kilogramos,22
+habas_cruda,"Habas, cruda",verduras,verduras_y_frutas,kilogramos,22
+habas_hervida,"Habas, hervida",verduras,verduras_y_frutas,kilogramos,22
+hakusai_o_col_china_crudo,"Hakusai o col china, crudo",verduras,verduras_y_frutas,kilogramos,22
+hinojo_crudo,"Hinojo, crudo",verduras,verduras_y_frutas,kilogramos,22
+hinojo_hervido,"Hinojo, hervido",verduras,verduras_y_frutas,kilogramos,22
+hongos_enlatados,"Hongos, enlatados",verduras,verduras_y_frutas,kilogramos,22
+hongos_frescos_crudos,"Hongos, frescos, crudos",verduras,verduras_y_frutas,kilogramos,22
+hongos_frescos_rehogados,"Hongos, frescos, rehogados",verduras,verduras_y_frutas,kilogramos,22
+hongos_secos,"Hongos, secos",verduras,verduras_y_frutas,kilogramos,22
+jardinera_enlatada,"Jardinera, enlatada",verduras,verduras_y_frutas,kilogramos,22
+jengibre,Jengibre,verduras,verduras_y_frutas,kilogramos,22
+kale_crudo,"Kale, crudo",verduras,verduras_y_frutas,kilogramos,22
+lechuga_cruda,"Lechuga, cruda",verduras,verduras_y_frutas,kilogramos,22
+mandioca_cruda,"Mandioca, cruda",verduras,verduras_y_frutas,kilogramos,22
+mandioca_hervida,"Mandioca, hervida",verduras,verduras_y_frutas,kilogramos,22
+medallones_de_industrializados_verdura_congelados,Medallones de industrializados verdura congelados,verduras,verduras_y_frutas,kilogramos,22
+palmitos_enlatados,"Palmitos, enlatados",verduras,verduras_y_frutas,kilogramos,24
+pepino_crudo,"Pepino, crudo",verduras,verduras_y_frutas,kilogramos,24
+perejil_crudo,"Perejil, crudo",verduras,verduras_y_frutas,kilogramos,24
+pickles_en_vinagre,"Pickles, en vinagre",verduras,verduras_y_frutas,kilogramos,24
+prefritos_espinaca_congelados_patitas_de_vegetales,"Prefritos (espinaca) congelados, patitas de vegetales",verduras,verduras_y_frutas,kilogramos,24
+puerro_crudo,"Puerro, crudo",verduras,verduras_y_frutas,kilogramos,24
+puerro_hervido,"Puerro, hervido",verduras,verduras_y_frutas,kilogramos,24
+rabanito_crudo,"Rabanito, crudo",verduras,verduras_y_frutas,kilogramos,24
+radicheta_cruda,"Radicheta, cruda",verduras,verduras_y_frutas,kilogramos,24
+remolacha_cruda,"Remolacha, cruda",verduras,verduras_y_frutas,kilogramos,24
+remolacha_hervida,"Remolacha, hervida",verduras,verduras_y_frutas,kilogramos,24
+repollito_de_bruselas_crudos,"Repollito de Bruselas, crudos",verduras,verduras_y_frutas,kilogramos,24
+repollito_de_bruselas_hervidos,"Repollito de Bruselas, hervidos",verduras,verduras_y_frutas,kilogramos,24
+repollo_crudo,"Repollo, crudo",verduras,verduras_y_frutas,kilogramos,24
+repollo_hervido,"Repollo, hervido",verduras,verduras_y_frutas,kilogramos,24
+rucula_cruda,"Rúcula, cruda",verduras,verduras_y_frutas,kilogramos,24
+tomate_crudo,"Tomate, crudo",verduras,verduras_y_frutas,kilogramos,24
+tomate_desecado,"Tomate, desecado",verduras,verduras_y_frutas,kilogramos,24
+tomate_enlatado,"Tomate, enlatado",verduras,verduras_y_frutas,kilogramos,24
+tomate_hervido,"Tomate, hervido",verduras,verduras_y_frutas,kilogramos,26
+tomate_pure_de_tomate,"Tomate, puré de tomate",verduras,verduras_y_frutas,kilogramos,26
+tomate_pure_de_tomate_hervido,"Tomate, puré de tomate, hervido",verduras,verduras_y_frutas,kilogramos,26
+tomates_cherry_crudos,"Tomates cherry, crudos",verduras,verduras_y_frutas,kilogramos,26
+verdolaga_cruda,"Verdolaga, cruda",verduras,verduras_y_frutas,kilogramos,26
+verdolaga_hervida,"Verdolaga, hervida",verduras,verduras_y_frutas,kilogramos,26
+zanahoria_cruda,"Zanahoria, cruda",verduras,verduras_y_frutas,kilogramos,26
+zanahoria_hervida,"Zanahoria, hervida",verduras,verduras_y_frutas,kilogramos,26
+zapallito_crudo,"Zapallito, crudo",verduras,verduras_y_frutas,kilogramos,26
+zapallito_hervido,"Zapallito, hervido",verduras,verduras_y_frutas,kilogramos,26
+zapallo_crudo,"Zapallo, crudo",verduras,verduras_y_frutas,kilogramos,26
+zapallo_hervido,"Zapallo, hervido",verduras,verduras_y_frutas,kilogramos,26
+zucchini_crudo,"Zucchini, crudo",verduras,verduras_y_frutas,kilogramos,26
+zucchini_hervido,"Zucchini, hervido",verduras,verduras_y_frutas,kilogramos,26
+aceituna_negra,Aceituna negra,frutas,verduras_y_frutas,kilogramos,28
+aceituna_verde,Aceituna verde,frutas,verduras_y_frutas,kilogramos,28
+acerola,Acerola,frutas,verduras_y_frutas,kilogramos,28
+anana,Ananá,frutas,verduras_y_frutas,kilogramos,28
+anana_enlatado_fruta_y_almibar,"Ananá, enlatado (fruta y almíbar)",frutas,verduras_y_frutas,kilogramos,28
+arandanos,Arándanos,frutas,verduras_y_frutas,kilogramos,28
+banana,Banana,frutas,verduras_y_frutas,kilogramos,28
+cereza,Cereza,frutas,verduras_y_frutas,kilogramos,28
+ciruela,Ciruela,frutas,verduras_y_frutas,kilogramos,28
+ciruela_pasa_ciruela_seca,Ciruela pasa / ciruela seca,frutas,verduras_y_frutas,kilogramos,28
+coco_rallado,Coco rallado,frutas,verduras_y_frutas,kilogramos,28
+coctail_de_frutas_enlatado_fruta_y_almibar,"Coctail de frutas, enlatado (fruta y almíbar)",frutas,verduras_y_frutas,kilogramos,28
+damasco,Damasco,frutas,verduras_y_frutas,kilogramos,28
+datiles,Dátiles,frutas,verduras_y_frutas,kilogramos,28
+durazno,Durazno,frutas,verduras_y_frutas,kilogramos,28
+durazno_orejon,Durazno orejón,frutas,verduras_y_frutas,kilogramos,28
+durazno_enlatado_fruta_y_almibar,"Durazno, enlatado (fruta y almíbar)",frutas,verduras_y_frutas,kilogramos,28
+durazno_enlatado_light_fruta_y_almibar,"Durazno, enlatado light (fruta y almíbar)",frutas,verduras_y_frutas,kilogramos,28
+frambuesa,Frambuesa,frutas,verduras_y_frutas,kilogramos,28
+frutas_abrillantadas,Frutas abrillantadas,frutas,verduras_y_frutas,kilogramos,28
+frutilla,Frutilla,frutas,verduras_y_frutas,kilogramos,30
+granada,Granada,frutas,verduras_y_frutas,kilogramos,30
+guayaba,Guayaba,frutas,verduras_y_frutas,kilogramos,30
+higo,Higo,frutas,verduras_y_frutas,kilogramos,30
+higo_desecado,Higo desecado,frutas,verduras_y_frutas,kilogramos,30
+kaki,Kaki,frutas,verduras_y_frutas,kilogramos,30
+kinoto,Kinoto,frutas,verduras_y_frutas,kilogramos,30
+kiwi,Kiwi,frutas,verduras_y_frutas,kilogramos,30
+limon,Limón,frutas,verduras_y_frutas,kilogramos,30
+mamon,Mamón,frutas,verduras_y_frutas,kilogramos,30
+mandarina,Mandarina,frutas,verduras_y_frutas,kilogramos,30
+mango,Mango,frutas,verduras_y_frutas,kilogramos,30
+manzana_con_piel,Manzana con piel,frutas,verduras_y_frutas,kilogramos,30
+manzana_sin_piel,Manzana sin piel,frutas,verduras_y_frutas,kilogramos,30
+maracuya,Maracuyá,frutas,verduras_y_frutas,kilogramos,30
+melon,Melón,frutas,verduras_y_frutas,kilogramos,30
+membrillo,Membrillo,frutas,verduras_y_frutas,kilogramos,30
+mora,Mora,frutas,verduras_y_frutas,kilogramos,30
+naranja,Naranja,frutas,verduras_y_frutas,kilogramos,30
+nispero,Níspero,frutas,verduras_y_frutas,kilogramos,30
+palta,Palta,frutas,verduras_y_frutas,kilogramos,32
+papaya,Papaya,frutas,verduras_y_frutas,kilogramos,32
+pera,Pera,frutas,verduras_y_frutas,kilogramos,32
+pera_orejon,Pera orejón,frutas,verduras_y_frutas,kilogramos,32
+pera_enlatada_fruta_y_almibar,"Pera, enlatada (fruta y almíbar)",frutas,verduras_y_frutas,kilogramos,32
+pera_enlatada_light_fruta_y_almibar,"Pera, enlatada light (fruta y almíbar)",frutas,verduras_y_frutas,kilogramos,32
+pomelo,Pomelo,frutas,verduras_y_frutas,kilogramos,32
+pure_de_frutas_envasado_alimento_infantil,Puré de frutas envasado (alimento infantil),frutas,verduras_y_frutas,kilogramos,32
+sandia,Sandía,frutas,verduras_y_frutas,kilogramos,32
+uva,Uva,frutas,verduras_y_frutas,kilogramos,32
+uva_pasa,Uva pasa,frutas,verduras_y_frutas,kilogramos,32
+almidon_de_maiz_crudo,"Almidón de maíz, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+almidon_de_mandioca_crudo,"Almidón de mandioca, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+amaranto_crudo,"Amaranto, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+amaranto_hervido,"Amaranto, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+anchi,Anchi,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+arroz_blanco_crudo,"Arroz blanco, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+arroz_blanco_hervido,"Arroz blanco, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+arroz_envasado_deshidratado_listo_para_preparar_con_salsa_u_otros_ingredientes_tipo_cuatro_quesos_primavera_etc,"Arroz envasado deshidratado listo para preparar con salsa u otros ingredientes (tipo cuatro quesos, primavera, etc.)",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+arroz_inflado_azucarado,Arroz inflado azucarado,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+arroz_integral_crudo,"Arroz integral, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+arroz_integral_hervido,"Arroz integral, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+arroz_yamani_crudo,"Arroz yamaní, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+arroz_yamani_hervido,"Arroz yamaní, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+arveja_semilla_seca_entera_partida_cruda,"Arveja, semilla seca entera / partida, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+arveja_semilla_seca_entera_partida_hervida,"Arveja, semilla seca entera / partida, hervida",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+avena_almohaditas,"Avena, almohaditas",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+avena_arrollada_cruda,"Avena, arrollada, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,34
+avena_arrollada_hervida,"Avena, arrollada, hervida",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+barra_crocante_de_arroz,Barra crocante de arroz,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+barra_de_cereal_fortificada,Barra de cereal fortificada,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+barra_de_cereal_light,Barra de cereal light,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+barra_de_cereales_promedio,"Barra de cereales, PROMEDIO",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+batata_cruda,"Batata, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+batata_hervida,"Batata, hervida",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+bizcochitos_de_arroz_envasados_tipo_galletita,Bizcochitos de arroz envasados (tipo galletita),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+bizcochitos_de_grasa_envasados,Bizcochitos de grasa envasados,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+bizcochitos_de_grasa_envasados_light,Bizcochitos de grasa envasados light,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+bizcochos_de_grasa_panaderia_criollitos_libritos_pan_con_grasa,"Bizcochos de grasa (panadería) / Criollitos, Libritos (pan con grasa)",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+bizcochos_tipo_bay_biscuit,Bizcochos tipo Bay Biscuit,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+bizcochuelo_preparado_panaderia,Bizcochuelo preparado (panadería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+bizcochuelo_premezcla_preparado_a_partir_de_polvo,Bizcochuelo premezcla preparado a partir de polvo,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+bizcochuelo_premezcla_sin_preparado_a_tacc_partir_de_polvo,"Bizcochuelo premezcla, SIN preparado a TACC partir de polvo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+bollitos_de_anis,Bollitos de anís,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+brownie_panaderia,Brownie (panadería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,36
+budin_industrializado,Budín industrializado,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+budin_industrializado_con_nueces_tipo_navideno,"Budín industrializado con nueces, tipo navideño",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+capelettis_capelettinis_deshidratados_envasados_crudos,"Capelettis / capelettinis deshidratados, envasados, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+capelettis_capelettinis_deshidratados_envasados_hervidos,"Capelettis / capelettinis deshidratados, envasados, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+capelettis_frescos_artesanal_crudo,"Capelettis frescos, artesanal, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+capelettis_frescos_artesanal_hervido,"Capelettis frescos, artesanal, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+cereal_desayuno_aritos_frutales,"Cereal desayuno, aritos frutales",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+cereal_desayuno_aritos_sabor_miel,"Cereal desayuno, aritos sabor miel",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+cereal_desayuno_bolitas_de_chocolate,"Cereal desayuno, bolitas de chocolate",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+cereal_desayuno_copos_azucarados_fortificados,"Cereal desayuno, copos azucarados, fortificados",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+cereal_desayuno_copos_azucarados_sin_fortificar,"Cereal desayuno, copos azucarados, sin fortificar",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+cereal_desayuno_copos_de_cereal_integral_arroz_y_maiz_fortificados,"Cereal desayuno, copos de cereal integral (arroz y maíz), fortificados",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+cereal_desayuno_copos_de_maiz_sin_azucar_sin_fortificar,"Cereal desayuno, copos de maíz sin azúcar, sin fortificar",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+cereal_desayuno_salvado_de_trigo_tipo_bastoncitos,"Cereal desayuno, salvado de trigo tipo bastoncitos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+cereal_infantil_para_papilla,Cereal infantil para papilla,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+cheesecake_panaderia_confiteria,Cheesecake (panadería / confitería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+chipa,Chipá,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,38
+chipa_premezcla_preparado_a_partir_de_polvo,Chipá premezcla preparado a partir de polvo,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+chipaco_o_pan_con_chicharron_comprado,"Chipaco o pan con chicharrón, comprado",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+choclo_crudo,"Choclo, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+choclo_enlatado_cremoso,"Choclo, enlatado cremoso",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+choclo_enlatado_en_grano,"Choclo, enlatado en grano",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+choclo_hervido,"Choclo, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+churros,Churros,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+coquitos_panaderia,Coquitos (panadería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+cous_cous_cocido,"Cous Cous, cocido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+cous_cous_crudo,"Cous Cous, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+cucurucho_cubanito,Cucurucho / cubanito,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+empanaditas_chinas_restaurant,Empanaditas chinas (restaurant),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+facturas_rellenas,Facturas rellenas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+facturas_simples,Facturas simples,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+fideos_de_arroz_sin_tacc_crudos,"Fideos de arroz, SIN TACC, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+fideos_de_arroz_sin_tacc_hervidos,"Fideos de arroz, SIN TACC, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+fideos_frescos_al_huevo_crudos,"Fideos frescos, al huevo, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,40
+fideos_frescos_al_huevo_hervidos,"Fideos frescos, al huevo, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,42
+fideos_secos_integrales_fideos_secos_de_semola_y_harina_de_legumbres_crudos,"Fideos secos integrales / fideos secos de sémola y harina de legumbres, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,42
+fideos_secos_integrales_fideos_secos_de_semola_y_harina_de_legumbres_hervidos,"Fideos secos integrales / fideos secos de sémola y harina de legumbres, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,42
+fideos_secos_crudos,"Fideos secos, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,42
+fideos_secos_fortificados_crudos,"Fideos secos, fortificados, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,42
+fideos_secos_fortificados_hervidos,"Fideos secos, fortificados, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,42
+fideos_secos_hervidos,"Fideos secos, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,42
+frangollo_maiz_seco_pisado,Frangollo (maíz seco pisado),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,42
+galleta_de_campo,Galleta de campo,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,42
+galleta_de_grasa_con_chicharron,Galleta de grasa con chicharrón,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,42
+galleta_marinera,Galleta marinera,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,42
+galleta_marinera_con_semillas_galletitas_crackers_con_semillas,Galleta marinera con semillas / galletitas crackers con semillas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,42
+galleta_marinera_integral,Galleta marinera integral,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,42
+galleta_marinera_light_en_grasas,"Galleta marinera, light en grasas",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,42
+galletas_de_arroz,Galletas de arroz,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,42
+galletas_de_arroz_horneadas_tipo_snack_varios_sabores,Galletas de arroz horneadas tipo snack varios sabores,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,42
+galletas_de_arroz_sin_sal,Galletas de arroz sin sal,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_de_agua_con_girasol_alto_oleico,Galletitas de agua con girasol alto oleico,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_de_agua_con_grasa_vacuna,Galletitas de agua con grasa vacuna,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_de_agua_light,Galletitas de agua light,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_de_agua_sin_sal,Galletitas de agua sin sal,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_de_agua_sin_sal_con_chia_y_lino,Galletitas de agua sin sal con chía y lino,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_de_agua_promedio,"Galletitas de agua, PROMEDIO",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_de_salvado_o_integrales,Galletitas de salvado o integrales,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_dulces_con_centro_de_membrillo_o_similar_tipo_pepas,Galletitas dulces con centro de membrillo o similar (tipo Pepas),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_dulces_con_chips_de_chocolate,Galletitas dulces con chips de chocolate,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_dulces_de_almidon_de_maiz_tapita_de_alfajor,Galletitas dulces de almidón de maíz (tapita de alfajor),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_dulces_hojaldradas,Galletitas dulces hojaldradas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_dulces_obleas,Galletitas dulces obleas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_dulces_rellenas,Galletitas dulces rellenas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_dulces_rellenas_banadas_en_chocolate,Galletitas dulces rellenas bañadas en chocolate,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_dulces_simples,Galletitas dulces simples,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_dulces_tipo_frutigran,Galletitas dulces tipo Frutigran,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_dulces_sin_tacc,"Galletitas dulces, SIN TACC",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,44
+galletitas_integrales_sin_sal,Galletitas integrales sin sal,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+galletitas_tipo_copetin,Galletitas tipo copetín,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+galletitas_tipo_talitas_o_fajitas,Galletitas tipo talitas o fajitas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+garbanzos_crudos,"Garbanzos, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+garbanzos_enlatados,"Garbanzos, enlatados",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+garbanzos_hervidos,"Garbanzos, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+germen_de_trigo,Gérmen de trigo,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+granola,Granola,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+grisines,Grisines,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+grisines_sin_sal,Grisines sin sal,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+hamburguesa_de_soja_congelada,Hamburguesa de soja congelada,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+harina_de_algarrobo,Harina de algarrobo,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+harina_de_arroz_cruda,"Harina de arroz, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+harina_de_cebada_cruda,"Harina de cebada, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+harina_de_centeno_cruda,"Harina de centeno, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+harina_de_chia,Harina de chía,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+harina_de_garbanzos_cruda,"Harina de garbanzos, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+harina_de_maiz_cruda,"Harina de maíz, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+harina_de_maiz_hervida,"Harina de maíz, hervida",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,46
+harina_de_quinoa_cruda,"Harina de quinoa, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+harina_de_soja_cruda,"Harina de soja, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+harina_de_trigo_con_levadura_para_pizza_cruda,"Harina de trigo con levadura para pizza, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+harina_de_trigo_fortificada_cruda,"Harina de trigo fortificada, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+harina_de_trigo_integral_cruda,"Harina de trigo integral, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+harina_de_trigo_cruda,"Harina de trigo, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+harina_leudante_cruda,"Harina leudante, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+lentejas_crudas,"Lentejas, crudas",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+lentejas_enlatadas,"Lentejas, enlatadas",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+lentejas_hervidas,"Lentejas, hervidas",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+levadura_en_polvo,Levadura en polvo,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+levadura_fresca,Levadura fresca,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+madalenas,Madalenas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+madalenas_fortificadas,Madalenas fortificadas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+madalenas_rellenas,Madalenas rellenas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+maiz_grano_entero_crudo,"Maíz, grano entero, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+maiz_grano_entero_hervido,"Maíz, grano entero, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+masa_de_pizza_premezcla_preparada_a_partir_de_polvo,"Masa de pizza, premezcla preparada a partir de polvo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,48
+masa_de_pizza_preparada_a_partir_de_polvo_premezcla_sin_tacc,"Masa de pizza, preparada a partir de polvo premezcla, SIN TACC",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+masa_de_prepizza_de_panaderia_o_envasada,Masa de prepizza de panadería o envasada,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+masa_de_tarta_o_empanada_integral,"Masa de tarta o empanada, integral",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+masa_de_tarta_o_empanadas,Masa de tarta o empanadas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+masa_de_tarta_o_empanadas_light,Masa de tarta o empanadas light,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+masa_de_tarta_sin_tacc,"Masa de tarta, SIN TACC",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+masas_finas_surtidas_panaderia_confiteria,Masas finas surtidas (panadería / confitería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+masas_secas_surtidas_panaderia_confiteria,Masas secas surtidas (panadería / confitería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+milanesa_de_arroz_prefrita,"Milanesa de arroz, prefrita",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+milanesa_de_soja_prefrita,"Milanesa de soja, prefrita",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+noquis_de_papa_frescos_artesanal_crudos,"Ñoquis de papa frescos, artesanal, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+noquis_de_papa_frescos_artesanal_hervidos,"Ñoquis de papa frescos, artesanal, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+noquis_de_papa_envasados_crudos,"Ñoquis de papa, envasados, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+noquis_de_papa_envasados_hervidos,"Ñoquis de papa, envasados, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+noquis_premezcla_preparados_a_partir_de_polvo,Ñoquis premezcla preparados a partir de polvo,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+noquis_preparados_a_partir_de_polvo_premezcla_sin_tacc,"Ñoquis preparados a partir de polvo premezcla, SIN TACC",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+pan_arabe,Pan árabe,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,50
+pan_blanco_tipo_molde_lacteado,"Pan blanco, tipo molde, lacteado",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_cacho_tipo_pan_casero_de_campo_sin_grasa,"Pan cacho (tipo pan casero de campo, sin grasa)",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_con_grasa_tipo_pan_cordero,"Pan con grasa (tipo pan ""cordero"")",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_criollo_semita_tortillas_bollos_harinitas,Pan criollo / semita / tortillas / bollos / harinitas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_de_centeno,Pan de Centeno,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_de_gluten,Pan de gluten,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_de_maiz,Pan de maíz,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_de_miga,Pan de miga,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_de_molde_con_salvado,Pan de molde con salvado,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_de_molde_con_salvado_sin_sal,Pan de molde con salvado sin sal,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_de_salvado,Pan de salvado,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_de_salvado_con_semillas,Pan de salvado con semillas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_de_salvado_sin_sal_panaderia,Pan de salvado sin sal (panadería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_de_viena,Pan de viena,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_dulce,Pan dulce,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_figacita_de_manteca,Pan figacita de manteca,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_frances_o_pan_casero_sin_agregado_de_grasa_o_aceite,Pan francés o pan casero sin agregado de grasa o aceite,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_frances_sin_sal,Pan francés sin sal,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,52
+pan_lactal_sin_tacc,"Pan lactal, SIN TACC",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+pan_negro_sin_levadura,Pan negro sin levadura,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+pan_para_panchos_o_hamburguesas_envasado,"Pan para panchos o hamburguesas, envasado",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+pan_paraguayo_galleta_paraguaya_bollitos_con_levadura_harina_grasa_o_manteca_leche_huevos_y_anis,"Pan paraguayo / galleta paraguaya (bollitos con levadura, harina, grasa o manteca, leche, huevos y anís)",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+pan_rallado,Pan rallado,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+pan_rallado_fortificado,"Pan rallado, fortificado",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+pan_rallado_sin_tacc,"Pan rallado, SIN TACC",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+panko_pan_rallado_japones,Panko (pan rallado japonés),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+papa_croquetas_u_otro_preformado_de_papa_rebozado_prefrito_congelado,"Papa, croquetas u otro preformado de papa rebozado, prefrito, congelado",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+papa_cruda,"Papa, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+papa_hervida,"Papa, hervida",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+papa_pure_instantaneo_polvo,"Papa, puré instantáneo (polvo)",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+papas_prefritas_congeladas_envasadas,Papas prefritas congeladas envasadas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+pastas_secas_sin_tacc_crudas,"Pastas secas, SIN TACC, crudas",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+pastelitos_rellenos_de_dulce_de_membrillo_o_batata_panaderia_confiteria,Pastelitos rellenos de dulce de membrillo o batata (panadería / confitería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+patay,Patay,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+pionono,Pionono,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,54
+pochoclo_acaramelado,Pochoclo acaramelado,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+pochoclo_salado,Pochoclo salado,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+polvo_de_hornear,Polvo de hornear,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+polvo_para_preparar_brownie,Polvo para preparar brownie,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+porotos_crudos,"Porotos, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+porotos_enlatados,"Porotos, enlatados",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+porotos_hervidos,"Porotos, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+premezcla_para_bizcochuelo_sin_tacc,"Premezcla para bizcochuelo, SIN TACC",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+premezcla_para_panificados_pastas_y_postres_sin_tacc,"Premezcla para panificados, pastas y postres, SIN TACC",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+puflito,Puflito,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+quinoa_inflada,Quinoa inflada,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+quinoa_semilla_cruda,"Quinoa, semilla, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+quinoa_semilla_hervida,"Quinoa, semilla, hervida",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+ravioles_deshidratados_envasados_crudos,"Ravioles deshidratados, envasados, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+ravioles_frescos_artesanal_crudos,"Ravioles frescos, artesanal, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+ravioles_frescos_artesanal_hervidos,"Ravioles frescos, artesanal, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+ravioles_frescos_envasados_crudos,"Ravioles frescos, envasados, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+rosca_de_pascuas_panaderia_confiteria,Rosca de pascuas (panadería / confitería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,56
+rosquete,Rosquete,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+rosquita_tipo_doughtnut,Rosquita tipo Doughtnut,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+rosquita_tipo_doughtnut_de_chocolate,Rosquita tipo Doughtnut de chocolate,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+rosquito_de_vino_cuyano,Rosquito de vino (cuyano),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+salvado_de_avena,Salvado de avena,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+salvado_de_trigo,Salvado de trigo,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+semola_fortificada_cruda,"Sémola fortificada, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+semola_fortificada_hervida,"Sémola fortificada, hervida",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+semola_cruda,"Sémola, cruda",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+semola_hervida,"Sémola, hervida",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+soja_texturizada,Soja texturizada,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+soja_porotos_crudos,"Soja, porotos, crudos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+soja_porotos_hervidos,"Soja, porotos, hervidos",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+sushi_promedio,"Sushi, PROMEDIO",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+tapas_para_lasagna_pasta_seca,"Tapas para lasagna, pasta seca",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+tapioca_almidon_de_mandioca_crudo,"Tapioca (almidón de mandioca), crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+tofu,Tofu,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+torta_de_coco_panaderia,Torta de coco (panadería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,58
+torta_de_manzana_panaderia,Torta de manzana (panadería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+torta_de_ricotta_panaderia,Torta de ricotta (panadería),legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+torta_frita,Torta frita,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+torta_mil_hojas,Torta mil hojas,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+tortillas_de_trigo_envasadas,"Tortillas de trigo, envasadas",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+tortitas_jachaleras,Tortitas Jachaleras,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+tostadas_de_gluten,Tostadas de gluten,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+tostadas_de_mesa,Tostadas de mesa,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+tostadas_integrales,Tostadas integrales,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+tostadas_light,Tostadas light,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+tostadas_sin_sal,Tostadas sin sal,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+tostaditas_saladas_saborizadas_producto_tipo_copetin,"Tostaditas saladas, saborizadas, producto tipo copetín",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+trigo_burgol_crudo,"Trigo burgol, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+trigo_burgol_hervido,"Trigo burgol, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+trigo_inflado_azucarado,Trigo inflado azucarado,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+trigo_grano_entero_crudo,"Trigo, grano entero, crudo",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+trigo_grano_entero_hervido,"Trigo, grano entero, hervido",legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+turron_de_mani_con_oblea_tipo_golosina,Turrón de maní con oblea tipo golosina,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+turron_tipo_navideno,Turrón tipo navideño,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+tutuca,Tutuca,legumbres_cereales_papa_choclo_batata_pan_y_pastas,legumbres_cereales_papa_pan_y_pastas,kilogramos,60
+alimento_a_base_de_leche_entera_y_cafe_fortificado_con_calcio_varios_sabores_listo_para_consumir,"Alimento a base de leche entera y café, fortificado con calcio, varios sabores, listo para consumir",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,62
+bebida_lactea_parcialmente_descremada_fluida_baja_en_lactosa_fortificada_con_vitaminas_a_d_b2_b9_y_zinc,"Bebida láctea parcialmente descremada fluida, baja en lactosa, fortificada con vitaminas A, D, B2, B9 y Zinc",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,62
+flan_envasado_listo_para_consumir,Flan envasado listo para consumir,leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,62
+flan_light_envasado_listo_para_consumir,Flan light envasado listo para consumir,leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,62
+leche_condensada,Leche condensada,leche_y_postres_de_leche,consumo_opcional,kilogramos,62
+leche_de_cabra_entera_en_polvo,"Leche de cabra, entera, en polvo",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,62
+leche_de_cabra_entera_fluida,"Leche de cabra, entera, fluida",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,62
+leche_de_oveja_entera_fluida,"Leche de oveja, entera, fluida",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,62
+leche_de_vaca_ordenada_sin_ningun_tipo_de_procesamiento,"Leche de vaca, ordeñada (sin ningún tipo de procesamiento)",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,62
+leche_descremada_fortificada_con_vitaminas_a_y_d_en_polvo,"Leche descremada fortificada con vitaminas A y D, en polvo",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,62
+leche_descremada_en_polvo_tipo_nido_buen_dia_fortificada_con_hierro_y_calcio,"Leche descremada en polvo, tipo Nido Buen Día, fortificada con hierro y calcio",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,62
+leche_descremada_fluida_con_50_mas_de_proteinas,"Leche descremada fluida, con 50% más de proteínas",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,62
+leche_en_polvo_25_menos_de_grasas_saturadas_fortificada_con_vitaminas_a_d_c_calcio_y_zinc,"Leche en polvo, 25% menos de grasas saturadas, fortificada con vitaminas A, D, C, calcio y zinc",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,64
+leche_fortigrow_entera_en_polvo_tipo_nido,Leche Fortigrow entera en polvo tipo Nido,leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,64
+leche_entera_en_polvo_deslactosada_fortificada_con_vitaminas_a_y_d,"Leche entera en polvo, deslactosada, fortificada con vitaminas A y D *",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,64
+leche_entera_en_polvo_fortificada_con_hierro,"Leche entera en polvo, fortificada con hierro",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,64
+leche_entera_en_polvo_fortificada_con_vitaminas_a_y_d,"Leche entera en polvo, fortificada con vitaminas A y D",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,64
+leche_entera_en_polvo_plan_materno_infantil_programas_sociales_otros_fortificada_con_hierro_zinc_y_ac_ascorbico,"Leche entera en polvo, Plan Materno Infantil / Programas Sociales / otros, fortificada con hierro, zinc y ác. ascórbico",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,64
+leche_entera_en_polvo_plan_materno_infantil_sin_fortificacion,"Leche entera en polvo, Plan Materno Infantil, sin fortificación",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,64
+leche_entera_en_polvo_plan_vida_ministerio_de_desarrollo_social_pcia_de_bs_as_fortificada_con_vitaminas_a_y_d,"Leche entera en polvo, Plan Vida, Ministerio de Desarrollo Social Pcia. de Bs. As., fortificada con vitaminas A y D",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,64
+leche_entera_en_polvo_sin_fortificacion,"Leche entera en polvo, sin fortificación",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,64
+leche_entera_fluida_fortificada_con_hierro,"Leche entera fluida, fortificada con hierro",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,64
+leche_entera_fluida_con_azucar_lista_para_consumir,"Leche entera fluida, con azúcar, lista para consumir",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,66
+leche_entera_fluida_con_cla_fortificada_con_vitaminas_a_y_d,"Leche entera fluida, con CLA, fortificada con vitaminas A y D",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,66
+leche_entera_fluida_con_vitaminas_a_y_d,"Leche entera fluida, con vitaminas A y D",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,66
+leche_entera_fluida_deslactosada_fortificada_con_vitaminas_a_y_d,"Leche entera fluida, deslactosada, fortificada con vitaminas A y D",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,66
+leche_entera_fluida_fortificada_con_vitaminas_a_d_y_b9,"Leche entera fluida, fortificada con vitaminas A, D y B9",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,66
+leche_entera_fluida_fortificada_con_vitaminas_a_d_c_b9_y_extra_calcio,"Leche entera fluida, fortificada con vitaminas A, D, C, B9 y extra calcio",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,66
+leche_entera_fluida_sin_fortificacion,"Leche entera fluida, sin fortificación",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,66
+leche_formula_0_12_meses_hipoalergenica_tipo_nutrilon_ha_nan_ha_en_polvo,"Leche fórmula 0-12 meses, hipoalergénica, tipo Nutrilón HA, NAN HA, en polvo",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,66
+leche_formula_0_12_meses_sin_lactosa_en_polvo,"Leche fórmula 0-12 meses, sin lactosa, en polvo",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,66
+leche_formula_antireflujo_en_polvo,"Leche fórmula antireflujo, en polvo",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,66
+leche_formula_etapa_3_en_polvo,"Leche fórmula etapa 3, en polvo",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,66
+leche_formula_etapa_3_fluida,"Leche fórmula etapa 3, fluida",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,66
+leche_formula_etapa_3_sin_lactosa_en_polvo,"Leche fórmula etapa 3, sin lactosa, en polvo",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,66
+leche_formula_etapa_4_en_polvo,"Leche fórmula etapa 4, en polvo",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,66
+leche_formula_etapa_4_fluida,"Leche fórmula etapa 4, fluida",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,68
+leche_formula_inicio_en_polvo,"Leche fórmula inicio, en polvo",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,68
+leche_formula_inicio_fluida,"Leche fórmula inicio, fluida",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,68
+leche_formula_para_prematuros_etapa_1_en_polvo,"Leche fórmula para prematuros etapa 1, en polvo",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,68
+leche_formula_para_prematuros_etapa_1_fluida,"Leche fórmula para prematuros etapa 1, fluida",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,68
+leche_formula_para_prematuros_etapa_2_en_polvo,"Leche fórmula para prematuros etapa 2, en polvo",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,68
+leche_formula_para_prematuros_etapa_2_fluida,"Leche fórmula para prematuros etapa 2, fluida",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,68
+leche_formula_seguimiento_en_polvo,"Leche fórmula seguimiento, en polvo",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,68
+leche_formula_seguimiento_fluida,"Leche fórmula seguimiento, fluida",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,68
+leche_formula_tipo_alfare_en_polvo,"Leche fórmula, tipo Alfaré, en polvo**",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,68
+leche_formula_tipo_enfabebe_confort_en_polvo,"Leche fórmula, tipo Enfabebe Confort, en polvo",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,68
+leche_formula_tipo_ga1_anamix_infant_en_polvo,"Leche fórmula, tipo GA1 Anamix Infant, en polvo",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,68
+leche_formula_tipo_nutrilon_pepti_junior_he_en_polvo,"Leche fórmula, tipo Nutrilon Pepti junior HE, en polvo",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,68
+leche_parcialmente_descremada_fluida_con_fitoesteroles_y_ac_grasos_omega_3_fortificada_con_calcio_y_vitaminas_a_d_y_e,"Leche parcialmente descremada fluida, con Fitoesteroles y Ác. Grasos Omega 3, fortificada con calcio y vitaminas A, D y E",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,70
+leche_parcialmente_descremada_fluida_deslactosada_fortificada_con_vitaminas_a_y_d,"Leche parcialmente descremada fluida, deslactosada, fortificada con vitaminas A y D",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,70
+leche_parcialmente_descremada_fluida_fortificada_con_hierro,"Leche parcialmente descremada fluida, fortificada con hierro",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,70
+leche_parcialmente_descremada_fluida_fortificada_con_vitaminas_a_y_d,"Leche parcialmente descremada fluida, fortificada con vitaminas A y D",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,70
+leche_parcialmente_descremada_fluida_fortificada_con_vitaminas_a_d_c_y_ac_folico,"Leche parcialmente descremada fluida, fortificada con vitaminas A, D, C y ác. fólico",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,70
+leche_parcialmente_descremada_fluida_sin_fortificacion,"Leche parcialmente descremada fluida, sin fortificación",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,70
+leche_parcialmente_descremada_sabor_chocolate_o_dulce_de_leche_fortificada_con_vitaminas_a_y_d_lista_para_consumir,"Leche parcialmente descremada, sabor chocolate o dulce de leche, fortificada con vitaminas A y D, lista para consumir",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,70
+leche_seguimiento_etapa_3_sabor_vainilla,"Leche seguimiento etapa 3, sabor vainilla",leche_y_postres_de_leche,leche_yogur_y_quesos,litros,70
+leche_semidescremada_en_polvo_deslactosada,"Leche semidescremada en polvo, deslactosada",leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,72
+postre_de_leche_bebible_infantil,Postre de leche bebible infantil,leche_y_postres_de_leche,leche_yogur_y_quesos,litros,72
+postre_light_de_leche_listo_para_consumir,Postre light de leche listo para consumir,leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,72
+postre_de_leche_listo_para_consumir_tipo_danonino,Postre de leche listo para consumir tipo Danonino,leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,72
+postre_de_leche_listo_para_consumir_tipo_serenito,Postre de leche listo para consumir tipo Serenito,leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,72
+probioticos_descremados,Probióticos descremados,leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,72
+probioticos_enteros,Probióticos enteros,leche_y_postres_de_leche,leche_yogur_y_quesos,kilogramos,72
+yogur_con_fitoesteroles,Yogur con fitoesteroles,yogures,leche_yogur_y_quesos,kilogramos,74
+yogur_descremado,Yogur descremado,yogures,leche_yogur_y_quesos,kilogramos,74
+yogur_descremado_bebible,Yogur descremado bebible,yogures,leche_yogur_y_quesos,litros,74
+yogur_descremado_con_cereales,Yogur descremado con cereales,yogures,leche_yogur_y_quesos,kilogramos,74
+yogur_descremado_con_frutas,Yogur descremado con frutas,yogures,leche_yogur_y_quesos,kilogramos,74
+yogur_descremado_con_frutas_y_cereales,Yogur descremado con frutas y cereales,yogures,leche_yogur_y_quesos,kilogramos,74
+yogur_descremado_fortificado_con_calcio,Yogur descremado fortificado con calcio,yogures,leche_yogur_y_quesos,kilogramos,74
+yogur_entero_bebible_saborizado,Yogur entero bebible saborizado,yogures,leche_yogur_y_quesos,litros,74
+yogur_entero_con_cereales,Yogur entero con cereales,yogures,leche_yogur_y_quesos,kilogramos,74
+yogur_entero_con_frutas,Yogur entero con frutas,yogures,leche_yogur_y_quesos,kilogramos,74
+yogur_entero_con_frutas_y_cereales,Yogur entero con frutas y cereales,yogures,leche_yogur_y_quesos,kilogramos,74
+yogur_entero_natural,Yogur entero natural,yogures,leche_yogur_y_quesos,kilogramos,74
+yogur_entero_saborizado,Yogur entero saborizado,yogures,leche_yogur_y_quesos,kilogramos,74
+yogur_fortificado_con_hierro,Yogur fortificado con hierro,yogures,leche_yogur_y_quesos,kilogramos,74
+muzzarella_rebozada_sin_freir_polleria_o_granja,Muzzarella rebozada sin freir (pollería o granja),quesos,leche_yogur_y_quesos,kilogramos,76
+queso_pategras,Queso Pategrás,quesos,leche_yogur_y_quesos,kilogramos,76
+queso_azul,Queso Azul,quesos,leche_yogur_y_quesos,kilogramos,76
+queso_blanco_descremado_untable,"Queso blanco descremado, untable",quesos,leche_yogur_y_quesos,kilogramos,76
+queso_blanco_semidescremado_untable,"Queso blanco semidescremado, untable",quesos,leche_yogur_y_quesos,kilogramos,76
+queso_cheddar,Queso Cheddar,quesos,leche_yogur_y_quesos,kilogramos,76
+queso_chubut,Queso Chubut,quesos,leche_yogur_y_quesos,kilogramos,76
+queso_crema_entero_untable,"Queso crema entero, untable",quesos,leche_yogur_y_quesos,kilogramos,76
+queso_cremoso,Queso Cremoso,quesos,leche_yogur_y_quesos,kilogramos,76
+queso_cuartirolo,Queso Cuartirolo,quesos,leche_yogur_y_quesos,kilogramos,76
+queso_de_cabra,Queso de cabra,quesos,leche_yogur_y_quesos,kilogramos,76
+queso_de_maquina,Queso de máquina,quesos,leche_yogur_y_quesos,kilogramos,76
+queso_en_hebras,Queso en hebras,quesos,leche_yogur_y_quesos,kilogramos,76
+queso_en_hebras_light,Queso en hebras light,quesos,leche_yogur_y_quesos,kilogramos,76
+queso_fontina,Queso Fontina,quesos,leche_yogur_y_quesos,kilogramos,76
+queso_fontina_fundido_light,Queso Fontina fundido light,quesos,leche_yogur_y_quesos,kilogramos,76
+queso_fresco_sin_sal,Queso fresco sin sal,quesos,leche_yogur_y_quesos,kilogramos,76
+queso_fundido,Queso fundido,quesos,leche_yogur_y_quesos,kilogramos,76
+queso_gruyere,Queso Gruyére,quesos,leche_yogur_y_quesos,kilogramos,76
+queso_holanda,Queso Holanda,quesos,leche_yogur_y_quesos,kilogramos,76
+queso_mar_del_plata,Queso Mar del Plata,quesos,leche_yogur_y_quesos,kilogramos,78
+queso_mascarpone,Queso Mascarpone,quesos,leche_yogur_y_quesos,kilogramos,78
+queso_muzzarella,Queso Muzzarella,quesos,leche_yogur_y_quesos,kilogramos,78
+queso_parmesano,Queso Parmesano,quesos,leche_yogur_y_quesos,kilogramos,78
+queso_pasta_blanda_descremado,Queso pasta blanda descremado,quesos,leche_yogur_y_quesos,kilogramos,78
+queso_pasta_blanda_doble_crema,Queso pasta blanda doble crema,quesos,leche_yogur_y_quesos,kilogramos,78
+queso_pasta_blanda_promedio,"Queso pasta blanda, PROMEDIO *",quesos,leche_yogur_y_quesos,kilogramos,78
+queso_pasta_dura_promedio,"Queso pasta dura, PROMEDIO **",quesos,leche_yogur_y_quesos,kilogramos,78
+queso_pasta_semidura_promedio,"*** Queso pasta semidura, PROMEDIO",quesos,leche_yogur_y_quesos,kilogramos,78
+queso_porsalut_sin_sal_light,Queso porsalut sin sal light,quesos,leche_yogur_y_quesos,kilogramos,78
+queso_provolone,Queso Provolone,quesos,leche_yogur_y_quesos,kilogramos,78
+queso_rallado_envasado,Queso rallado envasado,quesos,leche_yogur_y_quesos,kilogramos,78
+queso_reggianito,Queso Reggianito,quesos,leche_yogur_y_quesos,kilogramos,78
+queso_roquefort,Queso Roquefort,quesos,leche_yogur_y_quesos,kilogramos,78
+queso_sardo,Queso Sardo,quesos,leche_yogur_y_quesos,kilogramos,78
+queso_sbrinz,Queso Sbrinz,quesos,leche_yogur_y_quesos,kilogramos,78
+queso_untable_tipo_finlandia,Queso untable tipo Finlandia,quesos,leche_yogur_y_quesos,kilogramos,80
+queso_untable_tipo_finlandia_light,Queso untable tipo Finlandia light,quesos,leche_yogur_y_quesos,kilogramos,80
+queso_untable_tipo_tholem,Queso untable tipo Tholem,quesos,leche_yogur_y_quesos,kilogramos,80
+queso_untable_tipo_tholem_light,Queso untable tipo Tholem light,quesos,leche_yogur_y_quesos,kilogramos,80
+queso_untable_promedio,"Queso untable, PROMEDIO",quesos,leche_yogur_y_quesos,kilogramos,80
+quesos_de_pasta_semidura_descremados,Quesos de pasta semidura descremados,quesos,leche_yogur_y_quesos,kilogramos,80
+ricota,Ricota,quesos,leche_yogur_y_quesos,kilogramos,80
+ricota_descremada,Ricota descremada,quesos,leche_yogur_y_quesos,kilogramos,80
+bondiola_fiambre,Bondiola (fiambre),carnes,consumo_opcional,kilogramos,82
+butifarra,Butifarra,carnes,carnes_y_huevos,kilogramos,82
+cabra_cruda,"Cabra, cruda",carnes,carnes_y_huevos,kilogramos,82
+cabra_al_horno,"Cabra, al horno",carnes,carnes_y_huevos,kilogramos,82
+cantimpalo_fiambre,Cantimpalo (fiambre),carnes,consumo_opcional,kilogramos,82
+carpincho_crudo,"Carpincho, crudo",carnes,carnes_y_huevos,kilogramos,82
+cerdo_promedio_crudo,"Cerdo, PROMEDIO, crudo",carnes,carnes_y_huevos,kilogramos,82
+cerdo_promedio_horno_parrilla,"Cerdo, PROMEDIO (horno/parrilla)",carnes,carnes_y_huevos,kilogramos,82
+chinchulines_tripa_gorda_crudos,"Chinchulines, tripa gorda, crudos",carnes,carnes_y_huevos,kilogramos,82
+chinchulines_tripa_gorda_horno_parrilla,"Chinchulines, tripa gorda (horno/ parrilla)",carnes,carnes_y_huevos,kilogramos,82
+chivito_crudo,"Chivito, crudo",carnes,carnes_y_huevos,kilogramos,82
+chivito_horno_parrilla,Chivito (horno/parrilla),carnes,carnes_y_huevos,kilogramos,82
+chorizo_crudo,"Chorizo, crudo",carnes,consumo_opcional,kilogramos,82
+chorizo_horno_parrilla,Chorizo (horno/parrilla),carnes,consumo_opcional,kilogramos,82
+chorizo_seco,Chorizo seco,carnes,consumo_opcional,kilogramos,82
+conejo_crudo,"Conejo, crudo",carnes,carnes_y_huevos,kilogramos,82
+conejo_hervido,"Conejo, hervido",carnes,carnes_y_huevos,kilogramos,82
+corazon_vacuno_crudo,"Corazón, vacuno, crudo",carnes,carnes_y_huevos,kilogramos,82
+cordero_promedio_crudo,"Cordero, PROMEDIO, crudo",carnes,carnes_y_huevos,kilogramos,82
+cordero_promedio_horno_parrilla,"Cordero, PROMEDIO (horno/parrilla)",carnes,carnes_y_huevos,kilogramos,82
+cuerito_de_cerdo,Cuerito de cerdo,carnes,carnes_y_huevos,kilogramos,84
+fiambre_de_cerdo,Fiambre de cerdo,carnes,consumo_opcional,kilogramos,84
+hamburguesa_de_carne_vacuna_carniceria,Hamburguesa de carne vacuna (carnicería),carnes,carnes_y_huevos,kilogramos,84
+hamburguesa_de_carne_vacuna_industrializada,"Hamburguesa de carne vacuna, industrializada",carnes,carnes_y_huevos,kilogramos,84
+hamburguesa_de_carne_vacuna_industrializada_light,"Hamburguesa de carne vacuna, industrializada, light",carnes,carnes_y_huevos,kilogramos,84
+hamburguesa_de_carne_vacuna_industrializada_rebozada,"Hamburguesa de carne vacuna, industrializada, rebozada",carnes,carnes_y_huevos,kilogramos,84
+hamburguesa_de_pollo_polleria_granja,Hamburguesa de pollo (pollería / granja),carnes,carnes_y_huevos,kilogramos,84
+hamburguesa_de_pollo_industrializada,"Hamburguesa de pollo, industrializada",carnes,carnes_y_huevos,kilogramos,84
+higado_crudo,"Hígado, crudo",carnes,carnes_y_huevos,kilogramos,84
+higado_rehogado_plancha,Hígado (rehogado/plancha),carnes,carnes_y_huevos,kilogramos,84
+higado_de_pollo_crudo,"Hígado de pollo, crudo",carnes,carnes_y_huevos,kilogramos,84
+higado_de_pollo_cocido,"Hígado de pollo, cocido",carnes,carnes_y_huevos,kilogramos,84
+jabali_crudo,"Jabalí, crudo",carnes,carnes_y_huevos,kilogramos,84
+jamon_cocido,Jamón cocido,carnes,consumo_opcional,kilogramos,84
+jamon_crudo,Jamón crudo,carnes,consumo_opcional,kilogramos,84
+leberwurst,Leberwurst,carnes,consumo_opcional,kilogramos,84
+lengua_cruda,"Lengua, cruda",carnes,carnes_y_huevos,kilogramos,84
+lengua_hervida,"Lengua, hervida",carnes,carnes_y_huevos,kilogramos,84
+lomito_ahumado,Lomito ahumado,carnes,carnes_y_huevos,kilogramos,86
+longaniza,Longaniza,carnes,consumo_opcional,kilogramos,86
+matambre_fiambre,Matambre (fiambre),carnes,consumo_opcional,kilogramos,86
+milanesa_de_carne_vacuna_rebozada_carniceria,Milanesa de carne vacuna rebozada (carnicería),carnes,carnes_y_huevos,kilogramos,86
+milanesa_de_pollo_rebozada_polleria_granja,Milanesa de pollo rebozada (pollería / granja),carnes,carnes_y_huevos,kilogramos,86
+milanesa_de_pollo_prefrita_congelada,"Milanesa de pollo, prefrita congelada",carnes,carnes_y_huevos,kilogramos,86
+mollejas_crudas,"Mollejas, crudas",carnes,carnes_y_huevos,kilogramos,86
+mollejas_a_la_parrilla,"Mollejas, a la parrilla",carnes,carnes_y_huevos,kilogramos,86
+mondongo_crudo,"Mondongo, crudo",carnes,carnes_y_huevos,kilogramos,86
+mondongo_hervido,"Mondongo, hervido",carnes,carnes_y_huevos,kilogramos,86
+morcilla,Morcilla,carnes,consumo_opcional,kilogramos,86
+mortadela,Mortadela,carnes,consumo_opcional,kilogramos,86
+nuggets_o_patitas_de_pollo,Nuggets o patitas de pollo,carnes,carnes_y_huevos,kilogramos,86
+osobuco_crudo,"Osobuco, crudo",carnes,carnes_y_huevos,kilogramos,86
+osobuco_hervido,"Osobuco, hervido",carnes,carnes_y_huevos,kilogramos,86
+paleta_fiambre,Paleta (fiambre),carnes,consumo_opcional,kilogramos,86
+panceta,Panceta,carnes,consumo_opcional,kilogramos,86
+pastron,Pastrón,carnes,carnes_y_huevos,kilogramos,86
+pate_picadillo,Paté / picadillo,carnes,consumo_opcional,kilogramos,88
+pato_crudo,"Pato, crudo",carnes,carnes_y_huevos,kilogramos,88
+pato_al_horno,"Pato, al horno",carnes,carnes_y_huevos,kilogramos,88
+pavo_crudo,"Pavo, crudo",carnes,carnes_y_huevos,kilogramos,88
+pavo_al_horno,"Pavo, al horno",carnes,carnes_y_huevos,kilogramos,88
+pollo_con_piel_crudo,"Pollo con piel, crudo",carnes,carnes_y_huevos,kilogramos,88
+pollo_con_piel_horno_parrilla,Pollo con piel (horno/parrilla),carnes,carnes_y_huevos,kilogramos,88
+pollo_sin_piel_crudo,"Pollo sin piel, crudo",carnes,carnes_y_huevos,kilogramos,88
+pollo_sin_piel_horno_parrilla,Pollo sin piel (horno/parrilla),carnes,carnes_y_huevos,kilogramos,88
+pollo_menudos_crudos,"Pollo, menudos, crudos",carnes,carnes_y_huevos,kilogramos,88
+pollo_menudos_cocidos,"Pollo, menudos, cocidos",carnes,carnes_y_huevos,kilogramos,88
+pollo_pechuga_sin_piel_crudo,"Pollo, pechuga sin piel, crudo",carnes,carnes_y_huevos,kilogramos,88
+pollo_pechuga_sin_piel_horno_parrilla,"Pollo, pechuga sin piel (horno/parrilla)",carnes,carnes_y_huevos,kilogramos,88
+rana_cruda,"Rana, cruda",carnes,carnes_y_huevos,kilogramos,88
+rinon_crudo,"Riñón, crudo",carnes,carnes_y_huevos,kilogramos,88
+rinon_horno_parrilla,Riñón (horno/parrilla),carnes,carnes_y_huevos,kilogramos,88
+salame,Salame,carnes,consumo_opcional,kilogramos,88
+salchicha_de_viena,Salchicha de viena,carnes,consumo_opcional,kilogramos,88
+salchicha_de_viena_light,Salchicha de viena light,carnes,consumo_opcional,kilogramos,90
+salchicha_parrillera_cruda,"Salchicha parrillera, cruda",carnes,consumo_opcional,kilogramos,90
+salchicha_parrillera_a_la_parrilla,"Salchicha parrillera, a la parrilla",carnes,consumo_opcional,kilogramos,90
+salchichon,Salchichón,carnes,consumo_opcional,kilogramos,90
+sesos_crudos,"Sesos, crudos",carnes,carnes_y_huevos,kilogramos,90
+sesos_hervidos,"Sesos, hervidos",carnes,carnes_y_huevos,kilogramos,90
+ubre_cruda,"Ubre, cruda",carnes,carnes_y_huevos,kilogramos,90
+vacuno_cortes_grasos_promedio_crudo,"Vacuno, cortes grasos*, PROMEDIO, crudo",carnes,carnes_y_huevos,kilogramos,90
+vacuno_cortes_grasos_promedio_hervido,"Vacuno, cortes grasos*, PROMEDIO, hervido",carnes,carnes_y_huevos,kilogramos,90
+vacuno_cortes_grasos_promedio_horno_parrilla,"Vacuno, cortes grasos*, PROMEDIO, horno/parrilla",carnes,carnes_y_huevos,kilogramos,90
+vacuno_cortes_magros_promedio_crudo,"Vacuno, cortes magros**, PROMEDIO, crudo",carnes,carnes_y_huevos,kilogramos,90
+vacuno_cortes_magros_promedio_hervido,"Vacuno, cortes magros**, PROMEDIO, hervido",carnes,carnes_y_huevos,kilogramos,90
+vacuno_cortes_magros_promedio_horno_parrilla,"Vacuno, cortes magros**, PROMEDIO, horno/parrilla",carnes,carnes_y_huevos,kilogramos,90
+vacuno_cortes_semigrasos_promedio_crudo,"Vacuno, cortes semigrasos***, PROMEDIO, crudo",carnes,carnes_y_huevos,kilogramos,90
+vacuno_cortes_semigrasos_promedio_hervido,"Vacuno, cortes semigrasos***, PROMEDIO, hervido",carnes,carnes_y_huevos,kilogramos,90
+vacuno_cortes_semigrasos_ej_lomo_carne_picada_especial_roast_beef_paleta_bife_angosto_tortuguita_palomita_promedio_horno_parrilla,"Vacuno, cortes semigrasos, (ej: lomo, carne picada especial, roast beef, paleta, bife angosto, tortuguita, palomita), PROMEDIO, horno/parrilla",carnes,carnes_y_huevos,kilogramos,91
+vizcacha_cruda,"Vizcacha, cruda",carnes,carnes_y_huevos,kilogramos,91
+huevo_de_codorniz_entero_crudo,"Huevo de codorníz, entero, crudo",huevos,carnes_y_huevos,unidades,93
+huevo_de_codorniz_entero_hervido,"Huevo de codorníz, entero, hervido",huevos,carnes_y_huevos,unidades,93
+huevo_de_gallina_clara_cruda,"Huevo de gallina, clara, cruda",huevos,carnes_y_huevos,unidades,93
+huevo_de_gallina_clara_hervida,"Huevo de gallina, clara, hervida",huevos,carnes_y_huevos,unidades,93
+huevo_de_gallina_entero_crudo,"Huevo de gallina, entero, crudo",huevos,carnes_y_huevos,unidades,93
+huevo_de_gallina_entero_hervido,"Huevo de gallina, entero, hervido",huevos,carnes_y_huevos,unidades,93
+huevo_de_gallina_yema_cruda,"Huevo de gallina, yema, cruda",huevos,carnes_y_huevos,unidades,93
+huevo_de_gallina_yema_hervida,"Huevo de gallina, yema, hervida",huevos,carnes_y_huevos,unidades,93
+abadejo_crudo,"Abadejo, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+almeja_cruda,"Almeja, cruda",pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+anchoa_enlatada_en_aceite,"Anchoa, enlatada en aceite",pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+atun_enlatado_al_natural,"Atún, enlatado al natural",pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+atun_enlatado_en_aceite,"Atún, enlatado en aceite",pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+atun_lomito_fresco_crudo,"Atún, lomito fresco, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+bocaditos_de_pescado_prefritos,"Bocaditos de pescado, prefritos",pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+brotola_cruda,"Brótola, cruda",pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+caballa_enlatada,"Caballa, enlatada",pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+calamar_crudo,"Calamar, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+camaron,Camarón,pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+cornalitos_crudos,"Cornalitos, crudos",pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+corvina_cruda,"Corvina, cruda",pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+dorado_crudo,"Dorado, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+gatuzo_crudo,"Gatuzo, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+hamburguesa_de_pescado_pescaderia,Hamburguesa de pescado (pescadería),pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+kani_kama,Kani Kama,pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+langostino,Langostino,pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+lenguado_crudo,"Lenguado, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,95
+mejillon_crudo,"Mejillón, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+merluza_cruda,"Merluza, cruda",pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+merluza,Merluza,pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+merluza_enlatada_en_agua_y_aceite,"Merluza, enlatada en agua y aceite",pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+milanesa_de_pescado_prefrita,"Milanesa de pescado, prefrita",pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+pacu_crudo,"Pacú, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+pacu,Pacú,pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+palometa_cruda,"Palometa, cruda",pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+palometa,Palometa,pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+pejerrey_crudo,"Pejerrey, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+pejerrey,Pejerrey,pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+pescados_de_mar_ej_brotola_corvina_blanca_gatuso_lenguado_merluza_etc_promedio_crudo,"Pescados de mar (ej: brótola, corvina blanca, gatuso, lenguado, merluza, etc.), PROMEDIO, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+pescados_de_rio_ej_dorado_palometa_surubi_trucha_etc_promedio_crudo,"Pescados de río (ej: dorado, palometa, surubí, trucha, etc.), PROMEDIO, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+pollo_de_mar_crudo,"Pollo de mar, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+pulpo_crudo,"Pulpo, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+rabas_restaurant,Rabas (restaurant),pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+sabalo_crudo,"Sábalo, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+salmon_blanco_crudo,"Salmón blanco, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,96
+salmon_rosado_crudo,"Salmón rosado, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,97
+sardinas_enlatadas_al_natural,"Sardinas, enlatadas al natural",pescados_y_mariscos,carnes_y_huevos,kilogramos,98
+sardinas_enlatadas_en_aceite,"Sardinas, enlatadas en aceite",pescados_y_mariscos,carnes_y_huevos,kilogramos,98
+surubi_crudo,"Surubí, crudo",pescados_y_mariscos,carnes_y_huevos,kilogramos,98
+trucha_cruda,"Trucha, cruda",pescados_y_mariscos,carnes_y_huevos,kilogramos,98
+aceite_comestible_mezcla,Aceite comestible mezcla,aceites,aceites_frutas_secas_y_semillas,litros,100
+aceite_de_canola,Aceite de canola,aceites,aceites_frutas_secas_y_semillas,litros,100
+aceite_de_chia,Aceite de chía,aceites,aceites_frutas_secas_y_semillas,litros,100
+aceite_de_coco,Aceite de coco,aceites,aceites_frutas_secas_y_semillas,litros,100
+aceite_de_girasol,Aceite de girasol,aceites,aceites_frutas_secas_y_semillas,litros,100
+aceite_de_girasol_alto_oleico,Aceite de girasol alto oleico,aceites,aceites_frutas_secas_y_semillas,litros,100
+aceite_de_maiz,Aceite de maíz,aceites,aceites_frutas_secas_y_semillas,litros,100
+aceite_de_oliva,Aceite de oliva,aceites,aceites_frutas_secas_y_semillas,litros,100
+aceite_de_sesamo,Aceite de sésamo,aceites,aceites_frutas_secas_y_semillas,litros,100
+aceite_de_soja,Aceite de soja,aceites,aceites_frutas_secas_y_semillas,litros,100
+aceite_de_uva,Aceite de uva,aceites,aceites_frutas_secas_y_semillas,litros,100
+aceite_mezcla_con_oliva,Aceite mezcla con oliva,aceites,aceites_frutas_secas_y_semillas,litros,100
+rocio_vegetal,Rocío vegetal,aceites,aceites_frutas_secas_y_semillas,kilogramos,100
+alimento_a_base_de_almendras_leche_de_almendras,Alimento a base de almendras (leche de almendras),frutas_secas_y_semillas,aceites_frutas_secas_y_semillas,litros,102
+almendra,Almendra,frutas_secas_y_semillas,aceites_frutas_secas_y_semillas,kilogramos,102
+avellana,Avellana,frutas_secas_y_semillas,aceites_frutas_secas_y_semillas,kilogramos,102
+mani_tostado_salado,Maní tostado salado,frutas_secas_y_semillas,aceites_frutas_secas_y_semillas,kilogramos,102
+mani_tostado_sin_sal,Maní tostado sin sal,frutas_secas_y_semillas,aceites_frutas_secas_y_semillas,kilogramos,102
+mantequilla_de_mani,Mantequilla de maní,frutas_secas_y_semillas,aceites_frutas_secas_y_semillas,kilogramos,102
+mix_de_frutos_secos_semillas_y_pasas_de_uva,"Mix de frutos secos, semillas y pasas de uva",frutas_secas_y_semillas,aceites_frutas_secas_y_semillas,kilogramos,102
+nuez,Nuez,frutas_secas_y_semillas,aceites_frutas_secas_y_semillas,kilogramos,102
+pistacho_salado,Pistacho salado,frutas_secas_y_semillas,aceites_frutas_secas_y_semillas,kilogramos,102
+semilla_de_amapola,Semilla de amapola,frutas_secas_y_semillas,aceites_frutas_secas_y_semillas,kilogramos,102
+semilla_de_chia,Semilla de chía,frutas_secas_y_semillas,aceites_frutas_secas_y_semillas,kilogramos,102
+semilla_de_girasol,Semilla de girasol,frutas_secas_y_semillas,aceites_frutas_secas_y_semillas,kilogramos,102
+semilla_de_girasol_con_sal_y_con_cascara,Semilla de girasol con sal y con cáscara,frutas_secas_y_semillas,aceites_frutas_secas_y_semillas,kilogramos,102
+semilla_de_lino,Semilla de lino,frutas_secas_y_semillas,aceites_frutas_secas_y_semillas,kilogramos,102
+semilla_de_sesamo,Semilla de sésamo,frutas_secas_y_semillas,aceites_frutas_secas_y_semillas,kilogramos,102
+semilla_de_zapallo,Semilla de zapallo,frutas_secas_y_semillas,aceites_frutas_secas_y_semillas,kilogramos,102
+azucar_blanca_molida,Azúcar blanca molida,azucares_mermeladas_y_dulces,consumo_opcional,kilogramos,104
+azucar_impalpable,Azúcar impalpable,azucares_mermeladas_y_dulces,consumo_opcional,kilogramos,104
+azucar_morena_azucar_mascabo,Azúcar morena / azúcar mascabo,azucares_mermeladas_y_dulces,consumo_opcional,kilogramos,104
+dulce_de_batata,Dulce de batata,azucares_mermeladas_y_dulces,consumo_opcional,kilogramos,104
+dulce_de_batata_light,Dulce de batata light,azucares_mermeladas_y_dulces,consumo_opcional,kilogramos,104
+dulce_de_leche,Dulce de leche,azucares_mermeladas_y_dulces,consumo_opcional,kilogramos,104
+dulce_de_leche_light,Dulce de leche light,azucares_mermeladas_y_dulces,consumo_opcional,kilogramos,104
+dulce_de_membrillo,Dulce de membrillo,azucares_mermeladas_y_dulces,consumo_opcional,kilogramos,104
+dulce_de_membrillo_light,Dulce de membrillo light,azucares_mermeladas_y_dulces,consumo_opcional,kilogramos,104
+glucosa,Glucosa,azucares_mermeladas_y_dulces,consumo_opcional,kilogramos,104
+jalea_tipo_membrillo,Jalea tipo membrillo,azucares_mermeladas_y_dulces,consumo_opcional,kilogramos,104
+kero_o_melaza,Kero o melaza,azucares_mermeladas_y_dulces,consumo_opcional,kilogramos,104
+mermelada_de_frutas,Mermelada de frutas,azucares_mermeladas_y_dulces,consumo_opcional,kilogramos,104
+mermelada_de_frutas_light,Mermelada de frutas light,azucares_mermeladas_y_dulces,consumo_opcional,kilogramos,104
+miel,Miel,azucares_mermeladas_y_dulces,consumo_opcional,kilogramos,104
+alfajor_de_arroz,Alfajor de arroz,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+alfajor_de_chocolate,Alfajor de chocolate,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+alfajor_de_chocolate_con_relleno_tipo_mousse,Alfajor de chocolate con relleno tipo mousse,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+alfajor_de_dulce_de_leche,Alfajor de dulce de leche,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+alfajor_de_fruta,Alfajor de fruta,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+alfajor_de_maicena,Alfajor de maicena,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+alfajor_de_miel,Alfajor de miel,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+alfajor_light,Alfajor light,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+bananita_con_cobertura_de_chocolate,Bananita con cobertura de chocolate,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+bano_de_reposteria_para_cubrir_tortas,Baño de repostería para cubrir tortas,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+barra_de_arroz_rellena_banada,Barra de arroz rellena bañada,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+barra_de_chocolate_tipo_kinder,Barra de chocolate tipo Kinder,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+bocadito_con_dulce_de_leche_tipo_cabsha,Bocadito con dulce de leche tipo Cabsha,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+bombon_tipo_bon_o_bon,Bombón tipo Bon O Bon,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+bombones_de_fruta,Bombones de fruta,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+cacao_amargo,Cacao amargo*,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+cacao_en_polvo_sin_fortificar,Cacao en polvo sin fortificar*,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+cacao_en_polvo_tipo_nesquick,Cacao en polvo tipo Nesquick*,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+caramelos_duros,Caramelos duros,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+caramelos_duros_light,Caramelos duros light,golosinas_y_chocolates,consumo_opcional,kilogramos,106
+caramelos_masticables,Caramelos masticables,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+caramelos_rellenos,Caramelos rellenos,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+chicles,Chicles,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+chicles_sin_azucar,Chicles sin azúcar,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+chocolate_60_cacao_o_mas,Chocolate 60% cacao o más,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+chocolate_amargo,Chocolate amargo,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+chocolate_blanco,Chocolate blanco,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+chocolate_con_almendras,Chocolate con almendras,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+chocolate_con_mani,Chocolate con maní,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+chocolate_light,Chocolate light,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+chocolate_para_taza,Chocolate para taza,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+chocolatin_chocolate_con_leche,Chocolatín / chocolate con leche,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+chupetin,Chupetín,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+conito_de_dulce_de_leche_envasado,Conito de dulce de leche envasado,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+cubanito_relleno,Cubanito relleno,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+garrapinada_de_mani,Garrapiñada de maní,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+gomitas_de_gelatina,Gomitas de gelatina,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+huevo_de_chocolate_tipo_kinder,Huevo de chocolate tipo Kinder,golosinas_y_chocolates,consumo_opcional,unidades,108
+lentejas_de_chocolate,Lentejas de chocolate,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+mani_con_chocolate,Maní con chocolate,golosinas_y_chocolates,consumo_opcional,kilogramos,108
+medallon_de_menta_y_chocolate,Medallón de menta y chocolate,golosinas_y_chocolates,consumo_opcional,kilogramos,110
+merengues_merenguitos,Merengues / merenguitos,golosinas_y_chocolates,consumo_opcional,kilogramos,110
+minitorta_banada,Minitorta bañada,golosinas_y_chocolates,consumo_opcional,kilogramos,110
+oblea_banada_tipo_kit_kat,Oblea bañada tipo Kit Kat,golosinas_y_chocolates,consumo_opcional,kilogramos,110
+obleas_banadas_tipo_nugaton,Obleas bañadas tipo Nugaton,golosinas_y_chocolates,consumo_opcional,kilogramos,110
+pasas_de_uva_con_chocolate,Pasas de uva con chocolate,golosinas_y_chocolates,consumo_opcional,kilogramos,110
+pastillas,Pastillas,golosinas_y_chocolates,consumo_opcional,kilogramos,110
+pastillas_sin_azucar,Pastillas sin azúcar,golosinas_y_chocolates,consumo_opcional,kilogramos,110
+postre_a_base_de_pasta_de_mani_tipo_mantecol,"Postre a base de pasta de maní, tipo Mantecol",golosinas_y_chocolates,consumo_opcional,kilogramos,110
+rhodesia,Rhodesia,golosinas_y_chocolates,consumo_opcional,kilogramos,110
+tableta_de_dulce_de_leche,Tableta de dulce de leche,golosinas_y_chocolates,consumo_opcional,kilogramos,110
+tableta_de_dulce_de_leche_light,Tableta de dulce de leche light,golosinas_y_chocolates,consumo_opcional,kilogramos,110
+tita,Tita,golosinas_y_chocolates,consumo_opcional,kilogramos,110
+crema_chantilly_lista_para_consumir_aerosol_o_industrial_preparada,"Crema chantilly (lista para consumir, aerosol o industrial preparada)",grasas,consumo_opcional,kilogramos,112
+crema_de_leche,Crema de leche,grasas,consumo_opcional,litros,112
+crema_light,Crema light,grasas,consumo_opcional,kilogramos,112
+grasa_de_cerdo,Grasa de cerdo,grasas,consumo_opcional,kilogramos,112
+grasa_de_pollo,Grasa de pollo,grasas,consumo_opcional,kilogramos,112
+grasa_vacuna,Grasa vacuna,grasas,consumo_opcional,kilogramos,112
+manteca,Manteca,grasas,consumo_opcional,kilogramos,112
+manteca_light,Manteca light,grasas,consumo_opcional,kilogramos,112
+margarina_en_pote_y_en_pan,Margarina (en pote y en pan),grasas,consumo_opcional,kilogramos,112
+margarina_untable_light,Margarina untable light,grasas,consumo_opcional,kilogramos,112
+chicharron,Chicharrón,snacks_salados,consumo_opcional,kilogramos,114
+mani_japones,Maní japonés,snacks_salados,consumo_opcional,kilogramos,114
+nachos,Nachos,snacks_salados,consumo_opcional,kilogramos,114
+palitos_aireados_de_harina_de_maiz_o_de_colores,Palitos aireados de harina de maíz o de colores,snacks_salados,consumo_opcional,kilogramos,114
+palitos_salados,Palitos salados,snacks_salados,consumo_opcional,kilogramos,114
+papas_fritas_de_copetin,Papas fritas de copetín,snacks_salados,consumo_opcional,kilogramos,114
+snacks_saborizados_salados_a_base_de_maiz,Snacks saborizados salados a base de maíz,snacks_salados,consumo_opcional,kilogramos,114
+snacks_saborizados_salados_a_base_de_semola_de_arroz_horneados_tipo_palitos_de_arroz_aros_de_cebolla,"Snacks saborizados salados a base de sémola de arroz, horneados, tipo Palitos de arroz / aros de cebolla",snacks_salados,consumo_opcional,kilogramos,114
+aceto_balsamico,Aceto balsámico,aderezos,consumo_opcional,litros,116
+aderezo_caesar_o_ranch,Aderezo Caesar o Ranch,aderezos,consumo_opcional,litros,116
+aderezo_para_ensaladas_light,Aderezo para ensaladas light,aderezos,consumo_opcional,litros,116
+jugo_de_limon_envasado,"Jugo de limón, envasado",aderezos,consumo_opcional,litros,116
+ketchup,Ketchup,aderezos,consumo_opcional,kilogramos,116
+mayonesa,Mayonesa,aderezos,consumo_opcional,kilogramos,116
+mayonesa_de_soja,Mayonesa de soja,aderezos,consumo_opcional,kilogramos,116
+mayonesa_light,Mayonesa light,aderezos,consumo_opcional,kilogramos,116
+mostaza,Mostaza,aderezos,consumo_opcional,kilogramos,116
+salsa_a_base_de_tomate_en_tetra_brick_o_sachet_lista_para_consumir_ej_pomarola_napolitana_con_o_sin_verdeo_etc,"Salsa a base de tomate en tetra brick o sachet, lista para consumir (ej: pomarola, napolitana, con o sin verdeo, etc.)",aderezos,consumo_opcional,kilogramos,116
+salsa_agridulce,Salsa agridulce,aderezos,consumo_opcional,kilogramos,116
+salsa_barbacoa,Salsa barbacoa,aderezos,consumo_opcional,kilogramos,116
+salsa_blanca_en_polvo_envasada,Salsa blanca en polvo envasada,aderezos,consumo_opcional,kilogramos,116
+salsa_chimichurri_envasada,Salsa chimichurri envasada,aderezos,consumo_opcional,kilogramos,116
+salsa_de_soja,Salsa de soja,aderezos,consumo_opcional,litros,116
+salsa_deshidratada_varios_sabores_polvo,"Salsa deshidratada varios sabores, polvo",aderezos,consumo_opcional,kilogramos,116
+salsa_golf,Salsa Golf,aderezos,consumo_opcional,kilogramos,116
+vinagre,Vinagre,aderezos,consumo_opcional,litros,116
+caldos_en_cubo,Caldos en cubo,caldos_y_sopas_industriales,consumo_opcional,kilogramos,118
+caldos_en_polvo,Caldos en polvo,caldos_y_sopas_industriales,consumo_opcional,kilogramos,118
+caldos_en_polvo_light,Caldos en polvo light,caldos_y_sopas_industriales,consumo_opcional,kilogramos,118
+caldos_en_polvo_sin_sal_light,Caldos en polvo sin sal light,caldos_y_sopas_industriales,consumo_opcional,kilogramos,118
+saborizador_en_cubos,Saborizador en cubos,caldos_y_sopas_industriales,consumo_opcional,kilogramos,118
+saborizador_en_polvo,Saborizador en polvo,caldos_y_sopas_industriales,consumo_opcional,kilogramos,118
+sopa_crema_instantanea_preparada,Sopa crema instantánea preparada,caldos_y_sopas_industriales,consumo_opcional,kilogramos,118
+sopa_crema_instantanea_polvo_para_preparar_sabores_varios,"Sopa crema instantánea, polvo para preparar (sabores varios)",caldos_y_sopas_industriales,consumo_opcional,kilogramos,118
+sopa_crema_instantanea_polvo_para_preparar_light_sabores_varios,"Sopa crema instantánea, polvo para preparar light (sabores varios)",caldos_y_sopas_industriales,consumo_opcional,kilogramos,118
+sopa_crema_premezcla_light_preparada_a_partir_de_polvo,Sopa crema premezcla light preparada a partir de polvo,caldos_y_sopas_industriales,consumo_opcional,kilogramos,118
+sopa_de_fideos_deshidratada_envasada_para_preparar,Sopa de fideos deshidratada envasada para preparar,caldos_y_sopas_industriales,consumo_opcional,kilogramos,118
+sopa_de_vegetales_instantanea_polvo_para_preparar,"Sopa de vegetales instantánea, polvo para preparar",caldos_y_sopas_industriales,consumo_opcional,kilogramos,118
+sopa_crema_preparada_a_partir_de_polvo_premezcla_sin_sal_light,Sopa crema preparada a partir de polvo premezcla sin sal light,caldos_y_sopas_industriales,consumo_opcional,kilogramos,118
+arroz_con_leche_envasado_listo_para_consumir,Arroz con leche envasado listo para consumir,postres_industriales_y_helados,consumo_opcional,kilogramos,120
+bombon_helado,Bombón helado,postres_industriales_y_helados,consumo_opcional,kilogramos,120
+gelatina_envasada_lista_para_consumir,Gelatina envasada lista para consumir,postres_industriales_y_helados,consumo_opcional,kilogramos,120
+gelatina_light_preparada_a_partir_de_polvo,"Gelatina light, preparada a partir de polvo",postres_industriales_y_helados,consumo_opcional,kilogramos,120
+gelatina_preparada_a_partir_de_polvo,Gelatina preparada a partir de polvo,postres_industriales_y_helados,consumo_opcional,kilogramos,120
+helado_de_agua_heladeria,Helado de agua (heladería),postres_industriales_y_helados,consumo_opcional,kilogramos,120
+helado_de_agua_palito,Helado de agua (palito),postres_industriales_y_helados,consumo_opcional,kilogramos,120
+helado_de_crema_heladeria,Helado de crema (heladería),postres_industriales_y_helados,consumo_opcional,kilogramos,120
+helado_de_crema_envasado,Helado de crema envasado,postres_industriales_y_helados,consumo_opcional,kilogramos,120
+helado_envasado_con_cucurucho_promedio,"Helado envasado con cucurucho, PROMEDIO",postres_industriales_y_helados,consumo_opcional,kilogramos,120
+polvo_para_preparar_helado,Polvo para preparar helado,postres_industriales_y_helados,consumo_opcional,kilogramos,120
+polvo_para_preparar_postre_lacteo,Polvo para preparar postre lácteo,postres_industriales_y_helados,consumo_opcional,kilogramos,120
+polvo_para_preparar_postre_lacteo_light,"Polvo para preparar postre lácteo, light",postres_industriales_y_helados,consumo_opcional,kilogramos,120
+sal,Sal,sales,,kilogramos,121
+sal_dietetica_o_modificada_promedio,"Sal, dietética o modificada, PROMEDIO",sales,,kilogramos,121
+sal_dietetica_sin_sodio,"Sal dietética, sin sodio",sales,,kilogramos,121
+sal_marina,Sal Marina,sales,,kilogramos,121
+sal_modificada_33_cloruro_de_sodio,"Sal modificada, 33% cloruro de sodio",sales,,kilogramos,121
+sal_modificada_66_cloruro_de_sodio,"Sal modificada, 66% cloruro de sodio",sales,,kilogramos,121
+agua_sabores_saborizada_aquarius_varios,"Agua sabores saborizada Aquarius, varios",bebidas_con_azucar,consumo_opcional,litros,123
+agua_saborizada_awafrut_varios_sabores,"Agua saborizada Awafrut, varios sabores",bebidas_con_azucar,consumo_opcional,litros,123
+agua_saborizada_con_azucar_promedio,"Agua saborizada con azúcar, PROMEDIO",bebidas_con_azucar,consumo_opcional,litros,123
+agua_saborizada_levite_varios_sabores,"Agua saborizada Levité, varios sabores",bebidas_con_azucar,consumo_opcional,litros,123
+agua_saborizada_tipo_manaos_sierra_de_los_padres_otros,"Agua saborizada tipo Manaos, Sierra de los Padres, otros",bebidas_con_azucar,consumo_opcional,litros,123
+amargo_serrano,Amargo serrano,bebidas_con_azucar,consumo_opcional,litros,123
+bebida_a_base_de_soja_sabor_natural,Bebida a base de soja sabor natural,bebidas_con_azucar,consumo_opcional,litros,123
+bebida_a_base_de_soja_y_jugo_sabores_varios,"Bebida a base de soja y jugo, sabores varios",bebidas_con_azucar,consumo_opcional,litros,123
+bebida_a_base_de_soja_y_jugo_varios_sabores_light,"Bebida a base de soja y jugo, varios sabores light",bebidas_con_azucar,consumo_opcional,litros,123
+gaseosa_con_azucar_promedio,"Gaseosa con azúcar, PROMEDIO",bebidas_con_azucar,consumo_opcional,litros,123
+gatorade_varios_sabores,"Gatorade, varios sabores",bebidas_con_azucar,consumo_opcional,litros,123
+jugo_concentrado_con_azucar_para_diluir,"Jugo concentrado con azúcar, para diluir",bebidas_con_azucar,consumo_opcional,litros,123
+jugo_congelado_con_azucar_en_sachet,Jugo congelado con azúcar en sachet,bebidas_con_azucar,consumo_opcional,litros,123
+jugo_de_fruta_envasado_varios_sabores,"Jugo de fruta envasado, varios sabores",bebidas_con_azucar,consumo_opcional,litros,123
+jugo_en_polvo_con_azucar,Jugo en polvo con azúcar,bebidas_con_azucar,consumo_opcional,kilogramos,123
+powerade_varios_sabores,"Powerade, varios sabores",bebidas_con_azucar,consumo_opcional,litros,123
+agua_saborizada_flip_light,Agua saborizada Flip light,bebidas_sin_azucar,consumo_opcional,litros,125
+agua_saborizada_h2o_varios_sabores,"Agua saborizada H2O, varios sabores",bebidas_sin_azucar,consumo_opcional,litros,125
+agua_saborizada_levite_cero_varios_sabores_light,"Agua saborizada Levité Cero, varios sabores light",bebidas_sin_azucar,consumo_opcional,litros,125
+agua_saborizada_light_promedio,"Agua saborizada light, PROMEDIO",bebidas_sin_azucar,consumo_opcional,litros,125
+agua_saborizada_we_o_ser_ligth,Agua saborizada We o Ser ligth,bebidas_sin_azucar,consumo_opcional,litros,125
+amargo_serrano_light,Amargo serrano light,bebidas_sin_azucar,consumo_opcional,litros,125
+gaseosa_light_promedio,"Gaseosa light, PROMEDIO",bebidas_sin_azucar,consumo_opcional,litros,125
+gatorade_zero_varios_sabores_sin_azucar,"Gatorade Zero, varios sabores (sin azúcar)",bebidas_sin_azucar,consumo_opcional,litros,125
+jugo_en_polvo_bc,Jugo en polvo BC,bebidas_sin_azucar,consumo_opcional,kilogramos,125
+jugo_en_polvo_light,Jugo en polvo light,bebidas_sin_azucar,consumo_opcional,kilogramos,125
+jugo_tipo_bc_varios_sabores_alimento_liquido_dietetico_con_50_de_jugo_y_pulpa,"Jugo tipo BC, varios sabores (alimento líquido dietético con 50% de jugo y pulpa)",bebidas_sin_azucar,consumo_opcional,litros,125
+powerade_zero_varios_sabores_sin_azucar,"Powerade Zero, varios sabores (sin azúcar)",bebidas_sin_azucar,consumo_opcional,litros,125
+anana_fizz,Ananá Fizz,bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+aperitivo_tipo_gancia,"Aperitivo, tipo Gancia",bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+bebida_destilada_promedio,"Bebida destilada, PROMEDIO",bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+bebida_energizante,Bebida energizante,bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+cerveza_con_alcohol,Cerveza con alcohol,bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+cerveza_sin_alcohol,Cerveza sin alcohol,bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+champagne,Champagne,bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+chicha_bebida_tradicional_obtenida_por_fermentacion_del_maiz,"Chicha, bebida tradicional obtenida por fermentación del maíz",bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+dr_lemon,Dr. Lemon,bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+fernet,Fernet,bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+licor_promedio,"Licor, PROMEDIO",bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+sidra,Sidra,bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+vermouth,Vermouth,bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+vino_blanco,Vino blanco,bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+vino_espumante_tipo_frizze,"Vino espumante, tipo Frizze",bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+vino_mistela,Vino Mistela,bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+vino_tinto,Vino tinto,bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+vodka,Vodka,bebidas_alcoholicas_y_energizantes,consumo_opcional,litros,127
+cafe_instantaneo_polvo_o_granulado_para_preparar,Café instantáneo (polvo o granulado para preparar),infusiones,consumo_opcional,kilogramos,131
+cafe_instantaneo_descafeinado_polvo_o_granulado_para_preparar,Café instantáneo descafeinado (polvo o granulado para preparar),infusiones,consumo_opcional,kilogramos,131
+cafe_preparado_a_partir_de_grano_molido_tipo_cafe_de_filtro,Café preparado a partir de grano molido (tipo café de filtro),infusiones,consumo_opcional,kilogramos,131
+capucchino_preparado,Capucchino preparado,infusiones,consumo_opcional,kilogramos,131
+malta_instantanea_en_polvo,Malta instantánea en polvo,infusiones,consumo_opcional,kilogramos,131
+mcdonald_s_bigmc,"McDonald's, BigMc",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,133
+mcdonald_s_cajita_feliz_hamburguesa_con_queso_grill,"McDonald's, Cajita Feliz, Hamburguesa con queso Grill",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,133
+mcdonald_s_cajita_feliz_hamburguesa_grill,"McDonald's, Cajita Feliz, Hamburguesa Grill",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,133
+mcdonald_s_cajita_feliz_mc_tostado,"McDonald's, Cajita Feliz, Mc Tostado",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,133
+mcdonald_s_cajita_feliz_mcnuggets_x4,"McDonald's, Cajita Feliz, McNuggets X4",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,133
+mcdonald_s_cajita_feliz_papas_kids,"McDonald's, Cajita Feliz, Papas Kids",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,133
+mcdonald_s_cajita_feliz_papas_pequenas,"McDonald's, Cajita Feliz, Papas pequeñas",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,133
+mcdonald_s_cajita_feliz_tomate_cherry_50g,"McDonald's, Cajita Feliz, Tomate cherry 50g",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,133
+mcdonald_s_club_house,"McDonald's, Club House",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,133
+mcdonald_s_clubhouse_guacamole_cryspi_onion_bbq_con_pollo_crispy,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo crispy",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,133
+mcdonald_s_clubhouse_guacamole_cryspi_onion_bbq_con_pollo_grill,"McDonald's, Clubhouse/ Guacamole/ Cryspi Onion BBQ con pollo grill",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,133
+mcdonald_s_cono,"McDonald's, Cono",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,133
+mcdonald_s_cuarto_de_libra,"McDonald's, Cuarto de Libra",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,133
+mcdonald_s_doble_cuarto_de_libra_con_queso,"McDonald's, Doble Cuarto de Libra con queso",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,135
+mcdonald_s_hamburguesa,"McDonald's, Hamburguesa",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,135
+mcdonald_s_hamburguesa_con_queso,"McDonald's, Hamburguesa con queso",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,135
+mcdonald_s_mc_flurry_oreo,"McDonald's, Mc Flurry Oreo",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,135
+mcdonald_s_mcnifica,"McDonald's, McNífica",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,135
+mcdonald_s_mcnuggets_x_10,"McDonald's, McNuggets x 10",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,135
+mcdonald_s_mcpollo_grill,"McDonald's, McPollo Grill",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,135
+mcdonald_s_papas_grandes,"McDonald's, Papas grandes",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,135
+mcdonald_s_papas_medianas,"McDonald's, Papas medianas",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,135
+mcdonald_s_papas_pequenas,"McDonald's, Papas pequeñas",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,135
+mcdonald_s_pollo_jr,"McDonald's, Pollo Jr.",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,135
+mcdonald_s_sundae_chocolate,"McDonald's, Sundae chocolate",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,135
+mcdonald_s_sundae_dulce_de_leche,"McDonald's, Sundae dulce de leche",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,135
+mcdonald_s_sundae_frutilla,"McDonald's, Sundae frutilla",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,135
+mcdonald_s_triple_mac,"McDonald's, Triple Mac",alimentos_de_locales_de_comidas_rapidas,consumo_opcional,unidades,135

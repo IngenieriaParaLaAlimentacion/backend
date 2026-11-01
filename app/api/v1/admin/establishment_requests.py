@@ -9,10 +9,11 @@ from app.api.v1.params import (
 )
 from app.core.dependencies import get_establishment_service, require_admin
 from app.domain.user import UserActor
+from app.exceptions.exception_handlers import INVALID_FIELD_EXTENSION
 from app.schemas.establishments.establishment_schema import (
+    EstablishmentApprovalRequest,
     EstablishmentApprovalResponse,
     EstablishmentCreationRequestAdminView,
-    EstablishmentRequest,
     EstablishmentRequestRejection,
 )
 from app.schemas.pagination import PaginatedResponse
@@ -57,16 +58,22 @@ async def list_establishment_requests(
     "creating a new establishment or reusing an existing one with the same "
     "place_id. The field worker's access to it is left pending a separate "
     "admin review; they're notified by email that the establishment was "
-    "created. Accessible by admins only.",
+    "created. The characterization profile sent here, or else the one sent "
+    "with the request, is stored unless a reused establishment already has "
+    "an answered profile. Accessible by admins only.",
     responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Invalid data; `field` names the field that failed"
+        },
         **AUTH_RESPONSES,
         status.HTTP_404_NOT_FOUND: {"description": "Request not found"},
         status.HTTP_409_CONFLICT: {"description": "Request already reviewed"},
     },
+    openapi_extra={INVALID_FIELD_EXTENSION: True},
 )
 async def approve_request(
     request_id: UUID,
-    data: EstablishmentRequest,
+    data: EstablishmentApprovalRequest,
     admin: UserActor = Depends(require_admin),
     service: EstablishmentService = Depends(get_establishment_service),
 ) -> EstablishmentApprovalResponse:
@@ -82,6 +89,7 @@ async def approve_request(
         place_id=establishment.place_id,
         city=establishment.city,
         province=establishment.province,
+        characterization_status=establishment.characterization_status,
         reused=reused,
     )
 

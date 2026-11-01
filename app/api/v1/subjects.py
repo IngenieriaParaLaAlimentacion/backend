@@ -22,7 +22,7 @@ from app.schemas.subjects.subject_schema import (
     SubjectResponse,
     SubjectUpdateRequest,
 )
-from app.services.exporters.csv.columns import SUBJECT_LISTING_EXPORTER
+from app.services.exporters.csv.columns import build_subject_listing_export
 from app.services.measurements.measurement_service import MeasurementService
 from app.services.subjects.subject_service import SubjectService
 
@@ -86,12 +86,11 @@ async def export_subjects(
 ) -> StreamingResponse:
     query.validate()
     params = query.to_domain()
+    exporter, filename = build_subject_listing_export()
     total = await service.count_subject_export(params)
     return csv_stream_response(
-        lambda uow: SubjectService(uow).export_subject_listing(
-            params, SUBJECT_LISTING_EXPORTER
-        ),
-        SUBJECT_LISTING_EXPORTER.filename(),
+        lambda uow: SubjectService(uow).export_subject_listing(params, exporter),
+        filename,
         total,
     )
 

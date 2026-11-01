@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -7,7 +8,9 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.config.settings import settings
+from app.domain.food_catalog import MeasurementUnit
 from app.domain.food_intake import FoodIntakeOriginType
+from app.domain.unit_conversion import ConversionFactors
 from app.domain.user import UserActor, UserRole
 from app.exceptions.domain_exceptions import (
     EstablishmentAccessDeniedError,
@@ -15,6 +18,8 @@ from app.exceptions.domain_exceptions import (
     ImageContentMismatchError,
     ImageTooLargeError,
     LlmClientError,
+    LlmQuotaExhaustedError,
+    LlmUnavailableError,
     ObjectStorageError,
     ReceiptPhotoStorageError,
     UnsupportedImageTypeError,
@@ -41,6 +46,11 @@ def _intake_request(**overrides) -> FoodIntakeRequest:
     return FoodIntakeRequest(**fields)
 
 
+def _factors_for_every_food(factors: ConversionFactors) -> AsyncMock:
+    """A factors lookup that, like the repository, answers for every food asked."""
+    return AsyncMock(side_effect=lambda food_ids: dict.fromkeys(food_ids, factors))
+
+
 @pytest.fixture
 def admin_actor() -> UserActor:
     return UserActor(user_id=uuid.uuid4(), role=UserRole.ADMIN)
@@ -59,6 +69,9 @@ def uow(stub_establishment_lookup):
     stub_establishment_lookup(_uow, establishment=object())
     _uow.user_establishment_repo.get_relation = AsyncMock(return_value=None)
     _uow.food_repo.find_best_match = AsyncMock(return_value=None)
+    _uow.food_equivalence_repo.get_factors_by_food_ids = _factors_for_every_food(
+        ConversionFactors()
+    )
     return _uow
 
 
@@ -80,6 +93,198 @@ def llm_client():
     client = AsyncMock()
     client.complete = AsyncMock(return_value={"lines": []})
     return client
+
+
+@pytest.mark.parametrize(
+    "result",
+    [
+        {},
+        {"lines": None},
+        {"lines": [None]},
+        {"lines": ["item"]},
+        {"lines": [{"description": 5}]},
+    ],
+)
+async def test_invalid_extraction_safely_falls_back_without_catalog_access(
+    result,
+    uow,
+    storage,
+    food_intake_service,
+    llm_client,
+    admin_actor,
+):
+    llm_client.complete.return_value = result
+    service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+    response = await service.propose_from_photo(
+        establishment_id=uuid.uuid4(),
+        content_type="image/png",
+        image=PNG_BYTES,
+        actor=admin_actor,
+    )
+    assert response.lines == []
+    assert response.message
+    uow.food_repo.find_best_match.assert_not_awaited()
+    uow.commit.assert_not_awaited()
+    storage.save.assert_not_awaited()
+
+
+async def test_extra_ai_fields_do_not_discard_receipt_lines(
+    uow,
+    storage,
+    food_intake_service,
+    llm_client,
+    admin_actor,
+):
+    llm_client.complete.return_value = {
+        "confidence": 0.9,
+        "lines": [
+            {
+                "description": "Arroz",
+                "raw_quantity": "1,5",
+                "raw_unit_text": "kg",
+                "confidence": 0.8,
+            }
+        ],
+    }
+    service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+    response = await service.propose_from_photo(
+        establishment_id=uuid.uuid4(),
+        content_type="image/png",
+        image=PNG_BYTES,
+        actor=admin_actor,
+    )
+    assert response.message is None
+    assert len(response.lines) == 1
+    assert response.lines[0].description == "Arroz"
+    assert response.lines[0].raw_quantity == Decimal("1.5")
+    assert "confidence" not in response.model_dump()
+    assert "confidence" not in response.lines[0].model_dump()
+
+
+@pytest.mark.parametrize(
+    "quantity,expected",
+    [
+        ("1,5", Decimal("1.5")),
+        ("1.000,5", Decimal("1000.5")),
+        ("1.000.000", Decimal("1000000")),
+        ("1.2345", Decimal("1.235")),
+        ("9999999.999", Decimal("9999999.999")),
+        ("invalid", None),
+        (float("nan"), None),
+        (float("inf"), None),
+        (7791234567890, None),
+    ],
+)
+async def test_printed_quantity_parsing_preserves_proposal_lines(
+    quantity,
+    expected,
+    uow,
+    storage,
+    food_intake_service,
+    llm_client,
+    admin_actor,
+):
+    llm_client.complete.return_value = {
+        "lines": [{"description": "Arroz", "raw_quantity": quantity}],
+    }
+    service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+    response = await service.propose_from_photo(
+        establishment_id=uuid.uuid4(),
+        content_type="image/png",
+        image=PNG_BYTES,
+        actor=admin_actor,
+    )
+    assert len(response.lines) == 1
+    assert response.lines[0].raw_quantity == expected
+    schema = llm_client.complete.call_args.kwargs["response_schema"]
+    assert schema["$defs"]["ExtractedReceiptLine"]["properties"]["raw_quantity"][
+        "anyOf"
+    ] == [
+        {"type": "number"},
+        {"type": "null"},
+    ]
+
+
+@pytest.mark.parametrize(
+    "failure",
+    [LlmQuotaExhaustedError(12), LlmUnavailableError("unavailable")],
+)
+async def test_provider_failures_preserve_manual_fallback(
+    failure,
+    uow,
+    storage,
+    food_intake_service,
+    llm_client,
+    admin_actor,
+):
+    llm_client.complete.side_effect = failure
+    service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+    response = await service.propose_from_photo(
+        establishment_id=uuid.uuid4(),
+        content_type="image/png",
+        image=PNG_BYTES,
+        actor=admin_actor,
+    )
+    assert response.lines == []
+    assert response.message == service._MANUAL_FALLBACK_MESSAGE
+    uow.commit.assert_not_awaited()
+    uow.food_repo.find_best_match.assert_not_awaited()
+    storage.save.assert_not_awaited()
+
+
+async def test_proposal_deadline_cancels_work_and_rolls_back(
+    monkeypatch,
+    uow,
+    storage,
+    food_intake_service,
+    llm_client,
+    admin_actor,
+):
+    monkeypatch.setattr(settings, "receipt_generation_timeout_seconds", 0.02)
+    cancelled = asyncio.Event()
+
+    async def blocked(**kwargs):
+        try:
+            await asyncio.Event().wait()
+        finally:
+            cancelled.set()
+
+    llm_client.complete.side_effect = blocked
+    service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+    response = await asyncio.wait_for(
+        service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        ),
+        1,
+    )
+    assert response.lines == []
+    assert response.message == service._MANUAL_FALLBACK_MESSAGE
+    assert cancelled.is_set()
+    uow.rollback.assert_awaited_once()
+    uow.commit.assert_not_awaited()
+
+
+@pytest.mark.parametrize("failure", [asyncio.CancelledError, TimeoutError])
+async def test_proposal_preserves_cancellation_and_unrelated_timeout(
+    failure,
+    uow,
+    storage,
+    food_intake_service,
+    llm_client,
+    admin_actor,
+):
+    llm_client.complete.side_effect = failure
+    service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+    with pytest.raises(failure):
+        await service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        )
 
 
 class TestImageValidation:
@@ -197,7 +402,6 @@ class TestExtraction:
             "Leche 1L",
         ]
         assert all(line.food is None for line in proposal.lines)
-        assert all(line.needs_review for line in proposal.lines)
         assert proposal.message is None
         storage.save.assert_not_called()  # nothing is stored until confirmation
 
@@ -235,10 +439,45 @@ class TestExtraction:
         assert yerba.raw_quantity is None
         assert yerba.raw_unit_text is None
 
-    async def test_confident_catalog_match_populates_food_but_still_needs_review(
+    async def test_unusable_quantity_is_dropped_without_losing_the_other_lines(
         self, uow, storage, food_intake_service, llm_client, admin_actor
     ):
-        matched_food = SimpleNamespace(id=uuid.uuid4(), name="Arroz")
+        llm_client.complete = AsyncMock(
+            return_value={
+                "lines": [
+                    # a barcode read as the quantity does not fit a proposed line
+                    {
+                        "description": "Fideos",
+                        "raw_quantity": 7791234567890,
+                        "raw_unit_text": "un",
+                    },
+                    {
+                        "description": "Arroz 1kg",
+                        "raw_quantity": "1,5",
+                        "raw_unit_text": "kg",
+                    },
+                ]
+            }
+        )
+
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+        proposal = await service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        )
+
+        noodles, rice = proposal.lines
+        assert noodles.raw_quantity is None
+        assert rice.raw_quantity == Decimal("1.5")
+
+    async def test_confident_catalog_match_populates_food(
+        self, uow, storage, food_intake_service, llm_client, admin_actor
+    ):
+        matched_food = SimpleNamespace(
+            id=uuid.uuid4(), name="Arroz", base_unit=MeasurementUnit.KILOGRAMOS
+        )
         uow.food_repo.find_best_match = AsyncMock(return_value=matched_food)
         llm_client.complete = AsyncMock(
             return_value={
@@ -264,12 +503,122 @@ class TestExtraction:
         assert line.food is not None
         assert line.food.id == matched_food.id
         assert line.food.name == "Arroz"
-        assert line.needs_review is True
         uow.food_repo.find_best_match.assert_awaited_once_with(
             "Arroz 1kg",
             settings.receipt_food_match_min_word_similarity,
             settings.receipt_food_match_min_similarity,
         )
+
+    @pytest.mark.parametrize(
+        ("base_unit", "factors", "raw_quantity", "raw_unit_text", "quantity", "unit"),
+        [
+            # printed in the food's own base unit
+            (
+                MeasurementUnit.KILOGRAMOS,
+                ConversionFactors(),
+                1,
+                "kg",
+                Decimal("1"),
+                "kilogramos",
+            ),
+            # printed in another unit of the same dimension
+            (
+                MeasurementUnit.KILOGRAMOS,
+                ConversionFactors(),
+                500,
+                "g",
+                Decimal("0.5"),
+                "kilogramos",
+            ),
+            # a different dimension, through the food's stored unit weight
+            (
+                MeasurementUnit.UNIDADES,
+                ConversionFactors(unit_weight_g=Decimal("50")),
+                600,
+                "g",
+                Decimal("12"),
+                "unidades",
+            ),
+            # a different dimension, with no factor stored for the food
+            (MeasurementUnit.UNIDADES, ConversionFactors(), 1, "kg", None, None),
+        ],
+    )
+    async def test_matched_line_is_prefilled_in_base_unit_when_convertible(
+        self,
+        uow,
+        storage,
+        food_intake_service,
+        llm_client,
+        admin_actor,
+        base_unit,
+        factors,
+        raw_quantity,
+        raw_unit_text,
+        quantity,
+        unit,
+    ):
+        uow.food_repo.find_best_match = AsyncMock(
+            return_value=SimpleNamespace(
+                id=uuid.uuid4(), name="Arroz", base_unit=base_unit
+            )
+        )
+        uow.food_equivalence_repo.get_factors_by_food_ids = _factors_for_every_food(
+            factors
+        )
+        llm_client.complete = AsyncMock(
+            return_value={
+                "lines": [
+                    {
+                        "description": "Arroz",
+                        "raw_quantity": raw_quantity,
+                        "raw_unit_text": raw_unit_text,
+                    }
+                ]
+            }
+        )
+
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+        proposal = await service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        )
+
+        (line,) = proposal.lines
+        assert line.quantity == quantity
+        assert line.unit == unit
+        # the printed values are passed through whether or not they were used
+        assert line.raw_quantity == Decimal(raw_quantity)
+        assert line.raw_unit_text == raw_unit_text
+
+    async def test_unmatched_line_has_no_quantity_or_unit(
+        self, uow, storage, food_intake_service, llm_client, admin_actor
+    ):
+        llm_client.complete = AsyncMock(
+            return_value={
+                "lines": [
+                    {
+                        "description": "Cosa rara 1kg",
+                        "raw_quantity": 1,
+                        "raw_unit_text": "kg",
+                    }
+                ]
+            }
+        )
+
+        service = ReceiptIntakeService(uow, storage, food_intake_service, llm_client)
+        proposal = await service.propose_from_photo(
+            establishment_id=uuid.uuid4(),
+            content_type="image/png",
+            image=PNG_BYTES,
+            actor=admin_actor,
+        )
+
+        (line,) = proposal.lines
+        assert line.food is None
+        assert line.quantity is None
+        assert line.unit is None
 
     async def test_no_lines_detected_returns_manual_fallback_message(
         self, uow, storage, food_intake_service, llm_client, admin_actor

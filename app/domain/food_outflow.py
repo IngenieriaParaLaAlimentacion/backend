@@ -1,19 +1,19 @@
 from dataclasses import dataclass
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from uuid import UUID
 
 from app.domain.food_intake import FoodLineDomain
 
 
-class FoodOutflowSource(str, Enum):
+class FoodOutflowSource(StrEnum):
     """How a food outflow was loaded into the system."""
 
     MANUAL = "manual"
     PHOTO = "photo"
 
 
-class FoodOutflowCategory(str, Enum):
+class FoodOutflowCategory(StrEnum):
     """Why food left an establishment's stock."""
 
     FAMILY_DELIVERY = "family_delivery"

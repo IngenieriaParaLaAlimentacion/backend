@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "_theme.html" import c %}
+{% from "_macros.html" import box, button, expiry, pill, steps %}
+{% block preheader %}Activá tu cuenta de {{ role_label }} antes del {{ expires_at }}.{% endblock %}
+{% block title %}Te damos la bienvenida a Raíz{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">Te invitaron a sumarte al panel de Raíz, del proyecto Ingeniería Para La Alimentación, con este rol:</p>
+{% call box("Tu rol") %}
+{{ pill(role_label | capitalize) }}
+<p style="margin:8px 0 0;font-size:14px;color:{{ c.tinta_suave }};">{{ role_description }}</p>
+{% endcall %}
+<p style="margin:0 0 12px;">Para activar tu cuenta:</p>
+{{ steps([
+  ("", "Creá tu contraseña", ""),
+  ("", "Completá tu nombre y apellido", "Localidad, descripción y teléfono son opcionales."),
+  ("", "Ingresá al panel", ""),
+]) }}
+{{ button("Activar mi cuenta", url) }}
+{{ expiry(expires_at) }}
+{% endblock %}
+{% block footer_reason %}Recibiste este correo porque un administrador de Raíz te invitó con esta dirección. Si no lo esperabas, ignoralo: la cuenta no se activa hasta que elijas una contraseña.{% endblock %}

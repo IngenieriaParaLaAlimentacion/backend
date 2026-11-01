@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 from decimal import Decimal
-from enum import Enum, StrEnum
+from enum import StrEnum
+from typing import NamedTuple
 from uuid import UUID
 
 from app.domain.common_domains import IdentifierRefDomain, normalize_optional_str
 
 
-class MeasurementUnit(str, Enum):
+class MeasurementUnit(StrEnum):
     """Unit a food's stock quantity is persisted in."""
 
     UNIDADES = "unidades"
@@ -14,7 +15,21 @@ class MeasurementUnit(str, Enum):
     LITROS = "litros"
 
 
-class NutrientGroup(str, Enum):
+class EquivalenceKind(StrEnum):
+    """Which factor a food equivalence gives."""
+
+    DENSITY_G_ML = "density_g_ml"
+    UNIT_WEIGHT_G = "unit_weight_g"
+
+
+class EquivalenceMatchType(StrEnum):
+    """Whether an equivalence was taken for the food itself or a similar one."""
+
+    DIRECT = "direct"
+    FAMILY = "family"
+
+
+class NutrientGroup(StrEnum):
     """Which of SARA 2's two composition tables a nutrient belongs to."""
 
     MACRONUTRIENT = "macronutrient"
@@ -104,6 +119,16 @@ class FoodNutrientValueDomain:
             nutrient=NutrientRefDomain.from_db(value.nutrient),
             amount_per_100g=value.amount_per_100g,
         )
+
+
+class FoodNutrientRow(NamedTuple):
+    """One (food, nutrient) reading with the food's GAPA group, no relations."""
+
+    food_id: UUID
+    gapa_category_code: str | None
+    nutrient_code: str
+    amount_per_100g: Decimal
+    food_name: str = ""
 
 
 # SARA 2's own table split: macronutrients (fatty acids as their sub-list)

@@ -26,7 +26,7 @@ from app.models.subjects.subject import Subject
 
 # Completed months between a subject's birth date and the moment they were
 # measured. Postgres ``age()`` returns an interval of full years/months/days,
-# which is exactly the semantics of ``app.reference_data.anthropometry.age_in_months``.
+# matching ``app.utils.dates.completed_months_between``.
 AGE_MONTHS = extract(
     "year", func.age(Measurement.measured_at, Subject.birth_date)
 ) * 12 + extract("month", func.age(Measurement.measured_at, Subject.birth_date))

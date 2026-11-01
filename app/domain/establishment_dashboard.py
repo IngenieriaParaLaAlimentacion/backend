@@ -136,6 +136,11 @@ class EstablishmentDashboardDomain:
     metrics: EstablishmentMetricsDomain
     alert_status: EstablishmentAlertStatusDomain
 
+    @property
+    def characterization(self) -> dict | None:
+        """The establishment's characterization profile, if any."""
+        return self.establishment.characterization
+
 
 @dataclass
 class EstablishmentSubjectItemDomain:

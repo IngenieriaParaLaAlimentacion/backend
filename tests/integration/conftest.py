@@ -98,7 +98,10 @@ def analyst_headers():
 
 @pytest.fixture(scope="session")
 def postgres_url():
-    """Start a Postgres container for the test session and yield its connection URL."""
+    """Yield a disposable external test database or start a Postgres container."""
+    if test_url := os.environ.get("TEST_POSTGRES_URL"):
+        yield test_url
+        return
     # The database is disposable, so durability guarantees only slow it down.
     postgres = PostgresContainer("postgres:16-alpine").with_command(
         "postgres -c fsync=off -c synchronous_commit=off -c full_page_writes=off"
@@ -170,14 +173,6 @@ def app(postgres_url, storage_config):
     settings.storage_access_key_id = storage_config["access_key_id"]
     settings.storage_secret_access_key = storage_config["secret_access_key"]
 
-    # GeminiLlmClient() is constructed by the get_llm_client dependency on
-    # every request that resolves get_receipt_intake_service, even for tests
-    # that never reach the actual extraction call -- so it needs *a* key to
-    # construct without error. Tests that exercise extraction override the
-    # dependency outright via the fake_llm_client fixture instead of hitting
-    # the real API.
-    settings.gemini_api_key = "test-gemini-key"
-
     import app.db.database as db_module
     from app.main import app as fastapi_app
 
@@ -190,13 +185,7 @@ def app(postgres_url, storage_config):
 
 
 class FakeLlmClient(ILlmClient):
-    """Test double for ILlmClient: returns a scripted result instead of
-    calling the real Gemini API.
-
-    Defaults to no detected lines, matching the manual-fallback behavior a
-    test gets by default. Set ``response`` or ``error`` before the request
-    to script an extraction result or a provider failure.
-    """
+    """Return scripted completion results without external inference requests."""
 
     def __init__(self) -> None:
         self.response: dict[str, Any] = {"lines": []}
@@ -297,15 +286,18 @@ async def db_subject():
 
 @pytest_asyncio.fixture()
 async def make_field_worker_with_access():
-    """Factory fixture: create a field worker with an APPROVED relation to a
-    given establishment.
+    """Factory fixture: create a field worker with a relation to a given
+    establishment, APPROVED unless another status is given.
 
-    Returns a callable ``(establishment_id) -> (headers, user_id)``, so a
-    single test can create field workers scoped to different establishments.
+    Returns a callable ``(establishment_id, status) -> (headers, user_id)``, so
+    a single test can create field workers scoped to different establishments.
     """
     from app.db.database import AsyncSessionLocal
 
-    async def _make(establishment_id: uuid.UUID):
+    async def _make(
+        establishment_id: uuid.UUID,
+        status: UserEstablishmentStatus = UserEstablishmentStatus.APPROVED,
+    ):
         user_id = uuid.uuid4()
         async with AsyncSessionLocal() as session:
             session.add(
@@ -322,7 +314,7 @@ async def make_field_worker_with_access():
                 UserEstablishment(
                     user_id=user_id,
                     establishment_id=establishment_id,
-                    status=UserEstablishmentStatus.APPROVED,
+                    status=status,
                 )
             )
             await session.commit()

@@ -1,0 +1,9 @@
+{% extends "base.txt" %}
+{% block content %}
+Un administrador aprobó la creación del establecimiento que pediste: {{ establishment_name }}.
+
+✓ Solicitud enviada
+✓ Establecimiento creado
+● Tu acceso, en revisión: te avisamos por correo cuando un administrador lo apruebe.
+{% endblock %}
+{% block footer_reason %}Recibiste este correo porque pediste dar de alta este establecimiento en Raíz.{% endblock %}

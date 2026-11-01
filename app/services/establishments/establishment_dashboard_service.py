@@ -25,9 +25,9 @@ from app.domain.measurement import (
 )
 from app.domain.pagination import PaginatedResult
 from app.domain.user import UserActor
-from app.reference_data.anthropometry import age_in_months
 from app.services.access import check_establishment_access
 from app.services.exporters.csv.csv_exporter import CsvExporter
+from app.utils.dates import completed_months_between
 
 
 def _round(value: float | None, digits: int = 2) -> float | None:
@@ -127,7 +127,9 @@ class EstablishmentDashboardService:
             last_name=subject.last_name,
             sex=subject.sex,
             birth_date=subject.birth_date,
-            age_months=age_in_months(subject.birth_date, measurement.measured_at),
+            age_months=completed_months_between(
+                subject.birth_date, measurement.measured_at.date()
+            ),
             measurement_count=measurement_count,
             nutritional_status=status_from_alerts(measurement.alerts),
             latest_measurement=MeasurementSummaryDomain.from_db(measurement),

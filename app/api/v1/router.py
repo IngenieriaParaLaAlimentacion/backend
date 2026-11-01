@@ -8,6 +8,8 @@ from app.api.v1 import (
     food_intakes,
     food_outflows,
     measurements,
+    nutrition_reports,
+    recipes,
     subjects,
     users,
 )
@@ -31,3 +33,6 @@ v1_router.include_router(surveys.router, tags=["Surveys V1"])
 v1_router.include_router(survey_responses.router, tags=["Survey Responses V1"])
 v1_router.include_router(users.router, tags=["Users V1"])
 v1_router.include_router(analytics.router, tags=["Analytics V1"])
+
+v1_router.include_router(recipes.router, tags=["Recipes V1"])
+v1_router.include_router(nutrition_reports.router, tags=["Nutrition Report V1"])

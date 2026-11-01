@@ -9,42 +9,9 @@ from app.domain.subject import Sex
 from app.reference_data.anthropometry import (
     _adult_alerts,
     _child_alerts,
-    age_in_months,
     compute_bmi_z_score,
     evaluate_alerts,
 )
-
-
-class TestAgeInMonths:
-    def test_exact_birthday(self):
-        assert (
-            age_in_months(date(2010, 3, 15), datetime(2020, 3, 15, tzinfo=timezone.utc))
-            == 120
-        )
-
-    def test_birthday_not_yet_reached_this_month(self):
-        assert (
-            age_in_months(date(2010, 3, 20), datetime(2020, 3, 15, tzinfo=timezone.utc))
-            == 119
-        )
-
-    def test_birthday_already_passed_this_month(self):
-        assert (
-            age_in_months(date(2010, 3, 10), datetime(2020, 3, 15, tzinfo=timezone.utc))
-            == 120
-        )
-
-    def test_newborn_same_day(self):
-        assert (
-            age_in_months(date(2024, 1, 1), datetime(2024, 1, 1, tzinfo=timezone.utc))
-            == 0
-        )
-
-    def test_does_not_go_negative(self):
-        assert (
-            age_in_months(date(2024, 6, 1), datetime(2024, 1, 1, tzinfo=timezone.utc))
-            == 0
-        )
 
 
 class TestComputeBmiZScore:
