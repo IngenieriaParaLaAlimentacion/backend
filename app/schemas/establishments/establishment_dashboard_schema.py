@@ -43,6 +43,17 @@ class StatusDistributionEntryResponse(BaseModel):
 
 
 class EstablishmentAlertStatusResponse(BaseModel):
+    """Overall nutritional alert state of an establishment.
+
+    ``severity`` is the worst severity present among its subjects, not an average
+    or a prevalence threshold: one critical case makes it ``critical`` even when
+    most subjects are ``normal``. It is null when every subject is ``normal``.
+    Show it next to ``at_risk_count`` and ``distribution``, not on its own.
+    ``dominant_status`` is the most common status, and ties break towards the
+    more severe one. ``at_risk_count`` counts the subjects whose status is not
+    ``normal``.
+    """
+
     model_config = ConfigDict(from_attributes=True)
 
     severity: AlertSeverity | None

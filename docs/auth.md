@@ -123,7 +123,7 @@ only changes for a session through a new login.
 
 ### Changing a user's role
 
-`PATCH /api/v1/admin/users/{user_id}/role` (contract in `docs/api.md`). The rule lives in
+`PATCH /api/v1/admin/users/{user_id}/role` (contract in the Swagger UI, `/docs`). The rule lives in
 `AdminService` (`_ROLE_CHANGE_SOURCES`):
 
 | Actor | May change users with role | To |
@@ -136,6 +136,8 @@ only changes for a session through a new login.
 - The change revokes all of the user's refresh tokens in the same transaction, forcing a
   new login. The access token already issued keeps the old role until it expires
   (≤ 15 min); this window is accepted.
+- The user gets an email with the old and the new role.
+- Requesting the role the user already has is a no-op: `200`, no email, sessions kept.
 
 ---
 

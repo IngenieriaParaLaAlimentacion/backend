@@ -82,9 +82,9 @@ The platform's product modules are implemented by these code modules (one folder
 | Product module | Code modules | Description |
 |---|---|---|
 | Auth | `auth`, `establishments` | Users, roles, per-establishment permissions and requests |
-| `talla_y_peso` (Module 1) | `subjects`, `measurements` | Subjects and height/weight registration with georeferencing |
-| `encuesta_alimentaria` (Module 2) | `surveys` | Configurable surveys, FAO FIES |
-| `nutrir` (Module 4) | `food_catalog`, `food_intakes`, `food_outflows`, `food_stock`, `recipes` | Food catalog and stock movements, AI-assisted recipe proposals |
+| `talla_y_peso` | `subjects`, `measurements` | Subjects and height/weight registration with georeferencing |
+| `encuesta_alimentaria` | `surveys` | Configurable surveys, FAO FIES |
+| `nutrir` | `food_catalog`, `food_intakes`, `food_outflows`, `food_stock`, `recipes` | Food catalog and stock movements, AI-assisted recipe proposals |
 | `dashboard` | analytics routes and services, establishment dashboard | Cross-module analytics for technical profiles |
 | Reports and alerts | `nutrition_reports`, `notifications` | Monthly nutrition report PDF and push notifications |
 
