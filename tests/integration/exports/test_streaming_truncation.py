@@ -1,6 +1,6 @@
 """Does a mid-stream failure reach a real HTTP client as an error?
 
-The front-end guidance for exports (docs/frontend/csv-exports.md) tells clients
+The front-end guidance for exports (docs/csv-exports.md) tells clients
 to read the body and treat a read failure as a broken download. That only works
 if the server aborts the connection instead of ending the response cleanly.
 

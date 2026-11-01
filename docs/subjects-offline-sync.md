@@ -19,7 +19,7 @@ At the moment a subject is created locally — online or offline — the device 
   supports it.
 - **UUIDv4** is a fine universal fallback.
 
-All locally-created child records (measurements, surveys, iron values) reference this
+All locally-created child records (measurements, surveys) reference this
 id **immediately**. They never wait for the server to assign one.
 
 ## 2. Local sync state machine

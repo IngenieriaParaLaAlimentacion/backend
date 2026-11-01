@@ -2,14 +2,10 @@
 
 ## Git workflow
 
-### Branches
+Branches, pull requests and the CI checks are described in [CONTRIBUTING.md](../CONTRIBUTING.md). In short:
 
-| Branch | Purpose |
-|---|---|
-| `main` | Production. Never commit directly. |
-| `feature/<ticket>` | All development work. |
-
-Examples: `feature/AUTH-12`, `feature/nutrir-meal-endpoint`.
+- `develop` is the integration branch and `main` the release branch. Never commit directly to either.
+- Working branches use the `feat/`, `feature/`, `fix/`, `refactor/`, `docs/` or `chore/` prefix, and every PR targets `develop`.
 
 ### Commit messages
 
@@ -27,18 +23,19 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 | `docs` | Documentation only |
 | `test` | Adding or updating tests |
 | `refactor` | Code change that neither fixes a bug nor adds a feature |
+| `ci` | CI workflows and pipeline configuration |
 
 Examples:
 ```
 feat: add height/weight registration endpoint
 fix: resolve session leak on failed DB transaction
 test: add unit tests for Settings defaults
-docs: document auth middleware behavior
+docs: document the rate limit settings
 ```
 
 ### Pull requests
 
-- Every PR targets `main`.
+- Every PR targets `develop`. Only releases go from `develop` to `main`.
 - At least 1 review required before merging.
 - PR description must explain what changed and why.
 
@@ -81,12 +78,15 @@ Each layer has a single responsibility. Do not cross boundaries:
 
 | Layer | Responsibility | Must not |
 |---|---|---|
-| `api/<module>/` | Parse HTTP input, call services, return responses | Contain business logic or DB queries |
+| `api/` | Parse HTTP input, call services, return responses | Contain business logic or DB queries |
 | `services/<module>/` | Business logic and domain rules | Access the DB directly or know about HTTP |
 | `repositories/<module>/` | DB queries only | Contain business logic |
 | `models/<module>/` | ORM model definitions | Contain methods with business logic |
-| `db/` | Engine and session factory | Be imported outside repositories and Alembic |
-| `core/` | App settings | Be used for anything other than configuration |
+| `schemas/<module>/` | Request and response models | Contain business logic |
+| `domain/` | Enums and plain domain types | Import from the layers above it |
+| `core/` | Ports (`core/interfaces/`), FastAPI dependencies, security, rate limiting | Hold business rules |
+| `config/` | Settings and observability configuration | Be used for anything other than configuration |
+| `db/` | Engine, session factory and unit of work | Be imported by route handlers or services: they receive the unit of work through `core/dependencies.py` |
 
 ---
 

@@ -70,6 +70,8 @@ async def get_establishment_dashboard(
     description=(
         "Returns a paginated list of the subjects measured at this establishment, "
         "enriched with their latest measurement and derived anthropometric status. "
+        "Both are scoped to this establishment: they can differ from the subject's "
+        "latest measurement overall, which `GET /subjects/{subject_id}` returns. "
         "Supports searching by name, last name or DNI, and sorting by measurement "
         "date, name, BMI or age. Accessible by admins and analysts."
     ),
