@@ -30,7 +30,7 @@ Examples:
 feat: add height/weight registration endpoint
 fix: resolve session leak on failed DB transaction
 test: add unit tests for Settings defaults
-docs: document auth middleware behavior
+docs: document the rate limit settings
 ```
 
 ### Pull requests

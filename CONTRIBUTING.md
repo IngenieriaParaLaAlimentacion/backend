@@ -27,10 +27,10 @@ This project follows [Conventional Commits](https://www.conventionalcommits.org/
 ```
 <type>(<scope>): <description>
 
-feat(recetas): add search by ingredient endpoint
+feat(recipes): add search by ingredient endpoint
 fix(auth): handle expired token correctly
 chore(deps): bump ruff to 0.15.8
-test(usuarios): add integration tests for registration
+test(subjects): add integration tests for registration
 ```
 
 Common types: `feat`, `fix`, `chore`, `docs`, `test`, `refactor`, `ci`.
@@ -38,7 +38,7 @@ Common types: `feat`, `fix`, `chore`, `docs`, `test`, `refactor`, `ci`.
 ## Pull Requests
 
 - Target `develop`. Only releases go from `develop` to `main`.
-- Every PR requires at least **one approval** before merging.
+- Every PR needs at least **one approval** before merging. This is a team agreement: GitHub does not enforce it.
 - Keep PRs small and focused. If a task is large, split it into incremental PRs.
 - Delete the remote branch after merging.
 
@@ -55,7 +55,7 @@ Other workflows:
 
 - [`pr-branch-policy.yaml`](.github/workflows/pr-branch-policy.yaml) validates the source branch of every PR into `develop` or `main`.
 - [`load-tests.yml`](.github/workflows/load-tests.yml) runs the k6 load tests on demand. See [`tests/load/README.md`](tests/load/README.md).
-- [`claude.yml`](.github/workflows/claude.yml) runs Claude Code on issue and pull request comments.
+- [`claude.yml`](.github/workflows/claude.yml) runs Claude Code when `@claude` is mentioned in an issue, a comment or a pull request review.
 
 ### Codecov setup (maintainers only)
 

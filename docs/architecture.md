@@ -25,6 +25,7 @@ app/
   services/
     <module>/                    # Business logic, one subdirectory per module
     access.py                    # Shared establishment-access checks
+    *_service.py                 # Services that serve several modules (admin, analytics, email, health)
   repositories/
     <module>/                    # DB access, one subdirectory per module
   models/
@@ -81,7 +82,7 @@ The platform's product modules are implemented by these code modules (one folder
 
 | Product module | Code modules | Description |
 |---|---|---|
-| Auth | `auth`, `establishments` | Users, roles, per-establishment permissions and requests |
+| `auth` | `auth`, `establishments` | Users, roles, per-establishment permissions and requests |
 | `talla_y_peso` | `subjects`, `measurements` | Subjects and height/weight registration with georeferencing |
 | `encuesta_alimentaria` | `surveys` | Configurable surveys, FAO FIES |
 | `nutrir` | `food_catalog`, `food_intakes`, `food_outflows`, `food_stock`, `recipes` | Food catalog and stock movements, AI-assisted recipe proposals |
