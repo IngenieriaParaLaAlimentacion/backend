@@ -12,7 +12,8 @@ import asyncio
 import logging
 from uuid import UUID
 
-from sqlalchemy import delete, func, select, update
+from sqlalchemy import all_, any_, delete, func, literal, select, update
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.logging import setup_logging
@@ -52,6 +53,15 @@ def _seeded_measurement_ids() -> list[UUID]:
     ]
 
 
+def _in(column, ids: list[UUID]):
+    # One array parameter: asyncpg caps a statement at 32,767 and a run can make more.
+    return column == any_(literal(ids, ARRAY(column.type)))
+
+
+def _not_in(column, ids: list[UUID]):
+    return column != all_(literal(ids, ARRAY(column.type)))
+
+
 async def _ids(session: AsyncSession, statement) -> list[UUID]:
     return list((await session.scalars(statement)).all())
 
@@ -87,7 +97,7 @@ async def _clean(session: AsyncSession) -> dict[str, int]:
                 )
             ),
             Subject.last_name.startswith(MARKER),
-            Subject.id.not_in(_seeded_subject_ids()),
+            _not_in(Subject.id, _seeded_subject_ids()),
         )
         .distinct(),
     )
@@ -133,15 +143,15 @@ async def _clean(session: AsyncSession) -> dict[str, int]:
         delete(Measurement).where(
             Measurement.establishment_id.in_(establishment_ids),
             Measurement.responsible_id.in_(user_ids),
-            Measurement.id.not_in(_seeded_measurement_ids()),
+            _not_in(Measurement.id, _seeded_measurement_ids()),
         ),
     )
     removed["subject_events"] = await _delete(
         session,
-        delete(SubjectEvent).where(SubjectEvent.subject_id.in_(run_subject_ids)),
+        delete(SubjectEvent).where(_in(SubjectEvent.subject_id, run_subject_ids)),
     )
     removed["subjects"] = await _delete(
-        session, delete(Subject).where(Subject.id.in_(run_subject_ids))
+        session, delete(Subject).where(_in(Subject.id, run_subject_ids))
     )
     # Every login leaves a refresh token behind.
     removed["user_tokens"] = await _delete(
