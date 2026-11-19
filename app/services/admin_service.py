@@ -571,3 +571,32 @@ class AdminService:
             page_size=history_page_size,
         )
         return SubjectDomain.from_db(subject), history
+
+    async def block_user(
+        self, actor: UserActor, user_id: UUID
+    ) -> UserWithEstablishmentsDomain:
+        """Block an active user and revoke all of their refresh tokens.
+        Admins may block field workers and analysts; superadmins may also block
+        admins. Nobody may block a superadmin or themselves.
+
+        Returns:
+            The blocked user's updated profile with their establishments.
+
+        Raises:
+            UserNotFoundError: If no user with user_id exists.
+            RoleNotAllowedError: If the actor may not block this user.
+            UserNotActiveError: If the user's account is not active.
+        """
+        user = await self._get_user(user_id)
+        if actor.user_id == user_id or user.role not in _ROLE_CHANGE_SOURCES.get(
+            actor.role, frozenset()
+        ):
+            raise RoleNotAllowedError("You are not allowed to block this user.")
+        if user.status != UserStatus.ACTIVE:
+            raise UserNotActiveError("Only active users can be blocked.")
+
+        await self.uow.user_repo.update_status(user_id, UserStatus.BLOCKED)
+        await self.uow.token_repo.revoke_all_by_user_id(user_id)
+        await self.uow.commit()
+
+        return await self.get_user_info(user_id)

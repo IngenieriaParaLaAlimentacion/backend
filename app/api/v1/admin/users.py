@@ -103,3 +103,34 @@ async def change_user_role(
     """
     result = await service.change_user_role(admin, user_id, body.role)
     return FullUserAdminView.model_validate(result)
+
+
+@router.patch(
+    "/users/{user_id}/block",
+    response_model=FullUserAdminView,
+    status_code=status.HTTP_200_OK,
+    summary="Block a user from the system.",
+    description="Blocks an active user from the system and revokes their refresh "
+    "tokens. Admins may block field workers and analysts; superadmins may also "
+    "block admins. Nobody may block a superadmin or themselves.",
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_400_BAD_REQUEST: {"description": "User is not active"},
+        status.HTTP_403_FORBIDDEN: {"description": "Not allowed to block this user"},
+        status.HTTP_404_NOT_FOUND: {"description": "User not found"},
+    },
+)
+async def block_user(
+    user_id: UUID,
+    admin: UserActor = Depends(require_admin),
+    service: AdminService = Depends(get_admin_service),
+) -> FullUserAdminView:
+    """Block the user from the system and return their updated profile.
+
+    Raises:
+        UserNotFoundError: If no user with user_id exists.
+        RoleNotAllowedError: If the actor may not block this user.
+        UserNotActiveError: If the user's account is not active.
+    """
+    result = await service.block_user(admin, user_id)
+    return FullUserAdminView.model_validate(result)
