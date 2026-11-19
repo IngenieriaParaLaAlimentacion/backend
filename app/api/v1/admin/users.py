@@ -21,14 +21,17 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
     summary="List registered users",
     description="Returns a paginated list of users, optionally filtered by role or "
-    "status, or searching by name, last name or email. Accessible by admins only.",
+    "by one or more statuses, or searching by name, last name or email. Accessible "
+    "by admins only.",
     responses=AUTH_RESPONSES,
 )
 async def list_users(
     paginated: PaginatedQueryParams = Depends(),
     role: UserRole | None = Query(default=None, description="Filter by role."),
-    status_filter: UserStatus | None = Query(
-        default=None, alias="status", description="Filter by status."
+    status_filter: list[UserStatus] | None = Query(
+        default=None,
+        alias="status",
+        description="Filter by status. Repeat the parameter to include several.",
     ),
     search: str | None = Query(default=None, max_length=100),
     _admin: UserActor = Depends(require_admin),
@@ -38,7 +41,7 @@ async def list_users(
         page=paginated.page,
         page_size=paginated.page_size,
         role=role,
-        status=status_filter,
+        statuses=status_filter,
         search=search,
     )
     return PaginatedUsersResponse.model_validate(result)

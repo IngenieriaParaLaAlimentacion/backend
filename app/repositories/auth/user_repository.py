@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from uuid import UUID
 
 from sqlalchemy import exists, func, or_, select, update
@@ -128,12 +129,14 @@ class UserRepository:
         limit: int,
         offset: int,
         role: UserRole | None = None,
-        status: UserStatus | None = None,
+        statuses: Sequence[UserStatus] | None = None,
         search: str | None = None,
     ) -> tuple[list[User], int]:
         """Return a paginated list of users and the total matching count.
 
-        ``search`` matches case-insensitively against email, name, and last_name (OR).
+        ``statuses`` keeps the users in any of them, and a pending user is listed
+        only once their email is verified. ``search`` matches case-insensitively
+        against email, name, and last_name (OR).
         """
         query = select(User)
         count_query = select(func.count()).select_from(User)
@@ -141,12 +144,16 @@ class UserRepository:
         if role is not None:
             query = query.where(User.role == role)
             count_query = count_query.where(User.role == role)
-        if status is not None:
-            query = query.where(User.status == status)
-            count_query = count_query.where(User.status == status)
-            if status == UserStatus.PENDING_VALIDATION:
-                query = query.where(User.is_email_verified.is_(True))
-                count_query = count_query.where(User.is_email_verified.is_(True))
+        if statuses:
+            query = query.where(User.status.in_(statuses))
+            count_query = count_query.where(User.status.in_(statuses))
+            if UserStatus.PENDING_VALIDATION in statuses:
+                verified = or_(
+                    User.status != UserStatus.PENDING_VALIDATION,
+                    User.is_email_verified.is_(True),
+                )
+                query = query.where(verified)
+                count_query = count_query.where(verified)
         if search:
             condition = self._search_condition(search)
             query = query.where(condition)

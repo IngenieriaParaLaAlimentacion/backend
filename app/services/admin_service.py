@@ -227,10 +227,12 @@ class AdminService:
         page: int,
         page_size: int,
         role: UserRole | None = None,
-        status: UserStatus | None = None,
+        statuses: list[UserStatus] | None = None,
         search: str | None = None,
     ) -> PaginatedResult[UserWithEstablishmentsDomain]:
         """Return a paginated list of users with their approved establishments.
+
+        ``statuses`` keeps the users in any of them.
 
         Only approved relations are hydrated: a pending request is not access,
         and is surfaced by get_pending_establishment_requests instead.
@@ -243,7 +245,7 @@ class AdminService:
 
         users, total = await self.uow.user_repo.get_paginated(
             role=role,
-            status=status,
+            statuses=statuses,
             limit=page_size,
             offset=offset,
             search=search,
