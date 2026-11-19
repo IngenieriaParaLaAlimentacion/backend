@@ -28,8 +28,6 @@ runs:
 
     - name: Install Poetry
       shell: bash
-      # install.python-poetry.org answers 403 to Python-urllib, which is what
-      # snok/install-poetry uses to download the installer, so install from PyPI.
       run: |
         pipx install poetry==2.4.1
         poetry config virtualenvs.create true
