@@ -27,12 +27,13 @@ runs:
           libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz0b libharfbuzz-subset0 fonts-dejavu-core
 
     - name: Install Poetry
-      uses: snok/install-poetry@76e04a911780d5b312d89783f7b1cd627778900a #v1.4.1
-      with:
-        virtualenvs-create: true
-        virtualenvs-in-project: true
-        virtualenvs-path: .venv
-        installer-parallel: true
+      shell: bash
+      # install.python-poetry.org answers 403 to Python-urllib, which is what
+      # snok/install-poetry uses to download the installer, so install from PyPI.
+      run: |
+        pipx install poetry==2.4.1
+        poetry config virtualenvs.create true
+        poetry config virtualenvs.in-project true
 
     - name: Install dependencies
       shell: bash
