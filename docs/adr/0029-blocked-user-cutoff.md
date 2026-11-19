@@ -40,8 +40,9 @@ token and its role, and raises `UserBlockedError` when it is `blocked`. It is a 
 query by primary key, run in a short unit of work of its own, because the dependency runs before
 the route's service opens its own.
 
-The query sits behind one function, `check_user_not_blocked(user_id)`, so the strategy can change
-without touching any caller.
+The rule lives in one function, `check_user_not_blocked(uow, user_id)` in
+`app/services/access.py`, next to the establishment access checks. The dependency opens the unit
+of work and calls it, so the strategy can change without touching any route or service.
 
 A user with no row keeps today's behaviour and is not rejected by this check.
 
@@ -105,7 +106,7 @@ PostgreSQL are both network calls on the current host, so the saving is small. I
 degraded-mode handling the rate limiter has, since the 0.2 s Redis timeouts would otherwise delay
 every request during an outage. It becomes worth it if the extra database session per request
 turns out to pressure the connection pool, and that should be measured first. Because of
-`check_user_not_blocked`, adding it later touches one function.
+`check_user_not_blocked`, adding it later touches that function and the dependency that calls it.
 
 **Accepting the 15-minute window, as role changes do** — rejected. Role changes accept it, but it
 would let a blocked user keep acting for up to 15 minutes, which the requirement rules out.

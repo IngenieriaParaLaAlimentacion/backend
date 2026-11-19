@@ -24,6 +24,7 @@ from app.exceptions.domain_exceptions import (
     RecoveryTokenExpiredError,
     RecoveryTokenUsedError,
     UserAlreadyExistsError,
+    UserBlockedError,
     VerificationTokenExpiredError,
     VerificationTokenUsedError,
 )
@@ -156,6 +157,7 @@ class AuthService:
                 error for all three so the endpoint cannot be used to enumerate
                 registered addresses.
             PendingValidationError: If the account still awaits approval.
+            UserBlockedError: If the account is blocked.
 
         Side effects:
             Persists a new refresh token hash for the given device and commits.
@@ -173,6 +175,11 @@ class AuthService:
 
         if user.status == UserStatus.PENDING_VALIDATION:
             raise PendingValidationError()
+
+        # Checked after the password so a caller who does not know it cannot tell
+        # that an account is blocked.
+        if user.status == UserStatus.BLOCKED:
+            raise UserBlockedError()
 
         approved_establishment_ids = (
             await self.uow.user_establishment_repo.get_approved_establishment_ids(

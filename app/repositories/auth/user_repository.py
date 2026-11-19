@@ -230,3 +230,8 @@ class UserRepository:
                 email_verified_at=func.now(),
             )
         )
+
+    async def get_status(self, user_id: UUID) -> UserStatus | None:
+        """Return a user's status, or None if the user does not exist."""
+        result = await self.db.execute(select(User.status).where(User.id == user_id))
+        return result.scalar_one_or_none()
