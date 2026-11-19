@@ -40,9 +40,10 @@ from app.services.email_service import (
     send_role_changed_email,
 )
 
-# Actor role -> roles of the users it may change. The schema already limits the
-# destination role to field_worker, analyst or admin.
-_ROLE_CHANGE_SOURCES: dict[UserRole, frozenset[UserRole]] = {
+# Actor role -> roles of the users it may change the role of, block or unblock. The
+# schema already limits the destination role of a role change to field_worker,
+# analyst or admin.
+_MANAGEABLE_ROLES: dict[UserRole, frozenset[UserRole]] = {
     UserRole.ADMIN: frozenset({UserRole.FIELD_WORKER, UserRole.ANALYST}),
     UserRole.SUPERADMIN: frozenset(
         {UserRole.FIELD_WORKER, UserRole.ANALYST, UserRole.ADMIN}
@@ -318,7 +319,7 @@ class AdminService:
             UserNotActiveError: If the user's account is not active.
         """
         user = await self._get_user(user_id)
-        if actor.user_id == user_id or user.role not in _ROLE_CHANGE_SOURCES.get(
+        if actor.user_id == user_id or user.role not in _MANAGEABLE_ROLES.get(
             actor.role, frozenset()
         ):
             raise RoleNotAllowedError("You are not allowed to change this user's role.")
@@ -576,11 +577,13 @@ class AdminService:
         self, actor: UserActor, user_id: UUID
     ) -> UserWithEstablishmentsDomain:
         """Block an active user and revoke all of their refresh tokens.
+
         Admins may block field workers and analysts; superadmins may also block
-        admins. Nobody may block a superadmin or themselves.
+        admins. Nobody may block a superadmin or themselves. Blocking a user who is
+        already blocked changes nothing.
 
         Returns:
-            The blocked user's updated profile with their establishments.
+            The user with their approved establishments.
 
         Raises:
             UserNotFoundError: If no user with user_id exists.
@@ -588,10 +591,12 @@ class AdminService:
             UserNotActiveError: If the user's account is not active.
         """
         user = await self._get_user(user_id)
-        if actor.user_id == user_id or user.role not in _ROLE_CHANGE_SOURCES.get(
+        if actor.user_id == user_id or user.role not in _MANAGEABLE_ROLES.get(
             actor.role, frozenset()
         ):
             raise RoleNotAllowedError("You are not allowed to block this user.")
+        if user.status == UserStatus.BLOCKED:
+            return await self.get_user_info(user_id)
         if user.status != UserStatus.ACTIVE:
             raise UserNotActiveError("Only active users can be blocked.")
 

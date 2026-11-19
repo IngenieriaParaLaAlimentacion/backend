@@ -112,7 +112,8 @@ async def change_user_role(
     summary="Block a user from the system.",
     description="Blocks an active user from the system and revokes their refresh "
     "tokens. Admins may block field workers and analysts; superadmins may also "
-    "block admins. Nobody may block a superadmin or themselves.",
+    "block admins. Nobody may block a superadmin or themselves. Blocking a user who "
+    "is already blocked changes nothing.",
     responses={
         **AUTH_RESPONSES,
         status.HTTP_400_BAD_REQUEST: {"description": "User is not active"},

@@ -125,7 +125,7 @@ only changes for a session through a new login.
 ### Changing a user's role
 
 `PATCH /api/v1/admin/users/{user_id}/role` (contract in the Swagger UI, `/docs`). The rule lives in
-`AdminService` (`_ROLE_CHANGE_SOURCES`):
+`AdminService` (`_MANAGEABLE_ROLES`):
 
 | Actor | May change users with role | To |
 |---|---|---|
@@ -146,7 +146,8 @@ A block cuts a user off from the whole platform and is reversible: the user keep
 their establishment memberships. It is unrelated to removing a user from an establishment.
 Decision and alternatives: [ADR-0029](adr/0029-blocked-user-cutoff.md).
 
-The rule lives in `AdminService` and uses the same role table as the role change:
+The rule lives in `AdminService` and uses the same role table as the role change
+(`_MANAGEABLE_ROLES`):
 
 | Actor | May block and unblock users with role |
 |---|---|
