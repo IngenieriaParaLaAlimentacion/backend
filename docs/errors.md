@@ -96,6 +96,7 @@ to the first list index), never its value.
 | `/errors/unauthorized` | 401 | `UnauthorizedError` | Exception raised when authorization fails. |
 | `/errors/unsupported-image-type` | 422 | `UnsupportedImageTypeError` | Raised when an uploaded image's content type is not in the allow-list. |
 | `/errors/user-already-exists` | 409 | `UserAlreadyExistsError` | Exception raised when trying to register with an existing email. |
+| `/errors/user-blocked` | 403 | `UserBlockedError` | Raised when a blocked user logs in or makes an authenticated request. |
 | `/errors/user-establishment-not-approved` | 409 | `UserEstablishmentNotApprovedError` | Raised when revoking access to an establishment that isn't currently approved for the given user. |
 | `/errors/user-establishment-not-found` | 404 | `UserEstablishmentNotFoundError` | Exception raised when a user-establishment relation does not exist. |
 | `/errors/user-establishment-not-withdrawable` | 409 | `UserEstablishmentNotWithdrawableError` | Raised when a user tries to withdraw their own access to an establishment whose relation is not currently approved or pending. |

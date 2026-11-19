@@ -421,6 +421,12 @@
       "description": "Exception raised when trying to register with an existing email."
     },
     {
+      "type": "/errors/user-blocked",
+      "status": 403,
+      "exception": "UserBlockedError",
+      "description": "Raised when a blocked user logs in or makes an authenticated request."
+    },
+    {
       "type": "/errors/user-establishment-not-approved",
       "status": 409,
       "exception": "UserEstablishmentNotApprovedError",
