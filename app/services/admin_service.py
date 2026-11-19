@@ -605,3 +605,32 @@ class AdminService:
         await self.uow.commit()
 
         return await self.get_user_info(user_id)
+
+    async def unblock_user(
+        self, actor: UserActor, user_id: UUID
+    ) -> UserWithEstablishmentsDomain:
+        """Unblock a blocked user and set them back to active.
+
+        Admins may unblock field workers and analysts; superadmins may also unblock
+        admins. Nobody may unblock a superadmin or themselves. Unblocking a user who
+        is not blocked changes nothing.
+
+        Returns:
+            The user with their approved establishments, as get_user_info.
+
+        Raises:
+            UserNotFoundError: If no user with user_id exists.
+            RoleNotAllowedError: If the actor may not unblock this user.
+        """
+        user = await self._get_user(user_id)
+        if actor.user_id == user_id or user.role not in _MANAGEABLE_ROLES.get(
+            actor.role, frozenset()
+        ):
+            raise RoleNotAllowedError("You are not allowed to unblock this user.")
+        if user.status != UserStatus.BLOCKED:
+            return await self.get_user_info(user_id)
+
+        await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
+        await self.uow.commit()
+
+        return await self.get_user_info(user_id)

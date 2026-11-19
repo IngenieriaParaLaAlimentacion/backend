@@ -135,3 +135,33 @@ async def block_user(
     """
     result = await service.block_user(admin, user_id)
     return FullUserAdminView.model_validate(result)
+
+
+@router.patch(
+    "/users/{user_id}/unblock",
+    response_model=FullUserAdminView,
+    status_code=status.HTTP_200_OK,
+    summary="Unblock a user from the system.",
+    description="Unblocks a blocked user and restores their access. Admins may "
+    "unblock field workers and analysts; superadmins may also unblock admins. Nobody "
+    "may unblock a superadmin or themselves. Unblocking a user who is not blocked "
+    "changes nothing.",
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_403_FORBIDDEN: {"description": "Not allowed to unblock this user"},
+        status.HTTP_404_NOT_FOUND: {"description": "User not found"},
+    },
+)
+async def unblock_user(
+    user_id: UUID,
+    admin: UserActor = Depends(require_admin),
+    service: AdminService = Depends(get_admin_service),
+) -> FullUserAdminView:
+    """Unblock the user and return their updated profile.
+
+    Raises:
+        UserNotFoundError: If no user with user_id exists.
+        RoleNotAllowedError: If the actor may not unblock this user.
+    """
+    result = await service.unblock_user(admin, user_id)
+    return FullUserAdminView.model_validate(result)
