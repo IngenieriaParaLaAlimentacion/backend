@@ -7,6 +7,9 @@ from app.repositories.auth.email_verification_repository import (
 from app.repositories.auth.password_recovery_repository import (
     PasswordRecoveryTokenRepository,
 )
+from app.repositories.auth.user_block_event_repository import (
+    UserBlockEventRepository,
+)
 from app.repositories.auth.user_establishment_repository import (
     UserEstablishmentRepository,
 )
@@ -70,6 +73,7 @@ class IUnitOfWork(ABC):
     user_repo: UserRepository
     password_repo: UserPasswordRepository
     token_repo: TokenRepository
+    user_block_event_repo: UserBlockEventRepository
     establishment_repo: EstablishmentRepository
     establishment_request_repo: EstablishmentRequestRepository
     user_establishment_repo: UserEstablishmentRepository

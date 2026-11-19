@@ -1,14 +1,18 @@
 import uuid
+from datetime import datetime, timedelta, timezone
 
 import pytest
 import pytest_asyncio
 from fastapi import status
+from sqlalchemy import select
 
 import app.db.database as db_module
 from app.core.security import create_access_token
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.user import UserRole, UserStatus
+from app.domain.user_block_event import UserBlockEventType
 from app.models.auth.user import User
+from app.models.auth.user_block_event import UserBlockEvent
 from tests.integration.admin.conftest import (
     ADMIN_USERS_URL,
     BLOCK_USER_URL,
@@ -39,6 +43,14 @@ async def _get_status(user_id: uuid.UUID) -> UserStatus:
     async with db_module.AsyncSessionLocal() as session:
         user = await session.get(User, user_id)
         return user.status
+
+
+async def _get_events(user_id: uuid.UUID) -> list[UserBlockEvent]:
+    async with db_module.AsyncSessionLocal() as session:
+        result = await session.execute(
+            select(UserBlockEvent).where(UserBlockEvent.user_id == user_id)
+        )
+        return list(result.scalars().all())
 
 
 @pytest_asyncio.fixture
@@ -229,3 +241,52 @@ class TestBlockedSession:
         )
 
         assert response.status_code == status.HTTP_200_OK
+
+
+class TestAuditLog:
+    @pytest.mark.parametrize(
+        ("action", "user_status", "event_type"),
+        [
+            (_block, UserStatus.ACTIVE, UserBlockEventType.BLOCKED),
+            (_unblock, UserStatus.BLOCKED, UserBlockEventType.UNBLOCKED),
+        ],
+        ids=["block", "unblock"],
+    )
+    async def test_records_who_did_it_to_whom_and_when(
+        self, client, make_user_with_role, action, user_status, event_type
+    ):
+        headers, admin_id = await make_user_with_role(UserRole.ADMIN)
+        user_id = await _insert_user(UserRole.FIELD_WORKER, user_status)
+
+        await action(client, headers, user_id)
+
+        (event,) = await _get_events(user_id)
+        assert event.actor_id == admin_id
+        assert event.event_type == event_type
+        assert abs(datetime.now(timezone.utc) - event.occurred_at) < timedelta(
+            minutes=1
+        )
+
+    @pytest.mark.parametrize(
+        ("action", "role", "user_status"),
+        [
+            (_block, UserRole.FIELD_WORKER, UserStatus.BLOCKED),
+            (_unblock, UserRole.FIELD_WORKER, UserStatus.ACTIVE),
+            (_block, UserRole.FIELD_WORKER, UserStatus.PENDING_VALIDATION),
+            (_block, UserRole.ADMIN, UserStatus.ACTIVE),
+        ],
+        ids=[
+            "already-blocked",
+            "not-blocked",
+            "not-active",
+            "not-allowed",
+        ],
+    )
+    async def test_requests_that_change_nothing_record_nothing(
+        self, client, admin, action, role, user_status
+    ):
+        user_id = await _insert_user(role, user_status)
+
+        await action(client, admin, user_id)
+
+        assert await _get_events(user_id) == []

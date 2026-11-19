@@ -16,6 +16,7 @@ from app.domain.user import (
     UserStatus,
     UserWithEstablishmentsDomain,
 )
+from app.domain.user_block_event import UserBlockEventType
 from app.exceptions.domain_exceptions import (
     FieldWorkerNotPendingError,
     InvalidUserRoleError,
@@ -576,7 +577,7 @@ class AdminService:
     async def block_user(
         self, actor: UserActor, user_id: UUID
     ) -> UserWithEstablishmentsDomain:
-        """Block an active user and revoke all of their refresh tokens.
+        """Block an active user, revoke all of their refresh tokens and record it.
 
         Admins may block field workers and analysts; superadmins may also block
         admins. Nobody may block a superadmin or themselves. Blocking a user who is
@@ -602,6 +603,11 @@ class AdminService:
 
         await self.uow.user_repo.update_status(user_id, UserStatus.BLOCKED)
         await self.uow.token_repo.revoke_all_by_user_id(user_id)
+        await self.uow.user_block_event_repo.append(
+            user_id=user_id,
+            actor_id=actor.user_id,
+            event_type=UserBlockEventType.BLOCKED,
+        )
         await self.uow.commit()
 
         return await self.get_user_info(user_id)
@@ -609,7 +615,7 @@ class AdminService:
     async def unblock_user(
         self, actor: UserActor, user_id: UUID
     ) -> UserWithEstablishmentsDomain:
-        """Unblock a blocked user and set them back to active.
+        """Unblock a blocked user, set them back to active and record it.
 
         Admins may unblock field workers and analysts; superadmins may also unblock
         admins. Nobody may unblock a superadmin or themselves. Unblocking a user who
@@ -631,6 +637,11 @@ class AdminService:
             return await self.get_user_info(user_id)
 
         await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
+        await self.uow.user_block_event_repo.append(
+            user_id=user_id,
+            actor_id=actor.user_id,
+            event_type=UserBlockEventType.UNBLOCKED,
+        )
         await self.uow.commit()
 
         return await self.get_user_info(user_id)

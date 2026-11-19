@@ -7,6 +7,9 @@ from app.repositories.auth.email_verification_repository import (
 from app.repositories.auth.password_recovery_repository import (
     PasswordRecoveryTokenRepository,
 )
+from app.repositories.auth.user_block_event_repository import (
+    UserBlockEventRepository,
+)
 from app.repositories.auth.user_establishment_repository import (
     UserEstablishmentRepository,
 )
@@ -80,6 +83,7 @@ class UnitOfWork(IUnitOfWork):
         self.user_repo = UserRepository(self.session)
         self.password_repo = UserPasswordRepository(self.session)
         self.token_repo = TokenRepository(self.session)
+        self.user_block_event_repo = UserBlockEventRepository(self.session)
         self.establishment_repo = EstablishmentRepository(self.session)
         self.establishment_request_repo = EstablishmentRequestRepository(self.session)
         self.user_establishment_repo = UserEstablishmentRepository(self.session)
