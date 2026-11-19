@@ -279,6 +279,7 @@ async def test_recipient_listing_applies_every_current_eligibility_predicate(app
         "analyst": {"role": UserRole.ANALYST},
         "admin": {"role": UserRole.ADMIN},
         "inactive": {"status": UserStatus.INACTIVE},
+        "blocked": {"status": UserStatus.BLOCKED},
         "pending": {"relation": UserEstablishmentStatus.PENDING},
         "pending-analyst": {
             "role": UserRole.ANALYST,

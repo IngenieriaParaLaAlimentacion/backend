@@ -34,6 +34,8 @@ REVOKE_URL = "/api/v1/admin/field-worker/{user_id}/establishments/revoke"
 APPROVE_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/approve"
 REJECT_FIELD_WORKER_URL = "/api/v1/admin/field-worker/{user_id}/reject"
 PENDING_ESTABLISHMENTS_URL = "/api/v1/admin/field-worker/establishments/pending"
+BLOCK_USER_URL = "/api/v1/admin/users/{user_id}/block"
+UNBLOCK_USER_URL = "/api/v1/admin/users/{user_id}/unblock"
 
 
 async def _make_list_request(client, *, headers=None):
@@ -111,6 +113,18 @@ async def _make_reject_field_worker_request(client, *, headers=None):
     )
 
 
+async def _make_block_user_request(client, *, headers=None):
+    return await client.patch(
+        BLOCK_USER_URL.format(user_id=uuid.uuid4()), headers=headers or {}
+    )
+
+
+async def _make_unblock_user_request(client, *, headers=None):
+    return await client.patch(
+        UNBLOCK_USER_URL.format(user_id=uuid.uuid4()), headers=headers or {}
+    )
+
+
 @pytest.fixture(
     params=[
         pytest.param(_make_list_request, id="GET /admin/users"),
@@ -134,6 +148,8 @@ async def _make_reject_field_worker_request(client, *, headers=None):
             _make_reject_field_worker_request,
             id="PATCH /admin/field-worker/{id}/reject",
         ),
+        pytest.param(_make_block_user_request, id="PATCH /admin/users/{id}/block"),
+        pytest.param(_make_unblock_user_request, id="PATCH /admin/users/{id}/unblock"),
         pytest.param(
             _make_list_pending_establishments_request,
             id="GET /admin/field-worker/establishments/pending",
