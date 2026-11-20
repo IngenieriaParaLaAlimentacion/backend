@@ -1,4 +1,5 @@
 import secrets
+from collections.abc import Sequence
 from typing import Any
 from uuid import UUID
 
@@ -227,7 +228,7 @@ class AdminService:
         page: int,
         page_size: int,
         role: UserRole | None = None,
-        statuses: list[UserStatus] | None = None,
+        statuses: Sequence[UserStatus] | None = None,
         search: str | None = None,
     ) -> PaginatedResult[UserWithEstablishmentsDomain]:
         """Return a paginated list of users with their approved establishments.

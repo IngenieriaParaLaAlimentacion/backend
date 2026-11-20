@@ -24,7 +24,9 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    # Code from before this revision cannot read 'blocked' rows, so blocked
+    # users become 'inactive' (not 'active', which would silently unblock them).
+    op.execute("UPDATE users SET status = 'inactive' WHERE status = 'blocked'")
     # Postgres does not support removing enum values, so 'blocked' is left
-    # in place on downgrade (same limitation as
+    # in the type on downgrade (same limitation as
     # 65b1998cb602_add_withdrawn_to_userestablishmentstatus_.py).
-    pass
