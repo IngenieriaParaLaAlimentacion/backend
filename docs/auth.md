@@ -27,7 +27,8 @@ Authorization has two levels:
 - Payload contains: `user_id`, `role`.
 - Short-lived: 15 minutes (`ACCESS_TOKEN_EXPIRE_MINUTES`).
 - Sent by the client in the `Authorization: Bearer <token>` header.
-- Stateless — not stored in the DB. Validation is signature-only.
+- Not stored in the DB. Every request verifies the signature and then reads the user's status
+  from the DB, so a blocked user is rejected at once (see [Blocking users](#blocking-users)).
 
 ### Refresh token
 
@@ -124,7 +125,7 @@ only changes for a session through a new login.
 ### Changing a user's role
 
 `PATCH /api/v1/admin/users/{user_id}/role` (contract in the Swagger UI, `/docs`). The rule lives in
-`AdminService` (`_ROLE_CHANGE_SOURCES`):
+`AdminService` (`_MANAGEABLE_ROLES`):
 
 | Actor | May change users with role | To |
 |---|---|---|
@@ -138,6 +139,44 @@ only changes for a session through a new login.
   (≤ 15 min); this window is accepted.
 - The user gets an email with the old and the new role.
 - Requesting the role the user already has is a no-op: `200`, no email, sessions kept.
+
+### Blocking users
+
+A block cuts a user off from the whole platform and is reversible: the user keeps their data and
+their establishment memberships. It is unrelated to removing a user from an establishment.
+Decision and alternatives: [ADR-0029](adr/0029-blocked-user-cutoff.md).
+
+The rule lives in `AdminService` and uses the same role table as the role change
+(`_MANAGEABLE_ROLES`):
+
+| Actor | May block and unblock users with role |
+|---|---|
+| `admin` | `field_worker`, `analyst` |
+| `superadmin` | `field_worker`, `analyst`, `admin` |
+
+- Nobody may block a `superadmin` or themselves.
+- Only `active` users can be blocked, and unblocking always returns them to `active`.
+- Blocking an already blocked user, or unblocking one who is not blocked, changes nothing and
+  returns `200`.
+- Blocking revokes all of the user's refresh tokens in the same transaction.
+- No email or push is sent about the block. While blocked, the user receives no push
+  notifications.
+
+#### Effects
+
+- **Login** is rejected with `403`, error type `user-blocked`, only after the password is
+  verified, so a wrong password still gets `invalid-credentials`.
+- **Open sessions** stop working on the next request. `_get_authenticated_actor` reads the user's
+  status from the DB through `check_user_not_blocked` (`app/services/access.py`) and answers the same
+  `403 user-blocked`. It is `403` and not `401`, so clients do not take it for an expired token and
+  try to refresh. The check also applies to endpoints that take an optional token: a blocked
+  caller is rejected instead of being treated as anonymous.
+- **Refresh, logout, password recovery, invitation acceptance and email verification** have no
+  block check. Blocking revokes the refresh tokens and login is closed, so none of them can
+  give access.
+- A user with no row in `users` is not rejected by this check.
+
+The backend assumes a single instance; see the ADR for what changes if that stops being true.
 
 ---
 

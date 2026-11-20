@@ -5,14 +5,13 @@ import aiosmtplib
 import pytest
 import pytest_asyncio
 from fastapi import status
-from sqlalchemy import select
 
 import app.db.database as db_module
 from app.config.settings import settings
 from app.domain.user import UserRole, UserStatus
 from app.models.auth.user import User
-from app.models.auth.user_token import UserToken
 from tests.integration.admin.conftest import _insert_user
+from tests.integration.admin.helpers import insert_refresh_token, is_revoked
 
 CHANGE_ROLE_URL = "/api/v1/admin/users/{user_id}/role"
 SEND_MAIL = "app.services.admin_service.send_role_changed_email"
@@ -28,30 +27,6 @@ async def _get_role(user_id: uuid.UUID) -> UserRole:
     async with db_module.AsyncSessionLocal() as session:
         user = await session.get(User, user_id)
         return user.role
-
-
-async def _insert_refresh_token(user_id: uuid.UUID, role: UserRole) -> uuid.UUID:
-    token_id = uuid.uuid4()
-    async with db_module.AsyncSessionLocal() as session:
-        session.add(
-            UserToken(
-                id=token_id,
-                user_id=user_id,
-                device_id=uuid.uuid4(),
-                role=role,
-                token_hash=uuid.uuid4().hex,
-            )
-        )
-        await session.commit()
-    return token_id
-
-
-async def _is_revoked(token_id: uuid.UUID) -> bool:
-    async with db_module.AsyncSessionLocal() as session:
-        result = await session.execute(
-            select(UserToken.revoked).where(UserToken.id == token_id)
-        )
-        return result.scalar_one()
 
 
 @pytest_asyncio.fixture
@@ -102,16 +77,16 @@ class TestChangeUserRoleAllowed:
 
     async def test_revokes_refresh_tokens(self, client, admin):
         user_id = await _insert_user(UserRole.FIELD_WORKER, UserStatus.ACTIVE)
-        token_id = await _insert_refresh_token(user_id, UserRole.FIELD_WORKER)
+        token_id = await insert_refresh_token(user_id, UserRole.FIELD_WORKER)
 
         with patch(SEND_MAIL):
             await _change_role(client, admin, user_id, UserRole.ANALYST.value)
 
-        assert await _is_revoked(token_id)
+        assert await is_revoked(token_id)
 
     async def test_same_role_is_noop(self, client, admin):
         user_id = await _insert_user(UserRole.ANALYST, UserStatus.ACTIVE)
-        token_id = await _insert_refresh_token(user_id, UserRole.ANALYST)
+        token_id = await insert_refresh_token(user_id, UserRole.ANALYST)
 
         with patch(SEND_MAIL) as send_mail:
             response = await _change_role(
@@ -121,7 +96,7 @@ class TestChangeUserRoleAllowed:
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["role"] == UserRole.ANALYST.value
         send_mail.assert_not_called()
-        assert not await _is_revoked(token_id)
+        assert not await is_revoked(token_id)
 
     async def test_smtp_failure_keeps_role_change(self, client, admin, monkeypatch):
         monkeypatch.setattr(settings, "smtp_enabled", True)

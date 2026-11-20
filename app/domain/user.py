@@ -27,6 +27,7 @@ class UserStatus(StrEnum):
     ACTIVE = "active"
     INACTIVE = "inactive"
     PENDING_VALIDATION = "pending_validation"
+    BLOCKED = "blocked"
 
 
 @dataclass

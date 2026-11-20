@@ -1,15 +1,14 @@
 import uuid
 
+import pytest_asyncio
 from fastapi import status
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 import app.db.database as db_module
-from app.domain.user import UserRole
+from app.domain.user import UserRole, UserStatus
 from app.models.auth.user import User
 from app.models.auth.user_establishment import UserEstablishment
-from tests.integration.urls import LOGIN_URL, LOGOUT_URL, REGISTER_URL
-
-REFRESH_URL = "/api/v1/auth/refresh"
+from tests.integration.urls import LOGIN_URL, LOGOUT_URL, REFRESH_URL, REGISTER_URL
 
 
 class TestRegisterFieldWorker:
@@ -258,6 +257,43 @@ class TestLoginPendingValidation:
         response = await client.post(LOGIN_URL, json=self._payload())
         assert "access_token" not in response.json()
         assert "refresh_token" not in response.json()
+
+
+class TestLoginBlocked:
+    @pytest_asyncio.fixture
+    async def blocked_user(self, db_active_user):
+        async with db_module.AsyncSessionLocal() as session:
+            await session.execute(
+                update(User)
+                .where(User.id == db_active_user.id)
+                .values(status=UserStatus.BLOCKED)
+            )
+            await session.commit()
+        return db_active_user
+
+    def _payload(self, password: str) -> dict:
+        return {
+            "email": "ana@test.com",
+            "password": password,
+            "device_id": str(uuid.uuid4()),
+        }
+
+    async def test_blocked_user_returns_403_user_blocked(self, client, blocked_user):
+        response = await client.post(LOGIN_URL, json=self._payload("correct_password"))
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        body = response.json()
+        assert body["type"] == "/errors/user-blocked"
+        assert "access_token" not in body
+        assert "refresh_token" not in body
+
+    async def test_wrong_password_is_not_revealed_as_blocked(
+        self, client, blocked_user
+    ):
+        response = await client.post(LOGIN_URL, json=self._payload("wrong_password"))
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json()["type"] == "/errors/invalid-credentials"
 
 
 class TestLogout:
