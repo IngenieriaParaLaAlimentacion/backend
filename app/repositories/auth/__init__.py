@@ -4,9 +4,6 @@ from app.repositories.auth.email_verification_repository import (
 from app.repositories.auth.password_recovery_repository import (
     PasswordRecoveryTokenRepository,
 )
-from app.repositories.auth.user_block_event_repository import (
-    UserBlockEventRepository,
-)
 from app.repositories.auth.user_establishment_repository import (
     UserEstablishmentRepository,
 )
@@ -18,7 +15,6 @@ __all__ = [
     "EmailVerificationTokenRepository",
     "PasswordRecoveryTokenRepository",
     "TokenRepository",
-    "UserBlockEventRepository",
     "UserEstablishmentRepository",
     "UserPasswordRepository",
     "UserRepository",

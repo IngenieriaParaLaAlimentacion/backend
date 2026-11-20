@@ -162,8 +162,6 @@ The rule lives in `AdminService` and uses the same role table as the role change
 - No email or push is sent about the block. While blocked, the user receives no push
   notifications.
 
-Every block and unblock is recorded in `user_block_events` (admin, user, type and time).
-
 #### Effects
 
 - **Login** is rejected with `403`, error type `user-blocked`, only after the password is

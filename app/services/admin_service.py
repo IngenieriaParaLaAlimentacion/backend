@@ -17,7 +17,6 @@ from app.domain.user import (
     UserStatus,
     UserWithEstablishmentsDomain,
 )
-from app.domain.user_block_event import UserBlockEventType
 from app.exceptions.domain_exceptions import (
     FieldWorkerNotPendingError,
     InvalidUserRoleError,
@@ -614,11 +613,6 @@ class AdminService:
 
         await self.uow.user_repo.update_status(user_id, UserStatus.BLOCKED)
         await self.uow.token_repo.revoke_all_by_user_id(user_id)
-        await self.uow.user_block_event_repo.append(
-            user_id=user_id,
-            actor_id=actor.user_id,
-            event_type=UserBlockEventType.BLOCKED,
-        )
         await self.uow.commit()
 
         return await self.get_user_info(user_id)
@@ -647,11 +641,6 @@ class AdminService:
             return await self.get_user_info(user_id)
 
         await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
-        await self.uow.user_block_event_repo.append(
-            user_id=user_id,
-            actor_id=actor.user_id,
-            event_type=UserBlockEventType.UNBLOCKED,
-        )
         await self.uow.commit()
 
         return await self.get_user_info(user_id)

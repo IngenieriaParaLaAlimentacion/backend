@@ -1,7 +1,6 @@
 from .auth.email_verification_token import EmailVerificationToken
 from .auth.password_recovery_token import PasswordRecoveryToken
 from .auth.user import User, UserRole, UserStatus
-from .auth.user_block_event import UserBlockEvent
 from .auth.user_establishment import UserEstablishment
 from .auth.user_password import UserPassword
 from .auth.user_token import UserToken
@@ -40,7 +39,6 @@ __all__ = [
     "User",
     "UserRole",
     "UserStatus",
-    "UserBlockEvent",
     "Establishment",
     "EstablishmentRequest",
     "UserEstablishment",
