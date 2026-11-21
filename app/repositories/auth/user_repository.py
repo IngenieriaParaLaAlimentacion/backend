@@ -101,6 +101,17 @@ class UserRepository:
         """Return a user by id, or None if it does not exist."""
         return await self.db.get(User, user_id)
 
+    async def get_for_update(self, user_id: UUID) -> User | None:
+        """Return and lock the current user row until the transaction ends."""
+        query = (
+            select(User)
+            .where(User.id == user_id)
+            .with_for_update()
+            .execution_options(populate_existing=True)
+        )
+        result = await self.db.execute(query)
+        return result.scalar_one_or_none()
+
     async def get_by_email(self, email: str) -> User | None:
         """Return a user by email, ignoring case, or None if it does not exist."""
         result = await self.db.execute(
