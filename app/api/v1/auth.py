@@ -55,11 +55,13 @@ async def register_field_worker(
     ],
     response_model=TokenResponse,
     summary="Login user",
-    description="Authenticates a user and returns a JWT token. Blocks pending users.",
+    description="Authenticates an active user and returns access and refresh tokens.",
     responses={
         status.HTTP_200_OK: {"description": "Successful login"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Invalid credentials"},
-        status.HTTP_403_FORBIDDEN: {"description": "Account pending validation"},
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Account pending validation or blocked"
+        },
         **RATE_LIMITED_RESPONSES,
     },
 )
@@ -109,7 +111,10 @@ async def logout(
     responses={
         status.HTTP_200_OK: {"description": "Tokens refreshed successfully"},
         status.HTTP_401_UNAUTHORIZED: {
-            "description": "Invalid or expired refresh token"
+            "description": "Invalid, expired or revoked refresh token"
+        },
+        status.HTTP_403_FORBIDDEN: {
+            "description": "Account blocked for an opted-in, block-revoked credential"
         },
         status.HTTP_400_BAD_REQUEST: {"description": "Invalid request payload"},
         **RATE_LIMITED_RESPONSES,
@@ -119,6 +124,7 @@ async def refresh(
     data: RefreshRequest,
     service: AuthService = Depends(get_auth_service),
 ) -> RefreshResponse:
+    """Rotate the supplied refresh credential."""
     result = await service.refresh(data)
     return RefreshResponse.model_validate(result)
 

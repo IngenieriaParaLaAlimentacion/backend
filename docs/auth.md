@@ -40,9 +40,15 @@ Authorization has two levels:
 
 ### Token refresh flow
 
-1. Client sends the refresh token.
-2. Backend hashes it and looks it up in `user_tokens` (by `token_hash + device_id + revoked = false`).
-3. If valid and not expired, issues a new access token.
+1. The client sends the refresh token and device ID. It may include
+   `report_user_blocked: true` to receive the account-block response.
+2. The backend matches the hash and device ID, locks the user row, then rechecks the
+   credential. Login, refresh, block and unblock share the user row lock.
+3. If the credential is active and unexpired and the account can refresh, the backend
+   rotates the refresh token and issues a new access token. For an opted-in request
+   with an unexpired credential revoked by the current block, it returns
+   `403 /errors/user-blocked`. Other rejected refresh attempts return
+   `401 /errors/auth/invalid-refresh-token`.
 
 ---
 
@@ -158,7 +164,9 @@ The rule lives in `AdminService` and uses the same role table as the role change
 - Only `active` users can be blocked, and unblocking always returns them to `active`.
 - Blocking an already blocked user, or unblocking one who is not blocked, changes nothing and
   returns `200`.
-- Blocking revokes all of the user's refresh tokens in the same transaction.
+- Blocking revokes all of the user's refresh tokens in the same transaction and
+  marks the ones that were still unexpired and unrevoked. Unblocking clears these
+  markers and leaves the tokens revoked.
 - No email or push is sent about the block. While blocked, the user receives no push
   notifications.
 
@@ -166,14 +174,13 @@ The rule lives in `AdminService` and uses the same role table as the role change
 
 - **Login** is rejected with `403`, error type `user-blocked`, only after the password is
   verified, so a wrong password still gets `invalid-credentials`.
-- **Open sessions** stop working on the next request. `_get_authenticated_actor` reads the user's
-  status from the DB through `check_user_not_blocked` (`app/services/access.py`) and answers the same
-  `403 user-blocked`. It is `403` and not `401`, so clients do not take it for an expired token and
-  try to refresh. The check also applies to endpoints that take an optional token: a blocked
-  caller is rejected instead of being treated as anonymous.
-- **Refresh, logout, password recovery, invitation acceptance and email verification** have no
-  block check. Blocking revokes the refresh tokens and login is closed, so none of them can
-  give access.
+- **Open sessions** with a valid access token receive the same `403 user-blocked`
+  when `_get_authenticated_actor` sees the committed block through
+  `check_user_not_blocked` (`app/services/access.py`). Requests already authorized can
+  finish. This also applies to endpoints that accept an optional token.
+- **Refresh** can report the block after access token expiry if the client proves
+  possession of an unexpired, device-bound credential revoked by the current block.
+  Clients that omit the opt-in continue to receive generic `401` on refresh failure.
 - A user with no row in `users` is not rejected by this check.
 
 The backend assumes a single instance; see the ADR for what changes if that stops being true.

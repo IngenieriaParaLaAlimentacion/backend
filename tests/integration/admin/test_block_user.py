@@ -1,14 +1,21 @@
+import asyncio
 import uuid
+from datetime import UTC, datetime, timedelta
 
 import pytest
 import pytest_asyncio
 from fastapi import status
+from sqlalchemy import select
 
 import app.db.database as db_module
-from app.core.security import create_access_token
+from app.config.settings import settings
+from app.core.security import create_access_token, hash_token
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.user import UserRole, UserStatus
 from app.models.auth.user import User
+from app.models.auth.user_token import UserToken
+from app.repositories.auth.user_repository import UserRepository
+from app.repositories.auth.user_token_repository import TokenRepository
 from tests.integration.admin.conftest import (
     ADMIN_USERS_URL,
     BLOCK_USER_URL,
@@ -17,7 +24,7 @@ from tests.integration.admin.conftest import (
     _insert_user,
 )
 from tests.integration.admin.helpers import insert_refresh_token, is_revoked
-from tests.integration.urls import LOGIN_URL, REFRESH_URL
+from tests.integration.urls import LOGIN_URL, LOGOUT_URL, REFRESH_URL
 
 ME_URL = "/api/v1/users/me"
 
@@ -203,29 +210,261 @@ class TestBlockedSession:
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json()["type"] == "/errors/user-blocked"
 
-    async def test_refresh_token_is_rejected(self, client, blocked_session):
-        _, refresh_token, device_id, _ = blocked_session
+    @pytest.mark.parametrize("options", [{}, {"report_user_blocked": False}])
+    async def test_legacy_refresh_keeps_generic_error(
+        self, client, blocked_session, options
+    ):
+        _, token, device, _ = blocked_session
 
         response = await client.post(
-            REFRESH_URL,
-            json={"refresh_token": refresh_token, "device_id": device_id},
+            REFRESH_URL, json={"refresh_token": token, "device_id": device, **options}
         )
 
+        _assert_invalid_refresh(response)
+
+    async def test_expired_access_can_detect_block_during_refresh(
+        self, client, blocked_session, monkeypatch
+    ):
+        _, token, device, user = blocked_session
+        monkeypatch.setattr(settings, "access_token_expire_minutes", -1)
+        expired = create_access_token(user.id, role=user.role)
+        response = await client.get(
+            ME_URL, headers={"Authorization": f"Bearer {expired}"}
+        )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_unblocked_user_can_log_in_again(
-        self, client, superadmin, blocked_session
-    ):
-        *_, user = blocked_session
-        await _unblock(client, superadmin, user.id)
+        _assert_blocked_refresh(await _refresh(client, token, device))
 
-        response = await client.post(
-            LOGIN_URL,
-            json={
-                "email": user.email,
-                "password": "correct_password",
-                "device_id": str(uuid.uuid4()),
-            },
+    async def test_wrong_device_and_unknown_token_keep_generic_error(
+        self, client, blocked_session
+    ):
+        _, token, device, _ = blocked_session
+
+        _assert_invalid_refresh(await _refresh(client, token, str(uuid.uuid4())))
+        _assert_invalid_refresh(await _refresh(client, uuid.uuid4().hex, device))
+
+    @pytest.mark.parametrize(
+        "provenance", ["rotated", "logged_out", "legacy", "expired"]
+    )
+    async def test_ineligible_credentials_keep_generic_error(
+        self, client, superadmin, db_logged_in_user, provenance
+    ):
+        user, token, device = db_logged_in_user
+        if provenance == "rotated":
+            assert (await _refresh(client, token, device)).status_code == 200
+        elif provenance == "logged_out":
+            response = await client.post(
+                LOGOUT_URL, json={"refresh_token": token, "device_id": device}
+            )
+            assert response.status_code == 204
+        else:
+            async with db_module.AsyncSessionLocal() as session:
+                row = await session.scalar(
+                    select(UserToken).where(UserToken.token_hash == hash_token(token))
+                )
+                if provenance == "legacy":
+                    row.revoked = True
+                else:
+                    row.expires_at = datetime.now(UTC) - timedelta(seconds=1)
+                await session.commit()
+
+        assert (await _block(client, superadmin, user.id)).status_code == 200
+        _assert_invalid_refresh(await _refresh(client, token, device))
+        assert await _revocation(token) == (True, False)
+
+    async def test_unblock_clears_markers_and_fresh_login_restores_access(
+        self, client, superadmin, blocked_session, db_establishment
+    ):
+        _, token, device, user = blocked_session
+        await _insert_relation(
+            user.id, db_establishment.id, UserEstablishmentStatus.APPROVED
+        )
+        _assert_blocked_refresh(await _refresh(client, token, device))
+        assert await _revocation(token) == (True, True)
+
+        await _unblock(client, superadmin, user.id)
+        _assert_invalid_refresh(await _refresh(client, token, device))
+        assert await _revocation(token) == (True, False)
+
+        fresh = await _login(client, user, device)
+        assert fresh.status_code == 200
+        response = await client.get(
+            "/api/v1/users/me/establishments",
+            headers={"Authorization": f"Bearer {fresh.json()['access_token']}"},
+        )
+        assert response.status_code == 200
+        assert str(db_establishment.id) in response.text
+
+        await _block(client, superadmin, user.id)
+        _assert_invalid_refresh(await _refresh(client, token, device))
+        _assert_blocked_refresh(
+            await _refresh(client, fresh.json()["refresh_token"], device)
         )
 
-        assert response.status_code == status.HTTP_200_OK
+    async def test_cutoff_applies_to_multiple_devices(
+        self, client, superadmin, db_logged_in_user
+    ):
+        user, first_token, first_device = db_logged_in_user
+        second_device = str(uuid.uuid4())
+        second = await _login(client, user, second_device)
+        assert second.status_code == 200
+
+        await _block(client, superadmin, user.id)
+
+        _assert_blocked_refresh(await _refresh(client, first_token, first_device))
+        _assert_blocked_refresh(
+            await _refresh(client, second.json()["refresh_token"], second_device)
+        )
+
+
+async def _login(client, user, device):
+    return await client.post(
+        LOGIN_URL,
+        json={"email": user.email, "password": "correct_password", "device_id": device},
+    )
+
+
+async def _refresh(client, token, device):
+    return await client.post(
+        REFRESH_URL,
+        json={"refresh_token": token, "device_id": device, "report_user_blocked": True},
+    )
+
+
+def _assert_invalid_refresh(response):
+    assert response.status_code == 401
+    assert response.json()["type"] == "/errors/auth/invalid-refresh-token"
+
+
+def _assert_blocked_refresh(response):
+    assert response.status_code == 403
+    assert response.headers["content-type"].startswith("application/problem+json")
+    problem = response.json()
+    assert problem["type"] == "/errors/user-blocked"
+    assert problem["instance"] == REFRESH_URL
+    assert "access_token" not in problem
+    assert "refresh_token" not in problem
+
+
+async def _revocation(token):
+    async with db_module.AsyncSessionLocal() as session:
+        result = await session.execute(
+            select(UserToken.revoked, UserToken.revoked_for_block).where(
+                UserToken.token_hash == hash_token(token)
+            )
+        )
+        return result.one()
+
+
+class TestConcurrentBlock:
+    async def test_refresh_rechecks_credential_after_block(
+        self, client, superadmin, db_logged_in_user, monkeypatch
+    ):
+        user, token, device = db_logged_in_user
+        discovered = asyncio.Event()
+        resume = asyncio.Event()
+        original = TokenRepository.get_refresh_candidate_user_id
+
+        async def pause_after_lookup(repo, *args, **kwargs):
+            owner = await original(repo, *args, **kwargs)
+            discovered.set()
+            await asyncio.wait_for(resume.wait(), timeout=10)
+            return owner
+
+        monkeypatch.setattr(
+            TokenRepository, "get_refresh_candidate_user_id", pause_after_lookup
+        )
+        refresh = asyncio.create_task(_refresh(client, token, device))
+        try:
+            await asyncio.wait_for(discovered.wait(), timeout=10)
+            assert (await _block(client, superadmin, user.id)).status_code == 200
+        finally:
+            resume.set()
+            result = await asyncio.wait_for(refresh, timeout=10)
+
+        _assert_blocked_refresh(result)
+
+    async def test_login_reloads_status_after_block(
+        self, client, superadmin, db_logged_in_user, monkeypatch
+    ):
+        user, _, _ = db_logged_in_user
+        discovered = asyncio.Event()
+        resume = asyncio.Event()
+        original = UserRepository.get_by_email
+
+        async def pause_after_lookup(repo, *args, **kwargs):
+            candidate = await original(repo, *args, **kwargs)
+            discovered.set()
+            await asyncio.wait_for(resume.wait(), timeout=10)
+            return candidate
+
+        monkeypatch.setattr(UserRepository, "get_by_email", pause_after_lookup)
+        login = asyncio.create_task(_login(client, user, str(uuid.uuid4())))
+        try:
+            await asyncio.wait_for(discovered.wait(), timeout=10)
+            assert (await _block(client, superadmin, user.id)).status_code == 200
+        finally:
+            resume.set()
+            result = await asyncio.wait_for(login, timeout=10)
+
+        assert result.status_code == 403
+        assert result.json()["type"] == "/errors/user-blocked"
+
+    async def test_block_revokes_replacement_staged_by_concurrent_refresh(
+        self, client, superadmin, db_logged_in_user, monkeypatch
+    ):
+        user, token, device = db_logged_in_user
+        staged = asyncio.Event()
+        block_started = asyncio.Event()
+        resume = asyncio.Event()
+        create = TokenRepository.create
+        lock = UserRepository.get_for_update
+
+        async def pause_after_create(repo, *args, **kwargs):
+            result = await create(repo, *args, **kwargs)
+            staged.set()
+            await asyncio.wait_for(resume.wait(), timeout=10)
+            return result
+
+        async def observe_lock(repo, *args, **kwargs):
+            if staged.is_set():
+                block_started.set()
+            return await lock(repo, *args, **kwargs)
+
+        monkeypatch.setattr(TokenRepository, "create", pause_after_create)
+        monkeypatch.setattr(UserRepository, "get_for_update", observe_lock)
+        refresh = asyncio.create_task(_refresh(client, token, device))
+        block = None
+        try:
+            await asyncio.wait_for(staged.wait(), timeout=10)
+            block = asyncio.create_task(_block(client, superadmin, user.id))
+            await asyncio.wait_for(block_started.wait(), timeout=10)
+        finally:
+            resume.set()
+            rotated = await asyncio.wait_for(refresh, timeout=10)
+            if block is not None:
+                blocked = await asyncio.wait_for(block, timeout=10)
+
+        assert rotated.status_code == 200
+        assert blocked.status_code == 200
+        replacement = rotated.json()
+        assert await _revocation(replacement["refresh_token"]) == (True, True)
+        assert await _revocation(token) == (True, False)
+        response = await client.get(
+            ME_URL, headers={"Authorization": f"Bearer {replacement['access_token']}"}
+        )
+        assert response.status_code == 403
+        assert response.json()["type"] == "/errors/user-blocked"
+
+    async def test_simultaneous_refresh_rotates_once(self, client, db_logged_in_user):
+        _, token, device = db_logged_in_user
+        responses = await asyncio.wait_for(
+            asyncio.gather(
+                _refresh(client, token, device), _refresh(client, token, device)
+            ),
+            timeout=10,
+        )
+        assert sorted(response.status_code for response in responses) == [200, 401]
+        _assert_invalid_refresh(
+            next(response for response in responses if response.status_code == 401)
+        )
