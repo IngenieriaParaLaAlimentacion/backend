@@ -680,7 +680,7 @@ class PendingValidationError(ForbiddenError):
 
 
 class UserBlockedError(ForbiddenError):
-    """Raised when a blocked user logs in or makes an authenticated request."""
+    """Raised when a blocked user signs in, makes a protected request or refreshes."""
 
     error_type = "user-blocked"
 

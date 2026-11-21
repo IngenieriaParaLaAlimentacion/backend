@@ -39,8 +39,15 @@ class LogoutRequest(BaseModel):
 
 
 class RefreshRequest(BaseModel):
+    """Rotate a refresh credential bound to the requesting device."""
+
     refresh_token: str
     device_id: UUID
+    report_user_blocked: bool = Field(
+        default=False,
+        strict=True,
+        description="Report a current block for an eligible refresh credential.",
+    )
 
 
 class PasswordRecoveryRequest(BaseModel):

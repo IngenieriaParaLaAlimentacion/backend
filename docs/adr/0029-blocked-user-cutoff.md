@@ -59,8 +59,14 @@ account, so a caller who does not know the password cannot find out that an acco
 ### Blocking also revokes refresh tokens
 
 Blocking revokes all of the user's refresh tokens in the same transaction as the status change.
-Together with the closed login, no endpoint that issues tokens can give a blocked user access, so
-`refresh`, recovery, invitation acceptance and email verification need no block check of their own.
+It marks tokens that were unrevoked and unexpired at that transition. Unblock clears the markers
+while preserving revocation. Login, refresh, block and unblock hold the user row lock through
+commit, so a token issued before the block is covered by revocation.
+
+Mobile needs the same block notice when its access token has already expired (Mobile #110,
+CA2). An opted-in refresh request gets `403 /errors/user-blocked` only for an exact, unexpired
+device-bound credential marked by the current block while the account remains blocked.
+Other failed refresh requests keep the generic `401`.
 
 ### What it assumes
 
@@ -71,8 +77,8 @@ strategy is revisited then, not now.
 
 *Positives*
 
-- The cut-off is immediate and exact: the next request after the block commits is rejected, with
-  no window and nothing to keep in sync.
+- An authorization check that sees the committed block rejects a protected request. A request
+  that already passed the check can finish.
 - One check in one function covers every authenticated route, including future ones.
 - The database stays the only source of truth. There is no second copy of the block state that
   can disagree with it, and nothing to rebuild after a restart.
@@ -85,7 +91,8 @@ strategy is revisited then, not now.
   expected to matter, but it has not been measured.
 - A public endpoint that takes an optional token (`get_optional_actor`) also rejects a blocked
   caller, instead of treating them as anonymous.
-- `docs/auth.md` can no longer say that access token validation is signature-only.
+- A JWT from a session that missed an entire block and unblock can work until its existing
+  expiry. A client that observed the cutoff clears its session and requires fresh sign-in.
 
 ## Alternatives considered
 
@@ -121,7 +128,6 @@ every token.
 **Checking in each route or service** — rejected. A route that forgot the check would keep serving
 a blocked user. `_get_authenticated_actor` is the one place every route already passes through.
 
-**Checking the block also in `refresh`** — rejected as unnecessary. Blocking revokes every refresh
-token, and login is closed, so a blocked user cannot hold a valid one. A client whose access token
-had already expired gets an invalid-refresh-token `401` and goes back to login, where it receives
-`user-blocked`.
+**Returning generic `401` for every rejected refresh** — retained for legacy clients. Mobile
+opts in to the typed error so it can display the same notice whether the access token was valid
+or expired when the server observed the block.

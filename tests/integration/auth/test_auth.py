@@ -1,5 +1,6 @@
 import uuid
 
+import pytest
 import pytest_asyncio
 from fastapi import status
 from sqlalchemy import select, update
@@ -343,12 +344,16 @@ class TestRefreshSuccess:
     def _payload(self, refresh_token: str, device_id: str) -> dict:
         return {"refresh_token": refresh_token, "device_id": device_id}
 
-    async def test_valid_refresh_returns_200(self, client, db_logged_in_user):
+    @pytest.mark.parametrize("options", [{}, {"report_user_blocked": True}])
+    async def test_valid_refresh_returns_tokens(
+        self, client, db_logged_in_user, options
+    ):
         _, refresh_token, device_id = db_logged_in_user
         response = await client.post(
-            REFRESH_URL, json=self._payload(refresh_token, device_id)
+            REFRESH_URL, json={**self._payload(refresh_token, device_id), **options}
         )
         assert response.status_code == status.HTTP_200_OK
+        assert set(response.json()) == {"access_token", "refresh_token", "token_type"}
 
     async def test_response_contains_access_token(self, client, db_logged_in_user):
         _, refresh_token, device_id = db_logged_in_user

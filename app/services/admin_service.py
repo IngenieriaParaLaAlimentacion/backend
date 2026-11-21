@@ -59,9 +59,14 @@ class AdminService:
         self.uow = uow
         self.auth_service = auth_service
 
-    async def _get_user(self, user_id: UUID) -> Any:
-        """Return the user, raising if they do not exist."""
-        user = await self.uow.user_repo.get_by_id(user_id)
+    async def _get_user(self, user_id: UUID, *, for_update: bool = False) -> Any:
+        """Return the user, optionally locking the row for the transaction."""
+        repo = self.uow.user_repo
+        user = (
+            await repo.get_for_update(user_id)
+            if for_update
+            else await repo.get_by_id(user_id)
+        )
         if user is None:
             raise UserNotFoundError(str(user_id))
         return user
@@ -590,7 +595,7 @@ class AdminService:
     async def block_user(
         self, actor: UserActor, user_id: UUID
     ) -> UserWithEstablishmentsDomain:
-        """Block an active user, revoke all of their refresh tokens and record it.
+        """Block an active user and record which live refresh tokens it revoked.
 
         Admins may block field workers and analysts; superadmins may also block
         admins. Nobody may block a superadmin or themselves. Blocking a user who is
@@ -604,7 +609,7 @@ class AdminService:
             RoleNotAllowedError: If the actor may not block this user.
             UserNotActiveError: If the user's account is not active.
         """
-        user = await self._get_user(user_id)
+        user = await self._get_user(user_id, for_update=True)
         self._require_manageable(actor, user, "You are not allowed to block this user.")
         if user.status == UserStatus.BLOCKED:
             return await self.get_user_info(user_id)
@@ -612,7 +617,7 @@ class AdminService:
             raise UserNotActiveError("Only active users can be blocked.")
 
         await self.uow.user_repo.update_status(user_id, UserStatus.BLOCKED)
-        await self.uow.token_repo.revoke_all_by_user_id(user_id)
+        await self.uow.token_repo.revoke_all_by_user_id(user_id, for_block=True)
         await self.uow.commit()
 
         return await self.get_user_info(user_id)
@@ -620,7 +625,7 @@ class AdminService:
     async def unblock_user(
         self, actor: UserActor, user_id: UUID
     ) -> UserWithEstablishmentsDomain:
-        """Unblock a blocked user, set them back to active and record it.
+        """Restore the user's active status and clear the block revocation markers.
 
         Admins may unblock field workers and analysts; superadmins may also unblock
         admins. Nobody may unblock a superadmin or themselves. Unblocking a user who
@@ -633,7 +638,7 @@ class AdminService:
             UserNotFoundError: If no user with user_id exists.
             RoleNotAllowedError: If the actor may not unblock this user.
         """
-        user = await self._get_user(user_id)
+        user = await self._get_user(user_id, for_update=True)
         self._require_manageable(
             actor, user, "You are not allowed to unblock this user."
         )
@@ -641,6 +646,7 @@ class AdminService:
             return await self.get_user_info(user_id)
 
         await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
+        await self.uow.token_repo.clear_block_revocation_by_user_id(user_id)
         await self.uow.commit()
 
         return await self.get_user_info(user_id)

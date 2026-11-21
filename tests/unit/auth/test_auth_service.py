@@ -1,4 +1,5 @@
 import uuid
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -9,6 +10,7 @@ from app.exceptions.domain_exceptions import (
     InvalidCredentialsError,
     InvalidRefreshTokenError,
     UserAlreadyExistsError,
+    UserBlockedError,
 )
 from app.schemas.auth.auth_schema import (
     LoginRequest,
@@ -31,11 +33,18 @@ def valid_refresh_request():
 def make_active_token():
     """Return a factory for mock token rows returned by token_repo."""
 
-    def _make(role: UserRole = UserRole.ADMIN):
-        t = MagicMock()
-        t.user_id = uuid.uuid4()
-        t.role = role
-        return t
+    def _make(
+        role: UserRole = UserRole.ADMIN,
+        *,
+        revoked: bool = False,
+        revoked_for_block: bool = False,
+    ):
+        return SimpleNamespace(
+            user_id=uuid.uuid4(),
+            role=role,
+            revoked=revoked,
+            revoked_for_block=revoked_for_block,
+        )
 
     return _make
 
@@ -46,17 +55,17 @@ def device_id():
 
 
 @pytest.fixture
-def make_uow(make_user):
+def make_uow(make_user, make_login_user):
     def _make(
         existing_user=None,
         establishments=None,
         login_user=None,
         password_record=None,
         active_token=None,
+        refresh_candidate=None,
     ):
         uow = AsyncMock()
 
-        uow.user_repo.get_by_email = AsyncMock(return_value=existing_user)
         uow.establishment_repo.get_all_by_ids = AsyncMock(
             return_value=establishments or []
         )
@@ -65,10 +74,19 @@ def make_uow(make_user):
         uow.user_establishment_repo.preset_relation = AsyncMock()
 
         uow.user_repo.get_by_email = AsyncMock(return_value=login_user or existing_user)
+        locked_user = login_user
+        if refresh_candidate is not None:
+            locked_user = make_login_user()
+            locked_user.id = refresh_candidate.user_id
+        uow.user_repo.get_for_update = AsyncMock(return_value=locked_user)
         uow.password_repo.get_by_user_id = AsyncMock(return_value=password_record)
         uow.token_repo.create = AsyncMock()
 
         uow.token_repo.get_active_refresh_token = AsyncMock(return_value=active_token)
+        uow.token_repo.get_refresh_candidate_user_id = AsyncMock(
+            return_value=refresh_candidate.user_id if refresh_candidate else None
+        )
+        uow.token_repo.get_refresh_candidate = AsyncMock(return_value=refresh_candidate)
         uow.token_repo.revoke = AsyncMock()
 
         uow.commit = AsyncMock()
@@ -488,7 +506,7 @@ class TestLoginWrongPassword:
     async def test_raises_invalid_credentials(
         self, make_uow, make_login_user, make_password_record, device_id, mock_security
     ):
-        user = make_login_user()
+        user = make_login_user(status=UserStatus.BLOCKED)
         uow = make_uow(login_user=user, password_record=make_password_record(user))
         bad_request = LoginRequest(
             email=user.email, password="wrong_password", device_id=device_id
@@ -496,6 +514,8 @@ class TestLoginWrongPassword:
 
         with pytest.raises(InvalidCredentialsError):
             await AuthService(uow).login(bad_request)
+
+        uow.user_repo.get_for_update.assert_not_awaited()
 
     async def test_does_not_commit(
         self, make_uow, make_login_user, make_password_record, device_id, mock_security
@@ -509,6 +529,29 @@ class TestLoginWrongPassword:
         with pytest.raises(InvalidCredentialsError):
             await AuthService(uow).login(bad_request)
 
+        uow.commit.assert_not_awaited()
+
+
+class TestLoginBlocked:
+    async def test_block_committed_since_initial_read(
+        self,
+        make_uow,
+        make_login_user,
+        make_password_record,
+        valid_login_request,
+        mock_security,
+    ):
+        user = make_login_user()
+        blocked = make_login_user(status=UserStatus.BLOCKED)
+        blocked.id = user.id
+        uow = make_uow(login_user=user, password_record=make_password_record(user))
+        uow.user_repo.get_for_update.return_value = blocked
+
+        with pytest.raises(UserBlockedError):
+            await AuthService(uow).login(valid_login_request)
+
+        uow.user_repo.get_for_update.assert_awaited_once_with(user.id)
+        uow.token_repo.create.assert_not_awaited()
         uow.commit.assert_not_awaited()
 
 
@@ -611,7 +654,7 @@ class TestRefreshSuccess:
         mock_encode_refresh_token,
     ):
         token = make_active_token(role=UserRole.ADMIN)
-        uow = make_uow(active_token=token)
+        uow = make_uow(refresh_candidate=token)
 
         result = await AuthService(uow).refresh(valid_refresh_request)
 
@@ -625,7 +668,7 @@ class TestRefreshSuccess:
         mock_security,
         mock_encode_refresh_token,
     ):
-        uow = make_uow(active_token=make_active_token())
+        uow = make_uow(refresh_candidate=make_active_token())
 
         result = await AuthService(uow).refresh(valid_refresh_request)
 
@@ -640,7 +683,7 @@ class TestRefreshSuccess:
         mock_encode_refresh_token,
     ):
         token = make_active_token()
-        uow = make_uow(active_token=token)
+        uow = make_uow(refresh_candidate=token)
 
         await AuthService(uow).refresh(valid_refresh_request)
 
@@ -655,7 +698,7 @@ class TestRefreshSuccess:
         mock_encode_refresh_token,
     ):
         token = make_active_token()
-        uow = make_uow(active_token=token)
+        uow = make_uow(refresh_candidate=token)
 
         await AuthService(uow).refresh(valid_refresh_request)
 
@@ -674,7 +717,7 @@ class TestRefreshSuccess:
         mock_security,
         mock_encode_refresh_token,
     ):
-        uow = make_uow(active_token=make_active_token())
+        uow = make_uow(refresh_candidate=make_active_token())
 
         await AuthService(uow).refresh(valid_refresh_request)
 
@@ -688,13 +731,19 @@ class TestRefreshSuccess:
         mock_security,
         mock_encode_refresh_token,
     ):
-        uow = make_uow(active_token=make_active_token())
+        uow = make_uow(refresh_candidate=make_active_token())
 
         await AuthService(uow).refresh(valid_refresh_request)
 
-        uow.token_repo.get_active_refresh_token.assert_awaited_once_with(
-            "hashed_refresh_token", valid_refresh_request.device_id
-        )
+        for query in (
+            uow.token_repo.get_refresh_candidate_user_id,
+            uow.token_repo.get_refresh_candidate,
+        ):
+            query.assert_awaited_once_with(
+                "hashed_refresh_token",
+                valid_refresh_request.device_id,
+                report_user_blocked=False,
+            )
 
 
 class TestRefreshInvalidToken:
@@ -704,10 +753,13 @@ class TestRefreshInvalidToken:
         valid_refresh_request,
         mock_encode_refresh_token,
     ):
-        uow = make_uow(active_token=None)
+        uow = make_uow(refresh_candidate=None)
 
         with pytest.raises(InvalidRefreshTokenError):
             await AuthService(uow).refresh(valid_refresh_request)
+
+        uow.user_repo.get_for_update.assert_not_awaited()
+        uow.token_repo.get_refresh_candidate.assert_not_awaited()
 
     async def test_does_not_revoke(
         self,
@@ -715,7 +767,7 @@ class TestRefreshInvalidToken:
         valid_refresh_request,
         mock_encode_refresh_token,
     ):
-        uow = make_uow(active_token=None)
+        uow = make_uow(refresh_candidate=None)
 
         with pytest.raises(InvalidRefreshTokenError):
             await AuthService(uow).refresh(valid_refresh_request)
@@ -728,7 +780,7 @@ class TestRefreshInvalidToken:
         valid_refresh_request,
         mock_encode_refresh_token,
     ):
-        uow = make_uow(active_token=None)
+        uow = make_uow(refresh_candidate=None)
 
         with pytest.raises(InvalidRefreshTokenError):
             await AuthService(uow).refresh(valid_refresh_request)
@@ -741,9 +793,70 @@ class TestRefreshInvalidToken:
         valid_refresh_request,
         mock_encode_refresh_token,
     ):
-        uow = make_uow(active_token=None)
+        uow = make_uow(refresh_candidate=None)
 
         with pytest.raises(InvalidRefreshTokenError):
             await AuthService(uow).refresh(valid_refresh_request)
 
+        uow.commit.assert_not_awaited()
+
+    async def test_recheck_rejects_a_consumed_candidate(
+        self,
+        make_uow,
+        make_active_token,
+        valid_refresh_request,
+        mock_encode_refresh_token,
+    ):
+        token = make_active_token()
+        uow = make_uow(refresh_candidate=token)
+        uow.token_repo.get_refresh_candidate.return_value = None
+
+        with pytest.raises(InvalidRefreshTokenError):
+            await AuthService(uow).refresh(valid_refresh_request)
+
+        uow.user_repo.get_for_update.assert_awaited_once_with(token.user_id)
+        uow.token_repo.revoke.assert_not_awaited()
+        uow.token_repo.create.assert_not_awaited()
+        uow.commit.assert_not_awaited()
+
+
+class TestRefreshAccountBlock:
+    @pytest.mark.parametrize(
+        ("status", "revoked", "block_marker", "expected_error"),
+        [
+            (UserStatus.BLOCKED, True, True, UserBlockedError),
+            (UserStatus.BLOCKED, False, False, InvalidRefreshTokenError),
+            (UserStatus.ACTIVE, True, True, InvalidRefreshTokenError),
+        ],
+    )
+    async def test_block_response_requires_current_block_and_marked_revocation(
+        self,
+        make_uow,
+        make_active_token,
+        valid_refresh_request,
+        mock_encode_refresh_token,
+        status,
+        revoked,
+        block_marker,
+        expected_error,
+    ):
+        token = make_active_token(revoked=revoked, revoked_for_block=block_marker)
+        uow = make_uow(refresh_candidate=token)
+        uow.user_repo.get_for_update.return_value.status = status
+        valid_refresh_request.report_user_blocked = True
+
+        with pytest.raises(expected_error):
+            await AuthService(uow).refresh(valid_refresh_request)
+
+        for query in (
+            uow.token_repo.get_refresh_candidate_user_id,
+            uow.token_repo.get_refresh_candidate,
+        ):
+            query.assert_awaited_once_with(
+                "hashed_refresh_token",
+                valid_refresh_request.device_id,
+                report_user_blocked=True,
+            )
+        uow.token_repo.revoke.assert_not_awaited()
+        uow.token_repo.create.assert_not_awaited()
         uow.commit.assert_not_awaited()

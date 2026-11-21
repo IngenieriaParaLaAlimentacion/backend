@@ -173,6 +173,10 @@ class AuthService:
         if not verify_password(data.password, user_password.password_hashed):
             raise InvalidCredentialsError()
 
+        user = await self.uow.user_repo.get_for_update(user.id)
+        if user is None:
+            raise InvalidCredentialsError()
+
         if user.status == UserStatus.PENDING_VALIDATION:
             raise PendingValidationError()
 
@@ -236,12 +240,34 @@ class AuthService:
         await self.uow.commit()
 
     async def refresh(self, data: RefreshRequest) -> RefreshDomain:
+        """Rotate an eligible credential or report its current account block."""
         refresh_token_hash = hash_token(data.refresh_token)
 
-        token = await self.uow.token_repo.get_active_refresh_token(
-            refresh_token_hash, data.device_id
+        user_id = await self.uow.token_repo.get_refresh_candidate_user_id(
+            refresh_token_hash,
+            data.device_id,
+            report_user_blocked=data.report_user_blocked,
         )
-        if not token:
+        if user_id is None:
+            raise InvalidRefreshTokenError()
+
+        user = await self.uow.user_repo.get_for_update(user_id)
+        if user is None:
+            raise InvalidRefreshTokenError()
+
+        token = await self.uow.token_repo.get_refresh_candidate(
+            refresh_token_hash,
+            data.device_id,
+            report_user_blocked=data.report_user_blocked,
+        )
+        if token is None or token.user_id != user.id:
+            raise InvalidRefreshTokenError()
+
+        if user.status == UserStatus.BLOCKED:
+            if data.report_user_blocked and token.revoked and token.revoked_for_block:
+                raise UserBlockedError()
+            raise InvalidRefreshTokenError()
+        if token.revoked:
             raise InvalidRefreshTokenError()
 
         await self.uow.token_repo.revoke(token)
