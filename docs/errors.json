@@ -424,7 +424,7 @@
       "type": "/errors/user-blocked",
       "status": 403,
       "exception": "UserBlockedError",
-      "description": "Raised when a blocked user logs in or makes an authenticated request."
+      "description": "Raised when a blocked user signs in, makes a protected request or refreshes."
     },
     {
       "type": "/errors/user-establishment-not-approved",

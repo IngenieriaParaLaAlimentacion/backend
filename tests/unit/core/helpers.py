@@ -88,6 +88,7 @@ NON_SENSITIVE_COLUMNS = frozenset(
         "responsetarget",
         "responsetype",
         "revoked",
+        "revokedforblock",
         "role",
         "severity",
         "source",
