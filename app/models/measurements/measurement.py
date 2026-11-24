@@ -1,6 +1,17 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Index, Text, func, text
+from sqlalchemy import (
+    CheckConstraint,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    String,
+    Text,
+    func,
+    text,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -12,6 +23,10 @@ class Measurement(Base):
 
     __tablename__ = "measurements"
     __table_args__ = (
+        CheckConstraint(
+            "stature_method IN ('recumbent', 'standing')",
+            name="ck_measurements_stature_method",
+        ),
         Index(
             "ix_measurements_latest_per_subject",
             "establishment_id",
@@ -37,6 +52,7 @@ class Measurement(Base):
     )
     weight_kg = Column(Float, nullable=False)
     height_cm = Column(Float, nullable=False)
+    stature_method = Column(String(16))
     bmi = Column(Float, nullable=False)
     observation = Column(Text, nullable=True)
     measured_at = Column(DateTime(timezone=True), nullable=False)
@@ -57,4 +73,10 @@ class Measurement(Base):
         back_populates="measurement",
         cascade="all, delete-orphan",
         lazy="selectin",
+    )
+    assessments = relationship(
+        "MeasurementAssessment",
+        back_populates="measurement",
+        cascade="all, delete-orphan",
+        lazy="raise",
     )

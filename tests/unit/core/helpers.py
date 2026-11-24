@@ -82,6 +82,7 @@ NON_SENSITIVE_COLUMNS = frozenset(
         "province",
         "quantity",
         "referenceprofile",
+        "referenceversion",
         "requiresresponsenumber",
         "responsecount",
         "responsenumber",
