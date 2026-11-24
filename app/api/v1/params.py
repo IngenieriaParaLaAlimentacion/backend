@@ -31,6 +31,7 @@ from app.domain.food_stock import (
     FoodStockSortOrder,
 )
 from app.domain.measurement import MeasurementListingParams, MeasurementSortOrder
+from app.domain.measurement_assessment import Indicator
 from app.domain.nutrition_report import (
     NutritionReportListingParams,
     NutritionReportSortOrder,
@@ -137,6 +138,8 @@ class MeasurementListingQuery(LocationQuery):
     min_age: Annotated[int | None, Query(ge=0, le=150)] = None
     max_age: Annotated[int | None, Query(ge=0, le=150)] = None
     sort_order: MeasurementSortOrder = MeasurementSortOrder.DATE_DESC
+    indicator: Annotated[Indicator | None, Query()] = None
+    classification: Annotated[str | None, Query(min_length=1, max_length=64)] = None
 
     def validate(self) -> None:
         """Raise InvalidAgeRangeError if the age bounds are inverted, or
@@ -163,6 +166,8 @@ class MeasurementListingQuery(LocationQuery):
             min_age=self.min_age,
             max_age=self.max_age,
             sort_order=self.sort_order,
+            indicator=self.indicator,
+            classification=self.classification,
         )
 
 
@@ -398,6 +403,8 @@ class SubjectListingQuery:
     is_indigenous: Annotated[bool | None, Query()] = None
     sex: Annotated[Sex | None, Query()] = None
     sort_order: SubjectSortOrder = SubjectSortOrder.CREATED_AT_DESC
+    indicator: Annotated[Indicator | None, Query()] = None
+    classification: Annotated[str | None, Query(min_length=1, max_length=64)] = None
 
     def validate(self) -> None:
         """Raise InvalidDateRangeError if the date bounds are inverted."""
@@ -413,6 +420,8 @@ class SubjectListingQuery:
             is_indigenous=self.is_indigenous,
             sex=self.sex,
             sort_order=self.sort_order,
+            indicator=self.indicator,
+            classification=self.classification,
         )
 
 

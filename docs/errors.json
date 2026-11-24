@@ -205,6 +205,12 @@
       "description": "Raised when the target user's role is not valid for the operation."
     },
     {
+      "type": "/errors/measurement-not-found",
+      "status": 404,
+      "exception": "MeasurementNotFoundError",
+      "description": "Raised when an anthropometric measurement cannot be found."
+    },
+    {
       "type": "/errors/no-fields-to-update",
       "status": 400,
       "exception": "EmptyUpdateRequestError",

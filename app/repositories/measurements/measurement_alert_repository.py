@@ -4,6 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.measurement import AlertSeverity, AlertType
+from app.models.measurements.measurement import Measurement
 from app.models.measurements.measurement_alert import MeasurementAlert
 
 
@@ -31,6 +32,23 @@ class MeasurementAlertRepository:
         self.db.add_all(rows)
         await self.db.flush()
         return rows
+
+    async def replace_for_measurement(
+        self,
+        measurement: Measurement,
+        alerts: list[tuple[AlertType, AlertSeverity, str]],
+    ) -> None:
+        """Replace the legacy alerts when the corrected result changes."""
+        current = [
+            (row.alert_type, row.severity, row.detail) for row in measurement.alerts
+        ]
+        if current == alerts:
+            return
+        measurement.alerts = [
+            MeasurementAlert(alert_type=kind, severity=severity, detail=detail)
+            for kind, severity, detail in alerts
+        ]
+        await self.db.flush()
 
     async def get_by_measurement_id(
         self, measurement_id: UUID

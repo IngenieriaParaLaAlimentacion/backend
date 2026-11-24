@@ -10,6 +10,7 @@ from app.domain.measurement import (
     MeasurementSummaryDomain,
     NutritionalStatus,
 )
+from app.domain.measurement_assessment import Indicator
 from app.domain.subject import Sex
 from app.domain.user import UserStatus
 
@@ -128,6 +129,33 @@ class EstablishmentAlertStatusDomain:
 
 
 @dataclass
+class AssessmentDistributionEntry:
+    """Classification count and proportion among one indicator's results."""
+
+    classification: str
+    count: int
+    percentage: float
+
+
+@dataclass
+class IndicatorDistribution:
+    """Distribution over the latest measurements with an evaluated indicator."""
+
+    indicator: Indicator
+    evaluated_count: int
+    distribution: list[AssessmentDistributionEntry]
+
+
+@dataclass
+class AssessmentSummary:
+    """Establishment-level risk counts and per-indicator distributions."""
+
+    at_risk_count: int
+    at_risk_percentage: float | None
+    indicators: list[IndicatorDistribution]
+
+
+@dataclass
 class EstablishmentDashboardDomain:
     """Full dashboard payload for one establishment."""
 
@@ -135,6 +163,7 @@ class EstablishmentDashboardDomain:
     has_data: bool
     metrics: EstablishmentMetricsDomain
     alert_status: EstablishmentAlertStatusDomain
+    assessment_summary: AssessmentSummary | None = None
 
     @property
     def characterization(self) -> dict | None:

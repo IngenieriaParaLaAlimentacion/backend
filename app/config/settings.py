@@ -141,6 +141,10 @@ class Settings(BaseSettings):
     # disables trusting those reports.
     internal_service_token: SecretStr | None = None
 
+    # Anthropometric evaluations use an explicitly installed reference version.
+    sap_assessment_ruleset: str | None = None
+    sap_assessment_visible: bool = False
+
     # Stale-establishment notifications
     fcm_project_id: str | None = None
     fcm_client_email: str | None = None
@@ -238,6 +242,19 @@ class Settings(BaseSettings):
         except ValueError as exc:
             raise ValueError(f"invalid rate limit {value!r}: {exc}") from exc
         return value
+
+    @model_validator(mode="after")
+    def verify_sap_ruleset(self) -> "Settings":
+        """Reject configuration that exposes a missing assessment version."""
+        if not self.sap_assessment_ruleset:
+            self.sap_assessment_ruleset = None
+            if self.sap_assessment_visible:
+                raise ValueError("Visible SAP assessments require a ruleset")
+            return self
+        from app.reference_data.sap_reference import load_ruleset
+
+        load_ruleset(self.sap_assessment_ruleset)
+        return self
 
     @model_validator(mode="after")
     def build_database_url(self) -> "Settings":

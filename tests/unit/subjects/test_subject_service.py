@@ -437,13 +437,13 @@ class TestUpdateSubject:
                 uuid.uuid4(), SubjectUpdateRequest(), actor_id=uuid.uuid4()
             )
 
-        uow.subject_repo.get_by_id.assert_not_called()
+        uow.subject_repo.get_for_update.assert_not_called()
         uow.commit.assert_not_called()
 
     async def test_raises_if_subject_not_found(self, make_uow):
         """SubjectNotFoundError is raised when the subject does not exist."""
         uow = make_uow()
-        uow.subject_repo.get_by_id = AsyncMock(return_value=None)
+        uow.subject_repo.get_for_update = AsyncMock(return_value=None)
         service = SubjectService(uow)
 
         with pytest.raises(SubjectNotFoundError):
@@ -456,7 +456,7 @@ class TestUpdateSubject:
         to another subject."""
         subject = make_subject()
         uow = make_uow()
-        uow.subject_repo.get_by_id = AsyncMock(return_value=subject)
+        uow.subject_repo.get_for_update = AsyncMock(return_value=subject)
         uow.subject_repo.update = AsyncMock(
             side_effect=UniqueConstraintError("dni", 99999999)
         )
@@ -479,7 +479,7 @@ class TestUpdateSubject:
         updated.id = subject.id
 
         uow = make_uow()
-        uow.subject_repo.get_by_id = AsyncMock(return_value=subject)
+        uow.subject_repo.get_for_update = AsyncMock(return_value=subject)
         uow.subject_repo.update = AsyncMock(return_value=updated)
         service = SubjectService(uow)
 

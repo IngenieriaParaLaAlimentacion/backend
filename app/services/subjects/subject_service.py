@@ -13,12 +13,20 @@ from app.exceptions.domain_exceptions import (
     SubjectNotFoundError,
     UniqueConstraintError,
 )
+from app.reference_data.sap_reference import configured_ruleset
 from app.schemas.subjects.subject_schema import (
     SubjectRequest,
     SubjectResponse,
     SubjectUpdateRequest,
 )
 from app.services.exporters.csv.csv_exporter import CsvExporter
+from app.services.measurements.assessment_projection import (
+    assessments_by_id,
+    begin_assessment_read,
+    resolve_assessment_filters,
+)
+from app.services.measurements.assessment_service import persist_assessments
+from app.services.measurements.measurement_service import refresh_legacy_alerts
 from app.utils.db import achunked
 
 # Subjects pulled per round trip before their latest measurements are looked
@@ -101,11 +109,15 @@ class SubjectService:
         Raises:
             SubjectNotFoundError: If no subject with the given id exists.
         """
+        await begin_assessment_read(self.uow)
         subject = await self.uow.subject_repo.get_by_id(subject_id)
         if subject is None:
             raise SubjectNotFoundError(str(subject_id))
         latest = await self.uow.measurement_repo.get_latest_for_subject(subject_id)
-        return SubjectDetailDomain.build(subject, latest)
+        if latest is None:
+            return SubjectDetailDomain.build(subject, None)
+        assessments = await assessments_by_id(self.uow, [latest.id])
+        return SubjectDetailDomain.build(subject, latest, assessments.get(latest.id))
 
     async def get_subject_listing(
         self,
@@ -115,17 +127,21 @@ class SubjectService:
     ) -> PaginatedResult[SubjectDetailDomain]:
         """Return a paginated list of subjects, each enriched with its
         latest measurement."""
+        await begin_assessment_read(self.uow)
         page = max(1, page)
         offset = (page - 1) * page_size
         subjects, total = await self.uow.subject_repo.get_subject_listing(
-            limit=page_size, offset=offset, params=params
+            limit=page_size, offset=offset, params=resolve_assessment_filters(params)
         )
         latest_by_subject = await self.uow.measurement_repo.get_latest_for_subjects(
             [subject.id for subject in subjects]
         )
+        assessments = await assessments_by_id(
+            self.uow, (m.id for m in latest_by_subject.values())
+        )
         return PaginatedResult.build(
             items=[
-                SubjectDetailDomain.build(subject, latest_by_subject.get(subject.id))
+                self._project_subject(subject, latest_by_subject, assessments)
                 for subject in subjects
             ],
             total=total,
@@ -134,7 +150,7 @@ class SubjectService:
         )
 
     async def _stream_subjects_with_latest(
-        self, params: SubjectListingParams
+        self, params: SubjectListingParams, assessment_fields: bool
     ) -> AsyncIterator[SubjectDetailDomain]:
         """Stream subjects, enriched with their latest measurement.
 
@@ -142,18 +158,34 @@ class SubjectService:
         over every id at once -- collecting all ids first would defeat the
         streaming, and one query per subject would be an N+1.
         """
-        subjects = self.uow.subject_repo.stream_for_export(params)
+        await begin_assessment_read(self.uow)
+        subjects = self.uow.subject_repo.stream_for_export(
+            resolve_assessment_filters(params)
+        )
         async for batch in achunked(subjects, _EXPORT_BATCH):
             latest = await self.uow.measurement_repo.get_latest_for_subjects(
                 [subject.id for subject in batch]
             )
+            assessments = (
+                await assessments_by_id(self.uow, (m.id for m in latest.values()))
+                if assessment_fields
+                else {}
+            )
             for subject in batch:
-                yield SubjectDetailDomain.build(subject, latest.get(subject.id))
+                yield self._project_subject(subject, latest, assessments)
+
+    @staticmethod
+    def _project_subject(subject, latest, assessments) -> SubjectDetailDomain:
+        measurement = latest.get(subject.id)
+        results = assessments.get(measurement.id) if measurement is not None else None
+        return SubjectDetailDomain.build(subject, measurement, results)
 
     def export_subject_listing(
         self,
         params: SubjectListingParams,
         exporter: CsvExporter[SubjectDetailDomain],
+        *,
+        assessment_fields: bool = False,
     ) -> AsyncIterator[bytes]:
         """Stream the subject listing as an exported file's bytes.
 
@@ -161,11 +193,15 @@ class SubjectService:
         whole result set rather than one page. The caller's UnitOfWork must
         outlive the returned iterator.
         """
-        return exporter.stream(self._stream_subjects_with_latest(params))
+        return exporter.stream(
+            self._stream_subjects_with_latest(params, assessment_fields)
+        )
 
     async def count_subject_export(self, params: SubjectListingParams) -> int:
         """How many rows the export will contain, for the row-count header."""
-        return await self.uow.subject_repo.count_for_export(params)
+        return await self.uow.subject_repo.count_for_export(
+            resolve_assessment_filters(params)
+        )
 
     async def update_subject(
         self, subject_id: UUID, data: SubjectUpdateRequest, actor_id: UUID
@@ -182,7 +218,7 @@ class SubjectService:
         if not update_dict:
             raise EmptyUpdateRequestError()
 
-        subject = await self.uow.subject_repo.get_by_id(subject_id)
+        subject = await self.uow.subject_repo.get_for_update(subject_id)
         if subject is None:
             raise SubjectNotFoundError(str(subject_id))
 
@@ -194,6 +230,20 @@ class SubjectService:
             raise SubjectAlreadyExistsError(data.dni)
 
         after = {f: _to_json_safe(getattr(subject, f)) for f in update_dict}
+
+        if any(
+            before.get(field) != after.get(field) for field in ("birth_date", "sex")
+        ):
+            ruleset = configured_ruleset()
+            measurements = await self.uow.measurement_repo.list_for_subject(subject.id)
+            await self.uow.measurement_assessment_repo.invalidate_other_versions(
+                [measurement.id for measurement in measurements],
+                ruleset.version if ruleset is not None else None,
+            )
+            for measurement in measurements:
+                await refresh_legacy_alerts(self.uow, measurement, subject)
+                if ruleset is not None:
+                    await persist_assessments(self.uow, measurement, subject, ruleset)
 
         await self.uow.subject_event_repo.append(
             subject_id=subject.id,

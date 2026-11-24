@@ -577,7 +577,10 @@ class TestSubjectListing:
             "bmi",
             "alerts",
             "observation",
+            "stature_method",
+            "assessments",
         } == item["latest_measurement"].keys()
+        assert item["latest_measurement"]["assessments"] is None
 
     async def test_latest_measurement_supersedes_older_ones(self, body):
         bruno = next(i for i in body["items"] if i["last_name"] == "Normal")

@@ -13,8 +13,11 @@ from app.core.dependencies import (
 )
 from app.domain import UserActor
 from app.domain.measurement import EvolutionOrder
-from app.schemas.measurements.measurement_schema import SubjectEvolutionResponse
-from app.schemas.pagination import PaginatedResponse
+from app.schemas.measurements.measurement_schema import (
+    AssessmentFiltersResponse,
+    AssessmentPaginatedResponse,
+    SubjectEvolutionResponse,
+)
 from app.schemas.subjects.subject_schema import (
     SubjectDetailResponse,
     SubjectListingResponse,
@@ -23,6 +26,7 @@ from app.schemas.subjects.subject_schema import (
     SubjectUpdateRequest,
 )
 from app.services.exporters.csv.columns import build_subject_listing_export
+from app.services.measurements.assessment_projection import assessment_filter_options
 from app.services.measurements.measurement_service import MeasurementService
 from app.services.subjects.subject_service import SubjectService
 
@@ -81,15 +85,20 @@ async def create_subject(
 )
 async def export_subjects(
     query: SubjectListingQuery = Depends(),
+    assessment_fields: bool = False,
     _: UserActor = Depends(require_admin_or_analyst),
     service: SubjectService = Depends(get_subject_service),
 ) -> StreamingResponse:
     query.validate()
     params = query.to_domain()
-    exporter, filename = build_subject_listing_export()
+    exporter, filename = build_subject_listing_export(
+        assessment_fields=assessment_fields
+    )
     total = await service.count_subject_export(params)
     return csv_stream_response(
-        lambda uow: SubjectService(uow).export_subject_listing(params, exporter),
+        lambda uow: SubjectService(uow).export_subject_listing(
+            params, exporter, assessment_fields=assessment_fields
+        ),
         filename,
         total,
     )
@@ -123,7 +132,7 @@ async def get_subject(
 
 @router.get(
     "",
-    response_model=PaginatedResponse[SubjectListingResponse],
+    response_model=AssessmentPaginatedResponse[SubjectListingResponse],
     status_code=status.HTTP_200_OK,
     summary="List subjects",
     description=(
@@ -145,13 +154,13 @@ async def list_subjects(
     query: SubjectListingQuery = Depends(),
     _: UserActor = Depends(require_any),
     service: SubjectService = Depends(get_subject_service),
-) -> PaginatedResponse[SubjectListingResponse]:
+) -> AssessmentPaginatedResponse[SubjectListingResponse]:
     query.validate()
     result = await service.get_subject_listing(
         page=paginated.page, page_size=paginated.page_size, params=query.to_domain()
     )
 
-    return PaginatedResponse[SubjectListingResponse](
+    return AssessmentPaginatedResponse[SubjectListingResponse](
         items=[
             SubjectListingResponse.model_validate(subject) for subject in result.items
         ],
@@ -159,6 +168,9 @@ async def list_subjects(
         page=result.page,
         page_size=result.page_size,
         total_pages=result.total_pages,
+        assessment_filters=AssessmentFiltersResponse.for_options(
+            assessment_filter_options()
+        ),
     )
 
 

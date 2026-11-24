@@ -5,6 +5,7 @@ from typing import Self
 from uuid import UUID
 
 from app.domain.common_domains import IdentifierRefDomain, normalize_optional_str
+from app.domain.measurement_assessment import Assessment, Indicator, StatureMethod
 from app.domain.subject import Sex
 
 
@@ -123,6 +124,13 @@ class AlertDomain:
         )
 
 
+def assessment_fields(obj, assessments: tuple[Assessment, ...] | None) -> dict:
+    """Copy the stored stature method and the selected version's assessments."""
+    return dict(
+        stature_method=getattr(obj, "stature_method", None), assessments=assessments
+    )
+
+
 @dataclass
 class MeasurementBase:
     """The anthropometric values one measurement records, with its alerts."""
@@ -134,8 +142,11 @@ class MeasurementBase:
     alerts: list[AlertDomain]
     observation: str | None = field(default=None, kw_only=True)
 
+    stature_method: StatureMethod | None = field(default=None, kw_only=True)
+    assessments: tuple[Assessment, ...] | None = field(default=None, kw_only=True)
+
     @classmethod
-    def _base_kwargs(cls, obj) -> dict:
+    def _base_kwargs(cls, obj, assessments: tuple[Assessment, ...] | None) -> dict:
         """Copy the shared measurement values off an ORM Measurement."""
         return dict(
             measured_at=obj.measured_at,
@@ -144,16 +155,17 @@ class MeasurementBase:
             bmi=obj.bmi,
             alerts=[AlertDomain.from_db(a) for a in obj.alerts],
             observation=obj.observation,
+            **assessment_fields(obj, assessments),
         )
 
     @classmethod
-    def from_db(cls, obj) -> Self:
+    def from_db(cls, obj, assessments: tuple[Assessment, ...] | None = None) -> Self:
         """Build from an ORM Measurement with its alerts loaded.
 
         Subclasses that attach context references override this and feed
         ``_base_kwargs`` alongside their own fields.
         """
-        return cls(**cls._base_kwargs(obj))
+        return cls(**cls._base_kwargs(obj, assessments))
 
 
 @dataclass
@@ -171,9 +183,13 @@ class MeasurementDomain:
     created_at: datetime
     alerts: list[AlertDomain]
     observation: str | None = None
+    stature_method: StatureMethod | None = None
+    assessments: tuple[Assessment, ...] | None = None
 
     @classmethod
-    def from_db(cls, obj) -> "MeasurementDomain":
+    def from_db(
+        cls, obj, assessments: tuple[Assessment, ...] | None = None
+    ) -> "MeasurementDomain":
         """Build a MeasurementDomain from ORM."""
         return cls(
             id=obj.id,
@@ -187,6 +203,7 @@ class MeasurementDomain:
             created_at=obj.created_at,
             alerts=[AlertDomain.from_db(a) for a in obj.alerts],
             observation=obj.observation,
+            **assessment_fields(obj, assessments),
         )
 
 
@@ -204,6 +221,9 @@ class MeasurementListingParams:
     min_age: int | None = None
     max_age: int | None = None
     sort_order: MeasurementSortOrder = MeasurementSortOrder.DATE_DESC
+    indicator: Indicator | None = None
+    classification: str | None = None
+    ruleset_version: str | None = None
 
     def __post_init__(self) -> None:
         self.city = normalize_optional_str(self.city)
@@ -255,10 +275,12 @@ class MeasurementSummaryDomain(MeasurementBase):
     establishment: EstablishmentRefDomain
 
     @classmethod
-    def from_db(cls, obj) -> "MeasurementSummaryDomain":
+    def from_db(
+        cls, obj, assessments: tuple[Assessment, ...] | None = None
+    ) -> "MeasurementSummaryDomain":
         """Build from an ORM Measurement with establishment and alerts loaded."""
         return cls(
-            **cls._base_kwargs(obj),
+            **cls._base_kwargs(obj, assessments),
             id=obj.id,
             establishment=EstablishmentRefDomain.from_db(obj.establishment),
         )
@@ -285,10 +307,12 @@ class MeasurementListItemDomain(MeasurementBase):
     responsible: ResponsibleRefDomain
 
     @classmethod
-    def from_db(cls, obj) -> "MeasurementListItemDomain":
+    def from_db(
+        cls, obj, assessments: tuple[Assessment, ...] | None = None
+    ) -> "MeasurementListItemDomain":
         """Build a listing item from an ORM Measurement with loaded relations."""
         return cls(
-            **cls._base_kwargs(obj),
+            **cls._base_kwargs(obj, assessments),
             id=obj.id,
             subject=SubjectRefDomain.from_db(obj.subject),
             establishment=EstablishmentRefDomain.from_db(obj.establishment),

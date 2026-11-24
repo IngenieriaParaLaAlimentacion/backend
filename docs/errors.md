@@ -60,6 +60,7 @@ to the first list index), never its value.
 | `/errors/invalid-survey-response` | 400 | `InvalidSurveyResponseError` | Exception raised when submitted answers fail validation, or the payload names an entity that does not match the survey's response target. |
 | `/errors/invalid-survey-structure` | 400 | `InvalidSurveyStructureError` | Exception raised when a survey's questions or options are inconsistent. |
 | `/errors/invalid-user-role` | 400 | `InvalidUserRoleError` | Raised when the target user's role is not valid for the operation. |
+| `/errors/measurement-not-found` | 404 | `MeasurementNotFoundError` | Raised when an anthropometric measurement cannot be found. |
 | `/errors/no-fields-to-update` | 400 | `EmptyUpdateRequestError` | Exception raised when an update has no attributes to be updated. |
 | `/errors/not-resource-owner` | 403 | `NotResourceOwnerError` | Raised when a non-admin acts on a resource somebody else created. |
 | `/errors/notification-configuration-invalid` | 503 | `NotificationConfigurationError` | Raised when scheduled notifications are not fully configured. |

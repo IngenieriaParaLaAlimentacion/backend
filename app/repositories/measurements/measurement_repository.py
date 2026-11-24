@@ -5,17 +5,23 @@ from uuid import UUID
 from sqlalchemy import asc, desc, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import joinedload, selectinload
 
 from app.domain.measurement import (
     EvolutionOrder,
     MeasurementListingParams,
 )
+from app.domain.measurement_assessment import Assessment, Indicator
 from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.establishments.establishment import Establishment
 from app.models.measurements.measurement import Measurement
+from app.models.measurements.measurement_assessment import MeasurementAssessment
 from app.models.subjects.subject import Subject
 from app.repositories.measurements.constants import MEASUREMENT_SORT_CLAUSES
+from app.repositories.measurements.measurement_assessment_repository import (
+    assessment_from_row,
+    evaluated_assessment,
+)
 from app.utils.db import (
     execute_count,
     execute_paginated,
@@ -43,6 +49,55 @@ class MeasurementRepository:
         """Return a measurement by id, or None if it does not exist."""
         return await self.db.get(Measurement, measurement_id)
 
+    async def get_by_id_with_assessments(
+        self, measurement_id: UUID, ruleset_version: str
+    ) -> tuple[Measurement, tuple[Assessment, ...] | None] | None:
+        """Load the raw values, legacy alerts, and active assessments together."""
+        result = await self.db.execute(
+            select(Measurement)
+            .where(Measurement.id == measurement_id)
+            .options(
+                joinedload(Measurement.alerts),
+                joinedload(
+                    Measurement.assessments.and_(
+                        MeasurementAssessment.ruleset_version == ruleset_version
+                    )
+                ),
+            )
+            .execution_options(populate_existing=True)
+        )
+        measurement = result.unique().scalar_one_or_none()
+        if measurement is None:
+            return None
+        assessments = {
+            row.indicator: assessment_from_row(row) for row in measurement.assessments
+        }
+        return measurement, (
+            tuple(assessments[key] for key in Indicator if key in assessments)
+            if assessments
+            else None
+        )
+
+    async def get_current_by_id(self, measurement_id: UUID) -> Measurement | None:
+        """Refresh the measurement after acquiring its subject lock."""
+        return await self.db.get(Measurement, measurement_id, populate_existing=True)
+
+    async def update(self, measurement: Measurement, fields: dict) -> Measurement:
+        """Flush the corrected measurement values."""
+        for key, value in fields.items():
+            setattr(measurement, key, value)
+        await self.db.flush()
+        return measurement
+
+    async def list_for_subject(self, subject_id: UUID) -> list[Measurement]:
+        """Return a subject's measurements in stable ID order."""
+        result = await self.db.scalars(
+            select(Measurement)
+            .where(Measurement.subject_id == subject_id)
+            .order_by(Measurement.id)
+        )
+        return list(result.all())
+
     @staticmethod
     def _listing_conditions(params: MeasurementListingParams) -> list:
         """Build the filter conditions for a measurement listing."""
@@ -69,6 +124,15 @@ class MeasurementRepository:
         if params.max_age is not None:
             conditions.append(
                 Subject.birth_date > _subtract_years(date.today(), params.max_age + 1)
+            )
+        if params.indicator is not None and params.ruleset_version is not None:
+            conditions.append(
+                evaluated_assessment(
+                    Measurement.id,
+                    ruleset_version=params.ruleset_version,
+                    indicator=params.indicator,
+                    classification=params.classification,
+                )
             )
         return conditions
 
@@ -212,7 +276,12 @@ class MeasurementRepository:
         result = await self.db.execute(
             select(Measurement)
             .where(Measurement.subject_id == subject_id)
-            .order_by(order_by)
+            .order_by(
+                order_by,
+                asc(Measurement.id)
+                if order == EvolutionOrder.OLDEST_FIRST
+                else desc(Measurement.id),
+            )
         )
         return result.scalars().all()
 
@@ -228,6 +297,7 @@ class MeasurementRepository:
         bmi: float,
         measured_at: datetime,
         observation: str | None = None,
+        stature_method: str | None = None,
     ) -> Measurement:
         """Persist a new measurement. ``id`` is optional; when None the server
         generates it.
@@ -248,6 +318,7 @@ class MeasurementRepository:
             bmi=bmi,
             measured_at=measured_at,
             observation=observation,
+            stature_method=stature_method,
         )
         if id is not None:
             fields["id"] = id
