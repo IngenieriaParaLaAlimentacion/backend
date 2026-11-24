@@ -1,7 +1,7 @@
 from collections.abc import AsyncIterator
 from uuid import UUID
 
-from sqlalchemy import Row, asc, desc, func, or_, select
+from sqlalchemy import Row, asc, desc, distinct, func, or_, select, true
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
 
@@ -9,6 +9,7 @@ from app.domain.establishment_dashboard import (
     EstablishmentFieldWorkerListingParams,
     EstablishmentSubjectListingParams,
 )
+from app.domain.measurement_assessment import AssessmentStatus
 from app.models.auth.user import User
 from app.models.auth.user_establishment import UserEstablishment
 from app.models.establishments.establishment import Establishment
@@ -16,6 +17,7 @@ from app.models.food_intakes.food_intake import FoodIntake
 from app.models.food_outflows.food_outflow import FoodOutflow
 from app.models.measurements.measurement import Measurement
 from app.models.measurements.measurement_alert import MeasurementAlert
+from app.models.measurements.measurement_assessment import MeasurementAssessment
 from app.models.subjects.subject import Subject
 from app.repositories.establishments.constants import (
     AGE_MONTHS,
@@ -253,6 +255,52 @@ class EstablishmentDashboardRepository:
         )
         result = await self.db.execute(query)
         return list(result.all())
+
+    async def get_assessment_distribution(
+        self, establishment_id: UUID, ruleset_version: str
+    ) -> tuple[int, int, list[Row]]:
+        """Return total subjects, unique at-risk subjects, and evaluated groups."""
+        latest_scope = self._latest_per_subject(establishment_id)
+        latest = select(latest_scope.c.id).cte("latest_measurements")
+        assessment = MeasurementAssessment
+        evaluated = (
+            select(
+                latest.c.id,
+                assessment.indicator,
+                assessment.classification,
+                assessment.alert_severity,
+            )
+            .join(assessment, assessment.measurement_id == latest.c.id)
+            .where(
+                assessment.ruleset_version == ruleset_version,
+                assessment.status == AssessmentStatus.EVALUATED,
+            )
+            .cte("evaluated")
+        )
+        totals = select(
+            select(func.count()).select_from(latest).scalar_subquery().label("total"),
+            func.count(distinct(evaluated.c.id))
+            .filter(evaluated.c.alert_severity.is_not(None))
+            .label("at_risk_count"),
+        ).subquery()
+        groups = (
+            select(
+                evaluated.c.indicator,
+                evaluated.c.classification,
+                func.count().label("count"),
+            )
+            .group_by(evaluated.c.indicator, evaluated.c.classification)
+            .subquery()
+        )
+        result = await self.db.execute(
+            select(totals, groups).select_from(totals.outerjoin(groups, true()))
+        )
+        rows = list(result.all())
+        return (
+            rows[0].total,
+            rows[0].at_risk_count,
+            [row for row in rows if row.indicator is not None],
+        )
 
     @classmethod
     def _subject_listing_query(

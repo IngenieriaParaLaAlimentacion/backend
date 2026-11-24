@@ -55,6 +55,7 @@ def make_measurement():
         m.created_at = datetime(2024, 6, 1, tzinfo=timezone.utc)
         m.alerts = []
         m.observation = None
+        m.stature_method = None
         return m
 
     return _make
@@ -69,7 +70,9 @@ def make_uow(make_subject, make_measurement, stub_establishment_lookup):
         measurement=None,
     ):
         uow = AsyncMock()
-        uow.subject_repo.get_by_id = AsyncMock(return_value=subject or make_subject())
+        subject = subject or make_subject()
+        uow.subject_repo.get_by_id = AsyncMock(return_value=subject)
+        uow.subject_repo.get_for_update = AsyncMock(return_value=subject)
         stub_establishment_lookup(uow, establishment)
         uow.user_establishment_repo.get_relation = AsyncMock(return_value=relation)
         uow.measurement_repo.get_by_id = AsyncMock(return_value=None)
@@ -109,7 +112,7 @@ class TestRegisterValidation:
         self, make_uow, valid_request, admin_actor
     ):
         uow = make_uow(subject=None)
-        uow.subject_repo.get_by_id = AsyncMock(return_value=None)
+        uow.subject_repo.get_for_update = AsyncMock(return_value=None)
 
         with pytest.raises(SubjectNotFoundError):
             await MeasurementService(uow).register(valid_request, admin_actor)

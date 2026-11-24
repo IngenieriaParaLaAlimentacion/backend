@@ -10,6 +10,9 @@ from app.domain.subject import Sex, SubjectListingParams
 from app.exceptions.domain_exceptions import UniqueConstraintError
 from app.models.measurements.measurement import Measurement
 from app.models.subjects.subject import Subject
+from app.repositories.measurements.measurement_assessment_repository import (
+    evaluated_assessment,
+)
 from app.repositories.subjects.constants import SUBJECT_SORT_CLAUSES
 from app.utils.db import (
     execute_count,
@@ -69,6 +72,23 @@ class SubjectRepository:
             conditions.append(Subject.is_indigenous == params.is_indigenous)
         if params.sex is not None:
             conditions.append(Subject.sex == params.sex)
+        if params.indicator is not None and params.ruleset_version is not None:
+            latest_id = (
+                select(Measurement.id)
+                .where(Measurement.subject_id == Subject.id)
+                .order_by(Measurement.measured_at.desc(), Measurement.id.desc())
+                .limit(1)
+                .correlate(Subject)
+                .scalar_subquery()
+            )
+            conditions.append(
+                evaluated_assessment(
+                    latest_id,
+                    ruleset_version=params.ruleset_version,
+                    indicator=params.indicator,
+                    classification=params.classification,
+                )
+            )
 
         return conditions
 
@@ -132,6 +152,16 @@ class SubjectRepository:
     async def get_by_id(self, subject_id: UUID) -> Subject | None:
         """Return a subject by id, or None if it does not exist."""
         return await self.db.get(Subject, subject_id)
+
+    async def get_for_update(self, subject_id: UUID) -> Subject | None:
+        """Lock a subject row and return current demographics."""
+        result = await self.db.execute(
+            select(Subject)
+            .where(Subject.id == subject_id)
+            .with_for_update()
+            .execution_options(populate_existing=True)
+        )
+        return result.scalar_one_or_none()
 
     async def get_by_dni(self, dni: int) -> Subject | None:
         """Return a subject by DNI, or None if it does not exist."""

@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, Response, status
 from fastapi.responses import StreamingResponse
 
@@ -9,17 +11,24 @@ from app.api.v1.params import (
 )
 from app.core.dependencies import (
     get_measurement_service,
+    require_admin,
     require_admin_or_analyst,
     require_any,
 )
 from app.domain import UserActor
 from app.schemas.measurements.measurement_schema import (
+    AssessmentFiltersResponse,
+    AssessmentPaginatedResponse,
+    MeasurementCorrectionRequest,
     MeasurementListItem,
     MeasurementRequest,
     MeasurementResponse,
 )
-from app.schemas.pagination import PaginatedResponse
-from app.services.exporters.csv.columns import MEASUREMENT_LISTING_EXPORTER
+from app.services.exporters.csv.columns import (
+    MEASUREMENT_ASSESSMENT_EXPORTER,
+    MEASUREMENT_LISTING_EXPORTER,
+)
+from app.services.measurements.assessment_projection import assessment_filter_options
 from app.services.measurements.measurement_service import MeasurementService
 
 router = APIRouter(prefix="/measurements")
@@ -33,7 +42,7 @@ router = APIRouter(prefix="/measurements")
     description=(
         "Idempotent upload of a height/weight measurement for a subject. "
         "Replaying the same id returns the stored record unchanged. "
-        "Clinical alerts are generated on first write using WHO standards."
+        "Clinical results are generated on first write."
     ),
     responses={
         status.HTTP_200_OK: {
@@ -61,9 +70,30 @@ async def upload_measurement(
     return MeasurementResponse.model_validate(measurement)
 
 
+@router.patch(
+    "/{measurement_id}",
+    response_model=MeasurementResponse,
+    summary="Correct an anthropometric measurement",
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_400_BAD_REQUEST: {"description": "No fields provided"},
+        status.HTTP_404_NOT_FOUND: {"description": "Measurement not found"},
+    },
+)
+async def correct_measurement(
+    measurement_id: UUID,
+    data: MeasurementCorrectionRequest,
+    actor: UserActor = Depends(require_admin),
+    service: MeasurementService = Depends(get_measurement_service),
+) -> MeasurementResponse:
+    """Correct stored values and return the recomputed assessment."""
+    measurement = await service.correct(measurement_id, data, actor)
+    return MeasurementResponse.model_validate(measurement)
+
+
 @router.get(
     "",
-    response_model=PaginatedResponse[MeasurementListItem],
+    response_model=AssessmentPaginatedResponse[MeasurementListItem],
     status_code=status.HTTP_200_OK,
     summary="List anthropometric measurements",
     description=(
@@ -85,17 +115,20 @@ async def list_measurements(
     paginated: PaginatedQueryParams = Depends(),
     _: UserActor = Depends(require_admin_or_analyst),
     service: MeasurementService = Depends(get_measurement_service),
-) -> PaginatedResponse[MeasurementListItem]:
+) -> AssessmentPaginatedResponse[MeasurementListItem]:
     query.validate()
     result = await service.list_measurements(
         page=paginated.page, page_size=paginated.page_size, params=query.to_domain()
     )
-    return PaginatedResponse[MeasurementListItem](
+    return AssessmentPaginatedResponse[MeasurementListItem](
         items=[MeasurementListItem.model_validate(item) for item in result.items],
         total=result.total,
         page=result.page,
         page_size=result.page_size,
         total_pages=result.total_pages,
+        assessment_filters=AssessmentFiltersResponse.for_options(
+            assessment_filter_options()
+        ),
     )
 
 
@@ -119,16 +152,22 @@ async def list_measurements(
 )
 async def export_measurements(
     query: MeasurementListingQuery = Depends(),
+    assessment_fields: bool = False,
     _: UserActor = Depends(require_admin_or_analyst),
     service: MeasurementService = Depends(get_measurement_service),
 ) -> StreamingResponse:
     query.validate()
     params = query.to_domain()
     total = await service.count_measurement_export(params)
+    exporter = (
+        MEASUREMENT_ASSESSMENT_EXPORTER
+        if assessment_fields
+        else MEASUREMENT_LISTING_EXPORTER
+    )
     return csv_stream_response(
         lambda uow: MeasurementService(uow).export_measurement_listing(
-            params, MEASUREMENT_LISTING_EXPORTER
+            params, exporter, assessment_fields=assessment_fields
         ),
-        MEASUREMENT_LISTING_EXPORTER.filename(),
+        exporter.filename(),
         total,
     )

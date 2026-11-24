@@ -45,6 +45,9 @@ from app.repositories.health_repository import HealthRepository
 from app.repositories.measurements.measurement_alert_repository import (
     MeasurementAlertRepository,
 )
+from app.repositories.measurements.measurement_assessment_repository import (
+    MeasurementAssessmentRepository,
+)
 from app.repositories.measurements.measurement_repository import MeasurementRepository
 from app.repositories.notifications import (
     PushDeliveryJobRepository,
@@ -89,6 +92,7 @@ class UnitOfWork(IUnitOfWork):
         self.email_verification_repo = EmailVerificationTokenRepository(self.session)
         self.measurement_repo = MeasurementRepository(self.session)
         self.measurement_alert_repo = MeasurementAlertRepository(self.session)
+        self.measurement_assessment_repo = MeasurementAssessmentRepository(self.session)
         self.activity_repo = ActivityRepository(self.session)
         self.survey_repo = SurveyRepository(self.session)
         self.survey_response_repo = SurveyResponseRepository(self.session)
@@ -115,6 +119,12 @@ class UnitOfWork(IUnitOfWork):
     async def commit(self) -> None:
         """Persist all pending changes to the database."""
         await self.session.commit()
+
+    async def begin_consistent_read(self) -> None:
+        """Use one PostgreSQL snapshot for every query in the read operation."""
+        await self.session.connection(
+            execution_options={"isolation_level": "REPEATABLE READ"}
+        )
 
     async def rollback(self) -> None:
         """Discard all pending changes since the last commit."""

@@ -439,6 +439,18 @@ class SubjectNotFoundError(NotFoundError):
         )
 
 
+class MeasurementNotFoundError(NotFoundError):
+    """Raised when an anthropometric measurement cannot be found."""
+
+    error_type = "measurement-not-found"
+
+    def __init__(self, measurement_id: str):
+        super().__init__(
+            "Measurement not found",
+            f"No measurement with id {measurement_id} exists.",
+        )
+
+
 class EmailDeliveryError(BaseError):
     """Raised when an outbound email cannot be delivered to the SMTP server.
 

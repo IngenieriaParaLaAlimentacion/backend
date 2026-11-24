@@ -63,6 +63,31 @@ poetry run alembic current
 
 ---
 
+## SAP anthropometric assessments
+
+Install the validated reference as `app/reference_data/sap/<version>/reference.json`.
+Set `SAP_ASSESSMENT_RULESET=<version>` on every backend instance that accepts
+measurement writes. Keep `SAP_ASSESSMENT_VISIBLE=false` during the historical
+reevaluation. Check coverage before and after applying it.
+
+```bash
+poetry run python -m scripts.backfill_measurement_assessments --ruleset-version VERSION --dry-run
+poetry run python -m scripts.backfill_measurement_assessments --ruleset-version VERSION --apply
+poetry run python -m scripts.backfill_measurement_assessments --ruleset-version VERSION --dry-run
+```
+
+The first and last commands report missing evaluations. Apply can resume after
+an interruption. A correction removes any stored version it cannot update, so
+rerunning coverage also checks whether a previous version needs reevaluation.
+After coverage reaches zero and Nutrition verifies the results, set
+`SAP_ASSESSMENT_VISIBLE=true`. Disable visibility to restore legacy reads.
+
+Export the same reviewed version for Mobile from a backend source checkout.
+
+```bash
+poetry run python -m scripts.export_anthropometry_reference --ruleset-version VERSION --output reference.json
+```
+
 ## E2E reference data
 
 `seed_reference_e2e.py` loads a fictitious dataset, so E2E tests and the user manual's screenshots start from the same state. It is **never** run by the service startup or the deploy. Run it by hand against a disposable database, after the migrations and the seeds of the superadmin and the food catalog; the E2E compose does that for you.

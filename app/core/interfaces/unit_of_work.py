@@ -45,6 +45,9 @@ from app.repositories.health_repository import HealthRepository
 from app.repositories.measurements.measurement_alert_repository import (
     MeasurementAlertRepository,
 )
+from app.repositories.measurements.measurement_assessment_repository import (
+    MeasurementAssessmentRepository,
+)
 from app.repositories.measurements.measurement_repository import MeasurementRepository
 from app.repositories.notifications import (
     PushDeliveryJobRepository,
@@ -79,6 +82,7 @@ class IUnitOfWork(ABC):
     email_verification_repo: EmailVerificationTokenRepository
     measurement_repo: MeasurementRepository
     measurement_alert_repo: MeasurementAlertRepository
+    measurement_assessment_repo: MeasurementAssessmentRepository
     survey_repo: SurveyRepository
     survey_response_repo: SurveyResponseRepository
     survey_response_edit_repo: SurveyResponseEditRepository
@@ -100,6 +104,10 @@ class IUnitOfWork(ABC):
 
     @abstractmethod
     async def commit(self) -> None: ...
+
+    @abstractmethod
+    async def begin_consistent_read(self) -> None:
+        """Start a consistent snapshot before the first repository query."""
 
     @abstractmethod
     async def rollback(self) -> None: ...

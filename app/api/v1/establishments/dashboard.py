@@ -25,7 +25,10 @@ from app.schemas.pagination import PaginatedResponse
 from app.services.establishments.establishment_dashboard_service import (
     EstablishmentDashboardService,
 )
-from app.services.exporters.csv.columns import ESTABLISHMENT_SUBJECT_EXPORTER
+from app.services.exporters.csv.columns import (
+    ESTABLISHMENT_SUBJECT_ASSESSMENT_EXPORTER,
+    ESTABLISHMENT_SUBJECT_EXPORTER,
+)
 
 router = APIRouter(prefix="/establishments")
 
@@ -124,6 +127,7 @@ async def list_establishment_subjects(
 async def export_establishment_subjects(
     establishment_id: UUID,
     query: EstablishmentSubjectsQuery = Depends(),
+    assessment_fields: bool = False,
     _: UserActor = Depends(require_admin_or_analyst),
     service: EstablishmentDashboardService = Depends(
         get_establishment_dashboard_service
@@ -132,11 +136,16 @@ async def export_establishment_subjects(
     params = query.to_domain()
     # resolves the establishment and sizes the export for the row-count header.
     name, total = await service.prepare_establishment_export(establishment_id, params)
+    exporter = (
+        ESTABLISHMENT_SUBJECT_ASSESSMENT_EXPORTER
+        if assessment_fields
+        else ESTABLISHMENT_SUBJECT_EXPORTER
+    )
     return csv_stream_response(
         lambda uow: EstablishmentDashboardService(uow).export_establishment_subjects(
-            establishment_id, params, ESTABLISHMENT_SUBJECT_EXPORTER
+            establishment_id, params, exporter, assessment_fields=assessment_fields
         ),
-        ESTABLISHMENT_SUBJECT_EXPORTER.filename(scope=name),
+        exporter.filename(scope=name),
         total,
     )
 

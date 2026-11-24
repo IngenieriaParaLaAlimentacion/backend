@@ -5,6 +5,7 @@ from typing import Self
 from uuid import UUID
 
 from app.domain.common_domains import normalize_optional_str
+from app.domain.measurement_assessment import Indicator
 
 
 class Sex(StrEnum):
@@ -62,6 +63,9 @@ class SubjectListingParams:
     is_indigenous: bool | None = None
     sex: Sex | None = None
     sort_order: SubjectSortOrder = SubjectSortOrder.CREATED_AT_DESC
+    indicator: Indicator | None = None
+    classification: str | None = None
+    ruleset_version: str | None = None
 
     def __post_init__(self) -> None:
         self.search = normalize_optional_str(self.search)

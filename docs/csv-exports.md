@@ -195,3 +195,16 @@ exported, with both `Último relevamiento` and the elapsed time blank.
 
 > If any of these headers or their order does not match what the table renders, say so. Each
 > column is a one-line change in `columns.py`.
+
+## Assessment columns
+
+The measurements, subjects, and establishment subject exports accept
+`assessment_fields=true`. This appends four columns for each indicator in
+the following order: status, classification code, Z-score, and alert
+detail. A subject export uses the same latest measurement as its listing.
+Rows without a result in the active assessment version have blank
+assessment cells.
+
+Measurement and global subject exports also accept `indicator` and
+`classification` when assessments are available. The filters match the
+listing and apply even when the extra export columns are omitted.

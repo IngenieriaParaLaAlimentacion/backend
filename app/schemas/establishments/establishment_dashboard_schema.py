@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict
 
 from app.domain.establishment import UserEstablishmentStatus
 from app.domain.measurement import AlertSeverity, NutritionalStatus
+from app.domain.measurement_assessment import Indicator
 from app.domain.subject import Sex
 from app.domain.user import UserStatus
 from app.schemas.establishments.establishment_characterization_schema import (
@@ -64,6 +65,36 @@ class EstablishmentAlertStatusResponse(BaseModel):
     distribution: list[StatusDistributionEntryResponse]
 
 
+class AssessmentDistributionEntryResponse(BaseModel):
+    """Classification count and percentage for one indicator."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    classification: str
+    count: int
+    percentage: float
+
+
+class IndicatorDistributionResponse(BaseModel):
+    """The scoped population and classifications for an evaluated indicator."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    indicator: Indicator
+    evaluated_count: int
+    distribution: list[AssessmentDistributionEntryResponse]
+
+
+class AssessmentSummaryResponse(BaseModel):
+    """Risk across subjects and the distribution for each indicator."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    at_risk_count: int
+    at_risk_percentage: float | None
+    indicators: list[IndicatorDistributionResponse]
+
+
 class EstablishmentDashboardResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -71,6 +102,7 @@ class EstablishmentDashboardResponse(BaseModel):
     has_data: bool
     metrics: EstablishmentMetricsResponse
     alert_status: EstablishmentAlertStatusResponse
+    assessment_summary: AssessmentSummaryResponse | None = None
     characterization: StoredCharacterization
 
 

@@ -20,6 +20,7 @@ from .food_outflows.food_outflow_item import FoodOutflowItem
 from .food_stock.food_stock import FoodStock
 from .measurements.measurement import Measurement
 from .measurements.measurement_alert import MeasurementAlert
+from .measurements.measurement_assessment import MeasurementAssessment
 from .notifications import PushDeliveryJob, StaleEstablishmentCycle, UserPushDevice
 from .nutrition_reports.nutrition_report import NutritionReport
 from .subjects.subject import Sex, Subject
@@ -46,6 +47,7 @@ __all__ = [
     "Sex",
     "Measurement",
     "MeasurementAlert",
+    "MeasurementAssessment",
     "SubjectEvent",
     "Survey",
     "SurveyQuestion",

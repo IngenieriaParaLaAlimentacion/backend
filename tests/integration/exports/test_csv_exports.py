@@ -30,7 +30,7 @@ def fixed_export_date(monkeypatch) -> date:
     )
     monkeypatch.setattr(
         "app.api.v1.subjects.build_subject_listing_export",
-        lambda: build_subject_listing_export(reference),
+        lambda **kwargs: build_subject_listing_export(reference, **kwargs),
     )
     return fixed_date
 

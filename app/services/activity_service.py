@@ -4,6 +4,10 @@ from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.activity import ActivityItemDomain, ActivityListingParams
 from app.domain.pagination import PaginatedResult
 from app.domain.user import UserActor
+from app.services.measurements.assessment_projection import (
+    assessments_by_id,
+    begin_assessment_read,
+)
 
 
 class ActivityService:
@@ -21,6 +25,7 @@ class ActivityService:
     ) -> PaginatedResult[ActivityItemDomain]:
         """Return the caller's own subjects, measurements, survey responses and
         food movements, merged into one date-descending feed."""
+        await begin_assessment_read(self.uow)
         page = max(1, page)
         offset = (page - 1) * page_size
         items, total = await self.uow.activity_repo.get_activity_feed(
@@ -29,6 +34,10 @@ class ActivityService:
             offset=offset,
             activity_types=params.activity_types,
         )
+        measurements = [entry.measurement for entry in items if entry.measurement]
+        assessments = await assessments_by_id(self.uow, (m.id for m in measurements))
+        for measurement in measurements:
+            measurement.assessments = assessments.get(measurement.id)
         return PaginatedResult.build(
             items=items, total=total, page=page, page_size=page_size
         )

@@ -6,6 +6,7 @@ subject.py would be circular.
 """
 
 from dataclasses import dataclass
+from uuid import UUID
 
 from app.domain.measurement import (
     MeasurementBase,
@@ -14,6 +15,7 @@ from app.domain.measurement import (
     SubjectRefDomain,
     status_from_alerts,
 )
+from app.domain.measurement_assessment import Assessment
 from app.domain.subject import SubjectDomain
 
 
@@ -33,7 +35,9 @@ class SubjectDetailDomain(SubjectDomain):
     latest_measurement: MeasurementSummaryDomain | None
 
     @classmethod
-    def build(cls, subject, measurement) -> "SubjectDetailDomain":
+    def build(
+        cls, subject, measurement, assessments: tuple[Assessment, ...] | None = None
+    ) -> "SubjectDetailDomain":
         """Combine an ORM Subject with its latest ORM Measurement, if any."""
         base = vars(SubjectDomain.from_db(subject))
         if measurement is None:
@@ -41,13 +45,24 @@ class SubjectDetailDomain(SubjectDomain):
         return cls(
             **base,
             nutritional_status=status_from_alerts(measurement.alerts),
-            latest_measurement=MeasurementSummaryDomain.from_db(measurement),
+            latest_measurement=MeasurementSummaryDomain.from_db(
+                measurement, assessments
+            ),
         )
 
 
 @dataclass
 class EvolutionPointDomain(MeasurementBase):
     """A single point in a subject's anthropometric evolution series."""
+
+    id: UUID
+
+    @classmethod
+    def from_db(
+        cls, obj, assessments: tuple[Assessment, ...] | None = None
+    ) -> "EvolutionPointDomain":
+        """Build a point from a measurement and its selected assessments."""
+        return cls(id=obj.id, **cls._base_kwargs(obj, assessments))
 
 
 @dataclass

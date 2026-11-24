@@ -5,6 +5,8 @@ from uuid import UUID
 from app.core.interfaces.unit_of_work import IUnitOfWork
 from app.domain.establishment import EstablishmentDomain
 from app.domain.establishment_dashboard import (
+    AssessmentDistributionEntry,
+    AssessmentSummary,
     EstablishmentAlertStatusDomain,
     EstablishmentDashboardDomain,
     EstablishmentFieldWorkerItemDomain,
@@ -13,6 +15,7 @@ from app.domain.establishment_dashboard import (
     EstablishmentMetricsDomain,
     EstablishmentSubjectItemDomain,
     EstablishmentSubjectListingParams,
+    IndicatorDistribution,
     StatusDistributionEntryDomain,
 )
 from app.domain.measurement import (
@@ -23,11 +26,20 @@ from app.domain.measurement import (
     NutritionalStatus,
     status_from_alerts,
 )
+from app.domain.measurement_assessment import Assessment, Indicator
 from app.domain.pagination import PaginatedResult
 from app.domain.user import UserActor
+from app.reference_data.sap_reference import visible_ruleset
 from app.services.access import check_establishment_access
 from app.services.exporters.csv.csv_exporter import CsvExporter
+from app.services.measurements.assessment_projection import (
+    assessments_by_id,
+    begin_assessment_read,
+)
 from app.utils.dates import completed_months_between
+from app.utils.db import achunked
+
+_ASSESSMENT_BATCH_SIZE = 500
 
 
 def _round(value: float | None, digits: int = 2) -> float | None:
@@ -116,7 +128,9 @@ class EstablishmentDashboardService:
 
     @staticmethod
     def _build_subject_item(
-        measurement, measurement_count: int
+        measurement,
+        measurement_count: int,
+        assessments: tuple[Assessment, ...] | None = None,
     ) -> EstablishmentSubjectItemDomain:
         """Build a listing item from a subject's latest measurement."""
         subject = measurement.subject
@@ -132,7 +146,50 @@ class EstablishmentDashboardService:
             ),
             measurement_count=measurement_count,
             nutritional_status=status_from_alerts(measurement.alerts),
-            latest_measurement=MeasurementSummaryDomain.from_db(measurement),
+            latest_measurement=MeasurementSummaryDomain.from_db(
+                measurement, assessments
+            ),
+        )
+
+    async def _assessment_summary(
+        self, establishment_id: UUID
+    ) -> AssessmentSummary | None:
+        ruleset = visible_ruleset()
+        if ruleset is None:
+            return None
+        (
+            total,
+            at_risk,
+            rows,
+        ) = await self.uow.establishment_dashboard_repo.get_assessment_distribution(
+            establishment_id, ruleset.version
+        )
+        counts: dict[Indicator, dict[str, int]] = defaultdict(dict)
+        for row in rows:
+            counts[Indicator(row.indicator)][row.classification] = row.count
+
+        indicators = []
+        for indicator in Indicator:
+            groups = counts[indicator]
+            evaluated = sum(groups.values())
+            indicators.append(
+                IndicatorDistribution(
+                    indicator=indicator,
+                    evaluated_count=evaluated,
+                    distribution=[
+                        AssessmentDistributionEntry(
+                            classification=classification,
+                            count=count,
+                            percentage=round(count * 100 / evaluated, 2),
+                        )
+                        for classification, count in sorted(groups.items())
+                    ],
+                )
+            )
+        return AssessmentSummary(
+            at_risk_count=at_risk,
+            at_risk_percentage=round(at_risk * 100 / total, 2) if total else None,
+            indicators=indicators,
         )
 
     async def get_establishment_dashboard(
@@ -145,6 +202,7 @@ class EstablishmentDashboardService:
             EstablishmentNotFoundError: If the establishment does not exist.
             EstablishmentAccessDeniedError: field worker lacks approved access.
         """
+        await begin_assessment_read(self.uow)
         establishment = await self.uow.establishment_repo.get_by_id_or_raise(
             establishment_id
         )
@@ -155,6 +213,7 @@ class EstablishmentDashboardService:
         )
         row = await self.uow.establishment_dashboard_repo.get_metrics(establishment_id)
         subject_count = row.subject_count or 0
+        assessment_summary = await self._assessment_summary(establishment_id)
 
         if subject_count == 0:
             empty = EstablishmentMetricsDomain.empty()
@@ -165,6 +224,7 @@ class EstablishmentDashboardService:
                 has_data=False,
                 metrics=empty,
                 alert_status=EstablishmentAlertStatusDomain.empty(),
+                assessment_summary=assessment_summary,
             )
 
         measurement_count = (
@@ -195,6 +255,7 @@ class EstablishmentDashboardService:
             has_data=True,
             metrics=metrics,
             alert_status=alert_status,
+            assessment_summary=assessment_summary,
         )
 
     async def get_establishments_map(self) -> list[EstablishmentMapItemDomain]:
@@ -236,6 +297,7 @@ class EstablishmentDashboardService:
         Raises:
             EstablishmentNotFoundError: If the establishment does not exist.
         """
+        await begin_assessment_read(self.uow)
         await self.uow.establishment_repo.get_by_id_or_raise(establishment_id)
 
         page = max(1, page)
@@ -247,8 +309,15 @@ class EstablishmentDashboardService:
             params=params,
         )
 
+        assessments = await assessments_by_id(
+            self.uow, (row.Measurement.id for row in rows)
+        )
         items = [
-            self._build_subject_item(row.Measurement, row.measurement_count)
+            self._build_subject_item(
+                row.Measurement,
+                row.measurement_count,
+                assessments.get(row.Measurement.id),
+            )
             for row in rows
         ]
         return PaginatedResult.build(
@@ -260,19 +329,37 @@ class EstablishmentDashboardService:
         establishment_id: UUID,
         params: EstablishmentSubjectListingParams,
         exporter: CsvExporter[EstablishmentSubjectItemDomain],
+        *,
+        assessment_fields: bool = False,
     ) -> AsyncIterator[bytes]:
         """Stream the establishment's subject listing as an exported file's bytes.
 
         Applies the same filters and order as ``list_establishment_subjects``
         over the whole result set rather than one page.
         """
-        rows = (
-            self._build_subject_item(row.Measurement, row.measurement_count)
-            async for row in self.uow.establishment_dashboard_repo.stream_for_export(
-                establishment_id=establishment_id, params=params
-            )
+        source = self.uow.establishment_dashboard_repo.stream_for_export(
+            establishment_id=establishment_id, params=params
         )
-        return exporter.stream(rows)
+        return exporter.stream(self._stream_subject_items(source, assessment_fields))
+
+    async def _stream_subject_items(
+        self, source: AsyncIterator, assessment_fields: bool
+    ) -> AsyncIterator[EstablishmentSubjectItemDomain]:
+        await begin_assessment_read(self.uow)
+        if not assessment_fields:
+            async for row in source:
+                yield self._build_subject_item(row.Measurement, row.measurement_count)
+            return
+        async for batch in achunked(source, _ASSESSMENT_BATCH_SIZE):
+            assessments = await assessments_by_id(
+                self.uow, (row.Measurement.id for row in batch)
+            )
+            for row in batch:
+                yield self._build_subject_item(
+                    row.Measurement,
+                    row.measurement_count,
+                    assessments.get(row.Measurement.id),
+                )
 
     async def prepare_establishment_export(
         self,

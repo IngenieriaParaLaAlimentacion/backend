@@ -58,6 +58,11 @@ EXACT_KEYS = frozenset(
         "bmi",
         "avgbmi",
         "imc",
+        "assessments",
+        "classification",
+        "alertdetail",
+        "alertseverity",
+        "staturemethod",
         # Sensitive under art. 2 of Ley 25.326 (ethnic origin, health). `sex` is
         # too short to be a fragment.
         "sex",
