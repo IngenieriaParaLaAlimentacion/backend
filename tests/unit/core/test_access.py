@@ -4,11 +4,12 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.domain.establishment import UserEstablishmentStatus
-from app.domain.user import UserActor, UserRole
+from app.domain.user import UserActor, UserRole, UserStatus
 from app.exceptions.domain_exceptions import EstablishmentAccessDeniedError
 from app.services.access import (
     check_establishment_access,
     check_field_work_access,
+    check_user_not_blocked,
 )
 
 
@@ -75,6 +76,18 @@ class TestCheckFieldWorkAccess:
         else:
             with pytest.raises(EstablishmentAccessDeniedError):
                 await check_field_work_access(uow, _actor(UserRole.ANALYST), None)
+
+
+class TestCheckUserNotBlocked:
+    @pytest.mark.parametrize(
+        "user_status",
+        [None, UserStatus.PENDING_VALIDATION, UserStatus.INACTIVE],
+    )
+    async def test_users_that_are_not_blocked_are_allowed(self, user_status):
+        uow = AsyncMock()
+        uow.user_repo.get_status = AsyncMock(return_value=user_status)
+
+        await check_user_not_blocked(uow, uuid.uuid4())
 
 
 class TestCheckEstablishmentAccess:

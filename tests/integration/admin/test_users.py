@@ -170,6 +170,48 @@ class TestListUsersPagination:
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["items"] == []
 
+    async def test_repeated_status_returns_users_in_any_of_them(
+        self, client, admin_headers
+    ):
+        """Repeating the status parameter keeps the users in any of those statuses."""
+        active = await _insert_user(UserRole.ANALYST, UserStatus.ACTIVE)
+        blocked = await _insert_user(UserRole.ANALYST, UserStatus.BLOCKED)
+        await _insert_user(UserRole.ANALYST, UserStatus.PENDING_VALIDATION)
+
+        response = await client.get(
+            f"{ADMIN_USERS_URL}?status={UserStatus.ACTIVE.value}"
+            f"&status={UserStatus.BLOCKED.value}",
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        body = response.json()
+        assert {item["id"] for item in body["items"]} == {str(active), str(blocked)}
+        assert body["total"] == 2
+
+    async def test_unverified_pending_user_stays_hidden_next_to_other_statuses(
+        self, client, admin_headers
+    ):
+        """A pending user is listed only once their email is verified, also when
+        the filter asks for other statuses too."""
+        active = await _insert_user(UserRole.ANALYST, UserStatus.ACTIVE)
+        verified = await _insert_user(UserRole.ANALYST, UserStatus.PENDING_VALIDATION)
+        unverified = await _insert_user(UserRole.ANALYST, UserStatus.PENDING_VALIDATION)
+        async with db_module.AsyncSessionLocal() as session:
+            user = await session.get(User, unverified)
+            user.is_email_verified = False
+            await session.commit()
+
+        response = await client.get(
+            f"{ADMIN_USERS_URL}?status={UserStatus.ACTIVE.value}"
+            f"&status={UserStatus.PENDING_VALIDATION.value}",
+            headers=admin_headers,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        ids = {item["id"] for item in response.json()["items"]}
+        assert ids == {str(active), str(verified)}
+
     async def test_search_by_name_returns_matching(
         self, client, admin_headers, db_establishment
     ):

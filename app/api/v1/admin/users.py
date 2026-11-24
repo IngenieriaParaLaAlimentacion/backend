@@ -21,14 +21,17 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
     summary="List registered users",
     description="Returns a paginated list of users, optionally filtered by role or "
-    "status, or searching by name, last name or email. Accessible by admins only.",
+    "by one or more statuses, or searching by name, last name or email. Accessible "
+    "by admins only.",
     responses=AUTH_RESPONSES,
 )
 async def list_users(
     paginated: PaginatedQueryParams = Depends(),
     role: UserRole | None = Query(default=None, description="Filter by role."),
-    status_filter: UserStatus | None = Query(
-        default=None, alias="status", description="Filter by status."
+    status_filter: list[UserStatus] | None = Query(
+        default=None,
+        alias="status",
+        description="Filter by status. Repeat the parameter to include several.",
     ),
     search: str | None = Query(default=None, max_length=100),
     _admin: UserActor = Depends(require_admin),
@@ -38,7 +41,7 @@ async def list_users(
         page=paginated.page,
         page_size=paginated.page_size,
         role=role,
-        status=status_filter,
+        statuses=status_filter,
         search=search,
     )
     return PaginatedUsersResponse.model_validate(result)
@@ -102,4 +105,66 @@ async def change_user_role(
         UserNotActiveError: If the user's account is not active.
     """
     result = await service.change_user_role(admin, user_id, body.role)
+    return FullUserAdminView.model_validate(result)
+
+
+@router.patch(
+    "/users/{user_id}/block",
+    response_model=FullUserAdminView,
+    status_code=status.HTTP_200_OK,
+    summary="Block a user from the system.",
+    description="Blocks an active user from the system and revokes their refresh "
+    "tokens. Admins may block field workers and analysts; superadmins may also "
+    "block admins. Nobody may block a superadmin or themselves. Blocking a user who "
+    "is already blocked changes nothing.",
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_400_BAD_REQUEST: {"description": "User is not active"},
+        status.HTTP_403_FORBIDDEN: {"description": "Not allowed to block this user"},
+        status.HTTP_404_NOT_FOUND: {"description": "User not found"},
+    },
+)
+async def block_user(
+    user_id: UUID,
+    admin: UserActor = Depends(require_admin),
+    service: AdminService = Depends(get_admin_service),
+) -> FullUserAdminView:
+    """Block the user from the system and return their updated profile.
+
+    Raises:
+        UserNotFoundError: If no user with user_id exists.
+        RoleNotAllowedError: If the actor may not block this user.
+        UserNotActiveError: If the user's account is not active.
+    """
+    result = await service.block_user(admin, user_id)
+    return FullUserAdminView.model_validate(result)
+
+
+@router.patch(
+    "/users/{user_id}/unblock",
+    response_model=FullUserAdminView,
+    status_code=status.HTTP_200_OK,
+    summary="Unblock a user from the system.",
+    description="Unblocks a blocked user and restores their access. Admins may "
+    "unblock field workers and analysts; superadmins may also unblock admins. Nobody "
+    "may unblock a superadmin or themselves. Unblocking a user who is not blocked "
+    "changes nothing.",
+    responses={
+        **AUTH_RESPONSES,
+        status.HTTP_403_FORBIDDEN: {"description": "Not allowed to unblock this user"},
+        status.HTTP_404_NOT_FOUND: {"description": "User not found"},
+    },
+)
+async def unblock_user(
+    user_id: UUID,
+    admin: UserActor = Depends(require_admin),
+    service: AdminService = Depends(get_admin_service),
+) -> FullUserAdminView:
+    """Unblock the user and return their updated profile.
+
+    Raises:
+        UserNotFoundError: If no user with user_id exists.
+        RoleNotAllowedError: If the actor may not unblock this user.
+    """
+    result = await service.unblock_user(admin, user_id)
     return FullUserAdminView.model_validate(result)

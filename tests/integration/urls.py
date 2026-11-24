@@ -2,6 +2,7 @@
 
 LOGIN_URL = "/api/v1/auth/login"
 LOGOUT_URL = "/api/v1/auth/logout"
+REFRESH_URL = "/api/v1/auth/refresh"
 REGISTER_URL = "/api/v1/auth/register/field-worker"
 INVITE_ADMIN_URL = "/api/v1/admin/invite-admin"
 DASHBOARD_URL = "/api/v1/establishments/{establishment_id}/dashboard"

@@ -679,6 +679,18 @@ class PendingValidationError(ForbiddenError):
         )
 
 
+class UserBlockedError(ForbiddenError):
+    """Raised when a blocked user logs in or makes an authenticated request."""
+
+    error_type = "user-blocked"
+
+    def __init__(self):
+        super().__init__(
+            "User blocked",
+            "Your account has been blocked.",
+        )
+
+
 class InvalidTokenError(UnauthorizedError, abstract=True):
     """Base exception for a token that is invalid, expired, or revoked.
 

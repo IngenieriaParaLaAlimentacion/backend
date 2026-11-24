@@ -76,6 +76,7 @@ EXPECTED: dict[str, int] = {
     "unauthorized": status.HTTP_401_UNAUTHORIZED,
     "unsupported-image-type": status.HTTP_422_UNPROCESSABLE_CONTENT,
     "user-already-exists": status.HTTP_409_CONFLICT,
+    "user-blocked": status.HTTP_403_FORBIDDEN,
     "user-establishment-not-approved": status.HTTP_409_CONFLICT,
     "user-establishment-not-found": status.HTTP_404_NOT_FOUND,
     "user-establishment-not-withdrawable": status.HTTP_409_CONFLICT,

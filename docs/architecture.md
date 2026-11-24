@@ -24,7 +24,7 @@ app/
   api/                           # Route handlers, grouped by API version
   services/
     <module>/                    # Business logic, one subdirectory per module
-    access.py                    # Shared establishment-access checks
+    access.py                    # Shared access checks (establishment scope, blocked users)
     *_service.py                 # Services that serve several modules (admin, analytics, email, health)
   repositories/
     <module>/                    # DB access, one subdirectory per module

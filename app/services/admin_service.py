@@ -1,4 +1,5 @@
 import secrets
+from collections.abc import Sequence
 from typing import Any
 from uuid import UUID
 
@@ -40,9 +41,10 @@ from app.services.email_service import (
     send_role_changed_email,
 )
 
-# Actor role -> roles of the users it may change. The schema already limits the
-# destination role to field_worker, analyst or admin.
-_ROLE_CHANGE_SOURCES: dict[UserRole, frozenset[UserRole]] = {
+# Actor role -> roles of the users it may change the role of, block or unblock. The
+# schema already limits the destination role of a role change to field_worker,
+# analyst or admin.
+_MANAGEABLE_ROLES: dict[UserRole, frozenset[UserRole]] = {
     UserRole.ADMIN: frozenset({UserRole.FIELD_WORKER, UserRole.ANALYST}),
     UserRole.SUPERADMIN: frozenset(
         {UserRole.FIELD_WORKER, UserRole.ANALYST, UserRole.ADMIN}
@@ -220,15 +222,29 @@ class AdminService:
             user.name or None,
         )
 
+    @staticmethod
+    def _require_manageable(actor: UserActor, user: Any, error_detail: str) -> None:
+        """Raise RoleNotAllowedError unless the actor may manage the user.
+
+        An actor may not manage themselves, nor a user whose role is not in
+        their manageable roles.
+        """
+        if actor.user_id == user.id or user.role not in _MANAGEABLE_ROLES.get(
+            actor.role, frozenset()
+        ):
+            raise RoleNotAllowedError(error_detail)
+
     async def get_users_paginated(
         self,
         page: int,
         page_size: int,
         role: UserRole | None = None,
-        status: UserStatus | None = None,
+        statuses: Sequence[UserStatus] | None = None,
         search: str | None = None,
     ) -> PaginatedResult[UserWithEstablishmentsDomain]:
         """Return a paginated list of users with their approved establishments.
+
+        ``statuses`` keeps the users in any of them.
 
         Only approved relations are hydrated: a pending request is not access,
         and is surfaced by get_pending_establishment_requests instead.
@@ -241,7 +257,7 @@ class AdminService:
 
         users, total = await self.uow.user_repo.get_paginated(
             role=role,
-            status=status,
+            statuses=statuses,
             limit=page_size,
             offset=offset,
             search=search,
@@ -318,10 +334,9 @@ class AdminService:
             UserNotActiveError: If the user's account is not active.
         """
         user = await self._get_user(user_id)
-        if actor.user_id == user_id or user.role not in _ROLE_CHANGE_SOURCES.get(
-            actor.role, frozenset()
-        ):
-            raise RoleNotAllowedError("You are not allowed to change this user's role.")
+        self._require_manageable(
+            actor, user, "You are not allowed to change this user's role."
+        )
         # The invite link depends on the role, so pending users keep theirs.
         if user.status != UserStatus.ACTIVE:
             raise UserNotActiveError("Only active users can have their role changed.")
@@ -571,3 +586,61 @@ class AdminService:
             page_size=history_page_size,
         )
         return SubjectDomain.from_db(subject), history
+
+    async def block_user(
+        self, actor: UserActor, user_id: UUID
+    ) -> UserWithEstablishmentsDomain:
+        """Block an active user, revoke all of their refresh tokens and record it.
+
+        Admins may block field workers and analysts; superadmins may also block
+        admins. Nobody may block a superadmin or themselves. Blocking a user who is
+        already blocked changes nothing.
+
+        Returns:
+            The user with their approved establishments.
+
+        Raises:
+            UserNotFoundError: If no user with user_id exists.
+            RoleNotAllowedError: If the actor may not block this user.
+            UserNotActiveError: If the user's account is not active.
+        """
+        user = await self._get_user(user_id)
+        self._require_manageable(actor, user, "You are not allowed to block this user.")
+        if user.status == UserStatus.BLOCKED:
+            return await self.get_user_info(user_id)
+        if user.status != UserStatus.ACTIVE:
+            raise UserNotActiveError("Only active users can be blocked.")
+
+        await self.uow.user_repo.update_status(user_id, UserStatus.BLOCKED)
+        await self.uow.token_repo.revoke_all_by_user_id(user_id)
+        await self.uow.commit()
+
+        return await self.get_user_info(user_id)
+
+    async def unblock_user(
+        self, actor: UserActor, user_id: UUID
+    ) -> UserWithEstablishmentsDomain:
+        """Unblock a blocked user, set them back to active and record it.
+
+        Admins may unblock field workers and analysts; superadmins may also unblock
+        admins. Nobody may unblock a superadmin or themselves. Unblocking a user who
+        is not blocked changes nothing.
+
+        Returns:
+            The user with their approved establishments, as get_user_info.
+
+        Raises:
+            UserNotFoundError: If no user with user_id exists.
+            RoleNotAllowedError: If the actor may not unblock this user.
+        """
+        user = await self._get_user(user_id)
+        self._require_manageable(
+            actor, user, "You are not allowed to unblock this user."
+        )
+        if user.status != UserStatus.BLOCKED:
+            return await self.get_user_info(user_id)
+
+        await self.uow.user_repo.update_status(user_id, UserStatus.ACTIVE)
+        await self.uow.commit()
+
+        return await self.get_user_info(user_id)

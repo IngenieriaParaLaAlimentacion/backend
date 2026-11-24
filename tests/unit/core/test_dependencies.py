@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 
 import pytest
@@ -8,8 +8,19 @@ from app.core.dependencies import require_admin, require_admin_or_analyst, requi
 from app.exceptions.domain_exceptions import (
     ForbiddenError,
     UnauthorizedError,
+    UserBlockedError,
 )
-from app.models.auth.user import UserRole
+from app.models.auth.user import UserRole, UserStatus
+
+
+@pytest.fixture(autouse=True)
+def uow():
+    """Replace the database the dependencies read the user's status from."""
+    uow = AsyncMock()
+    uow.user_repo.get_status = AsyncMock(return_value=UserStatus.ACTIVE)
+    with patch("app.core.dependencies.UnitOfWork") as unit_of_work:
+        unit_of_work.return_value.__aenter__.return_value = uow
+        yield uow
 
 
 def _claims(role: UserRole, *, valid_signature: bool = True):
@@ -37,6 +48,22 @@ async def test_valid_token_returns_the_actor(dependency, role):
         actor = await dependency(token="anytoken")
     assert str(actor.user_id) == payload["sub"]
     assert actor.role == role
+
+
+@pytest.mark.parametrize(
+    ("dependency", "role"),
+    [
+        (require_admin, UserRole.ADMIN),
+        (require_admin_or_analyst, UserRole.ANALYST),
+        (require_any, UserRole.FIELD_WORKER),
+    ],
+)
+async def test_blocked_user_with_valid_token_raises_user_blocked(dependency, role, uow):
+    uow.user_repo.get_status.return_value = UserStatus.BLOCKED
+    _, unverified, decoded = _claims(role)
+    with unverified, decoded:
+        with pytest.raises(UserBlockedError):
+            await dependency(token="anytoken")
 
 
 @pytest.mark.parametrize(

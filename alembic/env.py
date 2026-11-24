@@ -13,7 +13,9 @@ config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)
 
 if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+    # By default fileConfig disables every logger that already exists. Alembic
+    # also runs inside the test process, where that silences the application's.
+    fileConfig(config.config_file_name, disable_existing_loggers=False)
 
 target_metadata = Base.metadata
 

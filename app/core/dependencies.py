@@ -14,6 +14,7 @@ from app.exceptions.domain_exceptions import (
     RoleNotAllowedError,
     UnauthorizedError,
 )
+from app.services.access import check_user_not_blocked
 from app.services.activity_service import ActivityService
 from app.services.admin_service import AdminService
 from app.services.analytics_service import AnalyticsService
@@ -226,6 +227,9 @@ async def _get_authenticated_actor(
 
     if payload.get("role") not in allowed:
         raise RoleNotAllowedError()
+
+    async with UnitOfWork() as uow:
+        await check_user_not_blocked(uow, payload["sub"])
 
     return UserActor(user_id=payload["sub"], role=payload["role"])
 

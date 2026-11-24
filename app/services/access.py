@@ -1,17 +1,23 @@
-"""Per-establishment access checks shared by the services that need them.
+"""Access checks shared by the services and dependencies that need them.
 
 The token carries a role but no establishment scope, so a user's right to act
 on a given establishment is resolved at request time against their approved
 relations. Every service that writes or reads establishment-scoped data goes
 through here rather than re-deriving the rule.
+
+The token also cannot tell whether the user was blocked after it was issued, so
+every authenticated request checks the user's status here as well.
 """
 
 from uuid import UUID
 
 from app.core.interfaces.unit_of_work import IUnitOfWork
-from app.domain import UserActor, UserRole
+from app.domain import UserActor, UserRole, UserStatus
 from app.domain.establishment import UserEstablishmentStatus
-from app.exceptions.domain_exceptions import EstablishmentAccessDeniedError
+from app.exceptions.domain_exceptions import (
+    EstablishmentAccessDeniedError,
+    UserBlockedError,
+)
 
 
 async def _has_approved_relation(
@@ -66,3 +72,14 @@ async def check_field_work_access(
         )
     if not allowed:
         raise EstablishmentAccessDeniedError()
+
+
+async def check_user_not_blocked(uow: IUnitOfWork, user_id: UUID) -> None:
+    """Validate that the user is not blocked.
+
+    Raises:
+        UserBlockedError: the actor is blocked.
+    """
+    status = await uow.user_repo.get_status(user_id)
+    if status == UserStatus.BLOCKED:
+        raise UserBlockedError()

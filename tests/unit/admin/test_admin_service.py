@@ -120,7 +120,7 @@ class TestGetPaginatedUsers:
         await service.get_users_paginated(page=3, page_size=20)
 
         uow.user_repo.get_paginated.assert_called_once_with(
-            role=None, status=None, limit=20, offset=40, search=None
+            role=None, statuses=None, limit=20, offset=40, search=None
         )
 
     async def test_total_pages_rounds_up(self, make_uow, make_service):
@@ -159,7 +159,7 @@ class TestGetPaginatedUsers:
         await service.get_users_paginated(page=1, page_size=20, role=UserRole.ANALYST)
 
         uow.user_repo.get_paginated.assert_called_once_with(
-            role=UserRole.ANALYST, status=None, limit=20, offset=0, search=None
+            role=UserRole.ANALYST, statuses=None, limit=20, offset=0, search=None
         )
 
     async def test_skips_establishment_query_when_no_users(
@@ -209,12 +209,15 @@ class TestGetPaginatedUsers:
         service = make_service(uow)
 
         await service.get_users_paginated(
-            page=1, page_size=20, status=UserStatus.ACTIVE, search="Name search"
+            page=1,
+            page_size=20,
+            statuses=[UserStatus.ACTIVE, UserStatus.BLOCKED],
+            search="Name search",
         )
 
         uow.user_repo.get_paginated.assert_called_once_with(
             role=None,
-            status=UserStatus.ACTIVE,
+            statuses=[UserStatus.ACTIVE, UserStatus.BLOCKED],
             limit=20,
             offset=0,
             search="Name search",
@@ -227,7 +230,7 @@ class TestGetPaginatedUsers:
         await service.get_users_paginated(page=1, page_size=20, search="  john  ")
 
         uow.user_repo.get_paginated.assert_called_once_with(
-            role=None, status=None, limit=20, offset=0, search="john"
+            role=None, statuses=None, limit=20, offset=0, search="john"
         )
 
     async def test_whitespace_only_search_passes_none(self, make_uow, make_service):
@@ -237,7 +240,7 @@ class TestGetPaginatedUsers:
         await service.get_users_paginated(page=1, page_size=20, search="   ")
 
         uow.user_repo.get_paginated.assert_called_once_with(
-            role=None, status=None, limit=20, offset=0, search=None
+            role=None, statuses=None, limit=20, offset=0, search=None
         )
 
 
